@@ -1,90 +1,154 @@
 "use client";
+
 import React, { useState } from "react";
-import Link from "next/link";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
+import { DateRange, Calendar } from "react-date-range";
+import { format } from "date-fns";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
-const FlightSearch = () => {
-  const [departureCity, setDepartureCity] = useState("");
-  const [arrivalCity, setArrivalCity] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
-  const [returnDate, setReturnDate] = useState("");
-  const [passengers, setPassengers] = useState(1);
-  const [flightResults, setFlightResults] = useState([]);
+const FilterSearch = () => {
+  const [tripType, setTripType] = useState("oneway");
 
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    const response = await fetch(
-      `/api/flights?from=${departureCity}&to=${arrivalCity}&departureDate=${departureDate}&returnDate=${returnDate}&passengers=${passengers}`
-    );
-    const data = await response.json();
-    setFlightResults(data.flights);
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: null,
+      key: "selection",
+    },
+  ]);
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  const formattedDeparture = format(dateRange[0].startDate, "dd MMM yyyy");
+  const formattedReturn = dateRange[0].endDate
+    ? format(dateRange[0].endDate, "dd MMM yyyy")
+    : "";
+
+  const handleRangeChange = (ranges) => {
+    setDateRange([ranges.selection]);
   };
 
   return (
-    <section className="section-box box-filter-search background-body">
-      <div className="container">
-        <form className="form-search-filter" onSubmit={handleSearch}>
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Departure City"
-            value={departureCity}
-            onChange={(e) => setDepartureCity(e.target.value)}
-            required
-          />
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Arrival City"
-            value={arrivalCity}
-            onChange={(e) => setArrivalCity(e.target.value)}
-            required
-          />
-          <input
-            className="form-control"
-            type="date"
-            value={departureDate}
-            onChange={(e) => setDepartureDate(e.target.value)}
-            required
-          />
-          <input
-            className="form-control"
-            type="date"
-            value={returnDate}
-            onChange={(e) => setReturnDate(e.target.value)}
-          />
-          <select
-            className="form-control"
-            value={passengers}
-            onChange={(e) => setPassengers(e.target.value)}
-          >
-            {[1, 2, 3, 4, 5].map((num) => (
-              <option key={num} value={num}>
-                {num}
-              </option>
+    <div style={{ backgroundImage: "url('/assets/imgs/home_bg.webp')" }}>
+      <div className="flight-search-container">
+        {/* Tabs */}
+        <div className="tabs">
+          {" "}
+          <div className="tab active">
+            <img src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
+            <span>Flights</span>
+          </div>
+          <div className="tab">
+            <img src="/assets/imgs/travel_16190539.svg" alt="Hotels" />
+            <span>Hotels</span>
+          </div>
+          <div className="tab">
+            <img src="/assets/imgs/duty-free_2664702.svg" alt="Holiday" />
+            <span>Holiday package</span>
+          </div>
+          <div className="tab">
+            <img src="/assets/imgs/safe-flight_1585574.svg" alt="Insurance" />
+            <span>Travel Insurance</span>
+          </div>
+          <div className="tab">
+            <img src="/assets/imgs/passport_1257113.svg" alt="Visa" />
+            <span>Visa</span>
+          </div>
+        </div>
+
+        {/* Form Box */}
+        <div className="form-box">
+          {/* Trip Types */}
+          <div className="trip-types">
+            {["oneway", "round", "multi"].map((type) => (
+              <label
+                key={type}
+                className={`trip-type-btn ${tripType === type ? "active" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="tripType"
+                  value={type}
+                  checked={tripType === type}
+                  onChange={() => {
+                    setTripType(type);
+                    setShowCalendar(false);
+                  }}
+                />
+                {type === "oneway" && "One way"}
+                {type === "round" && "Round Trip"}
+                {type === "multi" && "Multi City"}
+              </label>
             ))}
-          </select>
-          <button className="btn btn-primary" type="submit">
-            Search Flights
-          </button>
-        </form>
-        <div>
-          {flightResults.length > 0 ? (
-            <ul>
-              {flightResults.map((flight, index) => (
-                <li key={index}>
-                  {flight.flightNumber} - {flight.departureTime} to{" "}
-                  {flight.arrivalTime} - ${flight.price}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No flights found.</p>
-          )}
+          </div>
+
+          {/* Input Grid */}
+          <div className="input-grid">
+            <div className="input-block">
+              <label>From</label>
+              <h3>Delhi</h3>
+              <p>DEL, Delhi Airport India</p>
+            </div>
+
+            <div className="input-block">
+              <label>To</label>
+              <h3>Bengaluru</h3>
+              <p>BLR, Bengaluru International...</p>
+            </div>
+
+            <div className="input-block relative">
+              <label>{tripType === "round" ? "Dates" : "Departure Date"}</label>
+              <div
+                className="datepicker-input"
+                onClick={() => setShowCalendar(!showCalendar)}
+              >
+                {tripType === "round"
+                  ? `${formattedDeparture} - ${
+                      formattedReturn || "Return Date"
+                    }`
+                  : formattedDeparture}
+              </div>
+              {showCalendar && (
+                <div className="calendar-popup">
+                  {tripType === "round" ? (
+                    <DateRange
+                      editableDateInputs={true}
+                      onChange={handleRangeChange}
+                      moveRangeOnFirstSelection={false}
+                      ranges={dateRange}
+                      minDate={new Date()}
+                    />
+                  ) : (
+                    <Calendar
+                      date={dateRange[0].startDate}
+                      onChange={(date) =>
+                        setDateRange([
+                          {
+                            ...dateRange[0],
+                            startDate: date,
+                            endDate: null,
+                          },
+                        ])
+                      }
+                      minDate={new Date()}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="input-block">
+              <label>Traveller / Class</label>
+              <h3>1 Traveller</h3>
+              <p>Economy / Premium Economy</p>
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <button className="search-btn">SEARCH</button>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-export default FlightSearch;
+export default FilterSearch;
