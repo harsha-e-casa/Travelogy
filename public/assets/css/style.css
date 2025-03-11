@@ -6412,8 +6412,8 @@ label {
 }
 
 .header .main-header .header-right {
-  width: 30%;
-  min-width: 405px;
+  width: 10%;
+  min-width: 200px;
   text-align: right;
   display: flex;
   align-items: center;
@@ -6439,10 +6439,10 @@ label {
 
 .header .nav-main-menu {
   display: flex;
-  padding: 0px;
+  /* padding: 0px;
   align-items: center;
-  justify-content: center;
-  text-align: left;
+  justify-content: center; */
+  float: right;
 }
 
 .header .main-menu li {
@@ -6484,7 +6484,8 @@ label {
   font-family: var(--manrope);
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  /* text-transform: uppercase; */
+  font-size: 15px;
   line-height: 22px;
   color: var(--bs-neutral-1000);
   display: block;
@@ -17587,8 +17588,8 @@ h2 span {
   color: #fff;
 }
 
-.header_logo{
- width: 240px; 
+.header_logo {
+  width: 240px;
 }
 
 .airport-fields {
@@ -17607,6 +17608,7 @@ h2 span {
   justify-content: center;
   align-items: center; */
 }
+
 .airport-display {
   padding: 10px;
   border: 1px solid #ccc;
@@ -17624,6 +17626,7 @@ h2 span {
   margin: 0;
   color: #888;
 }
+
 .FromSr1 {
 
   position: absolute;
