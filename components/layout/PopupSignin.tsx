@@ -6,10 +6,14 @@ export default function PopupSignin({ isLogin, handleLogin, isRegister, handleRe
 			<div className="popup-signin" style={{ display: `${isLogin ? "block" : "none"}` }}>
 				<div className="popup-container">
 					<div className="popup-content"> <a className="close-popup-signin" onClick={handleLogin} />
-						<div className="d-flex gap-2 align-items-center"><Link href="#"><img src="/assets/imgs/template/popup/logo.svg" alt="Travelogy" /></Link>
+						<div className="d-flex gap-2 align-items-center"><Link href="#">
+						{/*<img src="/assets/imgs/template/popup/logo.svg" alt="Travelogy" />*/}
+						</Link>
 							<h4 className="neutral-1000">Hello there !</h4>
 						</div>
-						<div className="box-button-logins"> <Link className="btn btn-login btn-google mr-10" href="#"><img src="/assets/imgs/template/popup/google.svg" alt="Travelogy" /><span className="text-sm-bold">Sign in
+						<div className="box-button-logins"> <Link className="btn btn-login btn-google mr-10" href="#">
+						<img src="/assets/imgs/template/popup/google.svg" alt="Travelogy" />
+						<span className="text-sm-bold">Sign in
 							with Google</span></Link><Link className="btn btn-login mr-10" href="#"><img src="/assets/imgs/template/popup/facebook.svg" alt="Travelogy" /></Link><Link className="btn btn-login" href="#"><img src="/assets/imgs/template/popup/apple.svg" alt="Travelogy" /></Link></div>
 						<div className="form-login">
 							<form action="#">

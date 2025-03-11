@@ -10,10 +10,15 @@ export default function Sidebar({ isSidebar, handleSidebar, }: any) {
 			<div className={`sidebar-canvas-wrapper perfect-scrollbar button-bg-2 ${isSidebar ? "sidebar-canvas-visible" : ""}`}>
 				<PerfectScrollbar className="sidebar-canvas-container">
 					<div className="sidebar-canvas-head">
-						<div className="sidebar-canvas-logo"> <Link className="d-flex" href="/"><img className="light-mode" alt="Travelogy" src="/assets/imgs/template/logo.svg" /><img className="dark-mode" alt="Travelogy" src="/assets/imgs/template/logo-w.svg" /></Link></div>
+						<div className="sidebar-canvas-logo">
+						 <Link className="d-flex" href="/">
+						 {/*<img className="light-mode" alt="Travelogy" src="/assets/imgs/template/logo.svg" />*/}
+						 <img alt="Travelogy" className="light-mode header_logo" src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" />
+						 <img className="dark-mode" alt="Travelogy" src="/assets/imgs/template/logo-w.svg" />
+						 </Link></div>
 						<div className="sidebar-canvas-lang">
-							<LanguageDropdown />
-							<CurrencyDropdown />
+							{/*<LanguageDropdown />*/}
+							{/*<CurrencyDropdown />*/}
 							<a className="close-canvas" onClick={handleSidebar}> <img alt="Travelogy" src="/assets/imgs/template/icons/close.png" /></a>
 						</div>
 						
@@ -23,7 +28,7 @@ export default function Sidebar({ isSidebar, handleSidebar, }: any) {
 							<div className="card-author">
 								<div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" /></div>
 								<div className="card-info">
-									<p className="text-md-bold neutral-1000">Alice Roses</p>
+									<p className="text-md-bold neutral-1000">Sasi tharan</p>
 									<p className="text-xs neutral-1000">London, England</p>
 								</div>
 							</div><Link className="btn btn-black" href="#">Logout</Link>
@@ -96,12 +101,12 @@ export default function Sidebar({ isSidebar, handleSidebar, }: any) {
 								</div>
 							</div>
 						</div>
-						<div className="box-eventsdate">
+						{/*<div className="box-eventsdate">
 							<h6 className="title-eventsdate neutral-1000">Event Dates</h6>
 							<div className="box-calendar-events">
 								<div id="calendar-events" />
 							</div>
-						</div>
+						</div>*/}
 						<div className="box-savedplaces">
 							<h6 className="title-savedplaces neutral-1000">Saved Places</h6>
 							<div className="box-list-places">
@@ -161,9 +166,9 @@ export default function Sidebar({ isSidebar, handleSidebar, }: any) {
 						<div className="box-contactus">
 							<h6 className="title-contactus neutral-1000">Contact Us</h6>
 							<div className="contact-info">
-								<p className="address-2 text-md-medium neutral-1000">4517 Washington Ave. <br />Manchester, Kentucky
+								<p className="address-2 text-md-medium neutral-1000">NPL Devi, 111, Lattice Brg Rd, Thiruvanmiyur, Chennai, Tamil Nadu 600041
 									39495</p>
-								<p className="hour-work-2 text-md-medium neutral-1000">Hours: 8:00 - 17:00, Mon - Sat</p>
+								<p className="hour-work-2 text-md-medium neutral-1000">Hours: 8:00 - 7:00, Mon - Fir</p>
 								<p className="email-2 text-md-medium neutral-1000">support@Travelogy.com</p>
 							</div>
 						</div>
