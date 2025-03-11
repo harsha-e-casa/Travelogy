@@ -7,7 +7,10 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import EngineTabs from "../searchEngine/engineHeader";
 import { AutoComplete, Button } from "antd";
+import ListShow from "./ListShow.jsx";
 import { SwapOutlined } from "@ant-design/icons";
+import "./FromSearch.css";
+
 const airports = [
   {
     location: "Delhi",
@@ -82,6 +85,12 @@ const SearchEngine = () => {
       key: "selection",
     },
   ]);
+  const [showFrom, setShowFrom] = useState(true);
+
+  const openFrom = () => {
+    setShowFrom(false);
+  };
+
   const [showCalendar, setShowCalendar] = useState(false);
   const [multiCities, setMultiCities] = useState([
     {
@@ -154,11 +163,14 @@ const SearchEngine = () => {
           </div>
 
           {tripType !== "multi" && (
-            <div className="input-grid">
-              {/* <div className="input-grid airport-fields"> */}
-              <div className="input-block">
-                <label>From</label>
-                <AutoComplete
+            <>
+              <div className="input-grid">
+                {/* <div className="input-grid airport-fields"> */}
+                <div className="input-block relative" onClick={openFrom}>
+                  <label>From</label>
+
+                  {/* <AutoComplete
+                  open={true}
                   style={{ width: "100%" }}
                   options={airportOptions}
                   value={fromAirport}
@@ -169,98 +181,103 @@ const SearchEngine = () => {
                       .toLowerCase()
                       .includes(inputValue.toLowerCase())
                   }
-                />
-                <Button
-                  className="swap-button-container"
-                  icon={<SwapOutlined />}
-                  onClick={swapAirports}
-                  type="default"
-                  shape="circle"
-                />
-              </div>
+                /> */}
+                  <Button
+                    className="swap-button-container"
+                    icon={<SwapOutlined />}
+                    onClick={swapAirports}
+                    type="default"
+                    shape="circle"
+                  />
 
-              <div className="input-block">
-                <label>To</label>
-                <AutoComplete
-                  style={{ width: "100%" }}
-                  options={airportOptions}
-                  value={toAirport}
-                  onChange={setToAirport}
-                  placeholder="Enter arrival airport"
-                  filterOption={(inputValue, option) =>
-                    option?.value
-                      .toLowerCase()
-                      .includes(inputValue.toLowerCase())
-                  }
-                />
-              </div>
-              {/* </div> */}
-
-              <div className="input-block relative">
-                <label>Departure Date</label>
-                <div
-                  className="datepicker-input"
-                  onClick={() => setShowCalendar(!showCalendar)}
-                >
-                  {formattedDeparture}
-                </div>
-                {showCalendar && tripType !== "round" && (
-                  <div className="calendar-popup">
-                    <Calendar
-                      date={dateRange[0].startDate}
-                      onChange={(date) =>
-                        setDateRange([
-                          {
-                            ...dateRange[0],
-                            startDate: date,
-                            endDate: null,
-                          },
-                        ])
-                      }
-                      minDate={new Date()}
-                    />
+                  <div className="FromSr1" hidden={showFrom}>
+                    <ListShow coick />
                   </div>
-                )}
-              </div>
+                </div>
 
-              {tripType === "round" && (
+                <div className="input-block">
+                  <label>To</label>
+                  <AutoComplete
+                    style={{ width: "100%" }}
+                    options={airportOptions}
+                    value={toAirport}
+                    onChange={setToAirport}
+                    placeholder="Enter arrival airport"
+                    filterOption={(inputValue, option) =>
+                      option?.value
+                        .toLowerCase()
+                        .includes(inputValue.toLowerCase())
+                    }
+                  />
+                </div>
+                {/* </div> */}
+
                 <div className="input-block relative">
-                  <label>Return Date</label>
+                  <label>Departure Date</label>
                   <div
                     className="datepicker-input"
                     onClick={() => setShowCalendar(!showCalendar)}
                   >
-                    {formattedReturn || "Return Date"}
+                    {formattedDeparture}
                   </div>
-                  {showCalendar && (
+                  {showCalendar && tripType !== "round" && (
                     <div className="calendar-popup">
-                      <DateRange
-                        editableDateInputs={true}
-                        onChange={handleRangeChange}
-                        moveRangeOnFirstSelection={false}
-                        ranges={dateRange}
+                      <Calendar
+                        date={dateRange[0].startDate}
+                        onChange={(date) =>
+                          setDateRange([
+                            {
+                              ...dateRange[0],
+                              startDate: date,
+                              endDate: null,
+                            },
+                          ])
+                        }
                         minDate={new Date()}
                       />
                     </div>
                   )}
                 </div>
-              )}
 
-              {tripType === "oneway" && (
-                <div className="input-block note">
-                  <label>Return Date</label>
-                  <p style={{ color: "#007bff" }}>
-                    Add return date for bigger discount!
-                  </p>
+                {tripType === "round" && (
+                  <div className="input-block relative">
+                    <label>Return Date</label>
+                    <div
+                      className="datepicker-input"
+                      onClick={() => setShowCalendar(!showCalendar)}
+                    >
+                      {formattedReturn || "Return Date"}
+                    </div>
+                    {showCalendar && (
+                      <div className="calendar-popup">
+                        <DateRange
+                          editableDateInputs={true}
+                          onChange={handleRangeChange}
+                          moveRangeOnFirstSelection={false}
+                          ranges={dateRange}
+                          minDate={new Date()}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {tripType === "oneway" && (
+                  <div className="input-block note">
+                    <label>Return Date</label>
+                    <p style={{ color: "#007bff" }}>
+                      Add return date for bigger discount!
+                    </p>
+                  </div>
+                )}
+
+                <div className="input-block">
+                  <label>Traveller / Class</label>
+                  <h3>1 Traveller</h3>
+                  <p>Economy / Premium Economy</p>
                 </div>
-              )}
-
-              <div className="input-block">
-                <label>Traveller / Class</label>
-                <h3>1 Traveller</h3>
-                <p>Economy / Premium Economy</p>
               </div>
-            </div>
+            </>
           )}
 
           {/* Multi City Input Blocks */}
