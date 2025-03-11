@@ -17587,6 +17587,10 @@ h2 span {
   color: #fff;
 }
 
+.header_logo{
+ width: 240px; 
+}
+
 .airport-fields {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -17627,5 +17631,4 @@ h2 span {
   background: rgb(247, 247, 247);
   height: 300px;
   z-index: 9;
-
 }

@@ -11,6 +11,8 @@ import TicketCard1 from '@/components/elements/ticketcard/TicketCard1'
 import Layout from "@/components/layout/Layout"
 import SwiperGroupPayment10Slider from '@/components/slider/SwiperGroupPayment10Slider'
 import TopCategory2 from "@/components/sections/TopCategory2"
+import SlideBanner1 from "@/components/sections/SlideBanner1"
+import Banner from "@/components/sections/Banner"
 import Flights4 from "@/components/sections/Flights4"
 import rawticketsData from "@/util/tickets.json"
 import useTicketFilter from '@/util/useTicketFilter'
@@ -59,12 +61,13 @@ export default function Tickets() {
             <Layout headerStyle={1} footerStyle={1}>
 
                 <main className="main">
-            
-                 <Flights4 />
+                {/*<SlideBanner1 />*/}
+                <Banner />
 
-                 
-            
-                    <section className="section-box box-how-it-work-3 background-body">
+            <div className="container">
+             <Flights4 />
+            </div>
+                    <section className="section-box box-how-it-work-3 background-3">
                         <div className="container">
                             <div className="box-how-it-work-inner background-3">
                                 <h3 className="neutral-1000 wow fadeInUp">How It Work ?</h3>
@@ -107,7 +110,7 @@ export default function Tickets() {
                         </div>
                     </section>
 
-                    <TopCategory2 />
+                <TopCategory2 />
 
                     <div className="pb-90 background-body" />
                     <section className="section-box box-media background-body">

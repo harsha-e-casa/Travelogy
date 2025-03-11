@@ -59,11 +59,11 @@ export default function Flights4() {
                                                 <div className="card-price">
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                 </div>
                                                 <div className="card-meta">
@@ -88,11 +88,11 @@ export default function Flights4() {
                                                 <div className="card-price">
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                 </div>
                                                 <div className="card-meta">
@@ -119,11 +119,11 @@ export default function Flights4() {
                                                 <div className="card-price">
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                 </div>
                                                 <div className="card-meta">
@@ -149,11 +149,11 @@ export default function Flights4() {
                                                 <div className="card-price">
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                 </div>
                                                 <div className="card-meta">
@@ -180,11 +180,11 @@ export default function Flights4() {
                                                 <div className="card-price">
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                 </div>
                                                 <div className="card-meta">
@@ -209,11 +209,11 @@ export default function Flights4() {
                                                 <div className="card-price">
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                     <div className="card-price-1">
                                                         <p className="text-md-medium">Business</p>
-                                                        <h6 className="neutral-1000">$288.15</h6>
+                                                        <h6 className="neutral-1000">Rs.18,000</h6>
                                                     </div>
                                                 </div>
                                                 <div className="card-meta">
