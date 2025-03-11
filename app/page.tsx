@@ -2,6 +2,7 @@ import Layout from "@/components/layout/Layout"
 
 // import Category from "@/components/sections/Category"
 import FilterSearch from "@/components/sections/FilterSearch"
+import SearchEngine from "@/components/flight"
 // import Flights1 from "@/components/sections/Flights1"
 // import News1 from "@/components/sections/News1"
 // import Payments1 from "@/components/sections/Payments1"
@@ -18,6 +19,7 @@ export default function Home() {
 
             <Layout headerStyle={1} footerStyle={1}>
                 <FilterSearch />
+                <SearchEngine/>
                  {/*<HoterlIntro /> */}
                 {/* <PopularDestinations1 /> */}
                 {/* <TopRated1 />
