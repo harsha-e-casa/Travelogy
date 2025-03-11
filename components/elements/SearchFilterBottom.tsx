@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import Dropdown from 'react-bootstrap/Dropdown'
-import MyDatePicker from './MyDatePicker'
+
 export default function SearchFilterBottom({ miniField }: any) {
 	return (
 		<>
@@ -22,13 +22,13 @@ export default function SearchFilterBottom({ miniField }: any) {
 				<div className="item-search item-search-2">
 					<label className="text-sm-bold neutral-500">Check In</label>
 					<div className="box-calendar-date">
-						<MyDatePicker />
+						
 					</div>
 				</div>
 				<div className="item-search item-search-3">
 					<label className="text-sm-bold neutral-500">Check Out</label>
 					<div className="box-calendar-date">
-						<MyDatePicker />
+						
 					</div>
 				</div>
 				{!miniField &&

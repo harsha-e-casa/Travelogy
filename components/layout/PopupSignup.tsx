@@ -6,11 +6,11 @@ export default function PopupSignup({ isLogin, handleLogin, isRegister, handleRe
             <div className="popup-signup" style={{ display: `${isRegister ? "block" : "none"}` }}>
                 <div className="popup-container">
                     <div className="popup-content"> <a className="close-popup-signup" onClick={handleRegister} />
-                        <div className="d-flex gap-2 align-items-center"><Link href="#"><img src="/assets/imgs/template/popup/logo.svg" alt="Travila" /></Link>
+                        <div className="d-flex gap-2 align-items-center"><Link href="#"><img src="/assets/imgs/template/popup/logo.svg" alt="Travelogy" /></Link>
                             <h4 className="neutral-1000">Register</h4>
                         </div>
-                        <div className="box-button-logins"> <Link className="btn btn-login btn-google mr-10" href="#"><img src="/assets/imgs/template/popup/google.svg" alt="Travila" /><span className="text-sm-bold">Sign up
-                            with Google</span></Link><Link className="btn btn-login mr-10" href="#"><img src="/assets/imgs/template/popup/facebook.svg" alt="Travila" /></Link><Link className="btn btn-login" href="#"><img src="/assets/imgs/template/popup/apple.svg" alt="Travila" /></Link></div>
+                        <div className="box-button-logins"> <Link className="btn btn-login btn-google mr-10" href="#"><img src="/assets/imgs/template/popup/google.svg" alt="Travelogy" /><span className="text-sm-bold">Sign up
+                            with Google</span></Link><Link className="btn btn-login mr-10" href="#"><img src="/assets/imgs/template/popup/facebook.svg" alt="Travelogy" /></Link><Link className="btn btn-login" href="#"><img src="/assets/imgs/template/popup/apple.svg" alt="Travelogy" /></Link></div>
                         <div className="form-login">
                             <form action="#">
                                 <div className="form-group">
