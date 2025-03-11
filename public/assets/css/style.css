@@ -17620,3 +17620,12 @@ h2 span {
   margin: 0;
   color: #888;
 }
+.FromSr1 {
+
+  position: absolute;
+  /* width: 250px; */
+  background: rgb(247, 247, 247);
+  height: 300px;
+  z-index: 9;
+
+}
