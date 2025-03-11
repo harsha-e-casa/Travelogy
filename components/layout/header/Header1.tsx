@@ -4,9 +4,9 @@ import LanguageDropdown from '@/components/elements/LanguageDropdown'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
-const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
-	ssr: false,
-})
+// const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
+// 	ssr: false,
+// })
 
 export default function Header1({ scroll, handleLogin, handleMobileMenu, handleRegister, handleSidebar }: any) {
 	return (
@@ -38,7 +38,7 @@ export default function Header1({ scroll, handleLogin, handleMobileMenu, handleR
 							{/*<CurrencyDropdown />*/}
 							<div className="d-none d-xxl-inline-block align-middle">
 								<a className="btn btn-default btn-signin mr-10" onClick={handleLogin}>Signin</a>
-								<ThemeSwitch />
+								{/* <ThemeSwitch /> */}
 							</div>
 							{/*<div className="burger-icon-2 burger-icon-white" onClick={handleSidebar}>
 								<img src="/assets/imgs/template/icons/menu.svg" alt="Travelogy" />
