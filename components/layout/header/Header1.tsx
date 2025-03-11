@@ -21,7 +21,8 @@ export default function Header1({ scroll, handleLogin, handleMobileMenu, handleR
 									<ul className="main-menu">
 										<li className=""><Link className="active" href="/">Home</Link></li>
 										<li className=""><Link href="/about">Tours</Link></li>
-										<li className=""><Link href="/blog-grid">Hotel</Link></li>
+										<li className=""><Link href="/hotels">Hotel</Link></li>
+										<li className=""><Link href="/flights">Flights</Link></li>
 										<li className=""><Link href="/index-grid">Blog</Link></li>
 										<li><Link href="/contact">Contact</Link></li>
 									</ul>

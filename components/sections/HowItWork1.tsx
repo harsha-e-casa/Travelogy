@@ -6,12 +6,14 @@ export default function HowItWork1() {
 
             <section className="section-box box-how-it-work background-body">
                 <div className="container">
-                    <div className="text-center wow fadeInUp">
+                    {/*<div className="text-center wow fadeInUp">*/}
+                    <div className="text-center">
                         <h2 className="neutral-1000">How It Work?</h2>
                         <p className="text-xl-medium neutral-500">Competitive fares for your route-specific searches.</p>
                     </div>
                     <div className="row mt-60 align-items-center">
-                        <div className="col-lg-6 wow fadeInUp">
+                        {/*<div className="col-lg-6 wow fadeInUp">*/}
+                        <div className="col-lg-6">
                             <div className="box-image-how">
                                 <div className="image-top-how"> <img src="/assets/imgs/page/homepage4/img-how.png" alt="Travelogy" />
                                 </div>
@@ -21,7 +23,8 @@ export default function HowItWork1() {
                             </div>
                         </div>
                         <div className="col-lg-6">
-                            <div className="card-why-travel card-why-travel-2 background-1 wow fadeInUp">
+                            {/*<div className="card-why-travel card-why-travel-2 background-1 wow fadeInUp">*/}
+                            <div className="card-why-travel card-why-travel-2 background-1">
                                 <div className="card-image"> <img src="/assets/imgs/page/homepage2/security.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">Find Your
@@ -34,7 +37,8 @@ export default function HowItWork1() {
                                         </svg></Link>
                                 </div>
                             </div>
-                            <div className="card-why-travel card-why-travel-2 background-2 wow fadeInUp">
+                            {/*<div className="card-why-travel card-why-travel-2 background-2 wow fadeInUp">*/}
+                            <div className="card-why-travel card-why-travel-2 background-2">
                                 <div className="card-image"> <img src="/assets/imgs/page/homepage2/support.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">Book a Ticket</Link>
@@ -45,7 +49,8 @@ export default function HowItWork1() {
                                         </svg></Link>
                                 </div>
                             </div>
-                            <div className="card-why-travel card-why-travel-2 background-3 wow fadeInUp">
+                            {/*<div className="card-why-travel card-why-travel-2 background-3 wow fadeInUp">*/}
+                            <div className="card-why-travel card-why-travel-2 background-3">
                                 <div className="card-image"> <img src="/assets/imgs/page/homepage2/policy.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">Pay and Go</Link>
