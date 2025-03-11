@@ -41,7 +41,7 @@ export default function SlideBanner1() {
 						<div className="swiper-container swiper-group-3 swiper-group-journey">
 							<Swiper {...swiperOptions} className="swiper-wrapper">
 								<SwiperSlide>
-									<div className="card-banner-slide wow fadeInUp">
+									<div className="card-banner-slide">
 										<div className="card-image"> </div>
 										<div className="card-info">
 											<h6>We Make Every<br />Trips Special</h6>
@@ -56,7 +56,7 @@ export default function SlideBanner1() {
 									</div>
 								</SwiperSlide>
 								<SwiperSlide>
-									<div className="card-banner-slide card-banner-slide-2 wow fadeInUp">
+									<div className="card-banner-slide card-banner-slide-2">
 										<div className="card-image" style={{ backgroundImage: 'url(assets/imgs/page/homepage4/bg-slider2.png)' }} />
 										<div className="card-info">
 											<p className="text-md-bold">Limited Offers</p>
@@ -72,7 +72,7 @@ export default function SlideBanner1() {
 									</div>
 								</SwiperSlide>
 								<SwiperSlide>
-									<div className="card-banner-slide card-banner-slide-3 wow fadeInUp">
+									<div className="card-banner-slide card-banner-slide-3">
 										<div className="card-image" style={{ backgroundImage: 'url(assets/imgs/page/homepage4/bg-slider3.png)' }} />
 										<div className="card-info">
 											<div className="box-title-top">
@@ -93,7 +93,7 @@ export default function SlideBanner1() {
 									</div>
 								</SwiperSlide>
 								<SwiperSlide>
-									<div className="card-banner-slide wow fadeInUp">
+									<div className="card-banner-slide">
 										<div className="card-image"> </div>
 										<div className="card-info">
 											<h6>We Make Every<br />Trips Special</h6>
@@ -108,7 +108,7 @@ export default function SlideBanner1() {
 									</div>
 								</SwiperSlide>
 								<SwiperSlide>
-									<div className="card-banner-slide card-banner-slide-2 wow fadeInUp">
+									<div className="card-banner-slide card-banner-slide-2">
 										<div className="card-image" style={{ backgroundImage: 'url(assets/imgs/page/homepage4/bg-slider2.png)' }} />
 										<div className="card-info">
 											<p className="text-md-bold">Limited Offers</p>
@@ -124,7 +124,7 @@ export default function SlideBanner1() {
 									</div>
 								</SwiperSlide>
 								<SwiperSlide>
-									<div className="card-banner-slide card-banner-slide-3 wow fadeInUp">
+									<div className="card-banner-slide card-banner-slide-3">
 										<div className="card-image" style={{ backgroundImage: 'url(assets/imgs/page/homepage4/bg-slider3.png)' }} />
 										<div className="card-info">
 											<div className="box-title-top">
