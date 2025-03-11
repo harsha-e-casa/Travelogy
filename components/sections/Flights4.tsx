@@ -7,7 +7,7 @@ export default function Flights4() {
     return (
         <>
 
-            <section className="section-box box-top-flights background-body">
+            <section className="section-box background-body">
                 <div className="container">
                     <div className="row align-items-end">
                         <div className="col-md-9 mb-30 wow fadeInUp">
