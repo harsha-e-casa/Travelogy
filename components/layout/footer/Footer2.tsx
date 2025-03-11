@@ -6,11 +6,11 @@ export default function Footer2() {
             <footer className="footer footer-type-3 background-body">
                 <div className="container">
                     <div className="row">
-                        <div className="col-md-4 mb-30"> <Link className="d-inline-block mb-20" href="/"><img className="light-mode" alt="Travila" src="/assets/imgs/template/logo-footer2.svg" /><img className="dark-mode" alt="Travila" src="/assets/imgs/template/logo-footer.svg" /></Link>
+                        <div className="col-md-4 mb-30"> <Link className="d-inline-block mb-20" href="/"><img className="light-mode" alt="Travelogy" src="/assets/imgs/template/logo-footer2.svg" /><img className="dark-mode" alt="Travelogy" src="/assets/imgs/template/logo-footer.svg" /></Link>
                             <div className="box-info-contact mt-0">
                                 <p className="text-md neutral-400 icon-address">4517 Washington Ave. Manchester, Kentucky 39495</p>
                                 <p className="text-md neutral-400 icon-worktime">Hours: 8:00 - 17:00, Mon - Sat</p>
-                                <p className="text-md neutral-400 icon-email">support@travila.com</p>
+                                <p className="text-md neutral-400 icon-email">support@Travelogy.com</p>
                             </div>
                         </div>
                         <div className="col-md-4 mb-30">
@@ -81,7 +81,7 @@ export default function Footer2() {
                     <div className="footer-bottom">
                         <div className="row align-items-center">
                             <div className="col-md-6 text-md-start text-center mb-20">
-                                <p className="text-sm neutral-500">© {new Date().getFullYear()} Travila Inc. All rights reserved.</p>
+                                <p className="text-sm neutral-500">© {new Date().getFullYear()} Travelogy Inc. All rights reserved.</p>
                             </div>
                             <div className="col-md-6 text-md-end text-center mb-20">
                                 <ul className="menu-bottom-footer">

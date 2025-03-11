@@ -28,7 +28,7 @@ export default function About() {
 							<div className="row align-items-end">
 								<div className="col-lg-7 wow fadeInUp"> <span className="btn btn-brand-secondary"> <img className="mr-10" src="/assets/imgs/page/homepage9/real.svg" alt="Travile" />Resort Real Estate</span>
 									<h1 className="neutral-1000 mt-15 mb-15">
-										Welcome<span>to Travila </span>Travel  <span>booking system</span></h1>
+										Welcome<span>to Travelogy </span>Travel  <span>booking system</span></h1>
 									<p className="text-xl-medium neutral-500">Make it easier for everyone to experience the world</p>
 								</div>
 								<div className="col-lg-5">
@@ -46,10 +46,10 @@ export default function About() {
 							</div>
 						</div>
 					</section>
-					<section className="section-box box-why-book-travila-5 background-5">
+					<section className="section-box box-why-book-Travelogy-5 background-5">
 						<div className="container">
 							<div className="row align-items-center">
-								<div className="col-lg-6 mb-30"><span className="btn btn-brand-secondary background-0 wow fadeInUp"> <img className="mr-10" src="/assets/imgs/page/homepage4/earth.svg" alt="Travile" />Why book at Travila ?</span>
+								<div className="col-lg-6 mb-30"><span className="btn btn-brand-secondary background-0 wow fadeInUp"> <img className="mr-10" src="/assets/imgs/page/homepage4/earth.svg" alt="Travile" />Why book at Travelogy ?</span>
 									<h2 className="mt-15 mb-15 neutral-1000 wow fadeInUp">Embracing Adventure Since 2003</h2>
 									<p className="text-xl-medium neutral-1000 mb-30 wow fadeInUp">Choose one style or create a package,  your passports with adventures together.</p>
 									<div className="list-numbers wow fadeInUp">
@@ -75,7 +75,7 @@ export default function About() {
 									<div className="row">
 										<div className="col-lg-6 col-sm-6 pt-30">
 											<div className="card-why card-why-2 background-1 wow fadeInUp">
-												<div className="card-image"> <img src="/assets/imgs/page/homepage6/experience.png" alt="Travila" /></div>
+												<div className="card-image"> <img src="/assets/imgs/page/homepage6/experience.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<h6 className="text-xl-bold neutral-1000">300,000+ Experiences</h6>
 													<p className="text-lg-medium neutral-500">Make memories around the world.</p>
@@ -183,7 +183,7 @@ export default function About() {
 						<div className="container">
 							<div className="row align-items-end">
 								<div className="col-lg-6 mb-30 wow fadeInUp">
-									<div className="box-author-testimonials button-brand-2 wow fadeInUp"> <img src="/assets/imgs/page/homepage1/testimonial.png" alt="Travila" /><img src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travila" /><img src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travila" />Our Team</div>
+									<div className="box-author-testimonials button-brand-2 wow fadeInUp"> <img src="/assets/imgs/page/homepage1/testimonial.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travelogy" />Our Team</div>
 									<h2 className="mt-8 mb-10 neutral-1000">Meet our Agents</h2>
 									<p className="text-xl-medium neutral-500">Meet our exceptional team of agents, each dedicated to making your property journey seamless and successful</p>
 								</div>
@@ -197,11 +197,11 @@ export default function About() {
 								<div className="row">
 									<div className="col-lg-4 col-md-6 wow fadeInUp">
 										<div className="card-team card-team-2">
-											<div className="card-image"> <img src="/assets/imgs/page/pages/team6.png" alt="Travila" /></div>
+											<div className="card-image"> <img src="/assets/imgs/page/pages/team6.png" alt="Travelogy" /></div>
 											<div className="card-info">
 												<h6 className="neutral-1000">Cody Fisher</h6>
 												<p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
-												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travila team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
+												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travelogy team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
 												<div className="card-team-bottom">
 													<div className="card-socials"> <Link className="link-social background-100" href="#">
 														<svg width={15} height={15} viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
@@ -226,11 +226,11 @@ export default function About() {
 									</div>
 									<div className="col-lg-4 col-md-6 wow fadeInUp">
 										<div className="card-team card-team-2">
-											<div className="card-image"> <img src="/assets/imgs/page/pages/team.png" alt="Travila" /></div>
+											<div className="card-image"> <img src="/assets/imgs/page/pages/team.png" alt="Travelogy" /></div>
 											<div className="card-info">
 												<h6 className="neutral-1000">Darrell Steward</h6>
 												<p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
-												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travila team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
+												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travelogy team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
 												<div className="card-team-bottom">
 													<div className="card-socials"> <Link className="link-social background-100" href="#">
 														<svg width={15} height={15} viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
@@ -255,11 +255,11 @@ export default function About() {
 									</div>
 									<div className="col-lg-4 col-md-6 wow fadeInUp">
 										<div className="card-team card-team-2">
-											<div className="card-image"> <img src="/assets/imgs/page/pages/team2.png" alt="Travila" /></div>
+											<div className="card-image"> <img src="/assets/imgs/page/pages/team2.png" alt="Travelogy" /></div>
 											<div className="card-info">
 												<h6 className="neutral-1000">Ronald Richards</h6>
 												<p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
-												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travila team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
+												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travelogy team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
 												<div className="card-team-bottom">
 													<div className="card-socials"> <Link className="link-social background-100" href="#">
 														<svg width={15} height={15} viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
@@ -284,11 +284,11 @@ export default function About() {
 									</div>
 									<div className="col-lg-4 col-md-6 wow fadeInUp">
 										<div className="card-team card-team-2">
-											<div className="card-image"> <img src="/assets/imgs/page/pages/team3.png" alt="Travila" /></div>
+											<div className="card-image"> <img src="/assets/imgs/page/pages/team3.png" alt="Travelogy" /></div>
 											<div className="card-info">
 												<h6 className="neutral-1000">Jerome Bell</h6>
 												<p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
-												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travila team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
+												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travelogy team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
 												<div className="card-team-bottom">
 													<div className="card-socials"> <Link className="link-social background-100" href="#">
 														<svg width={15} height={15} viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
@@ -313,11 +313,11 @@ export default function About() {
 									</div>
 									<div className="col-lg-4 col-md-6 wow fadeInUp">
 										<div className="card-team card-team-2">
-											<div className="card-image"> <img src="/assets/imgs/page/pages/team4.png" alt="Travila" /></div>
+											<div className="card-image"> <img src="/assets/imgs/page/pages/team4.png" alt="Travelogy" /></div>
 											<div className="card-info">
 												<h6 className="neutral-1000">Jenny Wilson</h6>
 												<p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
-												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travila team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
+												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travelogy team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
 												<div className="card-team-bottom">
 													<div className="card-socials"> <Link className="link-social background-100" href="#">
 														<svg width={15} height={15} viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
@@ -342,11 +342,11 @@ export default function About() {
 									</div>
 									<div className="col-lg-4 col-md-6 wow fadeInUp">
 										<div className="card-team card-team-2">
-											<div className="card-image"> <img src="/assets/imgs/page/pages/team5.png" alt="Travila" /></div>
+											<div className="card-image"> <img src="/assets/imgs/page/pages/team5.png" alt="Travelogy" /></div>
 											<div className="card-info">
 												<h6 className="neutral-1000">Floyd Miles</h6>
 												<p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
-												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travila team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
+												<p className="text-xs-medium neutral-1000">With over 15 years of real estate experience, John leads the Travelogy team with passion and expertise. His commitment to client satisfaction and market knowledge sets the standard for our exceptional service.</p>
 												<div className="card-team-bottom">
 													<div className="card-socials"> <Link className="link-social background-100" href="#">
 														<svg width={15} height={15} viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg">
@@ -378,8 +378,8 @@ export default function About() {
 							<div className="row align-items-center">
 								<div className="col-lg-5">
 									<div className="row">
-										<div className="col-md-7 mb-30"><img className="bdrd8 w-100" src="/assets/imgs/page/homepage1/pay1.png" alt="Travila" /></div>
-										<div className="col-md-5 mb-30"><img className="bdrd8 w-100 mb-15" src="/assets/imgs/page/homepage1/pay2.png" alt="Travila" /><img className="bdrd8 w-100" src="/assets/imgs/page/homepage1/pay3.png" alt="Travila" /></div>
+										<div className="col-md-7 mb-30"><img className="bdrd8 w-100" src="/assets/imgs/page/homepage1/pay1.png" alt="Travelogy" /></div>
+										<div className="col-md-5 mb-30"><img className="bdrd8 w-100 mb-15" src="/assets/imgs/page/homepage1/pay2.png" alt="Travelogy" /><img className="bdrd8 w-100" src="/assets/imgs/page/homepage1/pay3.png" alt="Travelogy" /></div>
 									</div>
 								</div>
 								<div className="col-lg-7 mb-30">
@@ -400,7 +400,7 @@ export default function About() {
 					</section>
 					<section className="section-box box-testimonials-2 background-body">
 						<div className="container">
-							<div className="box-author-testimonials"> <img src="/assets/imgs/page/homepage1/testimonial.png" alt="Travila" /><img src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travila" /><img src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travila" />Testimonials</div>
+							<div className="box-author-testimonials"> <img src="/assets/imgs/page/homepage1/testimonial.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travelogy" />Testimonials</div>
 							<h2 className="mt-8 mb-25 neutral-1000">Don't take our word for it</h2>
 						</div>
 						<div className="block-testimonials">
@@ -417,13 +417,13 @@ export default function About() {
 														</div>
 														<div className="card-top">
 															<div className="card-author">
-																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travila" /></div>
+																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" /></div>
 																<div className="card-info">
 																	<p className="text-lg-bold neutral-1000">Sara Mohamed</p>
 																	<p className="text-sm neutral-1000">Jakatar</p>
 																</div>
 															</div>
-															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /></div>
+															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
 														</div>
 													</div>
 												</SwiperSlide>
@@ -435,13 +435,13 @@ export default function About() {
 														</div>
 														<div className="card-top">
 															<div className="card-author">
-																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travila" /></div>
+																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" /></div>
 																<div className="card-info">
 																	<p className="text-lg-bold neutral-1000">Atend John</p>
 																	<p className="text-sm neutral-1000">Califonia</p>
 																</div>
 															</div>
-															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /></div>
+															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
 														</div>
 													</div>
 												</SwiperSlide>
@@ -453,13 +453,13 @@ export default function About() {
 														</div>
 														<div className="card-top">
 															<div className="card-author">
-																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travila" /></div>
+																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" /></div>
 																<div className="card-info">
 																	<p className="text-lg-bold neutral-1000">Sara Mohamed</p>
 																	<p className="text-sm neutral-1000">Jakatar</p>
 																</div>
 															</div>
-															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /></div>
+															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
 														</div>
 													</div>
 												</SwiperSlide>
@@ -471,13 +471,13 @@ export default function About() {
 														</div>
 														<div className="card-top">
 															<div className="card-author">
-																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travila" /></div>
+																<div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" /></div>
 																<div className="card-info">
 																	<p className="text-lg-bold neutral-1000">Sara Mohamed</p>
 																	<p className="text-sm neutral-1000">Jakatar</p>
 																</div>
 															</div>
-															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /><img src="/assets/imgs/template/icons/star.svg" alt="Travila" /></div>
+															<div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
 														</div>
 													</div>
 												</SwiperSlide>
@@ -526,7 +526,7 @@ export default function About() {
 						</div>
 					</section>
 					<section className="section-box box-media background-body">
-						<div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" /></div>
+						<div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travelogy" /></div>
 					</section>
 				</div>
 

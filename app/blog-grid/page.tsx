@@ -28,7 +28,7 @@ export default function Home() {
 								<div className="col-lg-6 mb-30">
 									<h1 className="text-86-bold neutral-1000">Inspiration </h1>
 									<h2 className="text-64-medium neutral-1000">for Your Next Trips</h2>
-									<h6 className="neutral-500">Discover the World's Treasures with Travila </h6>
+									<h6 className="neutral-500">Discover the World's Treasures with Travelogy </h6>
 								</div>
 								<div className="col-lg-6 mb-30">
 									<div className="box-swiper mt-30 wow fadeInUp">
@@ -36,7 +36,7 @@ export default function Home() {
 											<Swiper {...swiperGroup5}>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Wanderlust</Link>
 															<p className="text-xs neutral-500">25 posts</p>
 														</div>
@@ -44,7 +44,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity2.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity2.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Cuisine</Link>
 															<p className="text-xs neutral-500">34 posts</p>
 														</div>
@@ -52,7 +52,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity3.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity3.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Food Tours</Link>
 															<p className="text-xs neutral-500">56 posts</p>
 														</div>
@@ -60,7 +60,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity4.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity4.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Heritage</Link>
 															<p className="text-xs neutral-500">17 posts</p>
 														</div>
@@ -68,7 +68,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity5.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity5.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Lifestyle</Link>
 															<p className="text-xs neutral-500">17 posts</p>
 														</div>
@@ -76,7 +76,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity6.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity6.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">River Cruise</Link>
 															<p className="text-xs neutral-500">18 posts</p>
 														</div>
@@ -84,7 +84,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity7.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity7.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Spa Retreat</Link>
 															<p className="text-xs neutral-500">18 posts</p>
 														</div>
@@ -92,7 +92,7 @@ export default function Home() {
 												</SwiperSlide>
 												<SwiperSlide>
 													<div className="card-popular-destination card-popular-destination-type-2">
-														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity8.png" alt="Travila" /></div>
+														<div className="card-image"> <img src="/assets/imgs/page/homepage5/activity8.png" alt="Travelogy" /></div>
 														<div className="card-info"> <Link className="text-sm-bold" href="#">Road Trip</Link>
 															<p className="text-xs neutral-500">19 posts</p>
 														</div>
@@ -124,7 +124,7 @@ export default function Home() {
 									<Swiper {...swiperGroupCenter4}>
 										<SwiperSlide>
 											<div className="card-blog">
-												<div className="card-image"><img src="/assets/imgs/page/blog/blog.png" alt="Travila" /></div>
+												<div className="card-image"><img src="/assets/imgs/page/blog/blog.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<div className="card-info-blog"><Link className="btn btn-label-tag" href="/blog-grid-2">Cultural</Link><Link className="card-title heading-5" href="/blog-detail">Savoring Life’s Palette: Art, Food, and Beyond</Link>
 														<div className="card-meta-user">
@@ -141,7 +141,7 @@ export default function Home() {
 										</SwiperSlide>
 										<SwiperSlide>
 											<div className="card-blog">
-												<div className="card-image"><img src="/assets/imgs/page/blog/blog2.png" alt="Travila" /></div>
+												<div className="card-image"><img src="/assets/imgs/page/blog/blog2.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<div className="card-info-blog"><Link className="btn btn-label-tag" href="/blog-grid-2">Wanderlust</Link><Link className="card-title heading-5" href="#">Savoring Life’s Palette: Art, Food, and Beyond</Link>
 														<div className="card-meta-user">
@@ -158,7 +158,7 @@ export default function Home() {
 										</SwiperSlide>
 										<SwiperSlide>
 											<div className="card-blog">
-												<div className="card-image"><img src="/assets/imgs/page/blog/blog3.png" alt="Travila" /></div>
+												<div className="card-image"><img src="/assets/imgs/page/blog/blog3.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<div className="card-info-blog"><Link className="btn btn-label-tag" href="/blog-grid-2">Adventure</Link><Link className="card-title heading-5" href="/blog-detail">Canvas and Keyboard: An Art-Tech Affair</Link>
 														<div className="card-meta-user">
@@ -175,7 +175,7 @@ export default function Home() {
 										</SwiperSlide>
 										<SwiperSlide>
 											<div className="card-blog">
-												<div className="card-image"><img src="/assets/imgs/page/blog/blog4.png" alt="Travila" /></div>
+												<div className="card-image"><img src="/assets/imgs/page/blog/blog4.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<div className="card-info-blog"><Link className="btn btn-label-tag" href="#">Cultural</Link><Link className="card-title heading-5" href="/blog-detail">Wanderlust Whispers: My Global Gastronomic Odyssey</Link>
 														<div className="card-meta-user">
@@ -192,7 +192,7 @@ export default function Home() {
 										</SwiperSlide>
 										<SwiperSlide>
 											<div className="card-blog">
-												<div className="card-image"><img src="/assets/imgs/page/blog/blog.png" alt="Travila" /></div>
+												<div className="card-image"><img src="/assets/imgs/page/blog/blog.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<div className="card-info-blog"><Link className="btn btn-label-tag" href="/blog-grid-2">Cultural</Link><Link className="card-title heading-5" href="/blog-detail">Fashion Forward, Tech Savvy: My Lifestyle Fusion</Link>
 														<div className="card-meta-user">
@@ -209,7 +209,7 @@ export default function Home() {
 										</SwiperSlide>
 										<SwiperSlide>
 											<div className="card-blog">
-												<div className="card-image"><img src="/assets/imgs/page/blog/blog2.png" alt="Travila" /></div>
+												<div className="card-image"><img src="/assets/imgs/page/blog/blog2.png" alt="Travelogy" /></div>
 												<div className="card-info">
 													<div className="card-info-blog"><Link className="btn btn-label-tag" href="/blog-grid-2">Wanderlust</Link><Link className="card-title heading-5" href="#">Savoring Life’s Palette: Art, Food, and Beyond</Link>
 														<div className="card-meta-user">
@@ -314,7 +314,7 @@ export default function Home() {
 											<div className="card-image"> <Link className="wish" href="#">
 												<svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
 													<path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news.png" alt="Travila" /></Link></div>
+												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news.png" alt="Travelogy" /></Link></div>
 											<div className="card-info"> <Link className="btn btn-label-tag background-1" href="#">Adventure</Link>
 												<div className="card-title"> <Link className="heading-6 neutral-1000" href="/blog-detail">The Art of Living: A Stylish Tech Odyssey</Link></div>
 												<div className="card-meta"> <span className="post-date neutral-1000">18 Sep 2024</span><span className="post-time neutral-1000">6 mins</span><span className="post-comment neutral-1000">38 comments</span></div>
@@ -332,7 +332,7 @@ export default function Home() {
 											<div className="card-image"> <Link className="wish" href="#">
 												<svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
 													<path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news2.png" alt="Travila" /></Link></div>
+												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news2.png" alt="Travelogy" /></Link></div>
 											<div className="card-info"> <Link className="btn btn-label-tag background-1" href="#">Luxury</Link>
 												<div className="card-title"> <Link className="heading-6 neutral-1000" href="/blog-detail">Brushstrokes of Life: A Creative Journey Unveiled</Link></div>
 												<div className="card-meta"> <span className="post-date neutral-1000">18 Sep 2024</span><span className="post-time neutral-1000">6 mins</span><span className="post-comment neutral-1000">38 comments</span></div>
@@ -350,7 +350,7 @@ export default function Home() {
 											<div className="card-image"> <Link className="wish" href="#">
 												<svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
 													<path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news3.png" alt="Travila" /></Link></div>
+												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news3.png" alt="Travelogy" /></Link></div>
 											<div className="card-info"> <Link className="btn btn-label-tag background-1" href="#">Wanderlust</Link>
 												<div className="card-title"> <Link className="heading-6 neutral-1000" href="/blog-detail">Globetrotting in Style: A Journey Through My Lens</Link></div>
 												<div className="card-meta"> <span className="post-date neutral-1000">18 Sep 2024</span><span className="post-time neutral-1000">6 mins</span><span className="post-comment neutral-1000">38 comments</span></div>
@@ -368,7 +368,7 @@ export default function Home() {
 											<div className="card-image"> <Link className="wish" href="#">
 												<svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
 													<path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news4.png" alt="Travila" /></Link></div>
+												</svg></Link><Link href="/blog-detail"><img src="/assets/imgs/page/blog/news4.png" alt="Travelogy" /></Link></div>
 											<div className="card-info"> <Link className="btn btn-label-tag background-1" href="#">Heritage</Link>
 												<div className="card-title"> <Link className="heading-6 neutral-1000" href="/blog-detail">Tech Threads and Culinary Canvas: My Lifestyle Palette</Link></div>
 												<div className="card-meta"> <span className="post-date neutral-1000">18 Sep 2024</span><span className="post-time neutral-1000">6 mins</span><span className="post-comment neutral-1000">38 comments</span></div>
@@ -417,7 +417,7 @@ export default function Home() {
 											<ul className="list-posts">
 												<li>
 													<div className="card-post">
-														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending.png" alt="Travila" /></Link></div>
+														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending.png" alt="Travelogy" /></Link></div>
 														<div className="card-info"> <Link className="text-md-bold neutral-1000" href="/blog-detail">Beyond the Pixels: My Art-Tech Lifestyle Journey</Link>
 															<p className="text-sm-medium date-post neutral-500">18 Sep 2024</p>
 														</div>
@@ -425,7 +425,7 @@ export default function Home() {
 												</li>
 												<li>
 													<div className="card-post">
-														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending2.png" alt="Travila" /></Link></div>
+														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending2.png" alt="Travelogy" /></Link></div>
 														<div className="card-info"> <Link className="text-md-bold neutral-1000" href="/blog-detail">Beyond the Pixels: My Art-Tech Lifestyle Journey</Link>
 															<p className="text-sm-medium date-post neutral-500">18 Sep 2024</p>
 														</div>
@@ -433,7 +433,7 @@ export default function Home() {
 												</li>
 												<li>
 													<div className="card-post">
-														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending3.png" alt="Travila" /></Link></div>
+														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending3.png" alt="Travelogy" /></Link></div>
 														<div className="card-info"> <Link className="text-md-bold neutral-1000" href="/blog-detail">Beyond the Pixels: My Art-Tech Lifestyle Journey</Link>
 															<p className="text-sm-medium date-post neutral-500">18 Sep 2024</p>
 														</div>
@@ -441,7 +441,7 @@ export default function Home() {
 												</li>
 												<li>
 													<div className="card-post">
-														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending4.png" alt="Travila" /></Link></div>
+														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending4.png" alt="Travelogy" /></Link></div>
 														<div className="card-info"> <Link className="text-md-bold neutral-1000" href="/blog-detail">Beyond the Pixels: My Art-Tech Lifestyle Journey</Link>
 															<p className="text-sm-medium date-post neutral-500">18 Sep 2024</p>
 														</div>
@@ -449,7 +449,7 @@ export default function Home() {
 												</li>
 												<li>
 													<div className="card-post">
-														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending5.png" alt="Travila" /></Link></div>
+														<div className="card-image"> <Link href="/blog-detail"><img src="/assets/imgs/page/blog/trending5.png" alt="Travelogy" /></Link></div>
 														<div className="card-info"> <Link className="text-md-bold neutral-1000" href="/blog-detail">Beyond the Pixels: My Art-Tech Lifestyle Journey</Link>
 															<p className="text-sm-medium date-post neutral-500">18 Sep 2024</p>
 														</div>
@@ -464,15 +464,15 @@ export default function Home() {
 										</div>
 										<div className="box-content-sidebar">
 											<ul className="list-photo-col-3">
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat2.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat3.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat4.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat5.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat6.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat7.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat8.png" alt="Travila" /></Link></li>
-												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat.png" alt="Travila" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat2.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat3.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat4.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat5.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat6.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat7.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat8.png" alt="Travelogy" /></Link></li>
+												<li> <Link href="#"><img src="/assets/imgs/page/blog/cat.png" alt="Travelogy" /></Link></li>
 											</ul>
 										</div>
 									</div>
@@ -503,7 +503,7 @@ export default function Home() {
 						</div>
 					</section>
 					<section className="section-box box-media background-body">
-						<div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" /></div>
+						<div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travelogy" /></div>
 					</section>
 				</main>
 

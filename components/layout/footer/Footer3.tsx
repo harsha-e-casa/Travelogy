@@ -7,7 +7,7 @@ export default function Footer3() {
                     <div className="container-footer">
                         <div className="row">
                             <div className="col-lg-3 col-sm-12">
-                                <div className="mt-20 mb-20"><Link className="d-inline-block mb-20" href="/"><img className="dark-mode" alt="Travila" src="/assets/imgs/template/logo-footer.svg" /><img className="light-mode" alt="Travila" src="/assets/imgs/template/logo-footer-w.svg" /></Link>
+                                <div className="mt-20 mb-20"><Link className="d-inline-block mb-20" href="/"><img className="dark-mode" alt="Travelogy" src="/assets/imgs/template/logo-footer.svg" /><img className="light-mode" alt="Travelogy" src="/assets/imgs/template/logo-footer-w.svg" /></Link>
                                     <div className="box-info-contact mt-0">
                                         <p className="text-md neutral-1000">Dive into local recommendations for a truly authentic
                                             experience.</p>
@@ -73,7 +73,7 @@ export default function Footer3() {
                         <div className="footer-bottom mt-50">
                             <div className="row align-items-center">
                                 <div className="col-md-6 text-md-start text-center mb-20">
-                                    <p className="text-sm neutral-1000">© {new Date().getFullYear()} Travila Inc. All rights reserved.</p>
+                                    <p className="text-sm neutral-1000">© {new Date().getFullYear()} Travelogy Inc. All rights reserved.</p>
                                 </div>
                                 <div className="col-md-6 text-md-end text-center mb-20">
                                     <div className="d-flex align-items-center justify-content-center justify-content-md-end box-socials-footer-cover">
