@@ -53,6 +53,7 @@ export default function Header1({ scroll, handleLogin, handleMobileMenu, handleR
 				</div>
 
 			</header>
+			
 		</>
 	)
 }

@@ -7,13 +7,17 @@ import OurFeatured2 from "@/components/sections/OurFeatured2"
 
 import SlideBanner1 from "@/components/sections/SlideBanner1"
 import Testimonials3 from "@/components/sections/Testimonials3"
-
+import EngineTabs from "@/components/searchEngine/engineHeader";
 
 export default function Home4() {
 
     return (
         <>
             <Layout headerStyle={1} footerStyle={1}>  
+
+            <EngineTabs />
+
+   
                 {/*<BannerHome3 />*/}
                 {/*<Logos1 />*/}
                 {/*<PopularDestinations4 />*/}

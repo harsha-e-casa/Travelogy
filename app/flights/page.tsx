@@ -16,12 +16,15 @@ import Banner from "@/components/sections/Banner"
 import Flights4 from "@/components/sections/Flights4"
 import rawticketsData from "@/util/tickets.json"
 import useTicketFilter from '@/util/useTicketFilter'
+import EngineTabs from "@/components/searchEngine/engineHeader";
 import Link from "next/link"
 import React from 'react'
+
 const ticketsData = rawticketsData.map(ticket => ({
     ...ticket,
     rating: parseFloat(ticket.rating as string)
 }))
+
 export default function Tickets() {
     const {
         filter,
@@ -59,6 +62,11 @@ export default function Tickets() {
         <>
 
             <Layout headerStyle={1} footerStyle={1}>
+
+
+            <EngineTabs />
+
+   
 
                 <main className="main">
                 {/*<SlideBanner1 />*/}
