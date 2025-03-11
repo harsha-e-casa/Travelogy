@@ -17468,7 +17468,8 @@ h2 span {
   align-items: center;
   font-size: 14px;
   padding: 2px 8px 2px 30px;
-  border: 2px solid #ddd;border-radius: 10px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
 }
 
 .trip-type-btn input[type="radio"] {
@@ -17535,14 +17536,51 @@ h2 span {
 
 .search-btn {
   position: absolute;
-  right: 20px;
+  right: 0;
   bottom: -20px;
   background: #f8a600;
   border: none;
   color: white;
+  font-size: 20px;
+  font-weight: 600;
   padding: 12px 26px;
   border-radius: 24px;
   font-size: 14px;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: auto;
+  left: 0;
+  width: 10%;
+}
+
+.return-info {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 4px;
+}
+
+.multi-segment {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.add-segment-btn {
+  margin-top: 8px;
+  background-color: #eee;
+  padding: 8px 12px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+}
+
+.add-city-btn {
+  background-color: #22d1ee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  border-radius: 10px;
+  color: #fff;
 }
