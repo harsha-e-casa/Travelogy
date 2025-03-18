@@ -1,4 +1,4 @@
-// import SwiperGroupPaymentSlider from '@/components/slider/SwiperGroupPaymentSlider'
+import SwiperGroupPaymentSlider from '@/components/slider/SwiperGroupPaymentSlider'
 import Link from 'next/link'
 export default function Footer2() {
     return (

@@ -12,9 +12,9 @@ export default function Header1({ scroll, handleLogin, handleMobileMenu, handleR
 	return (
 		<>
 
-			<header className={`header sticky-bar ${scroll ? "stick" : ""}`}>
+			<header className={`z_99999 fixed header sticky-bar ${scroll ? "stick" : ""}`}>
 				
-				<div className="container-fluid background-body">
+				<div className="container-fluid background_body_overlay">
 					<div className="main-header">
 						<div className="header-left">
 							<div className="header-logo"><Link className="d-flex" href="/"><img className="light-mode header_logo" alt="Travelogy" src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" /><img className="dark-mode" alt="Travelogy" src="/assets/imgs/template/logo-w.svg" /></Link></div>
@@ -25,7 +25,8 @@ export default function Header1({ scroll, handleLogin, handleMobileMenu, handleR
 										{/*<li className=""><Link href="/about">Tours</Link></li>*/}
 										<li className=""><Link href="/hotels">Hotel</Link></li>
 										<li className=""><Link href="/flights">Flights</Link></li>
-										<li className=""><Link href="javascript:void(0)">Themes</Link></li>
+										<li className=""><Link href="/holiday">Holiday</Link></li>
+										<li className=""><Link href="#">Themes</Link></li>
 										{/*<li className=""><Link href="/index-grid">Blog</Link></li>*/}
 										<li><Link href="/contact">Contact</Link></li>
 									</ul>
@@ -53,6 +54,7 @@ export default function Header1({ scroll, handleLogin, handleMobileMenu, handleR
 				</div>
 
 			</header>
+			
 		</>
 	)
 }
