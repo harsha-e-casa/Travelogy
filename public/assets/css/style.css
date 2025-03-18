@@ -207,6 +207,7 @@ body {
   line-height: 1;
 }
 
+
 ol,
 ul {
   list-style: none;
@@ -446,10 +447,10 @@ a {
   text-decoration: none;
 }
 
-*:hover {
+/**:hover {
   transition-duration: 0.2s;
 }
-
+*/
 .section-box,
 .box-section {
   display: block;
@@ -17721,10 +17722,10 @@ h2 span {
             margin-bottom: 8px;
             transition: filter 0.3s ease;
         }
-
+/*
         .active {
             border-bottom: 3px solid blue;
-        }
+        }*/
 
         .active img {
             filter: hue-rotate(180deg);
@@ -17818,35 +17819,47 @@ h2 span {
 
 .section_main_book_dash_01{
       text-align: -webkit-center;
-    background: url(https://imgak.mmtcdn.com/pwa_v3/pwa_commons_assets/desktop/bg4.jpg);
-    height: 550px;
+/*    background: url(https://imgak.mmtcdn.com/pwa_v3/pwa_commons_assets/desktop/bg4.jpg);*/
+/*    height: 550px;*/
+    height: 500px;
     top: 0px;
     bottom: 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+/*    z-index:-9;*/
+    /*    */
+
+    background: url(https://static.toiimg.com/photo/msid-108650501,width-96,height-65.cms);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-y: -200px;
+    background-attachment: fixed; 
 }
 
 .grid_main_section_1{
-  box-shadow: 0 2px 20px 0 rgb(0 0 0 / 10%);
-  padding: 8px 30px;
+    box-shadow: 0 2px 20px 0 rgb(0 0 0 / 10%);
+    padding: 8px 30px;
     top: 60px;
     /* left: -19%; */
-left: 0px;
-right: 0px;
-margin: 0px auto;
+    left: 0px;
+    right: 0px;
+    margin: 0px auto;
     border-radius: 7px;
+    top: -50px;
 }
 
-.section_book_svg_icon svg{
-  filter: contrast(0.5)!important;
-}
-.section_book_svg_icon{
-/*  width: 70px;*/
-  width: 65px;
-}
+  .section_book_svg_icon svg{
+    filter: contrast(0.5)!important;
+  }
+  .section_book_svg_icon{
+  /*  width: 70px;*/
+  /*  width: 65px;*/
+    width: 55px;
+  }
 
 
 
@@ -17873,6 +17886,7 @@ margin: 0px auto;
 }
 
 .plans .plan .plan-content {
+  background:#ffffffd4;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -17937,18 +17951,55 @@ margin: 0px auto;
   border: 3px solid orange;
   -webkit-box-shadow: 0px 0px 0px 2px #e9970038;
   box-shadow: 0px 0px 0px 2px #e9970038;
+
+}
+
+.plans .plan input[type="radio"]:checked + .plan-content span{
+  font-weight: 700;
 }
 
 .plans .plan input[type="radio"]:checked + .plan-content {
   border: 2px solid #e9970038;
-  background: #e9970038;
+  background: #e997001a;
   -webkit-transition: ease-in 0.3s;
   -o-transition: ease-in 0.3s;
   transition: ease-in 0.3s;
 }
 
 
+.search_btn{
+      width: 200px;
+    border-radius: 25px;
+    z-index: 99;
+}
 
+.search_btn_font{
+  font-size: 18px;
+}
+
+.text_4xl{
+ font-size: 2rem;
+    line-height: 2.5rem;
+}
+
+.font_bold{
+  font-weight: 900;
+}
+
+.text-xl_small{
+      font-size: 14px;
+    font-weight: 600;
+}
+.search_txt_g3{
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.sub_txt1{
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: -6px;
+}
 @media screen and (max-width: 767px) {
   .plans .plan .plan-content .plan-details {
     width: 60%;
@@ -18016,10 +18067,13 @@ margin: 0px auto;
 }
 .b_right_2px{
 /*  border-right: 1.4px solid orange;*/
-border: solid 1px #e7e7e7;
+/*border: solid 1px #e7e7e7;*/
+ border: solid 1px #ffce90;
+    background: #ffffffd4;
 }
 .on33_w_drf{
-  width: 55%;
+/*  width: 55%;*/
+  width: 60%;
 }
 
 .active_border_org1{
@@ -18073,19 +18127,32 @@ content: "";
     position: absolute;
     justify-content: space-evenly;
 }
-
+.absolute{
+      position: absolute;
+}
+.b_0{
+  bottom: 0px;
+}
+.b_40{
+  bottom: 40px;
+}
 .grid_main_section_2{
     height: 200px;
     position: relative;
+    background: #ffffffcc;
+    border-radius: 14px;
 }
 
 .custom-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+/*  display: grid;*/
+/*  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+  display: flex;
   margin-left: 1.5rem;  /* ml-6 equivalent */
   margin-right: 1.5rem; /* mr-6 equivalent */
   margin-bottom: 1.5rem; /* mb-6 equivalent */
-  margin-top: 1rem; /* mt-4 equivalent */
+  /*  margin-top: 1rem; */
+  margin-top: 0.5rem; /* mt-4 equivalent */
+/*  transition: 0.2s;*/
 }
 
 .flex{
@@ -18095,12 +18162,20 @@ content: "";
 .justify-content{
   justify-content: space-between;
 }
+
+.justify-center{
+  justify-content: center;
+}
 .w-full{
   width: 100%;
 }
 .h_80{
-  height: 360px;
+/*  height: 360px;*/
+  height: 330px;
   border-radius: 7px;
+}
+.mb_8{
+  margin-bottom: 0px;
 }
 .z_10{
   z-index: 9;
@@ -18126,18 +18201,62 @@ content: "";
     line-height: 2.5rem;
 }
 
-
+.background_body_overlay{
+  background: #ffffff66;
+}
 .txt_travelSelect{
       font-size: 18px;
     font-weight: 700;
 }
 .txt_travelSelect2{
-      font-size: 16px;
+      font-size: 14px;
     font-weight: 700;
 }
 .txt_travelSelect3{
-      font-size: 14px;
+     /* font-size: 14px;
+    font-weight: 700;*/
+     font-size: 12px;
     font-weight: 700;
+}
+
+.txt_travelClass::after{
+    border: solid #008cff;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    content: '';
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    vertical-align: top;
+    margin: 3px 0 0 8px;
+    transition: all 0.3s ease-in-out;
+}
+.txt_travelFrom::after {
+    content: "↑"; /* Adds the upward arrow */
+}
+
+.txt_travelreturn::after {
+  content: "↓"; /* Adds the downward arrow */
+}
+
+.txt_travelSelect3::after {
+  font-size: 20px; /* Adjust the size of the arrow */
+  /*  margin-right: 5px; */
+  margin-left: 4px;
+  color: #EB5B00;
+}
+
+.justify_content_space{
+  justify-content: space-between;
+}
+.pt_30{
+  padding-top: 30px;
+}
+.ml__txt{
+  padding-right:25px;
+}
+.pl_4{
+  padding-left: 12px;
 }
 
 .text-gray-500 {
@@ -18177,9 +18296,14 @@ content: "";
     font-weight: 700;
 }
 
+.bg_t_2 {
+  --tw-bg-opacity: 1;
+  background-color: #EB5B00;
+}
+
 .bg-yellow-500 {
-    --tw-bg-opacity: 1;
-    background-color: rgba(245, 158, 11, var(--tw-bg-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgba(245, 158, 11, var(--tw-bg-opacity));--tw-bg-opacity: 1;
 }
 .rounded-full {
     border-radius: 9999px;
@@ -18205,4 +18329,312 @@ content: "";
 
 .p_4 {
     padding: 1rem;
+}
+.fixed{
+  position: fixed;
+}
+.top_banner_eng{
+  top: 100px;
+}
+.z__9{
+  z-index: -9;
+}
+.z_9{
+  z-index: 9!important;
+}
+.z_99{
+  z-index: 99;
+}
+.z_99999{
+  z-index: 99999;
+}
+.inline_flex{
+  display: inline-flex;
+}
+
+.fFromS > .padding-inline-start{
+/*  padding-inline-start: 0px;*/
+}
+
+.searchFfromSelect{
+/*  width: 280px;*/
+  width: 100%;
+  left:2px;
+/*  padding: 2px;*/
+  background: white;
+  height: auto;
+  position: absolute;
+/*  box-shadow: 0 1px 6px 0 rgb(0 0 0 / 20%);*/
+/*  top: 0px;*/
+  bottom: 0px;
+}
+
+.truncate-text {
+  width: 200px;            /* Set a specific width */
+  white-space: nowrap;     /* Prevent wrapping to a new line */
+  overflow: hidden;        /* Hide the overflowing text */
+  text-overflow: ellipsis; /* Show the ellipsis (...) */
+  
+}
+
+
+/* Custom styles for the dropdown */
+.custom-select-dropdown {
+  width: 400px;
+  border: none;
+  border-radius: 0px!important; /* Rounded corners for the dropdown */
+}
+
+/* Optional: Customize the border and other styles for individual options */
+.custom-select-dropdown .ant-select-item {
+  padding: 10px;  /* Adjust padding for each option */
+}
+
+.custom-select-dropdown .ant-select-item-option-selected {
+  background-color: #4CAF50;  /* Change background color when option is selected */
+  color: white;  /* Change text color when option is selected */
+}
+
+/* Optional: Customize the hover effect */
+.custom-select-dropdown .ant-select-item:hover {
+  background-color: #f0f0f0;  /* Change background color on hover */
+  border-color: #4CAF50;  /* Border color when hovered */
+}
+
+.searchFfromSelect .ant-select-selector:hover{
+  border:none!important;
+}
+.searchFfromSelect .ant-select-selector:focus-visible{
+  border: none!important;
+}
+.searchFfromSelect .ant-select-single{
+  height: 35px;
+}
+.searchFfromSelect .ant-select-selector{
+  border: none!important;
+   outline: none!important;  /* Disable the blue outline */
+   inline: none!important;  /* Disable the blue outline */
+  border-radius: 0px!important;
+  box-shadow: 2px 0px 11px -4px gray!important;
+}
+.relative{
+  position: relative;
+}
+.custom-select-dropdown{
+  position: fixed!important;
+}
+.h_search_section{
+/*  height: 130px;*/
+/*  padding: 3px 5px;*/
+}
+.g_w_2{
+  padding-left: 15px;
+}
+.g_w_1, .g_w_2, .g_w_5{
+  width: 290px;
+}
+.g_w_3, .g_w_4
+{
+  width: 155px;
+}
+/*
+.custome-date-rage{
+  width: 450px;
+    background: white;
+    position: absolute;
+    left: 45%;
+    padding: 5px;
+    border-radius: 7px;
+    box-shadow: 0px 0px 17px -5px #e78c1b;
+}
+*/
+
+
+.custome-date-rage .ant-picker-range .ant-picker-suffix {
+  display: none !important; /* Hide the calendar icon */
+}
+
+/* Additional customizations */
+.custome-date-rage .ant-picker-range .ant-picker-input {
+  border: none !important; /* Remove border from input field */
+  box-shadow: none !important; /* Remove focus box shadow */
+}
+
+.custome-date-rage .ant-picker-range:hover .ant-picker-input {
+  border: none !important; /* Remove border when hovered */
+  box-shadow: none !important;
+}
+
+.custome-date-rage .ant-picker-range.ant-picker-outlined {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.custome-date-rage .ant-picker-range.ant-picker-outlined:focus-within {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide the active selection bar */
+.custome-date-rage .ant-picker-panel {
+  display: block!important; /* Hide the active bar */
+}
+
+
+.custome-date-rage .ant-picker-panel .ant-picker-active-bar {
+  display: none !important; /* Hide the active bar */
+}
+
+/* Optional: If you want to change the active bar's appearance instead of removing it */
+.custome-date-rage .ant-picker-panel .ant-picker-active-bar {
+  background: transparent !important; /* Change color */
+  height: 0 !important; /* Remove height */
+}
+
+
+/* Hide the calendar icon (suffix) */
+.custome-date-rage .ant-picker-suffix {
+  display: none !important; /* Hide the calendar icon */
+}
+
+/* Additional customizations */
+.custome-date-rage .ant-picker.ant-picker-outlined {
+ border: none !important;
+  box-shadow: none !important;
+}
+.custome-date-rage .ant-picker-input {
+  border: none !important; /* Remove border from input field */
+  box-shadow: none !important; /* Remove focus box shadow */
+}
+
+/* Remove border when hovered */
+.custome-date-rage .ant-picker:hover .ant-picker-input {
+  border: none !important; /* Remove border when hovered */
+  box-shadow: none !important;
+}
+
+/* Remove border and box shadow when focused */
+.custome-date-rage .ant-picker.ant-picker-focused .ant-picker-input {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide the active selection bar */
+.custome-date-rage .ant-picker-panel .ant-picker-active-bar {
+  display: none !important; /* Hide the active bar */
+}
+
+/* Optional: If you want to change the active bar's appearance instead of removing it */
+.custome-date-rage .ant-picker-panel .ant-picker-active-bar {
+  background: transparent !important; /* Change color */
+  height: 0 !important; /* Remove height */
+}
+
+
+/* Hide the calendar icon (suffix) */
+.custome-date-rage{
+/*  display: table-column!important;*/
+/*position: fixed;*/
+}
+.custome-date-rage .ant-picker{
+      position: absolute;
+/*      display: none;*/
+    background: no-repeat;
+}
+.custome-date-rage .ant-picker-input{
+  display: none;
+}
+
+.searchReplaceLocation svg{
+  position: absolute;
+}
+.searchReplaceLocation{
+  cursor: pointer;
+/*    position: absolute;*/
+    right: -3px;
+    top: 0px;
+    width: 0px;
+    bottom: 0px;
+    background: #fffffffa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 22px -10px gray;
+}
+
+.searchReplaceLocation2{
+    position: absolute;
+    right: -3px;
+    top: 0px;
+    bottom: 0px;
+    background: #fffffffa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 22px -10px gray;
+}
+
+.searchReplaceLocation1{
+      position: absolute;
+      right: -15px;
+      top: 0px;
+      bottom: 0px;
+      background: #f59c67;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+
+/*.g_w_1{ border-right:none;}
+.g_w_2{ border-left:none;}*/
+
+.searchReplaceLocation svg{
+      background: white;
+    border-radius: 100%;
+    /* border: 2px solid #e8620c; */
+    box-shadow: 0px 0px 10px -4px #d68400;
+}
+
+.offermicro_section{
+  padding: 50px;
+    box-shadow: 0px 0px 16px -5px gray;
+    border-radius: 10px
+}
+
+.setHeightSlider{
+  height: 400px;
+}
+
+.offersSection_1{
+  box-shadow: 0px 0px 20px -1px lightgray;
+  display: flex;
+    width: 480px;
+/*    background: red;*/
+    height: 180px;
+    border-radius: 7px;
+}
+.offersSection_1_left{
+  width: 30%;
+}
+.offersSection_1_left img{
+  height: -webkit-fill-available;
+}
+.offersSection_1_right{
+  width: 70%;
+}
+.view_offer{
+  color: white;
+    background: orange;
+    width: 40%;
+    text-align: center;
+    padding: 7px;
+    bottom: 0px;
+    left: 0px;
+    border-radius: 10px;
+/*    position: absolute;*/
+}
+@media (max-width: 1440px) and (min-width: 1024px) {
+  .w_90{
+    width: 90%;
+  }
 }

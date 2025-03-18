@@ -9,9 +9,9 @@ export default function TopCategory2() {
             <div className="row align-items-end">
               <div className="col-md-8">
                 <h2 className="neutral-1000">Top Destinations</h2>
-                <p className="text-xl-medium neutral-500">
+                {/*<p className="text-xl-medium neutral-500">
                   Favorite place based on customer reviews
-                </p>
+                </p>*/}
               </div>
               <div className="col-md-4">
                 <div className="d-flex justify-content-end">

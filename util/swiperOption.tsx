@@ -468,6 +468,68 @@ export const swiperGroupAnimate: SwiperConfig = {
 		}
 	}
 }
+
+export const swiperGroupAnimateMicro: SwiperConfig = {
+	modules: [Autoplay, Pagination, Navigation],
+	spaceBetween: 24,
+	slidesPerView: 2.4,
+	slidesPerGroup: 1,
+	loop: true,
+	speed: 1000,
+	navigation: {
+		nextEl: ".swiper-button-next-animate",
+		prevEl: ".swiper-button-prev-animate"
+	},
+	autoplay: {
+		delay: 10000
+	},
+	breakpoints: {
+		1199: {
+			slidesPerView: 3.4
+		},
+		600: {
+			slidesPerView: 2
+		},
+		575: {
+			slidesPerView: 1
+		},
+		350: {
+			slidesPerView: 1
+		}
+	}
+}
+
+
+export const swiperGroupOffersAll: SwiperConfig = {
+	modules: [Autoplay, Pagination, Navigation],
+	spaceBetween: 84,
+	slidesPerView: 2.5,
+	slidesPerGroup: 1,
+	loop: true,
+	speed: 1000,
+	navigation: {
+		nextEl: ".swiper-button-next-animate",
+		prevEl: ".swiper-button-prev-animate"
+	},
+	autoplay: {
+		delay: 10000
+	},
+	breakpoints: {
+		1199: {
+			slidesPerView: 2.5
+		},
+		600: {
+			slidesPerView: 2
+		},
+		575: {
+			slidesPerView: 1
+		},
+		350: {
+			slidesPerView: 1
+		}
+	}
+}
+
 export const swiperCenterSlider: SwiperConfig = {
 	modules: [Autoplay, Pagination, Navigation],
 	navigation: {
@@ -488,6 +550,7 @@ export const swiperCenterSlider: SwiperConfig = {
 		clickable: true
 	}
 }
+
 export const swiperGroupCenter4: SwiperConfig = {
 	modules: [Autoplay, Pagination, Navigation],
 	navigation: {
