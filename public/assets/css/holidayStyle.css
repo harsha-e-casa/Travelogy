@@ -1,0 +1,266 @@
+
+img {
+    width: 100%;
+    display: block;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+
+/* ------------------------------------------------------------------------------------------------------- */
+
+/* Main css */
+
+.section__category {
+    display: grid;
+    grid-template-columns: 25% 30% 15% 25%;
+    gap: 15px;
+    place-content: center;
+    grid-template-rows: 50% 50%;
+    height: 80vh;
+    min-height: 460px;
+    padding: max(2vh, 1.5rem);
+}
+
+@media screen and (max-width: 690px) {
+    .section__category {
+        height: 65vh;
+    }
+}
+
+@media screen and (max-width: 470px) {
+    .section__category {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 35%);
+    }
+}
+
+.section__category .dgfry_card {
+    border-radius: 25px;
+    box-shadow: -2px 4px 15px rgba(0, 0, 0, 0.26);
+}
+
+@media screen and (max-width: 470px) {
+    .section__category .dgfry_card {
+        grid-column: span 1;
+    }
+}
+
+.section__category .dgfry_card:nth-child(2) {
+    grid-column: 2/3;
+    grid-row: span 2;
+}
+
+@media screen and (max-width: 690px) {
+    .section__category .dgfry_card:nth-child(2) {
+        grid-column: span 1;
+        grid-row: span 1;
+    }
+}
+
+.section__category .dgfry_card:nth-child(3) {
+    grid-column: span 2;
+}
+
+@media screen and (max-width: 690px) {
+    .section__category .dgfry_card:nth-child(3) {
+        grid-column: 2/4;
+        grid-row: 1/2;
+    }
+}
+
+@media screen and (max-width: 690px) {
+    .section__category .dgfry_card:nth-child(6) {
+        grid-column: 2/4;
+        grid-row: 2/3;
+    }
+}
+
+@media screen and (max-width: 470px) {
+    .section__category .dgfry_card:nth-child(5) {
+        grid-column: span 2;
+    }
+}
+
+.section__category .dgfry_card p {
+    font-size: clamp(0.9rem, 0.8750rem + 0.1250vw, 1rem);
+    line-height: 1.4;
+}
+
+.section__category .dgfry_card img {
+    border-radius: 25px;
+}
+
+.section__category .dgfry_card .card__img {
+    position: relative;
+    height: 100%;
+}
+
+.section__category .dgfry_card .card__img .card__overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    content: "";
+    color: #fff;
+    padding: clamp(0.938rem, 5vw, 1.563rem);
+    background: #02022e;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.57) 0%, rgba(255, 255, 255, 0) 100%);
+    width: 100%;
+    height: 100%;
+    border-radius: 25px;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+}
+
+.section__category .dgfry_card .card__img span {
+    position: absolute;
+    top: 25px;
+    left: min(2vmax, 1.563rem);
+    color: #ff7b29;
+    background: #fff;
+    border-radius: 50px;
+    padding: 2px 8px 2px 6px;
+    display: flex;
+    box-shadow: 0px 1px 20px #0000002b;
+}
+
+@media screen and (max-width: 690px) {
+    .section__category .dgfry_card .card__img span {
+        top: 20px;
+    }
+}
+
+@media screen and (max-width: 470px) {
+    .section__category .dgfry_card .card__img span {
+        top: 15px;
+    }
+}
+
+.section__category .dgfry_card .card__img span svg {
+    fill: #ff7b29;
+    width: 20px;
+    margin-right: 2px;
+}
+
+.general-container {
+    display: flex;
+    height: 34rem;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.radio {
+    display: none;
+}
+
+.content {
+    background: transparent;
+    background-image: url("../../assets/imgs/page/holiday/Clara-on-a-Longboat.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 3rem;
+    cursor: pointer;
+    flex: 1;
+    margin-right: 0.8rem;
+    overflow: hidden;
+    position: relative;
+    transition: all 500ms ease;
+}
+
+.content::before {
+    background: inherit;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+}
+
+.content>* {
+    position: relative;
+    z-index: 1;
+}
+
+.content:nth-of-type(2) {
+    background: transparent;
+    background-image: url("https://www.routeperfect.com/blog/wp-content/uploads/2023/05/10_most_picturesque_villages_in_switzerland.jpeg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.content:nth-of-type(3) {
+    background: transparent;
+    background-image: url("https://ichef.bbci.co.uk/ace/standard/976/cpsprodpb/10A3C/production/_129365186_gettyimages-103455489.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.content:nth-of-type(4) {
+    background: transparent;
+    background-image: url("https://upload.wikimedia.org/wikipedia/commons/d/de/Bank_junction_-_2020-09-20_%282%29.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.radio:hover+.content>.card-title {
+    opacity: 1;
+    transform: translateX(0, 0);
+}
+
+.radio:hover+.content>.title-card {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.active_content {
+    border-radius: 2rem;
+    box-shadow: 0.3rem 0.3rem 0.4rem rgba(0, 0, 0, 0.3);
+    flex: 4;
+}
+
+.book_now_offers {
+    cursor: pointer;
+    padding: 14px;
+    background: #1a1a1a99;
+    width: 150px;
+    text-align: center;
+    border-radius: 6px;
+    transition: all 300ms;
+}
+
+.absolute_b0 {
+    position: absolute !important;
+    bottom: 30px;
+    left: 30px;
+}
+
+.book_now_offers>span {
+    color: white;
+}
+
+.book_now_offers:hover {
+    background: #ffffff;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+}
+
+.book_now_offers:hover>span {
+    color: black;
+}
+
+.m_auto {
+    margin: 0px auto;
+}.section {
+    position: relative;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    height: 100vh;
+}
