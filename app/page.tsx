@@ -12,14 +12,16 @@ import SearchEngine from "@/components/flight"
 // import TopRated1 from "@/components/sections/TopRated1"
 // import WhyChooseUs1 from "@/components/sections/WhyChooseUs1"
 import HoterlIntro from "@/components/sections/HoterlIntro"
+
+
 export default function Home() {
 
     return (
         <>
 
             <Layout headerStyle={1} footerStyle={1}>
-                <FilterSearch />
-                <SearchEngine/>
+                <SearchEngine />
+        
                  {/*<HoterlIntro /> */}
                 {/* <PopularDestinations1 /> */}
                 {/* <TopRated1 />

@@ -16,12 +16,45 @@ import Banner from "@/components/sections/Banner";
 import Flights4 from "@/components/sections/Flights4";
 import rawticketsData from "@/util/tickets.json";
 import useTicketFilter from "@/util/useTicketFilter";
+import EngineTabs from "@/components/searchEngine/engineHeader";
 import Link from "next/link";
 import React from "react";
+import LoveUs from "@/components/sections/LoveUs";
+import Section6Home3 from "@/components/sections/Section6Home3";
+import MicroallOffersPage from "@/app/microPage/MicroallOffersPage";
+import { DatePicker } from "antd";
+import dayjs from "dayjs";
+
+const AppDateRangeww = () => {
+  const handleChange = (dates, dateString) => {
+    if (dates) {
+      const startDate = dayjs(dates[0]).format("MMM D YYYY"); // Format start date
+      const endDate = dayjs(dates[1]).format("MMM D YYYY"); // Format end date
+      console.log(`Start Date: ${startDate}`);
+      console.log(`End Date: ${endDate}`);
+      setDates([startDate, endDate]);
+    } else {
+      console.log("No dates selected");
+    }
+  };
+
+  return (
+    <div className="custome-date-rage">
+      <DatePicker.RangePicker
+        icon={false}
+        placeholder={["Allow Empty", "Till Now"]}
+        allowEmpty={[false, false]}
+        onChange={handleChange}
+      />
+    </div>
+  );
+};
+
 const ticketsData = rawticketsData.map((ticket) => ({
   ...ticket,
   rating: parseFloat(ticket.rating as string),
 }));
+
 export default function Tickets() {
   const {
     filter,
@@ -58,14 +91,22 @@ export default function Tickets() {
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
+        <EngineTabs />
         <main className="main">
           {/*<SlideBanner1 />*/}
-          <Banner />
+          {/*<Banner />*/}
 
+          <br />
+          <br />
+          <br />
           <div className="container">
             <Flights4 />
+
+            <MicroallOffersPage TopCategory2={TopCategory2} />
           </div>
-          <section className="section-box box-how-it-work-3 background-3">
+
+          <TopCategory2 />
+          <section className="section-box box-how-it-work-3 mt-80 background-3">
             <div className="container">
               <div className="box-how-it-work-inner background-3">
                 <h3 className="neutral-1000 wow fadeInUp">How It Work ?</h3>
@@ -145,21 +186,16 @@ export default function Tickets() {
             </div>
           </section>
 
-          <TopCategory2 />
+          <br />
+          <br />
+          <br />
+          <br />
+
+          <Section6Home3 />
+
+          <LoveUs />
 
           <div className="background-body" />
-          <section className="section-box pb-30 background-body">
-            <div className="container-media wow fadeInUp">
-              {" "}
-              <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" />
-              <img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" />
-              <img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" />
-              <img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" />
-              <img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" />
-              <img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" />
-              <img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" />
-            </div>
-          </section>
         </main>
       </Layout>
     </>

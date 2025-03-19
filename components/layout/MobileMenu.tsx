@@ -145,7 +145,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
 											<span className="menu-expand" onClick={() => handleAccordion(8)}>
 												<i className="arrow-small-down"></i>
 											</span>
-											<Link href="/javascript:void(0)">Pages</Link>
+											<Link href="/#">Pages</Link>
 											<ul className="sub-menu" style={{ display: `${isAccordion == 8 ? "block" : "none"}` }}>
 												<li><Link href="/about">About</Link></li>
 												<li><Link href="/contact">Contact</Link></li>
