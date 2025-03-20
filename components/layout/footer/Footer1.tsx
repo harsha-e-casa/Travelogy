@@ -3,6 +3,7 @@ export default function Footer1() {
   return (
     <>
       <footer className="footer">
+      <div className="footer_overlay">
         <section className="section-box box-media background-body">
           <div className="container-media wow fadeInUp">
             {" "}
@@ -220,7 +221,9 @@ export default function Footer1() {
             </div>
           </div>
         </div>
+        </div>
       </footer>
     </>
   );
+
 }
