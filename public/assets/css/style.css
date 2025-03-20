@@ -39,6 +39,7 @@ TABLE CONTENT
 @import url(../css/plugins/bootstrap-datepicker3.css);
 @import url(../css/plugins/slick.css);
 @import url(../css/tailwind.min.css);
+@import url(../css/holidayStyle.css);
 
 :root {
   --bs-border-color: #e4e6e8;
