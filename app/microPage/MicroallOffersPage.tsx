@@ -102,9 +102,10 @@ const AllOffersList = () => {
                                 <img src="http://localhost:3000/assets/imgs/page/homepage1/flight3.png" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -116,9 +117,10 @@ const AllOffersList = () => {
                                 <img src="https://promos.makemytrip.com/notification/xhdpi//116X11-paul-john-10062024.jpg?im=Resize=(134,134)" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -132,9 +134,10 @@ const AllOffersList = () => {
                                 <img src="http://localhost:3000/assets/imgs/page/homepage5/media.png" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -146,9 +149,10 @@ const AllOffersList = () => {
                                 <img src="http://localhost:3000/assets/imgs/page/homepage1/flight3.png" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -162,9 +166,10 @@ const AllOffersList = () => {
                                 <img src="https://promos.makemytrip.com/appfest/2x//j-and-k-116x116-19022025.jpg?im=Resize=(134,134)" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -176,9 +181,10 @@ const AllOffersList = () => {
                                 <img src="http://localhost:3000/assets/imgs/page/homepage1/flight2.png" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -192,9 +198,10 @@ const AllOffersList = () => {
                                 <img src="https://promos.makemytrip.com/notification/xhdpi//116X116-icici-ih-13102023.jpg?im=Resize=(134,134)" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -206,9 +213,10 @@ const AllOffersList = () => {
                                 <img src="http://localhost:3000/assets/imgs/page/homepage5/media.png" />
                               </div>
                               
-                              <div className="offersSection_1_right p-10 relative">
+                              <div className="offersSection_1_right p-20 relative">
                                 <span className="text-lg-medium">Recharge Yourself with a Relaxing Stay:</span>
-                                <div className="text-md-medium neutral-500">Grab Up to 25% Savings* on Stays @ Trident Hotels!</div>
+                                <div className="text-md-small neutral-500">Grab Up to 25% Savings* on Stays @ Trident
+                                <br /> Hotels!</div>
                                 <div className="view_offer text-md-medium mt-10 bg-red-800">View Offers</div>
                               </div>
 
@@ -266,21 +274,23 @@ const items = [
   // },
 ];
 
+
+
 const MicroallOffersPage = () => {
-
-
-
   return (
-    <div className="offermicro_section mb-8 mt-200">
-      <h6 className="neutral-1000 wow fadeInUp">Offers</h6>
-      <Tabs defaultActiveKey="1" onChange={onChange}>
-        {items.map((item) => (
-          <Tabs.TabPane tab={item.label} key={item.key}>
-            {item.children} {/* The content of the tab */}
-          </Tabs.TabPane>
-        ))}
-      </Tabs>
-    </div>
+    <>
+      <h2 className="neutral-1000 mt-20">Offers</h2>
+      <div className="offermicro_section mb-8">
+        <Tabs defaultActiveKey="1" onChange={onChange}>
+          {items.map((item) => (
+            <Tabs.TabPane tab={item.label} key={item.key}>
+              {item.children} {/* The content of the tab */}
+            </Tabs.TabPane>
+          ))}
+        </Tabs>
+
+      </div>
+    </>
   );
 };
 

@@ -1,13 +1,16 @@
 "use client";
 
 import React from "react";
+import Link from 'next/link'
 
-const SearchEngHeader = () => {
+const SearchEngHeader = ({active_border}) => {
+
   return (
     <>
     <div className="grid_main_section_1 on33_w_drf bg-white h-28 flex z_10">
-    <div className="w-1/4 css_pointer active_border_org1">
-      <div className="section_book_svg_icon">
+    <div className={`w-1/4 css_pointer ${active_border == '1' ? 'active_border_org1' : null}`}>
+     <Link href="/flights" > 
+     <div className="section_book_svg_icon">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           version="1.1"
@@ -39,11 +42,15 @@ const SearchEngHeader = () => {
           </g>
         </svg>
       </div>
+     
       <div className="">
-        <span className="text-sm-medium card-link"> Flights</span>
+        <span className="text-sm-medium text-black card-link"> Flights</span>
       </div>
+       </Link>
     </div>
-    <div className="w-1/4 css_pointer hover_svg_hotel">
+    {/*<div className="w-1/4 css_pointer ">*/}
+    <div className={`w-1/4 css_pointer hover_svg_hotel ${active_border == '2' ? 'active_border_org1' : null}`}>
+    <Link href="/hotels" > 
       <div className="section_book_svg_icon">
         {/*?xml version="1.0" encoding="UTF-8"?*/}
         <svg
@@ -77,11 +84,13 @@ const SearchEngHeader = () => {
           </g>
         </svg>
       </div>
-      <div className="text-sm-medium card-link">
+      <div className="text-sm-medium text-black card-link">
         <span> Hotels</span>
       </div>
+      </Link>
     </div>
     <div className="w-1/4 css_pointer">
+    <Link href="/holiday" > 
       <div className="section_book_svg_icon">
         {/*?xml version="1.0" encoding="UTF-8"?*/}
         <svg
@@ -115,9 +124,10 @@ const SearchEngHeader = () => {
           </g>
         </svg>
       </div>
-      <div className="text-sm-medium card-link">
-        <span> Holiday package </span>
+      <div className="text-sm-medium text-black card-link line_height">
+        <span> Holiday <br /> package </span>
       </div>
+      </Link>
     </div>
     <div className="w-1/4 css_pointer">
       <div className="section_book_svg_icon">
@@ -163,9 +173,10 @@ const SearchEngHeader = () => {
           </g>
         </svg>
       </div>
-      <div className="text-sm-medium card-link">Travel Insurance</div>
+      <div className="text-sm-medium text-black card-link line_height">Travel <br /> Insurance</div>
     </div>
-    <div className="w-1/4 css_pointer">
+    {/*<div className="w-1/4 css_pointer">*/}
+    <div className={`w-1/4 css_pointer ${active_border == '4' ? 'active_border_org1' : null}`}>
       <div className="section_book_svg_icon">
         {/*?xml version="1.0" encoding="UTF-8"?*/}
         <svg
@@ -199,7 +210,7 @@ const SearchEngHeader = () => {
           </g>
         </svg>
       </div>
-      <div className="text-sm-medium card-link">Visa</div>
+      <div className="text-sm-medium text-black card-link">Visa</div>
     </div>
     <div className="w-32 css_pointer mr-8">
       <div className="section_book_svg_icon">
@@ -235,7 +246,7 @@ const SearchEngHeader = () => {
           </g>
         </svg>
       </div>
-      <div className="text-sm-medium card-link">Corporate</div>
+      <div className="text-sm-medium text-black card-link">Corporate</div>
     </div>
   </div>
 

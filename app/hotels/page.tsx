@@ -8,7 +8,7 @@ import Link from "next/link"
 import VideoPopup from '@/components/elements/VideoPopup'
 import SlideBanner1 from "@/components/sections/SlideBanner1"
 import Testimonials3 from "@/components/sections/Testimonials3"
-import EngineTabs from "@/components/searchEngine/engineHeader";
+import EngineTabsHotel from "@/components/searchEngine/engineHeaderHotel";
 import WhyBookTravila3 from "@/components/sections/WhyBookTravila3"
 import LoveUs from "@/components/sections/LoveUs"
 import News3 from "@/components/sections/News3"
@@ -26,7 +26,8 @@ export default function Home4() {
         <>
             <Layout headerStyle={1} footerStyle={1}>  
 
-            <EngineTabs />
+            {/*<EngineTabs />*/}
+            <EngineTabsHotel active_border={'2'} />
 
 
 <section className="section-box box-top-rated-3 box-nearby best-room-hotel background-body">

@@ -99,16 +99,12 @@ export default function Tickets() {
 
             <Layout headerStyle={1} footerStyle={1}>
 
-            <EngineTabs />
+            <EngineTabs active_border={'1'} />
                 <main className="main">
                 {/*<SlideBanner1 />*/}
                 {/*<Banner />*/}
 
-
-<br />
-<br />
-<br />
-            <div className="container">
+            <div className="container mt-28">
              <Flights4 />
 
              <MicroallOffersPage TopCategory2={TopCategory2} />

@@ -3,7 +3,8 @@ export default function Footer1() {
     return (
         <>
             <footer className="footer">
-                <div className="container">
+                <div className="footer_overlay">
+                <div className="container pt-40">
                     <div className="footer-top">
                         <div className="row align-items-center">
                             <div className="col-md-4 text-center text-md-start"><Link className="d-inline-block" href="/"><img alt="Travelogy" className="header_logo" src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" /></Link></div>
@@ -97,6 +98,7 @@ export default function Footer1() {
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </footer>
         </>

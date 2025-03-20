@@ -1,7 +1,7 @@
 import React from 'react';
 import { Select } from 'antd';
 
-const AppListSeacrh = ({setSelectFrom, operEngLocation, setSelectFromSub}) => {
+const AppListSeacrh = ({setSelectFrom, operEngLocation, setSelectFromSub, categoryType}) => {
 
 const handleChange = (value) => {
   const getDtaa = value.split(',');
@@ -29,12 +29,23 @@ return (
       {
         label: <>
           <div className="inline_flex">  
+            {!categoryType ?
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
             </svg>
+            : null
+          }
             <div>
-              <div>Delhi (National Capital Territory of Delhi)</div>
-              <div>Indira Gandhi International Airport (DEL)</div>
+            {categoryType == 'hotel' ?
+              <>
+                <div>Delhi</div>
+              </>
+              : 
+              <>
+                <div>Delhi (National Capital Territory of Delhi)</div>
+                <div>Indira Gandhi International Airport (DEL)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -43,12 +54,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Chennai</div>
+              </>
+              : 
+              <>
+
               <div>Chennai (Tamil Nadu)</div>
               <div>Chennai International Airport (MAA)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -57,12 +81,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Mumbai</div>
+              </>
+              : 
+              <>
+
               <div>Mumbai (Maharashtra)</div>
               <div>Chhatrapati Shivaji Maharaj International Airport (BOM)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -71,12 +108,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Bangalore</div>
+              </>
+              : 
+              <>
+
               <div>Bangalore (Karnataka)</div>
               <div>Kempegowda International Airport (BLR)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -85,12 +135,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Kolkata</div>
+              </>
+              : 
+              <>
+
               <div>Kolkata (West Bengal)</div>
               <div>Netaji Subhas Chandra Bose International Airport (CCU)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -99,12 +162,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Hyderabad</div>
+              </>
+              : 
+              <>
+
               <div>Hyderabad (Telangana)</div>
               <div>Rajiv Gandhi International Airport (HYD)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -113,12 +189,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Ahmedabad</div>
+              </>
+              : 
+              <>
+
               <div>Ahmedabad (Gujarat)</div>
               <div>Sardar Vallabhbhai Patel International Airport (AMD)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -127,12 +216,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Kochi</div>
+              </>
+              : 
+              <>
+
               <div>Kochi (Kerala)</div>
               <div>Cochin International Airport (COK)</div>
+              </>
+            }
             </div>
           </div>
         </>,
@@ -141,12 +243,25 @@ return (
       {
         label: <>
           <div className="inline_flex">  
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-              <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
-            </svg>
+            {!categoryType ?
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
+              </svg>
+              : null 
+            }
+
             <div>
+             {categoryType == 'hotel' ?
+              <>
+                <div>Pune</div>
+              </>
+              : 
+              <>
+
               <div>Pune (Maharashtra)</div>
               <div>Pune Airport (PNQ)</div>
+              </>
+            }
             </div>
           </div>
         </>,

@@ -502,8 +502,8 @@ export const swiperGroupAnimateMicro: SwiperConfig = {
 
 export const swiperGroupOffersAll: SwiperConfig = {
 	modules: [Autoplay, Pagination, Navigation],
-	spaceBetween: 84,
-	slidesPerView: 2.5,
+	spaceBetween: 10,
+	slidesPerView: 2.2,
 	slidesPerGroup: 1,
 	loop: true,
 	speed: 1000,
@@ -516,7 +516,7 @@ export const swiperGroupOffersAll: SwiperConfig = {
 	},
 	breakpoints: {
 		1199: {
-			slidesPerView: 2.5
+			slidesPerView: 2.2
 		},
 		600: {
 			slidesPerView: 2
