@@ -196,7 +196,7 @@ const Slider: React.FC = () => {
           </div>
         </section>
         <YourJourney />
-        <div className="container mt-28">
+        <div className="container mt-8">
           <MicroallOffersPage />
         </div>
         <h5
