@@ -2,7 +2,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimate } from "@/util/swiperOption";
 import Link from "next/link";
-import Countdown from "@/components/elements/Countdown";
 
 export default function YourJourney() {
   const currentTime = new Date();
@@ -16,11 +15,14 @@ export default function YourJourney() {
                 Your Journey, Your Way
               </h4>
               <h6 className="heading-6-medium neutral-400 wow fadeInUp">
-                Discover the World's Treasures with Travelogy{" "}
+                Discover the World's Treasures with Travelogy
               </h6>
             </div>
             <div className="col-md-3 position-relative mb-30">
               <div className="box-button-slider box-button-slider-team justify-content-end">
+                <Link href="/trip-package">
+                  <button className="btn btn-black mr-10">View All</button>
+                </Link>
                 <div className="swiper-button-prev swiper-button-prev-style-1 swiper-button-prev-animate">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -132,7 +134,7 @@ export default function YourJourney() {
                   <div className="card-journey-small background-card">
                     <div className="card-image">
                       {" "}
-                      <Link className="wish" href="/tour-detail">
+                      <Link className="wish" href="#">
                         <svg
                           width={20}
                           height={18}
@@ -171,7 +173,7 @@ export default function YourJourney() {
                         {" "}
                         <Link
                           className="heading-6 neutral-1000"
-                          href="/tour-detail"
+                          href="#"
                         >
                           California Sunset/Twilight Boat Cruise{" "}
                         </Link>
@@ -204,7 +206,7 @@ export default function YourJourney() {
                   <div className="card-journey-small background-card">
                     <div className="card-image">
                       {" "}
-                      <Link className="wish" href="/tour-detail">
+                      <Link className="wish" href="#">
                         <svg
                           width={20}
                           height={18}
@@ -243,7 +245,7 @@ export default function YourJourney() {
                         {" "}
                         <Link
                           className="heading-6 neutral-1000"
-                          href="/tour-detail"
+                          href="#"
                         >
                           NYC: Food Tastings and Culture Tour
                         </Link>
@@ -276,7 +278,7 @@ export default function YourJourney() {
                   <div className="card-journey-small background-card">
                     <div className="card-image">
                       {" "}
-                      <Link className="wish" href="/tour-detail">
+                      <Link className="wish" href="#">
                         <svg
                           width={20}
                           height={18}
@@ -315,7 +317,7 @@ export default function YourJourney() {
                         {" "}
                         <Link
                           className="heading-6 neutral-1000"
-                          href="/tour-detail"
+                          href="#"
                         >
                           Grand Canyon Horseshoe Bend 2 days
                         </Link>
@@ -348,7 +350,7 @@ export default function YourJourney() {
                   <div className="card-journey-small background-card">
                     <div className="card-image">
                       {" "}
-                      <Link className="wish" href="/tour-detail">
+                      <Link className="wish" href="#">
                         <svg
                           width={20}
                           height={18}
@@ -387,7 +389,7 @@ export default function YourJourney() {
                         {" "}
                         <Link
                           className="heading-6 neutral-1000"
-                          href="/tour-detail"
+                          href="#"
                         >
                           California Sunset/Twilight Boat Cruise{" "}
                         </Link>
@@ -420,7 +422,7 @@ export default function YourJourney() {
                   <div className="card-journey-small background-card">
                     <div className="card-image">
                       {" "}
-                      <Link className="wish" href="/tour-detail">
+                      <Link className="wish" href="#">
                         <svg
                           width={20}
                           height={18}
@@ -459,7 +461,7 @@ export default function YourJourney() {
                         {" "}
                         <Link
                           className="heading-6 neutral-1000"
-                          href="/tour-detail"
+                          href="#"
                         >
                           NYC: Food Tastings and Culture Tour
                         </Link>
@@ -492,7 +494,7 @@ export default function YourJourney() {
                   <div className="card-journey-small background-card">
                     <div className="card-image">
                       {" "}
-                      <Link className="wish" href="/tour-detail">
+                      <Link className="wish" href="#">
                         <svg
                           width={20}
                           height={18}
@@ -531,7 +533,7 @@ export default function YourJourney() {
                         {" "}
                         <Link
                           className="heading-6 neutral-1000"
-                          href="/tour-detail"
+                          href="#"
                         >
                           Grand Canyon Horseshoe Bend 2 days
                         </Link>

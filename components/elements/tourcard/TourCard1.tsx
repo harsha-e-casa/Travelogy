@@ -23,7 +23,7 @@ export default function TourCard1({ tour }: any) {
 							<div className="card-price">
 								<h6 className="heading-6 neutral-1000">${tour.price}</h6>
 							</div>
-							<div className="card-button"> <Link className="btn btn-gray" href="/tour-detail">Book Now</Link></div>
+							<div className="card-button"> <Link className="btn btn-gray" href="#">Book Now</Link></div>
 						</div>
 					</div>
 				</div>
