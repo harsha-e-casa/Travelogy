@@ -271,7 +271,7 @@ const MicroallOffersPage = () => {
 
 
   return (
-    <div className="offermicro_section mb-8 mt-200">
+    <div className="offermicro_section mb-8 mt-50">
       <h6 className="neutral-1000 wow fadeInUp">Offers</h6>
       <Tabs defaultActiveKey="1" onChange={onChange}>
         {items.map((item) => (

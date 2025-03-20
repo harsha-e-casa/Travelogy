@@ -1,9 +1,10 @@
 "use client";
 
 import Layout from "@/components/layout/Layout";
-import Link from "next/link"
+import Link from "next/link";
 import React, { useState } from "react";
 // import AnimatedSlider from "./AnimatedSlider";
+import MicroallOffersPage from "@/app/microPage/MicroallOffersPage";
 
 const Slider: React.FC = () => {
   const cardData: string[] = [
@@ -193,310 +194,289 @@ const Slider: React.FC = () => {
             </div>
           </div>
         </section>
-        <div className="container mb-30">
-          <div className="row">
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    Venice
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+        <section className="background-3 pt-8 1box-how-it-work-inner">
+          <div className="container mb-30">
+            <h5
+              className="neutral-1000 wow fadeInUp mb-30"
+              style={{ visibility: "visible" }}
+            >
+              The Ultimate Travel Hitlist
+            </h5>
+            <div className="row">
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      Venice
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular2.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    Amsterdam
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular2.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      Amsterdam
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular3.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    Budapest
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular3.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      Budapest
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular4.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    Lisbon
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular4.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      Lisbon
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular5.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    London
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular5.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      London
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular6.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    Ottawa
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular6.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      Ottawa
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="col-lg-3 col-sm-6">
-              <div className="card-popular background-card hover-up">
-                <div className="card-image">
-                  {" "}
-                  <Link href="/destination">
-                    <img
-                      src="/assets/imgs/page/homepage1/popular7.png"
-                      alt="Travila"
-                    />
-                  </Link>
-                </div>
-                <div className="card-info">
-                  {" "}
-                  <Link className="card-title" href="/destination">
-                    Paris
-                  </Link>
-                  <div className="card-meta">
-                    <div className="meta-links">
-                      {" "}
-                      <Link href="#">356 Tours, </Link>
-                      <Link href="#">248 Activities</Link>
-                    </div>
-                    <div className="card-button">
-                      {" "}
-                      <Link href="/destination">
-                        <svg
-                          width={10}
-                          height={10}
-                          viewBox="0 0 10 10"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
+              <div className="col-lg-3 col-sm-6">
+                <div className="card-popular background-card hover-up">
+                  <div className="card-image">
+                    <Link href="/destination">
+                      <img
+                        src="/assets/imgs/page/homepage1/popular7.png"
+                        alt="Travila"
+                      />
+                    </Link>
+                  </div>
+                  <div className="card-info">
+                    <Link className="card-title" href="/destination">
+                      Paris
+                    </Link>
+                    <div className="card-meta">
+                      <div className="meta-links">
+                        <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link>
+                      </div>
+                      <div className="card-button">
+                        <Link href="/destination">
+                          <svg
+                            width={10}
+                            height={10}
+                            viewBox="0 0 10 10"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5.00011 9.08347L9.08347 5.00011L5.00011 0.916748M9.08347 5.00011L0.916748 5.00011"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            {/* <div className="col-lg-3 col-sm-6">
+              {/* <div className="col-lg-3 col-sm-6">
               <div className="card-popular-2">
                 <div className="card-info">
                   <h6 className="neutral-500">
@@ -508,7 +488,7 @@ const Slider: React.FC = () => {
                       All destinations
                     </div>
                     <div className="card-button hover-up">
-                      {" "}
+                      
                       <Link href="/destination">
                         <svg
                           width={10}
@@ -528,8 +508,18 @@ const Slider: React.FC = () => {
                 </div>
               </div>
             </div> */}
+            </div>
           </div>
+        </section>
+        <div className="container mt-28">
+          <MicroallOffersPage />
         </div>
+        <h5
+          className="container neutral-1000 wow fadeInUp mb-30"
+          style={{ visibility: "visible" }}
+        >
+          Destination Dreams
+        </h5>
         <section className="section__category container mb-30 box-top-category">
           {locations.map((loc, index) => (
             <div className="dgfry_card" key={index}>
@@ -546,59 +536,71 @@ const Slider: React.FC = () => {
             </div>
           ))}
         </section>
-        <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
-          <div className="main_d2l_section p-8 pt-4">
-            <h2 className="text-xl font-bold text-gray-900 tracking-wide">
-              Top destinations in India
-            </h2>
-            <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
-              {destinations.map((dest, index) => (
-                <div
-                  key={index}
-                  className="flex items-center rounded-lg aft_hvr w-full"
-                >
-                  <div className="w-1/3 rounded-full overflow-hidden">
-                    <img
-                      src={dest.image}
-                      alt={dest.title}
-                      className="h-20 w-20 rounded-full object-cover"
-                    />
+        <section>
+          <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
+            <div className="main_d2l_section p-8 pt-4">
+              <h2 className="text-xl font-bold text-gray-900 tracking-wide">
+                Best Selling Destination
+              </h2>
+              <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
+                {destinations.map((dest, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center rounded-lg aft_hvr w-full"
+                  >
+                    <div className="w-1/3 rounded-full overflow-hidden">
+                      <img
+                        src={dest.image}
+                        alt={dest.title}
+                        className="h-20 w-20 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="w-2/3 pl-3">
+                      <p className="text-xl font-semibold text-gray-900">
+                        {dest.title}
+                      </p>
+                      <p className="text-xs text-gray-900">
+                        {dest.description}
+                      </p>
+                    </div>
                   </div>
-                  <div className="w-2/3 pl-3">
-                    <p className="text-xl font-semibold text-gray-900">
-                      {dest.title}
-                    </p>
-                    <p className="text-xs text-gray-900">{dest.description}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="general-container container mb-30 box-top-category">
-          {destination.map((dest) => (
-            <React.Fragment key={dest.id}>
-              <input
-                className="radio"
-                type="radio"
-                name="card"
-                id={dest.id}
-                checked={selectedCard === dest.id}
-                onChange={() => setSelectedCard(dest.id)}
-              />
-              <label
-                className={`content ${getActiveClass(dest.id)}`}
-                htmlFor={dest.id}
-                onMouseEnter={() => setHoveredCard(dest.id)}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <div className="book_now_offers absolute_b0">
-                  <span className="font-bold">{dest.label}</span>
-                </div>
-              </label>
-            </React.Fragment>
-          ))}
-        </div>
+        </section>
+        <section className="container mb-30 box-top-category">
+          <h5
+            className="neutral-1000 wow fadeInUp mb-30"
+            style={{ visibility: "visible" }}
+          >
+            Travel Made Visa-Free
+          </h5>
+          <div className="general-container">
+            {destination.map((dest) => (
+              <React.Fragment key={dest.id}>
+                <input
+                  className="radio"
+                  type="radio"
+                  name="card"
+                  id={dest.id}
+                  checked={selectedCard === dest.id}
+                  onChange={() => setSelectedCard(dest.id)}
+                />
+                <label
+                  className={`content ${getActiveClass(dest.id)}`}
+                  htmlFor={dest.id}
+                  onMouseEnter={() => setHoveredCard(dest.id)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                >
+                  <div className="book_now_offers absolute_b0">
+                    <span className="font-bold">{dest.label}</span>
+                  </div>
+                </label>
+              </React.Fragment>
+            ))}
+          </div>
+        </section>
         {/* </main> */}
       </Layout>
     </>
