@@ -6,8 +6,10 @@ import React, { useState } from "react";
 // import AnimatedSlider from "./AnimatedSlider";
 import MicroallOffersPage from "@/app/microPage/MicroallOffersPage";
 import YourJourney from "./TripSlider";
+import HolidayBannerSlider from "./HolidayBannerSlider";
 
 const Slider: React.FC = () => {
+
   const cardData: string[] = [
     "https://images.ixigo.com/image/upload/why-ixigo/6f088102ee84ca42818880b0e7a53013-qeinq.png",
     "https://images.ixigo.com/image/upload/why-ixigo/a18ed159795638a89940bf7bfbf7a029-buxfd.png",
@@ -171,6 +173,9 @@ const Slider: React.FC = () => {
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
+
+
+      <HolidayBannerSlider />
         {/* <EngineTabs /> */}
         {/* <AnimatedSlider /> */}
         <section className="my-8 pt-40">
@@ -292,3 +297,6 @@ const Slider: React.FC = () => {
   );
 };
 export default Slider;
+
+
+
