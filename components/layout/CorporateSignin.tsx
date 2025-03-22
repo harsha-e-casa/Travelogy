@@ -32,8 +32,7 @@ export default function CorporateSignin({
                 <img
                   src="/assets/imgs/template/popup/facebook.svg"
                   alt="Travelogy"
-                />
-              </Link>
+              </Link>g
               <Link className="btn btn-login" href="#">
                 <img
                   src="/assets/imgs/template/popup/apple.svg"
