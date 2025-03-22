@@ -94,8 +94,12 @@ TABLE CONTENT
 /*import plugins*/
 /*RESET*/
 
+html {
+  scroll-behavior: smooth;
+}
 body{
   background: #fff0ac42;
+  scroll-behavior: smooth;
 }
 html,
 body,
