@@ -170,6 +170,8 @@ const Slider: React.FC = () => {
     if (!hoveredCard && selectedCard === id) return "active_content";
     return "";
   };
+
+
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
@@ -178,7 +180,7 @@ const Slider: React.FC = () => {
       <HolidayBannerSlider />
         {/* <EngineTabs /> */}
         {/* <AnimatedSlider /> */}
-        <section className="my-8 pt-40">
+        <section className="my-8 pt-120">
           <div className="p-8">
             <h2 className="ml-8 text-xl font-bold text-gray-900 tracking-wide">
               Why Booking Travelogy

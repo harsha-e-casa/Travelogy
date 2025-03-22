@@ -169,7 +169,7 @@ const engineHeaderHotel = ({active_border}) => {
   <SearchEngHeader active_border={active_border} />
 
     <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
-      <Link href="/tickets" className="search_btn_font text-white uppercase tracking-wide">
+      <Link href="/hotel-listing" className="search_btn_font text-white uppercase tracking-wide">
         {" "} Search
       </Link>
     </div>

@@ -177,6 +177,7 @@ const SearchEngHeader = ({active_border}) => {
     </div>
     {/*<div className="w-1/4 css_pointer">*/}
     <div className={`w-1/4 css_pointer ${active_border == '4' ? 'active_border_org1' : null}`}>
+      <Link href="/visa" > 
       <div className="section_book_svg_icon">
         {/*?xml version="1.0" encoding="UTF-8"?*/}
         <svg
@@ -211,6 +212,8 @@ const SearchEngHeader = ({active_border}) => {
         </svg>
       </div>
       <div className="text-sm-medium text-black card-link">Visa</div>
+    </Link>
+
     </div>
     <div className="w-32 css_pointer mr-8">
       <div className="section_book_svg_icon">
