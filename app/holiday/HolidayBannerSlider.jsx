@@ -93,7 +93,7 @@ const Slider = () => {
     };
 
     const animateSlider = () => {
-      
+
       order.push(order.shift());
 
       const [active, ...rest] = order;
@@ -180,6 +180,7 @@ const Slider = () => {
             </div>
             </div>
           </div>
+          {/*test*/}
         </a>
       ))}
 
