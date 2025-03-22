@@ -1,377 +1,188 @@
-import React, { useEffect, useState } from 'react';
-import gsap from 'gsap';
+import React, { useRef, useEffect } from 'react';
+import { gsap } from 'gsap';
 
-
-
-const Slider = () => {
- 
 
 
 const data = [
   {
-    place: 'Australia',
-    title: 'Australia',
-    title2: 'ANTONIEN',
-    description: '',
-    image: `https://travelogy.digilogy.co/demo2.jpg`,
-  },
-  {
-    place: 'Japan Alps',
-    title: 'Australia',
+    place: 'London',
+    title: 'London',
     title2: 'PREFECTURE',
     description: '',
-    image: `https://travelogy.digilogy.co/demo1.jpg`,
+    image: 'https://travelogy.digilogy.co/demo1.jpg',
   },
   {
-    place: 'Australia - Morocco',
-    title: 'MARRAKECH',
-    title2: 'MEROUGA',
-    description: '',
-    image: `https://travelogy.digilogy.co/demo3.jpg`,
-  },
-  {
-    place: 'Australia',
-    title: 'Australia',
+    place: 'Switzerland Alps',
+    title: 'SAINT',
     title2: 'ANTONIEN',
-    description: '',
-    image: `https://travelogy.digilogy.co/demo4.jpg`,
+    description: "Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for tranquility and adventure.",
+    image: 'https://travelogy.digilogy.co/demo2.jpg',
   },
   {
-    place: 'Japan Alps',
-    title: 'Australia',
+    place: 'Morocco',
+    title: 'MARRAKECH',
+    title2: 'MERZOUGA',
+    description: "Morocco offers vibrant markets, desert landscapes, and rich cultural experiences.",
+    image: 'https://travelogy.digilogy.co/demo3.jpeg',
+  },
+
+    {
+    place: 'Switzerland Alps',
+    title: 'SAINT',
+    title2: 'ANTONIEN',
+    description: "Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for tranquility and adventure.",
+    image: 'https://travelogy.digilogy.co/demo2.jpg',
+  },
+  {
+    place: 'Morocco',
+    title: 'MARRAKECH',
+    title2: 'MERZOUGA',
+    description: "Morocco offers vibrant markets, desert landscapes, and rich cultural experiences.",
+    image: 'https://travelogy.digilogy.co/demo3.jpeg',
+  },
+  {
+    place: 'London',
+    title: 'London',
     title2: 'PREFECTURE',
     description: '',
-    image: `https://travelogy.digilogy.co/demo2.jpg`,
-  },
-  {
-    place: 'Australia - Morocco',
-    title: 'MARRAKECH',
-    title2: 'MEROUGA',
-    description: '',
-    image: `https://travelogy.digilogy.co/demo2.jpg`,
+    image: 'https://travelogy.digilogy.co/demo1.jpg',
   },
 ];
 
+
+
+const Slider = () => {
+  const cardsRef = useRef([]);
+  const cardContentsRef = useRef([]);
+
+
+ useEffect(() => {
+    // Adding styles to the body when the component is mounted
+    document.body.style.overflowX = 'hidden';
+
+    // Cleanup function to reset body styles when the component unmounts
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []); // Empty dependency array ensures it runs only on mount and unmount
+
+
   useEffect(() => {
-    const range = (n) => Array(n).fill(0).map((i, j) => i + j);
-    const order = range(data.length); // Assuming `order` starts with all indexes
+    let order = data.map((_, index) => index);
 
-    let detailsEven = true;
-    const offsetTop = 450;
-    const offsetLeft = 700;
-    const cardWidth = 180;
-    const cardHeight = 230;
-    const gap = 30;
-    const numberSize = 50;
-    const ease = "sine.inOut";
+    const init = () => {
 
-    const getCard = (index) => `#card${index}`;
-    const getCardContent = (index) => `#card-content-${index}`;
-    const getSliderItem = (index) => `#slide-item-${index}`;
-
-    function animate(target, duration, properties) {
-      return new Promise((resolve) => {
-        gsap.to(target, {
-          ...properties,
-          duration: duration,
-          onComplete: resolve,
-        });
-      });
-    }
-
-    function init() {
       const [active, ...rest] = order;
-      const detailsActive = detailsEven ? "#details-even" : "#details-odd";
-      const detailsInactive = detailsEven ? "#details-odd" : "#details-even";
-      const { innerHeight: height, innerWidth: width } = window;
 
-      gsap.set("#pagination", {
-        top: offsetTop + 300,
-        left: offsetLeft,
-        y: 200,
-        opacity: 0,
-        zIndex: 30,
-      });
-
-      gsap.set(getCard(active), {
+      gsap.set(cardsRef.current[active], {
         x: 0,
         y: 0,
         width: window.innerWidth,
         height: 600,
       });
 
-      gsap.set(getCardContent(active), { x: 0, y: 0, opacity: 0 });
-      gsap.set(detailsActive, { opacity: 0, zIndex: 22, x: -200 });
-      gsap.set(detailsInactive, { opacity: 0, zIndex: 12 });
-      gsap.set(`${detailsInactive} .text`, { y: 100 });
-      gsap.set(`${detailsInactive} .title-1`, { y: 100 });
-      gsap.set(`${detailsInactive} .title-2`, { y: 100 });
-      gsap.set(`${detailsInactive} .desc`, { y: 50 });
-      gsap.set(`${detailsInactive} .cta`, { y: 60 });
-
       rest.forEach((i, index) => {
-        gsap.set(getCard(i), {
-          x: offsetLeft + 400 + index * (cardWidth + gap),
-          y: offsetTop,
-          width: cardWidth,
-          height: cardHeight,
-          zIndex: 30,
+        gsap.set(cardsRef.current[i], {
+          x: 700 + index * 210,
+          y: 450,
+          width: 180,
+          height: 230,
           borderRadius: 10,
         });
-        gsap.set(getCardContent(i), {
-          x: offsetLeft + 400 + index * (cardWidth + gap),
-          zIndex: 40,
-          y: offsetTop + cardHeight - 100,
-        });
-        gsap.set(getSliderItem(i), { x: (index + 1) * numberSize });
       });
+    };
 
-      gsap.set(".indicator", { x: -window.innerWidth });
+    const animateSlider = () => {
+      
+      order.push(order.shift());
 
-      const startDelay = 0.6;
+      const [active, ...rest] = order;
+      const prev = rest[rest.length - 1];
 
-      gsap.from(".cover", {
-        duration: 1,
-        opacity: 2,
-        ease: "rough",
-      });
-
-      gsap.to(".cover", {
-        x: width + 100,
-        delay: 0.1,
-        ease,
+      gsap.to(cardsRef.current[active], {
+        x: 0,
+        y: 0,
+        width: window.innerWidth,
+        height: 600,
+        borderRadius: 0,
+        zIndex: -1,
+        ease: "sine.inOut",
         onComplete: () => {
-          setTimeout(() => {
-            loop();
-          }, 500);
+          gsap.set(cardsRef.current[prev], {
+            x: 700 + (rest.length - 1) * 210,
+            y: 450,
+            width: 180,
+            height: 230,
+            borderRadius: 10,
+          });
+
         },
       });
 
+
       rest.forEach((i, index) => {
-        gsap.to(getCard(i), {
-          x: offsetLeft + index * (cardWidth + gap),
-          zIndex: 30,
-          delay: 0.05 * index,
-          ease,
-          delay: startDelay,
-        });
-        gsap.to(getCardContent(i), {
-          x: offsetLeft + index * (cardWidth + gap),
-          zIndex: 40,
-          delay: 0.05 * index,
-          ease,
-          delay: startDelay,
-        });
+        if (i !== prev) {
+          gsap.to(cardsRef.current[i], {
+            x: 900 + index * 210,
+            y: 450,
+            width: 180,
+            height: 230,
+            zIndex: 99999,
+            duration: 0.3,
+            ease: "sine.inOut",
+          });
+        }
       });
+    };
 
-      gsap.to("#pagination", { y: 0, opacity: 1, ease, delay: startDelay });
-      gsap.to(detailsActive, { opacity: 1, x: 0, ease, delay: startDelay });
-    }
+    const loop = () => {
+      animateSlider();
+      setTimeout(loop, 4000);
+    };
 
-    async function loop() {
-      await animate(".indicator", 2, { x: 0 });
-      await animate(".indicator", 0.8, { x: 200, delay: 0.3 });
-      set(".indicator", { x: -window.innerWidth });
-      await step();
+    const preloadImages = () => {
+      return Promise.all(
+        data.map(({ image }) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = image;
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+        })
+      );
+    };
+
+    preloadImages().then(() => {
+      init();
       loop();
-    }
-
-    async function step() {
-      return new Promise((resolve) => {
-        order.push(order.shift());
-        detailsEven = !detailsEven;
-
-        const detailsActive = detailsEven ? "#details-even" : "#details-odd";
-        const detailsInactive = detailsEven ? "#details-odd" : "#details-even";
-
-        document.querySelector(`${detailsActive} .place-box .text`).textContent =
-          data[order[0]].place;
-        document.querySelector(`${detailsActive} .title-1`).textContent =
-          data[order[0]].title;
-        document.querySelector(`${detailsActive} .title-2`).textContent =
-          data[order[0]].title2;
-        document.querySelector(`${detailsActive} .desc`).textContent =
-          data[order[0]].description;
-
-        gsap.set(detailsActive, { zIndex: 22 });
-        gsap.to(detailsActive, { opacity: 1, delay: 0.4, ease });
-        gsap.to(`${detailsActive} .text`, {
-          y: 0,
-          delay: 0.1,
-          duration: 0.7,
-          ease,
-        });
-        gsap.to(`${detailsActive} .title-1`, {
-          y: 0,
-          delay: 0.15,
-          duration: 0.7,
-          ease,
-        });
-        gsap.to(`${detailsActive} .title-2`, {
-          y: 0,
-          delay: 0.15,
-          duration: 0.7,
-          ease,
-        });
-        gsap.to(`${detailsActive} .desc`, {
-          y: 0,
-          delay: 0.3,
-          duration: 0.4,
-          ease,
-        });
-
-        gsap.to(`${detailsActive} .cta`, {
-          y: 0,
-          delay: 0.35,
-          duration: 0.4,
-          onComplete: resolve,
-          ease,
-        });
-
-        gsap.set(detailsInactive, { zIndex: 12 });
-        const [active, ...rest] = order;
-        const prv = rest[rest.length - 1];
-
-        gsap.set(getCard(prv), { zIndex: 10 });
-        gsap.set(getCard(active), { zIndex: 20 });
-        gsap.to(getCard(prv), { scale: 1, ease });
-
-        gsap.to(getCardContent(active), {
-          y: offsetTop + cardHeight - 10,
-          opacity: 0,
-          duration: 0.3,
-          ease,
-        });
-        gsap.to(getSliderItem(active), { x: 0, ease });
-        gsap.to(getSliderItem(prv), { x: -numberSize, ease });
-        gsap.to(".progress-sub-foreground", {
-          width: 500 * (1 / order.length) * (active + 1),
-          ease,
-        });
-
-        gsap.to(getCard(active), {
-          x: 0,
-          y: 0,
-          ease,
-          width: window.innerWidth,
-          height: 600,
-          borderRadius: 0,
-          onComplete: () => {
-            const xNew = offsetLeft + (rest.length - 1) * (cardWidth + gap);
-
-            gsap.set(getCard(prv), {
-              x: xNew,
-              y: offsetTop,
-              width: cardWidth,
-              height: cardHeight,
-              zIndex: 30,
-              borderRadius: 10,
-              scale: 1,
-            });
-
-            gsap.set(getCardContent(prv), {
-              x: xNew,
-              y: offsetTop + cardHeight - 100,
-              opacity: 1,
-              zIndex: 40,
-            });
-
-            gsap.set(getSliderItem(prv), { x: rest.length * numberSize });
-
-            gsap.set(detailsInactive, { opacity: 0 });
-            gsap.set(`${detailsInactive} .text`, { y: 100 });
-            gsap.set(`${detailsInactive} .title-1`, { y: 100 });
-            gsap.set(`${detailsInactive} .title-2`, { y: 100 });
-            gsap.set(`${detailsInactive} .desc`, { y: 50 });
-            gsap.set(`${detailsInactive} .cta`, { y: 60 });
-            clicks -= 1;
-            if (clicks > 0) {
-              step();
-            }
-          },
-        });
-
-        rest.forEach((i, index) => {
-          if (i !== prv) {
-            const xNew = offsetLeft + index * (cardWidth + gap);
-            gsap.set(getCard(i), { zIndex: 30 });
-            gsap.to(getCard(i), {
-              x: xNew,
-              y: offsetTop,
-              width: cardWidth,
-              height: cardHeight,
-              ease,
-              delay: 0.1 * (index + 1),
-            });
-
-            gsap.to(getCardContent(i), {
-              x: xNew,
-              y: offsetTop + cardHeight - 100,
-              opacity: 1,
-              zIndex: 40,
-              ease,
-              delay: 0.1 * (index + 1),
-            });
-            gsap.to(getSliderItem(i), { x: (index + 1) * numberSize, ease });
-          }
-        });
-      });
-    }
-
-
-  }, []);
+    });
+  }, [data]);
 
   return (
-    <div className="relative slider_auto_section_drf1">
-      <div className="dskjds">
-        <div id="demo"></div>
-      </div>
+    <div className="slider-container">
+      {data.map((item, index) => (
+        <a key={index} href="trip/details.html">
+          <div
+            className="card"
+            ref={(el) => (cardsRef.current[index] = el)}
+            style={{ backgroundImage: `url(${item.image})` }}
+          >
+            <div
+              className="card-content"
+              ref={(el) => (cardContentsRef.current[index] = el)}
+            >
+            <div className="card_sub">
+              <div className="content-start"></div>
+              <div className="content-place">{item.place}</div>
+              <div className="content-title-1">{item.title}</div>
+              <div className="content-title-2">{item.title2}</div>
+            </div>
+            </div>
+          </div>
+        </a>
+      ))}
 
-      <div className="details" id="details-even">
-        <div className="place-box">
-          <div className="text">London</div>
-        </div>
-        <div className="title-box-1">
-          <div className="title-1">London</div>
-        </div>
-        <div className="title-box-2">
-          <div className="title-2">PREFECTURE</div>
-        </div>
-        <div className="desc"></div>
-        <div className="cta">
-          <button className="bookmark">
-            {/* SVG bookmark */}
-          </button>
-          <button className="discover">Read More</button>
-        </div>
-      </div>
-
-      <div className="details" id="details-odd">
-        <div className="place-box">
-          <div className="text">Switzerland Alps</div>
-          <div className="content-title-2">PREFECTURE</div>
-        </div>
-        <div className="title-box-1">
-          <div className="title-1">SAINT</div>
-        </div>
-        <div className="title-box-2">
-          <div className="title-2">ANTONIEN</div>
-        </div>
-        <div className="desc">
-          Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for those seeking tranquility and adventure alike.
-        </div>
-        <div className="cta">
-          <button className="discover">Read More</button>
-        </div>
-      </div>
-
-      <div className="pagination" id="pagination">
-        {/* Pagination content */}
-      </div>
-
-      <div className="slide-numbers" id="slide-numbers" style={{ opacity: 0.1 }}></div>
-
-      <div className="cover"></div>
     </div>
   );
 };
