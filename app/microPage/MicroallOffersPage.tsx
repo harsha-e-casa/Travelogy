@@ -12,7 +12,7 @@ import { swiperGroupAnimateMicro, swiperGroupOffersAll } from "@/util/swiperOpti
 import Link from "next/link"
 
 
-const onChange = (key) => {
+const onChange = (key : any) => {
   console.log(key); // Log the active tab key
 };
 
@@ -62,10 +62,10 @@ const SortHotelsFilterApp = () => {
                   <div className="row">
                   <div className="swiper-container swiper-group-animate swiper-group-journey">
                       <Swiper {...swiperGroupAnimateMicro}>
-                        {paginatedHotels.map((hotel) => (
-                          <SwiperSlide>
+                        {paginatedHotels.map((hotel, index) => (
+                          <SwiperSlide key={index}>
                             
-                              <HotelCard1 hotel={hotel} key={hotel.id} />
+                              <HotelCard1 hotel={hotel} key={index} />
                           
                           </SwiperSlide>
                         ))}
@@ -74,11 +74,9 @@ const SortHotelsFilterApp = () => {
                 </div>
                 </div>
               </div>
-    </div>
+        </div>
     )
-};
-
-
+}; 
 
 const AllOffersList = () => {
 
@@ -99,7 +97,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1">
                               
                               <div className="offersSection_1_left">
-                                <img src="http://localhost:3000/assets/imgs/page/homepage1/flight3.png" />
+                                <img alt="travalogy" src="http://localhost:3000/assets/imgs/page/homepage1/flight3.png" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -114,7 +112,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1 mt-20">
                               
                               <div className="offersSection_1_left">
-                                <img src="https://promos.makemytrip.com/notification/xhdpi//116X11-paul-john-10062024.jpg?im=Resize=(134,134)" />
+                                <img alt="travalogy" src="https://promos.makemytrip.com/notification/xhdpi//116X11-paul-john-10062024.jpg?im=Resize=(134,134)" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -131,7 +129,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1">
                               
                               <div className="offersSection_1_left">
-                                <img src="http://localhost:3000/assets/imgs/page/homepage5/media.png" />
+                                <img alt="travalogy" src="http://localhost:3000/assets/imgs/page/homepage5/media.png" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -146,7 +144,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1 mt-20">
                               
                               <div className="offersSection_1_left">
-                                <img src="http://localhost:3000/assets/imgs/page/homepage1/flight3.png" />
+                                <img alt="travalogy" src="http://localhost:3000/assets/imgs/page/homepage1/flight3.png" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -163,7 +161,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1">
                               
                               <div className="offersSection_1_left">
-                                <img src="https://promos.makemytrip.com/appfest/2x//j-and-k-116x116-19022025.jpg?im=Resize=(134,134)" />
+                                <img alt="travalogy" src="https://promos.makemytrip.com/appfest/2x//j-and-k-116x116-19022025.jpg?im=Resize=(134,134)" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -178,7 +176,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1 mt-20">
                               
                               <div className="offersSection_1_left">
-                                <img src="http://localhost:3000/assets/imgs/page/homepage1/flight2.png" />
+                                <img alt="travalogy" src="http://localhost:3000/assets/imgs/page/homepage1/flight2.png" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -195,7 +193,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1">
                               
                               <div className="offersSection_1_left">
-                                <img src="https://promos.makemytrip.com/notification/xhdpi//116X116-icici-ih-13102023.jpg?im=Resize=(134,134)" />
+                                <img alt="travalogy" src="https://promos.makemytrip.com/notification/xhdpi//116X116-icici-ih-13102023.jpg?im=Resize=(134,134)" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -210,7 +208,7 @@ const AllOffersList = () => {
                             <div className="offersSection_1 mt-20">
                               
                               <div className="offersSection_1_left">
-                                <img src="http://localhost:3000/assets/imgs/page/homepage5/media.png" />
+                                <img alt="travalogy" src="http://localhost:3000/assets/imgs/page/homepage5/media.png" />
                               </div>
                               
                               <div className="offersSection_1_right p-20 relative">
@@ -279,11 +277,11 @@ const items = [
 const MicroallOffersPage = () => {
   return (
     <>
-      <h2 className="neutral-1000 mt-20">Offers</h2>
+      <h2 className="neutral-1000 mt-20 mb-4">Offers</h2>
       <div className="offermicro_section mb-8">
         <Tabs defaultActiveKey="1" onChange={onChange}>
-          {items.map((item) => (
-            <Tabs.TabPane tab={item.label} key={item.key}>
+          {items.map((item, index) => (
+            <Tabs.TabPane tab={item.label} key={index}>
               {item.children} {/* The content of the tab */}
             </Tabs.TabPane>
           ))}

@@ -2,6 +2,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 import "/public/assets/css/style.css"
 import type { Metadata } from "next"
 import { Manrope, Merienda } from "next/font/google"
+import { AppContextProvider } from '../util/AppContext';
+
 
 const manrope_init = Manrope({
     weight: ['300', '400', '500', '600', '700','800'],
@@ -28,7 +30,11 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className={`${manrope_init.variable} ${merienda_init.variable}`}>
-            <body>{children}</body>
+            <body>
+                <AppContextProvider>
+                 {children}
+                </AppContextProvider>
+            </body>
         </html>
     )
 }

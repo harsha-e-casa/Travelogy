@@ -16,7 +16,7 @@ export default function BannerHome6() {
 							<Swiper {...swiperGroup1}>
 								<SwiperSlide>
 									<div className="item-banner-slide" style={{ backgroundImage: 'url(assets/imgs/page/homepage7/banner.png)' }}>
-										<div className="container"> <span className="btn btn-brand-secondary wow fadeInUp"> <img className="mr-10" src="/assets/imgs/page/homepage7/hotel.svg" alt="Travile" />Great Hotel System</span>
+										<div className="container"> <span className="btn btn-brand-secondary wow fadeInUp"> <img  className="mr-10" src="/assets/imgs/page/homepage7/hotel.svg" alt="Travile" />Great Hotel System</span>
 											<h1 className="mt-20 mb-20 color-white">Find Your Next Stay</h1>
 											<h5 className="color-white">Search deals on hotels, homes, and much more...</h5>
 										</div>
@@ -24,7 +24,7 @@ export default function BannerHome6() {
 								</SwiperSlide>
 								<SwiperSlide>
 									<div className="item-banner-slide" style={{ backgroundImage: 'url(assets/imgs/page/homepage7/banner-2.png)' }}>
-										<div className="container"> <span className="btn btn-brand-secondary wow fadeInUp"> <img className="mr-10" src="/assets/imgs/page/homepage7/hotel.svg" alt="Travile" />Your Best Stay </span>
+										<div className="container"> <span className="btn btn-brand-secondary wow fadeInUp"> <img  className="mr-10" src="/assets/imgs/page/homepage7/hotel.svg" alt="Travile" />Your Best Stay </span>
 											<h1 className="mt-20 mb-20 color-white">Holiday Special Price</h1>
 											<h5 className="color-white">Book now your next stay and get special price</h5>
 										</div>

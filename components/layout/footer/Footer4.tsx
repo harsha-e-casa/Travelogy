@@ -8,7 +8,7 @@ export default function Footer4() {
             <div className="col-lg-4 col-sm-12">
               <div className="mb-20">
                 <Link className="d-inline-block mb-20" href="/">
-                  <img
+                  <img 
                     alt="Travelogy"
                     src="/assets/imgs/template/logo-footer.svg"
                   />
@@ -95,7 +95,7 @@ export default function Footer4() {
           <div className="box-footer-col-3">
             <div className="footer-col-1">
               <div className="box-footer-help">
-                <img
+                <img 
                   alt="Travelogy"
                   src="/assets/imgs/page/homepage6/help.svg"
                 />
@@ -112,7 +112,7 @@ export default function Footer4() {
             </div>
             <div className="footer-col-2">
               <div className="box-join">
-                <img
+                <img 
                   alt="Travelogy"
                   src="/assets/imgs/page/homepage6/join.svg"
                 />
@@ -124,7 +124,7 @@ export default function Footer4() {
             <div className="footer-col-3">
               <div className="box-send-message">
                 {" "}
-                <img
+                <img 
                   alt="Travelogy"
                   src="/assets/imgs/page/homepage6/msg.svg"
                 />

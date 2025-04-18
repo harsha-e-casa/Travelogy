@@ -9,7 +9,7 @@ export default function BannerHome8() {
 				<div className="block-banner-9-inner">
 					<div className="container">
 						<div className="row">
-							<div className="col-lg-6 wow fadeInUp"> <span className="btn btn-brand-secondary"> <img className="mr-10" src="/assets/imgs/page/homepage9/real.svg" alt="Travile" />Resort Real Estate</span>
+							<div className="col-lg-6 wow fadeInUp"> <span className="btn btn-brand-secondary"> <img  className="mr-10" src="/assets/imgs/page/homepage9/real.svg" alt="Travile" />Resort Real Estate</span>
 								<h1 className="neutral-1000 mt-15 mb-15"> <span>Discover a </span>Place <span>You’ll </span>Love
 									<span>To Live</span></h1>
 								<h6 className="neutral-500">Buy and sell properties in a fastest way</h6>
@@ -32,12 +32,12 @@ export default function BannerHome8() {
 							</div>
 						</div>
 					</div>
-					<div className="image-banner-bottom"> <img src="/assets/imgs/page/homepage9/banner-sm.png" alt="Travelogy" />
+					<div className="image-banner-bottom"> <img  src="/assets/imgs/page/homepage9/banner-sm.png" alt="Travelogy" />
 					</div>
-					<div className="image-banner-top-left"> <img src="/assets/imgs/page/homepage9/banner-sm2.png" alt="Travelogy" />
+					<div className="image-banner-top-left"> <img  src="/assets/imgs/page/homepage9/banner-sm2.png" alt="Travelogy" />
 					</div>
 					<div className="block-right-banner" style={{ backgroundImage: 'url(assets/imgs/page/homepage9/banner.png)' }}>
-						<div className="item-support border-1 background-body"> <img className="light-mode" src="/assets/imgs/page/homepage9/support.png" alt="Travelogy" /><img className="dark-mode" src="/assets/imgs/page/homepage9/support-dark.png" alt="Travelogy" />
+						<div className="item-support border-1 background-body"> <img  className="light-mode" src="/assets/imgs/page/homepage9/support.png" alt="Travelogy" /><img  className="dark-mode" src="/assets/imgs/page/homepage9/support-dark.png" alt="Travelogy" />
 							<div className="text-support">
 								<p className="text-sm-bold neutral-1000">Customer Service</p>
 								<h6 className="neutral-1000">+01 235 368</h6>
@@ -45,7 +45,7 @@ export default function BannerHome8() {
 						</div>
 						<div className="item-people-used">
 							<div className="box-authors-partner background-body wow fadeInUp">
-								<div className="authors-partner-left"><img src="/assets/imgs/page/homepage5/author.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/author2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage5/author3.png" alt="Travelogy" /><span className="item-author">
+								<div className="authors-partner-left"><img  src="/assets/imgs/page/homepage5/author.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage5/author2.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage5/author3.png" alt="Travelogy" /><span className="item-author">
 									<svg width={18} height={18} viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
 										<rect x="0.5" y="7.448" width={17} height="2.31818" fill="black" />
 										<rect x="7.84082" y="17.1072" width={17} height="2.31818" transform="rotate(-90 7.84082 17.1072)" fill="black" />

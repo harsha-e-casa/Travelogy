@@ -124,17 +124,17 @@ export default function HotelGrid2() {
 									<div className="col-lg-6">
 										<div className="box-item-download wow fadeInUp"> <span className="btn btn-brand-secondary">Install APP   Get  discount code</span>
 											<h5 className="mt-15 mb-30">Up to 55% Discount<br className="d-none d-lg-block" />and lots of special gifts</h5>
-											<div className="box-button-download"> <Link href="#"><img src="/assets/imgs/page/homepage6/googleplay.png" alt="Travila" /></Link><Link href="#"><img src="/assets/imgs/page/homepage6/appstore.png" alt="Travila" /></Link></div>
+											<div className="box-button-download"> <Link href="#"><img  src="/assets/imgs/page/homepage6/googleplay.png" alt="Travalogy" /></Link><Link href="#"><img  src="/assets/imgs/page/homepage6/appstore.png" alt="Travalogy" /></Link></div>
 										</div>
 									</div>
-									<div className="col-lg-6"><img className="wow fadeInUp" src="/assets/imgs/page/homepage6/img-download-app.png" alt="Travila" /></div>
+									<div className="col-lg-6"><img  className="wow fadeInUp" src="/assets/imgs/page/homepage6/img-download-app.png" alt="Travalogy" /></div>
 								</div>
 							</div>
 						</div>
 					</section>
 					<div className="pb-90 background-body" />
 					<section className="section-box box-media background-body">
-						<div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" /></div>
+						<div className="container-media wow fadeInUp"> <img  src="/assets/imgs/page/homepage5/media.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media2.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media3.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media4.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media5.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media6.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media7.png" alt="Travalogy" /></div>
 					</section>
 				</main>
 

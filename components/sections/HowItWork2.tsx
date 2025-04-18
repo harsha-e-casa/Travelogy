@@ -8,7 +8,7 @@ export default function HowItWork2() {
                         <div className="col-lg-6">
                             <h3 className="neutral-1000 wow fadeInUp">How It Work ?</h3>
                             <p className="text-xl-medium neutral-500 wow fadeInUp">Just 4 easy and quick steps</p>
-                            <div className="box-image-how wow fadeInUp"> <img src="/assets/imgs/page/homepage8/img-how.png" alt="Travelogy" /><span className="img-arrow"> <img src="/assets/imgs/page/homepage8/img-arrow.png" alt="Travelogy" /></span><span className="img-dot"> <img src="/assets/imgs/page/homepage8/dot-img.png" alt="Travelogy" /></span>
+                            <div className="box-image-how wow fadeInUp"> <img  src="/assets/imgs/page/homepage8/img-how.png" alt="Travelogy" /><span className="img-arrow"> <img  src="/assets/imgs/page/homepage8/img-arrow.png" alt="Travelogy" /></span><span className="img-dot"> <img  src="/assets/imgs/page/homepage8/dot-img.png" alt="Travelogy" /></span>
                             </div>
                         </div>
                         <div className="col-lg-6">

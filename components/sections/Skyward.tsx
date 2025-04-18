@@ -9,8 +9,8 @@ export default function Skyward() {
                     <div className="row align-items-center">
                         <div className="col-lg-6 mb-30 wow fadeInUp">
                             <div className="box-image-sky">
-                                <div className="col-sky-1"><img className="w-100" src="/assets/imgs/page/homepage10/sky.png" alt="Travelogy" /><img className="w-100" src="/assets/imgs/page/homepage10/sky2.png" alt="Travelogy" /></div>
-                                <div className="col-sky-2"><img className="w-100" src="/assets/imgs/page/homepage10/sky3.png" alt="Travelogy" /></div>
+                                <div className="col-sky-1"><img  className="w-100" src="/assets/imgs/page/homepage10/sky.png" alt="Travelogy" /><img  className="w-100" src="/assets/imgs/page/homepage10/sky2.png" alt="Travelogy" /></div>
+                                <div className="col-sky-2"><img  className="w-100" src="/assets/imgs/page/homepage10/sky3.png" alt="Travelogy" /></div>
                             </div>
                         </div>
                         <div className="col-lg-6 mb-30 wow fadeInUp">

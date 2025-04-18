@@ -8,7 +8,7 @@ export default function Testimonials2() {
 
             <section className="section-box box-testimonials-2 background-body">
                 <div className="container">
-                    <div className="box-author-testimonials"> <img src="/assets/imgs/page/homepage1/testimonial.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travelogy" />Testimonials</div>
+                    <div className="box-author-testimonials"> <img  src="/assets/imgs/page/homepage1/testimonial.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travelogy" />Testimonials</div>
                     <h2 className="mt-8 mb-25 neutral-1000">Don't take our word for it</h2>
                 </div>
                 <div className="block-testimonials">
@@ -29,14 +29,14 @@ export default function Testimonials2() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Sara Mohamed</p>
                                                             <p className="text-sm neutral-1000">Jakatar</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>
@@ -52,14 +52,14 @@ export default function Testimonials2() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Atend John</p>
                                                             <p className="text-sm neutral-1000">Califonia</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>
@@ -75,14 +75,14 @@ export default function Testimonials2() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Sara Mohamed</p>
                                                             <p className="text-sm neutral-1000">Jakatar</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>
@@ -98,14 +98,14 @@ export default function Testimonials2() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Sara Mohamed</p>
                                                             <p className="text-sm neutral-1000">Jakatar</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>

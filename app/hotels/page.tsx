@@ -41,7 +41,7 @@ export default function Home4() {
                                         <div className="card-image"> <Link className="wish" href="#">
                                             <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                            </svg></Link><Link href="/room-detail"><img src="/assets/imgs/page/hotel/room.png" alt="Travila" /></Link></div>
+                                            </svg></Link><Link href="/room-detail"><img  src="/assets/imgs/page/hotel/room.png" alt="Travalogy" /></Link></div>
                                         <div className="card-info">
                                             <div className="card-rating">
                                                 <div className="card-left"> </div>
@@ -79,7 +79,7 @@ export default function Home4() {
                                         <div className="card-image"> <Link className="wish" href="#">
                                             <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                            </svg></Link><Link href="/room-detail"><img src="/assets/imgs/page/hotel/room2.png" alt="Travila" /></Link></div>
+                                            </svg></Link><Link href="/room-detail"><img  src="/assets/imgs/page/hotel/room2.png" alt="Travalogy" /></Link></div>
                                         <div className="card-info">
                                             <div className="card-rating">
                                                 <div className="card-left"> </div>
@@ -117,7 +117,7 @@ export default function Home4() {
                                         <div className="card-image"> <Link className="wish" href="#">
                                             <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                            </svg></Link><Link href="/room-detail"><img src="/assets/imgs/page/hotel/room3.png" alt="Travila" /></Link></div>
+                                            </svg></Link><Link href="/room-detail"><img  src="/assets/imgs/page/hotel/room3.png" alt="Travalogy" /></Link></div>
                                         <div className="card-info">
                                             <div className="card-rating">
                                                 <div className="card-left"> </div>
@@ -155,7 +155,7 @@ export default function Home4() {
                                         <div className="card-image"> <Link className="wish" href="#">
                                             <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                            </svg></Link><Link href="/room-detail"><img src="/assets/imgs/page/hotel/room4.png" alt="Travila" /></Link></div>
+                                            </svg></Link><Link href="/room-detail"><img  src="/assets/imgs/page/hotel/room4.png" alt="Travalogy" /></Link></div>
                                         <div className="card-info">
                                             <div className="card-rating">
                                                 <div className="card-left"> </div>
@@ -193,7 +193,7 @@ export default function Home4() {
                                         <div className="card-image"> <Link className="wish" href="#">
                                             <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                            </svg></Link><Link href="/room-detail"><img src="/assets/imgs/page/hotel/room5.png" alt="Travila" /></Link></div>
+                                            </svg></Link><Link href="/room-detail"><img  src="/assets/imgs/page/hotel/room5.png" alt="Travalogy" /></Link></div>
                                         <div className="card-info">
                                             <div className="card-rating">
                                                 <div className="card-left"> </div>
@@ -231,7 +231,7 @@ export default function Home4() {
                                         <div className="card-image"> <Link className="wish" href="#">
                                             <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                 <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                            </svg></Link><Link href="/room-detail"><img src="/assets/imgs/page/hotel/room6.png" alt="Travila" /></Link></div>
+                                            </svg></Link><Link href="/room-detail"><img  src="/assets/imgs/page/hotel/room6.png" alt="Travalogy" /></Link></div>
                                         <div className="card-info">
                                             <div className="card-rating">
                                                 <div className="card-left"> </div>
@@ -289,7 +289,7 @@ export default function Home4() {
                                         <div className="card-grid-video">
                                             <div className="card-image">
                                                 <VideoPopup vdocls="btn btn-play popup-youtube" />
-                                                <img className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
+                                                <img  className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
                                             <div className="card-info">
                                                 <h4>The Venetian and The Palazzo - Las Vegas, USA</h4>
                                                 <p className="text-md-medium">8 Resort. 24 rooms</p>
@@ -303,19 +303,19 @@ export default function Home4() {
 
                                                     <VideoPopup vdocls="btn btn-play-sm popup-youtube" />
 
-                                                    <img className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
+                                                    <img  className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
                                                 <div className="item-info"> <Link className="heading-6" href="#">The Burj Al Arab Dubai, UAE</Link>
                                                     <p className="text-md-medium neutral-500">8 Resort. 24 rooms</p>
                                                 </div>
                                             </div>
                                             <div className="item-video-small">
-                                                <div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img className="mr-10" src="/assets/imgs/page/homepage7/img-video2.png" alt="Travile" /></div>
+                                                <div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img  className="mr-10" src="/assets/imgs/page/homepage7/img-video2.png" alt="Travile" /></div>
                                                 <div className="item-info"> <Link className="heading-6" href="#">The Burj Al Arab Dubai, UAE</Link>
                                                     <p className="text-md-medium neutral-500">8 Resort. 24 rooms</p>
                                                 </div>
                                             </div>
                                             <div className="item-video-small">
-                                                <div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img className="mr-10" src="/assets/imgs/page/homepage7/img-video3.png" alt="Travile" /></div>
+                                                <div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img  className="mr-10" src="/assets/imgs/page/homepage7/img-video3.png" alt="Travile" /></div>
                                                 <div className="item-info"> <Link className="heading-6" href="#">The Burj Al Arab Dubai, UAE</Link>
                                                     <p className="text-md-medium neutral-500">8 Resort. 24 rooms</p>
                                                 </div>
@@ -394,7 +394,7 @@ export default function Home4() {
 
                 <div className="background-body mt-140" />
                 {/*<section className="section-box box-media background-body">
-                    <div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" /></div>
+                    <div className="container-media wow fadeInUp"> <img  src="/assets/imgs/page/homepage5/media.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media2.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media3.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media4.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media5.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media6.png" alt="Travalogy" /><img  src="/assets/imgs/page/homepage5/media7.png" alt="Travalogy" /></div>
                 </section>*/}
 
             </Layout>

@@ -15,17 +15,17 @@ export default function HowItWork1() {
                         {/*<div className="col-lg-6 wow fadeInUp">*/}
                         <div className="col-lg-6">
                             <div className="box-image-how">
-                                <div className="image-top-how"> <img src="/assets/imgs/page/homepage4/img-how.png" alt="Travelogy" />
+                                <div className="image-top-how"> <img  src="/assets/imgs/page/homepage4/img-how.png" alt="Travelogy" />
                                 </div>
-                                <div className="image-bottom-how"> <img src="/assets/imgs/page/homepage4/img-how2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage4/img-how3.png" alt="Travelogy" />
-                                    <div className="shape"> <img className="light-mode" src="/assets/imgs/page/homepage4/wave.png" alt="Travelogy" /><img className="dark-mode" src="/assets/imgs/page/homepage4/wave-dark.png" alt="Travelogy" /></div>
+                                <div className="image-bottom-how"> <img  src="/assets/imgs/page/homepage4/img-how2.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage4/img-how3.png" alt="Travelogy" />
+                                    <div className="shape"> <img  className="light-mode" src="/assets/imgs/page/homepage4/wave.png" alt="Travelogy" /><img  className="dark-mode" src="/assets/imgs/page/homepage4/wave-dark.png" alt="Travelogy" /></div>
                                 </div>
                             </div>
                         </div>
                         <div className="col-lg-6">
                             {/*<div className="card-why-travel card-why-travel-2 background-1 wow fadeInUp">*/}
                             <div className="card-why-travel card-why-travel-2 background-1">
-                                <div className="card-image"> <img src="/assets/imgs/page/homepage2/security.svg" alt="Travelogy" />
+                                <div className="card-image"> <img  src="/assets/imgs/page/homepage2/security.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">Find Your
                                     Destination</Link>
@@ -39,7 +39,7 @@ export default function HowItWork1() {
                             </div>
                             {/*<div className="card-why-travel card-why-travel-2 background-2 wow fadeInUp">*/}
                             <div className="card-why-travel card-why-travel-2 background-2">
-                                <div className="card-image"> <img src="/assets/imgs/page/homepage2/support.svg" alt="Travelogy" />
+                                <div className="card-image"> <img  src="/assets/imgs/page/homepage2/support.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">Book a Ticket</Link>
                                     <p className="text-sm-medium neutral-500 card-desc">Choose reputable platforms or book
@@ -51,7 +51,7 @@ export default function HowItWork1() {
                             </div>
                             {/*<div className="card-why-travel card-why-travel-2 background-3 wow fadeInUp">*/}
                             <div className="card-why-travel card-why-travel-2 background-3">
-                                <div className="card-image"> <img src="/assets/imgs/page/homepage2/policy.svg" alt="Travelogy" />
+                                <div className="card-image"> <img  src="/assets/imgs/page/homepage2/policy.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">Pay and Go</Link>
                                     <p className="text-sm-medium neutral-500 card-desc">Ensure secure transactions. Save and

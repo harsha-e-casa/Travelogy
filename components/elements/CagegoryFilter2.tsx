@@ -8,8 +8,8 @@ export default function CagegoryFilter2() {
 		<>
 			<div className="d-flex align-items-center justify-content-center popular-categories">
 				<Dropdown className="dropdown dropdown-filter">
-					<Dropdown.Toggle className="btn btn-dropdown dropdown-toggle" id="dropdownCategory" type="button" data-bs-toggle="dropdown" aria-expanded="false"> <span>Price range</span></Dropdown.Toggle>
-					<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownCategory" style={{ margin: 0 }}>
+					<Dropdown.Toggle className="btn btn-dropdown dropdown-toggle" id="dropdownCategory1" type="button" data-bs-toggle="dropdown" aria-expanded="false"> <span>Price range</span></Dropdown.Toggle>
+					<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownCategory1" style={{ margin: 0 }}>
 						<li><Link className="dropdown-item active" href="#">$10 - $100</Link></li>
 						<li><Link className="dropdown-item" href="#">$100 - $1.000</Link></li>
 						<li><Link className="dropdown-item" href="#">$1.000 - $10.000</Link></li>
@@ -57,7 +57,7 @@ export default function CagegoryFilter2() {
 				</Dropdown>
 				<Dropdown className="dropdown dropdown-filter">
 					<Dropdown.Toggle className="btn btn-dropdown dropdown-toggle" id="dropdownLocation" type="button" data-bs-toggle="dropdown" aria-expanded="false"> <span>Booking Location</span></Dropdown.Toggle>
-					<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-light" aria-lablledby="dropdownLocation" style={{ margin: 0 }}>
+					<Dropdown.Menu as="ul" className="dropdown-menu dropdown-menu-light" aria-labelledby="dropdownLocation" style={{ margin: 0 }}>
 						<li><Link className="dropdown-item active" href="#">Vietnam</Link></li>
 						<li><Link className="dropdown-item" href="#">English</Link></li>
 					</Dropdown.Menu>

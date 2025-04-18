@@ -33,7 +33,7 @@ export default function Footer5() {
             <div className="col-md-3 col-sm-12 footer-1">
               <div className="mt-20 mb-20">
                 <a className="d-inline-block mb-20" href="index.html">
-                  <img
+                  <img 
                     alt="Travelogy"
                     src="assets/imgs/template/logo-footer.svg"
                   />

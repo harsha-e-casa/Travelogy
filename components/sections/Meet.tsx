@@ -11,7 +11,7 @@ export default function Meet() {
                 <div className="container">
                     <div className="row align-items-end">
                         <div className="col-lg-6 mb-30 wow fadeInUp">
-                            <div className="box-author-testimonials button-brand-2 wow fadeInUp"> <img src="/assets/imgs/page/homepage1/testimonial.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travelogy" />Our Team</div>
+                            <div className="box-author-testimonials button-brand-2 wow fadeInUp"> <img  src="/assets/imgs/page/homepage1/testimonial.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage1/testimonial2.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage1/testimonial3.png" alt="Travelogy" />Our Team</div>
                             <h2 className="mt-8 mb-10 neutral-1000">Meet our Agents</h2>
                             <p className="text-xl-medium neutral-500">Meet our exceptional team of agents, each dedicated to
                                 making your property journey seamless and successful</p>
@@ -38,7 +38,7 @@ export default function Meet() {
                                     <div className="row">
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">John Thompson</h6>
                                                     <p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
@@ -64,7 +64,7 @@ export default function Meet() {
                                         </div>
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team2.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team2.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">Emily Rodriguez</h6>
                                                     <p className="text-sm-medium neutral-500">Senior Real Estate Advisor</p>
@@ -90,7 +90,7 @@ export default function Meet() {
                                         </div>
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team3.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team3.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">Michael Chang</h6>
                                                     <p className="text-sm-medium neutral-500">Residential Specialist</p>
@@ -116,7 +116,7 @@ export default function Meet() {
                                         </div>
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team4.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team4.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">Michael Chang</h6>
                                                     <p className="text-sm-medium neutral-500">Residential Specialist</p>
@@ -146,7 +146,7 @@ export default function Meet() {
                                     <div className="row">
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">John Thompson</h6>
                                                     <p className="text-sm-medium neutral-500">Founder and Principal Broker</p>
@@ -172,7 +172,7 @@ export default function Meet() {
                                         </div>
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team2.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team2.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">Emily Rodriguez</h6>
                                                     <p className="text-sm-medium neutral-500">Senior Real Estate Advisor</p>
@@ -198,7 +198,7 @@ export default function Meet() {
                                         </div>
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team3.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team3.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">Michael Chang</h6>
                                                     <p className="text-sm-medium neutral-500">Residential Specialist</p>
@@ -224,7 +224,7 @@ export default function Meet() {
                                         </div>
                                         <div className="col-lg-6 wow fadeInUp">
                                             <div className="card-team">
-                                                <div className="card-image"> <img src="/assets/imgs/page/homepage9/team4.png" alt="Travelogy" /></div>
+                                                <div className="card-image"> <img  src="/assets/imgs/page/homepage9/team4.png" alt="Travelogy" /></div>
                                                 <div className="card-info">
                                                     <h6 className="neutral-1000">Michael Chang</h6>
                                                     <p className="text-sm-medium neutral-500">Residential Specialist</p>

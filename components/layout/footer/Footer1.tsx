@@ -7,13 +7,13 @@ export default function Footer1() {
         <section className="section-box box-media background-body">
           <div className="container-media wow fadeInUp">
             {" "}
-            <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" />
-            <img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" />
-            <img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" />
-            <img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" />
-            <img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" />
-            <img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" />
-            <img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" />
+            <img  src="/assets/imgs/page/homepage5/media.png" alt="Travalogy" />
+            <img  src="/assets/imgs/page/homepage5/media2.png" alt="Travalogy" />
+            <img  src="/assets/imgs/page/homepage5/media3.png" alt="Travalogy" />
+            <img  src="/assets/imgs/page/homepage5/media4.png" alt="Travalogy" />
+            <img  src="/assets/imgs/page/homepage5/media5.png" alt="Travalogy" />
+            <img  src="/assets/imgs/page/homepage5/media6.png" alt="Travalogy" />
+            <img  src="/assets/imgs/page/homepage5/media7.png" alt="Travalogy" />
           </div>
         </section>
         <div className="container">
@@ -21,7 +21,7 @@ export default function Footer1() {
             <div className="row align-items-center">
               <div className="col-md-4 text-center text-md-start">
                 <Link className="d-inline-block" href="/">
-                  <img
+                  <img 
                     alt="Travelogy"
                     className="header_logo"
                     src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
