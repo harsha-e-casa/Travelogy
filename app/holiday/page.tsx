@@ -180,43 +180,31 @@ const Slider: React.FC = () => {
       <HolidayBannerSlider />
         {/* <EngineTabs /> */}
         {/* <AnimatedSlider /> */}
-        <section className="my-8 pt-120">
-          <div className="p-8">
-            <h2 className="ml-8 text-xl font-bold text-gray-900 tracking-wide">
-              Why Booking Travelogy
-            </h2>
-            <div className="m-12 grid gap-5 lg:grid-cols-4 lg:max-w-none">
-              {cardData.map((url: string, index: number) => (
-                <div
-                  key={index}
-                  className="flex flex-col rounded-xl h-24 shadow-lg overflow-hidden"
-                  style={{
-                    backgroundImage: `url(${url})`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: "cover",
-                  }}
-                >
-                  <div className="flex p-1" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+
+
+
+        <div className="h-10">
+        
+        </div>
+
         <YourJourney />
+{/*
         <div className="container mt-8">
           <MicroallOffersPage />
-        </div>
-        <h5
+        </div>*/}
+        {/*<h5
           className="container neutral-1000 wow fadeInUp mt-100"
           style={{ visibility: "visible" }}
         >
           Destination Dreams
-        </h5>
+        </h5>*/}
+
+        <h2 className="container neutral-1000 mt-20">Destination Dreams</h2>
         <section className="section__category container mb-30 box-top-category">
           {locations.map((loc, index) => (
             <div className="dgfry_card" key={index}>
               <div className="card__img">
-                <img src={loc.image} alt={loc.place || "Travel Destination"} />
+                <img  src={loc.image} alt={loc.place || "Travel Destination"} />
                 <span>
                   <StarIcon /> {loc.rating}
                 </span>
@@ -228,46 +216,17 @@ const Slider: React.FC = () => {
             </div>
           ))}
         </section>
-        <section>
-          <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
-            <div className="main_d2l_section p-8 pt-4">
-              <h2 className="text-xl font-bold text-gray-900 tracking-wide">
-                Best Selling Destination
-              </h2>
-              <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
-                {destinations.map((dest, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center rounded-lg aft_hvr w-full"
-                  >
-                    <div className="w-1/3 rounded-full overflow-hidden">
-                      <img
-                        src={dest.image}
-                        alt={dest.title}
-                        className="h-20 w-20 rounded-full object-cover"
-                      />
-                    </div>
-                    <div className="w-2/3 pl-3">
-                      <p className="text-xl font-semibold text-gray-900">
-                        {dest.title}
-                      </p>
-                      <p className="text-xs text-gray-900">
-                        {dest.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="container mb-30 box-top-category">
-          <h5
+        
+         <section className="container_sub mb-30 box-top-category">
+          {/*<h5
             className="neutral-1000 wow fadeInUp mb-30"
             style={{ visibility: "visible" }}
           >
             Travel Made Visa-Free
-          </h5>
+          </h5>*/}
+
+          <h2 className="neutral-1000 mt-20 mb-6">Travel Made Visa-Free</h2>
+
           <div className="general-container">
             {destination.map((dest) => (
               <React.Fragment key={dest.id}>
@@ -293,7 +252,42 @@ const Slider: React.FC = () => {
             ))}
           </div>
         </section>
-        {/* </main> */}
+
+
+        <section>
+          <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
+            <div className="main_d2l_section p-8 pt-4">
+              <h2 className="text-xl font-bold text-gray-900 tracking-wide">
+                Best Selling Destination
+              </h2>
+              <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
+                {destinations.map((dest, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center rounded-lg aft_hvr w-full"
+                  >
+                    <div className="w-1/3 rounded-full overflow-hidden">
+                      <img 
+                        src={dest.image}
+                        alt={dest.title}
+                        className="h-20 w-20 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="w-2/3 pl-3">
+                      <p className="text-xl font-semibold text-gray-900">
+                        {dest.title}
+                      </p>
+                      <p className="text-xs text-gray-900">
+                        {dest.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+               {/* </main> */}
       </Layout>
     </>
   );

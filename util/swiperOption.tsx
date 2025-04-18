@@ -27,6 +27,7 @@ interface SwiperConfig {
 			slidesPerView: number | "auto"
 			slidesPerGroup?: number
 			spaceBetween?: number
+			centeredSlides?: boolean;  // Allow centeredSlides within breakpoints
 		}
 	}
 }
@@ -464,6 +465,41 @@ export const swiperGroupAnimate: SwiperConfig = {
 			slidesPerView: 1
 		},
 		350: {
+			slidesPerView: 1
+		}
+	}
+}
+
+export const swiperGroupAnimateHoliday: SwiperConfig = {
+	modules: [Autoplay, Pagination, Navigation],
+	spaceBetween: 24,
+	slidesPerView: 3.6,
+	centeredSlides: true, 
+	slidesPerGroup: 1,
+	loop: true,
+	speed: 1000,
+	navigation: {
+		nextEl: ".swiper-button-next-animate",
+		prevEl: ".swiper-button-prev-animate"
+	},
+	autoplay: {
+		delay: 10000
+	},
+	breakpoints: {
+		1199: {
+			centeredSlides: true, 
+			slidesPerView: 3.6
+		},
+		600: {
+			centeredSlides: true, 
+			slidesPerView: "auto"
+		},
+		575: {
+			centeredSlides: true,
+			slidesPerView: 1
+		},
+		350: {
+			centeredSlides: true,
 			slidesPerView: 1
 		}
 	}

@@ -8,7 +8,7 @@ export default function Footer6() {
               <div className="col-lg-3 col-sm-12">
                 <div className="mt-20 mb-20">
                   <a className="d-inline-block mb-20" href="index.html">
-                    <img
+                    <img 
                       alt="Travelogy"
                       src="assets/imgs/template/logo-footer.svg"
                     />

@@ -9,12 +9,12 @@ export default function Footer2() {
             <div className="col-md-4 mb-30">
               {" "}
               <Link className="d-inline-block mb-20" href="/">
-                <img
+                <img 
                   className="light-mode"
                   alt="Travelogy"
                   src="/assets/imgs/template/logo-footer2.svg"
                 />
-                <img
+                <img 
                   className="dark-mode"
                   alt="Travelogy"
                   src="/assets/imgs/template/logo-footer.svg"

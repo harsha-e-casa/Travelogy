@@ -43,8 +43,7 @@ const AppDateRange = ({ openToDateRange, setDatedep }) => {
 
   const handleChange = (dates, dateString) => {
   
-    if (dateString) {
-
+    if (dateString) { 
       setDatedep(dateString)
       openToDateRange();
     } else {
@@ -54,6 +53,12 @@ const AppDateRange = ({ openToDateRange, setDatedep }) => {
   };
 
   const dateFormat = 'DD-MM-YYYY';
+  
+  const disabledDate = current => {
+    // If the current date exists and is less than the start of today, disable it
+    return current && current < dayjs().startOf('day');
+  };
+
 
   return (
     <>
@@ -70,6 +75,7 @@ const AppDateRange = ({ openToDateRange, setDatedep }) => {
   <DatePicker
     open={open} 
     // needConfirm
+    disabledDate={disabledDate}
     onChange={handleChange}
   />
 

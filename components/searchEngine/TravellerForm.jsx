@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Flex, Radio, Button } from 'antd';
+import { Divider, Select, Space } from 'antd';
 
 import {
   PlusOutlined,
@@ -7,7 +8,7 @@ import {
 } from '@ant-design/icons';
 
 
-export const TravellerForm = ({showTraveller, adult, clickMinus, clickPlus, clickMinusChildren,clickPlusChildren, children, travellerClass, handleChangeClass, opentrvForm}) => {
+export const TravellerForm = ({ showTraveller, adult, clickMinus, clickPlus, clickMinusChildren,clickPlusChildren, countchildren, travellerClass, handleChangeClass, opentrvForm }) => {
 
    return (
       <>
@@ -40,17 +41,17 @@ export const TravellerForm = ({showTraveller, adult, clickMinus, clickPlus, clic
            <div className="flex custome_addBtn1">
               <div 
                  className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
-                 onClick={children >
+                 onClick={countchildren >
                  0 ? clickMinusChildren : null} // Conditionally enable onClick
-                 style={{ cursor: children > 0 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
+                 style={{ cursor: countchildren > 0 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
                  >
                  <MinusOutlined className="text-blue-700" />
               </div>
-              <div className="w-10 h-8 flex justify-center items-center prevent-select" type="number" id="number">{children}</div>
+              <div className="w-10 h-8 flex justify-center items-center prevent-select" type="number" id="number">{countchildren}</div>
               <div 
               className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
-              onClick={children < 10 ? clickPlusChildren : null} // Conditionally enable onClick
-              style={{ cursor: children < 10 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
+              onClick={countchildren < 10 ? clickPlusChildren : null} // Conditionally enable onClick
+              style={{ cursor: countchildren < 10 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
               >
               <PlusOutlined className="text-blue-700" />
            </div>
@@ -65,10 +66,10 @@ export const TravellerForm = ({showTraveller, adult, clickMinus, clickPlus, clic
          onChange={handleChangeClass}
          defaultValue={travellerClass}
          buttonStyle="solid" className="flex flex-wrap">
-      <Radio.Button className="w-50" value="a">Economy/Premium Economy</Radio.Button>
-      <Radio.Button className="w-50" value="b">Premium Economy</Radio.Button>
-      <Radio.Button className="w-50 mt-1" value="c">NEWBusiness</Radio.Button>
-      <Radio.Button className="w-50 mt-1" value="d">First Class</Radio.Button>
+      <Radio.Button className="w-50" value="a">Premium Economy</Radio.Button>
+      <Radio.Button className="w-50" value="b">Economy</Radio.Button>
+      <Radio.Button className="w-50" value="c">Business</Radio.Button>
+      <Radio.Button className="w-50" value="d">First</Radio.Button>
     </Radio.Group>
 </div>
   </Flex>
@@ -88,7 +89,7 @@ export const TravellerForm = ({showTraveller, adult, clickMinus, clickPlus, clic
 };
 
 
-export const AppTravellerHotel = ({showTraveller, adult, clickMinus, clickPlus, clickMinusChildren,clickPlusChildren, children, travellerClass, handleChangeClass, opentrvForm, clickRoomAdd,
+export const AppTravellerHotel = ({showTraveller, adult, clickMinus, clickPlus, clickMinusChildren,clickPlusChildren, countchildren, travellerClass, handleChangeClass, opentrvForm, clickRoomAdd,
  clickRoomMinus, rooms}) => {
 
    return (
@@ -148,17 +149,17 @@ export const AppTravellerHotel = ({showTraveller, adult, clickMinus, clickPlus, 
            <div className="flex custome_addBtn1">
               <div 
                  className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
-                 onClick={children >
+                 onClick={countchildren >
                  0 ? clickMinusChildren : null} // Conditionally enable onClick
-                 style={{ cursor: children > 0 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
+                 style={{ cursor: countchildren > 0 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
                  >
                  <MinusOutlined className="text-blue-700" />
               </div>
-              <div className="w-10 h-8 flex justify-center items-center prevent-select" type="number" id="number">{children}</div>
+              <div className="w-10 h-8 flex justify-center items-center prevent-select" type="number" id="number">{countchildren}</div>
               <div 
               className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
-              onClick={children < 10 ? clickPlusChildren : null} // Conditionally enable onClick
-              style={{ cursor: children < 10 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
+              onClick={countchildren < 10 ? clickPlusChildren : null} // Conditionally enable onClick
+              style={{ cursor: countchildren < 10 ? 'pointer' : 'not-allowed' }} // Change cursor on disabled
               >
               <PlusOutlined className="text-blue-700" />
            </div>
@@ -168,6 +169,48 @@ export const AppTravellerHotel = ({showTraveller, adult, clickMinus, clickPlus, 
         </div>
 
       
+      {countchildren && countchildren > 0 ?  
+  <> <Divider className="prevent-select" style={{ borderColor: 'orange' }}>Age of Children</Divider>
+<div className="grid grid-cols-2 gap-4">
+
+     
+
+      {[...Array(countchildren)].map((_, index) => ( 
+        
+          <div className="flex items-center gap-2 ">
+         <div className="text-base font-bold ">Child {index+1}</div> 
+            <Select
+            name={`childrenNamels${index}`}
+               defaultValue="3"
+               style={{ width: 120 }}
+               options={[
+                 { value: '0', label: '<1 Yrs' },
+                 { value: '1', label: '1 Yrs' },
+                 { value: '2', label: '2 Yrs' },
+                 { value: '3', label: '3 Yrs' },
+                 { value: '4', label: '4 Yrs' },
+                 { value: '5', label: '5 Yrs' },
+                 { value: '6', label: '6 Yrs' },
+                 { value: '7', label: '7 Yrs' },
+                 { value: '8', label: '8 Yrs' },
+                 { value: '9', label: '9 Yrs' },
+                 { value: '10', label: '10 Yrs' },
+                 { value: '11', label: '11 Yrs' },
+                 { value: '12', label: '12 Yrs' },
+                 { value: '13', label: '13 Yrs' },
+                 { value: '14', label: '14 Yrs' },
+                 { value: '15', label: '15 Yrs' },
+                 { value: '16', label: '16 Yrs' },
+                 { value: '17', label: '17 Yrs' },
+               ]}
+             />
+    </div>
+         
+            ))};
+    </div>
+
+</>
+    : null }
 
 <Button type="primary" onClick={opentrvForm} block className="mt-15">
       APPLY

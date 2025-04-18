@@ -28,7 +28,7 @@ export default function Picked() {
 								<div className="card-grid-video">
 									<div className="card-image">
 										<VideoPopup vdocls="btn btn-play popup-youtube" />
-										<img className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
+										<img  className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
 									<div className="card-info">
 										<h4>The Venetian and The Palazzo - Las Vegas, USA</h4>
 										<p className="text-md-medium">8 Resort. 24 rooms</p>
@@ -41,21 +41,21 @@ export default function Picked() {
 										<div className="item-image">
 											<VideoPopup vdocls="btn btn-play-sm popup-youtube" />
 
-											<img className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
+											<img  className="mr-10" src="/assets/imgs/page/homepage7/img-video.png" alt="Travile" /></div>
 										<div className="item-info"> <Link className="heading-6" href="/activities">The Burj Al Arab
 											Dubai, UAE</Link>
 											<p className="text-md-medium neutral-500">8 Resort. 24 rooms</p>
 										</div>
 									</div>
 									<div className="item-video-small">
-										<div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img className="mr-10" src="/assets/imgs/page/homepage7/img-video2.png" alt="Travile" /></div>
+										<div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img  className="mr-10" src="/assets/imgs/page/homepage7/img-video2.png" alt="Travile" /></div>
 										<div className="item-info"> <Link className="heading-6" href="/activities">Wynn Las Vegas
 											Las Vegas, USA</Link>
 											<p className="text-md-medium neutral-500">8 Resort. 24 rooms</p>
 										</div>
 									</div>
 									<div className="item-video-small">
-										<div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img className="mr-10" src="/assets/imgs/page/homepage7/img-video3.png" alt="Travile" /></div>
+										<div className="item-image"><VideoPopup vdocls="btn btn-play-sm popup-youtube" /><img  className="mr-10" src="/assets/imgs/page/homepage7/img-video3.png" alt="Travile" /></div>
 										<div className="item-info"> <Link className="heading-6" href="/activities">MGM Grand Las
 											Vegas, USA</Link>
 											<p className="text-md-medium neutral-500">8 Resort. 24 rooms</p>

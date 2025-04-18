@@ -86,7 +86,7 @@ export default function Tickets() {
     <>
       <Layout headerStyle={1} footerStyle={1}>
         <div className="holiday-search-engine">
-          <EngineTabs />
+          <EngineTabs active_border={'2'} />
         </div>
         <main className="main">
           <section className="bg-gray-100 box-section block-content-tourlist">
@@ -199,9 +199,9 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img
+                                <img 
                                   src="/assets/imgs/page/tour/post.png"
-                                  alt="Travila"
+                                  alt="Travalogy"
                                 />
                               </Link>
                             </div>
@@ -225,9 +225,9 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img
+                                <img 
                                   src="/assets/imgs/page/tour/post2.png"
-                                  alt="Travila"
+                                  alt="Travalogy"
                                 />
                               </Link>
                             </div>
@@ -251,9 +251,9 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img
+                                <img 
                                   src="/assets/imgs/page/tour/post3.png"
-                                  alt="Travila"
+                                  alt="Travalogy"
                                 />
                               </Link>
                             </div>
@@ -277,9 +277,9 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img
+                                <img 
                                   src="/assets/imgs/page/tour/post4.png"
-                                  alt="Travila"
+                                  alt="Travalogy"
                                 />
                               </Link>
                             </div>
@@ -303,9 +303,9 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img
+                                <img 
                                   src="/assets/imgs/page/tour/post5.png"
-                                  alt="Travila"
+                                  alt="Travalogy"
                                 />
                               </Link>
                             </div>

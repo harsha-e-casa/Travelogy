@@ -9,7 +9,7 @@ export default function BannerHome5() {
 				<div className="block-banner-home6">
 					<div className="container">
 						<div className="text-center wow fadeInUp">
-							<div className="d-flex justify-content-center"><span className="btn btn-brand-secondary"> <img className="mr-10" src="/assets/imgs/page/homepage4/earth.svg" alt="Travile" />Explore the
+							<div className="d-flex justify-content-center"><span className="btn btn-brand-secondary"> <img  className="mr-10" src="/assets/imgs/page/homepage4/earth.svg" alt="Travile" />Explore the
 								World</span></div>
 							<h2 className="mt-20 mb-20 color-white">Your Gateway to Extraordinary Adventures</h2>
 							<h6 className="heading-6-medium color-white mb-30">Pack your bags and let Travelogy redefine your

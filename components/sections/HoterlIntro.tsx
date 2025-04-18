@@ -30,7 +30,7 @@ export default function HoterlIntro() {
       <div className="flex flex-col rounded-lg shadow-lg overflow-hidden aft_hvr">
         <div className="flex-shrink-0">
           {" "}
-          <img
+          <img 
             className="h-48 w-full object-cover"
             src="https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur"
             alt=""
@@ -69,7 +69,7 @@ export default function HoterlIntro() {
       <div className="flex flex-col rounded-lg shadow-lg overflow-hidden aft_hvr">
         <div className="flex-shrink-0">
           {" "}
-          <img
+          <img 
             className="h-48 w-full object-cover"
             src="https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2ab5e4b032e338f191ed.jpg?cityName=Dehradun"
             alt=""
@@ -108,7 +108,7 @@ export default function HoterlIntro() {
       <div className="flex flex-col rounded-lg shadow-lg overflow-hidden aft_hvr">
         <div className="flex-shrink-0">
           {" "}
-          <img
+          <img 
             className="h-48 w-full object-cover"
             src="https://images-cf.ixigo.workers.dev/v2/images_by_id/57591a58bad3eb1cba5b0636.jpg?cityName=Khajuraho"
             alt=""

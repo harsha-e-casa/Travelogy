@@ -117,7 +117,7 @@ quick and easy.</span>
      {/* <div className="mt-12 -mb-16 sm:-mb-48 lg:m-0 lg:relative">
         <div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 lg:max-w-none lg:px-0">
           
-          <img
+          <img 
             className="w-full lg:absolute lg:inset-y-0 lg:left-0 lg:h-full lg:w-auto lg:max-w-none"
             src="https://tailwindui.com/img/component-images/cloud-illustration-teal-cyan.svg"
             alt=""
@@ -168,7 +168,7 @@ quick and easy.</span>
                     </div>
                             {/*<div className="card-why-travel card-why-travel-2 background-1 wow fadeInUp">*/}
                             <div className="card-why-travel card-why-travel-2 background-1">
-                                <div className="card-image"> <img src="/assets/imgs/page/homepage2/security.svg" alt="Travelogy" />
+                                <div className="card-image"> <img  src="/assets/imgs/page/homepage2/security.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">You submit the details
                                 </Link>
@@ -180,7 +180,7 @@ quick and easy.</span>
                             </div>
                             {/*<div className="card-why-travel card-why-travel-2 background-2 wow fadeInUp">*/}
                             <div className="card-why-travel card-why-travel-2 background-2">
-                                <div className="card-image"> <img src="/assets/imgs/page/homepage2/support.svg" alt="Travelogy" />
+                                <div className="card-image"> <img  src="/assets/imgs/page/homepage2/support.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">We work our magic
 </Link>
@@ -192,7 +192,7 @@ quick and easy.</span>
                             </div>
                             {/*<div className="card-why-travel card-why-travel-2 background-3 wow fadeInUp">*/}
                             <div className="card-why-travel card-why-travel-2 background-3">
-                                <div className="card-image"> <img src="/assets/imgs/page/homepage2/policy.svg" alt="Travelogy" />
+                                <div className="card-image"> <img  src="/assets/imgs/page/homepage2/policy.svg" alt="Travelogy" />
                                 </div>
                                 <div className="card-info"> <Link className="text-xl-bold card-title" href="#">You get your visa
 </Link>
@@ -206,10 +206,10 @@ quick and easy.</span>
 
                          <div className="col-lg-6">
                             <div className="box-image-how">
-                                <div className="image-top-how"> <img src="/assets/imgs/page/homepage4/img-how.png" alt="Travelogy" />
+                                <div className="image-top-how"> <img  src="/assets/imgs/page/homepage4/img-how.png" alt="Travelogy" />
                                 </div>
-                                <div className="image-bottom-how"> <img src="/assets/imgs/page/homepage4/img-how2.png" alt="Travelogy" /><img src="/assets/imgs/page/homepage4/img-how3.png" alt="Travelogy" />
-                                    <div className="shape"> <img className="light-mode" src="/assets/imgs/page/homepage4/wave.png" alt="Travelogy" /><img className="dark-mode" src="/assets/imgs/page/homepage4/wave-dark.png" alt="Travelogy" /></div>
+                                <div className="image-bottom-how"> <img  src="/assets/imgs/page/homepage4/img-how2.png" alt="Travelogy" /><img  src="/assets/imgs/page/homepage4/img-how3.png" alt="Travelogy" />
+                                    <div className="shape"> <img  className="light-mode" src="/assets/imgs/page/homepage4/wave.png" alt="Travelogy" /><img  className="dark-mode" src="/assets/imgs/page/homepage4/wave-dark.png" alt="Travelogy" /></div>
                                 </div>
                             </div>
                         </div>
@@ -296,7 +296,7 @@ quick and easy.</span>
       <div className="card-why-travel background-2 hover-up">
         <div className="card-image">
           {" "}
-          <img src="/assets/imgs/page/homepage2/security.svg" alt="Travila" />
+          <img  src="/assets/imgs/page/homepage2/security.svg" alt="Travalogy" />
         </div>
         <div className="card-info">
           {" "}
@@ -329,7 +329,7 @@ quick and easy.</span>
       <div className="card-why-travel background-7 hover-up">
         <div className="card-image">
           {" "}
-          <img src="/assets/imgs/page/homepage2/support.svg" alt="Travila" />
+          <img  src="/assets/imgs/page/homepage2/support.svg" alt="Travalogy" />
         </div>
         <div className="card-info">
           {" "}
@@ -362,7 +362,7 @@ quick and easy.</span>
       <div className="card-why-travel background-3 hover-up">
         <div className="card-image">
           {" "}
-          <img src="/assets/imgs/page/homepage2/policy.svg" alt="Travila" />
+          <img  src="/assets/imgs/page/homepage2/policy.svg" alt="Travalogy" />
         </div>
         <div className="card-info">
           {" "}
@@ -395,7 +395,7 @@ quick and easy.</span>
       <div className="card-why-travel background-8 hover-up">
         <div className="card-image">
           {" "}
-          <img src="/assets/imgs/page/homepage2/repu.svg" alt="Travila" />
+          <img  src="/assets/imgs/page/homepage2/repu.svg" alt="Travalogy" />
         </div>
         <div className="card-info">
           {" "}

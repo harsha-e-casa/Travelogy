@@ -47,14 +47,14 @@ export default function Testimonials3() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Sara Mohamed</p>
                                                             <p className="text-sm neutral-1000">Jakatar</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>
@@ -70,14 +70,14 @@ export default function Testimonials3() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Atend John</p>
                                                             <p className="text-sm neutral-1000">Califonia</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>
@@ -93,14 +93,14 @@ export default function Testimonials3() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Sara Mohamed</p>
                                                             <p className="text-sm neutral-1000">Jakatar</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>
@@ -116,14 +116,14 @@ export default function Testimonials3() {
                                                 </div>
                                                 <div className="card-top">
                                                     <div className="card-author">
-                                                        <div className="card-image"> <img src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
+                                                        <div className="card-image"> <img  src="/assets/imgs/page/homepage1/author2.png" alt="Travelogy" />
                                                         </div>
                                                         <div className="card-info">
                                                             <p className="text-lg-bold neutral-1000">Sara Mohamed</p>
                                                             <p className="text-sm neutral-1000">Jakatar</p>
                                                         </div>
                                                     </div>
-                                                    <div className="card-rate"> <img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
+                                                    <div className="card-rate"> <img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /><img  src="/assets/imgs/template/icons/star.svg" alt="Travelogy" /></div>
                                                 </div>
                                             </div>
                                         </SwiperSlide>

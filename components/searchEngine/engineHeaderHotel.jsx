@@ -14,7 +14,7 @@ import {
   MinusOutlined
 } from '@ant-design/icons';
 
-const engineHeaderHotel = ({active_border}) => {
+const EngineHeaderHotel = ({active_border}) => {
 
   const [showSearchState, setShowSearchState] = useState(false); // Consistent naming
   const [showSearchStateTo, setShowSearchStateTo] = useState(false); // Consistent naming
@@ -44,7 +44,7 @@ const engineHeaderHotel = ({active_border}) => {
 
   const [rooms, setRooms] = useState(1);
   const [adult, setAdult] = useState(1);
-  const [children, setChildren] = useState(0);
+  const [countchildren, setcountChildren] = useState(0);
   // State to store the selected value
   const [travellerClass, setTravellerClass] = useState('a'); // Default value is 'a'
 
@@ -74,10 +74,10 @@ const engineHeaderHotel = ({active_border}) => {
     setAdult(adult + 1); // Correct way to toggle the state
   }
   const clickMinusChildren = () => {
-    setChildren(children - 1); // Correct way to toggle the state
+    setcountChildren(countchildren - 1); // Correct way to toggle the state
   }
   const clickPlusChildren = () => {
-    setChildren(children + 1); // Correct way to toggle the state
+    setcountChildren(countchildren + 1); // Correct way to toggle the state
   }
 
    const clickRoomAdd = () => {
@@ -115,16 +115,7 @@ const engineHeaderHotel = ({active_border}) => {
     }
 
 
-  },[datedepr]);
-
-
-  useEffect(() => {
-    
-    if(selectedPlan){
-
-    }
-
-  },[selectedPlan]);
+  },[datedepr, selectedPlan]);
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
@@ -136,23 +127,23 @@ const engineHeaderHotel = ({active_border}) => {
   return (
     // <div className="tabs">
     //   <div className="tab active">
-    //     <img src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
+    //     <img  src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
     //     <span>Flights</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/travel_16190539.svg" alt="Hotels" />
+    //     <img  src="/assets/imgs/travel_16190539.svg" alt="Hotels" />
     //     <span>Hotels</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/duty-free_2664702.svg" alt="Holiday" />
+    //     <img  src="/assets/imgs/duty-free_2664702.svg" alt="Holiday" />
     //     <span>Holiday package</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/safe-flight_1585574.svg" alt="Insurance" />
+    //     <img  src="/assets/imgs/safe-flight_1585574.svg" alt="Insurance" />
     //     <span>Travel Insurance</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/passport_1257113.svg" alt="Visa" />
+    //     <img  src="/assets/imgs/passport_1257113.svg" alt="Visa" />
     //     <span>Visa</span>
     //   </div>
     // </div>
@@ -216,14 +207,14 @@ const engineHeaderHotel = ({active_border}) => {
 
 
     <div className="" onClick={openfrom}>
-        <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
+        <div className="pt-2 xs:pl-2 sm:pl-2 md:pl-2 lg:pl-6 text-xl-small text-gray-500 lg:pb-0 xl:pb-2">
           City, Location Or Property 
         </div>
-        <div className="pl-6 relative">
-          <h2 className="text_4xl font_bold text-black tracking-wide">
+        <div className="xs:pl-2 sm:pl-2 md:pl-2 lg:pl-6 relative">
+          <h2 className="cus-text-5xl text-4xl font_bold text-black tracking-wide">
             {selectFrom}
           </h2>
-          <p className="text-xl_small truncate-text">India</p>
+          <p className="text-xl_small truncate-text -mt-1">India</p>
        
         </div>
 
@@ -236,28 +227,25 @@ const engineHeaderHotel = ({active_border}) => {
            : null }
 
 
-           </div>
-        
- 
-
-
+           </div> 
 
       <div className="text_start b_right_2px grid_w_2 css_pointer" onClick={openToDateRange}>
-        <div className="flex pl-6 justify_content_space">
+        <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
           <div>
           {/*<div className="pt-2 pb-2 txt_travelClass">Check-In</div>*/}
-           <div className="pt-3 pb-2 text-xl-small txt_travelClass">
+          <div className="ml__txt">
+           <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small txt_travelClass">
           Check-In
         </div>
 {/*
             <div className="">
-              <span className="text-4xl font-bold text-gray-900">
+              <span className="lg:text-4xl xl:text-4xl font-bold text-gray-900">
                 {" "}
                 {dd_date}
                 {" "}
               </span> {" "}
               <sub className="sub_txt1 font-bold">{dd_monthStr} 2025</sub> {" "}
-               <span className="text-4xl font-bold text-gray-900">
+               <span className="lg:text-4xl xl:text-4xl font-bold text-gray-900">
                 {" "}
                 
                 {" "}
@@ -267,16 +255,14 @@ const engineHeaderHotel = ({active_border}) => {
 
          <div className="flex">
                     <div>
-                     <span className="text-5xl font-bold text-gray-900"> {dd_date} </span>{" "}
+                     <span className="cus-text-5xl text-5xl font-bold text-gray-900"> {dd_date}</span>{" "}
                     </div>
-                    <div className="flex flex-wrap content-center mt-2 line_height">
-                      <div className="w-full font-bold">{" "}{dd_monthStr} {dd_year}</div>
-                      <div className="w-full font-bold">{" "}{dd_strdate}</div>
+                    <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
+                      <div className="w-full font-bold cust_text_res">{" "}{dd_monthStr} {dd_year}</div>
+                      <div className="w-full font-bold cust_text_res">{" "}{dd_strdate}</div>
                      </div>
                   </div>
-                    
-
-            
+          </div>
             
             {/* <div class="mt-6">
     Departure Date
@@ -304,28 +290,26 @@ const engineHeaderHotel = ({active_border}) => {
 
     </div>
 
-	{openDateRage ? (<AppDateRage 
-		openToDateRange={openToDateRange} 
-		setDatedep={setDatedep}
-	/> ): null }
+	{openDateRage ? (<AppDateRage openToDateRange={openToDateRange} setDatedep={setDatedep} /> ): null }
 
       </div>
 
       {selectedPlan === 'round-trip' ? ( 
           <div className="text_start b_right_2px grid_w_3 css_pointer" onClick={openToDateRangeR}>
-            <div className="flex pl-6 justify_content_space">
+            {/*<div className="flex xs:pl-1 sm:pl-1 md:pl-6 lg:pl-6 xl:pl-6 justify_content_space">*/}
+          <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
               <div className="ml__txt">
                 {/*<div className="pt-2 pb-2 txt_travelClass">Check-Out</div>*/}
-              <div className="pt-3 pb-2 text-xl-small txt_travelClass">
+              <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small txt_travelClass">
           Check-Out
         </div>
                   <div className="flex">
                     <div>
-                     <span className="text-5xl font-bold text-gray-900"> {ddr_date} </span>{" "}
+                     <span className="cus-text-5xl text-5xl font-bold text-gray-900"> {ddr_date} </span>{" "}
                     </div>
-                    <div className="flex flex-wrap content-center mt-2 line_height">
-                      <div className="w-full font-bold">{" "} {ddr_monthStr} {ddr_year}</div>
-                      <div className="w-full font-bold">{" "} {ddr_strdate}</div>
+                    <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
+                      <div className="w-full font-bold cust_text_res">{" "} {ddr_monthStr} {ddr_year}</div>
+                      <div className="w-full font-bold cust_text_res">{" "} {ddr_strdate}</div>
                      </div>
                   </div>
                     
@@ -336,29 +320,27 @@ const engineHeaderHotel = ({active_border}) => {
               </div>
             </div> 
 
-              {openDateRageR ? (<AppDateRage
-              openToDateRange={openToDateRangeR} 
-              setDatedep={setDatedepr}
-              /> ): null }
+              {openDateRageR ? (<AppDateRage openToDateRange={openToDateRangeR} setDatedep={setDatedepr} /> ): null }
 
           </div>
         ) : null}
 
 
       <div className="b_right_2px grid_w_4 css_pointer relative box_left_ddr2" onClick={openTraveller}>
-        <div className="text_start flex pl-6 slider-labels">
+        <div className="text_start flex xs:pl-2 sm:pl-3 md:pl-4 lg:pl-6 slider-labels">
 
-          <div className="mt-6 flex">
+          {/*<div class="mt-6 min-lg:mt-2 flex">*/}
+          <div class="cus_mt_travelGroup xs:mt-0 sm:mt-2 md:mt-2 lg:mt-4 flex">
             <div className="txt_travelSelect">
 
-            	<span className="text-4xl font-bold text-gray-900">{adult}</span>
-            	<span className="text-2xl font-bold text-gray-900">{adult>1?'Adults':'Adult'} {children > 0 ? ',' : null} </span>
+            	<span className="cus_txt_traveller lg:text-4xl xl:text-4xl font-bold text-gray-900">{adult}{ " " }</span>
+            	<span className="cus_txt_traveller lg:text-2xl xl:text-2xl font-bold text-gray-900">{adult>1?'Adults':'Adult'} {countchildren > 0 ? ',' : null} </span>
             	
-            	{children > 0 ?
+            	{countchildren > 0 ?
 	            	<>
-	            	 <span className="text-4xl font-bold text-gray-900"> {children}</span>
-	            	 <span className="text-2xl font-bold text-gray-900">{children > 1 ? 'Children' : 'Child'} </span>
-	            	 {/*<span className="text-2xl font-bold text-gray-900">   </span>*/}
+	            	 <span className="cus_txt_traveller lg:text-4xl xl:text-4xl font-bold text-gray-900"> {countchildren}{" "}</span>
+	            	 <span className="cus_txt_traveller lg:text-2xl xl:text-2xl font-bold text-gray-900">{countchildren > 1 ? 'Children' : 'Child'} </span>
+	            	 {/*<span className="lg:text-2xl xl:text-2xl font-bold text-gray-900">   </span>*/}
 	            	</>
 	            	: null 
 	            }
@@ -369,15 +351,15 @@ const engineHeaderHotel = ({active_border}) => {
           </div>
         </div>
 
-         <div className="flex pl-7 -pt-2 -mt-2">
+         <div className="flex md:pl-5 lg:pl-7 xl:pl-7 -pt-2 -mt-2">
           
           <div className="flex">
             <div className="txt_travelSelect">
 
             	            	
-	            	 {/*<span className="text-4xl font-bold text-gray-900">  </span>*/}
-	            	 <span className="text-xl font-bold text-gray-900"> {rooms} {rooms > 1 ? 'Rooms' : 'Room'} </span>
-	            	 {/*<span className="text-2xl font-bold text-gray-900">   </span>*/}
+	            	 {/*<span className="lg:text-4xl xl:text-4xl font-bold text-gray-900">  </span>*/}
+	            	 <span className="cus_txt_traveller text-xl font-bold text-gray-900"> {rooms} {rooms > 1 ? 'Rooms' : 'Room'} </span>
+	            	 {/*<span className="lg:text-2xl xl:text-2xl font-bold text-gray-900">   </span>*/}
 
 
             </div>
@@ -385,7 +367,7 @@ const engineHeaderHotel = ({active_border}) => {
           </div>
         </div>
 
-        {/*<div className="text_start flex pl-6 slider-labels">*/}
+        {/*<div className="text_start flex xs:pl-2 sm:pl-3 md:pl-4 lg:pl-6 slider-labels">*/}
           {/*<div className="font-bold text-base"> {rooms} {rooms > 1 ? 'Rooms' : 'Room'}  </div>*/}
          {/* <div className="-mt-1">
             {" "}
@@ -409,11 +391,19 @@ const engineHeaderHotel = ({active_border}) => {
     </div>
 
     <AppTravellerHotel
-	    showTraveller={showTraveller} adult={adult}
-	    opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}
-	    clickMinusChildren={clickMinusChildren} clickPlusChildren={clickPlusChildren} 
-	    children={children} handleChangeClass={handleChangeClass} travellerClass={travellerClass}
-	    clickRoomAdd={clickRoomAdd} clickRoomMinus={clickRoomMinus} rooms={rooms}
+  	    showTraveller={showTraveller}
+        adult={adult}      
+  	    opentrvForm={openTraveller}
+        clickMinus={clickMinus}
+        clickPlus={clickPlus}
+  	    clickMinusChildren={clickMinusChildren}
+        clickPlusChildren={clickPlusChildren}       
+  	    countchildren={countchildren}
+        handleChangeClass={handleChangeClass}
+        travellerClass={travellerClass}
+  	    clickRoomAdd={clickRoomAdd}
+        clickRoomMinus={clickRoomMinus}
+        rooms={rooms}
     />
 
 
@@ -423,4 +413,4 @@ const engineHeaderHotel = ({active_border}) => {
   );
 };
 
-export default engineHeaderHotel;
+export default EngineHeaderHotel;

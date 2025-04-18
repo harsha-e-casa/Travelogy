@@ -26,6 +26,7 @@ TABLE CONTENT
  WP STYPE
  Custom amine
 ***/
+@import url(https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Quicksand:wght@400;700&display=swap);
 @import url(../css/vendors/normalize.css);
 @import url(../css/vendors/bootstrap.min.css);
 @import url(../css/vendors/uicons-regular-rounded.css);
@@ -100,6 +101,9 @@ html {
 body{
   background: #fff0ac42;
   scroll-behavior: smooth;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 html,
 body,
@@ -6900,7 +6904,7 @@ label {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 999;
+  z-index: 9999999;
   left: 0;
   -webkit-transition: all 0.3s ease 0s;
   transition: all 0.3s ease 0s;
@@ -14410,8 +14414,10 @@ a.link-black:hover svg {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 24px;
-  margin-bottom: 24px;
+  /* padding-bottom: 24px; */
+  /* margin-bottom: 24px; */
+  padding-bottom: 10px;
+  margin-bottom: 10px;
   border-bottom: 1px solid var(--bs-border-color);
 }
 
@@ -14822,7 +14828,7 @@ a.link-black:hover svg {
 }
 
 .list-flight-facilities li {
-  width: 50%;
+  /* width: 50%; */
   padding: 0px 15px;
   display: flex;
   align-items: center;
@@ -17387,7 +17393,7 @@ h2 span {
   }
 }
 
-/*OTHER SCREEN*/
+
 @media screen and (min-width: 1200px) and (max-width: 1440px) {
   .header-right {
     display: none;
@@ -18711,8 +18717,204 @@ h2 span {
   border-radius: 100px;
   box-shadow: 0px 0px 11px -4px #ffb235;
 }
+
+.font_familyadd{
+  font-family: Quicksand;
+  font-size: 42px;
+  margin-left: -4px;
+}
+.container_sub{
+  width: 90%;
+  margin: 0px auto;
+}
+
+
+.air_detailes{
+  position: absolute;
+   top: 0px;
+   background: orange;
+   width: 120px;
+   left: 0px;
+   padding: 1px 12px;
+   border-bottom-right-radius: 25px;
+   text-align: center;
+   color: white;
+   letter-spacing: 1px;
+   font-weight: 900;
+}
+
+
 @media (max-width: 1440px) and (min-width: 1024px) {
   .w_90{
     width: 90%;
   }
+  .on33_w_drf{
+    width: 70%;
+  }
 }
+
+
+@media screen and (max-width: 1024px){
+  .grid_w_2, .grid_w_3{
+    width: 30%;
+  }
+  .h_80{
+    height: 280px;
+  }
+  .b_40{
+    bottom: 60px;
+  }
+}
+
+
+@media screen and(max-width: 828px){
+  .cus_mdls_pl{
+    padding-left: 8px;
+  }
+}
+
+
+@media (max-width: 878px) and (min-width: 768px) {
+  .cust_text_res{
+    font-size: 12px;
+  }
+}
+
+
+@media (max-width: 1024px) and (min-width: 768px) {
+  .w_90{
+    width: 90%;
+  }
+  .on33_w_drf{
+    width: 80%;
+  }
+  .cus_mt_travelGroup{
+    margin-top: 2px;
+  }
+  .cus_txt_traveller{
+    font-size: 22px!important;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 798px) {
+  .cus-text-5xl{
+    font-size: 2.5rem!important;
+  }
+}
+
+/* Tablets, Portrait (600px to 768px) */
+@media screen and (min-width: 601px) and (max-width: 768px) {
+   .w_90{
+    width: 90%;
+  }
+  .on33_w_drf{
+    width: 85%;
+  }
+  .section_book_svg_icon{
+    width: 45px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .section_main_book_dash_01{
+    background-position-y: 0px;
+  }
+}
+
+
+/* Custom */
+@media screen and (min-width: 601px) and (max-width: 706px) {
+   .w_90{
+    width: 90%;
+  }
+  .on33_w_drf{
+    width: 85%;
+  }
+}
+
+@media screen and (max-width: 768px){
+  .cus_margin_frm{
+    margin-top: 3px !important;
+    margin-left: 2px !important;
+  }
+}
+
+
+/* Portrait Phones (up to 600px wide) */
+/*@media screen and (max-width: 600px) {*/
+  /* Your styles for small devices */
+/*}*/
+
+
+/* Tablets, Portrait (600px to 768px) */
+/*@media screen and (min-width: 601px) and (max-width: 768px) {*/
+  /* Your styles for tablets in portrait mode */
+/*}*/
+
+
+/* Tablets, Landscape (768px to 1024px) */
+/*@media screen and (min-width: 769px) and (max-width: 1024px) {*/
+  /* Your styles for tablets in landscape mode or small laptops */
+/*}*/
+
+
+
+/* Laptops and small desktops (1024px to 1200px) */
+@media screen and (min-width: 1025px) and (max-width: 1200px) {
+  /* Your styles for larger laptops or small desktops */
+}
+
+
+
+/* Large desktops and screens (1200px and up) */
+/*@media screen and (min-width: 1201px) {*/
+  /* Your styles for large desktops */
+/*}*/
+
+
+
+/* iPhone 5/SE (320px to 374px wide) */
+/*@media screen and (min-width: 320px) and (max-width: 374px) {*/
+  /* Your styles for iPhone 5/SE */
+/*}*/
+
+/* iPhone 6/7/8 (375px to 414px wide) */
+/*@media screen and (min-width: 375px) and (max-width: 414px) {*/
+  /* Your styles for iPhone 6/7/8 */
+/*}*/
+
+/* iPhone 6/7/8 Plus (414px to 736px wide) */
+/*@media screen and (min-width: 414px) and (max-width: 736px) {*/
+  /* Your styles for iPhone 6/7/8 Plus */
+/*}*/
+
+/* iPhone X, XS (375px to 812px wide) */
+/*@media screen and (min-width: 375px) and (max-width: 812px) {*/
+  /* Your styles for iPhone X, XS */
+/*}*/
+
+/* iPhone XR, XS Max (414px to 896px wide) */
+/*@media screen and (min-width: 414px) and (max-width: 896px) {*/
+  /* Your styles for iPhone XR, XS Max */
+/*}*/
+
+
+/* iPad (768px to 1024px wide) */
+/*@media screen and (min-width: 768px) and (max-width: 1024px) {*/
+  /* Your styles for iPad */
+/*}*/
+
+/* iPad Pro (1024px to 1366px wide) */
+/*@media screen and (min-width: 1024px) and (max-width: 1366px) {*/
+  /* Your styles for iPad Pro */
+/*}*/
+
+
+
+
+/*Breakpoint prefix Minimum width CSS
+sm  40rem (640px) @media (width >= 40rem) { ... }
+md  48rem (768px) @media (width >= 48rem) { ... }
+lg  64rem (1024px)  @media (width >= 64rem) { ... }
+xl  80rem (1280px)  @media (width >= 80rem) { ... }
+2xl 96rem (1536px)  @media (width >= 96rem) { ... }*/

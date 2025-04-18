@@ -30,14 +30,14 @@ import dayjs from 'dayjs';
 const AppDateRangeww = () => {
 
 
-  const handleChange = (dates, dateString) => {
+  const handleChange = (dates : any, dateString : any) => {
     
     if (dates) {
       const startDate = dayjs(dates[0]).format('MMM D YYYY');  // Format start date
       const endDate = dayjs(dates[1]).format('MMM D YYYY');    // Format end date
       console.log(`Start Date: ${startDate}`);
       console.log(`End Date: ${endDate}`);
-      setDates([startDate, endDate]);
+      // setDates([startDate, endDate]);
     } else {
       console.log('No dates selected');
     }
@@ -45,13 +45,12 @@ const AppDateRangeww = () => {
 
   return (
     <div className="custome-date-rage">
-      <DatePicker.RangePicker
-        icon={false}
-        placeholder={['Allow Empty', 'Till Now']}
-        allowEmpty={[false, false]}
-        onChange={handleChange}
-
-      />
+        <DatePicker.RangePicker
+            placeholder={['Allow Empty', 'Till Now']}
+            allowEmpty={[false, false]}
+            onChange={handleChange}
+            suffixIcon={null}  // This will remove the calendar icon
+        />
     </div>
   );
 };
@@ -107,7 +106,7 @@ export default function Tickets() {
             <div className="container mt-28">
              <Flights4 />
 
-             <MicroallOffersPage TopCategory2={TopCategory2} />
+             <MicroallOffersPage />
 
             </div>
 
@@ -156,9 +155,8 @@ export default function Tickets() {
                                 </div>
                             </div>
                         </div>
-                    </section>
-
-
+                    </section> 
+ 
                 <br />
                 <br />
                 <br />
@@ -170,10 +168,7 @@ export default function Tickets() {
 
 
                     <div className="background-body" />
-                    <section className="section-box box-media background-body">
-                        <div className="container-media wow fadeInUp"> <img src="/assets/imgs/page/homepage5/media.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media2.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media3.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media4.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media5.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media6.png" alt="Travila" /><img src="/assets/imgs/page/homepage5/media7.png" alt="Travila" /></div>
-                    </section>
-
+                
 
                 </main>
 

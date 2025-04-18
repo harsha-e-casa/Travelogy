@@ -11,34 +11,34 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ScrollAnimationWithRef = () => {
   // Create a reference for the box container
-  // const main = useRef();
+  const main = useRef();
 
-  // useLayoutEffect(() => {
-  //   // Select all elements with the class 'box'
-  //   const boxes = gsap.utils.toArray('.box');
+  useLayoutEffect(() => {
+    // Select all elements with the class 'box'
+    const boxes = gsap.utils.toArray('.box');
 
-  //   // Animate the boxes when they come into view
-  //   gsap.to(boxes, {
-  //     x: 0,  // Move the box horizontally by 50px
-  //     borderRadius: '0px',  // Increase the border-radius to 50px
-  //       borderRadius: '0px',  // Set the border-radius values
-  //     transform: 'translate(0px, 0px)', 
-  //     width: '100%',  // Increase the width of the box
-  //     height: '650px',
-  //     scrollTrigger: {
-  //     	ease: "power2.out",
-  //       trigger: boxes,  // The box itself will trigger the animation
-  //       start: 'top 80%',  // Start when the bottom of the box hits the bottom of the viewport
-  //       end: 'bottom 60%',  // End when the top of the box reaches 10% of the viewport height (you can adjust this value)
-  //       scrub: true,  // Smooth out the scroll animation as you scroll
-  //       // markers: true,  // Uncomment to see the markers for debugging
-  //     },
-  //   });
-  // }, []);
+    // Animate the boxes when they come into view
+    gsap.to(boxes, {
+      x: 0,  // Move the box horizontally by 50px
+      borderRadius: '0px',  // Increase the border-radius to 50px
+        // borderRadius: '0px',  // Set the border-radius values
+      transform: 'translate(0px, 0px)', 
+      width: '100%',  // Increase the width of the box
+      height: '650px',
+      scrollTrigger: {
+      	ease: "power2.out",
+        trigger: boxes,  // The box itself will trigger the animation
+        start: 'top 80%',  // Start when the bottom of the box hits the bottom of the viewport
+        end: 'bottom 60%',  // End when the top of the box reaches 10% of the viewport height (you can adjust this value)
+        scrub: true,  // Smooth out the scroll animation as you scroll
+        // markers: true,  // Uncomment to see the markers for debugging
+      },
+    });
+  }, []);
 
   return (
   	<>
-  	{/*<Header1 />
+  	<Header1 />
     <div>
       <section className="section_pos section flex-center column">
         <h2>Basic ScrollTrigger with React</h2>
@@ -50,14 +50,14 @@ const ScrollAnimationWithRef = () => {
       </div>
       
       <section className="section"></section>
-    </div>*/}
+    </div>
     <div className="relative">
   <div className="max-w-7xl mx-auto px-4 sm:px-6">
     <div className="flex justify-between items-center py-6 md:justify-start md:space-x-10">
       <div className="flex justify-start lg:w-0 lg:flex-1">
         <a href="#">
           <span className="sr-only">Workflow</span>
-          <img
+          <img 
             className="h-8 w-auto sm:h-10"
             src="https://tailwindui.com/img/logos/workflow-mark-blue-600.svg"
             alt=""
@@ -594,7 +594,7 @@ Leaving: "duration-100 ease-in"
       <div className="pt-5 pb-6 px-5">
         <div className="flex items-center justify-between">
           <div>
-            <img
+            <img 
               className="h-8 w-auto"
               src="https://tailwindui.com/img/logos/workflow-mark-blue-600.svg"
               alt="Workflow"

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef, useContext} from "react";
 import SearchEngHeader from './SearchEngHeader';
 import AppListSearch from './AppListSearch';
 import AppDateRage from './AppDateRage';
@@ -8,20 +8,38 @@ import {TripPlans} from './TripPlans';
 import dayjs from 'dayjs';
 import Link from 'next/link'
 import {TravellerForm} from './TravellerForm';
+import { AppContext } from '../../util/AppContext';
+import { useSearchParams, useRouter } from 'next/navigation'
 
 import {
   PlusOutlined,
   MinusOutlined
 } from '@ant-design/icons';
 
+
+
 const EngineTabs = ({active_border}) => {
+  
+  const searchParams = useSearchParams();
+  // Extract query parameters from the URL
+
+  const departureFrom = searchParams.get('departureFrom')
+  const arrivalTo = searchParams.get('arrivalTo')
+  const adults = searchParams.get('adults')
+  const children = searchParams.get('children')
+  const cabinType = searchParams.get('cabinType')
+  const departDate = searchParams.get('departDate')
+
+
+  const { value, updateValue, setCookie, getCookie } = useContext(AppContext);
 
   const [showSearchState, setShowSearchState] = useState(false); // Consistent naming
   const [showSearchStateTo, setShowSearchStateTo] = useState(false); // Consistent naming
   const [selectFrom, setSelectFrom] = useState('Delhi'); // Consistent naming
-  const [selectFromSub, setSelectFromSub] = useState('Indira Gandhi International Airp'); // Consistent naming
-  const [selectFromTo, setSelectFromTo] = useState('Mumbai'); // Consistent naming
-  const [selectFromSubTo, setSelectFromSubTo] = useState('Chhatrapati Shivaji Maharaj International Airport (BOM)'); // Consistent naming
+  const [selectFromSub, setSelectFromSub] = useState('DEL'); // Consistent naming
+  const [selectFromTo, setSelectFromTo] = useState('Bengaluru'); // Consistent naming
+  // const [selectFromSubTo, setSelectFromSubTo] = useState(arrivalTo ? arrivalTo : 'BLR'); // Consistent naming
+  const [selectFromSubTo, setSelectFromSubTo] = useState('BLR'); // Consistent naming
   const [openDateRage, setOpenDateRage] = useState(false);
   const [openDateRageR, setOpenDateRageR] = useState(false);
   const [showTraveller, setShowYTraveller] = useState(false);
@@ -41,15 +59,45 @@ const EngineTabs = ({active_border}) => {
 
 
   const [adult, setAdult] = useState(1);
-  const [children, setChildren] = useState(0);
+  const [countchildren, setcountChildren] = useState(0);
   // State to store the selected value
   const [travellerClass, setTravellerClass] = useState('a'); // Default value is 'a'
 
+  const router = useRouter();
+  
+
+  const searchTickets = () => {
+
+    let departureFrom = getCookie('gy_da')
+    let arrivalTo = getCookie('gy_aa')
+    let adults = getCookie('gy_adult')
+    let children = getCookie('gy_child')
+    let cabinType = getCookie('gy_class')
+    let departDate = getCookie('gy_trd')
+    alert(departDate);
+    
+    
+    const mydata = { 
+      departureFrom: departureFrom,
+      arrivalTo: arrivalTo,
+      adults: adults,
+      children: children,
+      cabinType: cabinType,
+      departDate: departDate
+    };
+
+    const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+
+    router.push(`/tickets?${queryString}`);
+
+  };
+
+  
   const classLabels = {
-    a: 'Economy/Premium Economy',
-    b: 'Premium Economy',
-    c: 'Business',
-    d: 'First Class',
+    a: 'PREMIUM_ECONOMY', // PREMIUM_ECONOMY
+    b: 'ECONOMY', //ECONOMY
+    c: 'BUSINESS',
+    d: 'FIRST',
   };
 
   // Handler to capture the selected radio button value
@@ -58,31 +106,43 @@ const EngineTabs = ({active_border}) => {
   };
 
 
-  const [selectedPlan, setSelectedPlan] = useState('round-trip');
+  const [selectedPlan, setSelectedPlan] = useState('one-way');
 
   const openfrom = () => {
     setShowSearchState((prevState) => !prevState); // Correct way to toggle the state
   }
 
   const clickMinus = () => {
-    setAdult(adult - 1); // Correct way to toggle the state
+
+    let adultCnt = adult - 1;
+    setCookie('gy_adult', adultCnt);
+    setAdult(adultCnt); // Correct way to toggle the state
   }
+
   const clickPlus = () => {
-    setAdult(adult + 1); // Correct way to toggle the state
-  }
+    
+    let adultMin = adult + 1;
+    setCookie('gy_adult', adultMin);
+    setAdult(adultMin); // Correct way to toggle the state
+  } 
+
   const clickMinusChildren = () => {
-    setChildren(children - 1); // Correct way to toggle the state
+    let childtMin = countchildren - 1;
+    setCookie('gy_child', childtMin);
+    setcountChildren(childtMin); // Correct way to toggle the state
   }
   const clickPlusChildren = () => {
-    setChildren(children + 1); // Correct way to toggle the state
+    let childtCnt = countchildren + 1;
+    setCookie('gy_child', childtCnt);
+    setcountChildren(childtCnt); // Correct way to toggle the state
   }
  
   const openTraveller = () => {
     setShowYTraveller((prevState) => !prevState); // Correct way to toggle the state
   }
   const locationSwap = () => {
-    // Swap logic for month, date, year
     
+    // Swap logic for month, date, year 
     setSelectFromTo(selectFrom);
     setSelectFromSubTo(selectFromSub);
 
@@ -96,9 +156,24 @@ const EngineTabs = ({active_border}) => {
   },[selectFromTo]);
 
   useEffect(() => {
+    setCookie('gy_class', travellerClass);
+  },[travellerClass]);
+
+
+  useEffect(() => {
+    setCookie('gy_da', selectFromSub.trim());
+  },[selectFromSub]);
+
+  useEffect(() => {
+    setCookie('gy_aa', selectFromSubTo.trim());
+  },[selectFromSubTo]);
+
+  useEffect(() => {
     
     if(datedep){
-      const formattedDate = dayjs(datedep)
+      const formattedDate = dayjs(datedep);
+      setCookie('gy_trd', datedep);
+
       setDd_monthStr(formattedDate.format('MMM')); // Format as string
       setDd_strdate(formattedDate.format('dddd')); // Format as string
       setDd_date(formattedDate.format('DD')); // Format as string
@@ -117,16 +192,10 @@ const EngineTabs = ({active_border}) => {
       setDdr_year(formattedDateR.format('YY')); // Format as string
     }
 
-  },[datedepr]);
+  },[datedepr, selectedPlan]);
 
 
-  useEffect(() => {
-    
-    if(selectedPlan){
 
-    }
-
-  },[selectedPlan]);
 
   const openTo = () => {
     setShowSearchStateTo((prevState) => !prevState); // Correct way to toggle the state
@@ -142,23 +211,23 @@ const EngineTabs = ({active_border}) => {
   return (
     // <div className="tabs">
     //   <div className="tab active">
-    //     <img src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
+    //     <img  src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
     //     <span>Flights</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/travel_16190539.svg" alt="Hotels" />
+    //     <img  src="/assets/imgs/travel_16190539.svg" alt="Hotels" />
     //     <span>Hotels</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/duty-free_2664702.svg" alt="Holiday" />
+    //     <img  src="/assets/imgs/duty-free_2664702.svg" alt="Holiday" />
     //     <span>Holiday package</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/safe-flight_1585574.svg" alt="Insurance" />
+    //     <img  src="/assets/imgs/safe-flight_1585574.svg" alt="Insurance" />
     //     <span>Travel Insurance</span>
     //   </div>
     //   <div className="tab">
-    //     <img src="/assets/imgs/passport_1257113.svg" alt="Visa" />
+    //     <img  src="/assets/imgs/passport_1257113.svg" alt="Visa" />
     //     <span>Visa</span>
     //   </div>
     // </div>
@@ -166,7 +235,6 @@ const EngineTabs = ({active_border}) => {
  <section
   // className="section_main_book_dash_01 relative_MainBanner mb-60"
   className="section_main_book_dash_01 relative_MainBanner"
-
 >
   
   
@@ -175,9 +243,9 @@ const EngineTabs = ({active_border}) => {
   <SearchEngHeader active_border={active_border} />
 
     <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
-      <Link href="/tickets" className="search_btn_font text-white uppercase tracking-wide">
+      <div onClick={searchTickets} className="search_btn_font text-white uppercase tracking-wide cursor-pointer">
         {" "} Search
-      </Link>
+      </div>
     </div>
     <br />
     <br />
@@ -350,7 +418,7 @@ const EngineTabs = ({active_border}) => {
       <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2" onClick={openTraveller}>
         <div className="text_start flex pl-6 slider-labels">
           <div className="">
-            <span className="text-7xl font-bold text-gray-900"> { adult+children } </span>
+            <span className="text-7xl font-bold text-gray-900"> { adult+countchildren } </span>
           </div>
           <div className="mt-3">
             <div className="txt_travelSelect">Traveller</div>
@@ -383,7 +451,7 @@ const EngineTabs = ({active_border}) => {
     <TravellerForm showTraveller={showTraveller} adult={adult}
      opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}
     clickMinusChildren={clickMinusChildren} clickPlusChildren={clickPlusChildren} 
-    children={children} handleChangeClass={handleChangeClass} travellerClass={travellerClass} />
+    countchildren={countchildren} handleChangeClass={handleChangeClass} travellerClass={travellerClass} />
 
   </div>
 </section>

@@ -1,6 +1,6 @@
 "use client";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { swiperGroupAnimate } from "@/util/swiperOption";
+import { swiperGroupAnimateHoliday } from "@/util/swiperOption";
 import Link from "next/link";
 
 export default function YourJourney() {
@@ -11,7 +11,7 @@ export default function YourJourney() {
         <div className="container">
           <div className="row align-items-end">
             <div className="col-md-9 mb-30">
-              <h4 className="neutral-1000 wow fadeInUp mb-15">
+              <h4 className="neutral-1000 wow fadeInUp mb-15 font_familyadd">
                 Your Journey, Your Way
               </h4>
               <h6 className="heading-6-medium neutral-400 wow fadeInUp">
@@ -58,7 +58,7 @@ export default function YourJourney() {
         <div className="container">
           <div className="box-swiper mt-30">
             <div className="swiper-container swiper-group-animate swiper-group-journey">
-              <Swiper {...swiperGroupAnimate}>
+              <Swiper {...swiperGroupAnimateHoliday}>
                 {/* <SwiperSlide>
                   <div className="card-journey-big background-card">
                     <div className="card-image">
@@ -80,9 +80,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey1.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">
@@ -151,9 +151,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey2.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">
@@ -223,9 +223,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey3.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">
@@ -295,9 +295,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey4.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">
@@ -367,9 +367,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey2.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">
@@ -439,9 +439,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey3.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">
@@ -511,9 +511,9 @@ export default function YourJourney() {
                           />
                         </svg>
                       </Link>
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage1/journey4.png"
-                        alt="Travila"
+                        alt="Travalogy"
                       />
                     </div>
                     <div className="card-info background-card">

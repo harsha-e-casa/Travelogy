@@ -42,7 +42,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top.png"
                         alt="Travelogy"
                       />
@@ -83,7 +83,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top2.png"
                         alt="Travelogy"
                       />
@@ -124,7 +124,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top3.png"
                         alt="Travelogy"
                       />
@@ -165,7 +165,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top4.png"
                         alt="Travelogy"
                       />
@@ -206,7 +206,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top5.png"
                         alt="Travelogy"
                       />
@@ -247,7 +247,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top6.png"
                         alt="Travelogy"
                       />
@@ -288,7 +288,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top7.png"
                         alt="Travelogy"
                       />
@@ -329,7 +329,7 @@ export default function TopCategory2() {
                   <div className="card-popular background-card hover-up">
                     <div className="card-image">
                       {" "}
-                      <img
+                      <img 
                         src="/assets/imgs/page/homepage2/top7.png"
                         alt="Travelogy"
                       />

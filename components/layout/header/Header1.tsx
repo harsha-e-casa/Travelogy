@@ -29,12 +29,12 @@ export default function Header1({
             <div className="header-left">
               <div className="header-logo">
                 <Link className="d-flex" href="/">
-                  <img
+                  <img 
                     className="light-mode header_logo"
                     alt="Travelogy"
                     src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
                   />
-                  <img
+                  <img 
                     className="dark-mode"
                     alt="Travelogy"
                     src="/assets/imgs/template/logo-w.svg"
@@ -44,17 +44,14 @@ export default function Header1({
               <div className="header-nav">
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
+                   
                     <li className="">
-                      <Link className="active" href="/">
-                        Home
-                      </Link>
+                      <Link href="/flights">Flights</Link>
                     </li>
                     <li className="">
                       <Link href="/hotels">Hotel</Link>
                     </li>
-                    <li className="">
-                      <Link href="/flights">Flights</Link>
-                    </li>
+                    
                     <li className="">
                       <Link href="/holiday">Holiday</Link>
                     </li>
@@ -108,7 +105,7 @@ export default function Header1({
                 {/* <ThemeSwitch /> */}
               </div>
               {/*<div className="burger-icon-2 burger-icon-white" onClick={handleSidebar}>
-								<img src="/assets/imgs/template/icons/menu.svg" alt="Travelogy" />
+								<img  src="/assets/imgs/template/icons/menu.svg" alt="Travelogy" />
 							</div>*/}
               <div
                 className="burger-icon burger-icon-white"

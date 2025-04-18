@@ -49,7 +49,7 @@ export default function Flights4() {
                                             <div className="card-image"> <Link className="wish" href="#">
                                                 <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                                </svg></Link><img src="/assets/imgs/page/homepage1/flight.png" alt="Travelogy" /></div>
+                                                </svg></Link><img  src="/assets/imgs/page/homepage1/flight.png" alt="Travelogy" /></div>
                                             <div className="card-info">
                                                 <label className="sale-lbl">-25%</label>
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
@@ -79,7 +79,7 @@ export default function Flights4() {
                                             <div className="card-image"> <Link className="wish" href="#">
                                                 <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                                </svg></Link><img src="/assets/imgs/page/homepage1/flight4.png" alt="Travelogy" /></div>
+                                                </svg></Link><img  src="/assets/imgs/page/homepage1/flight4.png" alt="Travelogy" /></div>
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
@@ -110,7 +110,7 @@ export default function Flights4() {
                                             <div className="card-image"> <Link className="wish" href="#">
                                                 <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                                </svg></Link><img src="/assets/imgs/page/homepage1/flight2.png" alt="Travelogy" /></div>
+                                                </svg></Link><img  src="/assets/imgs/page/homepage1/flight2.png" alt="Travelogy" /></div>
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
@@ -139,7 +139,7 @@ export default function Flights4() {
                                             <div className="card-image"> <Link className="wish" href="#">
                                                 <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                                </svg></Link><img src="/assets/imgs/page/homepage1/flight5.png" alt="Travelogy" /></div>
+                                                </svg></Link><img  src="/assets/imgs/page/homepage1/flight5.png" alt="Travelogy" /></div>
                                             <div className="card-info">
                                                 <label className="sale-lbl">-25%</label>
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
@@ -171,7 +171,7 @@ export default function Flights4() {
                                             <div className="card-image"> <Link className="wish" href="#">
                                                 <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                                </svg></Link><img src="/assets/imgs/page/homepage1/flight3.png" alt="Travelogy" /></div>
+                                                </svg></Link><img  src="/assets/imgs/page/homepage1/flight3.png" alt="Travelogy" /></div>
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">
@@ -200,7 +200,7 @@ export default function Flights4() {
                                             <div className="card-image"> <Link className="wish" href="#">
                                                 <svg width={20} height={18} viewBox="0 0 20 18" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                                                </svg></Link><img src="/assets/imgs/page/homepage1/flight6.png" alt="Travelogy" /></div>
+                                                </svg></Link><img  src="/assets/imgs/page/homepage1/flight6.png" alt="Travelogy" /></div>
                                             <div className="card-info">
                                                 <div className="card-date"><span className="date-1">09 Jun 2024</span><span className="line" /><span className="date-1">16 Jun 2024</span></div>
                                                 <div className="card-route">

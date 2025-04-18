@@ -13,7 +13,7 @@ export default function InstallApp4() {
                                 <h2 className="title-why neutral-1000">Discover Seamless Travel with Travelogy</h2>
                                 <p className="text-xl-medium neutral-500">Embark on a journey like never before with Travelogy –
                                     your ultimate travel companion.</p>
-                                <div className="download-apps"> <Link href="#"><img src="/assets/imgs/template/googleplay.png" alt="Travelogy" /></Link><Link href="#"><img src="/assets/imgs/template/appstore.png" alt="Travelogy" /></Link></div>
+                                <div className="download-apps"> <Link href="#"><img  src="/assets/imgs/template/googleplay.png" alt="Travelogy" /></Link><Link href="#"><img  src="/assets/imgs/template/appstore.png" alt="Travelogy" /></Link></div>
                             </div>
                         </div>
                     </div>

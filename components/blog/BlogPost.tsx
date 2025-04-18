@@ -1,6 +1,6 @@
 
 'use client'
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import data from "../../util/blog.json"
 import BlogCard1 from "./BlogCard1"
 import BlogCard2 from "./BlogCard2"
@@ -23,19 +23,35 @@ export default function BlogPost({ style, showItem, showPagination }: BlogPostPr
     const [limit, setLimit] = useState<number>(showItem || 0)
     const [pages, setPages] = useState<number>(Math.ceil(data.length / limit))
 
-    useEffect(() => {
-        createPagination()
-    }, [limit, pages, data.length])
 
-    const createPagination = (): void => {
-        // set pagination
+    // const createPagination = (): void => {
+    //     // set pagination
+    //     const arr: number[] = new Array(Math.ceil(data.length / limit))
+    //         .fill(undefined)
+    //         .map((_, idx) => idx + 1)
+
+    //     setPagination(arr)
+    //     setPages(Math.ceil(data.length / limit))
+    // }
+
+
+  // Memoize createPagination using useCallback to avoid unnecessary re-renders
+    const createPagination = useCallback(() => {
         const arr: number[] = new Array(Math.ceil(data.length / limit))
             .fill(undefined)
             .map((_, idx) => idx + 1)
 
         setPagination(arr)
         setPages(Math.ceil(data.length / limit))
-    }
+    }, [limit])  // Depend on 'limit' since that's the value that changes
+
+
+
+
+    useEffect(() => {
+        createPagination()
+    }, [limit, pages, createPagination])
+
 
     const startIndex: number = currentPage * limit - limit
     const endIndex: number = startIndex + limit
