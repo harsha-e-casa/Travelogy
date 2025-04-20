@@ -58,70 +58,70 @@ import dayjs from 'dayjs';
 
 export default function TicketCard1({ ticket }: any) {
 
-	const formatTime = (minutes:any) => {
-		  const hours = Math.floor(minutes / 60);
-		  const remainingMinutes = minutes % 60;
-		  return `${hours}h ${remainingMinutes}m`;
+	const formatTime = (minutes: any) => {
+		const hours = Math.floor(minutes / 60);
+		const remainingMinutes = minutes % 60;
+		return `${hours}h ${remainingMinutes}m`;
 	};
 
 	return (
 		<>
-		<div>
-           <div>
-             
-		   </div>
-		   <div className="item-flight background-card border-1 ticket-container relative">
-			
-             
-               {/* city1 */}
+			<div>
+				<div>
 
-			   <div className='air_detailes'>
-			    {ticket.sI[0]['fD'].aI.name}
-			   </div>
-				
-				<div className="flight-route flight-route-type-2 city1">
-					<div className="flight-route-1">
-						<div className="flight-name">
-							 
-							<div className="flight-info flex flex-col justify-center items-center">
-								<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['da'].city} ({ticket.sI[0]['da'].code})</p>
-								<p className="text-sm-medium time-flight timelogo"> 
-									<span className="neutral-1000 time">
-									{dayjs(ticket.sI[0]['dt']).format('hh:mm A')}
-									</span>
-								</p>
+				</div>
+				<div className="item-flight background-card border-1 ticket-container relative">
+
+
+					{/* city1 */}
+
+					<div className='air_detailes'>
+						{ticket.sI[0]['fD'].aI.name}
+					</div>
+
+					<div className="flight-route flight-route-type-2 city1">
+						<div className="flight-route-1">
+							<div className="flight-name">
+
+								<div className="flight-info flex flex-col justify-center items-center">
+									<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['da'].city} ({ticket.sI[0]['da'].code})</p>
+									<p className="text-sm-medium time-flight timelogo">
+										<span className="neutral-1000 time">
+											{dayjs(ticket.sI[0]['dt']).format('hh:mm A')}
+										</span>
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-						
-			{/* duration */}
-			<div className="flight-route flight-route-type-2 city1">
-			<div className="flight-route-1">
-				<div className=" flight-name duration flex flex-col items-center align-center">	    
-					<p className="text-sm-medium neutral-500 totalduration"> {formatTime(ticket.sI[0]['duration'])} </p>
-					<p className="text-sm-medium neutral-500 totalduration"> {ticket.sI[0]['stops'] > 0 ? ticket.sI[0]['stops'] `stops` : 'non stop' } </p> 
-				</div>
-				</div>
-				</div>
-				
-            {/* city2 */}
-			<div className="flight-route flight-route-type-2 city1">
-            
-			<div className="flight-route-1">
-                <div className="flight-name">
-		                    
-							 <div className="flight-info flex flex-col items-center align-center">
-								<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['aa'].city} ({ticket.sI[0]['aa'].code})</p>
-								<p className="text-sm-medium time-flight timelogo"> 
-									<span className="neutral-1000 time">{dayjs(ticket.sI[0]['at']).format('hh:mm A')} </span></p>
-							 </div>
-				</div>
-				</div>
-				</div>
 
-            {/* price and btn */}
-				
+					{/* duration */}
+					<div className="flight-route flight-route-type-2 city1">
+						<div className="flight-route-1">
+							<div className=" flight-name duration flex flex-col items-center align-center">
+								<p className="text-sm-medium neutral-500 totalduration"> {formatTime(ticket.sI[0]['duration'])} </p>
+								<p className="text-sm-medium neutral-500 totalduration"> {ticket.sI[0]['stops'] > 0 ? ticket.sI[0]['stops']`stops` : 'non stop'} </p>
+							</div>
+						</div>
+					</div>
+
+					{/* city2 */}
+					<div className="flight-route flight-route-type-2 city1">
+
+						<div className="flight-route-1">
+							<div className="flight-name">
+
+								<div className="flight-info flex flex-col items-center align-center">
+									<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['aa'].city} ({ticket.sI[0]['aa'].code})</p>
+									<p className="text-sm-medium time-flight timelogo">
+										<span className="neutral-1000 time">{dayjs(ticket.sI[0]['at']).format('hh:mm A')} </span></p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* price and btn */}
+
 					{/* price */}
 
 					{/* ticket.sI['totalPriceList'] */}
@@ -131,29 +131,29 @@ export default function TicketCard1({ ticket }: any) {
 						} </p>
 						{/* <p className="text-sm-medium neutral-500 mb-15 seats">4 Seat(s) left</p> */}
 					</div>
- 
 
-                 {/* btn */}
+
+					{/* btn */}
 					<div className="flight-price-2 border-1 btndiv">
 						<Link href={`book-ticket?tcs_id=${ticket.totalPriceList[0]['id']}`} className="btn btn-gray booknow">Book Now</Link>
 					</div>
 
-			    
+
+				</div>
+
+
+
+
+
 			</div>
 
 
 
 
 
-		</div>
-			
 
 
 
-
-
-
-				
 		</>
 	)
 }

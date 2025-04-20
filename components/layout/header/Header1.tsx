@@ -10,19 +10,21 @@ import Link from "next/link";
 // })
 
 export default function Header1({
-  scroll,
+  // scroll,
   handleLogin,
   handleCorporateLogin,
   handleMobileMenu,
   handleRegister,
   handleSidebar,
 }: any) {
+  
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <header
-        className={`z_99999 fixed header sticky-bar ${scroll ? "stick" : ""}`}
+      // className={`z_99999 fixed header sticky-bar ${scroll ? "stick" : ""}`}
+        className={`z_99999 header sticky-bar`}
       >
         <div className="container-fluid background_body_overlay">
           <div className="main-header">

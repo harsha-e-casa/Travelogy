@@ -74,8 +74,7 @@ const EngineTabs = ({active_border}) => {
     let children = getCookie('gy_child')
     let cabinType = getCookie('gy_class')
     let departDate = getCookie('gy_trd')
-    alert(departDate);
-    
+  
     
     const mydata = { 
       departureFrom: departureFrom,

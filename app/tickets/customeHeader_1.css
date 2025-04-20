@@ -1,0 +1,148 @@
+/* Sidebar Filters */
+.hdt_sidebar {
+    width: 280px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    margin-right: 20px;
+  }
+  .hdt_sidebar h2 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #444;
+  }
+  .hdt_filter-group { margin-bottom: 20px; }
+  .hdt_filter-group label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+  .hdt_filter-group input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  .hdt_price-range {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  .hdt_price-range input[type="range"] {
+    width: 100%;
+  }
+
+  /* Main Content */
+  .hdt_main-content { flex: 1; }
+  .hdt_flight-card {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    padding: 16px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 16px;
+    align-items: center;
+  }
+  .hdt_flight-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+  .hdt_flight-logo {
+    width: 60px;
+    height: 40px;
+    background: #ccc;
+    border-radius: 4px;
+    margin-right: 16px;
+  }
+  .hdt_flight-times {
+    margin-right: 24px;
+    text-align: center;
+  }
+  .hdt_flight-times .time {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .hdt_flight-times .duration {
+    font-size: 0.85rem;
+    color: #777;
+  }
+  .hdt_flight-destination {
+    text-align: center;
+    margin-right: 24px;
+  }
+  .hdt_flight-destination .code {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+  .hdt_flight-price {
+    text-align: right;
+    margin-right: 24px;
+  }
+  .hdt_flight-price .amount {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #008cff;
+  }
+  .hdt_view-btn {
+    background: #008cff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  .bg_cs_search{
+    background: #1a1a2e;
+  }
+  /* Header */
+  .hdt_header {
+    /* background: #1a1a2e; */
+    color: #fff;
+    padding: 4px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    /* border-radius: 4px; */
+    margin-bottom: 20px;
+    width: 75%;
+    margin: 0px auto;
+  }
+  .hdt_header-item { margin-right: 24px; }
+  .hdt_header-item:last-child { margin-right: 0; }
+  .hdt_header-item label { font-size: 0.85rem; display: block; color: #ddd; padding-left: 8px; }
+  .hdt_header-item .hdt_value { font-size: 1rem; font-weight: bold; }
+  .hdt_header .hdt_search-btn {
+    background: #008cff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .hdt_value:hover{
+    background: #202035; 
+  }
+  .hdt_value{
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 6px 15px;
+    border-radius: 4px;
+    border: none;
+    width: auto;
+    background: #2a2a44;
+    color: #fff;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hdt_container { flex-direction: column; }
+    .hdt_sidebar { width: 100%; margin-right: 0; margin-bottom: 20px; }
+  }
