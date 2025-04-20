@@ -3,13 +3,18 @@
 import BookingForm from '@/components/elements/BookingForm'
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { postDataFlightDetails } from '../../services/NetworkAdapter'
 import dayjs from 'dayjs'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { AppContext } from '@/util/AppContext'
+
 
 export default function BookTicket() {
   const searchParams = useSearchParams()
+  const router = useRouter();
+
+  const{getCookie } = useContext(AppContext);
 
   interface FlightSegment {
     id: string
@@ -60,13 +65,20 @@ export default function BookTicket() {
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+
+  useEffect(()=>{
+    console.log("segmentPrice",segmentsPrice)
+ },[segmentsPrice])
 
   const fetchFlights = async (priceId: string) => {
     setLoading(true)
     setError(null)
     try {
+      
       const parameter = { priceIds: [priceId] }
       const data: ApiResponse = await postDataFlightDetails(parameter)
+       console.log("data",data);
 
       if (!data.status?.success) {
         throw new Error(`API error: ${data.status.httpStatus}`)
@@ -85,14 +97,44 @@ export default function BookTicket() {
 
       // ←— NEW: pull totalPriceList into state
       setSegmentsPrice(firstTrip.totalPriceList ?? [])
+
+      console.log('aaa', firstTrip.totalPriceList)
+     
     } catch (err: any) {
-      console.error(err)
-      setError(err.message || 'Unknown error')
+      console.error("error caused",err)
+      setError('Keys Passed in the request is already expired. Please pass valid keys')
     } finally {
       setLoading(false)
     }
   }
+  
+  
+    const searchTickets = () => {
 
+      let departureFrom = getCookie('gy_da')
+      let arrivalTo = getCookie('gy_aa')
+      let adults = getCookie('gy_adult')
+      let children = getCookie('gy_child')
+      let cabinType = getCookie('gy_class')
+      let departDate = getCookie('gy_trd')
+      alert(departDate);
+      
+      
+      const mydata = { 
+        departureFrom: departureFrom,
+        arrivalTo: arrivalTo,
+        adults: adults,
+        children: children,
+        cabinType: cabinType,
+        departDate: departDate
+      };
+  
+      const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+  
+      router.push(`/tickets?${queryString}`);
+  
+    };
+  
   const tcs_id = searchParams.get('tcs_id')
   useEffect(() => {
     if (tcs_id) fetchFlights(tcs_id)
@@ -125,7 +167,22 @@ export default function BookTicket() {
               <h4 className="neutral-1000 mb-20">Complete your booking</h4>
 
               {loading && <p>Loading flights…</p>}
-              {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+              {error && (
+                         <>
+                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+                          <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
+                                 
+                            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
+                           Ok, Got It
+                           </button>
+                                
+                              </div>
+                            </div>
+                        
+                         </>)
+                        
+                 }
 
               {/* ←— NEW: Fare summary list */}
               {segmentsPrice.length > 0 && (
