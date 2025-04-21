@@ -221,7 +221,7 @@ const EngineHeaderHotel = ({active_border}) => {
       </div>
 
        {showSearchState ? 
-          <div className="searchFfromSelect">
+          <div className="searchFfromSelect searchFfromSelect_1">
             <AppListSearch categoryType={'hotel'} operEngLocation={openfrom} setSelectFrom={setSelectFrom} setSelectFromSub={setSelectFromSub} />
           </div>
            : null }

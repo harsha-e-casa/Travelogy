@@ -60,28 +60,29 @@ export default function Layout({
   const [isRegister, setRegister] = useState<boolean>(false);
   const handleRegister = (): void => setRegister(!isRegister);
 
-  useEffect(() => {
-    const WOW: any = require("wowjs");
-    (window as any).wow = new WOW.WOW({
-      live: false,
-    });
+  // useEffect(() => {
+  //   const WOW: any = require("wowjs");
+  //   (window as any).wow = new WOW.WOW({
+  //     live: false,
+  //   });
 
-    // Initialize WOW.js
-    (window as any).wow.init();
+  //   // Initialize WOW.js
+  //   (window as any).wow.init();
 
-    const handleScroll = (): void => {
-      const scrollCheck: boolean = window.scrollY > 100;
-      if (scrollCheck !== scroll) {
-        setScroll(scrollCheck);
-      }
-    };
+  //   const handleScroll = (): void => {
+  //     const scrollCheck: boolean = window.scrollY > 100;
+  //     if (scrollCheck !== scroll) {
+  //       setScroll(scrollCheck);
+  //     }
+  //   };
 
-    document.addEventListener("scroll", handleScroll);
+  //   document.addEventListener("scroll", handleScroll);
 
-    return () => {
-      document.removeEventListener("scroll", handleScroll);
-    };
-  }, [scroll]);
+  //   return () => {
+  //     document.removeEventListener("scroll", handleScroll);
+  //   };
+  // }, [scroll]);
+
   return (
     <>
       <div id="top" />
@@ -95,7 +96,7 @@ export default function Layout({
 
       {headerStyle == 1 ? (
         <Header1
-          scroll={scroll}
+          // scroll={scroll}
           isMobileMenu={isMobileMenu}
           handleMobileMenu={handleMobileMenu}
           isSidebar={isSidebar}

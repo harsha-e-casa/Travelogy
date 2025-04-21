@@ -107,7 +107,7 @@ const EngineTabs = () => {
           </h2>
           <p className="text-xl_small truncate-text">{selectFromSub}</p>
           {showSearchState ? 
-          <div className="searchFfromSelect">
+          <div className="searchFfromSelect searchFfromSelect_1">
           <AppListSearch setSelectFrom={setSelectFrom} setSelectFromSub={setSelectFromSub} />
           </div>
            : null }
@@ -127,7 +127,7 @@ const EngineTabs = () => {
           <p className="text-xl_small truncate-text">{selectFromSubTo}</p>
 
           {showSearchStateTo ? 
-          <div className="searchFfromSelect">
+          <div className="searchFfromSelect searchFfromSelect_1">
           <AppListSearch setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} />
           </div>
            : null }
