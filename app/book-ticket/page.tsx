@@ -473,7 +473,7 @@ export default function BookTicket() {
                                         <div className="head-booking-form">
                                             <p className="text-xl-bold neutral-1000">Fare Summary</p>
                                         </div>
-                                        <BookingForm />
+                                        <BookingForm  segmentsPrice={segmentsPrice} />
                                     </div>
                                     {/* …side banners… */}
                                 </div>
