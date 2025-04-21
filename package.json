@@ -11,9 +11,12 @@
     "sass": "sass --watch public/assets/scss/style.scss:public/assets/css/style.css"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@gsap/react": "^2.1.2",
     "@headlessui/react": "^2.0.3",
     "@heroicons/react": "^1.0.6",
+    "@mui/material": "^7.0.2",
     "antd": "^5.24.7",
     "axios": "^1.8.4",
     "axios-retry": "^4.5.0",
@@ -22,6 +25,7 @@
     "gsap": "^3.12.7",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
+    "material-ui-popup-state": "^5.3.5",
     "next": "^14.2.24",
     "react": "^18",
     "react-bootstrap": "^2.10.2",

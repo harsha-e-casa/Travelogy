@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import ByAirline from '@/components/Filter/ByAirline'
 import ByClass from '@/components/Filter/ByClass'
 import ByLocation from '@/components/Filter/ByLocation'
@@ -18,8 +18,16 @@ import Link from "next/link"
 import { postDataTJ } from '../../services/NetworkAdapter'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Skeleton } from 'antd';
-import AppListSearch from '@/components/searchEngine/AppDateRage';
+import AppListSearch from '@/components/searchEngine/AppListSearch';
+import AppDateRage from '@/components/searchEngine/AppDateRage';
 import './customeHeader_1.css';
+import Cookies from 'js-cookie';
+import dayjs from 'dayjs';
+import { DownOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { Dropdown, Space } from 'antd';
+import { tree } from 'next/dist/build/templates/app-page'
+import { AppContext } from '../../util/AppContext';
 
 // Convert ticket ratings from string to number
 const ticketsData = rawticketsData.map(ticket => ({
@@ -61,6 +69,9 @@ export default function Tickets() {
 		endItemIndex,
 	} = useTicketFilter(ticketsData)
 
+
+	
+	const { setCookie, getCookie } = useContext(AppContext);
 	const [flightData, setFlightData] = useState<any>(null)
 	const [activeFlight, setActiveFlight] = useState<any>(true)
 
@@ -68,13 +79,51 @@ export default function Tickets() {
 	const searchParams = useSearchParams()
 
 	// Extract query parameters from the URL
-	const departureFrom = searchParams.get('departureFrom')
-	const arrivalTo = searchParams.get('arrivalTo')
-	const adults = searchParams.get('adults')
-	const children = searchParams.get('children')
-	const cabinType = searchParams.get('cabinType')
-	const departDate = searchParams.get('departDate')
+	// const departureFrom   =  searchParams.get('departureFrom')
+	// const arrivalTo       =  searchParams.get('arrivalTo')
+	// const adults          =  searchParams.get('adults')
+	// const children        =  searchParams.get('children')
+	// const cabinType       =  searchParams.get('cabinType')
+	// const departDate      =  searchParams.get('departDate')
 
+	// const departureFromSr =  searchParams.get('gy_da_str')
+	// const arrivalToSr     =  searchParams.get('gy_aa_str');
+
+
+	const departureFrom   =  getCookie('gy_da')
+	const arrivalTo       =  getCookie('gy_aa')
+	const adults          =  getCookie('gy_adult')
+	const children        =  getCookie('gy_child')
+	const cabinType       =  getCookie('gy_class')
+	const departDate      =  getCookie('gy_trd')
+
+	const departureFromSr =  getCookie('gy_da_str')
+	const arrivalToSr     =  getCookie('gy_aa_str');
+	const tripType        =  getCookie('gy_triptype');
+
+
+	const mydata = { 
+		departureFrom: departureFrom,
+		arrivalTo: arrivalTo,
+		adults: adults,
+		children: children,
+		cabinType: cabinType,
+		departDate: departDate,
+		departureFromSr: departureFromSr,
+		arrivalToSr: arrivalToSr,
+		tripType: tripType
+	  };
+  
+	  const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+  
+	  router.push(`/tickets?${queryString}`);
+	
+
+	const [true_Tripconst, setTripconst] = useState<boolean>(false)
+	const [searchFlight,  SetSearchFlight] = useState<boolean>(true)
+
+	const [srx_cabinType, setCabinType] = useState<any>(null)
+	  
 	// Not required for API call but kept in state for other uses if needed.
 	const [ticketParams, setTicketParams] = useState({ id: null, date: null })
 
@@ -107,6 +156,8 @@ export default function Tickets() {
 				cabintypeF = 'ECONOMY'
 		}
 
+		setCabinType(cabintypeF);
+
 		// Build the parameter object without extra curly braces
 		const parameter = {
 			searchQuery: {
@@ -127,7 +178,18 @@ export default function Tickets() {
 						travelDate: departDate,
 					}
 				],
-				searchModifiers: {}
+				"searchModifiers": {
+					"pfts": [
+						"REGULAR"
+					],
+					"isDirectFlight": false,
+					"isConnectingFlight": false,
+					"sourceId": 0,
+					"pnrCreditInfo": {
+						"pnr": ""
+					},
+					"iiss": false
+				}
 			}
 		}
 
@@ -150,11 +212,136 @@ export default function Tickets() {
 			}
 		}
 
-		loadData()
+		if(searchFlight){
+			loadData()
+			SetSearchFlight(false);
+		}
 
 		// Run the effect whenever any dependency changes
-	}, [departureFrom, arrivalTo, cabinType, departDate, adults, children])
+	}, [departureFrom, arrivalTo, cabinType, departDate, adults, children, searchFlight])
 
+
+	const items: MenuProps['items'] = [
+		{
+		  label: (
+			'One-Way'
+		  ),
+		  key: 'One-Way',
+		},
+		{
+		  label: (
+			'Round-Trip'
+		  ),
+		  key: 'Round-Trip',
+		},
+	  ];
+
+
+	  // controls visibility
+	  const [open, setOpen] = useState(false)
+	  // stores the selected label
+	  const [srx_tripType, setTripType] = useState('One-Way')
+	  
+	  useEffect(() => {
+		const t = Cookies.get('gy_triptype') || ''
+		setTripType(t)
+	  }, [])
+
+	  const [srx_departureFrom, setdepartureFrom] = useState('Delhi')
+	  const [srx_departureCode, setDepartureToCode] = useState('DEL')
+
+	  useEffect(() => {
+		setCookie('gy_da_str', srx_departureFrom.trim());
+	  },[srx_departureFrom]);
+
+	  useEffect(() => {
+		setCookie('gy_da', srx_departureCode.trim());
+	  },[srx_departureCode]);
+
+	  
+	  useEffect(() => {
+		const df = Cookies.get('gy_da_str') || ''
+		setdepartureFrom(df)
+	  }, [])
+	  
+	  const [srx_arrivalTo, setArrivalTo] = useState('Bengaluru');
+	  const [srx_arrivalCode, setArrivalToCode] = useState('BLR')
+
+	  useEffect(() => {
+		const dfa = Cookies.get('gy_aa_str') || ''
+		setArrivalTo(dfa)
+	  }, [])
+
+	  useEffect(() => {
+		setCookie('gy_aa', srx_arrivalCode.trim());
+	  },[srx_arrivalCode]);
+	  
+	  useEffect(() => {
+		setCookie('gy_aa_str', srx_arrivalTo.trim());
+	  },[srx_arrivalTo]);
+
+	  const [srx_traveller, setTraveller] = useState(1);
+	  
+	  useEffect(() => {
+		const dfadu = parseInt(Cookies.get('gy_adult') || '1', 10);
+		const dfchi = parseInt(Cookies.get('gy_child') || '0', 10);
+		setTraveller(dfadu + dfchi);
+	  }, []);
+
+
+		const [dd_monthStr, setDd_monthStr] = useState<string | null>(null);
+		const [dd_strdate, setDd_strdate] = useState<string | null>(null);
+		const [dd_date, setDd_date] = useState<string | null>(null);
+		const [dd_year, setDd_year] = useState<string | null>(null);
+		const [srx_depart, setDepartDate] = useState<string | null>(null);
+
+
+	    // menu click handler
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+	setTripType(key);
+	setOpen(prev => !prev)
+  }
+
+
+  const [showSearchState, setShowSearchState] = useState<boolean>(false);
+  const [showSearchStateTo, setShowSearchStateTo] = useState<boolean>(false);
+  const [openDateRage, setOpenDateRage] = useState<boolean>(false);
+  
+
+	const [datedep, setDatedep] = useState<Dayjs>(() => {
+		const cookieDate = Cookies.get('gy_trd');
+		return cookieDate ? dayjs(cookieDate) : dayjs().format('YYYY-MM-DD');
+	});
+  
+
+  const openfrom = () => {
+    setShowSearchState((prevState) => !prevState); // Correct way to toggle the state
+  }
+
+  const openTo = () => {
+    setShowSearchStateTo((prevState) => !prevState); // Correct way to toggle the state
+  }
+
+
+  const openToDateRange = () => {
+    setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+  }
+
+    useEffect(() => {
+	  
+	  if(datedep){
+
+		const formattedDate = dayjs(datedep);
+
+		setCookie('gy_trd', formattedDate.format('YYYY-MM-DD'));		
+		setDd_monthStr(formattedDate.format('MMM')); // Format as string
+		setDd_strdate(formattedDate.format('dddd')); // Format as string
+		setDd_date(formattedDate.format('DD')); // Format as string
+		setDd_year(formattedDate.format('YY')); // Format as string
+	  }
+  
+	},[datedep]);
+	  
 	return (
 		<>
 			<Layout headerStyle={1} footerStyle={1}>
@@ -168,19 +355,59 @@ export default function Tickets() {
   <div className="hdt_header">
     <div className="hdt_header-item">
       <label>Trip Type</label>
-      <div className="hdt_value">One Way</div>
+	<Dropdown
+      menu={{ items, onClick: handleMenuClick }}
+      open={open}
+      trigger={[]}            // ← disable all built‑in open/close triggers
+      placement="bottomLeft"  // or wherever you like
+    >
+      <div
+        className="hdt_value"
+        onClick={() => setOpen(prev => !prev)}  // ← your toggle
+        style={{ cursor: 'pointer', display: 'inline-block' }}
+      >
+        {srx_tripType}
+      </div>
+    </Dropdown>
+
     </div>
-    <div className="hdt_header-item">
+    <div className="hdt_header-item relative">
       <label>From</label>
-      <div className="hdt_value">New Delhi, India</div>
+      <div onClick={openfrom} className="hdt_value">{srx_departureFrom}, India</div>
+
+	  {showSearchState ? 
+          <div className="searchFfromSelect searchFfromSelect_2">
+            <AppListSearch operEngLocation={openfrom} setSelectFrom={setdepartureFrom} setSelectFromSub={setDepartureToCode} />
+          </div>
+           : null }
+
     </div>
-    <div className="hdt_header-item">
+
+	
+
+    <div className="hdt_header-item relative">
       <label>To</label>
-      <div className="hdt_value">Bengaluru, India</div>
+      <div onClick={openTo} className="hdt_value">{srx_arrivalTo}, India</div>
+
+	    {showSearchStateTo ? 
+			<div className="searchFfromSelect searchFfromSelect_2">
+			<AppListSearch operEngLocation={openTo} setSelectFrom={setArrivalTo} setSelectFromSub={setArrivalToCode} />
+			</div>
+		: null }
+
     </div>
     <div className="hdt_header-item">
       <label>Depart</label>
-      <div className="hdt_value">Mon, Apr 21, 2025</div>
+      <div onClick={openToDateRange} className="hdt_value">{dd_strdate}, {dd_monthStr} {dd_date} {dd_year}</div>
+
+
+
+	  {openDateRage ? (<AppDateRage 
+              openToDateRange={openToDateRange} 
+              setDatedep={setDatedep}
+              /> ): null }
+	 
+
     </div>
     {/* <div className="hdt_header-item">
       <label>Return</label>
@@ -189,10 +416,10 @@ export default function Tickets() {
     <div className="hdt_header-item">
       <label>Passengers &amp; Class</label>
     <div className="hdt_value">
-		<span>1 Adult</span>
+		<span>{srx_traveller} {srx_traveller.length > 0 ? 'travellers' : 'traveller' } | <span className='text-sm'>{srx_cabinType}</span></span>
 	</div>
     </div>
-    <button className="hdt_search-btn">Search</button>
+    <button onClick={() => SetSearchFlight(prev => !prev)} className="hdt_search-btn">Search</button>
   </div>
 
 					{/* <AppListSearch operEngLocation={openTo} setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} /> */}
