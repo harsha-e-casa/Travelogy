@@ -204,8 +204,8 @@ const EngineTabs = ({active_border}) => {
     setCookie('gy_triptype', selectedPlan);
 
     if(datedepr && selectedPlan === 'round-trip'){
-      // const formattedDateR = dayjs(datedepr)
-      setCookie('gy_trd', formattedDate.format('YYYY-MM-DD'));
+      const formattedDateR = dayjs(datedepr)
+      setCookie('gy_trd', formattedDateR.format('YYYY-MM-DD'));
       setDdr_monthStr(formattedDateR.format('MMM')); // Format as string
       setDdr_strdate(formattedDateR.format('dddd')); // Format as string
       setDdr_date(formattedDateR.format('DD')); // Format as string
