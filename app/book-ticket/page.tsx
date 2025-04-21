@@ -8,144 +8,170 @@ import { postDataFlightDetails } from '../../services/NetworkAdapter'
 import dayjs from 'dayjs'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { AppContext } from '@/util/AppContext'
+import { Avatar, Space } from 'antd'; 
+import { UserOutlined } from '@ant-design/icons';
+
+
+import {
+    AutoComplete,
+    Button,
+    Cascader,
+    Checkbox,
+    Col,
+    Form,
+    Input,
+    InputNumber,
+    Row,
+    Select,
+  } from 'antd';
+
+  
+const url = 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg';
 
 
 export default function BookTicket() {
-  const searchParams = useSearchParams()
-  const router = useRouter();
+    const searchParams = useSearchParams()
+    const router = useRouter();
 
-  const{getCookie } = useContext(AppContext);
+    const{getCookie } = useContext(AppContext);
 
-  interface FlightSegment {
-    id: string
-    dt: string
-    at: string
-    duration: number
-    da: { code: string; city: string; name: string; terminal?: string }
-    aa: { code: string; city: string; name: string; terminal?: string }
-    fD: { aI: { code: string; name: string }; fN: string }
-    ssrInfo?: { MEAL?: { code: string; desc: string }[] }
-  }
-
-  interface TotalPriceListSeg {
-    id: string
-    fareIdentifier: string
-    pc: {
-      code: string
-      name: string
-      isLcc: boolean
+    interface FlightSegment {
+        id: string
+        dt: string
+        at: string
+        duration: number
+        da: { code: string; city: string; name: string; terminal?: string }
+        aa: { code: string; city: string; name: string; terminal?: string }
+        fD: { aI: { code: string; name: string }; fN: string }
+        ssrInfo?: { MEAL?: { code: string; desc: string }[] }
     }
-    fd: {
-      ADULT: {
-        fC: { BF: number; NF: number; TAF: number; TF: number }
-        afC: { TAF: { AGST: number; OT: number; YR: number } }
-        sR: number
-        bI: { iB: string; cB: string }
-        rT: number
-        cc: string
-        cB: string
-        fB: string
-      }
+
+    interface TotalPriceListSeg {
+        id: string
+        fareIdentifier: string
+        pc: {
+            code: string
+            name: string
+            isLcc: boolean
+        }
+        fd: {
+            ADULT: {
+                fC: { BF: number; NF: number; TAF: number; TF: number }
+                afC: { TAF: { AGST: number; OT: number; YR: number } }
+                sR: number
+                bI: { iB: string; cB: string }
+                rT: number
+                cc: string
+                cB: string
+                fB: string
+            }
+        }
     }
-  }
 
-  interface TripInfo {
-    sI?: FlightSegment[]
-    totalPriceList?: TotalPriceListSeg[]
-    airFlowType?: string
-  }
+    interface TripInfo {
+        sI?: FlightSegment[]
+        totalPriceList?: TotalPriceListSeg[]
+        airFlowType?: string
+    }
 
-  interface ApiResponse {
-    status?: { success: boolean; httpStatus: number }
-    tripInfos?: TripInfo[]
-  }
+    interface ApiResponse {
+        status?: { success: boolean; httpStatus: number }
+        tripInfos?: TripInfo[]
+    }
 
-  const [segments, setSegments] = useState<FlightSegment[]>([])
-  const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([])
-  const [selectedId, setSelectedId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+    const [segments, setSegments] = useState<FlightSegment[]>([])
+    const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([])
+    const [selectedId, setSelectedId] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+
+    const fetchFlights = async (priceId: string) => {
+        setLoading(true)
+        setError(null)
+        try {
+            const parameter = { priceIds: [priceId] }
+            const data: ApiResponse = await postDataFlightDetails(parameter)
+
+            if (!data.status?.success) {
+                throw new Error(`API error: ${data.status.httpStatus}`)
+            }
+
+            const firstTrip = data.tripInfos?.[0]
+            const segs = firstTrip?.sI
+            const id = segs?.[0]?.id.trim()
+
+            if (!segs || !id) {
+                throw new Error('No segment or price data returned by the API')
+            }
+
+            setSelectedId(id)
+            setSegments(segs)
+
+            // ←— NEW: pull totalPriceList into state
+            setSegmentsPrice(firstTrip.totalPriceList ?? [])
+          } catch (err: any) {
+            console.error("error caused",err)
+            setError('Keys Passed in the request is already expired. Please pass valid keys')
+          } finally {
+            setLoading(false)
+          }
+    }
+
+    const tcs_id = searchParams.get('tcs_id')
+    useEffect(() => {
+        if (tcs_id) fetchFlights(tcs_id)
+    }, [tcs_id])
+
+
+    
+    const { Option } = Select;
+   
+    const prefixSelector = (
+        <Form.Item name="prefix" noStyle>
+          <Select style={{ width: 70 }}>
+            <Option value="86">+86</Option>
+            <Option value="87">+87</Option>
+          </Select>
+        </Form.Item>
+    );
+
+    useEffect(()=>{
+      console.log("segmentPrice",segmentsPrice)
+   },[segmentsPrice])
   
-
-  useEffect(()=>{
-    console.log("segmentPrice",segmentsPrice)
- },[segmentsPrice])
-
-  const fetchFlights = async (priceId: string) => {
-    setLoading(true)
-    setError(null)
-    try {
-      
-      const parameter = { priceIds: [priceId] }
-      const data: ApiResponse = await postDataFlightDetails(parameter)
-       console.log("data",data);
-
-      if (!data.status?.success) {
-        throw new Error(`API error: ${data.status.httpStatus}`)
-      }
-
-      const firstTrip = data.tripInfos?.[0]
-      const segs = firstTrip?.sI
-      const id = segs?.[0]?.id.trim()
-
-      if (!segs || !id) {
-        throw new Error('No segment or price data returned by the API')
-      }
-
-      setSelectedId(id)
-      setSegments(segs)
-
-      // ←— NEW: pull totalPriceList into state
-      setSegmentsPrice(firstTrip.totalPriceList ?? [])
-
-      console.log('aaa', firstTrip.totalPriceList)
+   
+    
+   const searchTickets = () => {
+  
+    let departureFrom = getCookie('gy_da')
+    let arrivalTo = getCookie('gy_aa')
+    let adults = getCookie('gy_adult')
+    let children = getCookie('gy_child')
+    let cabinType = getCookie('gy_class')
+    let departDate = getCookie('gy_trd')
      
-    } catch (err: any) {
-      console.error("error caused",err)
-      setError('Keys Passed in the request is already expired. Please pass valid keys')
-    } finally {
-      setLoading(false)
-    }
-  }
-  
-  
-    const searchTickets = () => {
-
-      let departureFrom = getCookie('gy_da')
-      let arrivalTo = getCookie('gy_aa')
-      let adults = getCookie('gy_adult')
-      let children = getCookie('gy_child')
-      let cabinType = getCookie('gy_class')
-      let departDate = getCookie('gy_trd')
-      alert(departDate);
-      
-      
-      const mydata = { 
-        departureFrom: departureFrom,
-        arrivalTo: arrivalTo,
-        adults: adults,
-        children: children,
-        cabinType: cabinType,
-        departDate: departDate
-      };
-  
-      const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
-  
-      router.push(`/tickets?${queryString}`);
-  
+    
+    const mydata = { 
+      departureFrom: departureFrom,
+      arrivalTo: arrivalTo,
+      adults: adults,
+      children: children,
+      cabinType: cabinType,
+      departDate: departDate
     };
   
-  const tcs_id = searchParams.get('tcs_id')
-  useEffect(() => {
-    if (tcs_id) fetchFlights(tcs_id)
-  }, [tcs_id])
+    const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+  
+    router.push(`/tickets?${queryString}`);
+  
+  };
+  
+    return (
+        <>
+            <Layout headerStyle={1} footerStyle={1}>
+                <main className="main">
 
-  return (
-    <>
-      <Layout headerStyle={1} footerStyle={1}>
-        <main className="main">
-
-        <section className="box-section box-breadcrumb background-body">
+                    <section className="box-section box-breadcrumb background-body">
                         <div className="container pt-60">
                             <ul className="breadcrumbs">
                                 <li> <Link href="/">Home</Link><span className="arrow-right">
@@ -160,16 +186,14 @@ export default function BookTicket() {
                             </ul>
                         </div>
                     </section>
-                    
-          {/* Breadcrumb etc… */}
-          <section className="section-box block-content-book-tickets background-card">
-            <div className="container pt-60">
-              <h4 className="neutral-1000 mb-20">Complete your booking</h4>
 
-              {loading && <p>Loading flights…</p>}
-              {error && (
-                         <>
-                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+             {/* Breadcrumb etc… */}
+                    <section className="section-box block-content-book-tickets background-card">
+                        <div className="container pt-60">
+                            <h4 className="neutral-1000 mb-20">Complete your booking</h4>
+
+                            {loading && <p>Loading flights…</p>}
+                            {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                         <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
                           <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
                                  
@@ -178,92 +202,88 @@ export default function BookTicket() {
                            </button>
                                 
                               </div>
-                            </div>
-                        
-                         </>)
-                        
-                 }
+                            </div>}
 
-              {/* ←— NEW: Fare summary list */}
-              {segmentsPrice.length > 0 && (
-                <div className="fare-summary mb-20">
-                  <h5 className="text-lg-bold neutral-1000">Available Fares</h5>
-                  <ul>
-                    {segmentsPrice.map(p => (
-                      <li key={p.id} className="text-sm-medium neutral-700">
-                        <strong>{p.pc.name}</strong> ({p.fareIdentifier}) – ₹
-                        {p.fd.ADULT.fC.TF.toLocaleString()}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="row mt-20">
-                <div className="col-lg-8">
-                  <div className="box-content-tickets-detail">
-                    {!loading && !error && (
-                      <div className="box-timeline">
-                        {segments.map(seg => {
-                          const dep = dayjs(seg.dt)
-                          const arr = dayjs(seg.at)
-                          const hrs = Math.floor(seg.duration / 60)
-                          const mins = seg.duration % 60
-
-                          return (
-                            <React.Fragment key={seg.id}>
-                              <div className="item-timeline">
-                                <span className="text-xl-bold text-ads-middle">
-                                  {hrs}h {mins}m
-                                </span>
-                                <div className="item-line-timeline">
-                                  <div className="time-flight">
-                                    <p className="text-sm-bold neutral-1000 icon-time">
-                                      {dep.format('HH:mm')}
-                                    </p>
-                                    <p className="text-sm-medium neutral-500">
-                                      {dep.format('DD MMM YYYY')}
-                                    </p>
-                                  </div>
-                                  <div className="location-flight">
-                                    <p className="text-xl-bold neutral-1000 mb-5">
-                                      {seg.da.city} ({seg.da.code})
-                                    </p>
-                                    <p className="text-sm-medium neutral-500">
-                                      {seg.da.name}
-                                      {seg.da.terminal ? ` • ${seg.da.terminal}` : ''}
-                                    </p>
-                                  </div>
+                            {/* ←— NEW: Fare summary list */}
+                            {segmentsPrice.length > 0 && (
+                                <div className="fare-summary mb-20">
+                                    <h5 className="text-lg-bold neutral-1000">Available Fares</h5>
+                                    <ul>
+                                        {segmentsPrice.map(p => (
+                                            <li key={p.id} className="text-sm-medium neutral-700">
+                                                <strong>{p.pc.name}</strong> ({p.fareIdentifier}) – ₹
+                                                {p.fd.ADULT.fC.TF.toLocaleString()}
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-                                <div className="item-info-flight">
-                                  <div className="logo-flight">
-                                    <img
-                                      src={`/assets/imgs/airlines/${seg.fD.aI.code.toLowerCase()}.png`}
-                                      alt={seg.fD.aI.name}
-                                    />
-                                  </div>
-                                  <div className="flight-code">
-                                    <p className="text-sm-medium neutral-500">
-                                      {seg.fD.aI.code}-{seg.fD.fN} • Economy
-                                    </p>
-                                  </div>
-                                  .<div className="list-flight-facilities">
-                                
-                                                                    <li className="baggage">
-                                                                        <svg width={16} height={16} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                                                                            <path d="M14.122 7.23384H12.3453V5.80934C12.3453 5.55009 12.135 5.33991 11.8757 5.33991H9.33781C9.1025 4.62166 8.42469 4.10641 7.63672 4.10641H6.82216V0.469438C6.82216 0.210188 6.61194 0 6.35262 0H3.07384C2.81453 0 2.60428 0.210188 2.60428 0.469438V4.10644H1.78972C0.802875 4.10644 0 4.90906 0 5.89566V14.2107C0 15.1973 0.802875 16 1.78972 16H14.122C15.1575 16 16 15.1578 16 14.1225V9.11134C16 8.07609 15.1575 7.23384 14.122 7.23384ZM15.0609 9.11134V12.0802H5.77616V9.11134C5.77616 8.59378 6.19734 8.17269 6.71506 8.17269H14.122C14.6397 8.17269 15.0609 8.59375 15.0609 9.11134ZM11.4062 7.23384H9.43094V6.27878H11.4062V7.23384ZM3.54338 0.938844H5.88306V4.10641H3.54338V0.938844ZM0.939094 14.2107V5.89566C0.939094 5.42675 1.32069 5.04528 1.78972 5.04528H7.63672C8.08409 5.04528 8.45697 5.39431 8.48556 5.83991C8.48669 5.85728 8.48887 5.87431 8.49178 5.89106V7.23384H6.71503C5.6795 7.23384 4.83703 8.07609 4.83703 9.11134V14.1225C4.83703 14.4643 4.92931 14.7848 5.08962 15.0612H1.78972C1.32069 15.0612 0.939094 14.6797 0.939094 14.2107ZM14.122 15.0612H7.63672H6.71506C6.19734 15.0612 5.77616 14.6401 5.77616 14.1225V13.0191H15.0609V14.1225C15.0609 14.6401 14.6397 15.0612 14.122 15.0612Z" > </path>
-                                                                        </svg>
-                                                                        : (Adult) Check-in : {segmentsPrice[0].fd.ADULT.bI.iB} (01 Piece only)
-                                                                    </li>
-                                                                    <li className="cabin">
-                                                                        <svg width={10} height={16} viewBox="0 0 10 16" xmlns="http://www.w3.org/2000/svg">
-                                                                            <path d="M7.82422 3.76562H6.41016V0.9375H6.88281C7.14169 0.9375 7.35156 0.727625 7.35156 0.46875C7.35156 0.209875 7.14169 0 6.88281 0H3.11719C2.85831 0 2.64844 0.209875 2.64844 0.46875C2.64844 0.727625 2.85831 0.9375 3.11719 0.9375H3.58984V3.76562H2.17578C1.39822 3.76562 0.765625 4.39822 0.765625 5.17578V12.707C0.765625 13.3572 1.20803 13.9057 1.8075 14.0681C1.74294 14.2296 1.70703 14.4056 1.70703 14.5898C1.70703 15.3674 2.33963 16 3.11719 16C3.89475 16 4.52734 15.3674 4.52734 14.5898C4.52734 14.4241 4.49838 14.265 4.44559 14.1172H5.55437C5.50159 14.265 5.47262 14.4241 5.47262 14.5898C5.47262 15.3674 6.10522 16 6.88278 16C7.66034 16 8.29294 15.3674 8.29294 14.5898C8.29294 14.4056 8.25703 14.2296 8.19247 14.0681C8.79197 13.9057 9.23434 13.3572 9.23434 12.707V5.17578C9.23437 4.39822 8.60178 3.76562 7.82422 3.76562ZM4.52734 0.9375H5.47266V3.76562H4.52734V0.9375ZM3.58984 14.5898C3.58984 14.8505 3.37781 15.0625 3.11719 15.0625C2.85656 15.0625 2.64453 14.8505 2.64453 14.5898C2.64453 14.3292 2.85656 14.1172 3.11719 14.1172C3.37781 14.1172 3.58984 14.3292 3.58984 14.5898ZM6.88281 15.0625C6.62219 15.0625 6.41016 14.8505 6.41016 14.5898C6.41016 14.3292 6.62219 14.1172 6.88281 14.1172C7.14344 14.1172 7.35547 14.3292 7.35547 14.5898C7.35547 14.8505 7.14344 15.0625 6.88281 15.0625ZM8.29688 12.707C8.29688 12.9677 8.08484 13.1797 7.82422 13.1797H2.17578C1.91516 13.1797 1.70312 12.9677 1.70312 12.707V5.17578C1.70312 4.91516 1.91516 4.70312 2.17578 4.70312H7.82422C8.08484 4.70312 8.29688 4.91516 8.29688 5.17578V12.707Z" />
-                                                                            <path d="M3.11719 5.64844C2.85831 5.64844 2.64844 5.85831 2.64844 6.11719V11.7656C2.64844 12.0245 2.85831 12.2344 3.11719 12.2344C3.37606 12.2344 3.58594 12.0245 3.58594 11.7656V6.11719C3.58594 5.85831 3.37606 5.64844 3.11719 5.64844Z" />
-                                                                            <path d="M5 5.64844C4.74112 5.64844 4.53125 5.85831 4.53125 6.11719V11.7656C4.53125 12.0245 4.74112 12.2344 5 12.2344C5.25888 12.2344 5.46875 12.0245 5.46875 11.7656V6.11719C5.46875 5.85831 5.25888 5.64844 5 5.64844Z" />
-                                                                            <path d="M6.88281 5.64844C6.62394 5.64844 6.41406 5.85831 6.41406 6.11719V11.7656C6.41406 12.0245 6.62394 12.2344 6.88281 12.2344C7.14169 12.2344 7.35156 12.0245 7.35156 11.7656V6.11719C7.35156 5.85831 7.14169 5.64844 6.88281 5.64844Z" > </path>
-                                                                        </svg>Cabin baggage {segmentsPrice[0].fd.ADULT.bI.cB}
-                                                                    </li>
-                                                                    {/* <li className="meal">
+                            )}
+
+                            <div className="row mt-20">
+                                <div className="col-lg-8">
+                                    <div className="box-content-tickets-detail">
+                                        {!loading && !error && (
+                                            <div className="box-timeline">
+                                                {segments.map(seg => {
+                                                    const dep = dayjs(seg.dt)
+                                                    const arr = dayjs(seg.at)
+                                                    const hrs = Math.floor(seg.duration / 60)
+                                                    const mins = seg.duration % 60
+
+                                                    return (
+                                                        <React.Fragment key={seg.id}>
+                                                            <div className="item-timeline">
+                                                                <span className="text-xl-bold text-ads-middle">
+                                                                    {hrs}h {mins}m
+                                                                </span>
+                                                                <div className="item-line-timeline">
+                                                                    <div className="time-flight">
+                                                                        <p className="text-sm-bold neutral-1000 icon-time">
+                                                                            {dep.format('HH:mm')}
+                                                                        </p>
+                                                                        <p className="text-sm-medium neutral-500">
+                                                                            {dep.format('DD MMM YYYY')}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="location-flight">
+                                                                        <p className="text-xl-bold neutral-1000 mb-5">
+                                                                            {seg.da.city} ({seg.da.code})
+                                                                        </p>
+                                                                        <p className="text-sm-medium neutral-500">
+                                                                            {seg.da.name}
+                                                                            {seg.da.terminal ? ` • ${seg.da.terminal}` : ''}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="item-info-flight">
+                                                                    <div className="logo-flight">
+                                                                        <img
+                                                                            src={`/assets/imgs/airlines/${seg.fD.aI.code.toLowerCase()}.png`}
+                                                                            alt={seg.fD.aI.name}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="flight-code">
+                                                                        <p className="text-sm-medium neutral-500">
+                                                                            {seg.fD.aI.code}-{seg.fD.fN} • Economy
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="list-flight-facilities">
+
+                                                                        <li className="baggage">
+                                                                            <svg width={16} height={16} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M14.122 7.23384H12.3453V5.80934C12.3453 5.55009 12.135 5.33991 11.8757 5.33991H9.33781C9.1025 4.62166 8.42469 4.10641 7.63672 4.10641H6.82216V0.469438C6.82216 0.210188 6.61194 0 6.35262 0H3.07384C2.81453 0 2.60428 0.210188 2.60428 0.469438V4.10644H1.78972C0.802875 4.10644 0 4.90906 0 5.89566V14.2107C0 15.1973 0.802875 16 1.78972 16H14.122C15.1575 16 16 15.1578 16 14.1225V9.11134C16 8.07609 15.1575 7.23384 14.122 7.23384ZM15.0609 9.11134V12.0802H5.77616V9.11134C5.77616 8.59378 6.19734 8.17269 6.71506 8.17269H14.122C14.6397 8.17269 15.0609 8.59375 15.0609 9.11134ZM11.4062 7.23384H9.43094V6.27878H11.4062V7.23384ZM3.54338 0.938844H5.88306V4.10641H3.54338V0.938844ZM0.939094 14.2107V5.89566C0.939094 5.42675 1.32069 5.04528 1.78972 5.04528H7.63672C8.08409 5.04528 8.45697 5.39431 8.48556 5.83991C8.48669 5.85728 8.48887 5.87431 8.49178 5.89106V7.23384H6.71503C5.6795 7.23384 4.83703 8.07609 4.83703 9.11134V14.1225C4.83703 14.4643 4.92931 14.7848 5.08962 15.0612H1.78972C1.32069 15.0612 0.939094 14.6797 0.939094 14.2107ZM14.122 15.0612H7.63672H6.71506C6.19734 15.0612 5.77616 14.6401 5.77616 14.1225V13.0191H15.0609V14.1225C15.0609 14.6401 14.6397 15.0612 14.122 15.0612Z" > </path>
+                                                                            </svg>
+                                                                            : (Adult) Check-in : {segmentsPrice[0].fd.ADULT.bI.iB} (01 Piece only)
+                                                                        </li>
+                                                                        <li className="cabin">
+                                                                            <svg width={10} height={16} viewBox="0 0 10 16" xmlns="http://www.w3.org/2000/svg">
+                                                                                <path d="M7.82422 3.76562H6.41016V0.9375H6.88281C7.14169 0.9375 7.35156 0.727625 7.35156 0.46875C7.35156 0.209875 7.14169 0 6.88281 0H3.11719C2.85831 0 2.64844 0.209875 2.64844 0.46875C2.64844 0.727625 2.85831 0.9375 3.11719 0.9375H3.58984V3.76562H2.17578C1.39822 3.76562 0.765625 4.39822 0.765625 5.17578V12.707C0.765625 13.3572 1.20803 13.9057 1.8075 14.0681C1.74294 14.2296 1.70703 14.4056 1.70703 14.5898C1.70703 15.3674 2.33963 16 3.11719 16C3.89475 16 4.52734 15.3674 4.52734 14.5898C4.52734 14.4241 4.49838 14.265 4.44559 14.1172H5.55437C5.50159 14.265 5.47262 14.4241 5.47262 14.5898C5.47262 15.3674 6.10522 16 6.88278 16C7.66034 16 8.29294 15.3674 8.29294 14.5898C8.29294 14.4056 8.25703 14.2296 8.19247 14.0681C8.79197 13.9057 9.23434 13.3572 9.23434 12.707V5.17578C9.23437 4.39822 8.60178 3.76562 7.82422 3.76562ZM4.52734 0.9375H5.47266V3.76562H4.52734V0.9375ZM3.58984 14.5898C3.58984 14.8505 3.37781 15.0625 3.11719 15.0625C2.85656 15.0625 2.64453 14.8505 2.64453 14.5898C2.64453 14.3292 2.85656 14.1172 3.11719 14.1172C3.37781 14.1172 3.58984 14.3292 3.58984 14.5898ZM6.88281 15.0625C6.62219 15.0625 6.41016 14.8505 6.41016 14.5898C6.41016 14.3292 6.62219 14.1172 6.88281 14.1172C7.14344 14.1172 7.35547 14.3292 7.35547 14.5898C7.35547 14.8505 7.14344 15.0625 6.88281 15.0625ZM8.29688 12.707C8.29688 12.9677 8.08484 13.1797 7.82422 13.1797H2.17578C1.91516 13.1797 1.70312 12.9677 1.70312 12.707V5.17578C1.70312 4.91516 1.91516 4.70312 2.17578 4.70312H7.82422C8.08484 4.70312 8.29688 4.91516 8.29688 5.17578V12.707Z" />
+                                                                                <path d="M3.11719 5.64844C2.85831 5.64844 2.64844 5.85831 2.64844 6.11719V11.7656C2.64844 12.0245 2.85831 12.2344 3.11719 12.2344C3.37606 12.2344 3.58594 12.0245 3.58594 11.7656V6.11719C3.58594 5.85831 3.37606 5.64844 3.11719 5.64844Z" />
+                                                                                <path d="M5 5.64844C4.74112 5.64844 4.53125 5.85831 4.53125 6.11719V11.7656C4.53125 12.0245 4.74112 12.2344 5 12.2344C5.25888 12.2344 5.46875 12.0245 5.46875 11.7656V6.11719C5.46875 5.85831 5.25888 5.64844 5 5.64844Z" />
+                                                                                <path d="M6.88281 5.64844C6.62394 5.64844 6.41406 5.85831 6.41406 6.11719V11.7656C6.41406 12.0245 6.62394 12.2344 6.88281 12.2344C7.14169 12.2344 7.35156 12.0245 7.35156 11.7656V6.11719C7.35156 5.85831 7.14169 5.64844 6.88281 5.64844Z" > </path>
+                                                                            </svg>Cabin baggage {segmentsPrice[0].fd.ADULT.bI.cB}
+                                                                        </li>
+                                                                        {/* <li className="meal">
                                                                         <svg width={16} height={12} viewBox="0 0 16 12" xmlns="http://www.w3.org/2000/svg">
                                                                             <path d="M15.001 9.093C15.029 6.624 13.786 4.329 11.658 3.029C10.934 2.587 10.15 2.302 9.349 2.144C9.443 1.948 9.5 1.731 9.5 1.5C9.5 0.673 8.827 0 8 0C7.173 0 6.5 0.673 6.5 1.5C6.5 1.731 6.557 1.948 6.651 2.144C5.85 2.302 5.066 2.586 4.342 3.028C2.214 4.328 0.971 6.623 0.999 9.092C0.419 9.3 0 9.849 0 10.5C0 11.327 0.673 12 1.5 12H14.5C15.327 12 16 11.327 16 10.5C16 9.849 15.581 9.3 15.001 9.093ZM8 1C8.275 1 8.5 1.225 8.5 1.5C8.5 1.77 8.284 1.988 8.016 1.997C8.005 1.997 7.994 1.997 7.984 1.997C7.716 1.988 7.5 1.77 7.5 1.5C7.5 1.225 7.725 1 8 1ZM4.863 3.882C5.823 3.296 6.898 3.002 7.974 2.998C7.983 2.997 7.991 3 8 3C8.009 3 8.017 2.998 8.026 2.997C9.102 3.002 10.177 3.295 11.136 3.881C12.938 4.982 14 6.914 14.003 9H1.997C2 6.914 3.062 4.982 4.863 3.882ZM14.5 11H1.5C1.225 11 1 10.775 1 10.5C1 10.225 1.225 10 1.5 10H14.5C14.775 10 15 10.225 15 10.5C15 10.775 14.775 11 14.5 11Z" />
                                                                         </svg>Free Meal
@@ -308,53 +328,160 @@ export default function BookTicket() {
                                                                  */}
 
 
-                                  </div>
-                                </div>
-                              </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
 
-                             
-                              <div className="item-timeline">
-                                <div className="item-line-timeline">
-                                  <div className="time-flight">
-                                    <p className="text-sm-bold neutral-1000 icon-time">
-                                      {arr.format('HH:mm')}
-                                    </p>
-                                    <p className="text-sm-medium neutral-500">
-                                      {arr.format('DD MMM YYYY')}
-                                    </p>
-                                  </div>
-                                  <div className="location-flight">
-                                    <p className="text-xl-bold neutral-1000">
-                                      {seg.aa.city} ({seg.aa.code})
-                                    </p>
-                                    <p className="text-sm-medium neutral-500">
-                                      {seg.aa.name}
-                                      {seg.aa.terminal ? ` • ${seg.aa.terminal}` : ''}
-                                    </p>
-                                  </div>
+
+                                                            <div className="item-timeline">
+                                                                <div className="item-line-timeline">
+                                                                    <div className="time-flight">
+                                                                        <p className="text-sm-bold neutral-1000 icon-time">
+                                                                            {arr.format('HH:mm')}
+                                                                        </p>
+                                                                        <p className="text-sm-medium neutral-500">
+                                                                            {arr.format('DD MMM YYYY')}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="location-flight">
+                                                                        <p className="text-xl-bold neutral-1000">
+                                                                            {seg.aa.city} ({seg.aa.code})
+                                                                        </p>
+                                                                        <p className="text-sm-medium neutral-500">
+                                                                            {seg.aa.name}
+                                                                            {seg.aa.terminal ? ` • ${seg.aa.terminal}` : ''}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </React.Fragment>
+                                                    )
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
+
+
+                                    <section aria-labelledby="applicant-information-title" className='mt-20'>
+                                        <div className="bg-white shadow sm:rounded-lg relative">
+                                            <div className="px-4 py-3 border_xcolor_1px">
+                                                <h2
+                                                    id="applicant-information-title"
+                                                    className="text-lg leading-6 font-bold text-gray-900"
+                                                >
+                                                    Traveller Details
+
+                                                </h2>
+                                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                                    Log in to view your saved traveller list, unlock amazing deals & much more!
+                                                </p>
+
+                                                <a className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4" href="#">Login
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 15L15 8L8 1M15 8L1 8" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> </path></svg></a>
+
+                                            </div>
+                                            <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
+                                                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                                                    <div className="sm:col-span-1">
+                                                        <dd className="mt-1 text-sm font-medium text-gray-900">
+                                                            <Avatar className='mr-1' style={{ backgroundColor: '#ebc7ff' }} icon={<UserOutlined className='text-black' />} /> ADULT (12 yrs+)
+                                                        </dd>
+                                                    </div>
+                                                    <div className="sm:col-span-1">
+                                                        <dd className="mt-1 text-sm font-medium text-gray-900 text-right">0/1 added</dd>
+                                                    </div>
+
+
+                                                    <div className="sm:col-span-2">
+                                                        {/* <dt className="text-sm font-medium text-gray-500">Attachments</dt> */}
+                                                        <dd className="text-sm text-gray-900">
+                                                            <ul
+                                                                role="list"
+                                                                className="border border-gray-200 rounded-md divide-y divide-gray-200"
+                                                            >
+                                                                <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm border_xcolor_1px">
+                                                                    <div className="w-0 flex-1 flex items-center">
+                                                                        {/* Heroicon name: solid/paper-clip */}
+
+                                                                        <span className="ml-2 flex-1 w-0 truncate">
+                                                                            {" "}
+                                                                            You have not added any adults to the list {" "}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="ml-4 flex-shrink-0">
+                                                                        <a
+                                                                            href="#"
+                                                                            className="font-medium text-blue-600 hover:text-blue-500"
+                                                                        >
+                                                                            {" "}
+                                                                            + ADD NEW ADULT {" "}
+                                                                        </a>
+                                                                    </div>
+                                                                </li>
+
+                                                            </ul>
+                                                        </dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+
+                                            <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
+                                                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                                                    <div className="sm:col-span-1">
+                                                        <dd className="mt-1 text-md font-bold text-gray-900">
+                                                          Booking details will be sent to
+                                                        </dd>
+                                                    </div>
+                                                  
+
+
+                                                    <div className="sm:col-span-2">
+                                                        {/* <dt className="text-sm font-medium text-gray-500">Attachments</dt> */}
+                                                        <dd className="text-sm text-gray-900">
+                                                            <ul
+                                                                role="list"
+                                                                className="border border-gray-200 rounded-md divide-y divide-gray-200"
+                                                            >
+                                                            
+                                                            {/* <Form.Item
+        name="phone"
+        label="Phone Number"
+        rules={[{ required: true, message: 'Please input your phone number!' }]}
+      >
+        <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
+      </Form.Item> */}
+                                                            </ul>
+                                                        </dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                            <div>
+                                                <a
+                                                    href="#"
+                                                    className="block bg-gray-50 text-sm font-medium text-gray-500 text-center px-4 py-4 hover:text-gray-700 sm:rounded-b-lg"
+                                                >
+                                                    Read full application
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </section>
+
+
                                 </div>
-                              </div>
-                            </React.Fragment>
-                          )
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="col-lg-4">
-                  <div className="booking-form">
-                    <div className="head-booking-form">
-                      <p className="text-xl-bold neutral-1000">Fare Summary</p>
-                    </div>
-                    <BookingForm />
-                  </div>
-                  {/* …side banners… */}
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-      </Layout>
-    </>
-  )
+                                <div className="col-lg-4">
+                                    <div className="booking-form">
+                                        <div className="head-booking-form">
+                                            <p className="text-xl-bold neutral-1000">Fare Summary</p>
+                                        </div>
+                                        <BookingForm />
+                                    </div>
+                                    {/* …side banners… */}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </main>
+            </Layout>
+        </>
+    )
 }

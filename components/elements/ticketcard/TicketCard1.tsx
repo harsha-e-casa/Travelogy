@@ -53,6 +53,7 @@
 // 	)
 // }
 
+
 import Link from 'next/link'
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
@@ -61,66 +62,66 @@ import { Input, Radio } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
 
 
-
 export default function TicketCard1({ ticket }: any) {
 
-	const formatTime = (minutes:any) => {
-		  const hours = Math.floor(minutes / 60);
-		  const remainingMinutes = minutes % 60;
-		  return `${hours}h ${remainingMinutes}m`;
+	const formatTime = (minutes: any) => {
+		const hours = Math.floor(minutes / 60);
+		const remainingMinutes = minutes % 60;
+		return `${hours}h ${remainingMinutes}m`;
 	};
 
 
 	console.log(ticket);
 	
-const style: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 8,
-};
-
-
-  const [value, setValue] = useState(0);
-
-  const onChange = (e: RadioChangeEvent) => {
-    setValue(e.target.value);
-	console.log("the value is",value)
-  };
-
-  
-
+	const style: React.CSSProperties = {
+	  display: 'flex',
+	  flexDirection: 'column',
+	  gap: 8,
+	};
+	
+	
+	  const [value, setValue] = useState(0);
+	
+	  const onChange = (e: RadioChangeEvent) => {
+		setValue(e.target.value);
+		console.log("the value is",value)
+	  };
+	
 
 	return (
 		<>
-		<div>
-           
-		   <div className="item-flight background-card border-1 ticket-container relative">
-			
-             
-               {/* city1 */}
+			<div>
+				<div>
 
-			   <div className='air_detailes'>
-			    {ticket.sI[0]['fD'].aI.name}
-			   </div>
-				
-				<div className="flight-route flight-route-type-2 city1">
-					<div className="flight-route-1">
-						<div className="flight-name">
-							 
-							<div className="flight-info flex flex-col justify-center items-center">
-								<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['da'].city} ({ticket.sI[0]['da'].code})</p>
-								<p className="text-sm-medium time-flight timelogo"> 
-									<span className="neutral-1000 time">
-									{dayjs(ticket.sI[0]['dt']).format('hh:mm A')}
-									</span>
-								</p>
+				</div>
+				<div className="item-flight background-card border-1 ticket-container relative">
+
+
+					{/* city1 */}
+
+					<div className='air_detailes'>
+						{ticket.sI[0]['fD'].aI.name}
+					</div>
+
+					<div className="flight-route flight-route-type-2 city1">
+						<div className="flight-route-1">
+							<div className="flight-name">
+
+								<div className="flight-info flex flex-col justify-center items-center">
+									<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['da'].city} ({ticket.sI[0]['da'].code})</p>
+									<p className="text-sm-medium time-flight timelogo">
+										<span className="neutral-1000 time">
+											{dayjs(ticket.sI[0]['dt']).format('hh:mm A')}
+										</span>
+									</p>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-						
-			{/* duration */}
-			<div className="flight-route flight-route-type-2 city1">
+
+
+{/* duration */}
+<div className="flight-route flight-route-type-2 city1">
 			<div className="flight-route-1">
 				<div className=" flight-name duration flex flex-col items-center align-center">	    
 					<p className="text-sm-medium neutral-500 totalduration"> {formatTime(ticket.sI[0]['duration'])} </p>
@@ -133,61 +134,79 @@ const style: React.CSSProperties = {
 				</div>
 				</div>
 				
-            {/* city2 */}
-		<div className="flight-route flight-route-type-2 city1">
-            
-			<div className="flight-route-1">
-                <div className="flight-name">
-		                    
-							 <div className="flight-info flex flex-col items-center align-center">
-								<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['aa'].city} ({ticket.sI[0]['aa'].code})</p>
-								<p className="text-sm-medium time-flight timelogo"> 
-									<span className="neutral-1000 time">{dayjs(ticket.sI[0]['at']).format('hh:mm A')} </span></p>
-							 </div>
-				</div>
-			</div>
-		</div>
+					{/* duration */}
+					{/* <div className="flight-route flight-route-type-2 city1">
+						<div className="flight-route-1">
+							<div className=" flight-name duration flex flex-col items-center align-center">
+								<p className="text-sm-medium neutral-500 totalduration"> {formatTime(ticket.sI[0]['duration'])} </p>
+								<p className="text-sm-medium neutral-500 totalduration"> {ticket.sI[0]['stops'] > 0 ? ticket.sI[0]['stops']`stops` : 'non stop'} </p>
+							</div>
+						</div>
+					</div> */}
 
-            {/* price and btn */}
-				
+					{/* city2 */}
+					<div className="flight-route flight-route-type-2 city1">
+
+						<div className="flight-route-1">
+							<div className="flight-name">
+
+								<div className="flight-info flex flex-col items-center align-center">
+									<p className="text-md-bold neutral-1000 city1name">{ticket.sI[0]['aa'].city} ({ticket.sI[0]['aa'].code})</p>
+									<p className="text-sm-medium time-flight timelogo">
+										<span className="neutral-1000 time">{dayjs(ticket.sI[0]['at']).format('hh:mm A')} </span></p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					{/* price and btn */}
+
 					{/* price */}
 
 					{/* ticket.sI['totalPriceList'] */}
-				<div className="flight-price-1 border-1 price-div flex justify-center items-center flex-col items-center border border-black-200 " style={{paddingRight:"200px"}}>
+					{/* <div className="flight-price-1 border-1 price-div flex justify-center flex-col items-center ">
+						<p className="text-sm-medium neutral-500 business">{ticket.totalPriceList[0]['fd']['ADULT']['cc']}</p>
+						<p className="heading-5 neutral-1000 price">₹{new Intl.NumberFormat('en-IN').format(ticket.totalPriceList[0]['fd']['ADULT']['fC']['BF']) // 27,387
+						} </p>
+						 */}
+					{/* </div> */}
+
+					<div className="flight-price-1 border-1 price-div flex justify-center items-center flex-col items-center border border-black-200 " style={{paddingRight:"200px"}}>
 						
-					<Radio.Group onChange={onChange} value={value} className="fare-options flex flex-col gap-2  w-full" >
-                              {ticket.totalPriceList.map((e: any, i: number) => {
-                              
+						<Radio.Group onChange={onChange} value={value} className="fare-options flex flex-col gap-2  w-full" >
+								  {ticket.totalPriceList.map((e: any, i: number) => {
+								  
+	
+						 return (
+							 <Radio key={i} value={i} className="w-full">
+									<div className={`p-0 rounded-lg border-2 transition-all duration-200 
+												   ${'border-gray-300 hover:border-gray-500'}`} >
+											   <div className='flex flex-row gap-2 items-center'>
+													  <div className="text-lg font-bold text-gray-800" >
+												   ₹{new Intl.NumberFormat('en-IN').format(e.fd.ADULT.fC.BF)}
+													  </div>
+	
+													  <span className="   text-xs font-bold" style={{backgroundColor:"#f5deb3",color:"#5c4033",padding:"1px 2px"}}>
+												   {e.fareIdentifier}
+												   </span>{' '}
+											   </div>
+					 
+											 <div className="text-xs text-gray-600">
+												   <span className="ml-2">
+												{e.fd.ADULT.cc} | {e.fd.rT === 1 ? 'Non-refundable' : 'Refundable'}
+												</span>
+											</div>
+									</div>
+							</Radio>
+								);
+										 
+										 })}
+						</Radio.Group>
+					</div>
 
-                     return (
-                         <Radio key={i} value={i} className="w-full">
-                                <div className={`p-0 rounded-lg border-2 transition-all duration-200 
-								               ${'border-gray-300 hover:border-gray-500'}`} >
-	       		                        <div className='flex flex-row gap-2 items-center'>
-	       		                               <div className="text-lg font-bold text-gray-800" >
-                                               ₹{new Intl.NumberFormat('en-IN').format(e.fd.ADULT.fC.BF)}
-	       	                                   </div>
 
-	       	                                   <span className="   text-xs font-bold" style={{backgroundColor:"#f5deb3",color:"#5c4033",padding:"1px 2px"}}>
-                                               {e.fareIdentifier}
-                                               </span>{' '}
-	       		                        </div>
-                 
-                                         <div className="text-xs text-gray-600">
-	       	                                <span className="ml-2">
-                                            {e.fd.ADULT.cc} | {e.fd.rT === 1 ? 'Non-refundable' : 'Refundable'}
-                                            </span>
-                                        </div>
-                                </div>
-                        </Radio>
-                            );
-                                     
-									 })}
-                    </Radio.Group>
-                </div>
- 
 
-                 {/* btn */}
+					{/* btn */}
 					<div className="flight-price-2 border-1 btndiv">
 					<Link
                      href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
@@ -197,22 +216,21 @@ const style: React.CSSProperties = {
                      </Link>
 					</div>
 
-			    
+				</div>
+
+
+
+
+
 			</div>
 
 
 
 
 
-		</div>
-			
 
 
 
-
-
-
-				
 		</>
 	)
 }

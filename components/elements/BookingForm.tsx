@@ -28,7 +28,7 @@ export default function BookingForm() {
 								<p className="text-md-medium neutral-500 mr-30">Airline GST</p>
 							</div>
 							<div className="dropdown-quantity">
-							₹305.00
+							₹8,305.00
 							</div>
 						</div>
 						
@@ -44,7 +44,7 @@ export default function BookingForm() {
 								<p className="text-md-medium neutral-500 mr-30">Airline GST</p>
 							</div>
 							<div className="dropdown-quantity">
-							₹305.00
+							₹7,305.00
 							</div>
 						</div>
 						
@@ -87,7 +87,7 @@ export default function BookingForm() {
 				</div> */}
 				<div className="item-line-booking last-item"> <strong className="text-md-bold neutral-1000">Total Amount:</strong>
 					<div className="line-booking-right">
-						<p className="text-xl-bold neutral-1000">$124.00</p>
+						<p className="text-xl-bold neutral-1000">₹ 11,2800.00</p>
 					</div>
 				</div>
 				<div className="box-button-book"> <a className="btn btn-book" href="#">Book Now

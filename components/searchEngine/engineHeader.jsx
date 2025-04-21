@@ -43,7 +43,9 @@ const EngineTabs = ({active_border}) => {
   const [openDateRage, setOpenDateRage] = useState(false);
   const [openDateRageR, setOpenDateRageR] = useState(false);
   const [showTraveller, setShowYTraveller] = useState(false);
-  const [datedep, setDatedep] = useState(dayjs());
+  // const [datedep, setDatedep] = useState(dayjs());
+  const [datedep, setDatedep] = useState(dayjs(dayjs().format('YYYY-MM-DD')));
+
   const [datedepr, setDatedepr] = useState(dayjs().add(2, 'day'));
   const dateRangeRef = useRef(null); // Ref for date range container
 
@@ -74,7 +76,9 @@ const EngineTabs = ({active_border}) => {
     let children = getCookie('gy_child')
     let cabinType = getCookie('gy_class')
     let departDate = getCookie('gy_trd')
-    alert(departDate);
+    let departureFromSr = getCookie('gy_da_str')
+    let arrivalToSr = getCookie('gy_aa_str')
+    let tripType = getCookie('gy_triptype')
     
     
     const mydata = { 
@@ -83,7 +87,10 @@ const EngineTabs = ({active_border}) => {
       adults: adults,
       children: children,
       cabinType: cabinType,
-      departDate: departDate
+      departDate: departDate,
+      departureFromSr: departureFromSr,
+      arrivalToSr: arrivalToSr,
+      tripType: tripType
     };
 
     const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
@@ -165,14 +172,24 @@ const EngineTabs = ({active_border}) => {
   },[selectFromSub]);
 
   useEffect(() => {
+    setCookie('gy_da_str', selectFrom.trim());
+  },[selectFrom]);
+
+  useEffect(() => {
     setCookie('gy_aa', selectFromSubTo.trim());
   },[selectFromSubTo]);
+
+  useEffect(() => {
+    setCookie('gy_aa_str', selectFromTo.trim());
+  },[selectFromTo]);
+
 
   useEffect(() => {
     
     if(datedep){
       const formattedDate = dayjs(datedep);
-      setCookie('gy_trd', datedep);
+      // setCookie('gy_trd', datedep);
+      setCookie('gy_trd', formattedDate.format('YYYY-MM-DD'));
 
       setDd_monthStr(formattedDate.format('MMM')); // Format as string
       setDd_strdate(formattedDate.format('dddd')); // Format as string
@@ -183,13 +200,17 @@ const EngineTabs = ({active_border}) => {
   },[datedep]);
 
   useEffect(() => {
-    
+
+    setCookie('gy_triptype', selectedPlan);
+
     if(datedepr && selectedPlan === 'round-trip'){
       const formattedDateR = dayjs(datedepr)
+      setCookie('gy_trd', formattedDateR.format('YYYY-MM-DD'));
       setDdr_monthStr(formattedDateR.format('MMM')); // Format as string
       setDdr_strdate(formattedDateR.format('dddd')); // Format as string
       setDdr_date(formattedDateR.format('DD')); // Format as string
       setDdr_year(formattedDateR.format('YY')); // Format as string
+      
     }
 
   },[datedepr, selectedPlan]);
@@ -303,7 +324,7 @@ const EngineTabs = ({active_border}) => {
       </div>
 
        {showSearchState ? 
-          <div className="searchFfromSelect">
+          <div className="searchFfromSelect searchFfromSelect_1">
             <AppListSearch operEngLocation={openfrom} setSelectFrom={setSelectFrom} setSelectFromSub={setSelectFromSub} />
           </div>
            : null }
@@ -332,7 +353,7 @@ const EngineTabs = ({active_border}) => {
         </div>
       </div>
        {showSearchStateTo ? 
-          <div className="searchFfromSelect">
+          <div className="searchFfromSelect searchFfromSelect_1">
           <AppListSearch operEngLocation={openTo} setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} />
           </div>
            : null }

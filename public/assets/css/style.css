@@ -18398,7 +18398,7 @@ h2 span {
 /*  padding-inline-start: 0px;*/
 }
 
-.searchFfromSelect{
+.searchFfromSelect_1{
 /*  width: 280px;*/
   width: 100%;
   left:2px;
@@ -18410,6 +18410,20 @@ h2 span {
 /*  top: 0px;*/
   bottom: 0px;
 }
+
+.searchFfromSelect_2{
+   width: 280px;
+    /* width: 100%; */
+    top: 80px;
+    left:2px;
+  /*  padding: 2px;*/
+    background: white;
+    height: auto;
+    position: absolute;
+  /*  box-shadow: 0 1px 6px 0 rgb(0 0 0 / 20%);*/
+  /*  top: 0px;*/
+    /* bottom: 0px; */
+  }
 
 .truncate-text {
   width: 200px;            /* Set a specific width */
@@ -18918,3 +18932,8 @@ md  48rem (768px) @media (width >= 48rem) { ... }
 lg  64rem (1024px)  @media (width >= 64rem) { ... }
 xl  80rem (1280px)  @media (width >= 80rem) { ... }
 2xl 96rem (1536px)  @media (width >= 96rem) { ... }*/
+
+
+.border_xcolor_1px{
+  border-bottom: 1px solid #ebe7e7;
+}
