@@ -3,12 +3,12 @@
 import BookingForm from '@/components/elements/BookingForm'
 import Layout from "@/components/layout/Layout"
 import Link from "next/link"
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { postDataFlightDetails } from '../../services/NetworkAdapter'
 import dayjs from 'dayjs'
-import { useSearchParams } from 'next/navigation'
-import { Avatar, Space } from 'antd';
-
+import { useSearchParams, useRouter } from 'next/navigation'
+import { AppContext } from '@/util/AppContext'
+import { Avatar, Space } from 'antd'; 
 import { UserOutlined } from '@ant-design/icons';
 
 
@@ -31,6 +31,9 @@ const url = 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg
 
 export default function BookTicket() {
     const searchParams = useSearchParams()
+    const router = useRouter();
+
+    const{getCookie } = useContext(AppContext);
 
     interface FlightSegment {
         id: string
@@ -106,12 +109,12 @@ export default function BookTicket() {
 
             // ←— NEW: pull totalPriceList into state
             setSegmentsPrice(firstTrip.totalPriceList ?? [])
-        } catch (err: any) {
-            console.error(err)
-            setError(err.message || 'Unknown error')
-        } finally {
+          } catch (err: any) {
+            console.error("error caused",err)
+            setError('Keys Passed in the request is already expired. Please pass valid keys')
+          } finally {
             setLoading(false)
-        }
+          }
     }
 
     const tcs_id = searchParams.get('tcs_id')
@@ -132,6 +135,37 @@ export default function BookTicket() {
         </Form.Item>
     );
 
+    useEffect(()=>{
+      console.log("segmentPrice",segmentsPrice)
+   },[segmentsPrice])
+  
+   
+    
+   const searchTickets = () => {
+  
+    let departureFrom = getCookie('gy_da')
+    let arrivalTo = getCookie('gy_aa')
+    let adults = getCookie('gy_adult')
+    let children = getCookie('gy_child')
+    let cabinType = getCookie('gy_class')
+    let departDate = getCookie('gy_trd')
+     
+    
+    const mydata = { 
+      departureFrom: departureFrom,
+      arrivalTo: arrivalTo,
+      adults: adults,
+      children: children,
+      cabinType: cabinType,
+      departDate: departDate
+    };
+  
+    const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+  
+    router.push(`/tickets?${queryString}`);
+  
+  };
+  
     return (
         <>
             <Layout headerStyle={1} footerStyle={1}>
@@ -153,13 +187,22 @@ export default function BookTicket() {
                         </div>
                     </section>
 
-                    {/* Breadcrumb etc… */}
+             {/* Breadcrumb etc… */}
                     <section className="section-box block-content-book-tickets background-card">
                         <div className="container pt-60">
                             <h4 className="neutral-1000 mb-20">Complete your booking</h4>
 
                             {loading && <p>Loading flights…</p>}
-                            {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+                            {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+                          <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
+                                 
+                            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
+                           Ok, Got It
+                           </button>
+                                
+                              </div>
+                            </div>}
 
                             {/* ←— NEW: Fare summary list */}
                             {segmentsPrice.length > 0 && (
