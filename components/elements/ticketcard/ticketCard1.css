@@ -1,0 +1,127 @@
+
+@media (max-width: 639px){
+    .item-flight{
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      width: max-content;
+      font-size: smaller;
+    }
+    .city1 p{
+        font-size: 15px;
+    }
+    .duration p{
+        font-size: 15px;
+    }
+    .citycode{
+        font-size: 13px;
+    }
+    .time{
+        font-size: 13px;
+    }
+    .radiodiv{
+       
+        font-size: 13px;
+    }
+    .radiocomp{
+      width: 160px;
+    }
+    .price{
+        font-size: 17px;
+        
+    }
+    .fareidentifier{
+        font-size: 10px;
+        
+    }
+    .cabinclass{
+        font-size: 10px;
+        display: block;
+    }
+    .refundable{
+        font-size: 12px;
+        color: grey;
+    }
+    .btn{
+        
+        padding: none;
+        width: max-content;
+    }
+
+} 
+
+@media (min-width: 640px) and (max-width: 992px) {
+   .btn{
+    width: max-content;
+   }
+   .cabinclass{
+    
+    display: inline;
+}
+.radiocomp{
+    width: 200px;
+    
+}
+.cabinclass{
+    display: block;
+}
+  }
+
+@media (min-width:993px) and (max-width:1023px) {
+    .item-flight{
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        width: max-content;
+        font-size: smaller;
+      }
+      .city1 p{
+          font-size: 12px;
+          
+      }
+      .duration p{
+          font-size: 10px;
+      }
+      .citycode{
+          font-size: 12px;
+      }
+      .time{
+          font-size: 13px;
+         
+      }
+      .radiodiv{
+         
+          font-size: 13px;
+      }
+      .radiocomp{
+        width: 160px;
+        padding-left: 5px;
+        border: black solid 2px;
+      }
+      .price{
+          font-size: 17px;
+          
+      }
+      .fareidentifier{
+          font-size: 10px;
+          
+      }
+      .cabinclass{
+          font-size: 10px;
+          display: block;
+      }
+      .refundable{
+          font-size: 12px;
+          color: grey;
+      }
+      .btndiv{
+          
+          padding: none;
+          width: max-content;
+          
+      }
+      .price-div{
+        width:100px;
+        
+      }
+}

@@ -1,18 +1,63 @@
 
-export default function BookingForm() {
+export default function BookingForm({segmentsPrice}) {
+	console.log("return segmentsPrice",segmentsPrice)
+	const othertaxes=segmentsPrice?.map((data1: any, index: number) => (
+		 Number(data1.fd?.ADULT?.afC?.TAF?.OT)
+	 ))
+	 const Airlinegst=segmentsPrice?.map((data1: any, index: number) => (
+		Number(data1.fd?.ADULT?.afC?.TAF?.AGST)
+	))
+	
+	const basefare=segmentsPrice?.map((data1: any, index: number) => (
+		Number((data1.fd?.ADULT?.fC?.BF))))
+	
+		const netfare=segmentsPrice?.map((data1: any, index: number) => (
+			Number((data1.fd?.ADULT?.fC?.NF))))
+
+			const totalfare=Number(othertaxes)+Number(Airlinegst)
+			console.log("totalfare",totalfare)
+			const totalpricee=Number(totalfare)+Number(basefare)
+			console.log("basefare",basefare)
+			console.log("totalprice",totalpricee)
 	return (
+		
 		<>
 			<div className="content-booking-form">
 			
+				<div className="item-line-booking flex flex-row">
+					<div className="box-tickets"><strong className="text-md-bold neutral-1000">Base Fare:</strong></div>
+					<div className="line-booking-tickets ">
+							
+							<div className="dropdown-quantity text-md-bold neutral-1000">
+							<p>₹{basefare}</p>
+							</div>
+					</div>
+					
+				</div>
+
 				<div className="item-line-booking">
-					<div className="box-tickets"><strong className="text-md-bold neutral-1000">Base Fare:</strong>
+					<div className="box-tickets">
+						<div className="flex flex-row justify-between">
+							<div><strong className="text-md-bold neutral-1000">Taxes and fees</strong></div>
+							<div className="text-md-bold neutral-1000">₹{Number(othertaxes)+Number(Airlinegst)}</div>
+						</div>
 					
 						<div className="line-booking-tickets">
 							<div className="item-ticket">
-								<p className="text-md-medium neutral-500 mr-30">Airline GST</p>
+								<p className="text-small neutral-500 mr-30">Airline GST</p>
+								
 							</div>
 							<div className="dropdown-quantity">
-							₹305.00
+							<p>₹{Airlinegst}</p>
+							</div>
+						</div>
+						<div className="line-booking-tickets">
+							<div className="item-ticket">
+								<p className="text-small neutral-500 mr-30">Other Taxes</p>
+								
+							</div>
+							<div className="dropdown-quantity">
+							<p>₹{othertaxes}</p>
 							</div>
 						</div>
 						
@@ -21,33 +66,39 @@ export default function BookingForm() {
 				</div>
 
 				<div className="item-line-booking">
-					<div className="box-tickets"><strong className="text-md-bold neutral-1000">Taxes and fees:</strong>
+					<div className="box-tickets">
+						<div className="flex flex-row justify-between">
+							<div><strong className="text-md-bold neutral-1000">Amount to Pay</strong></div>
+							<div className="text-xl-bold neutral-1000">₹{totalpricee}</div>
+						</div>
 					
 						<div className="line-booking-tickets">
 							<div className="item-ticket">
-								<p className="text-md-medium neutral-500 mr-30">Airline GST</p>
+								<p className="text-small neutral-500 mr-30">Commisiion</p>
+								
 							</div>
 							<div className="dropdown-quantity">
-							₹8,305.00
+							<p>₹0.0</p>
 							</div>
 						</div>
-						
-					</div>
-					
-				</div>
-
-				<div className="item-line-booking">
-					<div className="box-tickets"><strong className="text-md-bold neutral-1000">Amount to Pay:</strong>
-					
 						<div className="line-booking-tickets">
 							<div className="item-ticket">
-								<p className="text-md-medium neutral-500 mr-30">Airline GST</p>
+								<p className="text-small neutral-500 mr-30">TDS</p>
+								
 							</div>
 							<div className="dropdown-quantity">
-							₹7,305.00
+							<p>₹0.0</p>
 							</div>
 						</div>
-						
+						<div className="line-booking-tickets">
+							<div className="item-ticket">
+								<p className="text-small neutral-500 mr-30">Net Price</p>
+								
+							</div>
+							<div className="dropdown-quantity">
+							<p>₹{totalpricee}</p>
+							</div>
+						</div>
 					</div>
 					
 				</div>
