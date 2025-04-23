@@ -15946,7 +15946,7 @@ h2 span {
   }
 
   .box-list-flights-2 .item-flight {
-    flex-wrap: wrap;
+    
   }
 
   .box-list-flights-2 .item-flight .flight-price {
@@ -16266,7 +16266,7 @@ h2 span {
   }
 
   .box-list-flights .item-flight {
-    flex-wrap: wrap;
+   
   }
 
   .box-list-flights .item-flight .flight-route {
@@ -18936,4 +18936,9 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 .border_xcolor_1px{
   border-bottom: 1px solid #ebe7e7;
+}
+
+.add_sticky{
+  position: sticky!important;
+  top: 0px!important;
 }

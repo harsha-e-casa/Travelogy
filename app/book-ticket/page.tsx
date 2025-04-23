@@ -10,7 +10,9 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { AppContext } from '@/util/AppContext'
 import { Avatar, Space } from 'antd'; 
 import { UserOutlined } from '@ant-design/icons';
-
+import AppFormAdult from './AppFormAdult.jsx';
+import AppFormCustomer from './AppFormCustomer.jsx';
+import { postDataTJBookingAir } from '../../services/NetworkAdapter'
 
 import {
     AutoComplete,
@@ -84,7 +86,14 @@ export default function BookTicket() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [totalpricee, setTotalpricee] = useState<string | null>(null)
+    const [tdnetPrice, setNetFare] = useState<string | null>(null)
+    const [bookingId, setBookingId] = useState<string | null>(null)
+    
+    
 
+  
+     
     const fetchFlights = async (priceId: string) => {
         setLoading(true)
         setError(null)
@@ -97,6 +106,8 @@ export default function BookTicket() {
             }
 
             const firstTrip = data.tripInfos?.[0]
+            setBookingId(data.bookingId)
+
             const segs = firstTrip?.sI
             const id = segs?.[0]?.id.trim()
 
@@ -109,6 +120,21 @@ export default function BookTicket() {
 
             // ←— NEW: pull totalPriceList into state
             setSegmentsPrice(firstTrip.totalPriceList ?? [])
+            const totalFareDetail = data.totalPriceInfo.totalFareDetail;
+
+            const totalFare = totalFareDetail.fC.TF; // 23070.00
+            const baseFare = totalFareDetail.fC.BF; // 20000.00
+            const taxesAndFees = totalFareDetail.fC.TAF; // 3070.00
+            const netFare = totalFareDetail.fC.NF; // 23070.00
+            setNetFare(netFare);
+
+            const yearlyRate = totalFareDetail.afC.TAF.YR; // 170.00
+            const otherCharges = totalFareDetail.afC.TAF.OT; // 479.00
+            const additionalGST = totalFareDetail.afC.TAF.AGST; // 2421.00
+
+
+
+            
           } catch (err: any) {
             console.error("error caused",err)
             setError('Keys Passed in the request is already expired. Please pass valid keys')
@@ -163,9 +189,78 @@ export default function BookTicket() {
     const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
   
     router.push(`/tickets?${queryString}`);
-  
+
   };
   
+  
+// Async function to fetch flight data
+const loadDataBook = async (parameter) => {
+    try {
+      console.log(parameter);
+      // Call your API function with the properly constructed parameter
+      const result = await postDataTJBookingAir(parameter);
+  console.log(result);
+
+      
+    } catch (err) {
+      console.error('Error while fetching flight data:', err);
+    
+      // Optionally, you can show an error message to the user here
+    }
+  };
+  
+  // Function to handle booking review and trigger loadDataBook
+  const bookingReview = () => {
+    if (tdnetPrice && bookingId) {
+      // Build the parameter object without extra curly braces
+      const parameter = {
+        bookingId: bookingId,
+        paymentInfos: [
+          {
+            amount: tdnetPrice
+          }
+        ],
+        travellerInfo: [
+          {
+            ti: 'Mr',
+            fN: 'Test',
+            lN: 'AdultA',
+            pt: 'ADULT'
+          }
+          // Uncomment and include more traveller details as needed:
+          // {
+          //   ti: 'Ms',
+          //   fN: 'Test',
+          //   lN: 'ChildA',
+          //   pt: 'CHILD'
+          // },
+          // {
+          //   ti: 'Master',
+          //   fN: 'Test',
+          //   lN: 'InfantA',
+          //   pt: 'INFANT',
+          //   dob: '2019-08-09'
+          // }
+        ],
+        // gstInfo: { // Uncomment this section when needed
+        //   gstNumber: '07AAGCT7826A1ZF',
+        //   email: 'prabhu@technogramsolutions.com',
+        //   registeredName: 'TGS Pvt Ltd',
+        //   mobile: '9538500324',
+        //   address: 'gurugram'
+        // },
+        deliveryInfo: {
+          emails: ['karthiccr07@gmail.com'],
+          contacts: ['7550071116']
+        }
+      };
+  
+      loadDataBook(parameter);
+    } else {
+      // Handle case when totalpricee is not set
+      console.error('Total price is not set');
+    }
+  };
     return (
         <>
             <Layout headerStyle={1} footerStyle={1}>
@@ -381,7 +476,7 @@ export default function BookTicket() {
 
                                             </div>
                                             <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
-                                                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                                                <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                                                     <div className="sm:col-span-1">
                                                         <dd className="mt-1 text-sm font-medium text-gray-900">
                                                             <Avatar className='mr-1' style={{ backgroundColor: '#ebc7ff' }} icon={<UserOutlined className='text-black' />} /> ADULT (12 yrs+)
@@ -399,9 +494,12 @@ export default function BookTicket() {
                                                                 role="list"
                                                                 className="border border-gray-200 rounded-md divide-y divide-gray-200"
                                                             >
-                                                                <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm border_xcolor_1px">
+                                                                <AppFormAdult />
+
+                                                                {/* <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm border_xcolor_1px">
+
+                                                               
                                                                     <div className="w-0 flex-1 flex items-center">
-                                                                        {/* Heroicon name: solid/paper-clip */}
 
                                                                         <span className="ml-2 flex-1 w-0 truncate">
                                                                             {" "}
@@ -417,14 +515,68 @@ export default function BookTicket() {
                                                                             + ADD NEW ADULT {" "}
                                                                         </a>
                                                                     </div>
-                                                                </li>
+                                                                </li> */}
 
                                                             </ul>
+
+                                                            
                                                         </dd>
                                                     </div>
                                                 </dl>
                                             </div>
 
+                                            <div className="px-4 py-3 border_xcolor_1px">
+                                                <h2
+                                                    id="applicant-information-title"
+                                                    className="text-lg leading-6 font-bold text-gray-900"
+                                                >
+                                                    Booking details will be sent to
+
+                                                </h2>
+                                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                                This is where your confirmation will be sent
+
+                                                </p>
+
+                                                <a className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4" href="#">Login
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 15L15 8L8 1M15 8L1 8" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> </path></svg></a>
+
+                                            </div>
+                                            <AppFormCustomer />
+
+                                            
+                                            <div className="bg-white shadow sm:rounded-lg relative">
+                                            <div className="px-4 py-3 border_xcolor_1px flex justify-between">
+                                            <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
+                                             >
+                           Back
+                           </button>
+
+                           <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
+                                            onClick={bookingReview} >
+                           Continue
+                           </button>
+                                            </div>
+                                            </div>
+
+                                            <div className="px-4 py-3 border_xcolor_1px">
+                                                <h2
+                                                    id="applicant-information-title"
+                                                    className="text-lg leading-6 font-bold text-gray-900"
+                                                >
+                                                    Seats & Meals
+
+                                                </h2>
+                                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                                This is where your confirmation will be sent
+                                                </p>
+
+                                                <a className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4" href="#">Login
+                                                    <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 15L15 8L8 1M15 8L1 8" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> </path></svg></a>
+
+                                            </div>
+                                            
+{/* 
                                             <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
                                                 <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
                                                     <div className="sm:col-span-1">
@@ -436,44 +588,40 @@ export default function BookTicket() {
 
 
                                                     <div className="sm:col-span-2">
-                                                        {/* <dt className="text-sm font-medium text-gray-500">Attachments</dt> */}
+                                                       
                                                         <dd className="text-sm text-gray-900">
                                                             <ul
                                                                 role="list"
                                                                 className="border border-gray-200 rounded-md divide-y divide-gray-200"
                                                             >
                                                             
-                                                            {/* <Form.Item
-        name="phone"
-        label="Phone Number"
-        rules={[{ required: true, message: 'Please input your phone number!' }]}
-      >
-        <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
-      </Form.Item> */}
+                                                            
                                                             </ul>
                                                         </dd>
                                                     </div>
                                                 </dl>
-                                            </div>
-                                            <div>
+                                            </div> */}
+                                            {/* <div>
                                                 <a
                                                     href="#"
                                                     className="block bg-gray-50 text-sm font-medium text-gray-500 text-center px-4 py-4 hover:text-gray-700 sm:rounded-b-lg"
                                                 >
                                                     Read full application
                                                 </a>
-                                            </div>
+                                            </div> */}
                                         </div>
+                                        <br /><br />
                                     </section>
 
 
                                 </div>
                                 <div className="col-lg-4">
-                                    <div className="booking-form">
+                                    <div className="booking-form add_sticky">
                                         <div className="head-booking-form">
                                             <p className="text-xl-bold neutral-1000">Fare Summary</p>
                                         </div>
-                                        <BookingForm />
+
+                                        <BookingForm putTotalpricee={setTotalpricee} segmentsPrice={segmentsPrice} />
                                     </div>
                                     {/* …side banners… */}
                                 </div>

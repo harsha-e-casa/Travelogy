@@ -74,6 +74,7 @@ export default function Tickets() {
 	const { setCookie, getCookie } = useContext(AppContext);
 	const [flightData, setFlightData] = useState<any>(null)
 	const [activeFlight, setActiveFlight] = useState<any>(true)
+	const [loading,setloading]=useState<boolean>(false)
 
 	const router = useRouter()
 	const searchParams = useSearchParams()
@@ -198,6 +199,7 @@ export default function Tickets() {
 
 			setFlightData(null);
 			setActiveFlight(true);
+			setloading(true)
 
 			try {
 				console.log(parameter);
@@ -206,9 +208,17 @@ export default function Tickets() {
 				if (result && result.searchResult && result.searchResult.tripInfos) {
 					setFlightData(result.searchResult.tripInfos.ONWARD)
 					setActiveFlight(false);
+					setloading(false)
 				}
+				else{
+					setloading(false)
+					setActiveFlight(false);
+				}
+
 			} catch (err) {
 				console.error('Error while fetching flight data:', err)
+				setloading(false)
+				setActiveFlight(false);
 			}
 		}
 
@@ -454,10 +464,75 @@ export default function Tickets() {
 											sortedTickets={sortedTickets}
 										/>
 									</div>
+                                   
+									{ loading && <div className="box-list-flights box-list-flights-2">
+												<div>
+													<div />
+													
+													<div className="item-flight background-card border-1 ticket-container relative">
+														<div className="air_detailes"></div>
+														<div className="flight-route flight-route-type-2 city1">
+														</div>
+														
+														<Skeleton active={activeFlight} />
+													</div>
+													
+												</div>
+	
+												<div>
+													<div />
+													
+													<div className="item-flight background-card border-1 ticket-container relative">
+														<div className="air_detailes"></div>
+														<div className="flight-route flight-route-type-2 city1">
+														</div>
+														
+														<Skeleton active={activeFlight} />
+													</div>
+													
+												</div>
+	
+												<div>
+													<div />
+													
+													<div className="item-flight background-card border-1 ticket-container relative">
+														<div className="air_detailes"></div>
+														<div className="flight-route flight-route-type-2 city1">
+														</div>
+														
+														<Skeleton active={activeFlight} />
+													</div>
+													
+												</div>
+	
+												<div>
+													<div />
+													
+													<div className="item-flight background-card border-1 ticket-container relative">
+														<div className="air_detailes"></div>
+														<div className="flight-route flight-route-type-2 city1">
+														</div>
+														
+														<Skeleton active={activeFlight} />
+													</div>
+													
+												</div>
+												<div>
+													<div />
+													
+													<div className="item-flight background-card border-1 ticket-container relative">
+														<div className="air_detailes"></div>
+														<div className="flight-route flight-route-type-2 city1">
+														</div>
+														
+														<Skeleton active={activeFlight} />
+													</div>
+													
+												</div>
+											</div>}
 
-
-									{flightData ?
-										<><div className="box-grid-tours">
+									{flightData && flightData.length>0 ?
+										(<><div className="box-grid-tours">
 											<div className="row">
 
 												<div className="box-list-flights box-list-flights-2">
@@ -477,75 +552,20 @@ export default function Tickets() {
 												handleNextPage={handleNextPage}
 												handlePageChange={handlePageChange}
 											/>
-										</> :
+											
+										</>) :(<>
+										{loading===false&&<div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+  
+  <p className="text-xl font-semibold">No result found</p>
+  <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
+</div>}
+											
+										</>)}
+										
 
-										<div className="box-list-flights box-list-flights-2">
-											<div>
-												<div />
-												
-												<div className="item-flight background-card border-1 ticket-container relative">
-													<div className="air_detailes"></div>
-													<div className="flight-route flight-route-type-2 city1">
-													</div>
-													
-													<Skeleton active={activeFlight} />
-												</div>
-												
-											</div>
+										
 
-											<div>
-												<div />
-												
-												<div className="item-flight background-card border-1 ticket-container relative">
-													<div className="air_detailes"></div>
-													<div className="flight-route flight-route-type-2 city1">
-													</div>
-													
-													<Skeleton active={activeFlight} />
-												</div>
-												
-											</div>
-
-											<div>
-												<div />
-												
-												<div className="item-flight background-card border-1 ticket-container relative">
-													<div className="air_detailes"></div>
-													<div className="flight-route flight-route-type-2 city1">
-													</div>
-													
-													<Skeleton active={activeFlight} />
-												</div>
-												
-											</div>
-
-											<div>
-												<div />
-												
-												<div className="item-flight background-card border-1 ticket-container relative">
-													<div className="air_detailes"></div>
-													<div className="flight-route flight-route-type-2 city1">
-													</div>
-													
-													<Skeleton active={activeFlight} />
-												</div>
-												
-											</div>
-											<div>
-												<div />
-												
-												<div className="item-flight background-card border-1 ticket-container relative">
-													<div className="air_detailes"></div>
-													<div className="flight-route flight-route-type-2 city1">
-													</div>
-													
-													<Skeleton active={activeFlight} />
-												</div>
-												
-											</div>
-										</div>
-
-									}
+									
 								</div>
 
 								{/* Left Sidebar Filters */}
