@@ -2,23 +2,23 @@
 export default function BookingForm({segmentsPrice}) {
 	console.log("return segmentsPrice",segmentsPrice)
 	const othertaxes=segmentsPrice?.map((data1: any, index: number) => (
-		 Number(data1.fd?.ADULT?.afC?.TAF?.OT)
+		 (data1.fd?.ADULT?.afC?.TAF?.OT)
 	 ))
 	 const Airlinegst=segmentsPrice?.map((data1: any, index: number) => (
-		Number(data1.fd?.ADULT?.afC?.TAF?.AGST)
+		(data1.fd?.ADULT?.afC?.TAF?.AGST)
 	))
 	
 	const basefare=segmentsPrice?.map((data1: any, index: number) => (
-		Number((data1.fd?.ADULT?.fC?.BF))))
+		((data1.fd?.ADULT?.fC?.BF))))
 	
-		const netfare=segmentsPrice?.map((data1: any, index: number) => (
-			Number((data1.fd?.ADULT?.fC?.NF))))
+	const netfare=segmentsPrice?.map((data1: any, index: number) => (
+			((data1.fd?.ADULT?.fC?.NF))))
 
 			const totalfare=Number(othertaxes)+Number(Airlinegst)
-			console.log("totalfare",totalfare)
+			
 			const totalpricee=Number(totalfare)+Number(basefare)
-			console.log("basefare",basefare)
-			console.log("totalprice",totalpricee)
+			
+			
 	return (
 		
 		<>
@@ -29,7 +29,7 @@ export default function BookingForm({segmentsPrice}) {
 					<div className="line-booking-tickets ">
 							
 							<div className="dropdown-quantity text-md-bold neutral-1000">
-							<p>₹{basefare}</p>
+							<p>₹{Number(basefare)}</p>
 							</div>
 					</div>
 					
@@ -48,7 +48,7 @@ export default function BookingForm({segmentsPrice}) {
 								
 							</div>
 							<div className="dropdown-quantity">
-							<p>₹{Airlinegst}</p>
+							<p>₹{Number(Airlinegst)}</p>
 							</div>
 						</div>
 						<div className="line-booking-tickets">
@@ -57,7 +57,7 @@ export default function BookingForm({segmentsPrice}) {
 								
 							</div>
 							<div className="dropdown-quantity">
-							<p>₹{othertaxes}</p>
+							<p>₹{Number(othertaxes)}</p>
 							</div>
 						</div>
 						
@@ -138,7 +138,7 @@ export default function BookingForm({segmentsPrice}) {
 				</div> */}
 				<div className="item-line-booking last-item"> <strong className="text-md-bold neutral-1000">Total Amount:</strong>
 					<div className="line-booking-right">
-						<p className="text-xl-bold neutral-1000">₹ 11,2800.00</p>
+						<p className="text-xl-bold neutral-1000">₹ {totalpricee}</p>
 					</div>
 				</div>
 				<div className="box-button-book"> <a className="btn btn-book" href="#">Book Now

@@ -9,6 +9,9 @@
     }
     .city1 p{
         font-size: 15px;
+        display: flex
+;
+        justify-content: center;
     }
     .duration p{
         font-size: 15px;
@@ -47,6 +50,11 @@
         padding: none;
         width: max-content;
     }
+    .flight-info{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
 } 
 
@@ -64,6 +72,11 @@
 }
 .cabinclass{
     display: block;
+}
+.city1 p{
+    
+    display: flex;
+    justify-content: center;
 }
   }
 
