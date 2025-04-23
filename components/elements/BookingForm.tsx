@@ -1,5 +1,5 @@
 
-export default function BookingForm({segmentsPrice}) {
+export default function BookingForm({segmentsPrice, putTotalpricee}) {
 	console.log("return segmentsPrice",segmentsPrice)
 	const othertaxes=segmentsPrice?.map((data1: any, index: number) => (
 		 Number(data1.fd?.ADULT?.afC?.TAF?.OT)
@@ -17,6 +17,10 @@ export default function BookingForm({segmentsPrice}) {
 			const totalfare=Number(othertaxes)+Number(Airlinegst)
 			console.log("totalfare",totalfare)
 			const totalpricee=Number(totalfare)+Number(basefare)
+
+			if(totalpricee){
+				putTotalpricee(totalpricee)
+			}
 			console.log("basefare",basefare)
 			console.log("totalprice",totalpricee)
 	return (
@@ -138,14 +142,15 @@ export default function BookingForm({segmentsPrice}) {
 				</div> */}
 				<div className="item-line-booking last-item"> <strong className="text-md-bold neutral-1000">Total Amount:</strong>
 					<div className="line-booking-right">
-						<p className="text-xl-bold neutral-1000">₹ 11,2800.00</p>
+						<p className="text-xl-bold neutral-1000">₹ {totalpricee}</p>
 					</div>
 				</div>
-				<div className="box-button-book"> <a className="btn btn-book" href="#">Book Now
+				{/* <div className="box-button-book"> <a className="btn btn-book" href="#">Book Now
 					<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M8 15L15 8L8 1M15 8L1 8" stroke='#0D0D0D' strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-					</svg></a></div>
-				<div className="box-need-help"> <a href="help-center.html">
+					</svg></a></div> */}
+					{/* <div className="box-need-help"> <a href="help-center.html"></a> */}
+				<div className="box-need-help"> <a href="#">
 					<svg width={12} height={14} viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M2.83366 3.66667C2.83366 1.92067 4.25433 0.5 6.00033 0.5C7.74633 0.5 9.16699 1.92067 9.16699 3.66667C9.16699 5.41267 7.74633 6.83333 6.00033 6.83333C4.25433 6.83333 2.83366 5.41267 2.83366 3.66667ZM8.00033 7.83333H4.00033C1.88699 7.83333 0.166992 9.55333 0.166992 11.6667C0.166992 12.678 0.988992 13.5 2.00033 13.5H10.0003C11.0117 13.5 11.8337 12.678 11.8337 11.6667C11.8337 9.55333 10.1137 7.83333 8.00033 7.83333Z" fill='#0D0D0D' />
 					</svg>Need some help?</a></div>

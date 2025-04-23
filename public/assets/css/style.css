@@ -18937,3 +18937,8 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .border_xcolor_1px{
   border-bottom: 1px solid #ebe7e7;
 }
+
+.add_sticky{
+  position: sticky!important;
+  top: 0px!important;
+}
