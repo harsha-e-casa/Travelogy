@@ -91,11 +91,11 @@ const EngineHeaderHotel = ({active_border}) => {
  
   const openTraveller = () => {
     setShowYTraveller((prevState) => !prevState); // Correct way to toggle the state
-    closeallform()
-    setShowYTraveller(true)
+   
+
   }
  
-
+ 
   useEffect(() => {
     
     if(datedep){

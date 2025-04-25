@@ -209,6 +209,7 @@ export default function Tickets() {
 					setFlightData(result.searchResult.tripInfos.ONWARD)
 					setActiveFlight(false);
 					setloading(false)
+				
 				}
 				else{
 					setloading(false)
@@ -556,7 +557,9 @@ export default function Tickets() {
 											/>
 											
 										</>) :(<>
-										{loading===false&&<div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+										 
+										 
+										 {loading===false&&<div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
   
   <p className="text-xl font-semibold">No result found</p>
   <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>

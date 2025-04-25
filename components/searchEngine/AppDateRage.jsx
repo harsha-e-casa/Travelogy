@@ -46,6 +46,7 @@ const AppDateRange = ({ openToDateRange, setDatedep }) => {
     if (dateString) { 
       setDatedep(dateString)
       openToDateRange();
+      setOpen(false);    
     } else {
       setDatedep(null)
       console.log('No dates selected');
