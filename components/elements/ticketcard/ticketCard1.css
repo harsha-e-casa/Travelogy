@@ -50,6 +50,7 @@
         padding: none;
         width: max-content;
     }
+
     .flight-info{
         display: flex;
         justify-content: center;
@@ -73,11 +74,13 @@
 .cabinclass{
     display: block;
 }
+
 .city1 p{
     
     display: flex;
     justify-content: center;
 }
+
   }
 
 @media (min-width:993px) and (max-width:1023px) {

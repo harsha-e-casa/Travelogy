@@ -164,6 +164,19 @@ export const postDataTJ = async (parameter) => {
 };
 
 
+
+
+export const postDataTJBookingAir = async (parameter) => {
+
+  try {
+    const response = await apiInstanceTripJack.post('oms/v1/air/book', parameter);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 export const postDataFlightDetails = async (parameter) => {
 
   try {

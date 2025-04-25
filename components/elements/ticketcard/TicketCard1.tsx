@@ -149,7 +149,9 @@ export default function TicketCard1({ ticket }: any) {
 							<div className="flight-name">
 
 								<div className="flight-info flex flex-col items-center align-center">
+
 									<p className="text-md-bold neutral-1000 align-center city1name">{ticket.sI[0]['aa'].city} <span className='text-md-bold neutral-1000 citycode'>({ticket.sI[0]['aa'].code})</span></p>
+
 									<p className="text-sm-medium time-flight timelogo">
 										<span className="neutral-1000 time">{dayjs(ticket.sI[0]['at']).format('hh:mm A')} </span></p>
 								</div>
