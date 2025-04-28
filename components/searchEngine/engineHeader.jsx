@@ -511,7 +511,7 @@ const EngineTabs = ({active_border}) => {
       </div>
     </div>
 
-    <TravellerForm showTraveller={showTraveller} adult={adult}
+    <TravellerForm showTraveller={showTraveller}  adult={adult}
      opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}
     clickMinusChildren={clickMinusChildren} clickPlusChildren={clickPlusChildren} 
     countchildren={countchildren} handleChangeClass={handleChangeClass} travellerClass={travellerClass} />
