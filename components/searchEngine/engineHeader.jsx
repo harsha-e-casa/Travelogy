@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useContext} from "react";
+import React, { useState, useEffect, useRef, useContext, use} from "react";
 import SearchEngHeader from './SearchEngHeader';
 import AppListSearch from './AppListSearch';
 import AppDateRage from './AppDateRage';
@@ -66,6 +66,17 @@ const EngineTabs = ({active_border}) => {
   const [travellerClass, setTravellerClass] = useState('a'); // Default value is 'a'
 
   const router = useRouter();
+  useEffect(() => {
+    const handleClick = () => {
+      closeAllFields(); 
+    };
+  
+    window.addEventListener("click", handleClick);
+  
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
+  }, []);
   
 
   const searchTickets = () => {
@@ -117,6 +128,10 @@ const EngineTabs = ({active_border}) => {
 
   const openfrom = () => {
     setShowSearchState((prevState) => !prevState); // Correct way to toggle the state
+    closeAllFields();
+    setShowSearchState(true);
+
+  
   }
 
   const clickMinus = () => {
@@ -146,6 +161,8 @@ const EngineTabs = ({active_border}) => {
  
   const openTraveller = () => {
     setShowYTraveller((prevState) => !prevState); // Correct way to toggle the state
+    closeAllFields();
+    setShowYTraveller(true);
   }
   const locationSwap = () => {
     
@@ -161,6 +178,13 @@ const EngineTabs = ({active_border}) => {
   useEffect(() => {
     setShowSearchStateTo(false)
   },[selectFromTo]);
+  useEffect(() => {
+    setShowSearchState(false)
+  },[selectFrom]);
+
+  
+  
+  
 
   useEffect(() => {
     setCookie('gy_class', travellerClass);
@@ -220,14 +244,28 @@ const EngineTabs = ({active_border}) => {
 
   const openTo = () => {
     setShowSearchStateTo((prevState) => !prevState); // Correct way to toggle the state
+    closeAllFields();
+    setShowSearchStateTo(true);
   }
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+    closeAllFields();
+    setOpenDateRage(true);
   }
   const openToDateRangeR = () => {
     setOpenDateRageR((prevState) => !prevState); // Correct way to toggle the state
+    closeAllFields();
+    setOpenDateRageR(true);
   }
+  const closeAllFields = () => {
+    setShowSearchState(false);
+    setShowSearchStateTo(false);
+    setOpenDateRage(false);
+    setOpenDateRageR(false);
+    setShowYTraveller(false);
+  };
+  
 
   return (
     // <div className="tabs">
@@ -259,7 +297,7 @@ const EngineTabs = ({active_border}) => {
 >
   
   
-  <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40">
+  <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40" onClick={(e) => e.stopPropagation()}>
   {/*<div className="grid_main_section_2 w_90 rounded-md h_80 fixed z__9 top_banner_eng">*/}
   <SearchEngHeader active_border={active_border} />
 
@@ -407,6 +445,10 @@ const EngineTabs = ({active_border}) => {
         {openDateRage ? (<AppDateRage 
               openToDateRange={openToDateRange} 
               setDatedep={setDatedep}
+
+
+
+              
               /> ): null }
 
 

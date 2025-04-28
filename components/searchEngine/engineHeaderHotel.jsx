@@ -65,6 +65,8 @@ const EngineHeaderHotel = ({active_border}) => {
 
   const openfrom = () => {
     setShowSearchState((prevState) => !prevState); // Correct way to toggle the state
+    closeallform()
+    setShowSearchState(true)
   }
 
   const clickMinus = () => {
@@ -89,9 +91,11 @@ const EngineHeaderHotel = ({active_border}) => {
  
   const openTraveller = () => {
     setShowYTraveller((prevState) => !prevState); // Correct way to toggle the state
+   
+
   }
  
-
+ 
   useEffect(() => {
     
     if(datedep){
@@ -119,10 +123,30 @@ const EngineHeaderHotel = ({active_border}) => {
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+    closeallform()
+    setOpenDateRage(true)
   }
   const openToDateRangeR = () => {
     setOpenDateRageR((prevState) => !prevState); // Correct way to toggle the state
+    closeallform()
+    setOpenDateRageR(true)
   }
+  const closeallform=()=>{
+     setOpenDateRage(false);
+  setOpenDateRageR(false);
+  setShowYTraveller(false);
+  setShowSearchState(false); 
+  setShowSearchStateTo(false);
+  }
+  useEffect(()=>{
+    const handleclick=()=>{
+      closeallform() }
+    window.addEventListener("click",handleclick)
+    return()=>{  window.removeEventListener("click",handleclick)
+    }
+    
+  },[])
+  
 
   return (
     // <div className="tabs">
@@ -155,7 +179,7 @@ const EngineHeaderHotel = ({active_border}) => {
 >
   
   
-  <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40">
+  <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40"  onClick={(e) => e.stopPropagation()}>
   {/*<div className="grid_main_section_2 w_90 rounded-md h_80 fixed z__9 top_banner_eng">*/}
   <SearchEngHeader active_border={active_border} />
 

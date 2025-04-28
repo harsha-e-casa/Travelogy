@@ -9,6 +9,9 @@
     }
     .city1 p{
         font-size: 15px;
+        display: flex
+;
+        justify-content: center;
     }
     .duration p{
         font-size: 15px;
@@ -48,6 +51,12 @@
         width: max-content;
     }
 
+    .flight-info{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
 } 
 
 @media (min-width: 640px) and (max-width: 992px) {
@@ -65,6 +74,13 @@
 .cabinclass{
     display: block;
 }
+
+.city1 p{
+    
+    display: flex;
+    justify-content: center;
+}
+
   }
 
 @media (min-width:993px) and (max-width:1023px) {

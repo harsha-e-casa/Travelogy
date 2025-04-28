@@ -23,6 +23,7 @@ export default function BookingForm({segmentsPrice, putTotalpricee}) {
 			}
 			console.log("basefare",basefare)
 			console.log("totalprice",totalpricee)
+
 	return (
 		
 		<>
@@ -33,7 +34,7 @@ export default function BookingForm({segmentsPrice, putTotalpricee}) {
 					<div className="line-booking-tickets ">
 							
 							<div className="dropdown-quantity text-md-bold neutral-1000">
-							<p>₹{basefare}</p>
+							<p>₹{Number(basefare)}</p>
 							</div>
 					</div>
 					
@@ -52,7 +53,7 @@ export default function BookingForm({segmentsPrice, putTotalpricee}) {
 								
 							</div>
 							<div className="dropdown-quantity">
-							<p>₹{Airlinegst}</p>
+							<p>₹{Number(Airlinegst)}</p>
 							</div>
 						</div>
 						<div className="line-booking-tickets">
@@ -61,7 +62,7 @@ export default function BookingForm({segmentsPrice, putTotalpricee}) {
 								
 							</div>
 							<div className="dropdown-quantity">
-							<p>₹{othertaxes}</p>
+							<p>₹{Number(othertaxes)}</p>
 							</div>
 						</div>
 						

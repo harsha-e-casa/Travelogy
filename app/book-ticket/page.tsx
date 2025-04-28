@@ -1009,7 +1009,9 @@ setTravellerInfoV(travellerInfoV);
                                             <p className="text-xl-bold neutral-1000">Fare Summary</p>
                                         </div>
 
+
                                         <BookingForm putTotalpricee={setTotalpricee} segmentsPrice={segmentsPrice} />
+
                                     </div>
                                     {/* …side banners… */}
                                 </div>
