@@ -86,25 +86,7 @@ export default function BookTicket() {
     interface ApiResponse {
         status?: { success: boolean; httpStatus: number }
         tripInfos?: TripInfo[]
-        totalPriceInfo?:TotalPriceInfo[]
     }
-    interface TotalPriceInfo {
-        
-        totalFareDetail: {
-          fC: {
-            TF: number;   
-            BF: number;   
-            TAF: number;  
-            NF: number;   
-          };
-          afC: {
-            TAF: {
-              YQ: number;     
-              AGST: number;    
-              OT: number;      
-            };
-          };
-        }}
 
     const [segments, setSegments] = useState<FlightSegment[]>([])
     const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([])
@@ -200,32 +182,48 @@ export default function BookTicket() {
             }
 
 
+        } catch (err: any) {
+            console.error("error caused", err)
+            setError('Keys Passed in the request is already expired. Please pass valid keys')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+
+    
+    const fetchFlightsReview = async (priceId: string) => {
+
+      
+
+        try {
+            const parameter = { priceIds: [priceId] }
+            const data: ApiResponse = await postDataFlightDetails(parameter)
+
+            if (!data.status?.success) {
+                throw new Error(`API error: ${data.status.httpStatus}`)
+            }
 
             
-          }catch (err: any) {
-            console.error("error caused", err);
-          
-            if (err?.response) {
-              const errorArray = err.response?.data?.errors;
-              const firstError = errorArray?.[0];
-              
-              console.log("Error response data!:", errorArray);
-              setError(firstError?.message);
-              console.log(firstError?.message)
-              console.log("Error status:", err.response?.status);
-              
-            } else if (err?.message) {
-              console.log("Error message:", err.message);
-              setError(err.message);
-            }
-          } finally {
-            setLoading(false);
-          }
-        }         
+
+        } catch (err: any) {
+            console.error("error caused review", err)
+        } finally {
+            // setLoading(false)
+        }
+    }
+
 
     const tcs_id = searchParams.get('tcs_id')
+    const bookingIdget = searchParams.get('bookingId')
+    
     useEffect(() => {
-        if (tcs_id) fetchFlights(tcs_id)
+
+        if (tcs_id && bookingIdget){
+            fetchFlights(tcs_id)
+            // fetchFlightsReview(bookingIdget);
+        }
+
     }, [tcs_id])
 
 
@@ -291,14 +289,11 @@ export default function BookTicket() {
     };
 
 
-
-
     const [api, contextHolder] = notification.useNotification();
 
     const openNotificationWithIcon = (type: NotificationType) => {
         api[type]({
             message: 'Booking Sucessfully',
-
         });
     };
 
@@ -420,11 +415,11 @@ export default function BookTicket() {
             // Build the parameter object without extra curly braces
             const parameter = {
                 bookingId: bookingId,
-                paymentInfos: [
-                    {
-                        amount: tdnetPrice
-                    }
-                ],
+                // paymentInfos: [
+                //     {
+                //         amount: tdnetPrice
+                //     }
+                // ],
                 travellerInfo: [
                     travellerInfoV[0]
                 ],
@@ -621,7 +616,7 @@ setTravellerInfoV(travellerInfoV);
                     {/* Breadcrumb etc… */}
                     <section className="section-box block-content-book-tickets background-card">
                         <div className="container pt-60">
-                            <h4 className="neutral-1000 mb-20">Complete your booking</h4>
+                            <h4 className="neutral-1000 mb-20">Check your booking details</h4>
 
                             {loading && <p>Loading flights…</p>}
                             {/* {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -1042,9 +1037,7 @@ setTravellerInfoV(travellerInfoV);
                                             <p className="text-xl-bold neutral-1000">Fare Summary</p>
                                         </div>
 
-
                                         <BookingForm putTotalpricee={setTotalpricee} segmentsPrice={segmentsPrice} />
-
                                     </div>
                                     {/* …side banners… */}
                                 </div>
