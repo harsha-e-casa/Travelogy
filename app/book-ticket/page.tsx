@@ -86,7 +86,25 @@ export default function BookTicket() {
     interface ApiResponse {
         status?: { success: boolean; httpStatus: number }
         tripInfos?: TripInfo[]
+        totalPriceInfo?:TotalPriceInfo[]
     }
+    interface TotalPriceInfo {
+        
+        totalFareDetail: {
+          fC: {
+            TF: number;   
+            BF: number;   
+            TAF: number;  
+            NF: number;   
+          };
+          afC: {
+            TAF: {
+              YQ: number;     
+              AGST: number;    
+              OT: number;      
+            };
+          };
+        }}
 
     const [segments, setSegments] = useState<FlightSegment[]>([])
     const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([])
@@ -182,13 +200,28 @@ export default function BookTicket() {
             }
 
 
-        } catch (err: any) {
-            console.error("error caused", err)
-            setError('Keys Passed in the request is already expired. Please pass valid keys')
-        } finally {
-            setLoading(false)
-        }
-    }
+
+            
+          }catch (err: any) {
+            console.error("error caused", err);
+          
+            if (err?.response) {
+              const errorArray = err.response?.data?.errors;
+              const firstError = errorArray?.[0];
+              
+              console.log("Error response data!:", errorArray);
+              setError(firstError?.message);
+              console.log(firstError?.message)
+              console.log("Error status:", err.response?.status);
+              
+            } else if (err?.message) {
+              console.log("Error message:", err.message);
+              setError(err.message);
+            }
+          } finally {
+            setLoading(false);
+          }
+        }         
 
     const tcs_id = searchParams.get('tcs_id')
     useEffect(() => {

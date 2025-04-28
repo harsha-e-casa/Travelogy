@@ -209,7 +209,6 @@ export default function Tickets() {
 					setFlightData(result.searchResult.tripInfos.ONWARD)
 					setActiveFlight(false);
 					setloading(false)
-				
 				}
 				else{
 					setloading(false)
@@ -307,34 +306,36 @@ export default function Tickets() {
 		const [srx_depart, setDepartDate] = useState<string | null>(null);
 
 
-	// menu click handler
-	const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
-		setTripType(key);
-		setOpen(prev => !prev)
-	}
+	    // menu click handler
+  const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+	setTripType(key);
+	setOpen(prev => !prev)
+  }
 
-	const [showSearchState, setShowSearchState] = useState<boolean>(false);
-	const [showSearchStateTo, setShowSearchStateTo] = useState<boolean>(false);
-	const [openDateRage, setOpenDateRage] = useState<boolean>(false);
-	
+
+  const [showSearchState, setShowSearchState] = useState<boolean>(false);
+  const [showSearchStateTo, setShowSearchStateTo] = useState<boolean>(false);
+  const [openDateRage, setOpenDateRage] = useState<boolean>(false);
+  
 
 	const [datedep, setDatedep] = useState<Dayjs>(() => {
 		const cookieDate = Cookies.get('gy_trd');
 		return cookieDate ? dayjs(cookieDate) : dayjs().format('YYYY-MM-DD');
 	});
+  
 
-	const openfrom = () => {
-		setShowSearchState((prevState) => !prevState); // Correct way to toggle the state
-	}
+  const openfrom = () => {
+    setShowSearchState((prevState) => !prevState); // Correct way to toggle the state
+  }
 
-	const openTo = () => {
-		setShowSearchStateTo((prevState) => !prevState); // Correct way to toggle the state
-	}
+  const openTo = () => {
+    setShowSearchStateTo((prevState) => !prevState); // Correct way to toggle the state
+  }
 
 
-	const openToDateRange = () => {
-		setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
-	}
+  const openToDateRange = () => {
+    setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+  }
 
     useEffect(() => {
 	  
@@ -555,8 +556,6 @@ export default function Tickets() {
 											/>
 											
 										</>) :(<>
-										 
-										 
 										 {loading===false&&<div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
   
   <p className="text-xl font-semibold">No result found</p>

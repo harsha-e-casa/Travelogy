@@ -95,7 +95,10 @@ const EngineHeaderHotel = ({active_border}) => {
 
   }
  
- 
+  useEffect(()=>{
+    setShowSearchState(false)
+  },[showSearchState])
+
   useEffect(() => {
     
     if(datedep){
