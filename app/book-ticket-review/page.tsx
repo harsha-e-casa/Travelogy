@@ -106,7 +106,9 @@ export default function BookTicket() {
     const [groupedInfantsV, setGroupedInfants] = useState(null);
 
     const [travellerInfoV, setTravellerInfoV] = useState(null);
+    
 
+    
 
     const fetchFlights = async (priceId: string) => {
 
