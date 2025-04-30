@@ -22,6 +22,8 @@ const Page = () => {
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
 
+  const[totalPriceinfo,setTotalpriceinfo]=useState(null)
+
    const router = useRouter();
   useEffect(() => {
     const data = getCookie('travellerInfo');
@@ -87,7 +89,7 @@ const Page = () => {
         const firstError = err.response.data.errors[0];
         const message = firstError?.message || 'An unknown error occurred.';
         const details = firstError?.details ? ` - ${firstError.details}` : '';
-        setError(`${message}${details}`);
+        setError(`${message}`);
   
         console.log("API error message:", message);
         console.log("Error details:", details);
@@ -176,6 +178,17 @@ const Page = () => {
   const totalpriceinfos = flightData?.tripInfos.flatMap(trip => trip.totalPriceList) ?? [];
   const flightNames = segments.map(segment => segment.fD?.aI?.name);
   const flightnumber = segments.map(segment => segment.fD?.fN);
+  const stops = segments.map(segment => 
+    segment.stops === 0 ? "Non Stop" : `${segment.stops} Stop${segment.stops > 1 ? 's' : ''}`
+  );
+  const duration = segments.map(segment => {
+    if (!segment.duration) return "";
+  
+    const hours = Math.floor(segment.duration / 60);
+    const minutes = segment.duration % 60;
+  
+    return `${hours}h ${minutes}m`;
+  });
   const dt = segments.map(segment => segment.dt.split("T")[1]);
   const at = segments.map(segment => segment.at.split("T")[1]);
   const dcountry = segments.map(segment => segment.da?.country);
@@ -192,6 +205,11 @@ const Page = () => {
   const traveldata = routeinfo.map((e) => e.travelDate);
 
   // Total price info
+  useEffect(() => {
+    if (flightData?.totalPriceInfo?.totalFareDetail) {
+      setTotalpriceinfo(flightData.totalPriceInfo.totalFareDetail);
+    }
+  }, [flightData]);
   const fd = totalpriceinfos.map(e => e.fd) ?? {};
   const fareIdentifier = totalpriceinfos.map(e => e.fareIdentifier) ?? {};
   const cabinclass = fd.map((e) => e.ADULT?.cc);
@@ -292,7 +310,7 @@ const Page = () => {
         </svg>
         <p className="text-sm-medium neutral-500 totalduration">{toCity}</p>
         <p className="text-sm-medium neutral-500 totalduration">on</p>
-        <p className="text-sm-medium neutral-500 totalduration">{formattedDate}</p>
+        <p className="text-sm-medium neutral-500 totalduration">{formattedDate||null}</p>
                   </div>
 
                   <section aria-labelledby="applicant-information-title" className="mt-20">
@@ -344,7 +362,7 @@ const Page = () => {
   <div className="flight-route flight-route-type-2 city1">
     <div className="flight-route-1">
       <div className="flight-name duration flex flex-col items-center align-center">
-        <p className="text-sm-medium neutral-500 totalduration">2h 15m</p>
+        <p className="text-sm-medium neutral-500 totalduration">{duration}</p>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="16"
@@ -360,7 +378,7 @@ const Page = () => {
             8.5H1.5A.5.5 0 0 1 1 8"
           />
         </svg>
-        <p className="text-sm-medium neutral-500 totalduration">non stop</p>
+        <p className="text-sm-medium neutral-500 totalduration">{stops}</p>
       </div>
     </div>
   </div>
@@ -420,9 +438,9 @@ const Page = () => {
 
                       {/* Form */}
                       <form id="validateOnly" autoComplete="off" className="ant-form ant-form-vertical p-6">
-                        <div className="ant-row" style={{ marginLeft: "-8px", marginRight: "-8px" }}>
+                        <div className="ant-row" style={{ marginLeft: "-8px", marginRight: "-8px",borderBottom:"1px solid grey" }}>
                           {/* Country Code */}
-                          <div className="ant-col ant-col-6" style={{ paddingLeft: "8px", paddingRight: "8px" }}>
+                          <div className="ant-col ant-col-6" style={{ paddingLeft: "8px", paddingRight: "8px",  }}>
                             <div className="ant-form-item">
                               <p className="text-lg-bold neutral-1000 mb-10 ">Passenger information</p>
                               <table className="w-full border-collapse mb-20 " >
@@ -435,15 +453,36 @@ const Page = () => {
     </tr>
   </thead>
   <tbody>
-    {travellers.map((traveller, index) => (
-      <tr key={index}>
-        <td className="px-4 py-3 border-b border-gray-200 text-black">{index + 1}</td> {/* Serial number */}
-        <td className="px-4 py-3 border-b border-gray-200 text-black">{traveller.ti}</td>
-        <td className="px-4 py-3 border-b border-gray-200 text-black">{traveller.fN}</td>
-        <td className="px-4 py-3 border-b border-gray-200 text-black">{traveller.lN}</td>
-      </tr>
-    ))}
-  </tbody>
+  {travellers.length > 0 ? (
+    travellers.map((traveller, index) => {
+      // Log for debugging, check the content of traveller
+      console.log(`Traveller ${index + 1} Title:`, traveller?.ti);
+
+      return (
+        <tr key={index}>
+          <td className="px-4 py-3 border-b border-gray-200 text-black">{index + 1}</td>
+          <td className="px-4 py-3 border-b border-gray-200 text-black">
+            {traveller?.ti?.trim() || "N/A"}
+          </td>
+          <td className="px-4 py-3 border-b border-gray-200 text-black">
+            {traveller?.fN?.trim() || "N/A"}
+          </td>
+          <td className="px-4 py-3 border-b border-gray-200 text-black">
+            {traveller?.lN?.trim() || "N/A"}
+          </td>
+        </tr>
+      );
+    })
+  ) : (
+    <tr>
+      <td className="px-4 py-3 border-b border-gray-200 text-black">1</td>
+      <td className="px-4 py-3 border-b border-gray-200 text-black">N/A</td>
+      <td className="px-4 py-3 border-b border-gray-200 text-black">N/A</td>
+      <td className="px-4 py-3 border-b border-gray-200 text-black">N/A</td>
+    </tr>
+  )}
+</tbody>
+
 </table>
 
 
@@ -451,13 +490,18 @@ const Page = () => {
                           </div>
                         
                         
-<hr />
+
                           {/* Email and Phone Number */}
                           <div className="ant-col ant-col-6 mt-30 mb-30" style={{ paddingLeft: "8px", paddingRight: "8px" }}>
                           <p className="text-lg-bold neutral-1000 mb-10 ">Contact information</p>
                             <div className="ant-form-item">
                               <div className="text-md neutral-1000 ">Email: <strong>{email ? email : "No email available"}</strong> </div>
-                              <div className="text-md neutral-1000 ">Phone Number: <strong>{number ? `${number.code} ${number.number}`||"no number" : "No phone number available"}</strong> </div>
+                              <div className="text-md neutral-1000 ">Phone Number: <strong><strong>
+  {number?.code && number?.number
+    ? `${number.code} ${number.number}`
+    : "No phone number available"}
+</strong>
+</strong> </div>
                             </div>
                           </div>
                         </div>
@@ -467,7 +511,7 @@ const Page = () => {
                       {/* Buttons */}
                       <div className="bg-white shadow sm:rounded-lg relative">
                         <div className="px-4 py-3 border_xcolor_1px flex justify-between">
-                        <Link href={`/book-ticket?tcs_id=${priceId}`} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition">
+                        <Link href={`/book-ticket?tcs_id=${priceId}`} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">
   Back
 </Link>
                           <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition" >Continue</button>
@@ -480,11 +524,12 @@ const Page = () => {
                 {/* Right Column: Fare Summary */}
                 <div className="col-lg-4">
                   <div className="booking-form add_sticky">
-                    <BookingForm />
+                  <div class="head-booking-form"><p class="text-xl-bold neutral-1000">Fare Summary</p></div>
+                    <BookingForm totalpricee={totalPriceinfo} />
                   </div>
                 </div>
               </div></>)}
-                            {/* {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                            {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                         <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
                           <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
                                  
@@ -493,7 +538,7 @@ const Page = () => {
                            </button>
                                 
                               </div>
-                            </div>} */}
+                            </div>}
               
               
             </div>
