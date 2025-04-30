@@ -13,7 +13,7 @@ import { UserOutlined } from '@ant-design/icons';
 import AppFormAdult from './AppFormAdult.jsx';
 import AppFormChild from './AppFormChild.jsx';
 import AppFormInfant from './AppFormInfant.jsx';
-import AppFormCustomer from './AppFormCustomer.jsx'; 
+import AppFormCustomer from './AppFormCustomer.jsx';
 import { postDataTJBookingAir } from '../../services/NetworkAdapter'
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Razorpay from 'razorpay';
@@ -42,8 +42,7 @@ export default function BookTicket() {
     const searchParams = useSearchParams()
     const router = useRouter();
 
-    const { getCookie,setCookie,updateemail, updatephone  } = useContext(AppContext);
-   
+    const { getCookie } = useContext(AppContext);
 
     interface FlightSegment {
         id: string
@@ -87,25 +86,7 @@ export default function BookTicket() {
     interface ApiResponse {
         status?: { success: boolean; httpStatus: number }
         tripInfos?: TripInfo[]
-        totalPriceInfo?:TotalPriceInfo[]
     }
-    interface TotalPriceInfo {
-        
-        totalFareDetail: {
-          fC: {
-            TF: number;   
-            BF: number;   
-            TAF: number;  
-            NF: number;   
-          };
-          afC: {
-            TAF: {
-              YQ: number;     
-              AGST: number;    
-              OT: number;      
-            };
-          };
-        }}
 
     const [segments, setSegments] = useState<FlightSegment[]>([])
     const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([])
@@ -125,99 +106,126 @@ export default function BookTicket() {
     const [groupedInfantsV, setGroupedInfants] = useState(null);
 
     const [travellerInfoV, setTravellerInfoV] = useState(null);
+    
 
+    
 
     const fetchFlights = async (priceId: string) => {
-        setLoading(true);
-        setError(null);
-        
+
+        setLoading(true)
+        setError(null)
         try {
-          const parameter = { priceIds: [priceId] };
-          console.log(parameter);
-      
-          const data: ApiResponse = await postDataFlightDetails(parameter);
-      
-          if (!data.status?.success) {
-            const apiErrorMessage = data.errors?.[0]?.message || 'Unknown API error';
-            const apiErrorDetails = data.errors?.[0]?.details || '';
-            const fullErrorMessage = `${apiErrorMessage}${apiErrorDetails ? ` - ${apiErrorDetails}` : ''}`;
-            
-            throw new Error(fullErrorMessage);
-          }
-      
-          console.log(data);
-      
-          const firstTrip = data.tripInfos?.[0];
-          setBookingId(data.bookingId);
-      
-          const segs = firstTrip?.sI;
-          const id = segs?.[0]?.id.trim();
-      
-          if (!segs || !id) {
-            throw new Error('No segment or price data returned by the API');
-          }
-      
-          setSelectedId(id);
-          setSegments(segs);
-      
-          const totalFareDetail = data.totalPriceInfo.totalFareDetail;
-          console.log("total fare detail", totalFareDetail);
-          setTotalpricee(totalFareDetail);
-      
-          const netFare = totalFareDetail.fC.NF;
-          
-          setNetFare(netFare);
-      
-          const ssrInfo = segs?.[0]?.ssrInfo;
-          const mealOptions = ssrInfo?.MEAL || [];
-      
-          const fareRuleInformation = firstTrip?.fareRuleInformation || {};
-          setSegmentsPrice(firstTrip.totalPriceList ?? []);
-      
-          const cabinClass = data.searchQuery.cabinClass;
-          console.log('Cabin Class:', cabinClass);
-      
-          const paxInfo = data.searchQuery.paxInfo;
-      
-          if (paxInfo.ADULT) {
-            setNumAdults(paxInfo.ADULT);
-          }
-      
-          if (paxInfo.CHILD) {
-            setNumChild(paxInfo.CHILD);
-          }
-      
-          if (paxInfo.INFANT) {
-            setNumInfants(paxInfo.INFANT);
-          }
-      
-        } catch (err: any) {
-            console.error("error caused", err);
-        
-            if (err?.response?.data?.errors?.length) {
-              const firstError = err.response.data.errors[0];
-              const message = firstError?.message || 'An unknown error occurred.';
-              const details = firstError?.details ? ` - ${firstError.details}` : '';
-              setError(`${message}${details}`);
-        
-              console.log("API error message:", message);
-              console.log("Error details:", details);
-              console.log("Error status code:", err.response.status);
-            } else if (err?.message) {
-              setError(err.message);
-              console.log("Generic error message:", err.message);
-            } else {
-              setError("Something went wrong. Please try again.");
+            const parameter = { priceIds: [priceId] }
+            const data: ApiResponse = await postDataFlightDetails(parameter)
+
+            if (!data.status?.success) {
+                throw new Error(`API error: ${data.status.httpStatus}`)
             }
-          } finally {
-            setLoading(false);
-          }
-        };
+
+            console.log(data);
+
+            const firstTrip = data.tripInfos?.[0]
+            setBookingId(data.bookingId)
+
+            const segs = firstTrip?.sI
+            const id = segs?.[0]?.id.trim()
+
+            if (!segs || !id) {
+                throw new Error('No segment or price data returned by the API')
+            }
+
+            setSelectedId(id)
+            setSegments(segs)
+
+            // ←— NEW: pull totalPriceList into state
+            // setSegmentsPrice(firstTrip.totalPriceList ?? [])
+            const totalFareDetail = data.totalPriceInfo.totalFareDetail;
+
+            // const totalFare = totalFareDetail.fC.TF; // 23070.00
+            // const baseFare = totalFareDetail.fC.BF; // 20000.00
+            // const taxesAndFees = totalFareDetail.fC.TAF; // 3070.00
+            const netFare = totalFareDetail.fC.NF; // 23070.00
+            alert(netFare)
+            setNetFare(netFare);
+
+            // const yearlyRate = totalFareDetail.afC.TAF.YR; // 170.00
+            // const otherCharges = totalFareDetail.afC.TAF.OT; // 479.00
+            // const additionalGST = totalFareDetail.afC.TAF.AGST; // 2421.00
+
+
+
+            // Extracting ssrInfo (meal options)
+            const ssrInfo = segs?.[0]?.ssrInfo;
+            const mealOptions = ssrInfo?.MEAL || [];
+            // console.log('Meal Options:', mealOptions);
+
+            // Extracting fareRuleInformation
+            const fareRuleInformation = firstTrip?.fareRuleInformation || {};
+            // console.log('Fare Rule Information:', fareRuleInformation);
+            setSegmentsPrice(firstTrip.totalPriceList ?? [])
+
+            // Extracting cabinClass and paxInfo from searchQuery
+            const cabinClass = data.searchQuery.cabinClass; // e.g., 'PREMIUM_ECONOMY'
+            console.log('Cabin Class:', cabinClass);
+
+            const paxInfo = data.searchQuery.paxInfo; // e.g., { ADULT: 1, CHILD: 0, INFANT: 0 }
+            // console.log('Passenger Information:', paxInfo);
+
+            if (paxInfo.ADULT) {
+                setNumAdults(paxInfo.ADULT);
+            }
+
+            if (paxInfo.CHILD) {
+                setNumChild(paxInfo.CHILD);
+            }
+
+            if (paxInfo.INFANT) {
+                setNumInfants(paxInfo.INFANT);
+            }
+
+
+        } catch (err: any) {
+            console.error("error caused", err)
+            setError('Keys Passed in the request is already expired. Please pass valid keys')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+
+    
+    const fetchFlightsReview = async (priceId: string) => {
+
       
 
+        try {
+            const parameter = { priceIds: [priceId] }
+            const data: ApiResponse = await postDataFlightDetails(parameter)
+
+            if (!data.status?.success) {
+                throw new Error(`API error: ${data.status.httpStatus}`)
+            }
+
+            
+
+        } catch (err: any) {
+            console.error("error caused review", err)
+        } finally {
+            // setLoading(false)
+        }
+    }
+
+
     const tcs_id = searchParams.get('tcs_id')
+    const bookingIdget = searchParams.get('bookingId')
+    
     useEffect(() => {
-        if (tcs_id) fetchFlights(tcs_id)
+
+        if (tcs_id && bookingIdget){
+            fetchFlights(tcs_id)
+            // fetchFlightsReview(bookingIdget);
+        }
+
     }, [tcs_id])
 
 
@@ -236,11 +244,7 @@ export default function BookTicket() {
     useEffect(() => {
         //   console.log("segmentPrice",segmentsPrice)
     }, [segmentsPrice])
-    useEffect(() => {
-        if (totalpricee) {
-          console.log("Updated totalpricee:", totalpricee);
-        }
-      }, [totalpricee]);
+
 
 
     const searchTickets = () => {
@@ -287,14 +291,11 @@ export default function BookTicket() {
     };
 
 
-
-
     const [api, contextHolder] = notification.useNotification();
 
     const openNotificationWithIcon = (type: NotificationType) => {
         api[type]({
             message: 'Booking Sucessfully',
-
         });
     };
 
@@ -416,11 +417,11 @@ export default function BookTicket() {
             // Build the parameter object without extra curly braces
             const parameter = {
                 bookingId: bookingId,
-                paymentInfos: [
-                    {
-                        amount: tdnetPrice
-                    }
-                ],
+                // paymentInfos: [
+                //     {
+                //         amount: tdnetPrice
+                //     }
+                // ],
                 travellerInfo: [
                     travellerInfoV[0]
                 ],
@@ -476,15 +477,9 @@ export default function BookTicket() {
     const handleNextClick = () => {
         // Retrieve all form values for the current fields
         const formValues = form.getFieldsValue(true);
-        console.log("all form vlaues",formValues)
-        
+
 
         console.log('Bacis Form Data:', formValues[`select_code`], formValues[`mNumber`], formValues[`mEmail`]);
-        updateemail(formValues['mEmail']);
-        updatephone({
-          code: formValues['select_code'],
-          number: formValues['mNumber']
-        });
 
         // // Group the adult data'
       
@@ -545,12 +540,11 @@ for (let i = 0; i < numAdults; i++) {
     groupedAdults.push({ ti, fN, lN, pt: 'ADULT' });
   }
 }
-console.log("groupedadults",groupedAdults)
 
 // Group children
 const groupedChildren = [];
 for (let i = 0; i < numChild; i++) {
-  const ti = formValues[`childselect-${i}`];
+  const ti = formValues[`childSelect-${i}`];
   const fN = formValues[`childName-${i}`];
   const lN = formValues[`childlast-${i}`];
   if (ti && fN && lN) {
@@ -576,15 +570,11 @@ const travellerInfoV = [
   ...groupedChildren,
   ...groupedInfants
 ];
-console.log("travellerinfo",travellerInfoV)
+
 setTravellerInfoV(travellerInfoV);
-setCookie('travellerInfo', JSON.stringify(travellerInfoV), { expires: 7 }); 
-console.log("document cookie",document.cookie)
 
-console.log("Cookies after update:", document.cookie);
-console.log("Stored Email:", getCookie('user_email'));
-console.log("Stored Phone:", getCookie('user_number'));
 
+    
 
         form
             .validateFields() // Validate all fields
@@ -599,63 +589,7 @@ console.log("Stored Phone:", getCookie('user_number'));
                 // alert('Validation failed! Please check the form fields.');
             });
     };
-    const BookingSkeleton = () => {
-            return (
-              <section className="section-box block-content-book-tickets background-card">
-                <div className="container pt-60">
-                  <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
-          
-                  <div className="row mt-20">
-                    <div className="col-lg-8">
-                      <div className="box-content-tickets-detail p-3 flex gap-3 items-center bg-gray-100 animate-pulse rounded">
-                        <div className="w-24 h-4 bg-gray-300 rounded" />
-                        <div className="w-4 h-4 bg-gray-400 rounded-full" />
-                        <div className="w-24 h-4 bg-gray-300 rounded" />
-                        <div className="w-10 h-4 bg-gray-300 rounded" />
-                        <div className="w-32 h-4 bg-gray-300 rounded" />
-                      </div>
-          
-                      <div className="mt-10 bg-white shadow rounded-lg p-6">
-                        <div className="h-4 w-1/3 bg-gray-300 rounded mb-6 animate-pulse"></div>
-          
-                        <div className="item-flight border border-black-200 rounded p-5 mb-6 animate-pulse flex flex-col gap-4">
-                          <div className="h-4 w-40 bg-gray-300 rounded" />
-                          <div className="flex justify-between">
-                            <div className="flex flex-col gap-2">
-                              <div className="h-4 w-24 bg-gray-300 rounded" />
-                              <div className="h-3 w-20 bg-gray-200 rounded" />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              <div className="h-4 w-24 bg-gray-300 rounded" />
-                              <div className="h-3 w-20 bg-gray-200 rounded" />
-                            </div>
-                            <div className="flex flex-col gap-2">
-                              <div className="h-4 w-24 bg-gray-300 rounded" />
-                              <div className="h-3 w-20 bg-gray-200 rounded" />
-                            </div>
-                          </div>
-                        </div>
-          
-                        <div className="h-4 w-1/3 bg-gray-300 rounded mb-6 animate-pulse"></div>
-          
-                        <div className="h-24 bg-gray-200 rounded mb-6"></div>
-                        <div className="h-20 bg-gray-200 rounded mb-6"></div>
-          
-                        <div className="flex justify-between mt-6">
-                          <div className="h-10 w-24 bg-gray-300 rounded"></div>
-                          <div className="h-10 w-24 bg-gray-300 rounded"></div>
-                        </div>
-                      </div>
-                    </div>
-          
-                    <div className="col-lg-4">
-                      <div className="h-96 bg-gray-200 rounded add_sticky animate-pulse"></div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            );
-          };
+
 
     return (
         <>
@@ -684,9 +618,20 @@ console.log("Stored Phone:", getCookie('user_number'));
                     {/* Breadcrumb etc… */}
                     <section className="section-box block-content-book-tickets background-card">
                         <div className="container pt-60">
-                            <h4 className="neutral-1000 mb-20">Complete your booking</h4>
+                            <h4 className="neutral-1000 mb-20">Check your booking details</h4>
 
-                            {loading?<BookingSkeleton />:(<>
+                            {loading && <p>Loading flights…</p>}
+                            {/* {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+                          <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
+                                 
+                            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
+                           Ok, Got It
+                           </button>
+                                
+                              </div>
+                            </div>} */}
+
                             {/* ←— NEW: Fare summary list */}
                             {segmentsPrice.length > 0 && (
                                 <div className="fare-summary mb-20">
@@ -1023,13 +968,12 @@ console.log("Stored Phone:", getCookie('user_number'));
                                                         Back
                                                     </button>
 
-                                                    <Link
-  href={`/reviewpage?tcs_id=${tcs_id}`}
-  onClick={handleNextClick}
-  className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition inline-block text-center"
->
-  Continue
-</Link>
+                                                    <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
+                                                        // onClick={bookingReview} 
+                                                        onClick={handleNextClick}
+                                                    >
+                                                        Continue
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -1095,26 +1039,11 @@ console.log("Stored Phone:", getCookie('user_number'));
                                             <p className="text-xl-bold neutral-1000">Fare Summary</p>
                                         </div>
 
-
-                                        <BookingForm totalpricee={totalpricee} segmentsPrice={segmentsPrice} />
-
+                                        <BookingForm putTotalpricee={setTotalpricee} segmentsPrice={segmentsPrice} />
                                     </div>
                                     {/* …side banners… */}
                                 </div>
                             </div>
-                            </>)}
-                            {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
-                          <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
-                                 
-                            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
-                           Ok, Got It
-                           </button>
-                                
-                              </div>
-                            </div>}
-
-                            
                         </div>
                     </section>
                 </main>

@@ -1,11 +1,10 @@
-
+import React from 'react'; 
 import { Form, Input, Select, Row, Col } from 'antd';
 
 const { Option } = Select;
 
 
 const AppFormCustomer = ({form}) => {
-  
   return (
     <Form className='p-6' form={form} name="validateOnly" layout="vertical" autoComplete="off">
       {/* Row for Layout */}
