@@ -198,7 +198,7 @@ export default function BookTicket() {
               const firstError = err.response.data.errors[0];
               const message = firstError?.message || 'An unknown error occurred.';
               const details = firstError?.details ? ` - ${firstError.details}` : '';
-              setError(`${message}${details}`);
+              setError(`${message}`);
         
               console.log("API error message:", message);
               console.log("Error details:", details);
