@@ -2,12 +2,14 @@
 
 import BookingForm from "@/components/elements/BookingForm";
 import Layout from "@/components/layout/Layout";
-import { postDataFlightDetails } from "@/services/NetworkAdapter";
+import { postDataFareDetails, postDataFlightDetails } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
+import FareRuleTabs from "./cancelattion.jsx"
+import { Timeline } from "antd";
 
 
 const Page = () => {
@@ -18,11 +20,14 @@ const Page = () => {
   const [error, setError] = useState(null); 
   const { getCookie } = useContext(AppContext);
 
+  const[fareDetails,setFareDetails]=useState(null)
+
   const [travellers, setTravellers] = useState([]);
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
 
   const[totalPriceinfo,setTotalpriceinfo]=useState(null)
+
 
    const router = useRouter();
   useEffect(() => {
@@ -77,10 +82,10 @@ const Page = () => {
 
     try {
       const parameter = { priceIds: [priceId] };
-      console.log("Fetching with parameter:", parameter);
+      console.log("Fetching with parameter FOR REVIEW:", parameter);
 
       const data = await postDataFlightDetails(parameter);
-      console.log("Flight detailsssss:", data);
+      console.log("Flight detailsssss FOR REVIEW:", data);
       setFlightData(data); // Update state with flight details
     } catch (err) {
       console.error("error caused", err);
@@ -104,6 +109,45 @@ const Page = () => {
       setLoading(false);
     }
   };
+
+//to fetch fare rule
+const fetchFareRule = async (params) => {
+  setLoading(true);
+  setError(null);
+
+  
+  try {
+    console.log("Fetching FARERULE with parameter:", params);
+    const data = await postDataFareDetails(params);
+    console.log("Flight details FROM FARERULE:", data);
+    setFareDetails(data)
+   
+  } catch (err) {
+    console.error("error caused", err);
+
+    if (err?.response?.data?.errors?.length) {
+      const firstError = err.response.data.errors[0];
+      const message = firstError?.message || 'An unknown error occurred.';
+      const details = firstError?.details ? ` - ${firstError.details}` : '';
+      setError(`${message}`);
+
+      console.log("API error message:", message);
+      console.log("Error details:", details);
+      console.log("Error status code:", err.response.status);
+    } else if (err?.message) {
+      setError(err.message);
+      console.log("Generic error message:", err.message);
+    } else {
+      setError("Something went wrong. Please try again.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
   // UseEffect to call the function when 'tcs_id' is available in the search params
   useEffect(() => {
     console.log("Extracted tcs_id:", priceId); // Debug log to check if tcs_id is correct
@@ -113,10 +157,22 @@ const Page = () => {
       setError("No valid tcs_id found in the URL.");
     }
   }, [priceId]);
+
+
+  useEffect(() => {
+    console.log("Extracted tcs_id:", priceId);
+    if (priceId) {
+      fetchFareRule({ id: [priceId], flowType: "SEARCH" });
+    } else {
+      setError("No valid tcs_id found in the URL.");
+    }
+  }, [priceId]);
+  
+
   const BookingSkeleton = () => {
     return (
       <section className="section-box block-content-book-tickets background-card">
-        <div className="container pt-60">
+        <div className="container pt-1">
           <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
   
           <div className="row mt-20">
@@ -178,6 +234,8 @@ const Page = () => {
   const totalpriceinfos = flightData?.tripInfos.flatMap(trip => trip.totalPriceList) ?? [];
   const flightNames = segments.map(segment => segment.fD?.aI?.name);
   const flightnumber = segments.map(segment => segment.fD?.fN);
+  const flighteT=segments.map(segment => segment.fD?.eT);
+  const flightcode=segments.map(segment => (segment.fD?.aI?.code).toLowerCase());
   const stops = segments.map(segment => 
     segment.stops === 0 ? "Non Stop" : `${segment.stops} Stop${segment.stops > 1 ? 's' : ''}`
   );
@@ -194,10 +252,15 @@ const Page = () => {
   const dcountry = segments.map(segment => segment.da?.country);
   const dcity = segments.map(segment => segment.da?.city);
   const dcitycode=segments.map(segment => segment.da?.code);
+
+  const acountry = segments.map(segment => segment.aa?.country);
+ const aterminal=segments.map(segment => segment.aa?.terminal);
+ const acity=segments.map(segment => segment.aa?.city);
+ const acitycode=segments.map(segment => segment.aa?.code);
+  const aairportname=segments.map(segment => segment.aa?.name);
   const dairportname = segments.map(segment => segment.da?.name);
   const terminal = segments.map(segment => segment.da?.terminal);
-  const acity=segments.map(segment => segment.aa?.city);
-  const acitycode=segments.map(segment => segment.aa?.code);
+ 
   // Search query
   const routeinfo = flightData?.searchQuery?.routeInfos ?? [];
   const fromCity = routeinfo.map((e) => e.fromCityOrAirport?.city);
@@ -218,6 +281,28 @@ const Page = () => {
   //totalfare
   const totalprice=flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF
 
+  //fare rule api
+  const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
+
+const cancellation = fareRule?.CANCELLATION ?? [];
+const noShow = fareRule?.NO_SHOW ?? [];
+const dateChange = fareRule?.DATECHANGE ?? [];
+
+// Cancellation
+const cancellationAmount = cancellation.map((e) => e.amount);
+const cancellationPolicy = cancellation.map((e) => e.policyInfo);
+const cancellationPenaltyPeriod = cancellation.map((e) => e.pp);
+const cancellationFee = cancellation.map((e) => e.fcs?.ACF);
+
+// No Show
+const noShowPolicy = noShow.map((e) => e.policyInfo);
+const noShowPenaltyPeriod = noShow.map((e) => e.pp);
+
+// Date Change
+const dateChangeAmount = dateChange.map((e) => e.amount);
+const dateChangePolicy = dateChange.map((e) => e.policyInfo);
+const dateChangePenaltyPeriod = dateChange.map((e) => e.pp);
+const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
   const searchTickets = () => {
 
     let departureFrom = getCookie('gy_da')
@@ -261,7 +346,7 @@ const Page = () => {
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <section className="box-section box-breadcrumb background-body">
-            <div className="container pt-60">
+            <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
                   <Link href="/">Home</Link>
@@ -287,11 +372,12 @@ const Page = () => {
           </section>
 
           <section className="section-box block-content-book-tickets background-card">
-            <div className="container pt-60">
-              <h4 className="neutral-1000 mb-20">Review</h4>
-              {loading?(<BookingSkeleton />):(<><div className="row mt-20">
+            <div className="container pt-1">
+              <h4 className="neutral-1000">Review</h4>
+              {loading?(<BookingSkeleton />):
+              (<><div className="row mt-20">
                 <div className="col-lg-8">
-                  <div className="box-content-tickets-detail flex flex-row items-center gap-3 p-3">
+                  {/* <div className="box-content-tickets-detail flex flex-row items-center gap-3 p-3">
                     <p className="text-sm-medium neutral-500 totalduration">{fromCity}</p>
                     <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -311,10 +397,10 @@ const Page = () => {
         <p className="text-sm-medium neutral-500 totalduration">{toCity}</p>
         <p className="text-sm-medium neutral-500 totalduration">on</p>
         <p className="text-sm-medium neutral-500 totalduration">{formattedDate||null}</p>
-                  </div>
+                  </div> */}
 
                   <section aria-labelledby="applicant-information-title" className="mt-20">
-                    <div className="bg-white shadow sm:rounded-lg relative">
+                    <div className="bg-white shadow sm:rounded-lg relative p-3 mb-30">
                       {/* <div className="px-4 py-3 border_xcolor_1px flex flex-row justify-between items-center">
                         <div className="flex flex-col justify-between">
                           <div>
@@ -339,8 +425,193 @@ const Page = () => {
                         <div>{cabinclass}</div>
                       </div> */}
 
+  {/* header */}
+<div className="flex flex-row justify-between items-center">
+<div className="flex flex-row gap-3 items-center ">
+        <p className="text-xl-bold neutral-1000 mb-5">{fromCity||"DELHI"} <span>({dcitycode})</span></p>
+        <p className="text-xl-bold neutral-1000"><svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          className="bi bi-arrow-right"
+          viewBox="0 0 16 16"
+        > 
+          <path
+            fillRule="evenodd"
+            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
+            .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
+            8.5H1.5A.5.5 0 0 1 1 8"
+          />
+        </svg></p>
+        <p className="text-xl-bold neutral-1000 mb-5">{toCity||"DELHI"} <span>({acitycode})</span></p>
+        <div>
+        <p className="text-sm-medium neutral-500">{formattedDate||null}</p>
+      </div>
+      </div>
+      
+</div>
+  
+{/* //flight information */}
+<div className="flex flex-row mt-3 items-center gap-3 mb-3">
 
-                      <div className="item-flight background-card border border-black-200 ticket-container relative flex flex-row justify-between items-center p-5">
+<div className=" flex flex-row justify-between items-center">
+                        
+                        <div className="flex flex-row gap-2">
+                         [<p className="text-sm-medium neutral-500">{dcountry},{dcity}</p>|
+                          <p className="text-sm-medium neutral-500">{dairportname}</p>|
+                          <p className="text-sm-medium neutral-500">{terminal}</p>]
+                        </div>
+                        
+                      </div>
+    
+
+<div>
+<svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          className="bi bi-arrow-right"
+          viewBox="0 0 16 16"
+        > 
+          <path
+            fillRule="evenodd"
+            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
+            .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
+            8.5H1.5A.5.5 0 0 1 1 8"
+          />
+        </svg>
+</div>
+
+    
+<div className=" flex flex-row justify-between items-center">
+                        
+<div className="flex flex-row gap-2 ">
+                         [ <p className="text-sm-medium neutral-500">{acountry},{acity}</p>|
+                          <p className="text-sm-medium neutral-500">{aairportname}</p>|
+                          <p className="text-sm-medium neutral-500">{aterminal}</p>]
+                        </div>
+                        
+                      </div>
+    
+
+</div>
+{/* //flightname and code
+       */}
+         <div className="flex flex-row justify-between">
+          
+         <div className="logo-flight flex flex-row gap-3 items-center mb-20">
+                                                                        {/* <img
+                                                                            src={`/assets/imgs/airlines/${flightcode}.png`}
+                                                                            
+                                                                        /> */}
+                                                                        <div className="text-md-medium neutral-500">
+                                                                          {flightNames}
+                                                                        </div>
+                                                                        <div className="text-md-medium neutral-500">
+                                                                          {flightnumber}
+                                                                        </div>
+                                                                        <div className="text-md-medium neutral-500 border border-black-200 rounded-lg pl-10 pr-10">
+                                                                          {flighteT}
+                                                                        </div>
+                                                                        
+                                                                    </div>
+
+                  <div className="flex flex-row items-center gap-3">
+                    <p className="text-sm-medium neutral-500 ">{cabinclass} 
+                     </p>
+                     <span
+                className="fareidentifier text-xs font-bold"
+                style={{
+                  backgroundColor: 'rgb(245, 222, 179)',
+                  color: 'rgb(92, 64, 51)',
+                  padding: '1px 2px',
+                }} 
+              >
+                {fareIdentifier}
+              </span>
+                   
+                  </div>
+
+         </div>
+
+         {/* //cancelattion */}
+   <p className="text-md-bold neutral-1000 mb-10 mt-10">Cancellation</p>
+   <Timeline className="pl-50" style={{ paddingBottom: 0 }}>
+      {cancellation.map((item, index) => (
+        <>
+          {/* Timeline Item for Amount */}
+          <Timeline.Item key={`amount-${index}`}>
+            <p className="text-small neutral-500 mr-30"><strong>Amount:</strong> ₹{item.amount}</p>
+          </Timeline.Item>
+
+          {/* Timeline Item for Policy */}
+          <Timeline.Item key={`policy-${index}`}>
+            <p className="text-small neutral-500 mr-30"><strong>Policy:</strong> {item.policyInfo}</p>
+          </Timeline.Item>
+
+          {/* Timeline Item for Penalty Applies */}
+          <Timeline.Item key={`penalty-${index}`} style={{ paddingBottom: 0 }}>
+            <p className="text-small neutral-500 mr-30"><strong>Penalty Applies:</strong> {item.pp}</p>
+          </Timeline.Item>
+
+          {/* Timeline Item for Fee (ACF) */}
+          
+        </>
+      ))}
+    </Timeline>
+
+
+
+    <p className="text-md-bold neutral-1000 mb-10 mt-10">No show</p>
+   <Timeline className="pl-50">
+      {noShow.map((item, index) => (
+        <>
+          {/* Timeline Item for Amount */}
+          <Timeline.Item key={`amount-${index}`}>
+            <p className="text-small neutral-500 mr-30"><strong>Amount:</strong> ₹{item.policyInfo}</p>
+          </Timeline.Item>
+
+          {/* Timeline Item for Policy */}
+          <Timeline.Item key={`policy-${index}`} style={{ paddingBottom: 0 }}>
+            <p className="text-small neutral-500 mr-30"><strong>Policy:</strong> {item.pp}</p>
+          </Timeline.Item>
+        </>
+      ))}
+    </Timeline>
+
+    <p className="text-md-bold neutral-1000 mb-10 mt-10">Date Change</p>
+    <div className="flex flex-row items-start justify-start  gap-5">
+    
+    <Timeline className="pt-5 pl-50">
+      {dateChange.map((item, index) => (
+        
+        <>
+          {/* Timeline Item for Amount */}
+          <Timeline.Item>
+            <p className="text-small neutral-500 mr-30"><strong>Amount:</strong> ₹{item.amount}</p>
+          </Timeline.Item>
+
+          {/* Timeline Item for Policy */}
+          <Timeline.Item>
+            <p className="text-small neutral-500 mr-30"><strong>Policy:</strong> {item.policyInfo}</p>
+          </Timeline.Item>
+
+          {/* Timeline Item for Penalty Applies */}
+          <Timeline.Item style={{ paddingBottom: 0 }}>
+            <p className="text-sm-medium neutral-500"><strong>Penalty Applies:</strong> {item.pp}</p>
+          </Timeline.Item>
+
+         
+        </>
+      ))}
+    </Timeline>
+
+    </div>
+    
+    
+                      {/* <div className="item-flight background-card border border-black-200 ticket-container relative flex flex-row justify-between items-center p-5">
   <div className="air_detailes border border-black-200">{flightNames }</div>
 
   <div className="flight-route flight-route-type-2 city1">
@@ -432,13 +703,13 @@ const Page = () => {
   </div>
 
  
-</div>
+</div> */}
 
                       
 
                       {/* Form */}
                       <form id="validateOnly" autoComplete="off" className="ant-form ant-form-vertical p-6">
-                        <div className="ant-row" style={{ marginLeft: "-8px", marginRight: "-8px",borderBottom:"1px solid grey" }}>
+                        <div className="ant-row" style={{ marginLeft: "-8px", marginRight: "-8px" }}>
                           {/* Country Code */}
                           <div className="ant-col ant-col-6" style={{ paddingLeft: "8px", paddingRight: "8px",  }}>
                             <div className="ant-form-item">
@@ -451,7 +722,7 @@ const Page = () => {
       <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">First Name</th>
       <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">Last Name</th>
     </tr>
-  </thead>
+  </thead> 
   <tbody>
   {travellers.length > 0 ? (
     travellers.map((traveller, index) => {
@@ -505,6 +776,7 @@ const Page = () => {
                             </div>
                           </div>
                         </div>
+                        
                       </form>
                       
                       
@@ -518,6 +790,7 @@ const Page = () => {
                         </div>
                       </div>
                     </div>
+                    
                   </section>
                 </div>
 
@@ -543,6 +816,8 @@ const Page = () => {
               
             </div>
             
+           
+ 
           </section>
         </main>
       </Layout>

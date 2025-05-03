@@ -198,6 +198,17 @@ export const postDataFlightDetails = async (parameter) => {
   }
 };
 
+export const postDataFareDetails = async (parameter) => {
+
+  try {
+    const response = await apiInstanceTripJack.post('fms/v2/farerule', parameter);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+
 // Add additional functions as needed (PUT, DELETE, etc.)
 
 export default apiInstanceTripJack;
