@@ -1,6 +1,6 @@
 
 export default function BookingForm({ segmentsPrice, totalpricee }) {
-	console.log("returned price",totalpricee)
+	
 	const basefare=totalpricee?.fC?.BF
 	const taxAndFees=totalpricee?.fC?.TAF
 	const Airlinegst=totalpricee?.afC?.TAF?.AGST;

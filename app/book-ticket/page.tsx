@@ -666,7 +666,7 @@ console.log("Stored Phone:", getCookie('user_number'));
                 <main className="main">
 
                     <section className="box-section box-breadcrumb background-body">
-                        <div className="container pt-60">
+                        <div className="container pt-1">
                             <ul className="breadcrumbs">
                                 <li> <Link href="/">Home</Link><span className="arrow-right">
                                     <svg width={7} height={12} viewBox="0 0 7 12" xmlns="http://www.w3.org/2000/svg">
@@ -683,7 +683,7 @@ console.log("Stored Phone:", getCookie('user_number'));
 
                     {/* Breadcrumb etc… */}
                     <section className="section-box block-content-book-tickets background-card">
-                        <div className="container pt-60">
+                        <div className="container pt-1">
                             <h4 className="neutral-1000 mb-20">Complete your booking</h4>
 
                             {loading?<BookingSkeleton />:(<>
