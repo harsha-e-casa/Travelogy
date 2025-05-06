@@ -8,8 +8,24 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
+import { Tabs } from 'antd';
 import FareRuleTabs from "./cancelattion.jsx"
-import { Timeline } from "antd";
+
+import { format } from 'date-fns';
+import * as React from 'react'; 
+import Timeline from '@mui/lab/Timeline';
+import TimelineItem from '@mui/lab/TimelineItem';
+import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import TimelineConnector from '@mui/lab/TimelineConnector';
+import TimelineContent from '@mui/lab/TimelineContent';
+import TimelineDot from '@mui/lab/TimelineDot';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import TimelineOppositeContent, {
+  timelineOppositeContentClasses,
+} from '@mui/lab/TimelineOppositeContent';
+
+  
 
 
 const Page = () => {
@@ -27,7 +43,7 @@ const Page = () => {
   const [number, setNumber] = useState(null);
 
   const[totalPriceinfo,setTotalpriceinfo]=useState(null)
-
+  const [showMore, setShowMore] = useState(false);
 
    const router = useRouter();
   useEffect(() => {
@@ -168,7 +184,68 @@ const fetchFareRule = async (params) => {
     }
   }, [priceId]);
   
-
+  const items = [
+    
+    {
+      label: 'Cancellation Fee',
+      key: '2',
+      children: (
+        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm">
+            <div>Time Frame</div>
+            <div>Cancellation Fee</div>
+          </div>
+  
+          {/* Table Row */}
+          <div className="grid grid-cols-2  px-3 py-4 border-t border-gray-200 text-sm">
+            <div className="text-gray-700">0 to 365 days</div>
+            <div className="text-gray-600">
+              <p>Cancellation permitted 02 Hrs before scheduled departure</p>
+              <p>Cancellation Penalty: ₹3,000/- or basic fare, whichever is lower</p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label: 'Date Change Fee',
+      key: '3',
+      children: (
+        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
+            <div>Time Frame</div>
+            <div>Date Change Fee</div>
+          </div>
+  
+          {/* Dividing line between header and content */}
+          <div className="grid grid-cols-2 items-center  px-3 py-4 border-t border-gray-200 text-sm">
+            <div className="text-gray-700 ">2 hrs to 365 days</div>
+            <div className="text-gray-600">
+              <p>Changes allowed up to 2 hours before departure</p>
+              <p>Fee: ₹2,000/- or fare difference, whichever is higher</p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label: 'No Show Fee',
+      key: '4',
+      children: (
+        <div className="text-gray-500 italic p-4">No data available.</div>
+      ),
+    },
+    {
+      label: 'Seat Chargeable Fee',
+      key: '5',
+      children: (
+        <div className="text-gray-500 italic p-4">No data available.</div>
+      ),
+    },
+  ];
+  
   const BookingSkeleton = () => {
     return (
       <section className="section-box block-content-book-tickets background-card">
@@ -232,6 +309,8 @@ const fetchFareRule = async (params) => {
   // Trip info
   const segments = flightData?.tripInfos.flatMap(trip => trip.sI) ?? [];
   const totalpriceinfos = flightData?.tripInfos.flatMap(trip => trip.totalPriceList) ?? [];
+  const cabinBaggage=totalpriceinfos.map((e)=>e.fd?.ADULT?.bI?.iB)
+  const checkinBaggage=totalpriceinfos.map((e)=>e.fd?.ADULT?.bI?.cB)
   const flightNames = segments.map(segment => segment.fD?.aI?.name);
   const flightnumber = segments.map(segment => segment.fD?.fN);
   const flighteT=segments.map(segment => segment.fD?.eT);
@@ -249,6 +328,20 @@ const fetchFareRule = async (params) => {
   });
   const dt = segments.map(segment => segment.dt.split("T")[1]);
   const at = segments.map(segment => segment.at.split("T")[1]);
+  let departureDate=segments.map(segment => segment.dt);
+  const arrivalDate=segments.map(segment => segment.at);
+  const formatDepartureDate = (dateString) => {
+    if (!dateString || isNaN(new Date(dateString))) return '';
+    return format(new Date(dateString), 'EEE, dd MMM');
+  };
+  
+  const formatArrivalDate = (dateString) => {
+    if (!dateString || isNaN(new Date(dateString))) return '';
+    return format(new Date(dateString), 'EEE, dd MMM');
+  };
+  
+
+
   const dcountry = segments.map(segment => segment.da?.country);
   const dcity = segments.map(segment => segment.da?.city);
   const dcitycode=segments.map(segment => segment.da?.code);
@@ -290,19 +383,29 @@ const dateChange = fareRule?.DATECHANGE ?? [];
 
 // Cancellation
 const cancellationAmount = cancellation.map((e) => e.amount);
-const cancellationPolicy = cancellation.map((e) => e.policyInfo);
-const cancellationPenaltyPeriod = cancellation.map((e) => e.pp);
+const cancellationPolicy = cancellation.map((e) => e.policyInfo?.includes('__nls__') 
+? e.policyInfo.replace(/__nls__/g, '/n')
+: e.policyInfo);
+const cancellationPenaltyPeriod = cancellation.map((e) => e.pp.toLowerCase());
 const cancellationFee = cancellation.map((e) => e.fcs?.ACF);
+const cancellationST=cancellation.map((e)=>e.st?? null)
+const cancellationET=cancellation.map((e)=>e.et?? null)
 
 // No Show
-const noShowPolicy = noShow.map((e) => e.policyInfo);
+const noShowPolicy = noShow.map((e) => e.policyInfo?.includes('__nls__') 
+? e.policyInfo.replace(/__nls__/g, '/n')
+: e.policyInfo);
 const noShowPenaltyPeriod = noShow.map((e) => e.pp);
 
 // Date Change
 const dateChangeAmount = dateChange.map((e) => e.amount);
-const dateChangePolicy = dateChange.map((e) => e.policyInfo);
+const dateChangePolicy = dateChange.map((e) => e.policyInfo?.includes('__nls__') 
+? e.policyInfo.replace(/__nls__/g, '/n')
+: e.policyInfo);
 const dateChangePenaltyPeriod = dateChange.map((e) => e.pp);
 const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
+const dateChangeSt=dateChange.map((e)=>e.st?? null)
+const dateChangeEt=dateChange.map((e)=>e.et?? null)
   const searchTickets = () => {
 
     let departureFrom = getCookie('gy_da')
@@ -334,14 +437,20 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
   date.setDate(date.getDate() - 1);
   
   // Format the new date in the desired format (e.g., "Monday, April 28, 2025")
-  const options = { 
-    weekday: 'long', // Include the day of the week
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
+  const options = {
+    weekday: 'short', // Mon
+    month: 'short',   // Apr
+    day: 'numeric'    // 28
   };
   const formattedDate = date.toLocaleDateString('en-US', options);
+  const options2 = {
+    month: 'short',   // Apr
+    day: 'numeric'    // 28
+  };
+  const formatteddate2= date.toLocaleDateString('en-US', options2);
+
   return ( 
+
     <>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
@@ -399,7 +508,7 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
         <p className="text-sm-medium neutral-500 totalduration">{formattedDate||null}</p>
                   </div> */}
 
-                  <section aria-labelledby="applicant-information-title" className="mt-20">
+                  <section aria-labelledby="applicant-information-title" className="mt-20 ">
                     <div className="bg-white shadow sm:rounded-lg relative p-3 mb-30">
                       {/* <div className="px-4 py-3 border_xcolor_1px flex flex-row justify-between items-center">
                         <div className="flex flex-col justify-between">
@@ -424,36 +533,45 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
                         </div>
                         <div>{cabinclass}</div>
                       </div> */}
-
+  <div className="shadow rounded-md p-3">
   {/* header */}
-<div className="flex flex-row justify-between items-center">
-<div className="flex flex-row gap-3 items-center ">
-        <p className="text-xl-bold neutral-1000 mb-5">{fromCity||"DELHI"} <span>({dcitycode})</span></p>
-        <p className="text-xl-bold neutral-1000"><svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          className="bi bi-arrow-right"
-          viewBox="0 0 16 16"
-        > 
-          <path
-            fillRule="evenodd"
-            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
-            .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
-            8.5H1.5A.5.5 0 0 1 1 8"
-          />
-        </svg></p>
-        <p className="text-xl-bold neutral-1000 mb-5">{toCity||"DELHI"} <span>({acitycode})</span></p>
-        <div>
-        <p className="text-sm-medium neutral-500">{formattedDate||null}</p>
-      </div>
-      </div>
-      
+  <div className="flex flex-col justify-start  items-start">
+  {/* City and direction row */}
+  <div className="flex flex-row gap-3 items-center mb-2">
+    <p className="text-xl-bold neutral-1000">{fromCity || "DELHI"} <span>({dcitycode})</span></p>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      className="bi bi-arrow-right"
+      viewBox="0 0 16 16"
+    >
+      <path
+        fillRule="evenodd"
+        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
+        .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
+        8.5H1.5A.5.5 0 0 1 1 8"
+      />
+    </svg>
+    <p className="text-xl-bold neutral-1000">{toCity || "DELHI"} <span>({acitycode})</span></p>
+  </div>
+
+<div className="flex flex-row gap-2">
+<p className="text-sm-bold neutral-500 ">{formattedDate || "Date not available"}</p>
+  {/* Info list below the cities */}
+  <ul className="flex flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc">
+    
+    <li className="text-sm-medium neutral-500 ">{stops || "No stop info"}</li>
+    <li className="text-sm-medium neutral-500 ">{duration || "Duration not available"}</li>
+  </ul>
 </div>
   
-{/* //flight information */}
-<div className="flex flex-row mt-3 items-center gap-3 mb-3">
+</div>
+
+  
+{/* //flight information */} 
+{/* <div className="flex flex-row mt-3 items-center gap-3 mb-3">
 
 <div className=" flex flex-row justify-between items-center">
                         
@@ -496,7 +614,7 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
                       </div>
     
 
-</div>
+</div> */}
 {/* //flightname and code
        */}
          <div className="flex flex-row justify-between">
@@ -506,7 +624,7 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
                                                                             src={`/assets/imgs/airlines/${flightcode}.png`}
                                                                             
                                                                         /> */}
-                                                                        <div className="text-md-medium neutral-500">
+                                                                        <div className="text-md-bold neutral-900">
                                                                           {flightNames}
                                                                         </div>
                                                                         <div className="text-md-medium neutral-500">
@@ -536,79 +654,337 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
 
          </div>
 
-         {/* //cancelattion */}
-   <p className="text-md-bold neutral-1000 mb-10 mt-10">Cancellation</p>
-   <Timeline className="pl-50" style={{ paddingBottom: 0 }}>
-      {cancellation.map((item, index) => (
-        <>
-          {/* Timeline Item for Amount */}
-          <Timeline.Item key={`amount-${index}`}>
-            <p className="text-small neutral-500 mr-30"><strong>Amount:</strong> ₹{item.amount}</p>
-          </Timeline.Item>
 
-          {/* Timeline Item for Policy */}
-          <Timeline.Item key={`policy-${index}`}>
-            <p className="text-small neutral-500 mr-30"><strong>Policy:</strong> {item.policyInfo}</p>
-          </Timeline.Item>
-
-          {/* Timeline Item for Penalty Applies */}
-          <Timeline.Item key={`penalty-${index}`} style={{ paddingBottom: 0 }}>
-            <p className="text-small neutral-500 mr-30"><strong>Penalty Applies:</strong> {item.pp}</p>
-          </Timeline.Item>
-
-          {/* Timeline Item for Fee (ACF) */}
-          
-        </>
-      ))}
-    </Timeline>
-
-
-
-    <p className="text-md-bold neutral-1000 mb-10 mt-10">No show</p>
-   <Timeline className="pl-50">
-      {noShow.map((item, index) => (
-        <>
-          {/* Timeline Item for Amount */}
-          <Timeline.Item key={`amount-${index}`}>
-            <p className="text-small neutral-500 mr-30"><strong>Amount:</strong> ₹{item.policyInfo}</p>
-          </Timeline.Item>
-
-          {/* Timeline Item for Policy */}
-          <Timeline.Item key={`policy-${index}`} style={{ paddingBottom: 0 }}>
-            <p className="text-small neutral-500 mr-30"><strong>Policy:</strong> {item.pp}</p>
-          </Timeline.Item>
-        </>
-      ))}
-    </Timeline>
-
-    <p className="text-md-bold neutral-1000 mb-10 mt-10">Date Change</p>
-    <div className="flex flex-row items-start justify-start  gap-5">
+         <div className=" flex flex-row justify-between  bg-white  space-y-6 ">
     
-    <Timeline className="pt-5 pl-50">
-      {dateChange.map((item, index) => (
+    {/* Flight Timings */}
+    <div className="flex justify-between items-center gap-5 ">
+      <div className="text-left space-y-1">
+        {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
+        <h4 className="" style={{fontSize:"28px",fontWeight:"normal"}}>{dt}</h4>
+        <p className="text-sm-medium neutral-500 ">{`${dcity},${dcountry}`}</p>
+        <p className="text-sm-medium neutral-500 ">{dairportname}</p>
+        <p className="text-sm-medium neutral-1000 ">{terminal}</p>
+      </div>
+
+      <div className="text-center space-y-1">
+        <p className="text-sm-medium neutral-500 ">{duration}</p>
+        <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg" alt="flight line" className="mx-auto w-20" />
+      </div>
+
+      <div className="text-right space-y-1">
+        {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
+        <h4 className="" style={{fontSize:"28px",fontWeight:"normal"}}>{at}</h4>
+        <p className="text-sm-medium neutral-500 ">{`${acity},${acountry}`}</p>
+        <p className="text-sm-medium neutral-500 ">{aairportname}</p>
+        <p className="text-sm-medium neutral-1000 ">{aterminal}</p>
+      </div>
+    </div>
+  
+
+
+    {/* Baggage Info */}
+    <div className="flex flex-col items-center justify-center gap-3  space-x-10">
+      
+      
+      <div className="flex items-center space-x-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suitcase-lg-fill" viewBox="0 0 16 16">
+  <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z"/>
+</svg>
+        <p className="text-sm-bold neutral-900">Cabin: <span className="text-sm-medium neutral-500">{cabinBaggage} per adult</span></p>
+      </div>
+      <div className="flex items-center space-x-2">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suitcase2-fill" viewBox="0 0 16 16">
+  <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z"/>
+</svg>
+        <p className="text-sm-bold neutral-900 ">Check-in: <span className="text-sm-medium neutral-500 ">{checkinBaggage}, 1 piece/adult</span></p>
+      </div>
+    </div>
+
+    
+  </div>
+  <div className="mt-30 text-sm-medium neutral-1000 p-3 bg-blue-100">
+  {`Got excess baggage? Don’t stress, buy extra check-in baggage allowance for ${dcitycode}-${acitycode} at fab rates!`}
+    </div>
+  </div>
+  
+ 
+  <div className="mt-50 shadow rounded-md p-3">
+    <div className="flex flex-row justify-between">
+    <div className="text-xl-bold neutral-1000">Cancellation and Refund</div>
+    <div className="pl-30 ">
+      <Stack>
+      <Button  variant="contained"
+          onClick={() => setShowMore((prev) => !prev)}
+          className=" cursor-pointer"
+        >
+          {showMore ? 'Show Less' : 'Show More'}
+        </Button>
+      </Stack>
         
+      </div>
+    </div>
+      
+
+      {/* Cancellation Charges */}
+      <div className="py-5 ">
+      {/* Refund boxes */}
+      <div className="flex flex-row    justify-around pr-4 mt-5 flex-wrap gap-y-5">
+        {/* <div className=" gap-5 ">
+          <div className="text-center pl-6">
+            <p className="text-primary text-sm font-medium whitespace-normal">₹1050 refund</p>
+            <div className="flex justify-center">
+              <div className="flex flex-wrap items-center justify-center max-w-full">
+                <div className="flex items-center">
+                  <p className="text-secondary text-sm">(</p>
+                  <p className="text-secondary text-xs">₹4300<span className="mx-1">+</span></p>
+                </div>
+                <div className="flex items-center">
+                  <p className="text-secondary text-sm">₹300)*</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> */}
+
+        {/* <div className="gap-5 justify-center">
+          <div className="text-center pl-6">
+            <p className="text-primary text-sm font-medium whitespace-normal">₹1050 refund</p>
+            <div className="flex justify-center">
+              <div className="flex flex-wrap items-center justify-center max-w-full">
+                <div className="flex items-center">
+                  <p className="text-secondary text-sm">(</p>
+                  <p className="text-secondary text-xs">₹4300<span className="mx-1">+</span></p>
+                </div>
+                <div className="flex items-center">
+                  <p className="text-secondary text-sm">₹300)*</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> */}
+
+        <div className=" gap-5 justify-center">
+          <div className="text-center pl-6">
+            <p className="text-primary text-sm font-medium whitespace-normal">{refundabletype}</p>
+            
+          </div>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="space-y-3 mt-3  pl-20 pr-30">
+  {/* Now */}
+  <div className="relative   flex items-center pl-5 justify-center">
+    
+    {/* Left Icon */}
+    <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
+      <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
+        </svg>
+      </div>
+    </div>
+
+    {/* Right Icon */}
+    <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
+      <div className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white">
+        <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
+        </svg>
+      </div>
+    </div>
+
+    {/* Horizontal Gradient Line */}
+    <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
+
+    {/* Vertical Dotted Line at Center */}
+    <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
+  </div>
+</div>
+<div className="flex flex-row justify-between align-center pt-4 pl-20">
+  <p>now</p>
+  <p className="text-sm-medium neutral-500 pl-50">{cancellationPenaltyPeriod}</p>
+  <div className="flex flex-col justify-center items-center">
+  <p>{dt}</p>
+  {/* <p>departure</p> */}
+  <p>{formattedDate}</p>
+  
+  </div>
+</div>
+
+
+     
+    </div>
+
+       
+      {/* <Timeline
+        sx={{
+          [`& .${timelineOppositeContentClasses.root}`]: {
+            flex: 0.2,
+          },
+        }}
+        className="flex"
+      >
+        <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">
+          Cancellation Charges
+        </TimelineOppositeContent>
+        
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector style={{height:"100px"}} />
+          
+        </TimelineSeparator>
+        <TimelineContent className="flex flex-row   items-center">
+          <div>
+          <p>
+          {cancellationAmount}
+          </p>
+          <p>
+            {cancellationPolicy}
+          </p>
+          <p>
+            {cancellationPenaltyPeriod}
+          </p>
+          </div>
+          
+        </TimelineContent>
+        
+      </TimelineItem>
+      
+
+
+      <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">
+          09:30 am
+        </TimelineOppositeContent>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>Eat</TimelineContent>
+      </TimelineItem>
+
+      
+
+      <TimelineItem>
+        <TimelineOppositeContent color="text.secondary">
+          09:30 am
+        </TimelineOppositeContent>
+        <TimelineSeparator>
+          <TimelineDot />
+          <TimelineConnector />
+        </TimelineSeparator>
+        <TimelineContent>Eat</TimelineContent>
+      </TimelineItem>
+
+
+
+        <TimelineItem>
+          <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
+            Now
+          </TimelineOppositeContent>
+          <TimelineSeparator>
+            <TimelineDot />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent className="pt-30 flex items-center">
+            {cancellationAmount} + {cancellationPolicy}
+          </TimelineContent>
+        </TimelineItem>
+        <TimelineItem>
+          <TimelineOppositeContent color="textSecondary">
+            
+            {`${formatteddate2} - ${dt}`}
+          </TimelineOppositeContent>
+          <TimelineSeparator>
+            <TimelineDot />
+          </TimelineSeparator>
+          <TimelineContent></TimelineContent>
+        </TimelineItem>
+      </Timeline> */}
+
+      {/* Show More / Show Less Button */}
+      
+ <div></div>
+      {/* Conditionally Render No Show and Date Change */}
+      {showMore && (
         <>
-          {/* Timeline Item for Amount */}
-          <Timeline.Item>
-            <p className="text-small neutral-500 mr-30"><strong>Amount:</strong> ₹{item.amount}</p>
-          </Timeline.Item>
+        <div style={{ maxWidth: '64rem', margin: '0 auto', padding: '1rem' }}>
+      
+      <Tabs defaultActiveKey="2" items={items} />
+    </div>
 
-          {/* Timeline Item for Policy */}
-          <Timeline.Item>
-            <p className="text-small neutral-500 mr-30"><strong>Policy:</strong> {item.policyInfo}</p>
-          </Timeline.Item>
+  
 
-          {/* Timeline Item for Penalty Applies */}
-          <Timeline.Item style={{ paddingBottom: 0 }}>
-            <p className="text-sm-medium neutral-500"><strong>Penalty Applies:</strong> {item.pp}</p>
-          </Timeline.Item>
+
+
+          No Show
+          <div className="text-md-medium neutral-500 mt-10 pl-30">No Show</div>
+          <Timeline
+            sx={{
+              [`& .${timelineOppositeContentClasses.root}`]: {
+                flex: 0.2,
+              },
+            }}
+            className="flex"
+          >
+            <TimelineItem>
+              <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
+                {dateChangeSt!==null?`${dateChangeSt} hrs`:"Now"}
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent className="pt-30 flex items-center">{noShowPolicy}</TimelineContent>
+            </TimelineItem>
+            <TimelineItem>
+              <TimelineOppositeContent color="textSecondary">{dateChangeEt!==null?`${dateChangeEt} days`:dt}</TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot />
+              </TimelineSeparator>
+              <TimelineContent></TimelineContent>
+            </TimelineItem>
+          </Timeline>
+
+          <div className="text-md-medium neutral-500 mt-10 pl-30">Date Change Charges</div>
+          <Timeline
+            sx={{
+              [`& .${timelineOppositeContentClasses.root}`]: {
+                flex: 0.2,
+              },
+            }}
+            className="flex"
+          >
+            <TimelineItem>
+              <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
+                Now
+              </TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot />
+                <TimelineConnector />
+              </TimelineSeparator>
+              <TimelineContent className="pt-30 flex items-center">
+                {dateChangeAmount} + {dateChangePolicy}
+              </TimelineContent>
+            </TimelineItem>
+            <TimelineItem>
+              <TimelineOppositeContent color="textSecondary">{dt}</TimelineOppositeContent>
+              <TimelineSeparator>
+                <TimelineDot />
+              </TimelineSeparator>
+              <TimelineContent></TimelineContent>
+            </TimelineItem>
+          </Timeline>
+        </>
+      )}
+    </div>
+
+
 
          
-        </>
-      ))}
-    </Timeline>
-
-    </div>
     
     
                       {/* <div className="item-flight background-card border border-black-200 ticket-container relative flex flex-row justify-between items-center p-5">
@@ -708,12 +1084,12 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
                       
 
                       {/* Form */}
-                      <form id="validateOnly" autoComplete="off" className="ant-form ant-form-vertical p-6">
+                      <form id="validateOnly" autoComplete="off" className="ant-form ant-form-vertical shadow rounded-md mt-50 p-3">
                         <div className="ant-row" style={{ marginLeft: "-8px", marginRight: "-8px" }}>
                           {/* Country Code */}
                           <div className="ant-col ant-col-6" style={{ paddingLeft: "8px", paddingRight: "8px",  }}>
                             <div className="ant-form-item">
-                              <p className="text-lg-bold neutral-1000 mb-10 ">Passenger information</p>
+                              <p className="text-xl-bold neutral-1000 mb-10 ">Passenger information</p>
                               <table className="w-full border-collapse mb-20 " >
   <thead style={{borderBottom:"grey 1px solid"}}>
     <tr>
@@ -760,8 +1136,7 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
                             </div>
                           </div>
                         
-                        
-
+                         
                           {/* Email and Phone Number */}
                           <div className="ant-col ant-col-6 mt-30 mb-30" style={{ paddingLeft: "8px", paddingRight: "8px" }}>
                           <p className="text-lg-bold neutral-1000 mb-10 ">Contact information</p>
@@ -776,19 +1151,19 @@ const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
                             </div>
                           </div>
                         </div>
-                        
-                      </form>
-                      
-                      
-                      {/* Buttons */}
-                      <div className="bg-white shadow sm:rounded-lg relative">
-                        <div className="px-4 py-3 border_xcolor_1px flex justify-between">
+                         {/* Buttons */}
+                      <div className="bg-white relative">
+                        <div className="mt-60 flex justify-between">
                         <Link href={`/book-ticket?tcs_id=${priceId}`} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">
   Back
 </Link>
                           <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition" >Continue</button>
                         </div>
                       </div>
+                      </form>
+                      
+                      
+                     
                     </div>
                     
                   </section>
