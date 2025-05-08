@@ -1103,18 +1103,16 @@ console.log("Stored Phone:", getCookie('user_number'));
                                 </div>
                             </div>
                             </>)}
-                            {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
-                          <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
-                                 
-                            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
-                           Ok, Got It
-                           </button>
-                                
-                              </div>
-                            </div>}
+    {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+            <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
 
-                            
+            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
+            Ok, Got It
+            </button>
+        </div>
+    </div>}
+                             
                         </div>
                     </section>
                 </main>
