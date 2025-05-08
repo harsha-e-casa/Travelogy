@@ -2,14 +2,16 @@
 
 import BookingForm from "@/components/elements/BookingForm";
 import Layout from "@/components/layout/Layout";
-import { postDataFareDetails, postDataFlightDetails } from "@/services/NetworkAdapter";
+import { postDataFareDetails, postDataFlightDetails, postDataTJBookingAir } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Tabs } from 'antd';
-import FareRuleTabs from "./cancelattion.jsx"
+
+
+import "./style.css"
 
 import { format } from 'date-fns';
 import * as React from 'react'; 
@@ -24,6 +26,7 @@ import Button from '@mui/material/Button';
 import TimelineOppositeContent, {
   timelineOppositeContentClasses,
 } from '@mui/lab/TimelineOppositeContent';
+
 
   
 
@@ -136,7 +139,8 @@ const fetchFareRule = async (params) => {
     console.log("Fetching FARERULE with parameter:", params);
     const data = await postDataFareDetails(params);
     console.log("Flight details FROM FARERULE:", data);
-    setFareDetails(data)
+    setFareDetails(
+      data)
    
   } catch (err) {
     console.error("error caused", err);
@@ -160,7 +164,15 @@ const fetchFareRule = async (params) => {
     setLoading(false);
   }
 };
+ useEffect(()=>{
+console.log("logged fare details",fareDetails)
+ },[fareDetails])
 
+
+ useEffect(()=>{
+  console.log("logged fflight details",flightData)
+   },[flightData])
+  
 
 
 
@@ -184,67 +196,6 @@ const fetchFareRule = async (params) => {
     }
   }, [priceId]);
   
-  const items = [
-    
-    {
-      label: 'Cancellation Fee',
-      key: '2',
-      children: (
-        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm">
-            <div>Time Frame</div>
-            <div>Cancellation Fee</div>
-          </div>
-  
-          {/* Table Row */}
-          <div className="grid grid-cols-2  px-3 py-4 border-t border-gray-200 text-sm">
-            <div className="text-gray-700">0 to 365 days</div>
-            <div className="text-gray-600">
-              <p>Cancellation permitted 02 Hrs before scheduled departure</p>
-              <p>Cancellation Penalty: ₹3,000/- or basic fare, whichever is lower</p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      label: 'Date Change Fee',
-      key: '3',
-      children: (
-        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
-          {/* Table Header */}
-          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
-            <div>Time Frame</div>
-            <div>Date Change Fee</div>
-          </div>
-  
-          {/* Dividing line between header and content */}
-          <div className="grid grid-cols-2 items-center  px-3 py-4 border-t border-gray-200 text-sm">
-            <div className="text-gray-700 ">2 hrs to 365 days</div>
-            <div className="text-gray-600">
-              <p>Changes allowed up to 2 hours before departure</p>
-              <p>Fee: ₹2,000/- or fare difference, whichever is higher</p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      label: 'No Show Fee',
-      key: '4',
-      children: (
-        <div className="text-gray-500 italic p-4">No data available.</div>
-      ),
-    },
-    {
-      label: 'Seat Chargeable Fee',
-      key: '5',
-      children: (
-        <div className="text-gray-500 italic p-4">No data available.</div>
-      ),
-    },
-  ];
   
   const BookingSkeleton = () => {
     return (
@@ -360,6 +311,11 @@ const fetchFareRule = async (params) => {
   const toCity = routeinfo.map((e) => e.toCityOrAirport.city);
   const traveldata = routeinfo.map((e) => e.travelDate);
 
+
+  //bookingid
+const bookingId=flightData?flightData.bookingId:null
+console.log("bookingId",bookingId)
+
   // Total price info
   useEffect(() => {
     if (flightData?.totalPriceInfo?.totalFareDetail) {
@@ -380,32 +336,39 @@ const fetchFareRule = async (params) => {
 const cancellation = fareRule?.CANCELLATION ?? [];
 const noShow = fareRule?.NO_SHOW ?? [];
 const dateChange = fareRule?.DATECHANGE ?? [];
+const seatCharge=fareRule?.SEAT_CHARGEABLE?? [];
+console.log("checking",cancellation?.map((e=>e.pp)))
 
 // Cancellation
 const cancellationAmount = cancellation.map((e) => e.amount);
-const cancellationPolicy = cancellation.map((e) => e.policyInfo?.includes('__nls__') 
-? e.policyInfo.replace(/__nls__/g, '/n')
-: e.policyInfo);
-const cancellationPenaltyPeriod = cancellation.map((e) => e.pp.toLowerCase());
-const cancellationFee = cancellation.map((e) => e.fcs?.ACF);
-const cancellationST=cancellation.map((e)=>e.st?? null)
-const cancellationET=cancellation.map((e)=>e.et?? null)
+const cancellationPolicy = cancellation.map((e) =>  e.policyInfo);
+const cancellationPenaltyPeriod = cancellation.map((e) => e.pp);
+const cancellationLength=cancellation.length
+console.log("lenght",cancellationLength)
+const cancellationFee = cancellation.map((e) => e.fcs?.ACF)
+const cancellationST=cancellation.map((e)=>e.st?? 0)
+const cancellationET=cancellation.map((e)=>e.et?? 365)
 
 // No Show
 const noShowPolicy = noShow.map((e) => e.policyInfo?.includes('__nls__') 
-? e.policyInfo.replace(/__nls__/g, '/n')
+? e.policyInfo.replace(/__nls__/g, '')
 : e.policyInfo);
 const noShowPenaltyPeriod = noShow.map((e) => e.pp);
+const noShowST=noShow.map((e)=>e.st??0)
+const noShowET=noShow.map((e)=>e.et/24??365)
 
 // Date Change
 const dateChangeAmount = dateChange.map((e) => e.amount);
-const dateChangePolicy = dateChange.map((e) => e.policyInfo?.includes('__nls__') 
-? e.policyInfo.replace(/__nls__/g, '/n')
-: e.policyInfo);
+const dateChangePolicy = dateChange.map((e) => e.policyInfo);
 const dateChangePenaltyPeriod = dateChange.map((e) => e.pp);
 const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
-const dateChangeSt=dateChange.map((e)=>e.st?? null)
-const dateChangeEt=dateChange.map((e)=>e.et?? null)
+const dateChangeSt=dateChange.map((e)=>e.st?? 0)
+const dateChangeEt=dateChange.map((e)=>e.et/24?? 365)
+
+
+//seat charge
+const seatChargeSt=seatCharge.map((e)=>e.st?? null)
+const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
   const searchTickets = () => {
 
     let departureFrom = getCookie('gy_da')
@@ -448,6 +411,244 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
     day: 'numeric'    // 28
   };
   const formatteddate2= date.toLocaleDateString('en-US', options2);
+  const items = [
+    
+    {
+      label:  <span className="text-sm-medium neutral-500">CANCELLATION FEE</span>  ,
+      key: '2',
+      children: (<>
+       <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm">
+            <div>Time Frame</div>
+            <div>Cancellation Fee</div>
+          </div>
+  
+          {/* Table Row */}
+          <div className="grid grid-cols-2  px-3 py-4 border-t border-gray-200 text-sm">
+            <div className="text-gray-700"> {cancellation?.some(item => item.st && item.et) ? (
+                   cancellation
+                     .filter(item => item.st && item.et)
+                     .map((item, index) => (
+                       <div key={index}>
+                         {`${item.st} hrs to ${item.et/24} days`}
+                       </div>
+                     ))
+                 ) : (
+                <p>{cancellation.map((e)=>e.pp)}</p>
+              )}</div>
+
+
+            <div className="text-gray-600">
+              {cancellation?.some(e=>e.pp===undefined)?(<><p>{cancellationPolicy ? cancellationPolicy
+              
+              .flatMap((item) =>
+                 item
+              .split("__nls__") 
+              .filter(Boolean)  
+      )
+      .map((line, index) => (
+        <div key={index}>{line.trim()}</div>
+      )) : null}</p></>)
+      :(
+                <p> ₹{cancellationAmount?cancellationAmount:null} </p>)}
+              
+            </div>
+          </div>
+        </div>
+
+        </>),
+    },
+    {
+      label:  <span className="text-sm-medium neutral-500">DATE CHANGE FEE</span>  ,
+      key: '3',
+      children: (
+        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
+            <div>Time Frame</div>
+            <div>Date Change Fee</div>
+          </div>
+  
+          {/* Dividing line between header and content */}
+          <div className="grid grid-cols-2 items-center   px-3 py-4 border-t border-gray-200 text-sm">
+          <div className="text-gray-700 space-y-5"> {dateChange?.some(item => item.st && item.et) ? (
+    dateChange
+      .filter(item => item.st && item.et)
+      .map((item, index) => (
+        <div key={index}>
+        {`${item.st} hrs to ${item.et > 24 ? item.et / 24 + " days" : item.et + " hrs"}`}
+      </div>
+      ))
+  ) : (
+    <p>{cancellation.map((e)=>e.pp)}</p>
+  )}</div>
+            <div className="text-gray-600 space-y-5">
+              {dateChange.some(e=>e.pp===undefined)?(<>
+              <p className="">{dateChangePolicy?dateChangePolicy
+              .flatMap((item)=>item.split("__nls__").filter(Boolean)).map((e,i)=>(<div key={i}>{dateChange[i]?.amount}{e.trim()}</div>)):null}</p></>):
+              (<>
+                <p> ₹{dateChangeAmount}</p></>)}
+              
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label:  <span className="text-sm-medium neutral-500">NO SHOW FEE</span> ,
+      key: '4',
+      children: (
+        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
+            <div>Time Frame</div>
+            <div>NoShow Fee</div>
+          </div>
+  
+          {/* Dividing line between header and content */}
+          <div className="grid grid-cols-2 items-center  px-3 py-4 border-t border-gray-200 text-sm">
+          <div className="text-gray-700"> {noShow?.some(item => item.st && item.et) ? (
+    noShow
+      .filter(item => item.st && item.et)
+      .map((item, index) => (
+        <div key={index}>
+        {`${item.st} hrs to ${item.et > 24 ? item.et / 24 + " days" : item.et + " hrs"}`}
+      </div>
+      ))
+  ) : (
+    <p>{cancellation.map((e)=>e.pp)}</p>
+  )}</div>
+            <div className="text-gray-600">
+              <p>{noShowPolicy}</p>
+              
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      label:  <span className="text-sm-medium neutral-500">SEAT CHARGABLE FEE</span> ,
+      key: '5',
+      children: (
+        seatCharge.length > 0 ? (
+          <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+          {/* Table Header */}
+          <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
+            <div>Time Frame</div>
+            <div>Seat Chargeable Fee</div>
+          </div>
+  
+          {/* Dividing line between header and content */}
+          <div className="grid grid-cols-2 items-center  px-3 py-4 border-t border-gray-200 text-sm">
+          <div className="text-gray-700"> {seatCharge?.some(item => item.st && item.et) ? (
+    seatCharge
+      .filter(item => item.st && item.et)
+      .map((item, index) => (
+        <div key={index}>
+        {`${item.st} hrs to ${item.et > 24 ? item.et / 24 + " days" : item.et + " hrs"}`}
+      </div>
+      ))
+  ) : (
+    <p>{cancellation.map((e)=>e.pp)}</p>
+  )}</div>
+            <div className="text-gray-600">
+              <p>{seatCharge.map((e)=>e.policyInfo)}</p>
+              
+            </div>
+          </div>
+        </div>
+        ) : (
+          <div className="text-gray-500 italic p-4">No data available.</div>
+        )
+      
+      ),
+    },
+  ];
+  
+  const loadDataBook = async (parameter) => {
+    try {
+          console.log('final', parameter);
+        // Call your API function with the properly constructed parameter
+        const result = await postDataTJBookingAir(parameter);
+        console.log(result)
+          console.log('success');
+          router.push(`/flights`);
+
+
+    } catch (err) {
+        console.error('Error while fetching flight data:', err);
+
+        // Optionally, you can show an error message to the user here
+    }
+};
+
+// Function to handle booking review and trigger loadDataBook
+const bookingReview = () => {
+ console.log("traveelers",travellers)
+ console.log("totalprice bookingid",totalprice,bookingId)
+  if (Array.isArray(travellers) && travellers.length > 0) {
+
+  if (totalprice && bookingId) {
+   
+      // handlePayment();
+      // openNotificationWithIcon('success');
+      // Build the parameter object without extra curly braces
+      const parameter = {
+          bookingId: bookingId,
+          paymentInfos: [
+              {
+                  amount: totalprice
+              }
+          ],
+          travellerInfo: travellers,
+      
+          // travellerInfo: [
+              // {
+              //     ti: 'Mr',
+              //     fN: 'Karthik',
+              //     lN: 'AdultA',
+              //     pt: 'ADULT'
+              // }
+              // Uncomment and include more traveller details as needed:
+              // {
+              //   ti: 'Ms',
+              //   fN: 'Test',
+              //   lN: 'ChildA',
+              //   pt: 'CHILD'
+              // },
+              // {
+              //   ti: 'Master',
+              //   fN: 'Test',
+              //   lN: 'InfantA',
+              //   pt: 'INFANT',
+              //   dob: '2019-08-09'
+              // }
+          // ],
+          // gstInfo: { // Uncomment this section when needed
+          //   gstNumber: '07AAGCT7826A1ZF',
+          //   email: 'prabhu@technogramsolutions.com',
+          //   registeredName: 'TGS Pvt Ltd',
+          //   mobile: '9538500324',
+          //   address: 'gurugram'
+          // },
+          deliveryInfo: {
+              emails: [email],
+              contacts: [number?.number]
+          }
+      };
+      console.log("traveelerinfo",parameter.travellerInfo)
+      loadDataBook(parameter);
+
+  }else{
+      console.error('Adult Is empty');
+  }
+  } else {
+      // Handle case when totalpricee is not set
+      console.error('Total price is not set');
+  }
+};
+
 
   return ( 
 
@@ -640,7 +841,7 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
                     <p className="text-sm-medium neutral-500 ">{cabinclass} 
                      </p>
                      <span
-                className="fareidentifier text-xs font-bold"
+                className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
                 style={{
                   backgroundColor: 'rgb(245, 222, 179)',
                   color: 'rgb(92, 64, 51)',
@@ -655,7 +856,7 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
          </div>
 
 
-         <div className=" flex flex-row justify-between  bg-white  space-y-6 ">
+         <div className=" flex flex-row justify-between  bg-gray-100 p-2 rounded-md  space-y-6 ">
     
     {/* Flight Timings */}
     <div className="flex justify-between items-center gap-5 ">
@@ -730,39 +931,7 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
       <div className="py-5 ">
       {/* Refund boxes */}
       <div className="flex flex-row    justify-around pr-4 mt-5 flex-wrap gap-y-5">
-        {/* <div className=" gap-5 ">
-          <div className="text-center pl-6">
-            <p className="text-primary text-sm font-medium whitespace-normal">₹1050 refund</p>
-            <div className="flex justify-center">
-              <div className="flex flex-wrap items-center justify-center max-w-full">
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">(</p>
-                  <p className="text-secondary text-xs">₹4300<span className="mx-1">+</span></p>
-                </div>
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">₹300)*</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
-        {/* <div className="gap-5 justify-center">
-          <div className="text-center pl-6">
-            <p className="text-primary text-sm font-medium whitespace-normal">₹1050 refund</p>
-            <div className="flex justify-center">
-              <div className="flex flex-wrap items-center justify-center max-w-full">
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">(</p>
-                  <p className="text-secondary text-xs">₹4300<span className="mx-1">+</span></p>
-                </div>
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">₹300)*</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
+       
 
         <div className=" gap-5 justify-center">
           <div className="text-center pl-6">
@@ -775,7 +944,7 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
       {/* Timeline */}
       <div className="space-y-3 mt-3  pl-20 pr-30">
   {/* Now */}
-  <div className="relative   flex items-center pl-5 justify-center">
+  <div className="relative   flex items-center pl-5  justify-center">
     
     {/* Left Icon */}
     <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
@@ -788,7 +957,7 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
 
     {/* Right Icon */}
     <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
-      <div className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white">
+      <div className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white" style={{marginRight:"-5px"}}>
         <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
           <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
         </svg>
@@ -799,16 +968,30 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
     <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
 
     {/* Vertical Dotted Line at Center */}
-    <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
+    <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400">
+  
+    
+    </div>
   </div>
 </div>
-<div className="flex flex-row justify-between align-center pt-4 pl-20">
-  <p>now</p>
-  <p className="text-sm-medium neutral-500 pl-50">{cancellationPenaltyPeriod}</p>
+
+
+<div className="flex flex-row justify-between align-center pt-4 pl-15 pr-15 ">
+  <p className="text-sm-medium neutral-1000">{cancellation.some(e=>e.pp===undefined)?("Now"):(<><div>Now</div></>)}</p>
+  <div className="flex  justify-center">
+              <div className="flex flex-wrap flex-col items-center justify-center max-w-full">
+                <div className="flex items-center flex-col">
+                  
+                  <p className="text-sm-medium neutral-500">₹ {cancellationAmount}<span className="mx-1"></span></p>
+                  <p className="text-secondary text-sm">{cancellation.some(e=>e.pp===undefined)?null:cancellationPolicy?cancellationPolicy:null}</p> 
+                </div>
+               
+              </div>
+            </div>
   <div className="flex flex-col justify-center items-center">
-  <p>{dt}</p>
+  <p className="text-sm-medium neutral-1000">{dt}</p>
   {/* <p>departure</p> */}
-  <p>{formattedDate}</p>
+  <p className="text-sm-medium neutral-1000">{formattedDate.split(",")[1]}</p>
   
   </div>
 </div>
@@ -817,97 +1000,9 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
      
     </div>
 
-       
-      {/* <Timeline
-        sx={{
-          [`& .${timelineOppositeContentClasses.root}`]: {
-            flex: 0.2,
-          },
-        }}
-        className="flex"
-      >
-        <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">
-          Cancellation Charges
-        </TimelineOppositeContent>
-        
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector style={{height:"100px"}} />
-          
-        </TimelineSeparator>
-        <TimelineContent className="flex flex-row   items-center">
-          <div>
-          <p>
-          {cancellationAmount}
-          </p>
-          <p>
-            {cancellationPolicy}
-          </p>
-          <p>
-            {cancellationPenaltyPeriod}
-          </p>
-          </div>
-          
-        </TimelineContent>
-        
-      </TimelineItem>
-      
-
-
-      <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">
-          09:30 am
-        </TimelineOppositeContent>
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector />
-        </TimelineSeparator>
-        <TimelineContent>Eat</TimelineContent>
-      </TimelineItem>
-
-      
-
-      <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">
-          09:30 am
-        </TimelineOppositeContent>
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector />
-        </TimelineSeparator>
-        <TimelineContent>Eat</TimelineContent>
-      </TimelineItem>
-
-
-
-        <TimelineItem>
-          <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
-            Now
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent className="pt-30 flex items-center">
-            {cancellationAmount} + {cancellationPolicy}
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineOppositeContent color="textSecondary">
-            
-            {`${formatteddate2} - ${dt}`}
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-          </TimelineSeparator>
-          <TimelineContent></TimelineContent>
-        </TimelineItem>
-      </Timeline> */}
-
       {/* Show More / Show Less Button */}
       
- <div></div>
+
       {/* Conditionally Render No Show and Date Change */}
       {showMore && (
         <>
@@ -920,64 +1015,7 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
 
 
 
-          No Show
-          <div className="text-md-medium neutral-500 mt-10 pl-30">No Show</div>
-          <Timeline
-            sx={{
-              [`& .${timelineOppositeContentClasses.root}`]: {
-                flex: 0.2,
-              },
-            }}
-            className="flex"
-          >
-            <TimelineItem>
-              <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
-                {dateChangeSt!==null?`${dateChangeSt} hrs`:"Now"}
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent className="pt-30 flex items-center">{noShowPolicy}</TimelineContent>
-            </TimelineItem>
-            <TimelineItem>
-              <TimelineOppositeContent color="textSecondary">{dateChangeEt!==null?`${dateChangeEt} days`:dt}</TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot />
-              </TimelineSeparator>
-              <TimelineContent></TimelineContent>
-            </TimelineItem>
-          </Timeline>
-
-          <div className="text-md-medium neutral-500 mt-10 pl-30">Date Change Charges</div>
-          <Timeline
-            sx={{
-              [`& .${timelineOppositeContentClasses.root}`]: {
-                flex: 0.2,
-              },
-            }}
-            className="flex"
-          >
-            <TimelineItem>
-              <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
-                Now
-              </TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot />
-                <TimelineConnector />
-              </TimelineSeparator>
-              <TimelineContent className="pt-30 flex items-center">
-                {dateChangeAmount} + {dateChangePolicy}
-              </TimelineContent>
-            </TimelineItem>
-            <TimelineItem>
-              <TimelineOppositeContent color="textSecondary">{dt}</TimelineOppositeContent>
-              <TimelineSeparator>
-                <TimelineDot />
-              </TimelineSeparator>
-              <TimelineContent></TimelineContent>
-            </TimelineItem>
-          </Timeline>
+         
         </>
       )}
     </div>
@@ -1152,21 +1190,24 @@ const dateChangeEt=dateChange.map((e)=>e.et?? null)
                           </div>
                         </div>
                          {/* Buttons */}
-                      <div className="bg-white relative">
+                      <div className="bg-white relative flex justify-between  flex-col">
                         <div className="mt-60 flex justify-between">
                         <Link href={`/book-ticket?tcs_id=${priceId}`} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">
   Back
 </Link>
-                          <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition" >Continue</button>
+<div onClick={bookingReview} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">continue</div>
                         </div>
+                       
                       </div>
                       </form>
                       
-                      
+                    
                      
                     </div>
                     
                   </section>
+
+
                 </div>
 
                 {/* Right Column: Fare Summary */}

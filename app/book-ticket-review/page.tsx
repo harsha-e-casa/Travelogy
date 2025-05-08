@@ -417,11 +417,11 @@ export default function BookTicket() {
             // Build the parameter object without extra curly braces
             const parameter = {
                 bookingId: bookingId,
-                // paymentInfos: [
-                //     {
-                //         amount: tdnetPrice
-                //     }
-                // ],
+                paymentInfos: [
+                    {
+                        amount: tdnetPrice
+                    }
+                ],
                 travellerInfo: [
                     travellerInfoV[0]
                 ],
