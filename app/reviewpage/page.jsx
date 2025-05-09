@@ -124,22 +124,25 @@ const Page = () => {
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
 //to fetch fare rule
 const fetchFareRule = async (params) => {
   setLoading(true);
   setError(null);
-
+ 
+  if (!params) {
+    setError("Price ID is missing");
+    setLoading(false);
+    return;
+  }
   
   try {
     console.log("Fetching FARERULE with parameter:", params);
     const data = await postDataFareDetails(params);
     console.log("Flight details FROM FARERULE:", data);
-    setFareDetails(data )
+    setFareDetails(data)
    
   } catch (err) {
     console.error("error caused", err);
@@ -159,20 +162,19 @@ const fetchFareRule = async (params) => {
     } else {
       setError("Something went wrong. Please try again.");
     }
-  } finally {
-    setLoading(false);
-  }
+  } 
 };
- useEffect(()=>{
-console.log("logged fare details",fareDetails)
- },[fareDetails])
 
-
- useEffect(()=>{
-  console.log("logged fflight details",flightData)
-   },[flightData])
   
+useEffect(() => {
+  if (flightData && fareDetails) {
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 100); // small delay to ensure DOM updates
 
+    return () => clearTimeout(timeout);
+  }
+}, [flightData, fareDetails]);
 
 
   // UseEffect to call the function when 'tcs_id' is available in the search params
@@ -396,6 +398,7 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
 
   let date = new Date(traveldata);
 
+
   // Subtract one day (24 hours in milliseconds)
   date.setDate(date.getDate() - 1);
   
@@ -488,8 +491,8 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
   )}</div>
             <div className="text-gray-600 space-y-5">
               {dateChange.some(e=>e.pp===undefined)?(<>
-              <p className="">{dateChangePolicy?dateChangePolicy
-              .flatMap((item)=>item.split("__nls__").filter(Boolean)).map((e,i)=>(<div key={i}>{dateChange[i]?.amount}{e.trim()}</div>)):null}</p></>):
+              <p className="flex flex-col gap-3">{dateChangePolicy?dateChangePolicy
+              .flatMap((item)=>item.split("__nls__").filter(Boolean)).map((e,i)=>(<div key={i} className="">{dateChange[i]?.amount} {e.trim()}</div>)):null}</p></>):
               (<>
                 <p> ₹{dateChangeAmount}</p></>)}
               
@@ -506,7 +509,7 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
           {/* Table Header */}
           <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
             <div>Time Frame</div>
-            <div>NoShow Fee</div>
+            <div>No Show Fee</div>
           </div>
   
           {/* Dividing line between header and content */}
@@ -670,7 +673,7 @@ const bookingReview = () => {
                   </span>
                 </li>
                 <li>
-                  <Link href="/">Tickets</Link>
+                  <Link href={`/book-ticket?tcs_id=${priceId}`}>Tickets</Link>
                   <span className="arrow-right">
                     <svg width="7" height="12" viewBox="0 0 7 12" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1 11L6 6L1 1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -678,7 +681,15 @@ const bookingReview = () => {
                   </span>
                 </li>
                 <li>
-                  <span className="text-breadcrumb">Booking</span>
+                <Link href={`book-ticket?tcs_id=${priceId}`}>Booking</Link>
+                  <span className="arrow-right">
+                    <svg width="7" height="12" viewBox="0 0 7 12" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 11L6 6L1 1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                    </svg>
+                  </span>
+                </li>
+                <li>
+                  <span className="text-breadcrumb">Review</span>
                 </li>
               </ul>
             </div>
@@ -688,7 +699,7 @@ const bookingReview = () => {
             <div className="container pt-1">
               <h4 className="neutral-1000">Review</h4>
               {loading?(<BookingSkeleton />):
-              (<><div className="row mt-20">
+              (<><div className="row ">
                 <div className="col-lg-8">
                   {/* <div className="box-content-tickets-detail flex flex-row items-center gap-3 p-3">
                     <p className="text-sm-medium neutral-500 totalduration">{fromCity}</p>
@@ -1086,92 +1097,7 @@ const bookingReview = () => {
     </div>
 
        
-      {/* <Timeline
-        sx={{
-          [`& .${timelineOppositeContentClasses.root}`]: {
-            flex: 0.2,
-          },
-        }}
-        className="flex"
-      >
-        <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">
-          Cancellation Charges
-        </TimelineOppositeContent>
-        
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector style={{height:"100px"}} />
-          
-        </TimelineSeparator>
-        <TimelineContent className="flex flex-row   items-center">
-          <div>
-          <p>
-          {cancellationAmount}
-          </p>
-          <p>
-            {cancellationPolicy}
-          </p>
-          <p>
-            {cancellationPenaltyPeriod}
-          </p>
-          </div>
-          
-        </TimelineContent>
-        
-      </TimelineItem>
-      
-
-
-      <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">
-          09:30 am
-        </TimelineOppositeContent>
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector />
-        </TimelineSeparator>
-        <TimelineContent>Eat</TimelineContent>
-      </TimelineItem>
-
-      
-
-      <TimelineItem>
-        <TimelineOppositeContent color="text.secondary">
-          09:30 am
-        </TimelineOppositeContent>
-        <TimelineSeparator>
-          <TimelineDot />
-          <TimelineConnector />
-        </TimelineSeparator>
-        <TimelineContent>Eat</TimelineContent>
-      </TimelineItem>
-
-
-
-        <TimelineItem>
-          <TimelineOppositeContent color="textSecondary" className="flex flex-row justify-end">
-            Now
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent className="pt-30 flex items-center">
-            {cancellationAmount} + {cancellationPolicy}
-          </TimelineContent>
-        </TimelineItem>
-        <TimelineItem>
-          <TimelineOppositeContent color="textSecondary">
-            
-            {`${formatteddate2} - ${dt}`}
-          </TimelineOppositeContent>
-          <TimelineSeparator>
-            <TimelineDot />
-          </TimelineSeparator>
-          <TimelineContent></TimelineContent>
-        </TimelineItem>
-      </Timeline> */}
+    
 
       {/* Show More / Show Less Button */}
       
@@ -1384,10 +1310,10 @@ const bookingReview = () => {
                 </div>
 
                 {/* Right Column: Fare Summary */}
-                <div className="col-lg-4">
+                <div className="col-lg-4 mt-20">
                   <div className="booking-form add_sticky">
                   <div class="head-booking-form"><p class="text-xl-bold neutral-1000">Fare Summary</p></div>
-                    <BookingForm totalpricee={totalPriceinfo} />
+                    <BookingForm totalpricee={totalPriceinfo}  />
                   </div>
                 </div>
               </div></>)}
