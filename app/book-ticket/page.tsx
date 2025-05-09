@@ -599,6 +599,9 @@ console.log("Stored Phone:", getCookie('user_number'));
                 // alert('Validation failed! Please check the form fields.');
             });
     };
+
+
+    
     const BookingSkeleton = () => {
             return (
               <section className="section-box block-content-book-tickets background-card">
@@ -1033,7 +1036,7 @@ console.log("Stored Phone:", getCookie('user_number'));
                                                 </div>
                                             </div>
 
-                                            <div className="px-4 py-3 border_xcolor_1px">
+                                            {/* <div className="px-4 py-3 border_xcolor_1px">
                                                 <h2
                                                     id="applicant-information-title"
                                                     className="text-lg leading-6 font-bold text-gray-900"
@@ -1048,7 +1051,7 @@ console.log("Stored Phone:", getCookie('user_number'));
                                                 <a className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4" href="#">Login
                                                     <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M8 15L15 8L8 1M15 8L1 8" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"> </path></svg></a>
 
-                                            </div>
+                                            </div> */}
 
                                             {/* 
                                             <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
