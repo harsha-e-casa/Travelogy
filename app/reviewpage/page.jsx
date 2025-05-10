@@ -11,7 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import { Tabs } from 'antd';
 
 
-import "./style.css"
+// import "./style.css"
 
 import { format } from 'date-fns';
 import * as React from 'react'; 
