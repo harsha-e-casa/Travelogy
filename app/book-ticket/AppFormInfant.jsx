@@ -17,7 +17,7 @@ const AppFormInfant = ({ form, index }) => {
             label="Select"
             hasFeedback
             rules={[{ required: true, message: "" }]}>
-            <Select className="h-10" placeholder="Please select a title">
+            <Select className="h-10 flex flex-row justify-between items-center" placeholder="Please select a title">
               <Option value="Ms">Ms</Option>
               <Option value="Master">Master</Option>
             </Select>
@@ -29,8 +29,9 @@ const AppFormInfant = ({ form, index }) => {
           <Form.Item
             name={`infantName-${index}`}
             label="First Name"
-            rules={[{ required: true, message: "" }]}>
-            <Input className="h-10" placeholder="First Name" />
+            hasFeedback
+            rules={[{ required: true, message: "Please enter the name" }]}>
+            <Input className="h-10 flex flex-row justify-between items-center" placeholder="First Name" />
           </Form.Item>
         </Col>
 
@@ -39,8 +40,9 @@ const AppFormInfant = ({ form, index }) => {
           <Form.Item
             name={`infantLast-${index}`}
             label="Last Name"
-            rules={[{ required: true, message: "" }]}>
-            <Input className="h-10" placeholder="Last Name" />
+            hasFeedback
+            rules={[{ required: true, message: "Please enter the last name" }]}>
+            <Input className="h-10 flex flex-row justify-between items-center" placeholder="Last Name" />
           </Form.Item>
         </Col>
 
@@ -49,9 +51,10 @@ const AppFormInfant = ({ form, index }) => {
           <Form.Item
             name={`infantDOB-${index}`}
             label="Date of Birth"
-            rules={[{ required: true, message: "" }]}>
+            hasFeedback
+            rules={[{ required: true, message: "Please choose the DOB" }]}>
             <DatePicker 
-              className="h-10" 
+              className="h-10 flex flex-row justify-between items-center" 
               format="YYYY-MM-DD" 
               placeholder="Select Date of Birth"
               defaultValue={dayjs()} // Default to today's date

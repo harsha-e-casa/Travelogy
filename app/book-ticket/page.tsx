@@ -474,7 +474,12 @@ export default function BookTicket() {
     const [form] = Form.useForm();
 
     const handleNextClick = () => {
-        // Retrieve all form values for the current fields
+       
+
+        form
+            .validateFields() // Validate all fields
+            .then(() => {
+                 // Retrieve all form values for the current fields
         const formValues = form.getFieldsValue(true);
         console.log("all form vlaues",formValues)
         
@@ -585,14 +590,11 @@ console.log("Cookies after update:", document.cookie);
 console.log("Stored Email:", getCookie('user_email'));
 console.log("Stored Phone:", getCookie('user_number'));
 
-
-        form
-            .validateFields() // Validate all fields
-            .then(() => {
-                bookingReview();
+                // bookingReview();
                 // console.log('All forms are valid!');
                 // alert('Validation success!');
                 // Proceed with form submission or further actions
+                router.push(`/reviewpage?tcs_id=${tcs_id}`);
             })
             .catch((errorInfo) => {
                 console.log('Validation failed:', errorInfo);
@@ -1026,13 +1028,13 @@ console.log("Stored Phone:", getCookie('user_number'));
                                                         Back
                                                     </button>
 
-                                                    <Link
-  href={`/reviewpage?tcs_id=${tcs_id}`}
+                                                    <button
+  
   onClick={handleNextClick}
-  className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition inline-block text-center"
+  className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-block text-center"
 >
   Continue
-</Link>
+</button>
                                                 </div>
                                             </div>
 
