@@ -200,7 +200,7 @@ useEffect(() => {
   
   const BookingSkeleton = () => {
     return (
-      <section className="section-box block-content-book-tickets background-card">
+      <section className="section-box block-content-book-tickets background-card mb-20">
         <div className="container pt-1">
           <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
   

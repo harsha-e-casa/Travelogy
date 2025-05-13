@@ -63,9 +63,14 @@ const AppFormCustomer = ({form}) => {
           <Form.Item
             name="mNumber"
             label="Mobile Number"
-            rules={[{ required: true, message: "Please enter valid Mobile Number" }]}
+            hasFeedback
+            rules={[{ required: true, message: "Please enter valid Mobile Number" }, {
+              pattern: /^[0-9]+$/,
+              message: "Only numbers are allowed for Mobile Number",
+            }]}
+            
           >
-            <Input className='h-10' placeholder="Enter Mobile Number" />
+            <Input className='h-10 flex flex-row justify-between items-center' placeholder="Enter Mobile Number" />
           </Form.Item>
         </Col>
 
@@ -74,9 +79,13 @@ const AppFormCustomer = ({form}) => {
           <Form.Item
             name="mEmail"
             label="Email ID"
-            rules={[{ required: true, message: "Please enter valid Email" }]}
+            hasFeedback
+            rules={[{ required: true, message: "Please enter valid Email" },  {
+              type: 'email',
+              message: "Please enter a valid Email",
+            }]}
           >
-            <Input className='h-10' placeholder="Enter Email ID" />
+            <Input className='h-10 flex flex-row justify-between items-center' placeholder="Enter Email ID" />
           </Form.Item>
         </Col>
       </Row>

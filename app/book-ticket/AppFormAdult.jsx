@@ -13,7 +13,7 @@ const AppFormAdult = ({ form, index }) => {
             name={`select-${index}`}
             label="Select"
             hasFeedback
-            rules={[{ required: true, message: "" }]}>
+            rules={[{ required: true, message: "This field is required" }]}>
             <Select className="h-10" placeholder="Please select a title">
               <Option value="Mr">Mr</Option>
               <Option value="MRS">Mrs</Option>
@@ -27,8 +27,9 @@ const AppFormAdult = ({ form, index }) => {
           <Form.Item
             name={`fname-${index}`}
             label="First Name"
-            rules={[{ required: true, message: "" }]}>
-            <Input className="h-10" placeholder="First Name" />
+            hasFeedback
+            rules={[{ required: true, message: " Please Enter your First Name" }]}>
+            <Input className="h-10 flex flex-row justify-between items-center" placeholder="First Name" />
           </Form.Item>
         </Col>
 
@@ -37,9 +38,10 @@ const AppFormAdult = ({ form, index }) => {
           <Form.Item
             name={`lname-${index}`}
             label="Last Name"
+            hasFeedback
             // rules={[{ required: true, message: "" }]}>
-            rules={[{ required: true, message: "" }]}>
-            <Input className="h-10" placeholder="Last Name" />
+            rules={[{ required: true, message: "Please enter your last name" }]}>
+            <Input className="h-10 flex flex-row justify-between items-center" placeholder="Last Name" />
           </Form.Item>
         </Col>
       </Row>
