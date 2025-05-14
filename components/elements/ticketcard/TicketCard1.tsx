@@ -171,7 +171,7 @@ export default function TicketCard1({ ticket }: any) {
 						 */}
 					{/* </div> */}
 
-					<div className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center    " style={{width:"280px", paddingLeft:"20px"}} >
+					<div className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center    " style={{width:"245px", paddingLeft:"20px"}} >
 						
 						<Radio.Group onChange={onChange} value={value} className="fare-options flex flex-col gap-2  w-full" >
 								  {ticket.totalPriceList.map((e: any, i: number) => {
@@ -183,7 +183,7 @@ export default function TicketCard1({ ticket }: any) {
 												   ${'border-gray-300 hover:border-gray-500'}`} >
 											   <div className='flex flex-row gap-2 items-center'>
 													  <div className="text-lg font-bold text-gray-800 price" >
-												   ₹{new Intl.NumberFormat('en-IN').format(e.fd.ADULT.fC.TF)}
+												   ₹{new Intl.NumberFormat('en-IN').format(e.fd.ADULT.fC.BF)}
 													  </div>
 	
 													  <span className=" fareidentifier  text-xs font-bold" style={{backgroundColor:"#f5deb3",color:"#5c4033",padding:"1px 2px"}}>
@@ -193,7 +193,7 @@ export default function TicketCard1({ ticket }: any) {
 					 
 											 <div className="text-xs text-gray-600">
 												   <span className="ml-2 cabinclass">
-												{e.fd.ADULT.cc} |<span className='refundable'> {e.fd.rT === 1 ? 'Refundable' : 'Non-Refundable'}</span>
+												{e.fd.ADULT.cc} |<span className='refundable'> {e.fd.rT === 1 ? 'Non-refundable' : 'Refundable'}</span>
 												</span>
 											</div>
 									</div>

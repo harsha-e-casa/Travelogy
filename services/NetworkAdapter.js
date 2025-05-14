@@ -1,12 +1,13 @@
 // src/api/apiAdapter.js
 import axios from 'axios';
-import {useContext} from 'react'
+import { useContext } from 'react'
 import Cookies from 'js-cookie';
 
 // You can store the API base URL in an environment variable
-const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
-const API_TEST_JACK  =  'https://apitest.tripjack.com/';
-const apiKey         =  '412605c3683c38-96bd-45b6-ae06-02e22a8be1b1';
+// const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
+const API_BASE_URL = 'http://localhost:3030';
+const API_TEST_JACK = 'https://apitest.tripjack.com/';
+const apiKey = '412605c3683c38-96bd-45b6-ae06-02e22a8be1b1';
 
 // const parameter = {
 //   "searchQuery": {
@@ -46,7 +47,7 @@ const apiInstanceTripJack = axios.create({
   baseURL: API_TEST_JACK,
   headers: {
     'Content-Type': 'application/json',
-    'apikey' : apiKey,
+    'apikey': apiKey,
   },
   // timeout: 5000, // adjust timeout as necessary
 });
@@ -106,6 +107,16 @@ export const postData = async (endpoint, payload) => {
   }
 };
 
+// export const postDataApiCall = async (url, parameter) => {
+//   // travelogy/flight/search
+//   try {
+//     const response = await apiInstanceTripJack.post(url, parameter);
+//     return response.data;
+//   } catch (error) {
+//     throw error;
+//   }
+// }
+
 // TripJack API Sections Start
 
 
@@ -113,48 +124,47 @@ export const postDataTJ = async (parameter) => {
 
   try {
 
-    
+
     // let adults = getCookie('gy_adult')
     // let children = getCookie('gy_child')
     // let cabinType = getCookie('gy_class')
     // let departDate = getCookie('gy_trd')
 
 
-//     const parameter = {
-//       "searchQuery": {
-//           "cabinClass": "PREMIUM_ECONOMY",
-//           "paxInfo": {
-//               "ADULT": Cookies.get('gy_adult'),
-//               "CHILD": Cookies.get('gy_child'),
-//               "INFANT": 0
-//           },
-//           "routeInfos": [
-//               {
-//                   "fromCityOrAirport": {
-//                       "code": Cookies.get('gy_aa')
-//                   },
-//                   "toCityOrAirport": {
-//                       "code": Cookies.get('gy_da')
-//                   },
-//                   "travelDate": Cookies.get('gy_trd'),
-//               }
-//           ],
-//           "searchModifiers": {
-//             // "pfts": [
-//             //     "REGULAR"
-//             // ],
-//             // "isDirectFlight": false,
-//             // "isConnectingFlight": false,
-//             // "sourceId": 0,
-//             // "pnrCreditInfo": {
-//             //     "pnr": ""
-//             // },
-//             // "iiss": false
-//         }
-//       }
-//     }
-// console.log(parameter);
-
+    //     const parameter = {
+    //       "searchQuery": {
+    //           "cabinClass": "PREMIUM_ECONOMY",
+    //           "paxInfo": {
+    //               "ADULT": Cookies.get('gy_adult'),
+    //               "CHILD": Cookies.get('gy_child'),
+    //               "INFANT": 0
+    //           },
+    //           "routeInfos": [
+    //               {
+    //                   "fromCityOrAirport": {
+    //                       "code": Cookies.get('gy_aa')
+    //                   },
+    //                   "toCityOrAirport": {
+    //                       "code": Cookies.get('gy_da')
+    //                   },
+    //                   "travelDate": Cookies.get('gy_trd'),
+    //               }
+    //           ],
+    //           "searchModifiers": {
+    //             // "pfts": [
+    //             //     "REGULAR"
+    //             // ],
+    //             // "isDirectFlight": false,
+    //             // "isConnectingFlight": false,
+    //             // "sourceId": 0,
+    //             // "pnrCreditInfo": {
+    //             //     "pnr": ""
+    //             // },
+    //             // "iiss": false
+    //         }
+    //       }
+    //     }
+    // console.log(parameter);
 
     const response = await apiInstanceTripJack.post('fms/v1/air-search-all', parameter);
     return response.data;
@@ -164,10 +174,7 @@ export const postDataTJ = async (parameter) => {
 };
 
 
-
-
 export const postDataTJBookingAir = async (parameter) => {
-
   try {
     const response = await apiInstanceTripJack.post('oms/v1/air/book', parameter);
     return response.data;
@@ -221,4 +228,4 @@ export const postDataBookingDetails = async (parameter) => {
 
 // Add additional functions as needed (PUT, DELETE, etc.)
 
-export default apiInstanceTripJack;
+export default { apiInstanceTripJack, apiInstance };

@@ -11,7 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import { Tabs } from 'antd';
 
 
-
+// import "./style.css"
 
 import { format } from 'date-fns';
 import * as React from 'react'; 
@@ -101,7 +101,7 @@ const Page = () => {
 
     try {
       const parameter = { priceIds: [priceId] };
-     
+      console.log("Fetching with parameter FOR REVIEW:", parameter);
 
       const data = await postDataFlightDetails(parameter);
       console.log("Flight detailsssss FOR REVIEW:", data);
@@ -124,25 +124,23 @@ const Page = () => {
       } else {
         setError("Something went wrong. Please try again.");
       }
-    } 
+    } finally {
+      setLoading(false);
+    }
   };
 
 //to fetch fare rule
 const fetchFareRule = async (params) => {
   setLoading(true);
   setError(null);
- 
-  if (!params) {
-    setError("Price ID is missing");
-    setLoading(false);
-    return;
-  }
+
   
   try {
     console.log("Fetching FARERULE with parameter:", params);
     const data = await postDataFareDetails(params);
     console.log("Flight details FROM FARERULE:", data);
-    setFareDetails(data)
+    setFareDetails(
+      data)
    
   } catch (err) {
     console.error("error caused", err);
@@ -162,19 +160,20 @@ const fetchFareRule = async (params) => {
     } else {
       setError("Something went wrong. Please try again.");
     }
-  } 
-};
-
-  
-useEffect(() => {
-  if (flightData && fareDetails) {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 100); // small delay to ensure DOM updates
-
-    return () => clearTimeout(timeout);
+  } finally {
+    setLoading(false);
   }
-}, [flightData, fareDetails]);
+};
+ useEffect(()=>{
+console.log("logged fare details",fareDetails)
+ },[fareDetails])
+
+
+ useEffect(()=>{
+  console.log("logged fflight details",flightData)
+   },[flightData])
+  
+
 
 
   // UseEffect to call the function when 'tcs_id' is available in the search params
@@ -326,8 +325,7 @@ console.log("bookingId",bookingId)
   const fd = totalpriceinfos.map(e => e.fd) ?? {};
   const fareIdentifier = totalpriceinfos.map(e => e.fareIdentifier) ?? {};
   const cabinclass = fd.map((e) => e.ADULT?.cc);
-  const refundabletype=fd.map((e)=>e.ADULT?.rT===0?"Non-Refundable":"Refundable")
-  const isNonRefundable = fd.some(e => e.ADULT?.rT === 0);
+  const refundabletype=fd.map((e)=>e.ADULT?.rT===0?"Refundable":"non-refundable")
   
   //totalfare
   const totalprice=flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF
@@ -404,7 +402,6 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
 
   let date = new Date(traveldata);
 
-
   // Subtract one day (24 hours in milliseconds)
   date.setDate(date.getDate() - 1);
   
@@ -425,8 +422,8 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
     {
       label:  <span className="text-sm-medium neutral-500">CANCELLATION FEE</span>  ,
       key: '2',
-      children: (
-        <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
+      children: (<>
+       <div className="mt-4 border border-gray-200 rounded-md overflow-hidden">
           {/* Table Header */}
           <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm">
             <div>Time Frame</div>
@@ -435,12 +432,12 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
   
           {/* Table Row */}
           <div className="grid grid-cols-2  px-3 py-4 border-t border-gray-200 text-sm">
-            <div className="text-gray-700 flex flex-col justify-around"> {cancellation?.some(item => item.st && item.et) ? (
+            <div className="text-gray-700"> {cancellation?.some(item => item.st && item.et) ? (
                    cancellation
                      .filter(item => item.st && item.et)
                      .map((item, index) => (
-                       <div key={index} className="" >
-                          {`${item.st} hrs to ${item.et > 24 ? Math.floor(item.et / 24) + ' days' : item.et + ' hrs'}`}
+                       <div key={index}>
+                         {`${item.st} hrs to ${item.et/24} days`}
                        </div>
                      ))
                  ) : (
@@ -448,28 +445,25 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
               )}</div>
 
 
-<div className="text-gray-600">
-  {cancellation?.some(e => e.pp === undefined) ? (
-    <div className="flex flex-col">
-      {cancellationPolicy && cancellationPolicy.map((policy, index) => (
-        <div key={index} className="mb-2"> 
-          {policy
-            .split("__nls__")
-            .filter(Boolean)
-            .map((line, i) => (
-              <div key={i} className="pb-1">{line.trim()}</div>
-          ))}
-        </div>
-      ))}
-    </div>
-  ) : (
-    <p>₹{cancellationAmount ?? null}</p>
-  )}
-</div>
-
+            <div className="text-gray-600">
+              {cancellation?.some(e=>e.pp===undefined)?(<><p>{cancellationPolicy ? cancellationPolicy
+              
+              .flatMap((item) =>
+                 item
+              .split("__nls__") 
+              .filter(Boolean)  
+      )
+      .map((line, index) => (
+        <div key={index}>{line.trim()}</div>
+      )) : null}</p></>)
+      :(
+                <p> ₹{cancellationAmount?cancellationAmount:null} </p>)}
+              
+            </div>
           </div>
         </div>
-      ),
+
+        </>),
     },
     {
       label:  <span className="text-sm-medium neutral-500">DATE CHANGE FEE</span>  ,
@@ -489,16 +483,16 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
       .filter(item => item.st && item.et)
       .map((item, index) => (
         <div key={index}>
-        {`${item.st} hrs to ${item.et > 24 ? Math.floor(item.et / 24) + ' days' : item.et + ' hrs'}`}
+        {`${item.st} hrs to ${item.et > 24 ? item.et / 24 + " days" : item.et + " hrs"}`}
       </div>
       ))
   ) : (
-    <p>{dateChange.map((e)=>e.pp)}</p>
+    <p>{cancellation.map((e)=>e.pp)}</p>
   )}</div>
             <div className="text-gray-600 space-y-5">
               {dateChange.some(e=>e.pp===undefined)?(<>
-              <p className="flex flex-col gap-3">{dateChangePolicy?dateChangePolicy
-              .flatMap((item)=>item.split("__nls__").filter(Boolean)).map((e,i)=>(<div key={i} className="">{dateChange[i]?.amount} {e.trim()}</div>)):null}</p></>):
+              <p className="">{dateChangePolicy?dateChangePolicy
+              .flatMap((item)=>item.split("__nls__").filter(Boolean)).map((e,i)=>(<div key={i}>{dateChange[i]?.amount}{e.trim()}</div>)):null}</p></>):
               (<>
                 <p> ₹{dateChangeAmount}</p></>)}
               
@@ -515,7 +509,7 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
           {/* Table Header */}
           <div className="grid grid-cols-2 bg-gray-100 font-semibold text-gray-700 p-3 text-sm border-b border-gray-300">
             <div>Time Frame</div>
-            <div>No Show Fee</div>
+            <div>NoShow Fee</div>
           </div>
   
           {/* Dividing line between header and content */}
@@ -525,11 +519,11 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
       .filter(item => item.st && item.et)
       .map((item, index) => (
         <div key={index}>
-        {`${item.st} hrs to ${item.et > 24 ? Math.floor(item.et / 24) + ' days' : item.et + ' hrs'}`}
+        {`${item.st} hrs to ${item.et > 24 ? item.et / 24 + " days" : item.et + " hrs"}`}
       </div>
       ))
   ) : (
-    <p>{noShow.map((e)=>e.pp)}</p>
+    <p>{cancellation.map((e)=>e.pp)}</p>
   )}</div>
             <div className="text-gray-600">
               <p>{noShowPolicy}</p>
@@ -558,11 +552,11 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
       .filter(item => item.st && item.et)
       .map((item, index) => (
         <div key={index}>
-        {`${item.st} hrs to ${item.et > 24 ? Math.floor(item.et / 24) + ' days' : item.et + ' hrs'}`}
+        {`${item.st} hrs to ${item.et > 24 ? item.et / 24 + " days" : item.et + " hrs"}`}
       </div>
       ))
   ) : (
-    <p>{seatCharge.map((e)=>e.pp)}</p>
+    <p>{cancellation.map((e)=>e.pp)}</p>
   )}</div>
             <div className="text-gray-600">
               <p>{seatCharge.map((e)=>e.policyInfo)}</p>
@@ -679,7 +673,7 @@ const bookingReview = () => {
                   </span>
                 </li>
                 <li>
-                  <Link href={`/book-ticket?tcs_id=${priceId}`}>Tickets</Link>
+                  <Link href="/">Tickets</Link>
                   <span className="arrow-right">
                     <svg width="7" height="12" viewBox="0 0 7 12" xmlns="http://www.w3.org/2000/svg">
                       <path d="M1 11L6 6L1 1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -687,15 +681,7 @@ const bookingReview = () => {
                   </span>
                 </li>
                 <li>
-                <Link href={`book-ticket?tcs_id=${priceId}`}>Booking</Link>
-                  <span className="arrow-right">
-                    <svg width="7" height="12" viewBox="0 0 7 12" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 11L6 6L1 1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                    </svg>
-                  </span>
-                </li>
-                <li>
-                  <span className="text-breadcrumb">Review</span>
+                  <span className="text-breadcrumb">Booking</span>
                 </li>
               </ul>
             </div>
@@ -705,7 +691,7 @@ const bookingReview = () => {
             <div className="container pt-1">
               <h4 className="neutral-1000">Review</h4>
               {loading?(<BookingSkeleton />):
-              (<><div className="row ">
+              (<><div className="row mt-20">
                 <div className="col-lg-8">
                   {/* <div className="box-content-tickets-detail flex flex-row items-center gap-3 p-3">
                     <p className="text-sm-medium neutral-500 totalduration">{fromCity}</p>
@@ -938,7 +924,6 @@ const bookingReview = () => {
       <Button  variant="contained"
           onClick={() => setShowMore((prev) => !prev)}
           className=" cursor-pointer"
-          
         >
           {showMore ? 'Show Less' : 'Show More'}
         </Button>
@@ -952,39 +937,7 @@ const bookingReview = () => {
       <div className="py-5 ">
       {/* Refund boxes */}
       <div className="flex flex-row    justify-around pr-4 mt-5 flex-wrap gap-y-5">
-        {/* <div className=" gap-5 ">
-          <div className="text-center pl-6">
-            <p className="text-primary text-sm font-medium whitespace-normal">₹1050 refund</p>
-            <div className="flex justify-center">
-              <div className="flex flex-wrap items-center justify-center max-w-full">
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">(</p>
-                  <p className="text-secondary text-xs">₹4300<span className="mx-1">+</span></p>
-                </div>
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">₹300)*</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-
-        {/* <div className="gap-5 justify-center">
-          <div className="text-center pl-6">
-            <p className="text-primary text-sm font-medium whitespace-normal">₹1050 refund</p>
-            <div className="flex justify-center">
-              <div className="flex flex-wrap items-center justify-center max-w-full">
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">(</p>
-                  <p className="text-secondary text-xs">₹4300<span className="mx-1">+</span></p>
-                </div>
-                <div className="flex items-center">
-                  <p className="text-secondary text-sm">₹300)*</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
+       
 
         <div className=" gap-5 justify-center">
           <div className="text-center pl-6">
@@ -993,19 +946,14 @@ const bookingReview = () => {
           </div>
         </div>
       </div>
-      <div className="text-sm-medium neutral-500 flex flex-row justify-around items-center  w-full pl-20 pr-30">
-  {cancellation.map((e, i) => (
-    <p key={i} className="">₹ {e.amount}</p>
-  ))}
-</div>
 
       {/* Timeline */}
       <div className="space-y-3 mt-3  pl-20 pr-30">
   {/* Now */}
-  <div className="relative  flex items-center   justify-center">
+  <div className="relative   flex items-center pl-5  justify-center">
     
     {/* Left Icon */}
-    <div className="absolute left-0 z-10 flex items-center  justify-start">
+    <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
       <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
         <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
           <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
@@ -1026,88 +974,41 @@ const bookingReview = () => {
     <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
 
     {/* Vertical Dotted Line at Center */}
-    <div className=" relative w-full h-6 ">
-  {Array.isArray(cancellation) && cancellation.length > 1 &&
-    cancellation.slice(1).map((_, i) => {
-      const count = cancellation.length - 1;
-      const position = ((i + 1) / (count + 1)) * 100; // skip 0% and 100%
-
-      // Gradient color: Yellow → Orange → Red
-      const getColor = (percent) => {
-        if (percent < 50) return "#facc15"; // yellow
-        if (percent < 80) return "#f97316"; // orange
-        return "#ef4444"; // red
-      };
-
-      return (
-        <div
-          key={i}
-          className="absolute w-3 h-3 rounded-full border-2 border-white"
-          style={{
-            left: `${position}%`,
-            top: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: getColor(position),
-          }}
-        />
-      );
-    })}
-</div>
-
-
-
+    <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400">
+  
+    
+    </div>
   </div>
 </div>
 
 
 <div className="flex flex-row justify-between align-center pt-4 pl-15 pr-15 ">
-<div className="text-sm-medium text-neutral-1000 flex flex-row justify-between w-full pl-10 pr-10">
-  {cancellation.some(e => e.st && e.et) ? (
-    // ✅ Case: cancellation has st & et → calculate and show timeline points
-    [...cancellation.map(e => e.st), cancellation[cancellation.length - 1]?.et]
-      .filter((value, index, self) => self.indexOf(value) === index)
-      .map((hoursBeforeDeparture, i) => {
-        const timeStr = segments[0]?.dt || "";
-        const departure = new Date(timeStr);
-
-        const resultTime = new Date(departure.getTime() - hoursBeforeDeparture * 60 * 60 * 1000);
-
-        const formattedTime = resultTime.toLocaleTimeString("en-IN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        });
-
-        return <p key={i}>{formattedTime}</p>;
-      })
-  ) : (
-   
-    <>
-      <p>Now</p>
-      <p>{new Date(segments[0]?.dt).toLocaleTimeString("en-IN", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      })}</p>
-    </>
-  )}
+  <p className="text-sm-medium neutral-1000">{cancellation.some(e=>e.pp===undefined)?("Now"):(<><div>Now</div></>)}</p>
+  <div className="flex  justify-center">
+              <div className="flex flex-wrap flex-col items-center justify-center max-w-full">
+                <div className="flex items-center flex-col">
+                  
+                  <p className="text-sm-medium neutral-500">₹ {cancellationAmount}<span className="mx-1"></span></p>
+                  <p className="text-secondary text-sm">{cancellation.some(e=>e.pp===undefined)?null:cancellationPolicy?cancellationPolicy:null}</p> 
+                </div>
+               
+              </div>
+            </div>
+  <div className="flex flex-col justify-center items-center">
+  <p className="text-sm-medium neutral-1000">{dt}</p>
+  {/* <p>departure</p> */}
+  <p className="text-sm-medium neutral-1000">{formattedDate.split(",")[1]}</p>
+  
+  </div>
 </div>
-
- 
- 
-</div>
-
 
 
      
     </div>
 
-       
-    
-
       {/* Show More / Show Less Button */}
       
- <div></div>
+
       {/* Conditionally Render No Show and Date Change */}
       {showMore && (
         <>
@@ -1316,10 +1217,10 @@ const bookingReview = () => {
                 </div>
 
                 {/* Right Column: Fare Summary */}
-                <div className="col-lg-4 mt-20">
+                <div className="col-lg-4">
                   <div className="booking-form add_sticky">
                   <div class="head-booking-form"><p class="text-xl-bold neutral-1000">Fare Summary</p></div>
-                    <BookingForm totalpricee={totalPriceinfo}  />
+                    <BookingForm totalpricee={totalPriceinfo} />
                   </div>
                 </div>
               </div></>)}
