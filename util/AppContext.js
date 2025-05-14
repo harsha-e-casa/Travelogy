@@ -2,6 +2,7 @@
 
 import { createContext, useState,useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { postDataFlightDetails } from '@/services/NetworkAdapter';
 
 
 
@@ -74,6 +75,60 @@ setCookie("email",JSON.stringify(newInfo))
     }, []);
 
 
+
+
+    const [flightData,setFlightData]=useState(null)
+    const [error,setError]=useState(null)
+    const [loading,setLoading]=useState(null)
+    const fetchFlightDetails = async (priceId) => {
+       
+       setError(null);
+       setLoading(true)
+   
+       if (!priceId) {
+         setError("Price ID is missing");
+         setLoading(false)
+         
+         return;
+       }
+   
+       try {
+         const parameter = { priceIds: [priceId] };
+        
+   
+         const data = await postDataFlightDetails(parameter);
+         console.log("Flight detailsssss FOR REVIEW from context:", data);
+         setFlightData(data); // Update state with flight details
+       } catch (err) {
+         console.error("error caused", err);
+     
+         if (err?.response?.data?.errors?.length) {
+           const firstError = err.response.data.errors[0];
+           const message = firstError?.message || 'An unknown error occurred.';
+           const details = firstError?.details ? ` - ${firstError.details}` : '';
+           setError(`${message}`);
+     
+           console.log("API error message:", message);
+           console.log("Error details:", details);
+           console.log("Error status code:", err.response.status);
+         } else if (err?.message) {
+           setError(err.message);
+           console.log("Generic error message:", err.message);
+         } else {
+           setError("Something went wrong. Please try again.");
+         }
+       } 
+     };
+     useEffect(() => {
+      if (flightData) {
+        const timeout = setTimeout(() => {
+          setLoading(false);
+        }, 100); // small delay to ensure DOM updates
+    
+        return () => clearTimeout(timeout);
+      }
+    }, [flightData]);
+     
   return (
     <AppContext.Provider value={{  value,
       updateValue,
@@ -84,7 +139,14 @@ setCookie("email",JSON.stringify(newInfo))
       email,
       number,
       updateemail,
-      updatephone }}>
+      updatephone,
+      flightData,
+      fetchFlightDetails,
+      setFlightData,
+      error,
+      loading,
+      setLoading,
+      setError}}>
       {children}
     </AppContext.Provider>
   );
