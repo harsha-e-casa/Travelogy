@@ -351,6 +351,12 @@ const cancellationFee = cancellation.map((e) => e.fcs?.ACF)
 const cancellationST=cancellation.map((e)=>e.st?? 0)
 const cancellationET=cancellation.map((e)=>e.et?? 365)
 
+
+
+
+const hasFareRules = fareRule && Object.keys(fareRule).length > 0;
+
+console.log("Has Fare Rules?", hasFareRules);
 // No Show
 const noShowPolicy = noShow.map((e) => e.policyInfo?.includes('__nls__') 
 ? e.policyInfo.replace(/__nls__/g, '')
@@ -579,7 +585,7 @@ const seatChargeEt=seatCharge.map((e)=>e.et/24?? null)
         const result = await postDataTJBookingAir(parameter);
         console.log(result)
           console.log('success');
-          router.push(`/flights`);
+          router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
 
 
     } catch (err) {
@@ -695,7 +701,7 @@ const bookingReview = () => {
             </div>
           </section>
 
-          <section className="section-box block-content-book-tickets background-card">
+          <section className="section-box  background-card">
             <div className="container pt-1">
               <h4 className="neutral-1000">Review</h4>
               {loading?(<BookingSkeleton />):
@@ -1294,7 +1300,7 @@ const bookingReview = () => {
                         <Link href={`/book-ticket?tcs_id=${priceId}`} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">
   Back
 </Link>
-<div onClick={bookingReview} className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">continue</div>
+<div onClick={bookingReview}  className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">continue</div>
                         </div>
                        
                       </div>

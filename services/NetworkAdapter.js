@@ -207,6 +207,16 @@ export const postDataFareDetails = async (parameter) => {
     throw error;
   }
 };
+export const postDataBookingDetails = async (parameter) => {
+
+  try {
+    const response = await apiInstanceTripJack.post('oms/v1/booking-details', parameter);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 
 // Add additional functions as needed (PUT, DELETE, etc.)
