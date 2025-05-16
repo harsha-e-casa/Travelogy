@@ -211,8 +211,8 @@ export default function Tickets() {
 
       try {
         // Call your API function with the properly constructed parameter
-        // const result = await postDataTJ(parameter)
-        const result = await postData('travelogy/flight/search', parameter)
+        const result = await postDataTJ(parameter)
+        // const result = await postData('travelogy/flight/search', parameter)
         if (result && result.searchResult && result.searchResult.tripInfos) {
           setFlightData(result.searchResult.tripInfos.ONWARD)
           setActiveFlight(false);

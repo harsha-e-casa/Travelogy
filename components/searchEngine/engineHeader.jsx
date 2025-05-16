@@ -5,6 +5,7 @@ import SearchEngHeader from './SearchEngHeader';
 import AppListSearch from './AppListSearch';
 import AppDateRage from './AppDateRage';
 import { TripPlans } from './TripPlans';
+// import { PassengerType } from './PassengerType';
 import dayjs from 'dayjs';
 import Link from 'next/link'
 import { TravellerForm } from './TravellerForm';
@@ -62,6 +63,8 @@ const EngineTabs = ({ active_border }) => {
 
   const [adult, setAdult] = useState(1);
   const [countchildren, setcountChildren] = useState(0);
+  const [countinfant, setcountInfant] = useState(0);
+  const [totalPassenderCount, setTotalPassenderCount] = useState(adult + countchildren);
 
   useEffect(() => {
     if (getCookie('gy_adult') == undefined || getCookie('gy_adult') == 'Nan') {
@@ -73,6 +76,11 @@ const EngineTabs = ({ active_border }) => {
       setCookie('gy_child', 0)
     }
   }, [countchildren])
+  useEffect(() => {
+    if (getCookie('gy_infant') == undefined || getCookie('gy_infant') == 'Nan') {
+      setCookie('gy_infant', 0)
+    }
+  }, [countinfant])
   // State to store the selected value
   const [travellerClass, setTravellerClass] = useState('a'); // Default value is 'a'
 
@@ -96,6 +104,7 @@ const EngineTabs = ({ active_border }) => {
     let arrivalTo = getCookie('gy_aa')
     let adults = getCookie('gy_adult')
     let children = getCookie('gy_child')
+    let infant = getCookie('gy_infant')
     let cabinType = getCookie('gy_class')
     let departDate = getCookie('gy_trd')
     let departureFromSr = getCookie('gy_da_str')
@@ -108,6 +117,7 @@ const EngineTabs = ({ active_border }) => {
       arrivalTo: arrivalTo,
       adults: adults,
       children: children,
+      infant: infant,
       cabinType: cabinType,
       departDate: departDate,
       departureFromSr: departureFromSr,
@@ -136,6 +146,7 @@ const EngineTabs = ({ active_border }) => {
 
 
   const [selectedPlan, setSelectedPlan] = useState('one-way');
+  const [ selectedPassengerType, setSelectedPassengerType ] = useState('REGULAR')
 
   const openfrom = () => {
     if (showSearchState) {
@@ -149,13 +160,24 @@ const EngineTabs = ({ active_border }) => {
   const clickMinus = () => {
     let adultCnt = adult - 1;
     setCookie('gy_adult', adultCnt);
+    if (adultCnt < countinfant) {
+      clickMinusinfant();
+    }
     setAdult(adultCnt); // Correct way to toggle the state
   }
 
+  useEffect(() => {
+    setTotalPassenderCount(adult + countchildren);
+  }, [adult, countchildren]);
+
   const clickPlus = () => {
     let adultMin = adult + 1;
-    setCookie('gy_adult', adultMin);
-    setAdult(adultMin); // Correct way to toggle the state
+    // setTotalPassenderCount(adult + countchildren);
+    if (totalPassenderCount < 9) {
+      console.log("sssssssss inside !!!!!");
+      setCookie('gy_adult', adultMin);
+      setAdult(adultMin); // Correct way to toggle the state
+    }
   }
 
   const clickMinusChildren = () => {
@@ -165,8 +187,24 @@ const EngineTabs = ({ active_border }) => {
   }
   const clickPlusChildren = () => {
     let childtCnt = countchildren + 1;
-    setCookie('gy_child', childtCnt);
-    setcountChildren(childtCnt); // Correct way to toggle the state
+    // setTotalPassenderCount(adult + countchildren);
+    if (totalPassenderCount < 9) {
+      setCookie('gy_child', childtCnt);
+      setcountChildren(childtCnt); // Correct way to toggle the state
+    }
+  }
+
+  const clickMinusinfant = () => {
+    let infantMin = countinfant - 1;
+    setCookie('gy_infant', infantMin);
+    setcountInfant(infantMin);
+  }
+  const clickPlusinfant = () => {
+    let infantCnt = countinfant + 1;
+    // if (adult >= infantCnt) {
+    setCookie('gy_infant', infantCnt);
+    setcountInfant(infantCnt);
+    // }
   }
 
   const openTraveller = () => {
@@ -533,10 +571,12 @@ const EngineTabs = ({ active_border }) => {
           </div>
         </div>
 
+        {/* <PassengerType selectedPassengerType={selectedPassengerType} setSelectedPassengerType={setSelectedPassengerType} /> */}
+        
         <TravellerForm showTraveller={showTraveller} adult={adult}
           opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}
           clickMinusChildren={clickMinusChildren} clickPlusChildren={clickPlusChildren}
-          countchildren={countchildren} handleChangeClass={handleChangeClass} travellerClass={travellerClass} />
+          countchildren={countchildren} countinfant={countinfant} clickMinusinfant={clickMinusinfant} clickPlusinfant={clickPlusinfant} handleChangeClass={handleChangeClass} travellerClass={travellerClass} totalPassenderCount={totalPassenderCount} />
 
       </div>
     </section>
