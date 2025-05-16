@@ -231,13 +231,13 @@ const page=()=>{
               <section className="section-box  background-card">
           <div className="container pt-1">
             <div className="row">
-              <div className="col-lg-8">
+              <div className="">
                 
               <Alldetails bookingId={bookingId} />
                 
               </div>
 
-              <div className="col-lg-4 mt-20">
+              <div className=" mt-20">
                   <div className="booking-form add_sticky">
                   <div class="head-booking-form"><p class="text-xl-bold neutral-1000">Fare Summary</p></div>
                     <BookingForm totalpricee={totalPriceinfo}  />
