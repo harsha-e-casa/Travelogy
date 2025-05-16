@@ -44,7 +44,7 @@ const Page = () => {
   const [travellers, setTravellers] = useState([]);
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
-
+  console.log("number",number)
   const[totalPriceinfo,setTotalpriceinfo]=useState(null)
   const [showMore, setShowMore] = useState(false);
 
@@ -640,7 +640,7 @@ const bookingReview = () => {
           // },
           deliveryInfo: {
               emails: [email],
-              contacts: [number?.number]
+              contacts: [`${number.code}${number.number}`]
           }
       };
       console.log("traveelerinfo",parameter.travellerInfo)
