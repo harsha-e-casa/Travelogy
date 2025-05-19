@@ -38,7 +38,7 @@ const apiInstance = axios.create({
   headers: {
     'Content-Type': 'application/json'
   },
-  timeout: 5000, // adjust timeout as necessary
+  // timeout: 5000, // adjust timeout as necessary
 });
 
 // TripJack APi
