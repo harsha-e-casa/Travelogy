@@ -5,7 +5,7 @@ import SearchEngHeader from './SearchEngHeader';
 import AppListSearch from './AppListSearch';
 import AppDateRage from './AppDateRage';
 import { TripPlans } from './TripPlans';
-// import { PassengerType } from './PassengerType';
+import { PassengerType } from './PassengerType';
 import dayjs from 'dayjs';
 import Link from 'next/link'
 import { TravellerForm } from './TravellerForm';
@@ -107,9 +107,11 @@ const EngineTabs = ({ active_border }) => {
     let infant = getCookie('gy_infant')
     let cabinType = getCookie('gy_class')
     let departDate = getCookie('gy_trd')
+    let returnDate = getCookie('gy_return')
     let departureFromSr = getCookie('gy_da_str')
     let arrivalToSr = getCookie('gy_aa_str')
     let tripType = getCookie('gy_triptype')
+    let passengerType = getCookie('gy_passender_type')
 
 
     const mydata = {
@@ -122,8 +124,13 @@ const EngineTabs = ({ active_border }) => {
       departDate: departDate,
       departureFromSr: departureFromSr,
       arrivalToSr: arrivalToSr,
-      tripType: tripType
+      tripType: tripType,
+      passengerType: passengerType
     };
+
+    if (returnDate != undefined || returnDate != 'Nan') {
+      mydata.returnDate = returnDate
+    }
 
     const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
@@ -172,9 +179,7 @@ const EngineTabs = ({ active_border }) => {
 
   const clickPlus = () => {
     let adultMin = adult + 1;
-    // setTotalPassenderCount(adult + countchildren);
     if (totalPassenderCount < 9) {
-      console.log("sssssssss inside !!!!!");
       setCookie('gy_adult', adultMin);
       setAdult(adultMin); // Correct way to toggle the state
     }
@@ -185,9 +190,9 @@ const EngineTabs = ({ active_border }) => {
     setCookie('gy_child', childtMin);
     setcountChildren(childtMin); // Correct way to toggle the state
   }
+  
   const clickPlusChildren = () => {
     let childtCnt = countchildren + 1;
-    // setTotalPassenderCount(adult + countchildren);
     if (totalPassenderCount < 9) {
       setCookie('gy_child', childtCnt);
       setcountChildren(childtCnt); // Correct way to toggle the state
@@ -258,6 +263,9 @@ const EngineTabs = ({ active_border }) => {
     setCookie('gy_aa_str', selectFromTo.trim());
   }, [selectFromTo]);
 
+  useEffect(() => {
+    setCookie('gy_passender_type', selectedPassengerType);
+  }, [selectedPassengerType]);
 
   useEffect(() => {
 
@@ -278,9 +286,11 @@ const EngineTabs = ({ active_border }) => {
 
     setCookie('gy_triptype', selectedPlan);
 
-    if (datedepr && selectedPlan === 'round-trip') {
+    if (datedep && datedepr && selectedPlan === 'round-trip') {
+      const formattedDate = dayjs(datedep)
       const formattedDateR = dayjs(datedepr)
-      setCookie('gy_trd', formattedDateR.format('YYYY-MM-DD'));
+      setCookie('gy_trd', formattedDate.format('YYYY-MM-DD'));
+      setCookie('gy_return', formattedDateR.format('YYYY-MM-DD'));
       setDdr_monthStr(formattedDateR.format('MMM')); // Format as string
       setDdr_strdate(formattedDateR.format('dddd')); // Format as string
       setDdr_date(formattedDateR.format('DD')); // Format as string
@@ -288,7 +298,7 @@ const EngineTabs = ({ active_border }) => {
 
     }
 
-  }, [datedepr, selectedPlan]);
+  }, [datedepr, selectedPlan, datedep]);
 
 
 
@@ -571,7 +581,7 @@ const EngineTabs = ({ active_border }) => {
           </div>
         </div>
 
-        {/* <PassengerType selectedPassengerType={selectedPassengerType} setSelectedPassengerType={setSelectedPassengerType} /> */}
+        <PassengerType selectedPassengerType={selectedPassengerType} setSelectedPassengerType={setSelectedPassengerType} />
         
         <TravellerForm showTraveller={showTraveller} adult={adult}
           opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}

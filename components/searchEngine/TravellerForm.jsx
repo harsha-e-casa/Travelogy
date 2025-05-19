@@ -20,8 +20,6 @@ export const TravellerForm = ({
   opentrvForm,
   totalPassenderCount
 }) => {
-   console.log("adultCount = ",adult);
-   console.log("countinfant = ",countinfant);
   return (
     <>
       {showTraveller ? (

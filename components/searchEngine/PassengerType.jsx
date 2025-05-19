@@ -1,64 +1,64 @@
 import React, { useState } from "react";
 
-export const TripPlans = ({
+export const PassengerType = ({
   selectedPassengerType,
   setSelectedPassengerType,
 }) => {
-  // Set initial selected plan to 'Round Trip'
-
+  const passangerMap = {
+    "Regular": "REGULAR",
+    "Student": "STUDENT",
+    "Senior Citizen": "SENIOR CITIZEN"
+  };
   const handlePlanChange = (e) => {
-    // Update the selected plan based on the radio button clicked
-    setSelectedPassengerType(e.target.value);
+    setSelectedPassengerType(passangerMap[e.target.value]);
   };
 
   return (
     <div className="plans mt-35 mb_8 ml_10">
-      {/* One Way Plan */}
-      <label className="plan basic-plan" htmlFor="basic">
+      <label className="plan basic-plan" htmlFor="regular">
         <input
           type="radio"
-          id="basic"
-          name="plan"
-          value="REGULAR"
+          id="regular"
+          name="regular"
+          value="Regular"
           checked={selectedPassengerType === "REGULAR"}
           onChange={handlePlanChange}
         />
         <div className="plan-content">
           <div className="plan-details">
-            <span>REGULAR</span>
+            <span>Regular</span>
           </div>
         </div>
       </label>
 
-      {/* Round Trip Plan */}
-      <label className="plan complete-plan relative" htmlFor="complete">
+      <label className="plan complete-plan relative" htmlFor="student">
         <input
           type="radio"
-          id="complete"
-          name="plan"
-          value="STUDENT"
-          checked={selectedPlan === "STUDENT"}
+          id="student"
+          name="Student"
+          value="Student"
+          checked={selectedPassengerType === "STUDENT"}
           onChange={handlePlanChange}
         />
         <div className="plan-content">
           <div className="plan-details">
-            <span>STUDENT</span>
+            <span>Student</span>
           </div>
         </div>
       </label>
 
-      <label className="plan complete-plan relative" htmlFor="complete">
+      <label className="plan complete-plan relative" htmlFor="seniorCitizen" style={{ width: "155px" }}>
         <input
           type="radio"
-          id="complete"
-          name="plan"
-          value="STUDENT"
-          checked={selectedPlan === "STUDENT"}
+          id="seniorCitizen"
+          name="seniorCitizen"
+          value="Senior Citizen"
+          checked={selectedPassengerType === "SENIOR CITIZEN"}
           onChange={handlePlanChange}
         />
         <div className="plan-content">
           <div className="plan-details">
-            <span>STUDENT</span>
+            <span>Senior Citizen</span>
           </div>
         </div>
       </label>
