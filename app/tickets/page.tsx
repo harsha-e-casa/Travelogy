@@ -9,6 +9,8 @@ import ByRating from '@/components/Filter/ByRating'
 import SearchFilterBottom from '@/components/elements/SearchFilterBottom'
 import SortTicketsFilter from '@/components/elements/SortTicketsFilter'
 import TicketCard1 from '@/components/elements/ticketcard/TicketCard1'
+import DomesticRoundTripTicketCard from '@/components/elements/ticketcard/DomesticRoundTripTicketCard'
+import RoundTripSelectionView from '@/components/elements/ticketcard/RoundTripSelectionView'
 import Layout from "@/components/layout/Layout"
 import SwiperGroupPayment10Slider from '@/components/slider/SwiperGroupPayment10Slider'
 import rawticketsData from "@/util/tickets.json"
@@ -79,7 +81,6 @@ export default function Tickets() {
 
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [datedepr, setDatedepr] = useState(dayjs().add(2, 'day'));
 
   // Extract query parameters from the URL
   // const departureFrom   =  searchParams.get('departureFrom')
@@ -104,10 +105,13 @@ export default function Tickets() {
   const children = getCookie('gy_child')
   const cabinType = getCookie('gy_class')
   const departDate = getCookie('gy_trd')
+  const returnDate = getCookie('gy_return')
 
   const departureFromSr = getCookie('gy_da_str')
   const arrivalToSr = getCookie('gy_aa_str');
   const tripType = getCookie('gy_triptype');
+  const passengerType = getCookie('gy_passender_type')
+  const infant = getCookie('gy_infant')
 
 
   const mydata = {
@@ -115,12 +119,18 @@ export default function Tickets() {
     arrivalTo: arrivalTo,
     adults: adults,
     children: children,
+    infant: infant,
     cabinType: cabinType,
     departDate: departDate,
     departureFromSr: departureFromSr,
     arrivalToSr: arrivalToSr,
-    tripType: tripType
+    tripType: tripType,
+    passengerType: passengerType
   };
+
+  if (returnDate != undefined || returnDate != 'Nan') {
+    mydata.returnDate = returnDate
+  }
 
   const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
@@ -145,6 +155,7 @@ export default function Tickets() {
     // Parse passenger counts from string to number; use defaults if not provided.
     const numAdults = adults ? parseInt(adults, 10) : 1
     const numChildren = children ? parseInt(children, 10) : 0
+    const numInfant = infant ? parseInt(children, 10) : 0
 
     // Determine the cabin class from the cabinType parameter
     let cabintypeF = 'ECONOMY'
@@ -167,29 +178,60 @@ export default function Tickets() {
 
     setCabinType(cabintypeF);
 
+    let tripBasedRouteInfo = []
+
+    // gy_triptype
+    if (srx_tripType.toLowerCase() == "one-way") {
+      tripBasedRouteInfo = [
+        {
+          fromCityOrAirport: {
+            code: departureFrom
+          },
+          toCityOrAirport: {
+            code: arrivalTo
+          },
+          travelDate: departDate,
+        }
+      ];
+    }
+    if (srx_tripType.toLowerCase() == "round-trip") {
+      tripBasedRouteInfo = [
+        {
+          fromCityOrAirport: {
+            code: departureFrom
+          },
+          toCityOrAirport: {
+            code: arrivalTo
+          },
+          travelDate: departDate,
+        },
+        {
+          fromCityOrAirport: {
+            code: arrivalTo
+          },
+          toCityOrAirport: {
+            code: departureFrom
+          },
+          travelDate: returnDate,
+        },
+      ];
+    }
+
+    // console.log("tripBasedRouteInfo == ",tripBasedRouteInfo);
+
     // Build the parameter object without extra curly braces
     const parameter = {
       searchQuery: {
         cabinClass: cabintypeF,
         paxInfo: {
-          ADULT: numAdults,
-          CHILD: numChildren,
-          INFANT: 0
+          ADULT: adultCount,
+          CHILD: countChildren,
+          INFANT: countInfant
         },
-        routeInfos: [
-          {
-            fromCityOrAirport: {
-              code: departureFrom
-            },
-            toCityOrAirport: {
-              code: arrivalTo
-            },
-            travelDate: departDate,
-          }
-        ],
+        routeInfos: tripBasedRouteInfo,
         "searchModifiers": {
           "pfts": [
-            "REGULAR"
+            passengerType
           ],
           "isDirectFlight": false,
           "isConnectingFlight": false,
@@ -212,9 +254,10 @@ export default function Tickets() {
       try {
         // Call your API function with the properly constructed parameter
         // const result = await postDataTJ(parameter)
-        const result = await postData('travelogy/flight/search', parameter)
+        const result = await postData('travelogy/one-way/fetch-data', parameter)
         if (result && result.searchResult && result.searchResult.tripInfos) {
-          setFlightData(result.searchResult.tripInfos.ONWARD)
+          // setFlightData(result.searchResult.tripInfos.ONWARD)
+          setFlightData(result.searchResult.tripInfos)
           setActiveFlight(false);
           setloading(false)
         }
@@ -237,7 +280,7 @@ export default function Tickets() {
 
     // Run the effect whenever any dependency changes
   }, [departureFrom, arrivalTo, cabinType, departDate, adults, children, searchFlight])
-
+  
 
   const items: MenuProps['items'] = [
     {
@@ -258,31 +301,12 @@ export default function Tickets() {
   // controls visibility
   const [open, setOpen] = useState(false)
   // stores the selected label
-  const [srx_tripType, setTripType] = useState('one-Way')
+  const [srx_tripType, setTripType] = useState(tripType)
 
   useEffect(() => {
     const t = Cookies.get('gy_triptype') || ''
     setTripType(t)
   }, []);
-
-  const [ddr_monthStr, setDdr_monthStr] = useState(null);
-  const [ddr_strdate, setDdr_strdate] = useState(null);
-  const [ddr_date, setDdr_date] = useState(null);
-  const [ddr_year, setDdr_year] = useState(null);
-
-  useEffect(() => {
-    setCookie('gy_triptype', srx_tripType.toLowerCase());
-
-    if (datedepr && srx_tripType.toLowerCase() === 'round-trip') {
-      const formattedDateR = dayjs(datedepr)
-      setCookie('gy_trd', formattedDateR.format('YYYY-MM-DD'));
-      setDdr_monthStr(formattedDateR.format('MMM'));
-      setDdr_strdate(formattedDateR.format('dddd'));
-      setDdr_date(formattedDateR.format('DD'));
-      setDdr_year(formattedDateR.format('YY'));
-    }
-
-  }, [datedepr, srx_tripType])
 
   const [srx_departureFrom, setdepartureFrom] = useState()
   const [srx_departureCode, setDepartureToCode] = useState()
@@ -357,15 +381,18 @@ export default function Tickets() {
   }, [srx_arrivalTo]);
 
   const [srx_traveller, setTraveller] = useState(1);
-
-  const [adult, setAdult] = useState(1);
-  const [countchildren, setcountChildren] = useState(0);
+  
+  const [adultCount, setAdultCount] = useState(parseInt(mydata.adults));
+  const [countChildren, setCountChildren] = useState(parseInt(mydata.children));
+  const [countInfant, setcountInfant] = useState(parseInt(mydata.infant));
+  const adultChildCount = adultCount+ countChildren;
+  const [totalPassenderCount, setTotalPassenderCount] = useState(adultChildCount);
 
   useEffect(() => {
     const dfadu = parseInt(Cookies.get('gy_adult') || '1', 10);
     const dfchi = parseInt(Cookies.get('gy_child') || '0', 10);
     setTraveller(dfadu + dfchi);
-  }, [countchildren, adult]);
+  }, [countChildren, adultCount]);
 
 
   const [dd_monthStr, setDd_monthStr] = useState<string | null>(null);
@@ -374,10 +401,10 @@ export default function Tickets() {
   const [dd_year, setDd_year] = useState<string | null>(null);
   const [srx_depart, setDepartDate] = useState<string | null>(null);
 
-
   // menu click handler
   const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
     setTripType(key);
+    setCookie('gy_triptype', key)
     setOpen(prev => !prev)
   }
 
@@ -391,6 +418,11 @@ export default function Tickets() {
 
   const [datedep, setDatedep] = useState<Dayjs>(() => {
     const cookieDate = Cookies.get('gy_trd');
+    return cookieDate ? dayjs(cookieDate) : dayjs().format('YYYY-MM-DD');
+  });
+
+  const [datedepr, setDatedepr] = useState<Dayjs>(() => {
+    const cookieDate = Cookies.get('gy_return');
     return cookieDate ? dayjs(cookieDate) : dayjs().format('YYYY-MM-DD');
   });
 
@@ -453,31 +485,58 @@ export default function Tickets() {
     setShowSearchState(false);
     setShowSearchStateTo(false);
     setOpenDateRage(false);
+    setOpenDateRageR(false);
     setShowYTraveller(false);
     setOpen(false)
   };
 
+  useEffect(() => {
+    setTotalPassenderCount(adultCount + countChildren);
+  }, [adultCount, countChildren]);
+
   const clickMinus = () => {
-    let adultCnt = parseInt(mydata.adults) - 1;
+    let adultCnt = adultCount - 1;
     setCookie('gy_adult', adultCnt);
-    setAdult(adultCnt); // Correct way to toggle the state
+    if (adultCnt < countInfant) {
+      clickMinusinfant();
+    }
+    setAdultCount(adultCnt); // Correct way to toggle the state
   }
 
   const clickPlus = () => {
-    let adultMin = parseInt(mydata.adults) + 1;
-    setCookie('gy_adult', adultMin);
-    setAdult(adultMin); // Correct way to toggle the state
+    let adultMin = adultCount + 1;
+    if (totalPassenderCount < 9) {
+      setCookie('gy_adult', adultMin);
+      setAdultCount(adultMin); // Correct way to toggle the state
+    }
   }
 
   const clickMinusChildren = () => {
-    let childtMin = parseInt(mydata.children) - 1;
+    let childtMin = countChildren - 1;
     setCookie('gy_child', childtMin);
-    setcountChildren(childtMin); // Correct way to toggle the state
+    setCountChildren(childtMin); // Correct way to toggle the state
   }
+  
   const clickPlusChildren = () => {
-    let childtCnt = parseInt(mydata.children) + 1;
-    setCookie('gy_child', childtCnt);
-    setcountChildren(childtCnt); // Correct way to toggle the state
+    let childtCnt = countChildren + 1;
+    if (totalPassenderCount < 9) {
+      setCookie('gy_child', childtCnt);
+      setCountChildren(childtCnt); // Correct way to toggle the state
+    }
+  }
+
+  const clickMinusinfant = () => {
+    let infantMin = countInfant - 1;
+    setCookie('gy_infant', infantMin);
+    setcountInfant(infantMin);
+  }
+  
+  const clickPlusinfant = () => {
+    let infantCnt = countInfant + 1;
+    // if (adult >= infantCnt) {
+    setCookie('gy_infant', infantCnt);
+    setcountInfant(infantCnt);
+    // }
   }
 
   const handleChangeClass = (e) => {
@@ -490,9 +549,7 @@ export default function Tickets() {
   // }, [srx_cabinType]);
 
   useEffect(() => {
-
     if (datedep) {
-
       const formattedDate = dayjs(datedep);
 
       setCookie('gy_trd', formattedDate.format('YYYY-MM-DD'));
@@ -501,8 +558,28 @@ export default function Tickets() {
       setDd_date(formattedDate.format('DD')); // Format as string
       setDd_year(formattedDate.format('YY')); // Format as string
     }
-
   }, [datedep]);
+
+  const [ddr_monthStr, setDdr_monthStr] = useState(null);
+  const [ddr_strdate, setDdr_strdate] = useState(null);
+  const [ddr_date, setDdr_date] = useState(null);
+  const [ddr_year, setDdr_year] = useState(null);
+
+  useEffect(() => {
+    if (datedepr) {
+      const formattedDate = dayjs(datedepr);
+
+      setCookie('gy_return', formattedDate.format('YYYY-MM-DD'));
+      setDdr_monthStr(formattedDate.format('MMM'));
+      setDdr_strdate(formattedDate.format('dddd'));
+      setDdr_date(formattedDate.format('DD'));
+      setDdr_year(formattedDate.format('YY'));
+    }
+  }, [datedepr]);
+
+  console.log("vvvvvvvvvvvvvvvvvvvvvv ",flightData);
+  console.log("srx_tripType typeof --------------------- ", typeof srx_tripType);
+  console.log("srx_tripType---------------------",srx_tripType.trim().toLowerCase());
 
   return (
     <>
@@ -576,8 +653,8 @@ export default function Tickets() {
                 <>
                   <div className="hdt_header-item">
                     <label>Return</label>
-                    <div onClick={openToDateRange} className="hdt_value">{ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}</div>
-                    {openDateRage ? (<AppDateRage
+                    <div onClick={openToDateRangeR} className="hdt_value">{ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}</div>
+                    {openDateRageR ? (<AppDateRage
                       openToDateRange={openToDateRangeR}
                       setDatedep={setDatedepr}
                     />) : null}
@@ -599,10 +676,11 @@ export default function Tickets() {
 
             {/* <AppListSearch operEngLocation={openTo} setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} /> */}
           </div>
-          <TravellerForm showTraveller={showTraveller} adult={mydata.adults}
+          <TravellerForm showTraveller={showTraveller} adult={adultCount}
             opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}
             clickMinusChildren={clickMinusChildren} clickPlusChildren={clickPlusChildren}
-            countchildren={countchildren} handleChangeClass={handleChangeClass} travellerClass={srx_cabinType} />
+            countchildren={countChildren} countinfant={countInfant} 
+            handleChangeClass={handleChangeClass} travellerClass={srx_cabinType} clickMinusinfant={clickMinusinfant} clickPlusinfant={clickPlusinfant}  totalPassenderCount={totalPassenderCount} />
 
           {/* Block Banner Tickets */}
           {/* <section className="section-box box-logos-2 box-logos-tickets background-body">
@@ -623,7 +701,7 @@ export default function Tickets() {
               <div className="box-content-main">
                 <div className="content-right">
 
-                  <div className="box-filters mb-25 pb-5 border-bottom border-1">
+                  {/* <div className="box-filters mb-25 pb-5 border-bottom border-1">
                     <SortTicketsFilter
                       sortCriteria={sortCriteria}
                       handleSortChange={handleSortChange}
@@ -634,7 +712,7 @@ export default function Tickets() {
                       endItemIndex={endItemIndex}
                       sortedTickets={sortedTickets}
                     />
-                  </div>
+                  </div> */}
 
                   {loading && <div className="box-list-flights box-list-flights-2">
                     <div>
@@ -702,40 +780,92 @@ export default function Tickets() {
                     </div>
                   </div>}
 
-                  {flightData && flightData.length > 0 ?
-                    (<><div className="box-grid-tours">
-                      <div className="row">
-
-                        <div className="box-list-flights box-list-flights-2">
-                          {flightData.map((ticket: any) => (
-                            <React.Fragment key={ticket.id}>
-                              <TicketCard1 ticket={ticket} />
-                            </React.Fragment>
-                          ))
-                          }
+                  {srx_tripType && srx_tripType.trim().toLowerCase() === "one-way" ? (
+                    <>
+                      {flightData && flightData.ONWARD && flightData.ONWARD.length > 0 ?
+                        (<><div className="box-grid-tours">
+                          <div className="row">
+                            <div className="box-list-flights box-list-flights-2">
+                              {flightData.ONWARD.map((ticket: any) => (
+                                <React.Fragment key={ticket.id}>
+                                  <TicketCard1 ticket={ticket} />
+                                </React.Fragment>
+                              ))
+                              }
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                      <ByPagination
-                        handlePreviousPage={handlePreviousPage}
-                        totalPages={totalPages}
-                        currentPage={currentPage}
-                        handleNextPage={handleNextPage}
-                        handlePageChange={handlePageChange}
-                      />
+                          <ByPagination
+                            handlePreviousPage={handlePreviousPage}
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            handleNextPage={handleNextPage}
+                            handlePageChange={handlePageChange}
+                          />
+                        </>) : (<>
+                          {loading === false && <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                            <p className="text-xl font-semibold">No result found</p>
+                            <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
+                          </div>}
+                      </>)}
+                    </>
+                  ) : null }
 
-                    </>) : (<>
-                      {loading === false && <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                  {/* domestic - ONWARD RETURN - ticketCard */}
+                  {srx_tripType && srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                    <>
+                      {flightData && flightData.ONWARD && flightData.ONWARD.length > 0 && flightData.RETURN && flightData.RETURN.length > 0 ? (
+                        <RoundTripSelectionView flightData={flightData} departureFrom={departureFrom} arrivalTo={arrivalTo} />
+                      ) : (<>
+                          {loading === false && <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                            <p className="text-xl font-semibold">No result found</p>
+                            <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
+                          </div>}
+                      </>) }
+                    </>
+                  ) : null }
 
-                        <p className="text-xl font-semibold">No result found</p>
-                        <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
-                      </div>}
-
-                    </>)}
-
-
-
-
+                  {/* {srx_tripType && srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                    <>
+                      {flightData && flightData.ONWARD && flightData.ONWARD.length > 0 && flightData.RETURN && flightData.RETURN.length > 0 ?
+                        (<>
+                          <div className="box-grid-tours">
+                            <div className="row">
+                              <p>ONWARD</p>
+                              <div className="box-list-flights box-list-flights-2">
+                                {flightData.ONWARD.map((ticket: any) => (
+                                  <React.Fragment key={ticket.id}>
+                                    <DomesticRoundTripTicketCard ticket={ticket} />
+                                  </React.Fragment>
+                                ))
+                                }
+                              </div>
+                              <p>RETURN</p>
+                              <div className="box-list-flights box-list-flights-2">
+                                {flightData.RETURN.map((ticket: any) => (
+                                  <React.Fragment key={ticket.id}>
+                                    <DomesticRoundTripTicketCard ticket={ticket} />
+                                  </React.Fragment>
+                                ))
+                                }
+                              </div>
+                            </div>
+                          </div>
+                          <ByPagination
+                            handlePreviousPage={handlePreviousPage}
+                            totalPages={totalPages}
+                            currentPage={currentPage}
+                            handleNextPage={handleNextPage}
+                            handlePageChange={handlePageChange}
+                          />
+                        </>) : (<>
+                          {loading === false && <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                            <p className="text-xl font-semibold">No result found</p>
+                            <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
+                          </div>}
+                      </>)}
+                    </>
+                  ) : null } */}
 
                 </div>
 
