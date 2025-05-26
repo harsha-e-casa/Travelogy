@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { Select } from 'antd';
-const apiListAirLineState = require('./apiListAirLineState');
+import React, { useState } from "react";
+import { Select } from "antd";
+const apiListAirLineState = require("./apiListAirLineState");
 
-const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categoryType }) => {
+const AppListSeacrh = ({
+  setSelectFrom,
+  operEngLocation,
+  setSelectFromSub,
+  categoryType,
+}) => {
   const [filteredOptions, setFilteredOptions] = useState(apiListAirLineState);
   // const apiListAirLineState = [
   //   { "key": "AHA", "city": "Ambikapur", "name": "Ambikapur airport", "country": "India" },
@@ -216,14 +221,13 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
   //   { "key": "ZER", "city": "Zero", "name": "Zero Airport", "country": "India" }
   // ]
 
-
   const handleChange = (value) => {
-    alert("asdasdasdas")
-    const getDtaa = value.split(',');
+    // alert("asdasdasdas")
+    const getDtaa = value.split(",");
 
-    setSelectFrom(getDtaa[0])
-    setSelectFromSub(getDtaa[1])
-    operEngLocation()
+    setSelectFrom(getDtaa[0]);
+    setSelectFromSub(getDtaa[1]);
+    operEngLocation();
   };
 
   const handleSearch = (searchText) => {
@@ -238,7 +242,6 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
 
     setFilteredOptions(filtered.slice(0, 10)); // Show top 10 only
   };
-
 
   // const mappedOptions = apiListAirLineState.map((item) => ({
   const mappedOptions = filteredOptions.map((item) => ({
@@ -260,13 +263,15 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
           </svg>
         )}
         <div>
-          {categoryType === 'hotel' ? (
+          {categoryType === "hotel" ? (
             // For hotels, simply show the airport (or city) name:
             <div>{item.city}</div>
           ) : (
             // Otherwise, show additional details. Adjust the layout as needed.
             <>
-              <div>{item.city} ({item.country})</div>
+              <div>
+                {item.city} ({item.country})
+              </div>
               <div>{item.name}</div>
             </>
           )}
@@ -275,23 +280,19 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
     ),
     // Set the value to a string combining the airport name and key;
     // adjust according to how you need to consume the selection.
-    value: `${item.city},${item.key}`,
+    value: `${item.city},${item.key},${item.country}`,
   }));
-
-
 
   // Build the options structure with a group (you can add more groups if needed).
   const options = [
     {
       label: <span>Suggestion</span>,
-      title: 'manager',
+      title: "manager",
       options: mappedOptions,
     },
   ];
 
-
   return (
-
     //   <Select
     //     dropdownClassName="custom-select-dropdown"  // Assign a custom class to the dropdown
     //     showSearch
@@ -307,7 +308,7 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
     //     options: [
     //       {
     //         label: <>
-    //           <div className="inline_flex">  
+    //           <div className="inline_flex">
     //             {!categoryType ?
     //             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
     //               <path fill="#000" d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"/>
@@ -319,7 +320,7 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
     //               <>
     //                 <div>Delhi</div>
     //               </>
-    //               : 
+    //               :
     //               <>
     //                 <div>Delhi (National Capital Territory of Delhi)</div>
     //                 <div>Indira Gandhi International Airport (DEL)</div>
@@ -329,7 +330,7 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
     //           </div>
     //         </>,
     //         value: 'Delhi, Indira Gandhi International Airport (DEL)',
-    //       }, 
+    //       },
     //     ],
     //   },
 
@@ -342,14 +343,13 @@ const AppListSeacrh = ({ setSelectFrom, operEngLocation, setSelectFromSub, categ
       autoFocus
       showSearch
       open={true}
-      style={{ width: '100%' }}
+      style={{ width: "100%" }}
       onSearch={handleSearch}
       onChange={handleChange}
       options={options}
       placeholder="Select an airport..."
       filterOption={false} // disables built-in search
     />
-  )
-
+  );
 };
 export default AppListSeacrh;
