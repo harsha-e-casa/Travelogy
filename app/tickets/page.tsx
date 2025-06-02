@@ -230,16 +230,16 @@ export default function Tickets() {
         },
         routeInfos: tripBasedRouteInfo,
         "searchModifiers": {
-          "pfts": [
-            passengerType
-          ],
+          // "pfts": [
+          //   passengerType
+          // ],
           "isDirectFlight": false,
           "isConnectingFlight": false,
-          "sourceId": 0,
-          "pnrCreditInfo": {
-            "pnr": ""
-          },
-          "iiss": false
+          // "sourceId": 0,
+          // "pnrCreditInfo": {
+          //   "pnr": ""
+          // },
+          // "iiss": false
         }
       }
     }
@@ -784,7 +784,51 @@ export default function Tickets() {
                     </div>
                   </div>}
 
-                  {srx_tripType && srx_tripType.trim().toLowerCase() === "one-way" ? (
+                  {(
+                    (srx_tripType?.trim().toLowerCase() === "one-way" && flightData?.ONWARD?.length > 0) ||
+                    (srx_tripType?.trim().toLowerCase() === "round-trip" && flightData?.COMBO?.length > 0)
+                  ) && (() => {
+                    const tripInfo = srx_tripType?.trim().toLowerCase() === "round-trip"
+                      ? flightData.COMBO
+                      : flightData.ONWARD;
+
+                    return (
+                      <>
+                        {tripInfo?.length > 0 ? (
+                          <>
+                            <div className="box-grid-tours">
+                              <div className="row">
+                                <div className="box-list-flights box-list-flights-2">
+                                  {tripInfo.map((ticket: any) => (
+                                    <React.Fragment key={ticket.id}>
+                                      <TicketCard1 ticket={ticket} />
+                                    </React.Fragment>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <ByPagination
+                              handlePreviousPage={handlePreviousPage}
+                              totalPages={totalPages}
+                              currentPage={currentPage}
+                              handleNextPage={handleNextPage}
+                              handlePageChange={handlePageChange}
+                            />
+                          </>
+                        ) : (
+                          !loading && (
+                            <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                              <p className="text-xl font-semibold">No result found</p>
+                              <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
+                            </div>
+                          )
+                        )}
+                      </>
+                    );
+                  })()}
+
+
+                  {/* {(srx_tripType && srx_tripType.trim().toLowerCase() === "one-way") ? (
                     <>
                       {flightData && flightData.ONWARD && flightData.ONWARD.length > 0 ?
                         (<><div className="box-grid-tours">
@@ -813,7 +857,7 @@ export default function Tickets() {
                           </div>}
                       </>)}
                     </>
-                  ) : null }
+                  ) : null } */}
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType && srx_tripType.trim().toLowerCase() === "round-trip" ? (
