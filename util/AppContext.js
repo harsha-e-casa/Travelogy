@@ -98,7 +98,402 @@ setCookie("email",JSON.stringify(newInfo))
    
          const data = await postDataFlightDetails(parameter);
          console.log("Flight detailsssss FOR REVIEW from context:", data);
-         setFlightData(data); // Update state with flight details
+         setFlightData(data)
+    //      setFlightData({
+    //       "tripInfos": [
+    //           {
+    //               "sI": [
+    //                   {
+    //                       "id": "789",
+    //                       "fD": {
+    //                           "aI": {
+    //                               "code": "AI",
+    //                               "name": "Air India",
+    //                               "isLcc": false
+    //                           },
+    //                           "fN": "2412",
+    //                           "eT": "32N"
+    //                       },
+    //                       "stops": 0,
+    //                       "so": [],
+    //                       "duration": 175,
+    //                       "da": {
+    //                           "code": "DEL",
+    //                           "name": "Delhi Indira Gandhi Intl",
+    //                           "cityCode": "DEL",
+    //                           "city": "Delhi",
+    //                           "country": "India",
+    //                           "countryCode": "IN",
+    //                           "terminal": "Terminal 3"
+    //                       },
+    //                       "aa": {
+    //                           "code": "BLR",
+    //                           "name": "Bengaluru Intl Arpt",
+    //                           "cityCode": "BLR",
+    //                           "city": "Bengaluru",
+    //                           "country": "India",
+    //                           "countryCode": "IN",
+    //                           "terminal": "Terminal 2"
+    //                       },
+    //                       "dt": "2025-05-10T21:35",
+    //                       "at": "2025-05-11T00:30",
+    //                       "iand": true,
+    //                       "isRs": false,
+    //                       "sN": 0,
+    //                       "ssrInfo": {
+    //                           "MEAL": [
+    //                               {
+    //                                   "code": "VGML",
+    //                                   "amount": 0,
+    //                                   "desc": "Vegan Veg Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "AVML",
+    //                                   "amount": 0,
+    //                                   "desc": "Hindu Veg Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "VJML",
+    //                                   "amount": 0,
+    //                                   "desc": "Jain Veg Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "VLML",
+    //                                   "amount": 0,
+    //                                   "desc": "Lacto-Ovo Veg Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "FPML",
+    //                                   "amount": 0,
+    //                                   "desc": "Fruit Platter Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "NVML",
+    //                                   "amount": 0,
+    //                                   "desc": "Non-Veg Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "MOML",
+    //                                   "amount": 0,
+    //                                   "desc": "Moslem Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "HNML",
+    //                                   "amount": 0,
+    //                                   "desc": "Hindu Non-Veg Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "SFML",
+    //                                   "amount": 0,
+    //                                   "desc": "Sea Food Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "DBML",
+    //                                   "amount": 0,
+    //                                   "desc": "Diabetic Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "NLML",
+    //                                   "amount": 0,
+    //                                   "desc": "Low Lactose Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "CHML",
+    //                                   "amount": 0,
+    //                                   "desc": "Child Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "BBML",
+    //                                   "amount": 0,
+    //                                   "desc": "Baby Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "BLML",
+    //                                   "amount": 0,
+    //                                   "desc": "Bland Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "GFML",
+    //                                   "amount": 0,
+    //                                   "desc": "Gluten Intolerant Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "KSML",
+    //                                   "amount": 0,
+    //                                   "desc": "Kosher Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "LCML",
+    //                                   "amount": 0,
+    //                                   "desc": "Low Calorie Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "LFML",
+    //                                   "amount": 0,
+    //                                   "desc": "Low Fat Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "LSML",
+    //                                   "amount": 0,
+    //                                   "desc": "ow Salt Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "RVML",
+    //                                   "amount": 0,
+    //                                   "desc": "Vegetarian Raw Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "VOML",
+    //                                   "amount": 0,
+    //                                   "desc": "Vegetarian Oriental Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "SPML",
+    //                                   "amount": 0,
+    //                                   "desc": "Special Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "PFML",
+    //                                   "amount": 0,
+    //                                   "desc": "Peanut Free Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "ORML",
+    //                                   "amount": 0,
+    //                                   "desc": "Oriental Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "NSML",
+    //                                   "amount": 0,
+    //                                   "desc": "No Salt Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "PRML",
+    //                                   "amount": 0,
+    //                                   "desc": "Low Purine Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "LPML",
+    //                                   "amount": 0,
+    //                                   "desc": "Low Protein Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "HFML",
+    //                                   "amount": 0,
+    //                                   "desc": "High Fiber Meal",
+    //                                   "iswca": false
+    //                               },
+    //                               {
+    //                                   "code": "NFML",
+    //                                   "amount": 0,
+    //                                   "desc": "No Fish Meal",
+    //                                   "iswca": false
+    //                               }
+    //                           ]
+    //                       },
+    //                       "ac": []
+    //                   }
+    //               ],
+    //               "totalPriceList": [
+    //                   {
+    //                       "fd": {
+    //                           "ADULT": {
+    //                               "fC": {
+    //                                   "TF": 13533,
+    //                                   "TAF": 2048,
+    //                                   "NF": 13533,
+    //                                   "BF": 11485
+    //                               },
+    //                               "afC": {
+    //                                   "TAF": {
+    //                                       "YR": 170,
+    //                                       "AGST": 1399,
+    //                                       "OT": 479
+    //                                   }
+    //                               },
+    //                               "sR": 9,
+    //                               "bI": {
+    //                                   "iB": "15KG",
+    //                                   "cB": "7Kg"
+    //                               },
+    //                               "rT": 0,
+    //                               "cc": "PREMIUM_ECONOMY",
+    //                               "cB": "E",
+    //                               "fB": "EU1PWDQI"
+    //                           }
+    //                       },
+    //                       "fareIdentifier": "PUBLISHED",
+    //                       "id": "R15-2-10-3743860810_0DELBLRAI2412~33210890034287930",
+    //                       "messages": [],
+    //                       "pc": {
+    //                           "code": "AI",
+    //                           "name": "Air India",
+    //                           "isLcc": false
+    //                       },
+    //                       "fareRuleInformation": {
+    //                           "fr": {},
+    //                           "tfr": {
+    //                               "NO_SHOW": [
+    //                                   {
+    //                                       "policyInfo": "Not Applicable",
+    //                                       "pp": "BEFORE_DEPARTURE"
+    //                                   }
+    //                               ],
+    //                               "CANCELLATION": [
+    //                                   {
+    //                                       "amount": 3500,
+    //                                       "policyInfo": "Available with Penalty",
+    //                                       "fcs": {
+    //                                           "ACFT": 0,
+    //                                           "ACF": 3500
+    //                                       },
+    //                                       "pp": "BEFORE_DEPARTURE"
+    //                                   }
+    //                               ],
+    //                               "DATECHANGE": [
+    //                                   {
+    //                                       "amount": 2500,
+    //                                       "policyInfo": "Available with Penalty",
+    //                                       "fcs": {
+    //                                           "ARFT": 0,
+    //                                           "ARF": 2500
+    //                                       },
+    //                                       "pp": "BEFORE_DEPARTURE"
+    //                                   }
+    //                               ]
+    //                           }
+    //                       }
+    //                   }
+    //               ],
+    //               "airFlowType": "SEARCH"
+    //           }
+    //       ],
+    //       "alerts": [
+    //           {
+    //               "oldFare": 12133,
+    //               "newFare": 13533,
+    //               "type": "FAREALERT"
+    //           }
+    //       ],
+    //       "searchQuery": {
+    //           "routeInfos": [
+    //               {
+    //                   "fromCityOrAirport": {
+    //                       "code": "DEL",
+    //                       "name": "Delhi Indira Gandhi Intl",
+    //                       "cityCode": "DEL",
+    //                       "city": "Delhi",
+    //                       "country": "India",
+    //                       "countryCode": "IN"
+    //                   },
+    //                   "toCityOrAirport": {
+    //                       "code": "BLR",
+    //                       "name": "Bengaluru Intl Arpt",
+    //                       "cityCode": "BLR",
+    //                       "city": "Bengaluru",
+    //                       "country": "India",
+    //                       "countryCode": "IN"
+    //                   },
+    //                   "travelDate": "2025-05-10"
+    //               }
+    //           ],
+    //           "cabinClass": "PREMIUM_ECONOMY",
+    //           "paxInfo": {
+    //               "ADULT": 1,
+    //               "CHILD": 0,
+    //               "INFANT": 0
+    //           },
+    //           "requestId": "3743860810",
+    //           "searchType": "ONEWAY",
+    //           "searchModifiers": {
+    //               "isDirectFlight": false,
+    //               "isConnectingFlight": false,
+    //               "pft": "REGULAR",
+    //               "pfts": [
+    //                   "REGULAR"
+    //               ]
+    //           },
+    //           "isDomestic": true
+    //       },
+    //       "bookingId": "TJS101901435904",
+    //       "totalPriceInfo": {
+    //           "totalFareDetail": {
+    //               "fC": {
+    //                   "TF": 13533,
+    //                   "TAF": 2048,
+    //                   "NF": 13533,
+    //                   "BF": 11485
+    //               },
+    //               "afC": {
+    //                   "TAF": {
+    //                       "YR": 170,
+    //                       "AGST": 1399,
+    //                       "OT": 479
+    //                   }
+    //               }
+    //           }
+    //       },
+    //       "status": {
+    //           "success": true,
+    //           "httpStatus": 200
+    //       },
+    //       "conditions": {
+    //           "ffas": [
+    //               "AI"
+    //           ],
+    //           "isa": false,
+    //           "dob": {
+    //               "adobr": false,
+    //               "cdobr": false,
+    //               "idobr": true
+    //           },
+    //           "iecr": false,
+    //           "dc": {
+    //               "ida": false,
+    //               "idm": false,
+    //               "iqpe": false
+    //           },
+    //           "ipa": false,
+    //           "addOns": {
+    //               "isbpa": false
+    //           },
+    //           "iss": false,
+    //           "isBA": true,
+    //           "st": 900,
+    //           "sct": "2025-05-09T10:57:56.051",
+    //           "gst": {
+    //               "gstappl": true,
+    //               "igm": false
+    //           }
+    //       }}
+    // ); // Update state with flight details
        } catch (err) {
          console.error("error caused", err);
      
