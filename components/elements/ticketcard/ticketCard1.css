@@ -140,4 +140,7 @@
         width:100px;
         
       }
+      .w-135-inp{
+        width:135% !important;
+      }
 }
