@@ -101,6 +101,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
                 ticket={ticket}
                 handleTicketSelected={handleTicketSelected}
                 tripPhase={tripPhase}
+                selectedOnwardTicket={selectedOnwardTicket}
               />
             ))}
           </div>
