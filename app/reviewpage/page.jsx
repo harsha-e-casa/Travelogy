@@ -118,7 +118,7 @@ const Page = () => {
         const firstError = err.response.data.errors[0];
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
-        setError(`${message}`);
+        setError(`${message}`); 
 
         console.log("API error message:", message);
         console.log("Error details:", details);

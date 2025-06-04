@@ -14,7 +14,7 @@ import Alldetails from "./Alldetials";
 const page = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const priceId = searchParams.get("tcs_id");
+  // const priceId = searchParams.get("tcs_id");
   const bookingId = searchParams.get("booking_id");
 
   const BookingSkeleton = () => {
@@ -135,11 +135,11 @@ const page = () => {
   //   }, [priceId]);
 
   //to get the flightdeatails from the context
-  useEffect(() => {
-    if (priceId) {
-      fetchFlightDetails(priceId);
-    }
-  }, [priceId]);
+  // useEffect(() => {
+  //   if (priceId) {
+  //     fetchFlightDetails(priceId);
+  //   }
+  // }, [priceId]);
 
   //to send the priceinfo to the booking form
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
@@ -251,7 +251,7 @@ const page = () => {
             <div className="container pt-1">
               <div className="row">
                 <div className="">
-                  <Alldetails bookingId={bookingId} />
+                  <Alldetails  />
                 </div>
 
                 <div className=" mt-20">

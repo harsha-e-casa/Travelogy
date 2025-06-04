@@ -3,8 +3,14 @@ import { postDataBookingDetails } from "@/services/NetworkAdapter";
 import dayjs from "dayjs";
 import { AppContext } from "@/util/AppContext";
 import { format } from "date-fns";
+import { useSearchParams } from "next/navigation";
 
-const Alldetails = ({ bookingId }) => {
+const Alldetails = () => {
+  const searchParams = useSearchParams();
+  
+  const bookingId = searchParams.get("booking_id");
+  console.log("bookingid from alldetails",bookingId)
+
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
   const [bookingDetails, setBookingdetails] = useState(null);
@@ -17,6 +23,7 @@ const Alldetails = ({ bookingId }) => {
   };
 
   const bookingDetailsapi = async (bookingId) => {
+   
     setLoading(true);
     setError(null);
 
@@ -25,9 +32,13 @@ const Alldetails = ({ bookingId }) => {
       setLoading(false);
       return;
     }
+    else{
+      console.log("found")
+    }
 
     try {
       const parameter = { bookingId: bookingId, requirePaxPricing: true };
+      console.log("paramerter",parameter)
 
       const data = await postDataBookingDetails(parameter);
     //   const data={
@@ -168,7 +179,6 @@ const Alldetails = ({ bookingId }) => {
     //         "httpStatus": 200
     //     }
     // }
-    
       console.log("Booking details:", data);
 
       setBookingdetails(data); // Update state with flight details
@@ -242,23 +252,35 @@ const Alldetails = ({ bookingId }) => {
       <h4 className="neutral-1000">Booking Details</h4>
       <div className="mt-20 bg-white shadow rounded-lg p-6 mb-20">
         <div className="mb-10 shadow-md p-3 rounded">
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row justify-between gap-2">
             <div className="flex flex-col justify-start">
               <p className="text-md-medium neutral-1000">
                 Booking status:{" "}
                 <span
                   className={
-                    bookingDetails?.status?.success
+                    bookingDetails?.order?.status==="SUCCESS"
                       ? "bg-green-600 text-white pl-1 pr-1 rounded-full"
                       : "bg-red-600 text-white pl-1 pr-1 rounded-full"
                   }
                 >
-                  {bookingDetails?.status?.success ? "Success" : "Failed"}
+                  {bookingDetails?.order?.status}
                 </span>{" "}
               </p>
               <p className="text-sm-medium neutral-500">
                 Booking Id: {bookingDetails?.order?.bookingId}
               </p>
+            </div>
+
+            <div>
+              {bookingDetails?.order?.status==="SUCCESS"?<button className="border border-grey rounded">More</button>:
+              (<>
+              <div className="flex flex-row gap-3">
+                <button className="border border-grey rounded">Unhold</button>
+                <button className="border border-grey rounded">Pay Now</button>
+                <button className="border border-grey rounded">More</button>
+              </div>
+              </>)}
+              
             </div>
           </div>
         </div>
@@ -300,7 +322,7 @@ const Alldetails = ({ bookingId }) => {
 
               return (
                 <>
-                  <div className="shadow rounded-md p-3 ">
+                  <div className="shadow rounded-md p-3 mb-5 ">
                     {/* header */}
                     <div className="flex flex-col justify-start  items-start">
                       {/* City and direction row */}
@@ -379,7 +401,7 @@ const Alldetails = ({ bookingId }) => {
                     </div>
 
                     {/* flightdetails    */}
-                    <div className=" flex   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
+                    <div className=" flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
                       <div className="text-left space-y-1">
                         <h4
                           className=""

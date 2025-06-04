@@ -65,11 +65,22 @@
 }
 
 .t-head,.t-value {
-  font-size: 12px;
+  font-size: 10px;
 }
 
  .contactinfo{
     font-size: 12px;
+  }
+  .flight-timings{
+    flex-wrap: wrap;
+    gap:5;
+    justify-content: space-between;
+    padding: 5px;
+    align-items: center;
+  }
+  .baggageinfo{
+
+    margin-top: 20px;
   }
 /* .cabindetails{
     display: flex;
@@ -147,5 +158,13 @@
   }
   .contactinfo{
     font-size: 16px;
+  }
+  .flight-timings{
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .baggageinfo{
+    gap:20px
   }
 }

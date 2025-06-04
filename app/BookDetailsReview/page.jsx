@@ -4,7 +4,7 @@
 import "./style.css"
 import BookingForm from "@/components/elements/BookingForm";
 import Layout from "@/components/layout/Layout";
-import { postDataFareDetails, postDataFlightDetails, postDataTJBookingAir } from "@/services/NetworkAdapter";
+import { postDataBookingDetails, postDataFareDetails, postDataFlightDetails, postDataTJBookingAir } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -23,11 +23,11 @@ import * as React from 'react';
 
 
 const page = () => {
-//   const searchParams = useSearchParams();
-//   const priceId = searchParams.get('bookId'); 
-//   const [flightData, setFlightData] = useState(null); 
+  const searchParams = useSearchParams();
+  const bookingId = searchParams.get('bookId'); 
   const [loading, setLoading] = useState(false); 
   const [error, setError] = useState(null); 
+  // const [bookData,setBookData]=useState(null)
 //   const { getCookie } = useContext(AppContext);
 
 //   const[fareDetails,setFareDetails]=useState(null)
@@ -178,74 +178,118 @@ const page = () => {
 //   }, [priceId]);
 
 
-//   useEffect(() => {
-//     console.log("Extracted tcs_id:", priceId);
-//     if (priceId) {
-//       fetchFareRule({ id: [priceId], flowType: "SEARCH" });
-//     } else {
-//       setError("No valid tcs_id found in the URL.");
-//     }
-//   }, [priceId]);
   
   
-  const BookingSkeleton = () => {
-    return (
-      <section className="section-box block-content-book-tickets background-card mb-20">
-        <div className="container pt-1">
-          <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
-  
-          <div className="row mt-20">
-            <div className="col-lg-8">
-              <div className="box-content-tickets-detail p-3 flex gap-3 items-center bg-gray-100 animate-pulse rounded">
-                <div className="w-24 h-4 bg-gray-300 rounded" />
-                <div className="w-4 h-4 bg-gray-400 rounded-full" />
-                <div className="w-24 h-4 bg-gray-300 rounded" />
-                <div className="w-10 h-4 bg-gray-300 rounded" />
-                <div className="w-32 h-4 bg-gray-300 rounded" />
-              </div>
-  
-              <div className="mt-10 bg-white shadow rounded-lg p-6">
-                <div className="h-4 w-1/3 bg-gray-300 rounded mb-6 animate-pulse"></div>
-  
-                <div className="item-flight border border-black-200 rounded p-5 mb-6 animate-pulse flex flex-col gap-4">
-                  <div className="h-4 w-40 bg-gray-300 rounded" />
-                  <div className="flex justify-between">
-                    <div className="flex flex-col gap-2">
-                      <div className="h-4 w-24 bg-gray-300 rounded" />
-                      <div className="h-3 w-20 bg-gray-200 rounded" />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="h-4 w-24 bg-gray-300 rounded" />
-                      <div className="h-3 w-20 bg-gray-200 rounded" />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="h-4 w-24 bg-gray-300 rounded" />
-                      <div className="h-3 w-20 bg-gray-200 rounded" />
-                    </div>
-                  </div>
-                </div>
-  
-                <div className="h-4 w-1/3 bg-gray-300 rounded mb-6 animate-pulse"></div>
-  
-                <div className="h-24 bg-gray-200 rounded mb-6"></div>
-                <div className="h-20 bg-gray-200 rounded mb-6"></div>
-  
-                <div className="flex justify-between mt-6">
-                  <div className="h-10 w-24 bg-gray-300 rounded"></div>
-                  <div className="h-10 w-24 bg-gray-300 rounded"></div>
-                </div>
-              </div>
-            </div>
-  
-            <div className="col-lg-4">
-              <div className="h-96 bg-gray-200 rounded add_sticky animate-pulse"></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  };
+//  const BookingSkeleton = () => {
+//     return (
+//       <section className="section-box block-content-book-tickets background-card mb-20">
+//         <div className="container pt-1">
+//           <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
 
+//           <div className="row mt-20">
+//             <div className="">
+//               <div className="box-content-tickets-detail p-3 flex gap-3 items-center bg-gray-100 animate-pulse rounded">
+//                 <div className="w-24 h-4 bg-gray-300 rounded" />
+//                 <div className="w-4 h-4 bg-gray-400 rounded-full" />
+//                 <div className="w-24 h-4 bg-gray-300 rounded" />
+//                 <div className="w-10 h-4 bg-gray-300 rounded" />
+//                 <div className="w-32 h-4 bg-gray-300 rounded" />
+//               </div>
+
+//               <div className="mt-10 bg-white shadow rounded-lg p-6">
+//                 <div className="h-4 w-1/3 bg-gray-300 rounded mb-6 animate-pulse"></div>
+
+//                 <div className="item-flight border border-black-200 rounded p-5 mb-6 animate-pulse flex flex-col gap-4">
+//                   <div className="h-4 w-40 bg-gray-300 rounded" />
+//                   <div className="flex justify-between">
+//                     <div className="flex flex-col gap-2">
+//                       <div className="h-4 w-24 bg-gray-300 rounded" />
+//                       <div className="h-3 w-20 bg-gray-200 rounded" />
+//                     </div>
+//                     <div className="flex flex-col gap-2">
+//                       <div className="h-4 w-24 bg-gray-300 rounded" />
+//                       <div className="h-3 w-20 bg-gray-200 rounded" />
+//                     </div>
+//                     <div className="flex flex-col gap-2">
+//                       <div className="h-4 w-24 bg-gray-300 rounded" />
+//                       <div className="h-3 w-20 bg-gray-200 rounded" />
+//                     </div>
+//                   </div>
+//                 </div>
+
+//                 <div className="h-4 w-1/3 bg-gray-300 rounded mb-6 animate-pulse"></div>
+
+//                 <div className="h-24 bg-gray-200 rounded mb-6"></div>
+//                 <div className="h-20 bg-gray-200 rounded mb-6"></div>
+
+//                 <div className="flex justify-between mt-6">
+//                   <div className="h-10 w-24 bg-gray-300 rounded"></div>
+//                   <div className="h-10 w-24 bg-gray-300 rounded"></div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             <div className="">
+//               <div className="h-96 bg-gray-200 rounded add_sticky animate-pulse"></div>
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+//     );
+//   };
+
+//  const fetchBookingDetails = async (parameter) => {
+//     setLoading(true);
+//     setError(null);
+
+//     if (!bookingId) {
+//       setError("bookingId is missing");
+//       setLoading(false);
+//       return;
+//     }
+
+//     try {
+//       // const parameter = { bookingId: [bookingId] };
+//       console.log("Fetching with parameter for booking details:", parameter);
+
+//       const data = await postDataBookingDetails(parameter);
+//       console.log("response from bookingdetails api:", data);
+//       setBookData(data); // Update state with flight details
+//     } catch (err) {
+//       console.error("error caused", err);
+
+//       if (err?.response?.data?.errors?.length) {
+//         const firstError = err.response.data.errors[0];
+//         const message = firstError?.message || "An unknown error occurred.";
+//         const details = firstError?.details ? ` - ${firstError.details}` : "";
+//         setError(`${message}`); 
+
+//         console.log("API error message:", message);
+//         console.log("Error details:", details);
+//         console.log("Error status code:", err.response.status);
+//       } else if (err?.message) {
+//         setError(err.message);
+//         console.log("Generic error message:", err.message);
+//       } else {
+//         setError("Something went wrong. Please try again.");
+//       }
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+//   useEffect(() => {
+//     console.log("Extracted bookingId:", bookingId);
+//     if (bookingId) {
+//       fetchBookingDetails({
+//     bookingId: bookingId,
+//     requirePaxPricing:true
+    
+// });
+//     } else {
+//       setError("No valid booking id found in the URL.");
+//     }
+//   }, [bookingId]);
+ 
 
 
 //   // Trip info
@@ -678,11 +722,13 @@ return(<>
 
           <section className="section-box  background-card">
             <div className="container pt-1">
-              <h4 className="neutral-1000 mt-10">Booking Details</h4>
-              <p  className="text-md-bold neutral-900 mt-10">Flight Booking</p>
+              <h4 className="neutral-1000 mt-10 ">Booking Details</h4>
+              
+              <p  className="text-xl-bold neutral-900 mt-10 heading">Flight Booking</p>
+              
               {loading?(<BookingSkeleton />):
               (<><div className="row mt-20">
-                <div className="col-lg-8">
+                <div className="">
                   {/* <div className="box-content-tickets-detail flex flex-row items-center gap-3 p-3">
                     <p className="text-sm-medium neutral-500 totalduration">{fromCity}</p>
                     <svg
@@ -730,6 +776,28 @@ return(<>
                         </div>
                         <div>{cabinclass}</div>
                       </div> */}
+
+
+
+                      {/* <div className=" border flex flex-row justify-between rounded-md mb-4 shadow-md  p-3">
+                         <h6 className="heading">Status: Success</h6>
+                         <button className="border border-grey rounded">More</button>
+                      </div> */}
+
+                        <div className=" border flex flex-row justify-between items-center rounded-md mb-4 shadow-md  p-3">
+                          <div>
+                              <h6 className="heading">Status On Hold</h6>
+                              <p>Till- June-3,2025 9:14 | Time Left:00:00:00 </p>
+                              <p>Booking Id: {bookingId}</p>
+                          </div>
+                        
+                         <div className="flex flex-row gap-3">
+                          <button className="border border-grey rounded">Unhold</button>
+                         <button className="border border-grey rounded">Pay Now</button>
+                         <button className="border border-grey rounded">More</button>
+                         </div>
+                         
+                      </div>
   <div className="shadow rounded-md p-3">
   {/* header */}
   <div className="flex flex-col justify-start  items-start">
@@ -864,10 +932,10 @@ return(<>
          </div>
 
 
-         <div className=" flex flex-col md:flex-row justify-between ticketdiv  bg-gray-100 p-2 rounded-md  space-y-6 ">
+         <div className=" ticketdiv  bg-gray-100  rounded-md  space-y-6 ">
     
     {/* Flight Timings */}
-    <div className="flex justify-between items-center gap-5 ">
+    <div className="flex flight-timings   w-full ">
       <div className="text-left space-y-1">
         {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
         <h4 className="dtat font-normal" >06.00</h4>
@@ -894,12 +962,8 @@ return(<>
         <p className="text-sm-medium neutral-500 airportname ">aairportname</p>
         <p className="text-sm-medium neutral-1000 terminal">aterminal</p>
       </div>
-    </div>
-  
-
-
-    {/* Baggage Info */}
-    <div className="flex flex-col items-start  gap-3">
+       {/* Baggage Info */}
+    <div className="flex flex-col items-start baggageinfo  ">
       
       
       <div className="flex items-center space-x-2">
@@ -915,6 +979,12 @@ return(<>
         <p className="text-sm-bold neutral-900 cabindetails ">Check-in: <span className="text-sm-medium neutral-500 cabindetails ">checkinBaggage, per adult</span></p>
       </div>
     </div>
+
+    </div>
+  
+
+
+   
 
     
   </div>
@@ -1169,18 +1239,8 @@ return(<>
                           </div>
                         
                          
-                           {/* Buttons */}
-                      <div className="bg-white relative flex justify-between  flex-col">
-                        <div className="mt-60 flex justify-between">
-                        <Link  href="/"
-                        // href={`/book-ticket?tcs_id=${priceId}`}
-                         className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">
-  Back
-</Link>
-<div onClick={""}  className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black">continue</div>
-                        </div>
-                       
-                      </div>
+                          
+                      
 
                         
                         </div>
@@ -1199,7 +1259,7 @@ return(<>
                 </div>
 
                 {/* Right Column: Fare Summary */}
-                <div className="col-lg-4">
+                <div className="">
                   <div className="booking-form add_sticky">
                   <div class="head-booking-form"><p class="text-xl-bold neutral-1000">Fare Summary</p></div>
                     <BookingForm
