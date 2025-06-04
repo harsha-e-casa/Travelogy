@@ -12,7 +12,7 @@ const page = () => {
   const [userData, setUserData] = useState();
   const [userBookingData, setUserBookingData] = useState();
 
-  const bookingId = "TJS103101419066"
+  const bookingId = "TJS108101470162"
   useEffect(() => {
     const handleScroll = () => {
       const sections = ["profile", "login", "coTravellers", "bookings"];
@@ -73,7 +73,7 @@ const page = () => {
         //   reqParams
         // );
         const result = {
-          bookings: ["TJ108101470162"]
+          bookings: ["TJS108101470162", "TJS106301474288", "TJS102401473514"]
         }
         console.log("fetchflightBookingsresssssssssssss = ", result);
         setUserBookingData(result);
@@ -381,7 +381,7 @@ const page = () => {
                             {userBookingData?.bookings?.map((bookingId, index) => (
                               <div key={index} className="p-3 border shadow-md rounded" onClick={""}>
                                 <p className="booking-tab">Booking Id : <Link
-                              href={`/BookDetailsReview?bookId=${bookingId}`}
+                              href={`/BookingDetails?booking_id=${bookingId}`}
 
                             >
                               {bookingId}
