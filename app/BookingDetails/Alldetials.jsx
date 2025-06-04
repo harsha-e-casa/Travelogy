@@ -263,7 +263,7 @@ const Alldetails = () => {
                       : "bg-red-600 text-white pl-1 pr-1 rounded-full"
                   }
                 >
-                  {bookingDetails?.order?.status==="SUCCESS" ? "Success" : "Pending"}
+                  {bookingDetails?.order?.status}
                 </span>{" "}
               </p>
               <p className="text-sm-medium neutral-500">
