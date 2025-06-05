@@ -96,6 +96,7 @@ export default function BookTicket() {
     const [totalpricee, setTotalpricee] = useState<string | null>(null)
     const [tdnetPrice, setNetFare] = useState<string | null>(null)
     const [bookingId, setBookingId] = useState<string | null>(null)
+     const [isOpen, setIsOpen] = useState(true);
 
     const [numAdults, setNumAdults] = useState(null); // Example: You can dynamically set numAdults here
     const [numChild, setNumChild] = useState(null); // Example: You can dynamically set numAdults here

@@ -10,6 +10,7 @@ export default function DomesticRoundTripTicketCard({
   ticket,
   handleTicketSelected,
   tripPhase,
+  selectedOnwardTicket,
 }: any) {
   const { getCookie } = useContext(AppContext);
   const tripType = getCookie("gy_triptype");
@@ -37,80 +38,88 @@ export default function DomesticRoundTripTicketCard({
     <>
       <div>
         <div className="item-flight background-card border-1 ticket-container relative">
-          <div className="air_detailes">{ticket.sI[0]["fD"].aI.name}</div>
-          <div className="flight-route flight-route-type-2 city1">
-            <div className="flight-route-1">
-              <div className="flight-name">
-                <div className="flight-info flex flex-col justify-center items-center">
-                  <p className="text-md-bold neutral-1000 city1name">
-                    {ticket.sI[0]["da"].city}
-                    <span className="text-md-bold neutral-1000">
-                      ({ticket.sI[0]["da"].code})
-                    </span>{" "}
-                  </p>
+          {/* need to render dynamic city if layover */}
+          <div style={{ width: "55%" }}>
+            {ticket.sI.map((segment: any, index: number) => (
+              <div className="flex justify-evenly">
+                <div className="air_detailes">{segment["fD"].aI.name}</div>
+                <div className="flight-route flight-route-type-2 city1">
+                  <div className="flight-route-1">
+                    <div className="flight-name">
+                      <div className="flight-info flex flex-col justify-center items-center">
+                        <p className="text-md-bold neutral-1000 city1name">
+                          {segment["da"].city}
+                          <span className="text-md-bold neutral-1000">
+                            ({segment["da"].code})
+                          </span>{" "}
+                        </p>
 
-                  <p className="text-sm-medium time-flight timelogo">
-                    <span className="neutral-1000 time ">
-                      {dayjs(ticket.sI[0]["dt"]).format("hh:mm A")}
-                    </span>
-                  </p>
+                        <p className="text-sm-medium time-flight timelogo">
+                          <span className="neutral-1000 time ">
+                            {dayjs(segment["dt"]).format("hh:mm A")}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* duration */}
+                <div className="flight-route flight-route-type-2 city1">
+                  <div className="flight-route-1">
+                    <div className=" flight-name duration flex flex-col items-center align-center duration">
+                      <p className="text-sm-medium neutral-500 totalduration">
+                        {" "}
+                        {formatTime(segment["duration"])}{" "}
+                      </p>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        fill="currentColor"
+                        class="bi bi-arrow-right"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                        />
+                      </svg>
+
+                      <p className="text-sm-medium neutral-500 totalduration">
+                        {" "}
+                        {segment["stops"] > 0
+                          ? segment["stops"]`stops`
+                          : "non stop"}{" "}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flight-route flight-route-type-2 city1">
+                  <div className="flight-route-1">
+                    <div className="flight-name">
+                      <div className="flight-info flex flex-col items-center align-center">
+                        <p className="text-md-bold neutral-1000 align-center city1name">
+                          {segment["aa"].city}{" "}
+                          <span className="text-md-bold neutral-1000 citycode">
+                            ({segment["aa"].code})
+                          </span>
+                        </p>
+
+                        <p className="text-sm-medium time-flight timelogo">
+                          <span className="neutral-1000 time">
+                            {dayjs(segment["at"]).format("hh:mm A")}{" "}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
 
-          {/* duration */}
-          <div className="flight-route flight-route-type-2 city1">
-            <div className="flight-route-1">
-              <div className=" flight-name duration flex flex-col items-center align-center duration">
-                <p className="text-sm-medium neutral-500 totalduration">
-                  {" "}
-                  {formatTime(ticket.sI[0]["duration"])}{" "}
-                </p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  class="bi bi-arrow-right"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                  />
-                </svg>
-
-                <p className="text-sm-medium neutral-500 totalduration">
-                  {" "}
-                  {ticket.sI[0]["stops"] > 0
-                    ? ticket.sI[0]["stops"]`stops`
-                    : "non stop"}{" "}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flight-route flight-route-type-2 city1">
-            <div className="flight-route-1">
-              <div className="flight-name">
-                <div className="flight-info flex flex-col items-center align-center">
-                  <p className="text-md-bold neutral-1000 align-center city1name">
-                    {ticket.sI[0]["aa"].city}{" "}
-                    <span className="text-md-bold neutral-1000 citycode">
-                      ({ticket.sI[0]["aa"].code})
-                    </span>
-                  </p>
-
-                  <p className="text-sm-medium time-flight timelogo">
-                    <span className="neutral-1000 time">
-                      {dayjs(ticket.sI[0]["at"]).format("hh:mm A")}{" "}
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
           <div
             className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center    "
             style={{ width: "245px", paddingLeft: "20px" }}
@@ -163,14 +172,29 @@ export default function DomesticRoundTripTicketCard({
           </div>
 
           <div className="flight-price-2 border-1 btndiv">
-            <button className="btn btn-gray booknow btn" onClick={() => handleTicketSelected(ticket, value)} >{tripPhase == 'ONWARD' ? (<>Select</>) : (<>Book Now</>)}</button>
-
-            {/* <Link
-                     href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
-                     className="btn btn-gray booknow btn"
-                     >
-                     Book Now
-                     </Link> */}
+            <div className="flight-price-2 border-1 btndiv">
+              {tripPhase === "ONWARD" ? (
+                <button
+                  className="btn btn-gray booknow btn"
+                  onClick={() => handleTicketSelected(ticket, value)}
+                >
+                  Select
+                </button>
+              ) : (
+                selectedOnwardTicket && (
+                  <Link
+                    href={`book-ticket?tcs_id=${
+                      selectedOnwardTicket.ticket.totalPriceList[
+                        selectedOnwardTicket.selectedPriceIndex
+                      ]?.id
+                    },${ticket.totalPriceList[value]?.id}`}
+                    className="btn btn-gray booknow btn"
+                  >
+                    Book Now
+                  </Link>
+                )
+              )}
+            </div>
           </div>
         </div>
       </div>
