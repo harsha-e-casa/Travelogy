@@ -14,11 +14,13 @@ const AppFormAdult = ({ form, index }) => {
             label="Select"
             hasFeedback
             rules={[{ required: true, message: "This field is required" }]}>
+
             <Select className="h-10" placeholder="Please select a title">
               <Option value="Mr">Mr</Option>
               <Option value="MRS">Mrs</Option>
               <Option value="MS">Ms</Option>
             </Select>
+
           </Form.Item>
         </Col>
 
@@ -44,6 +46,8 @@ const AppFormAdult = ({ form, index }) => {
             <Input className="h-10 flex flex-row justify-between items-center" placeholder="Last Name" />
           </Form.Item>
         </Col>
+
+        
       </Row>
     </Form>
   );
