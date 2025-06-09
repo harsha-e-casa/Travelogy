@@ -132,6 +132,7 @@ export default function BookTicket() {
 
    const [baggageinfo, setBaggageinfo] = useState([]);
   const fetchFlights = async (priceId: string) => {
+ 
     setLoading(true);
     setError(null);
 
@@ -243,7 +244,7 @@ export default function BookTicket() {
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
     if (tcs_id) fetchFlights(tcs_id);
-  }, [tcs_id]);
+  }, []);
 
   const { Option } = Select;
 
@@ -1331,7 +1332,9 @@ for (let i = 0; i < numInfants; i++) {
                       const segments = trip?.sI || [];
                       return (
                         <>
-                          {segmentsPrice.length > 0 && (
+                        {idx == 0 && (<h5>Onward Journey</h5>)}
+                        {idx == 1 && (<h5 className="pt-15">Return Journey</h5>)}
+                          {/* {segmentsPrice.length > 0 && (
                             <div key={idx} className="fare-summary mb-20">
                               <h5 className="text-lg-bold neutral-1000">
                                 Available Fares
@@ -1349,7 +1352,7 @@ for (let i = 0; i < numInfants; i++) {
                                 ))}
                               </ul>
                             </div>
-                          )}
+                          )} */}
                           <div className="row mt-20">
                             <div>
                               <div className="box-content-tickets-detail">

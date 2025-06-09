@@ -45,7 +45,7 @@ export default function BookingForm({ segmentsPrice, totalpricee,baggageinfo }) 
 							
 						</div>
 						<div className="dropdown-quantity">
-						<p>₹{Airlinegst}</p>
+						<p>₹{Airlinegst ? Airlinegst : "0.0"}</p>
 						</div>
 					</div>
 					<div className="line-booking-tickets">

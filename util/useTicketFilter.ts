@@ -24,6 +24,9 @@ export interface Filter {
 type SortCriteria = "name" | "price" | "rating"
 
 const useTicketFilter = (ticketsData: Ticket[]) => {
+
+	console.log("filter -> ticket data --> ", ticketsData);
+	
 	const [filter, setFilter] = useState<Filter>({
 		names: [],
 		class: [],
@@ -70,6 +73,7 @@ const useTicketFilter = (ticketsData: Ticket[]) => {
 	const paginatedTickets = sortedTickets.slice(startIndex, endIndex)
 
 	const handleCheckboxChange = (field: keyof Filter, value: string | number) => (e: ChangeEvent<HTMLInputElement>) => {
+		console.log("filter -- ");
 		const checked = e.target.checked
 		setFilter((prevFilter) => {
 			const values = prevFilter[field] as (string | number)[]

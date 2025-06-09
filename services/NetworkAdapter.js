@@ -101,6 +101,7 @@ export const fetchData = async (endpoint, params = {}) => {
 export const postData = async (endpoint, payload) => {
   try {
     const response = await apiInstance.post(endpoint, payload);
+    console.log("ressssssssss 1111111 ",response)
     return response.data;
   } catch (error) {
     throw error;
@@ -224,6 +225,36 @@ export const postDataBookingDetails = async (parameter) => {
   }
 };
 
+export const postAirDataBookingDetails = async (parameter) => {
+
+  try {
+    const response = await apiInstanceTripJack.post('oms/v1/confirm-book', parameter);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//  fare-validate
+export const postFareValidate = async (parameter) => {
+
+  try {
+    const response = await apiInstanceTripJack.post('oms/v1/air/fare-validate', parameter);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postUnHold = async (parameter) => {
+
+  try {
+    const response = await apiInstanceTripJack.post('oms/v1/air/unhold', parameter);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 // Add additional functions as needed (PUT, DELETE, etc.)
