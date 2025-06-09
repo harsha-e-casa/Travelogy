@@ -938,73 +938,67 @@ export default function BookTicket() {
 // }
 
 
-const segmentinfo =apiData.tripInfos.flatMap(trip => trip.sI || [])  
 
 
+const segmentinfo = apiData.tripInfos.flatMap(trip => trip.sI || []);
 const segmentId = segmentinfo.map(segment => segment.id).join(",");
 
-let baggageinfo=[]
-
-
+let baggageinfo = [];
+let mealinfo = []; 
 const groupedAdults = [];
 
 for (let i = 0; i < numAdults; i++) {
   const ti = formValues[`select-${i}`];
   const fN = formValues[`fname-${i}`];
   const lN = formValues[`lname-${i}`];
-    const documentId = formValues[`documentId-${i}`];
+  const documentId = formValues[`documentId-${i}`];
 
   if (ti && fN && lN) {
-    const traveller = {
-      ti,
-      fN,
-      lN,
-      pt: "ADULT",
-      
-    };
+    const traveller = { ti, fN, lN, pt: "ADULT" };
 
-     if (documentId) {
-      traveller.di = documentId; 
+    if (documentId) {
+      traveller.di = documentId;
     }
 
-    // Loop through each flight segment
     const baggageInfos = [];
     const mealInfos = [];
 
     segmentinfo.forEach((segment, flightIndex) => {
       const baggageCode = formValues[`adultBaggage-${flightIndex}-${i}`];
-      
-if (baggageCode) {
-  // Find the baggage option from segment SSR baggage options
-  if (baggageCode) {
-  const baggageOption = segment.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
-  console.log("Found baggageOption:", baggageOption);
-
-  baggageinfo.push({
-    key: segment.id,
-    code: baggageCode,
-    amount: baggageOption?.amount || 0,
-  });
-  
-
-  console.log("the baggage info array now:", baggageinfo);
-}
-}
       const mealCode = formValues[`adultMeal-${flightIndex}-${i}`];
 
       if (baggageCode) {
-        baggageInfos.push({
+        const baggageOption = segment.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+        baggageInfos.push({ key: segment.id, code: baggageCode });
+        baggageinfo.push({
           key: segment.id,
           code: baggageCode,
+          amount: baggageOption?.amount || 0,
         });
       }
 
-      if (mealCode) {
-        mealInfos.push({
-          key: segment.id,
-          code: mealCode,
-        });
-      }
+      
+
+    
+if (mealCode && Array.isArray(segment?.ssrInfo?.MEAL)) {
+  const mealOption = segment.ssrInfo.MEAL.find(meal => meal.code === mealCode);
+
+  if (mealOption) {
+    mealInfos.push({
+      key: segment.id,
+      code: mealCode,
+    });
+
+    mealinfo.push({
+      key: segment.id,
+      code: mealCode,
+      amount: mealOption.amount,
+      desc: mealOption.desc,
+    });
+  }
+}
+
+
     });
 
     if (baggageInfos.length > 0) {
@@ -1018,29 +1012,17 @@ if (baggageCode) {
     groupedAdults.push(traveller);
   }
 }
-setBaggageinfo(baggageinfo);
-setCookie("baggageinfo", JSON.stringify(baggageinfo), {
-          expires: 7,
-        });
-console.log("grouped adults",groupedAdults)
 
-
-        // Group children
-       const groupedChildren = [];
+// Group children
+const groupedChildren = [];
 
 for (let i = 0; i < numChild; i++) {
   const ti = formValues[`childselect-${i}`];
   const fN = formValues[`childName-${i}`];
   const lN = formValues[`childlast-${i}`];
 
-
   if (ti && fN && lN) {
-    const traveller = {
-      ti,
-      fN,
-      lN,
-      pt: "CHILD",
-    };
+    const traveller = { ti, fN, lN, pt: "CHILD" };
 
     const baggageInfos = [];
     const mealInfos = [];
@@ -1050,18 +1032,34 @@ for (let i = 0; i < numChild; i++) {
       const mealCode = formValues[`childMeal-${flightIndex}-${i}`];
 
       if (baggageCode) {
-        baggageInfos.push({
+        const baggageOption = segment.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+        baggageInfos.push({ key: segment.id, code: baggageCode });
+        baggageinfo.push({
           key: segment.id,
           code: baggageCode,
+          amount: baggageOption?.amount || 0,
         });
       }
 
-      if (mealCode) {
-        mealInfos.push({
-          key: segment.id,
-          code: mealCode,
-        });
-      }
+    if (mealCode) {
+  const mealOption = segment?.ssrInfo?.MEAL?.find(meal => meal.code === mealCode);
+
+  if (mealOption) {
+    mealInfos.push({
+      key: segment.id,
+      code: mealCode,
+    });
+
+    mealinfo.push({
+      key: segment.id,
+      code: mealCode,
+      amount: mealOption.amount,
+      desc: mealOption.desc,
+    });
+  }
+}
+
+
     });
 
     if (baggageInfos.length > 0) {
@@ -1076,8 +1074,8 @@ for (let i = 0; i < numChild; i++) {
   }
 }
 
-        // Group infants
-     const groupedInfants = [];
+// Group infants
+const groupedInfants = [];
 
 for (let i = 0; i < numInfants; i++) {
   const ti = formValues[`infantselect-${i}`];
@@ -1087,13 +1085,7 @@ for (let i = 0; i < numInfants; i++) {
   const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
 
   if (ti && fN && lN && dob) {
-    const traveller = {
-      ti,
-      fN,
-      lN,
-      pt: "INFANT",
-      dob,
-    };
+    const traveller = { ti, fN, lN, pt: "INFANT", dob };
 
     const baggageInfos = [];
     const mealInfos = [];
@@ -1103,18 +1095,33 @@ for (let i = 0; i < numInfants; i++) {
       const mealCode = formValues[`infantMeal-${flightIndex}-${i}`];
 
       if (baggageCode) {
-        baggageInfos.push({
+        const baggageOption = segment.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+        baggageInfos.push({ key: segment.id, code: baggageCode });
+        baggageinfo.push({
           key: segment.id,
           code: baggageCode,
+          amount: baggageOption?.amount || 0,
         });
       }
 
-      if (mealCode) {
-        mealInfos.push({
-          key: segment.id,
-          code: mealCode,
-        });
-      }
+    if (mealCode) {
+  const mealOption = segment?.ssrInfo?.MEAL?.find(meal => meal.code === mealCode);
+
+  if (mealOption) {
+    mealInfos.push({
+      key: segment.id,
+      code: mealCode,
+    });
+
+    mealinfo.push({
+      key: segment.id,
+      code: mealCode,
+      amount: mealOption.amount,
+      desc: mealOption.desc,
+    });
+  }
+}
+
     });
 
     if (baggageInfos.length > 0) {
@@ -1129,6 +1136,16 @@ for (let i = 0; i < numInfants; i++) {
   }
 }
 
+// Set all grouped travelers and cookie
+setBaggageinfo(baggageinfo);
+
+
+setCookie("baggageinfo", JSON.stringify(baggageinfo), {
+  expires: 7,
+});
+setCookie("mealinfo", JSON.stringify(mealinfo), {
+  expires: 7,
+});
 
 
         
