@@ -18,7 +18,7 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form }) => {
 
             return (
               <div key={`flight-${flightIndex}`} className="border-b pb-4 mb-4">
-                <h3 className="text-lg">Flight {flightIndex + 1}</h3>
+                <h3 className="text-lg">{`${segment?.fD?.aI?.name}-${segment?.fD?.fN}`}</h3>
 
                 {/* Adult Meals */}
                 {Array.from({ length: numAdults }).map((_, index) => (
