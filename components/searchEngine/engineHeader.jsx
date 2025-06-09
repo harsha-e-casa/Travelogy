@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useContext, use } from "react";
+
 import SearchEngHeader from "./SearchEngHeader";
 import AppListSearch from "./AppListSearch";
 import AppDateRage from "./AppDateRage";
@@ -11,6 +12,8 @@ import Link from "next/link";
 import { TravellerForm } from "./TravellerForm";
 import { AppContext } from "../../util/AppContext";
 import { useSearchParams, useRouter } from "next/navigation";
+import "./DirectFlight.jsx";
+import DirectFlight from "./DirectFlight.jsx";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 
@@ -147,6 +150,7 @@ const EngineTabs = ({ active_border }) => {
 
   const [selectedPlan, setSelectedPlan] = useState("one-way");
   const [selectedPassengerType, setSelectedPassengerType] = useState("REGULAR");
+  const [isDirectFlight, setIsDirectFlight] = useState(false);
 
   const openfrom = () => {
     if (showSearchState) {
@@ -255,6 +259,9 @@ const EngineTabs = ({ active_border }) => {
   }, [selectedPassengerType]);
 
   useEffect(() => {
+    setCookie("gy_direct_flight", isDirectFlight ? "true" : "false");
+  }, [isDirectFlight]);
+  useEffect(() => {
     if (datedep) {
       const formattedDate = dayjs(datedep);
       // setCookie('gy_trd', datedep);
@@ -341,7 +348,7 @@ const EngineTabs = ({ active_border }) => {
 
     <section
       // className="section_main_book_dash_01 relative_MainBanner mb-60"
-      className="section_main_book_dash_01 relative_MainBanner"
+      className="section_main_book_dash_01 relative_MainBanner "
     >
       <div
         className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40"
@@ -436,7 +443,7 @@ const EngineTabs = ({ active_border }) => {
             {/*<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 32 32"><path fill="#e88400" d="m21.786 12.876l7.556-4.363l-7.556-4.363v2.598H2.813v3.5h18.973zm-11.418 5.248l-7.556 4.362l7.556 4.362V24.25h18.974v-3.5H10.368z"/></svg>*/}
           </div>
 
-          <div className="text_start b_right_2px g_w_2 css_pointer relative">
+          <div className="text_start b_right_2px g_w_2 css_pointer relative ">
             <div className="" onClick={openTo}>
               <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">
                 To
@@ -586,6 +593,16 @@ const EngineTabs = ({ active_border }) => {
             </div>
           </div>
         </div>
+        <div className="">
+          <PassengerType
+            selectedPassengerType={selectedPassengerType}
+            setSelectedPassengerType={setSelectedPassengerType}
+          />
+          <DirectFlight
+            isDirectFlight={isDirectFlight}
+            setIsDirectFlight={setIsDirectFlight}
+          />
+        </div>
 
         <TravellerForm
           showTraveller={showTraveller}
@@ -604,11 +621,6 @@ const EngineTabs = ({ active_border }) => {
           totalPassenderCount={totalPassenderCount}
           specificStyle={{ right: "0" }}
           setTravellerClass={setTravellerClass}
-        />
-
-        <PassengerType
-          selectedPassengerType={selectedPassengerType}
-          setSelectedPassengerType={setSelectedPassengerType}
         />
       </div>
     </section>

@@ -99,17 +99,19 @@ export default function Tickets() {
   if (getCookie("gy_child") == undefined || getCookie("gy_child") == "Nan") {
     setCookie("gy_child", 0);
   }
-  const adults = getCookie("gy_adult");
-  const children = getCookie("gy_child");
-  const cabinType = getCookie("gy_class");
-  const departDate = getCookie("gy_trd");
-  const returnDate = getCookie("gy_return");
 
-  const departureFromSr = getCookie("gy_da_str");
-  const arrivalToSr = getCookie("gy_aa_str");
-  const tripType = getCookie("gy_triptype");
-  const passengerType = getCookie("gy_passender_type");
-  const infant = getCookie("gy_infant");
+  const adults = getCookie('gy_adult')
+  const children = getCookie('gy_child')
+  const cabinType = getCookie('gy_class')
+  const departDate = getCookie('gy_trd')
+  const returnDate = getCookie('gy_return')
+
+  const departureFromSr = getCookie('gy_da_str')
+  const arrivalToSr = getCookie('gy_aa_str');
+  const tripType = getCookie('gy_triptype');
+  const passengerType = getCookie('gy_passender_type')
+ const isDirectFlight = (getCookie('gy_direct_flight') || 'false').toLowerCase() === 'true';
+  const infant = getCookie('gy_infant')
 
   const mydata = {
     departureFrom: departureFrom,
@@ -208,14 +210,15 @@ export default function Tickets() {
       ];
     }
 
-    // console.log("tripBasedRouteInfo == ",tripBasedRouteInfo);
-
-    // Build the parameter object without extra curly braces
     const mapPassengerType = {
       "SENIOR CITIZEN": "SENIOR_CITIZEN",
       "STUDENT": "STUDENT",
       "REGULAR": "REGULAR"
     }
+
+    // console.log("tripBasedRouteInfo == ",tripBasedRouteInfo);
+
+    // Build the parameter object without extra curly braces
     console.log("222222222222 ",cabinType);
     console.log("222222222222 ",classLabels[cabinType]);
     const parameter = {
@@ -227,12 +230,12 @@ export default function Tickets() {
           INFANT: countInfant,
         },
         routeInfos: tripBasedRouteInfo,
-        searchModifiers: {
+        "searchModifiers": {
           "pfts": [
             mapPassengerType[passengerType]
           ],
-          isDirectFlight: false,
-          isConnectingFlight: false,
+            isDirectFlight: isDirectFlight, // always true if isDirectFlight is false
+            isConnectingFlight: false
           // "sourceId": 0,
           // "pnrCreditInfo": {
           //   "pnr": ""

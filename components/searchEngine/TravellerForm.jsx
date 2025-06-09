@@ -204,7 +204,14 @@ export const AppTravellerHotel = ({
   clickRoomAdd,
   clickRoomMinus,
   rooms,
+  childAgesPerRoom,
+  setChildAgesPerRoom,
 }) => {
+  const handleChildAgeChange = (index, value) => {
+    const updatedAges = [...childAgesPerRoom];
+    updatedAges[index] = parseInt(value, 10);
+    setChildAgesPerRoom(updatedAges);
+  };
   return (
     <>
       {showTraveller ? (
@@ -284,10 +291,10 @@ export const AppTravellerHotel = ({
                 </div>
                 <div
                   className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
-                  onClick={countchildren < 10 ? clickPlusChildren : null} // Conditionally enable onClick
+                  onClick={countchildren < 10 ? clickPlusChildren : null} 
                   style={{
                     cursor: countchildren < 10 ? "pointer" : "not-allowed",
-                  }} // Change cursor on disabled
+                  }} 
                 >
                   <PlusOutlined className="text-blue-700" />
                 </div>
@@ -311,32 +318,20 @@ export const AppTravellerHotel = ({
                       </div>
                       <Select
                         name={`childrenNamels${index}`}
-                        defaultValue="3"
+                        value={
+                          childAgesPerRoom[index] !== undefined
+                            ? childAgesPerRoom[index]
+                            : ""
+                        }
+                        onChange={(value) => handleChildAgeChange(index, value)}
                         style={{ width: 120 }}
-                        options={[
-                          { value: "0", label: "<1 Yrs" },
-                          { value: "1", label: "1 Yrs" },
-                          { value: "2", label: "2 Yrs" },
-                          { value: "3", label: "3 Yrs" },
-                          { value: "4", label: "4 Yrs" },
-                          { value: "5", label: "5 Yrs" },
-                          { value: "6", label: "6 Yrs" },
-                          { value: "7", label: "7 Yrs" },
-                          { value: "8", label: "8 Yrs" },
-                          { value: "9", label: "9 Yrs" },
-                          { value: "10", label: "10 Yrs" },
-                          { value: "11", label: "11 Yrs" },
-                          { value: "12", label: "12 Yrs" },
-                          { value: "13", label: "13 Yrs" },
-                          { value: "14", label: "14 Yrs" },
-                          { value: "15", label: "15 Yrs" },
-                          { value: "16", label: "16 Yrs" },
-                          { value: "17", label: "17 Yrs" },
-                        ]}
+                        options={Array.from({ length: 18 }, (_, i) => ({
+                          value: i,
+                          label: i === 0 ? "<1 Yrs" : `${i} Yrs`,
+                        }))}
                       />
                     </div>
                   ))}
-                  ;
                 </div>
               </>
             ) : null}

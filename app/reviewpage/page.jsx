@@ -52,6 +52,7 @@ const Page = () => {
   console.log("number", number);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
+  const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
 
   const router = useRouter();
   useEffect(() => {
@@ -60,6 +61,7 @@ const Page = () => {
       try {
         console.log(data);
         const parsedData = JSON.parse(data);
+        console.log("parseddata from review page", parsedData);
         setTravellers(parsedData);
       } catch (err) {
         console.error("Invalid JSON in cookie:", err);
@@ -253,6 +255,11 @@ const Page = () => {
 
   // Trip info
   const segments = flightData?.tripInfos.flatMap((trip) => trip.sI) ?? [];
+  const segmentId = flightData?.tripInfos
+    ?.map((e, i) => e.sI?.map((data) => data.id))
+    .join("");
+
+  console.log("segment id from review", segmentId);
   const totalpriceinfos =
     flightData?.tripInfos.flatMap((trip) => trip.totalPriceList) ?? [];
   const cabinBaggage = totalpriceinfos.map((e) => e.fd?.ADULT?.bI?.iB);
@@ -327,7 +334,10 @@ const Page = () => {
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
+  const baggageTotal =
+    BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
 
+  const finalAmountToPay = totalprice + baggageTotal;
   //fare rule api
   const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
 
@@ -773,79 +783,66 @@ const Page = () => {
 
   // Function to handle booking review and trigger loadDataBook
   const bookingReview = () => {
-    console.log("traveelers", travellers);
-    console.log("totalprice bookingid", totalprice, bookingId);
-    if (Array.isArray(travellers) && travellers.length > 0) {
-      if (totalprice && bookingId) {
-        // handlePayment();
-        // openNotificationWithIcon('success');
-        // Build the parameter object without extra curly braces
-        const parameter = {
-          bookingId: bookingId,
-          paymentInfos: [
-            {
-              amount: totalprice,
-            },
-          ],
-          travellerInfo: travellers,
+    console.log("travellers (before update)", travellers);
+    console.log("totalprice bookingId", totalprice, bookingId);
 
-          // travellerInfo: [
-          // {
-          //     ti: 'Mr',
-          //     fN: 'Karthik',
-          //     lN: 'AdultA',
-          //     pt: 'ADULT'
-          // }
-          // Uncomment and include more traveller details as needed:
-          // {
-          //   ti: 'Ms',
-          //   fN: 'Test',
-          //   lN: 'ChildA',
-          //   pt: 'CHILD'
-          // },
-          // {
-          //   ti: 'Master',
-          //   fN: 'Test',
-          //   lN: 'InfantA',
-          //   pt: 'INFANT',
-          //   dob: '2019-08-09'
-          // }
-          // ],
-          // gstInfo: { // Uncomment this section when needed
-          //   gstNumber: '07AAGCT7826A1ZF',
-          //   email: 'prabhu@technogramsolutions.com',
-          //   registeredName: 'TGS Pvt Ltd',
-          //   mobile: '9538500324',
-          //   address: 'gurugram'
-          // },
-          deliveryInfo: {
-            emails: [email],
-            contacts: [`${number.code}${number.number}`],
-          },
-        };
-        console.log("traveelerinfo", parameter.travellerInfo);
+    const segmentinfo =
+      flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
-        const saveBookingId = async () => {
-          const reqSaveBookingId = {
-            booking_id: bookingId,
-            phone: number.number,
-          };
-          console.log("reqSaveBookingId === > ", reqSaveBookingId);
-          const result = await postData(
-            "travelogy/flight/save-booking",
-            reqSaveBookingId
-          );
-          console.log("saveBookingId result === > ", result);
-        };
-        saveBookingId();
+    const updatedTravellers = travellers.map((traveller) => {
+      const updatedTraveller = { ...traveller };
 
-        loadDataBook(parameter);
-      } else {
-        console.error("Adult Is empty");
+      if (Array.isArray(traveller.ssrMealInfos)) {
+        updatedTraveller.ssrMealInfos = traveller.ssrMealInfos.map(
+          (meal, idx) => ({
+            ...meal,
+            key: segmentinfo[idx]?.id || "",
+          })
+        );
       }
+
+      if (Array.isArray(traveller.ssrBaggageInfos)) {
+        updatedTraveller.ssrBaggageInfos = traveller.ssrBaggageInfos.map(
+          (bag, idx) => ({
+            ...bag,
+            key: segmentinfo[idx]?.id || "",
+          })
+        );
+      }
+
+      return updatedTraveller;
+    });
+
+    if (totalprice && bookingId) {
+      const parameter = {
+        bookingId,
+        paymentInfos: [{ amount: finalAmountToPay }],
+        travellerInfo: updatedTravellers,
+        deliveryInfo: {
+          emails: [email],
+          contacts: [`${number.code}${number.number}`],
+        },
+      };
+
+      console.log("travellerInfo (final):", parameter.travellerInfo);
+      console.log("parameter for book:", parameter);
+
+      const saveBookingId = async () => {
+        const reqSaveBookingId = {
+          booking_id: bookingId,
+          phone: number.number,
+        };
+        const result = await postData(
+          "travelogy/flight/save-booking",
+          reqSaveBookingId
+        );
+        console.log("saveBookingId result ===>", result);
+      };
+      saveBookingId();
+
+      loadDataBook(parameter);
     } else {
-      // Handle case when totalpricee is not set
-      console.error("Total price is not set");
+      console.error("Booking ID or total price is missing");
     }
   };
 
@@ -1617,14 +1614,20 @@ const Page = () => {
                                     <div className="flex items-center flex-col">
                                       <p className="text-sm-medium neutral-500">
                                         ₹{" "}
-                                        {
-                                          fareRulesData?.fareRuleInformation
-                                            ?.tfr?.CANCELLATION?.[0]?.amount
-                                        }
+                                        {fareRulesData?.fareRuleInformation?.tfr
+                                          ?.CANCELLATION?.[0]?.amount
+                                          ? fareRulesData?.fareRuleInformation
+                                              ?.tfr?.CANCELLATION?.[0]?.amount
+                                          : fareRulesData?.fareRuleInformation
+                                              ?.tfr?.CANCELLATION?.[0]
+                                              ?.additionalFee}
                                         <span className="mx-1"></span>
                                       </p>
                                       <p className="text-secondary text-sm">
-                                        {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo?.split("__nls__").filter(Boolean).map((line, index) => (
+                                        {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo
+                                          ?.split("__nls__")
+                                          .filter(Boolean)
+                                          .map((line, index) => (
                                             <div key={index}>{line.trim()}</div>
                                           ))}
                                       </p>
