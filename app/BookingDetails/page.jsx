@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import Alldetails from "./Alldetials";
+import { postDataBookingDetails } from "@/services/NetworkAdapter";
 
 const page = () => {
   const router = useRouter();
@@ -145,10 +146,49 @@ const page = () => {
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
 
   useEffect(() => {
-    if (flightData?.totalPriceInfo?.totalFareDetail) {
-      setTotalpriceinfo(flightData.totalPriceInfo.totalFareDetail);
+    console.log("Extracted Booking Id:", bookingId); // Debug log to check if bookingId is correct
+    if (bookingId) {
+      bookingDetailsapi(bookingId);
+    } else {
+      setError("No valid booking id found in the URL.");
     }
-  }, [flightData]);
+  }, [bookingId]);
+
+  const bookingDetailsapi = async (bookingId) => {
+    setLoading(true);
+    setError(null);
+
+    if (!bookingId) {
+      setError("Booking ID is missing");
+      setLoading(false);
+      return;
+    } else {
+      console.log("found");
+    }
+
+    try {
+      const parameter = { bookingId: bookingId, requirePaxPricing: true };
+      console.log("paramerter", parameter);
+
+      const data = await postDataBookingDetails(parameter);
+
+      setTotalpriceinfo(data?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail);
+    } catch (err) {
+      console.error("error caused", err);
+
+      if (err?.response?.data?.errors?.length) {
+        const firstError = err.response.data.errors[0];
+        const message = firstError?.message || "An unknown error occurred.";
+        setError(message);
+      } else if (err?.message) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   //for rounter when it is error
   const searchTickets = () => {
@@ -246,36 +286,46 @@ const page = () => {
             </div>
           </section>
 
-          {/* {loading?(<BookingSkeleton />):(<>  </>)} */}
-          <section className="section-box  background-card">
-            <div className="container pt-1">
-              <div className="row">
-                <div className="">
-                  <Alldetails  />
-                </div>
+          {loading ? (
+            <BookingSkeleton />
+          ) : (
+            <section className="section-box  background-card">
+              <div className="container pt-1">
+                <div className="row">
+                  <div className="">
+                    <Alldetails totalpricee={totalPriceinfo} />
+                  </div>
 
-                <div className=" mt-20">
-                  <div className="booking-form add_sticky">
-                    <div class="head-booking-form">
-                      <p class="text-xl-bold neutral-1000">Fare Summary</p>
+                  <div className=" mt-20">
+                    <div className="booking-form add_sticky">
+                      <div class="head-booking-form">
+                        <p class="text-xl-bold neutral-1000">Fare Summary</p>
+                      </div>
+                      <BookingForm totalpricee={totalPriceinfo} />
                     </div>
-                    <BookingForm totalpricee={totalPriceinfo} />
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
-          {/* {error && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                        <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
-                          <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
-                                 
-                            <button className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition" onClick={searchTickets}>
-                           Ok, Got It
-                           </button>
-                                
-                              </div>
-                            </div>} */}
+          {/* {error && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+                <p className="text-red-600 mb-4 font-semibold">
+                  Error: {error}
+                </p>
+
+                <button
+                  className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition"
+                  onClick={searchTickets}
+                >
+                  Ok, Got It
+                </button>
+              </div>
+            </div>
+          )} */}
+
         </main>
       </Layout>
     </>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import dayjs from "dayjs";
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import type { RadioChangeEvent } from "antd";
 import { Radio } from "antd";
 import "./ticketCard1.css";
@@ -14,6 +14,7 @@ export default function DomesticRoundTripTicketCard({
 }: any) {
   const { getCookie } = useContext(AppContext);
   const tripType = getCookie("gy_triptype");
+  const [showAllFares, setShowAllFares] = useState(false);
 
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
@@ -34,6 +35,30 @@ export default function DomesticRoundTripTicketCard({
     console.log("the value is", value);
   };
 
+  const [adultCount, setAdultCount] = useState(0);
+  const [childCount, setChildCount] = useState(0);
+  const [infantCount, setInfantCount] = useState(0);
+  useEffect(() => {
+    if (
+      getCookie("gy_adult") !== undefined &&
+      getCookie("gy_adult") !== "Nan"
+    ) {
+      setAdultCount(getCookie("gy_adult"));
+    }
+    if (
+      getCookie("gy_child") !== undefined &&
+      getCookie("gy_child") !== "Nan"
+    ) {
+      setChildCount(getCookie("gy_child"));
+    }
+    if (
+      getCookie("gy_infant") !== undefined &&
+      getCookie("gy_infant") !== "Nan"
+    ) {
+      setInfantCount(getCookie("gy_infant"));
+    }
+  }, []);
+
   return (
     <>
       <div>
@@ -42,7 +67,22 @@ export default function DomesticRoundTripTicketCard({
           <div style={{ width: "55%" }}>
             {ticket.sI.map((segment: any, index: number) => (
               <div className="flex justify-evenly">
-                <div className="air_detailes">{segment["fD"].aI.name}</div>
+                <div
+                  className="air_detailes"
+                  style={{ width: "unset", top: index === 0 ? "0" : "49%" }}
+                >
+                  <div className="flex items-center justify-center">
+                    <img
+                      style={{ width: "35px", height: "35px", padding: "5px" }}
+                      src={`/assets/imgs/airlines/${segment[
+                        "fD"
+                      ].aI.code.toLowerCase()}.png`}
+                    />
+                    <div style={{ fontSize: "10px" }}>
+                      {segment["fD"].aI.name}
+                    </div>
+                  </div>
+                </div>
                 <div className="flight-route flight-route-type-2 city1">
                   <div className="flight-route-1">
                     <div className="flight-name">
@@ -89,7 +129,7 @@ export default function DomesticRoundTripTicketCard({
                       <p className="text-sm-medium neutral-500 totalduration">
                         {" "}
                         {segment["stops"] > 0
-                          ? segment["stops"]`stops`
+                          ? `${segment["stops"]}stops`
                           : "non stop"}{" "}
                       </p>
                     </div>
@@ -129,7 +169,10 @@ export default function DomesticRoundTripTicketCard({
               value={value}
               className="fare-options flex flex-col gap-2  w-full"
             >
-              {ticket.totalPriceList.map((e: any, i: number) => {
+              {(showAllFares
+                ? ticket.totalPriceList
+                : ticket.totalPriceList.slice(0, 2)
+              ).map((e: any, i: number) => {
                 return (
                   <Radio key={i} value={i} className="w-full radiocomp">
                     <div
@@ -139,9 +182,43 @@ export default function DomesticRoundTripTicketCard({
                       <div className="flex flex-row gap-2 items-center">
                         <div className="text-lg font-bold text-gray-800 price">
                           ₹
-                          {new Intl.NumberFormat("en-IN").format(
+                          {/* {new Intl.NumberFormat("en-IN").format(
                             e.fd.ADULT.fC.BF
-                          )}
+                          )} */}
+                          {(() => {
+                            let adultCost = 0;
+                            let childCost = 0;
+                            let infantCost = 0;
+                            if (e?.fd?.ADULT) {
+                              if (
+                                getCookie("gy_adult") !== undefined &&
+                                getCookie("gy_adult") !== "Nan"
+                              ) {
+                                adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
+                              }
+                            }
+                            if (e?.fd?.CHILD) {
+                              if (
+                                getCookie("gy_child") !== undefined &&
+                                getCookie("gy_child") !== "Nan"
+                              ) {
+                                childCost = childCount * e?.fd?.CHILD?.fC?.NF;
+                              }
+                            }
+                            if (e?.fd?.INFANT) {
+                              if (
+                                getCookie("gy_infant") !== undefined &&
+                                getCookie("gy_infant") !== "Nan"
+                              ) {
+                                infantCost =
+                                  infantCount * e?.fd?.INFANT?.fC?.NF;
+                              }
+                            }
+
+                            return new Intl.NumberFormat("en-IN").format(
+                              adultCost + childCost + infantCost
+                            );
+                          })()}
                         </div>
                         <span
                           className=" fareidentifier  text-xs font-bold"
@@ -168,6 +245,17 @@ export default function DomesticRoundTripTicketCard({
                   </Radio>
                 );
               })}
+              {ticket.totalPriceList.length > 2 && (
+                <button
+                  className="view-more-txt"
+                  style={{ textAlign: "right", fontSize: "10px"}}
+                  onClick={() => {
+                    setShowAllFares((prev) => !prev);
+                  }}
+                >
+                  {showAllFares ? "(-) View Less" : "(+) View More"}
+                </button>
+              )}
             </Radio.Group>
           </div>
 

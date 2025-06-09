@@ -6,6 +6,7 @@ import {
   postDataFareDetails,
   postDataFlightDetails,
   postDataTJBookingAir,
+  postFareValidate,
   postData,
 } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
@@ -16,7 +17,6 @@ import { useContext, useEffect, useState } from "react";
 import { Tabs } from "antd";
 
 // import "./style.css"
-
 
 import { format } from "date-fns";
 import * as React from "react";
@@ -118,7 +118,7 @@ const Page = () => {
         const firstError = err.response.data.errors[0];
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
-        setError(`${message}`); 
+        setError(`${message}`);
 
         console.log("API error message:", message);
         console.log("Error details:", details);
@@ -381,6 +381,7 @@ const Page = () => {
     let children = getCookie("gy_child");
     let cabinType = getCookie("gy_class");
     let departDate = getCookie("gy_trd");
+    let returnDate = getCookie("gy_return");
 
     const mydata = {
       departureFrom: departureFrom,
@@ -506,10 +507,12 @@ const Page = () => {
                             ))}
                           <p>
                             ₹
-                            {
-                              fareRulesData.fareRuleInformation.tfr
-                                .CANCELLATION[0].amount
-                            }
+                            {fareRulesData?.fareRuleInformation?.tfr
+                              ?.CANCELLATION?.[0]?.amount
+                              ? fareRulesData?.fareRuleInformation?.tfr
+                                  ?.CANCELLATION?.[0]?.amount
+                              : fareRulesData?.fareRuleInformation?.tfr
+                                  ?.CANCELLATION?.[0]?.additionalFee}
                           </p>
                         </>
                       ) : null}
@@ -519,10 +522,12 @@ const Page = () => {
                   <p>
                     {" "}
                     ₹
-                    {
-                      fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                        ?.amount
-                    }{" "}
+                    {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                      ?.amount
+                      ? fareRulesData?.fareRuleInformation?.tfr
+                          ?.CANCELLATION?.[0]?.amount
+                      : fareRulesData?.fareRuleInformation?.tfr
+                          ?.CANCELLATION?.[0]?.additionalFee}{" "}
                   </p>
                 )}
               </div>
@@ -585,13 +590,26 @@ const Page = () => {
                             .map((line, index) => (
                               <div key={index}>{line.trim()}</div>
                             ))}
-                          <p>₹{dateChange?.amount}</p>
+                          <p>
+                            ₹
+                            {dateChange?.amount
+                              ? dateChange?.amount
+                              : dateChange?.additionalFee}
+                          </p>
                         </>
                       ) : null}
                     </p>
                   );
                 } else {
-                  return <p> ₹{dateChange?.amount}</p>;
+                  return (
+                    <p>
+                      {" "}
+                      ₹
+                      {dateChange?.amount
+                        ? dateChange?.amount
+                        : dateChange?.additionalFee}
+                    </p>
+                  );
                 }
               })()}
             </div>
@@ -731,7 +749,23 @@ const Page = () => {
       console.log("loadDataBook =========== ", result);
       router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
     } catch (err) {
-      console.error("Error while fetching flight data:", err);
+      console.error("Error while fetching flight data 1 :", err);
+
+      if (err?.response?.data?.errors?.length) {
+        const firstError = err.response.data.errors[0];
+        const message = firstError?.message || "An unknown error occurred.";
+        const details = firstError?.details ? ` - ${firstError.details}` : "";
+        setError(`${message}`);
+
+        console.log("API error message:", message);
+        console.log("Error details:", details);
+        console.log("Error status code:", err.response.status);
+      } else if (err?.message) {
+        setError(err.message);
+        console.log("Generic error message:", err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
 
       // Optionally, you can show an error message to the user here
     }
@@ -790,14 +824,17 @@ const Page = () => {
           },
         };
         console.log("traveelerinfo", parameter.travellerInfo);
-        
+
         const saveBookingId = async () => {
           const reqSaveBookingId = {
             booking_id: bookingId,
-            phone: number.number
+            phone: number.number,
           };
           console.log("reqSaveBookingId === > ", reqSaveBookingId);
-          const result = await postData("travelogy/flight/save-booking",reqSaveBookingId);
+          const result = await postData(
+            "travelogy/flight/save-booking",
+            reqSaveBookingId
+          );
           console.log("saveBookingId result === > ", result);
         };
         saveBookingId();
@@ -805,6 +842,49 @@ const Page = () => {
         loadDataBook(parameter);
       } else {
         console.error("Adult Is empty");
+      }
+    } else {
+      // Handle case when totalpricee is not set
+      console.error("Total price is not set");
+    }
+  };
+
+  const handleHoldBooking = () => {
+    console.log("handleHoldBooking =========== ");
+
+    console.log("traveelers", travellers);
+    console.log("totalprice bookingid", totalprice, bookingId);
+    if (Array.isArray(travellers) && travellers.length > 0) {
+      if (bookingId) {
+        // handlePayment();
+        // openNotificationWithIcon('success');
+        // Build the parameter object without extra curly braces
+        const parameter = {
+          bookingId: bookingId,
+          travellerInfo: travellers,
+          deliveryInfo: {
+            emails: [email],
+            contacts: [`${number.code}${number.number}`],
+          },
+        };
+
+        const saveBookingId = async () => {
+          const reqSaveBookingId = {
+            booking_id: bookingId,
+            phone: number.number,
+          };
+          console.log("reqSaveBookingId === > ", reqSaveBookingId);
+          const result = await postData(
+            "travelogy/flight/save-booking",
+            reqSaveBookingId
+          );
+          console.log("saveBookingId result === > ", result);
+        };
+        saveBookingId();
+
+        loadDataBook(parameter);
+      } else {
+        console.error("bookingId Is empty");
       }
     } else {
       // Handle case when totalpricee is not set
@@ -1544,10 +1624,9 @@ const Page = () => {
                                         <span className="mx-1"></span>
                                       </p>
                                       <p className="text-secondary text-sm">
-                                        {
-                                          fareRulesData?.fareRuleInformation
-                                            ?.tfr?.CANCELLATION?.[0]?.policyInfo
-                                        }
+                                        {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo?.split("__nls__").filter(Boolean).map((line, index) => (
+                                            <div key={index}>{line.trim()}</div>
+                                          ))}
                                       </p>
                                     </div>
                                   </div>
@@ -1807,6 +1886,14 @@ const Page = () => {
                                 >
                                   Back
                                 </Link>
+                                {flightData?.conditions?.isBA === true && (
+                                  <div
+                                    onClick={handleHoldBooking}
+                                    className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
+                                  >
+                                    hold booking
+                                  </div>
+                                )}
                                 <div
                                   onClick={bookingReview}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"

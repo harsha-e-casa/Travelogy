@@ -1,0 +1,31 @@
+.apply-btn, .custom-radio .ant-radio-button-wrapper-checked {
+  background-color: #EB5B00 !important;
+  border-color: #EB5B00 !important;
+  color: white !important;
+}
+
+.apply-btn:hover, .custom-radio .ant-radio-button-wrapper:hover {
+  background-color: #f46f1a !important;
+  border-color: #f46f1a !important;
+  color: white !important;
+}
+
+.passenger-details {
+    z-index: 10;
+    padding: 10px;
+    border: 1px solid orange;
+}
+
+.view-more-txt {
+    color:  #EB5B00 !important;
+    text-align: right;
+    font-size: 10px;
+    width: 38%;
+    margin-left: 40%;
+    border-radius: 18px;
+}
+
+.view-more-txt:hover {
+    color:  white !important;
+    background-color: #f46f1a !important;;
+}
