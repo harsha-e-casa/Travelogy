@@ -277,7 +277,11 @@ const EngineTabs = ({ active_border }) => {
   useEffect(() => {
     setCookie("gy_triptype", selectedPlan);
 
-    if (datedep && datedepr && selectedPlan === "round-trip") {
+    if (
+      datedep &&
+      datedepr &&
+      (selectedPlan === "round-trip" || selectedPlan === "multi-city")
+    ) {
       const formattedDate = dayjs(datedep);
       const formattedDateR = dayjs(datedepr);
       setCookie("gy_trd", formattedDate.format("YYYY-MM-DD"));
@@ -323,38 +327,12 @@ const EngineTabs = ({ active_border }) => {
   };
 
   return (
-    // <div className="tabs">
-    //   <div className="tab active">
-    //     <img  src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
-    //     <span>Flights</span>
-    //   </div>
-    //   <div className="tab">
-    //     <img  src="/assets/imgs/travel_16190539.svg" alt="Hotels" />
-    //     <span>Hotels</span>
-    //   </div>
-    //   <div className="tab">
-    //     <img  src="/assets/imgs/duty-free_2664702.svg" alt="Holiday" />
-    //     <span>Holiday package</span>
-    //   </div>
-    //   <div className="tab">
-    //     <img  src="/assets/imgs/safe-flight_1585574.svg" alt="Insurance" />
-    //     <span>Travel Insurance</span>
-    //   </div>
-    //   <div className="tab">
-    //     <img  src="/assets/imgs/passport_1257113.svg" alt="Visa" />
-    //     <span>Visa</span>
-    //   </div>
-    // </div>
-
-    <section
-      // className="section_main_book_dash_01 relative_MainBanner mb-60"
-      className="section_main_book_dash_01 relative_MainBanner "
-    >
+    <section className="section_main_book_dash_01 relative_MainBanner ">
+      
       <div
         className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40"
         onClick={(e) => e.stopPropagation()}
       >
-        {/*<div className="grid_main_section_2 w_90 rounded-md h_80 fixed z__9 top_banner_eng">*/}
         <SearchEngHeader active_border={active_border} />
 
         <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
@@ -374,34 +352,7 @@ const EngineTabs = ({ active_border }) => {
           setSelectedPlan={setSelectedPlan}
         />
 
-        {/*  <div className="plans mt-35 mb_8 ml_10">
-      <label className="plan basic-plan" htmlFor="basic">
-        <input defaultChecked={false} type="radio" name="plan" id="basic" />
-        <div className="plan-content">
-          <div className="plan-details">
-            <span>One way</span>
-          </div>
-        </div>
-      </label>
-      <label className="plan complete-plan" htmlFor="complete">
-        <input type="radio" defaultChecked={true} id="complete" name="plan" />
-        <div className="plan-content">
-          <div className="plan-details">
-            <span>Round Trip</span>
-          </div>
-        </div>
-      </label>
-      <label className="plan complete-plan" htmlFor="complete2">
-        <input type="radio" id="complete2" name="plan" />
-        <div className="plan-content">
-          <div className="plan-details">
-            <span>Multi City</span>
-          </div>
-        </div>
-      </label>
-    </div>*/}
-
-        <div className="custom-grid justify-center">
+        <div className="custom-grid justify-center 1">
           <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
             <div className="" onClick={openfrom}>
               <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
@@ -427,7 +378,6 @@ const EngineTabs = ({ active_border }) => {
           </div>
 
           <div className="searchReplaceLocation">
-            {/*<svg onClick={locationSwap} xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24"><path fill="#e88400" d="M12.005 22.003c-5.523 0-10-4.477-10-10s4.477-10 10-10s10 4.477 10 10s-4.477 10-10 10m0-2a8 8 0 1 0 0-16a8 8 0 0 0 0 16m-5-7h9v2h-4v3zm5-4v-3l5 5h-9v-2z"/></svg>*/}
             <svg
               onClick={locationSwap}
               xmlns="http://www.w3.org/2000/svg"
@@ -440,7 +390,6 @@ const EngineTabs = ({ active_border }) => {
                 d="M4.993 11.016a1 1 0 0 1-.531-1.848L7.15 6.48a1 1 0 0 1 1.414 1.415l-1.121 1.12h7.55a1 1 0 0 1 0 2zm14.014 1.969a1 1 0 0 1 .531 1.848L16.85 17.52a1 1 0 1 1-1.414-1.415l1.121-1.12h-7.55a1 1 0 1 1 0-2z"
               />
             </svg>
-            {/*<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 32 32"><path fill="#e88400" d="m21.786 12.876l7.556-4.363l-7.556-4.363v2.598H2.813v3.5h18.973zm-11.418 5.248l-7.556 4.362l7.556 4.362V24.25h18.974v-3.5H10.368z"/></svg>*/}
           </div>
 
           <div className="text_start b_right_2px g_w_2 css_pointer relative ">
@@ -482,31 +431,11 @@ const EngineTabs = ({ active_border }) => {
                   </span>{" "}
                   <sub className="sub_txt1">{dd_monthStr}</sub>{" "}
                 </div>
-
-                {/* <div class="mt-6">
-    Departure Date
-  </div> */}
                 <div className="text_start mt-0 flex">
                   <div className="txt_travelSelect3 txt_travelFrom">
                     {" "}
                     Departure Date
                   </div>
-
-                  {/*<div className="">
-                {" "}
-                <svg
-                  className="-mt-2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width={34}
-                  height={34}
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    fill="#ffac33"
-                    d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z"
-                  />
-                </svg>
-              </div>*/}
                 </div>
               </div>
             </div>
@@ -518,7 +447,7 @@ const EngineTabs = ({ active_border }) => {
               />
             ) : null}
           </div>
-          {selectedPlan === "round-trip" ? (
+          {selectedPlan === "round-trip" || selectedPlan === "multi-city" ? (
             <div className="text_start b_right_2px g_w_4 css_pointer">
               <div
                 className="flex pl-6 justify_content_space"
@@ -575,24 +504,10 @@ const EngineTabs = ({ active_border }) => {
                 {" "}
                 Traveller / Class
               </div>
-              {/* <div className="-mt-1">
-            {" "}
-            <svg
-              className="-mt-0"
-              xmlns="http://www.w3.org/2000/svg"
-              width={34}
-              height={34}
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="#ffac33"
-                d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z"
-              />
-            </svg>
-          </div>*/}
             </div>
           </div>
         </div>
+
         <div className="">
           <PassengerType
             selectedPassengerType={selectedPassengerType}
@@ -619,7 +534,7 @@ const EngineTabs = ({ active_border }) => {
           handleChangeClass={handleChangeClass}
           travellerClass={travellerClass}
           totalPassenderCount={totalPassenderCount}
-          specificStyle={{ right: "0" }}
+          specificStyle={{ right: "0", top: "" }}
           setTravellerClass={setTravellerClass}
         />
       </div>

@@ -45,7 +45,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
       </label>
 
       {/* Multi City Plan */}
-    {/*  <label className="plan complete-plan" htmlFor="complete2">
+     <label className="plan complete-plan" htmlFor="complete2">
         <input
           type="radio"
           id="complete2"
@@ -59,7 +59,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
             <span>Multi City</span>
           </div>
         </div>
-      </label>*/}
+      </label>
     </div>
   );
 };
