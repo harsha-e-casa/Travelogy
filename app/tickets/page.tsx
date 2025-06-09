@@ -111,6 +111,7 @@ export default function Tickets() {
   const arrivalToSr = getCookie('gy_aa_str');
   const tripType = getCookie('gy_triptype');
   const passengerType = getCookie('gy_passender_type')
+ const isDirectFlight = (getCookie('gy_direct_flight') || 'false').toLowerCase() === 'true';
   const infant = getCookie('gy_infant')
 
 
@@ -217,6 +218,12 @@ export default function Tickets() {
       ];
     }
 
+    const mapPassengerType = {
+      "SENIOR CITIZEN": "SENIOR_CITIZEN",
+      "STUDENT": "STUDENT",
+      "REGULAR": "REGULAR"
+    }
+
     // console.log("tripBasedRouteInfo == ",tripBasedRouteInfo);
 
     // Build the parameter object without extra curly braces
@@ -230,11 +237,12 @@ export default function Tickets() {
         },
         routeInfos: tripBasedRouteInfo,
         "searchModifiers": {
-          // "pfts": [
-          //   passengerType
-          // ],
-          "isDirectFlight": false,
-          "isConnectingFlight": false,
+          "pfts": [
+            mapPassengerType[passengerType]
+          ],
+        
+            isDirectFlight: isDirectFlight, // always true if isDirectFlight is false
+            isConnectingFlight: false
           // "sourceId": 0,
           // "pnrCreditInfo": {
           //   "pnr": ""

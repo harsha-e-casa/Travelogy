@@ -11,11 +11,13 @@ import Link from 'next/link'
 import { TravellerForm } from './TravellerForm';
 import { AppContext } from '../../util/AppContext';
 import { useSearchParams, useRouter } from 'next/navigation'
+import "./DirectFlight.jsx"
 
 import {
   PlusOutlined,
   MinusOutlined
 } from '@ant-design/icons';
+import DirectFlight from "./DirectFlight.jsx";
 
 
 
@@ -82,7 +84,7 @@ const EngineTabs = ({ active_border }) => {
     }
   }, [countinfant])
   // State to store the selected value
-  const [travellerClass, setTravellerClass] = useState('a'); // Default value is 'a'
+  const [travellerClass, setTravellerClass] = useState('b'); // Default value is 'a'
 
   const router = useRouter();
   useEffect(() => {
@@ -154,6 +156,7 @@ const EngineTabs = ({ active_border }) => {
 
   const [selectedPlan, setSelectedPlan] = useState('one-way');
   const [ selectedPassengerType, setSelectedPassengerType ] = useState('REGULAR')
+    const [isDirectFlight, setIsDirectFlight] = useState(false);
 
   const openfrom = () => {
     if (showSearchState) {
@@ -267,6 +270,10 @@ const EngineTabs = ({ active_border }) => {
     setCookie('gy_passender_type', selectedPassengerType);
   }, [selectedPassengerType]);
 
+   
+useEffect(() => {
+  setCookie('gy_direct_flight', isDirectFlight ? 'true' : 'false');
+}, [isDirectFlight]);
   useEffect(() => {
 
     if (datedep) {
@@ -363,15 +370,15 @@ const EngineTabs = ({ active_border }) => {
 
     <section
       // className="section_main_book_dash_01 relative_MainBanner mb-60"
-      className="section_main_book_dash_01 relative_MainBanner"
+      className="section_main_book_dash_01 relative_MainBanner "
     >
 
 
-      <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40" onClick={(e) => e.stopPropagation()}>
+      <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40 " onClick={(e) => e.stopPropagation()}>
         {/*<div className="grid_main_section_2 w_90 rounded-md h_80 fixed z__9 top_banner_eng">*/}
         <SearchEngHeader active_border={active_border} />
 
-        <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
+        <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto ">
           <div onClick={searchTickets} className="search_btn_font text-white uppercase tracking-wide cursor-pointer">
             {" "} Search
           </div>
@@ -409,11 +416,11 @@ const EngineTabs = ({ active_border }) => {
     </div>*/}
 
 
-        <div className="custom-grid justify-center">
+        <div className="custom-grid justify-center  ">
 
 
 
-          <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
+          <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1  ">
 
 
 
@@ -432,7 +439,7 @@ const EngineTabs = ({ active_border }) => {
             </div>
 
             {showSearchState ?
-              <div className="searchFfromSelect searchFfromSelect_1">
+              <div className="searchFfromSelect searchFfromSelect_1 ">
                 <AppListSearch operEngLocation={openfrom} setSelectFrom={setSelectFrom} setSelectFromSub={setSelectFromSub} />
               </div>
               : null}
@@ -446,7 +453,7 @@ const EngineTabs = ({ active_border }) => {
             {/*<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 32 32"><path fill="#e88400" d="m21.786 12.876l7.556-4.363l-7.556-4.363v2.598H2.813v3.5h18.973zm-11.418 5.248l-7.556 4.362l7.556 4.362V24.25h18.974v-3.5H10.368z"/></svg>*/}
           </div>
 
-          <div className="text_start b_right_2px g_w_2 css_pointer relative">
+          <div className="text_start b_right_2px g_w_2 css_pointer relative ">
             <div className="" onClick={openTo}>
               <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">
                 To
@@ -524,7 +531,7 @@ const EngineTabs = ({ active_border }) => {
 
           </div>
           {selectedPlan === 'round-trip' ? (
-            <div className="text_start b_right_2px g_w_4 css_pointer">
+            <div className="text_start b_right_2px g_w_4 css_pointer ">
               <div className="flex pl-6 justify_content_space" onClick={openToDateRangeR}>
                 <div className="ml__txt">
                   <div className="pt-2 pb-2">{ddr_strdate}</div>
@@ -548,7 +555,7 @@ const EngineTabs = ({ active_border }) => {
           ) : null}
 
 
-          <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2" onClick={openTraveller}>
+          <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2  " onClick={openTraveller}>
             <div className="text_start flex pl-6 slider-labels">
               <div className="">
                 <span className="text-7xl font-bold text-gray-900"> {adult + countchildren} </span>
@@ -580,8 +587,13 @@ const EngineTabs = ({ active_border }) => {
 
           </div>
         </div>
-
-        <PassengerType selectedPassengerType={selectedPassengerType} setSelectedPassengerType={setSelectedPassengerType} />
+        <div className="">
+  <PassengerType selectedPassengerType={selectedPassengerType} setSelectedPassengerType={setSelectedPassengerType} />
+        <DirectFlight  isDirectFlight={isDirectFlight}
+        setIsDirectFlight={setIsDirectFlight} />
+        </div>
+      
+        
         
         <TravellerForm showTraveller={showTraveller} adult={adult}
           opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}

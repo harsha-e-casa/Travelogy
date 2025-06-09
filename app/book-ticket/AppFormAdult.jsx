@@ -3,7 +3,7 @@ import { Form, Input, Select, Row, Col } from 'antd';
 
 const { Option } = Select;
 
-const AppFormAdult = ({ form, index }) => {
+const AppFormAdult = ({ form, index, showDocumentField }) => {
   return (
     <Form form={form} name={`adultForm-${index}`} layout="vertical" autoComplete="off">
       <Row gutter={16}>
@@ -47,7 +47,18 @@ const AppFormAdult = ({ form, index }) => {
           </Form.Item>
         </Col>
 
-        
+        {showDocumentField && (
+          <Col span={9}>
+            <Form.Item
+              name={`documentId-${index}`}
+              label="Document ID"
+              hasFeedback
+              rules={[{ required: true, message: "Please enter Document ID" }]}
+            >
+              <Input className="h-10 flex flex-row justify-between items-center" placeholder="Enter your Document ID" />
+            </Form.Item>
+          </Col>
+        )}
       </Row>
     </Form>
   );

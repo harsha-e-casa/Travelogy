@@ -129,6 +129,8 @@ export default function BookTicket() {
 
   const [travellerInfoV, setTravellerInfoV] = useState(null);
 
+
+   const [baggageinfo, setBaggageinfo] = useState([]);
   const fetchFlights = async (priceId: string) => {
     setLoading(true);
     setError(null);
@@ -169,7 +171,7 @@ export default function BookTicket() {
       console.log("data from page.tsx",data);
 
       setApiData(data);
-      console.log(apiData)
+      console.log("apidata from book-ticket page.tsx",apiData)
 
       const firstTrip = data.tripInfos?.[0];
       setBookingId(data.bookingId);
@@ -270,7 +272,7 @@ export default function BookTicket() {
   },[apiData])
 
   const searchTickets = () => {
-    let departureFrom = getCookie("gy_da");
+    let departureFrom = Cookieget("gy_da");
     let arrivalTo = getCookie("gy_aa");
     let adults = getCookie("gy_adult");
     let children = getCookie("gy_child");
@@ -935,140 +937,197 @@ export default function BookTicket() {
 // }
 
 
-const segmentinfo =apiData.tripInfos
-  .flatMap(trip => trip.sI || [])      
+const segmentinfo =apiData.tripInfos.flatMap(trip => trip.sI || [])  
 
-const segmentId=segmentinfo      
-  .map(segment => segment.id).join(",")  
-  
 
-      const groupedAdults = [];
+const segmentId = segmentinfo.map(segment => segment.id).join(",");
+
+let baggageinfo=[]
+
+
+const groupedAdults = [];
+
 for (let i = 0; i < numAdults; i++) {
   const ti = formValues[`select-${i}`];
   const fN = formValues[`fname-${i}`];
   const lN = formValues[`lname-${i}`];
-  const baggageCode = formValues[`adultBaggage-${i}`]; 
-  const mealCode=formValues[`adultMeal-${i}`];
-
-  const segmentKey = segmentId; 
+    const documentId = formValues[`documentId-${i}`];
 
   if (ti && fN && lN) {
     const traveller = {
       ti,
       fN,
       lN,
-      pt: "ADULT"
+      pt: "ADULT",
+      
     };
 
-    if (baggageCode) {
-      traveller.ssrBaggageInfos = [
-        {
-          key: segmentKey,
-          code: baggageCode
-        }
-      ];
+     if (documentId) {
+      traveller.di = documentId; 
     }
 
-    
+    // Loop through each flight segment
+    const baggageInfos = [];
+    const mealInfos = [];
 
-    if(mealCode){
-        traveller.ssrMealInfos = [
-        {
-          key: segmentId,
-          code: mealCode
-        }
-      ];
+    segmentinfo.forEach((segment, flightIndex) => {
+      const baggageCode = formValues[`adultBaggage-${flightIndex}-${i}`];
+      
+if (baggageCode) {
+  // Find the baggage option from segment SSR baggage options
+  if (baggageCode) {
+  const baggageOption = segment.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+  console.log("Found baggageOption:", baggageOption);
+
+  baggageinfo.push({
+    key: segment.id,
+    code: baggageCode,
+    amount: baggageOption?.amount || 0,
+  });
+  
+
+  console.log("the baggage info array now:", baggageinfo);
+}
+}
+      const mealCode = formValues[`adultMeal-${flightIndex}-${i}`];
+
+      if (baggageCode) {
+        baggageInfos.push({
+          key: segment.id,
+          code: baggageCode,
+        });
+      }
+
+      if (mealCode) {
+        mealInfos.push({
+          key: segment.id,
+          code: mealCode,
+        });
+      }
+    });
+
+    if (baggageInfos.length > 0) {
+      traveller.ssrBaggageInfos = baggageInfos;
     }
+
+    if (mealInfos.length > 0) {
+      traveller.ssrMealInfos = mealInfos;
+    }
+
     groupedAdults.push(traveller);
   }
-
-
-
-
 }
+setBaggageinfo(baggageinfo);
+setCookie("baggageinfo", JSON.stringify(baggageinfo), {
+          expires: 7,
+        });
 console.log("grouped adults",groupedAdults)
 
 
         // Group children
-        const groupedChildren = [];
+       const groupedChildren = [];
+
 for (let i = 0; i < numChild; i++) {
   const ti = formValues[`childselect-${i}`];
   const fN = formValues[`childName-${i}`];
   const lN = formValues[`childlast-${i}`];
-  const baggageCode = formValues[`childBaggage-${i}`];
-  const mealCode=formValues[`childMeal-${i}`];
+
 
   if (ti && fN && lN) {
     const traveller = {
       ti,
       fN,
       lN,
-      pt: "CHILD"
+      pt: "CHILD",
     };
 
-    if (baggageCode) {
-      traveller.ssrBaggageInfos = [
-        {
-          key: segmentId,
-          code: baggageCode
-        }
-      ];
+    const baggageInfos = [];
+    const mealInfos = [];
+
+    segmentinfo.forEach((segment, flightIndex) => {
+      const baggageCode = formValues[`childBaggage-${flightIndex}-${i}`];
+      const mealCode = formValues[`childMeal-${flightIndex}-${i}`];
+
+      if (baggageCode) {
+        baggageInfos.push({
+          key: segment.id,
+          code: baggageCode,
+        });
+      }
+
+      if (mealCode) {
+        mealInfos.push({
+          key: segment.id,
+          code: mealCode,
+        });
+      }
+    });
+
+    if (baggageInfos.length > 0) {
+      traveller.ssrBaggageInfos = baggageInfos;
     }
-    if(mealCode){
-        traveller.ssrMealInfos = [
-        {
-          key: segmentId,
-          code: mealCode
-        }
-      ];
+
+    if (mealInfos.length > 0) {
+      traveller.ssrMealInfos = mealInfos;
     }
 
     groupedChildren.push(traveller);
   }
 }
 
-
         // Group infants
-      const groupedInfants = [];
-        for (let i = 0; i < numInfants; i++) {
-          const ti = formValues[`infantselect-${i}`];
-          const fN = formValues[`infantName-${i}`];
-          const lN = formValues[`infantLast-${i}`];
-          const rawDob = formValues[`infantDOB-${i}`];
-          console.log("sssssss ",rawDob)
-          const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
-           const baggageCode = formValues[`infantBaggage-${i}`];
-           const mealCode=formValues[`infantMeal-${i}`]; 
-             
-           if (ti && fN && lN) {
+     const groupedInfants = [];
+
+for (let i = 0; i < numInfants; i++) {
+  const ti = formValues[`infantselect-${i}`];
+  const fN = formValues[`infantName-${i}`];
+  const lN = formValues[`infantLast-${i}`];
+  const rawDob = formValues[`infantDOB-${i}`];
+  const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
+
+  if (ti && fN && lN && dob) {
     const traveller = {
       ti,
       fN,
       lN,
       pt: "INFANT",
-      dob
+      dob,
     };
 
-    if (baggageCode) {
-      traveller.ssrBaggageInfos = [
-        {
-          key: segmentId,
-          code: baggageCode
-        }
-      ];
-    }
-    if(mealCode){
-        traveller.ssrMealInfos = [
-        {
-          key: segmentId,
-          code: mealCode
-        }
-      ];
+    const baggageInfos = [];
+    const mealInfos = [];
+
+    segmentinfo.forEach((segment, flightIndex) => {
+      const baggageCode = formValues[`infantBaggage-${flightIndex}-${i}`];
+      const mealCode = formValues[`infantMeal-${flightIndex}-${i}`];
+
+      if (baggageCode) {
+        baggageInfos.push({
+          key: segment.id,
+          code: baggageCode,
+        });
+      }
+
+      if (mealCode) {
+        mealInfos.push({
+          key: segment.id,
+          code: mealCode,
+        });
+      }
+    });
+
+    if (baggageInfos.length > 0) {
+      traveller.ssrBaggageInfos = baggageInfos;
     }
 
-    groupedChildren.push(traveller);
+    if (mealInfos.length > 0) {
+      traveller.ssrMealInfos = mealInfos;
+    }
+
+    groupedInfants.push(traveller);
   }
-        }
+}
+
 
 
         
@@ -1488,6 +1547,7 @@ for (let i = 0; i < numChild; i++) {
                       <BookingForm
                         totalpricee={totalpricee}
                         segmentsPrice={segmentsPrice}
+                        baggageinfo={baggageinfo}
                       />
                     </div>
                   </div>
@@ -1755,6 +1815,7 @@ for (let i = 0; i < numChild; i++) {
                                           <AppFormAdult
                                             form={form}
                                             index={index}
+                                            showDocumentField={apiData?.conditions?.dc?.ida === true}
                                           />
                                         </div>
                                       )
@@ -1912,7 +1973,7 @@ for (let i = 0; i < numChild; i++) {
                             </a>
                           </div>
                           <AppFormCustomer form={form} />
-                         
+                         <div className="text-lg leading-6 font-bold text-gray-900 p-4">Add Meal and Baggage 
                          <div>
                               <div className="px-4 py-3 border_xcolor_1px">
                             <h2
@@ -1982,6 +2043,7 @@ for (let i = 0; i < numChild; i++) {
                                 </path>
                               </svg>
                             </a>
+                          </div>
                           </div>
                          </div>
 
