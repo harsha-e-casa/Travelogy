@@ -5,16 +5,19 @@ import SearchEngHeader from './SearchEngHeader';
 import AppListSearch from './AppListSearch';
 import AppDateRage from './AppDateRage';
 import { TripPlans } from './TripPlans';
+import { PassengerType } from './PassengerType';
 import dayjs from 'dayjs';
 import Link from 'next/link'
 import { TravellerForm } from './TravellerForm';
 import { AppContext } from '../../util/AppContext';
 import { useSearchParams, useRouter } from 'next/navigation'
+import "./DirectFlight.jsx"
 
 import {
   PlusOutlined,
   MinusOutlined
 } from '@ant-design/icons';
+import DirectFlight from "./DirectFlight.jsx";
 
 
 
@@ -62,6 +65,8 @@ const EngineTabs = ({ active_border }) => {
 
   const [adult, setAdult] = useState(1);
   const [countchildren, setcountChildren] = useState(0);
+  const [countinfant, setcountInfant] = useState(0);
+  const [totalPassenderCount, setTotalPassenderCount] = useState(adult + countchildren);
 
   useEffect(() => {
     if (getCookie('gy_adult') == undefined || getCookie('gy_adult') == 'Nan') {
@@ -73,8 +78,13 @@ const EngineTabs = ({ active_border }) => {
       setCookie('gy_child', 0)
     }
   }, [countchildren])
+  useEffect(() => {
+    if (getCookie('gy_infant') == undefined || getCookie('gy_infant') == 'Nan') {
+      setCookie('gy_infant', 0)
+    }
+  }, [countinfant])
   // State to store the selected value
-  const [travellerClass, setTravellerClass] = useState('a'); // Default value is 'a'
+  const [travellerClass, setTravellerClass] = useState('b'); // Default value is 'a'
 
   const router = useRouter();
   useEffect(() => {
@@ -96,11 +106,14 @@ const EngineTabs = ({ active_border }) => {
     let arrivalTo = getCookie('gy_aa')
     let adults = getCookie('gy_adult')
     let children = getCookie('gy_child')
+    let infant = getCookie('gy_infant')
     let cabinType = getCookie('gy_class')
     let departDate = getCookie('gy_trd')
+    let returnDate = getCookie('gy_return')
     let departureFromSr = getCookie('gy_da_str')
     let arrivalToSr = getCookie('gy_aa_str')
     let tripType = getCookie('gy_triptype')
+    let passengerType = getCookie('gy_passender_type')
 
 
     const mydata = {
@@ -108,12 +121,18 @@ const EngineTabs = ({ active_border }) => {
       arrivalTo: arrivalTo,
       adults: adults,
       children: children,
+      infant: infant,
       cabinType: cabinType,
       departDate: departDate,
       departureFromSr: departureFromSr,
       arrivalToSr: arrivalToSr,
-      tripType: tripType
+      tripType: tripType,
+      passengerType: passengerType
     };
+
+    if (returnDate != undefined || returnDate != 'Nan') {
+      mydata.returnDate = returnDate
+    }
 
     const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
@@ -136,6 +155,8 @@ const EngineTabs = ({ active_border }) => {
 
 
   const [selectedPlan, setSelectedPlan] = useState('one-way');
+  const [selectedPassengerType, setSelectedPassengerType] = useState('REGULAR')
+  const [isDirectFlight, setIsDirectFlight] = useState(false);
 
   const openfrom = () => {
     if (showSearchState) {
@@ -149,13 +170,22 @@ const EngineTabs = ({ active_border }) => {
   const clickMinus = () => {
     let adultCnt = adult - 1;
     setCookie('gy_adult', adultCnt);
+    if (adultCnt < countinfant) {
+      clickMinusinfant();
+    }
     setAdult(adultCnt); // Correct way to toggle the state
   }
 
+  useEffect(() => {
+    setTotalPassenderCount(adult + countchildren);
+  }, [adult, countchildren]);
+
   const clickPlus = () => {
     let adultMin = adult + 1;
-    setCookie('gy_adult', adultMin);
-    setAdult(adultMin); // Correct way to toggle the state
+    if (totalPassenderCount < 9) {
+      setCookie('gy_adult', adultMin);
+      setAdult(adultMin); // Correct way to toggle the state
+    }
   }
 
   const clickMinusChildren = () => {
@@ -163,10 +193,26 @@ const EngineTabs = ({ active_border }) => {
     setCookie('gy_child', childtMin);
     setcountChildren(childtMin); // Correct way to toggle the state
   }
+
   const clickPlusChildren = () => {
     let childtCnt = countchildren + 1;
-    setCookie('gy_child', childtCnt);
-    setcountChildren(childtCnt); // Correct way to toggle the state
+    if (totalPassenderCount < 9) {
+      setCookie('gy_child', childtCnt);
+      setcountChildren(childtCnt); // Correct way to toggle the state
+    }
+  }
+
+  const clickMinusinfant = () => {
+    let infantMin = countinfant - 1;
+    setCookie('gy_infant', infantMin);
+    setcountInfant(infantMin);
+  }
+  const clickPlusinfant = () => {
+    let infantCnt = countinfant + 1;
+    // if (adult >= infantCnt) {
+    setCookie('gy_infant', infantCnt);
+    setcountInfant(infantCnt);
+    // }
   }
 
   const openTraveller = () => {
@@ -220,7 +266,14 @@ const EngineTabs = ({ active_border }) => {
     setCookie('gy_aa_str', selectFromTo.trim());
   }, [selectFromTo]);
 
+  useEffect(() => {
+    setCookie('gy_passender_type', selectedPassengerType);
+  }, [selectedPassengerType]);
 
+
+  useEffect(() => {
+    setCookie('gy_direct_flight', isDirectFlight ? 'true' : 'false');
+  }, [isDirectFlight]);
   useEffect(() => {
 
     if (datedep) {
@@ -240,9 +293,11 @@ const EngineTabs = ({ active_border }) => {
 
     setCookie('gy_triptype', selectedPlan);
 
-    if (datedepr && selectedPlan === 'round-trip') {
+    if (datedep && datedepr && selectedPlan === 'round-trip') {
+      const formattedDate = dayjs(datedep)
       const formattedDateR = dayjs(datedepr)
-      setCookie('gy_trd', formattedDateR.format('YYYY-MM-DD'));
+      setCookie('gy_trd', formattedDate.format('YYYY-MM-DD'));
+      setCookie('gy_return', formattedDateR.format('YYYY-MM-DD'));
       setDdr_monthStr(formattedDateR.format('MMM')); // Format as string
       setDdr_strdate(formattedDateR.format('dddd')); // Format as string
       setDdr_date(formattedDateR.format('DD')); // Format as string
@@ -250,7 +305,7 @@ const EngineTabs = ({ active_border }) => {
 
     }
 
-  }, [datedepr, selectedPlan]);
+  }, [datedepr, selectedPlan, datedep]);
 
 
 
@@ -315,15 +370,15 @@ const EngineTabs = ({ active_border }) => {
 
     <section
       // className="section_main_book_dash_01 relative_MainBanner mb-60"
-      className="section_main_book_dash_01 relative_MainBanner"
+      className="section_main_book_dash_01 relative_MainBanner "
     >
 
 
-      <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40" onClick={(e) => e.stopPropagation()}>
+      <div className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40 " onClick={(e) => e.stopPropagation()}>
         {/*<div className="grid_main_section_2 w_90 rounded-md h_80 fixed z__9 top_banner_eng">*/}
         <SearchEngHeader active_border={active_border} />
 
-        <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
+        <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto ">
           <div onClick={searchTickets} className="search_btn_font text-white uppercase tracking-wide cursor-pointer">
             {" "} Search
           </div>
@@ -361,11 +416,11 @@ const EngineTabs = ({ active_border }) => {
     </div>*/}
 
 
-        <div className="custom-grid justify-center">
+        <div className="custom-grid justify-center  ">
 
 
 
-          <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
+          <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1  ">
 
 
 
@@ -384,7 +439,7 @@ const EngineTabs = ({ active_border }) => {
             </div>
 
             {showSearchState ?
-              <div className="searchFfromSelect searchFfromSelect_1">
+              <div className="searchFfromSelect searchFfromSelect_1 ">
                 <AppListSearch operEngLocation={openfrom} setSelectFrom={setSelectFrom} setSelectFromSub={setSelectFromSub} />
               </div>
               : null}
@@ -398,7 +453,7 @@ const EngineTabs = ({ active_border }) => {
             {/*<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 32 32"><path fill="#e88400" d="m21.786 12.876l7.556-4.363l-7.556-4.363v2.598H2.813v3.5h18.973zm-11.418 5.248l-7.556 4.362l7.556 4.362V24.25h18.974v-3.5H10.368z"/></svg>*/}
           </div>
 
-          <div className="text_start b_right_2px g_w_2 css_pointer relative">
+          <div className="text_start b_right_2px g_w_2 css_pointer relative ">
             <div className="" onClick={openTo}>
               <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">
                 To
@@ -476,7 +531,7 @@ const EngineTabs = ({ active_border }) => {
 
           </div>
           {selectedPlan === 'round-trip' ? (
-            <div className="text_start b_right_2px g_w_4 css_pointer">
+            <div className="text_start b_right_2px g_w_4 css_pointer ">
               <div className="flex pl-6 justify_content_space" onClick={openToDateRangeR}>
                 <div className="ml__txt">
                   <div className="pt-2 pb-2">{ddr_strdate}</div>
@@ -500,7 +555,7 @@ const EngineTabs = ({ active_border }) => {
           ) : null}
 
 
-          <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2" onClick={openTraveller}>
+          <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2  " onClick={openTraveller}>
             <div className="text_start flex pl-6 slider-labels">
               <div className="">
                 <span className="text-7xl font-bold text-gray-900"> {adult + countchildren} </span>
@@ -532,11 +587,18 @@ const EngineTabs = ({ active_border }) => {
 
           </div>
         </div>
+        <div className="">
+          <PassengerType selectedPassengerType={selectedPassengerType} setSelectedPassengerType={setSelectedPassengerType} />
+          <DirectFlight isDirectFlight={isDirectFlight}
+            setIsDirectFlight={setIsDirectFlight} />
+        </div>
+
+
 
         <TravellerForm showTraveller={showTraveller} adult={adult}
           opentrvForm={openTraveller} clickMinus={clickMinus} clickPlus={clickPlus}
           clickMinusChildren={clickMinusChildren} clickPlusChildren={clickPlusChildren}
-          countchildren={countchildren} handleChangeClass={handleChangeClass} travellerClass={travellerClass} />
+          countchildren={countchildren} countinfant={countinfant} clickMinusinfant={clickMinusinfant} clickPlusinfant={clickPlusinfant} handleChangeClass={handleChangeClass} travellerClass={travellerClass} totalPassenderCount={totalPassenderCount} />
 
       </div>
     </section>

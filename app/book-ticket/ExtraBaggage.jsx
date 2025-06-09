@@ -386,8 +386,10 @@ const ExtraBaggage=({numAdults,numChild,numInfants,apiData,form})=>{
 //   .filter(Boolean);                    // remove undefined/null values
 
  const tripInfos = apiData?.tripInfos || [];
-  const ssrInfo = tripInfos
+  const segmentinfo= tripInfos
     .flatMap((trip) => trip.sI || [])
+    console.log("segmentinfo from extra baggage",segmentinfo)
+    const ssrInfo=segmentinfo
     .map((segment) => segment?.ssrInfo)
     .filter(Boolean);
 
@@ -399,66 +401,70 @@ const hasBaggage = ssrInfo.some(e => Array.isArray(e.BAGGAGE) && e.BAGGAGE.lengt
 {hasBaggage?(<>
 
 <Form form={form} name="baggageForm" layout="vertical" autoComplete="off">
-      {/* ADULT BAGGAGE SELECTION */}
-      {Array.from({ length: numAdults }).map((_, index) => (
-        <div className="p-3 flex flex-row gap-5 items-center" key={`adult-${index}`}>
-          <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
-            ADULT {index + 1}
-          </span>
-          <Form.Item name={`adultBaggage-${index}`} style={{ marginBottom: 0 }}>
-            <Select className="h-10 w-100" placeholder="Add Baggage">
-              {ssrInfo.flatMap((e) =>
-                e.BAGGAGE?.map((bag) => (
-                  <Option key={bag.code} value={bag.code}>
-                    {bag.desc} - ₹{bag.amount}
-                  </Option>
-                )) || []
-              )}
-            </Select>
-          </Form.Item>
-        </div>
-      ))}
+  {segmentinfo.map((segment, flightIndex) => {
+    const baggageOptions = segment?.ssrInfo?.BAGGAGE || [];
 
-      {/* CHILD BAGGAGE SELECTION */}
-      {Array.from({ length: numChild }).map((_, index) => (
-        <div className="p-3 flex flex-row gap-5 items-center" key={`child-${index}`}>
-          <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
-            CHILD {index + 1}
-          </span>
-          <Form.Item name={`childBaggage-${index}`} style={{ marginBottom: 0 }}>
-            <Select className="h-10 w-100" placeholder="Add Baggage">
-              {ssrInfo.flatMap((e) =>
-                e.BAGGAGE?.map((bag) => (
-                  <Option key={bag.code} value={bag.code}>
-                    {bag.desc} - ₹{bag.amount}
-                  </Option>
-                )) || []
-              )}
-            </Select>
-          </Form.Item>
-        </div>
-      ))}
+    return (
+      <div key={`flight-${flightIndex}`} className="border-b pb-4 mb-4">
+        <h3 className="text-lg">Flight {flightIndex + 1}</h3>
 
-      {/* INFANT BAGGAGE SELECTION */}
-      {Array.from({ length: numInfants }).map((_, index) => (
-        <div className="p-3 flex flex-row gap-5 items-center" key={`infant-${index}`}>
-          <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
-            INFANT {index + 1}
-          </span>
-          <Form.Item name={`infantBaggage-${index}`} style={{ marginBottom: 0 }}>
-            <Select className="h-10 w-100" placeholder="Add Baggage">
-              {ssrInfo.flatMap((e) =>
-                e.BAGGAGE?.map((bag) => (
+        {/* Adult Baggage for this flight */}
+        {Array.from({ length: numAdults }).map((_, index) => (
+          <div className="p-2 flex gap-4 items-center" key={`adult-${flightIndex}-${index}`}>
+            <span style={{ width: "100px" }} className="text-sm font-bold text-gray-900">
+              ADULT {index + 1}
+            </span>
+            <Form.Item name={`adultBaggage-${flightIndex}-${index}`} style={{ marginBottom: 0,width:"500px"}}>
+              <Select className="h-10" placeholder="Add Baggage">
+                {baggageOptions.map((bag) => (
                   <Option key={bag.code} value={bag.code}>
                     {bag.desc} - ₹{bag.amount}
                   </Option>
-                )) || []
-              )}
-            </Select>
-          </Form.Item>
-        </div>
-      ))}
-    </Form>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        ))}
+
+        {/* Child Baggage */}
+        {Array.from({ length: numChild }).map((_, index) => (
+          <div className="p-2 flex gap-4 items-center" key={`child-${flightIndex}-${index}`}>
+            <span style={{ width: "100px" }} className="text-sm font-bold text-gray-900">
+              CHILD {index + 1}
+            </span>
+            <Form.Item name={`childBaggage-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
+              <Select className="h-10 w-100" placeholder="Add Baggage">
+                {baggageOptions.map((bag) => (
+                  <Option key={bag.code} value={bag.code}>
+                    {bag.desc} - ₹{bag.amount}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        ))}
+
+        {/* Infant Baggage */}
+        {Array.from({ length: numInfants }).map((_, index) => (
+          <div className="p-2 flex gap-4 items-center" key={`infant-${flightIndex}-${index}`}>
+            <span style={{ width: "100px" }} className="text-sm font-bold text-gray-900">
+              INFANT {index + 1}
+            </span>
+            <Form.Item name={`infantBaggage-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
+              <Select className="h-10 w-100" placeholder="Add Baggage">
+                {baggageOptions.map((bag) => (
+                  <Option key={bag.code} value={bag.code}>
+                    {bag.desc} - ₹{bag.amount}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </div>
+        ))}
+      </div>
+    );
+  })}
+</Form>
 
 </>):(<>
  <div className="p-3 text-sm text-gray-500">No baggage options available for this flight.</div>

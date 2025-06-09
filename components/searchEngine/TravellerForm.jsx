@@ -24,7 +24,7 @@ export const TravellerForm = ({
     <>
       {showTraveller ? (
         <>
-          <div className="lg:w-2/5 md:w-2/5w-full absolute h-auto bg-white right-0 -mt-5 p-4 bx_shadow_dr1">
+          <div className="lg:w-2/5 md:w-2/5w-full absolute h-auto bg-white right-0 -mt-5 p-4 bx_shadow_dr1 ">
             <div className="form_dr1 flex justify-between items-center pt-4">
               <div className="text-base font-bold">Adults</div>
               <div className="flex custome_addBtn1">
@@ -131,11 +131,11 @@ export const TravellerForm = ({
                   buttonStyle="solid"
                   className="flex flex-wrap"
                 >
-                  <Radio.Button className="w-50" value="a">
-                    Premium Economy
-                  </Radio.Button>
                   <Radio.Button className="w-50" value="b">
                     Economy
+                  </Radio.Button>
+                  <Radio.Button className="w-50" value="a">
+                    Premium Economy
                   </Radio.Button>
                   <Radio.Button className="w-50" value="c">
                     Business

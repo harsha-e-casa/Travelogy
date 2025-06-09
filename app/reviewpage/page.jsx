@@ -52,6 +52,7 @@ const Page = () => {
   console.log("number", number);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
+  const BaggageAmount= JSON.parse(getCookie("baggageinfo") || "[]");
   
   const router = useRouter();
   useEffect(() => {
@@ -331,7 +332,9 @@ const Page = () => {
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
+  const baggageTotal = BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
 
+const finalAmountToPay = totalprice + baggageTotal;
   //fare rule api
   const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
 
@@ -747,28 +750,33 @@ const bookingReview = () => {
   console.log("travellers (before update)", travellers);
   console.log("totalprice bookingId", totalprice, bookingId);
 
+  const segmentinfo = flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
+
   const updatedTravellers = travellers.map((traveller) => {
+    const updatedTraveller = { ...traveller };
+
     if (Array.isArray(traveller.ssrMealInfos)) {
-      return {
-        ...traveller,
-        ssrMealInfos: traveller.ssrMealInfos.map((meal) => ({
-          ...meal,
-          key: segmentId, // Replace with dynamic segmentId
-        })),
-      };
+      updatedTraveller.ssrMealInfos = traveller.ssrMealInfos.map((meal, idx) => ({
+        ...meal,
+        key: segmentinfo[idx]?.id || "",
+      }));
     }
-    return traveller;
+
+    if (Array.isArray(traveller.ssrBaggageInfos)) {
+      updatedTraveller.ssrBaggageInfos = traveller.ssrBaggageInfos.map((bag, idx) => ({
+        ...bag,
+        key: segmentinfo[idx]?.id || "",
+      }));
+    }
+
+    return updatedTraveller;
   });
 
   if (totalprice && bookingId) {
     const parameter = {
-      bookingId: bookingId,
-      paymentInfos: [
-        {
-          amount: totalprice,
-        },
-      ],
-      travellerInfo: updatedTravellers, // ✅ Use updatedTravellers here
+      bookingId,
+      paymentInfos: [{ amount: finalAmountToPay }],
+      travellerInfo: updatedTravellers,
       deliveryInfo: {
         emails: [email],
         contacts: [`${number.code}${number.number}`],
@@ -783,7 +791,6 @@ const bookingReview = () => {
         booking_id: bookingId,
         phone: number.number,
       };
-      console.log("reqSaveBookingId ===>", reqSaveBookingId);
       const result = await postData("travelogy/flight/save-booking", reqSaveBookingId);
       console.log("saveBookingId result ===>", result);
     };
@@ -794,6 +801,7 @@ const bookingReview = () => {
     console.error("Booking ID or total price is missing");
   }
 };
+
 
 
   return (

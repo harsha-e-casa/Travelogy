@@ -89,7 +89,7 @@ export default function DomesticRoundTripTicketCard({
                       <p className="text-sm-medium neutral-500 totalduration">
                         {" "}
                         {segment["stops"] > 0
-                          ? segment["stops"]`stops`
+                          ? `${segment["stops"]}stops`
                           : "non stop"}{" "}
                       </p>
                     </div>
