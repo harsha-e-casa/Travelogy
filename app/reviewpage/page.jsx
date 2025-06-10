@@ -53,6 +53,7 @@ const Page = () => {
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
+  const MealAmount              = JSON.parse(getCookie("mealinfo") || "[]");
 
   const router = useRouter();
   useEffect(() => {
@@ -336,8 +337,10 @@ const Page = () => {
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
   const baggageTotal =
     BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
+    const mealTotal=
+    MealAmount.reduce((acc, curr) => acc + curr.amount, 0)
 
-  const finalAmountToPay = totalprice + baggageTotal;
+  const finalAmountToPay = totalprice + baggageTotal + mealTotal;
   //fare rule api
   const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
 
