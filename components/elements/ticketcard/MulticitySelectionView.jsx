@@ -61,6 +61,13 @@ export default function MulticitySelectionView({ flightData }) {
 
   const cities = [...firstIdxCity, ...simplifiedSegments];
 
+  const moveToNextTab = (maxTabs) => {
+    const currentIndex = parseInt(activeTabKey, 10);
+    if (currentIndex < maxTabs) {
+      setActiveTabKey(String(currentIndex + 1));
+    }
+  };
+
   const matchedFlights = cities.map(({ from, to }) => {
     const flights = [];
 
@@ -83,6 +90,8 @@ export default function MulticitySelectionView({ flightData }) {
     };
   });
   console.log("matched flight", matchedFlights);
+  console.log("Moving from tab:", activeTabKey, "to max:", matchedFlights.length);
+
 
   const formatTime = (durationInMinutes) => {
     const hours = Math.floor(durationInMinutes / 60);
@@ -346,9 +355,10 @@ export default function MulticitySelectionView({ flightData }) {
                                   };
 
                                   // Move to next tab if on tab 1 or 2 (i.e., index 0 or 1)
-                                  if (tabIndex === 0 || tabIndex === 1) {
-                                    setActiveTabKey(String(tabIndex + 2));
-                                  }
+                                  // if (tabIndex === 0 || tabIndex === 1) {
+                                  //   setActiveTabKey(String(tabIndex + 2));
+                                  // }
+                                  moveToNextTab(matchedFlights.length);
 
                                   return newFlights;
                                 });
