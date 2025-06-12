@@ -11,7 +11,7 @@ import SortTicketsFilter from "@/components/elements/SortTicketsFilter";
 import TicketCard1 from "@/components/elements/ticketcard/TicketCard1";
 import DomesticRoundTripTicketCard from "@/components/elements/ticketcard/DomesticRoundTripTicketCard";
 import RoundTripSelectionView from "@/components/elements/ticketcard/RoundTripSelectionView";
-import MulticitySelectionView from "@/components/elements/ticketcard/MulticitySelectionView.jsx"
+import MulticitySelectionView from "@/components/elements/ticketcard/MulticitySelectionView.jsx";
 import Layout from "@/components/layout/Layout";
 import SwiperGroupPayment10Slider from "@/components/slider/SwiperGroupPayment10Slider";
 import rawticketsData from "@/util/tickets.json";
@@ -155,12 +155,44 @@ export default function Tickets() {
     setCookie("gy_multi_city", JSON.stringify(multicitySegments));
   }, [setMulticitySegments]);
 
+  const [errorMsg, setErrorMsg] = useState("");
+
   const addSegment = () => {
+    const lastSegment = multicitySegments[multicitySegments.length - 1];
+
+    if (
+      !lastSegment ||
+      !lastSegment.fromCode ||
+      !lastSegment.toCode ||
+      !lastSegment.departureDate
+    ) {
+      setErrorMsg(
+        "Please fill in the previous segment before adding a new one."
+      );
+      return;
+    }
+
+    setErrorMsg(""); // Clear error if validation passed
+
+    const displayDate = dayjs().add(2, "day");
     setMulticitySegments((prev) => [
       ...prev,
-      { from: "", fromCode: "", to: "", toCode: "", departureDate: "" },
+      {
+        from: "Select City",
+        fromCode: "",
+        to: "Select City",
+        toCode: "",
+        departureDate: displayDate,
+      },
     ]);
   };
+
+  useEffect(() => {
+    if (errorMsg) {
+      const timer = setTimeout(() => setErrorMsg(""), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMsg]);
 
   const removeSegment = (index) => {
     setMulticitySegments((prev) => prev.filter((_, i) => i !== index));
@@ -391,7 +423,6 @@ export default function Tickets() {
         if (result && result.searchResult && result.searchResult.tripInfos) {
           // setFlightData(result.searchResult.tripInfos.ONWARD)
           setFlightData(result.searchResult.tripInfos);
-          
         } else {
           console.log("no dataaaaaaaa");
           setError("");
@@ -891,7 +922,7 @@ export default function Tickets() {
                       />
                     ) : null}
                   </div>
-                </> 
+                </>
               ) : null}
 
               <div
@@ -940,137 +971,144 @@ export default function Tickets() {
               )}
             </div>
             {srx_tripType.toLowerCase() === "multi-city" && modifySearchRef && (
-              <div style={{ width: "48%", margin: "0 auto" }}>
-                {multicitySegments.map((segment: any, idx: any) => (
-                  <div key={idx} className="flex justify-left items-center">
-                    <div
-                      className="hdt_header-item relative"
-                      style={{ width: "20%" }}
-                    >
-                      <div>
-                        <label>From</label>
-                        <div
-                          onClick={() => multiOpenfrom(idx)}
-                          className="hdt_value"
-                        >
-                          {segment.from}
-                        </div>
-                      </div>
-                      {openFromMultiIndex === idx && (
-                        <div className="searchFfromSelect searchFfromSelect_2">
-                          <AppListSearch
-                            operEngLocation={() => multiOpenfrom(idx)}
-                            setSelectFrom={(val) => {
-                              const newSegs = [...multicitySegments];
-                              newSegs[idx].from = val;
-                              setMulticitySegments(newSegs);
-                            }}
-                            setSelectFromSub={(val) => {
-                              const newSegs = [...multicitySegments];
-                              newSegs[idx].fromCode = val;
-                              setMulticitySegments(newSegs);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div
-                      className="hdt_header-item relative"
-                      style={{ width: "20%" }}
-                    >
-                      <div>
-                        <label>To</label>
-                        <div
-                          onClick={() => multiOpenToSecond(idx)}
-                          className="hdt_value"
-                        >
-                          {segment.to}
-                        </div>
-                      </div>
-                      {openToMultiIndex === idx && (
-                        <div className="searchFfromSelect searchFfromSelect_2">
-                          <AppListSearch
-                            operEngLocation={() => multiOpenToSecond(idx)}
-                            setSelectFrom={(val) => {
-                              const newSegs = [...multicitySegments];
-                              newSegs[idx].to = val;
-                              setMulticitySegments(newSegs);
-                            }}
-                            setSelectFromSub={(val) => {
-                              const newSegs = [...multicitySegments];
-                              newSegs[idx].toCode = val;
-                              setMulticitySegments(newSegs);
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="hdt_header-item">
-                      <label>Depart</label>
+              <>
+                <div style={{ width: "48%", margin: "0 auto" }}>
+                  {multicitySegments.map((segment: any, idx: any) => (
+                    <div key={idx} className="flex justify-left items-center">
                       <div
-                        onClick={() => multiOpenToDateRange(idx)}
-                        className="hdt_value"
+                        className="hdt_header-item relative"
+                        style={{ width: "20%" }}
                       >
-                        {segment.departureDate
-                          ? dayjs(segment.departureDate).format(
-                              "ddd, MMM D YYYY"
-                            )
-                          : "Select Date"}
+                        <div>
+                          <label>From</label>
+                          <div
+                            onClick={() => multiOpenfrom(idx)}
+                            className="hdt_value"
+                          >
+                            {segment.from}
+                          </div>
+                        </div>
+                        {openFromMultiIndex === idx && (
+                          <div className="searchFfromSelect searchFfromSelect_2">
+                            <AppListSearch
+                              operEngLocation={() => multiOpenfrom(idx)}
+                              setSelectFrom={(val) => {
+                                const newSegs = [...multicitySegments];
+                                newSegs[idx].from = val;
+                                setMulticitySegments(newSegs);
+                              }}
+                              setSelectFromSub={(val) => {
+                                const newSegs = [...multicitySegments];
+                                newSegs[idx].fromCode = val;
+                                setMulticitySegments(newSegs);
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
-                      {openDepartMultiIndex === idx && (
-                        <AppDateRage
-                          openToDateRange={() => multiOpenToDateRange(idx)}
-                          setDatedep={(val) => {
-                            const newSegs = [...multicitySegments];
-                            newSegs[idx].departureDate = val;
-                            setMulticitySegments(newSegs);
-                          }}
-                        />
-                      )}
-                    </div>
 
-                    {/* Add/Remove buttons */}
-                    <div
-                      className="hdt_segment-controls"
-                      style={{ paddingTop: "10px" }}
-                    >
-                      {idx === multicitySegments.length - 1 && (
-                        <>
-                          {multicitySegments.length > 1 && (
-                            <button
-                              style={{
-                                background: "grey",
-                                borderRadius: "10px",
-                                margin: "10px",
+                      <div
+                        className="hdt_header-item relative"
+                        style={{ width: "20%" }}
+                      >
+                        <div>
+                          <label>To</label>
+                          <div
+                            onClick={() => multiOpenToSecond(idx)}
+                            className="hdt_value"
+                          >
+                            {segment.to}
+                          </div>
+                        </div>
+                        {openToMultiIndex === idx && (
+                          <div className="searchFfromSelect searchFfromSelect_2">
+                            <AppListSearch
+                              operEngLocation={() => multiOpenToSecond(idx)}
+                              setSelectFrom={(val) => {
+                                const newSegs = [...multicitySegments];
+                                newSegs[idx].to = val;
+                                setMulticitySegments(newSegs);
                               }}
-                              onClick={() => removeSegment(idx)}
-                              className="remove-segment text-white"
-                            >
-                              Remove
-                            </button>
-                          )}
+                              setSelectFromSub={(val) => {
+                                const newSegs = [...multicitySegments];
+                                newSegs[idx].toCode = val;
+                                setMulticitySegments(newSegs);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </div>
 
-                          {multicitySegments.length < 5 && (
-                            <button
-                              style={{
-                                background: "grey",
-                                borderRadius: "10px",
-                                margin: "10px",
-                              }}
-                              onClick={addSegment}
-                              className="add-segment text-white"
-                            >
-                              Add
-                            </button>
-                          )}
-                        </>
-                      )}
+                      <div className="hdt_header-item">
+                        <label>Depart</label>
+                        <div
+                          onClick={() => multiOpenToDateRange(idx)}
+                          className="hdt_value"
+                        >
+                          {segment.departureDate
+                            ? dayjs(segment.departureDate).format(
+                                "ddd, MMM D YYYY"
+                              )
+                            : "Select Date"}
+                        </div>
+                        {openDepartMultiIndex === idx && (
+                          <AppDateRage
+                            openToDateRange={() => multiOpenToDateRange(idx)}
+                            setDatedep={(val) => {
+                              const newSegs = [...multicitySegments];
+                              newSegs[idx].departureDate = val;
+                              setMulticitySegments(newSegs);
+                            }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Add/Remove buttons */}
+                      <div
+                        className="hdt_segment-controls"
+                        style={{ paddingTop: "10px" }}
+                      >
+                        {idx === multicitySegments.length - 1 && (
+                          <>
+                            {multicitySegments.length > 1 && (
+                              <button
+                                style={{
+                                  background: "grey",
+                                  borderRadius: "10px",
+                                  margin: "10px",
+                                }}
+                                onClick={() => removeSegment(idx)}
+                                className="remove-segment text-white"
+                              >
+                                Remove
+                              </button>
+                            )}
+
+                            {multicitySegments.length < 5 && (
+                              <button
+                                style={{
+                                  background: "grey",
+                                  borderRadius: "10px",
+                                  margin: "10px",
+                                }}
+                                onClick={addSegment}
+                                className="add-segment text-white"
+                              >
+                                Add
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
+                  ))}
+                </div>
+                {errorMsg && (
+                  <div className="text-red-500 mt-2 text-sm font-medium" style={{ textAlign: "center", padding: "10px" }}>
+                    {errorMsg}
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
 
             {/* <AppListSearch operEngLocation={openTo} setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} /> */}
@@ -1107,7 +1145,7 @@ export default function Tickets() {
           {/* Ticket List Section */}
 
           <section className="box-section block-content-tourlist background-body">
-            <div className="container-fluid" style={{width:"93%"}}>
+            <div className="container-fluid" style={{ width: "93%" }}>
               <div className="box-content-main">
                 <div className="content-right border ">
                   {/* <div className="box-filters mb-25 pb-5 border-bottom border-1">
@@ -1200,7 +1238,10 @@ export default function Tickets() {
                                   <div className="box-list-flights box-list-flights-2">
                                     {tripInfo.map((ticket: any) => (
                                       <React.Fragment key={ticket.id}>
-                                        <TicketCard1 ticket={ticket} flightData={flightData} />
+                                        <TicketCard1
+                                          ticket={ticket}
+                                          flightData={flightData}
+                                        />
                                       </React.Fragment>
                                     ))}
                                   </div>
@@ -1291,12 +1332,10 @@ export default function Tickets() {
                       )}
                     </>
                   ) : null}
-                 {srx_tripType &&
+                  {srx_tripType &&
                   srx_tripType.trim().toLowerCase() === "multi-city" ? (
                     <>
-                      {flightData?(
-                       
-
+                      {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
                           departureFrom={departureFrom}
@@ -1318,8 +1357,6 @@ export default function Tickets() {
                       )}
                     </>
                   ) : null}
-
-                 
 
                   {/* Invalid airport */}
                   {error && (
