@@ -14,6 +14,7 @@ import { AppContext } from "../../util/AppContext";
 import { useSearchParams, useRouter } from "next/navigation";
 import "./DirectFlight.jsx";
 import DirectFlight from "./DirectFlight.jsx";
+import MultiCityContainer from "./MultiCityContainer.jsx";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 
@@ -99,6 +100,7 @@ const EngineTabs = ({ active_border }) => {
 
   const searchTickets = () => {
     console.log("fn searchTickettttttttttt ");
+    console.log(multicitySegments);
 
     let departureFrom = getCookie("gy_da");
     let arrivalTo = getCookie("gy_aa");
@@ -113,6 +115,8 @@ const EngineTabs = ({ active_border }) => {
     let tripType = getCookie("gy_triptype");
     let passengerType = getCookie("gy_passender_type");
 
+    // save multicity condition
+
     const mydata = {
       departureFrom: departureFrom,
       arrivalTo: arrivalTo,
@@ -126,6 +130,11 @@ const EngineTabs = ({ active_border }) => {
       tripType: tripType,
       passengerType: passengerType,
     };
+
+    if (tripType == "multi-city") {
+      mydata.multicitySegments = multicitySegments
+      setCookie('gy_multi_city', JSON.stringify(multicitySegments));
+    }
 
     if (returnDate != undefined || returnDate != "Nan") {
       mydata.returnDate = returnDate;
@@ -326,217 +335,276 @@ const EngineTabs = ({ active_border }) => {
     setShowYTraveller(false);
   };
 
+  const [multicitySegments, setMulticitySegments] = useState([
+    { from: "", fromCode: "", to: "", toCode: "", departureDate: null },
+  ]);
+
+  const multicityUpdateSegment = (index, newData) => {
+    const newSegments = [...multicitySegments];
+    newSegments[index] = newData;
+    setMulticitySegments(newSegments);
+  };
+
+  const multicityAddSegment = () => {
+    if (multicitySegments.length < 5) {
+      setMulticitySegments([
+        ...multicitySegments,
+        { from: "", fromCode: "", to: "", toCode: "", departureDate: null },
+      ]);
+    }
+  };
+
+  const multicityRemoveSegment = (index) => {
+    if (multicitySegments.length > 1) {
+      setMulticitySegments(multicitySegments.filter((_, i) => i !== index));
+    }
+  };
+
+  console.log("multicitySegmentsmulticitySegments ==> ",multicitySegments)
+
   return (
-    <section className="section_main_book_dash_01 relative_MainBanner ">
-      
+    <section
+      className="section_main_book_dash_01 relative_MainBanner "
+      style={{ padding: "3% 7% 7% 7%" }}
+    >
       <div
-        className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40"
+        className="rounded-md"
+        style={{
+          background: "#ffffffcc",
+          borderRadius: "14px",
+          position: "relative",
+          top: "61px",
+          width: "90%",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         <SearchEngHeader active_border={active_border} />
 
-        <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
+        <div style={{ marginTop: "7%" }}>
+          <TripPlans
+            selectedPlan={selectedPlan}
+            setSelectedPlan={setSelectedPlan}
+          />
+
           <div
-            onClick={searchTickets}
-            className="search_btn_font text-white uppercase tracking-wide cursor-pointer"
+            className="custom-grid justify-center"
+            style={{ flexDirection: "column" }}
           >
-            {" "}
-            Search
-          </div>
-        </div>
-        <br />
-        <br />
-
-        <TripPlans
-          selectedPlan={selectedPlan}
-          setSelectedPlan={setSelectedPlan}
-        />
-
-        <div className="custom-grid justify-center 1">
-          <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
-            <div className="" onClick={openfrom}>
-              <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
-                From
-              </div>
-              <div className="pl-6 relative">
-                <h2 className="text_4xl font_bold text-black tracking-wide">
-                  {selectFrom}
-                </h2>
-                <p className="text-xl_small truncate-text">{selectFromSub}</p>
-              </div>
-            </div>
-
-            {showSearchState ? (
-              <div className="searchFfromSelect searchFfromSelect_1">
-                <AppListSearch
-                  operEngLocation={openfrom}
-                  setSelectFrom={setSelectFrom}
-                  setSelectFromSub={setSelectFromSub}
-                />
-              </div>
-            ) : null}
-          </div>
-
-          <div className="searchReplaceLocation">
-            <svg
-              onClick={locationSwap}
-              xmlns="http://www.w3.org/2000/svg"
-              width="40"
-              height="40"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="#e88400"
-                d="M4.993 11.016a1 1 0 0 1-.531-1.848L7.15 6.48a1 1 0 0 1 1.414 1.415l-1.121 1.12h7.55a1 1 0 0 1 0 2zm14.014 1.969a1 1 0 0 1 .531 1.848L16.85 17.52a1 1 0 1 1-1.414-1.415l1.121-1.12h-7.55a1 1 0 1 1 0-2z"
-              />
-            </svg>
-          </div>
-
-          <div className="text_start b_right_2px g_w_2 css_pointer relative ">
-            <div className="" onClick={openTo}>
-              <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">
-                To
-              </div>
-              <div className="pl-6 pb-4 relative">
-                <h2 className="text_4xl font_bold text-black tracking-wide">
-                  {" "}
-                  {selectFromTo}{" "}
-                </h2>
-                <p className="text-xl_small truncate-text">{selectFromSubTo}</p>
-              </div>
-            </div>
-            {showSearchStateTo ? (
-              <div className="searchFfromSelect searchFfromSelect_1">
-                <AppListSearch
-                  operEngLocation={openTo}
-                  setSelectFrom={setSelectFromTo}
-                  setSelectFromSub={setSelectFromSubTo}
-                />
-              </div>
-            ) : null}
-          </div>
-
-          <div className="text_start b_right_2px g_w_3 css_pointer">
-            <div
-              className="flex pl-6 justify_content_space"
-              onClick={openToDateRange}
-            >
-              <div>
-                <div className="pt-2 pb-2">{dd_strdate}</div>
-
-                <div className="">
-                  <span className="text-4xl font-bold text-gray-900">
-                    {" "}
-                    {dd_date}{" "}
-                  </span>{" "}
-                  <sub className="sub_txt1">{dd_monthStr}</sub>{" "}
-                </div>
-                <div className="text_start mt-0 flex">
-                  <div className="txt_travelSelect3 txt_travelFrom">
-                    {" "}
-                    Departure Date
+            <div className="flex">
+              <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
+                <div className="" onClick={openfrom}>
+                  <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
+                    From
+                  </div>
+                  <div className="pl-6 relative">
+                    <h2 className="text_4xl font_bold text-black tracking-wide">
+                      {selectFrom}
+                    </h2>
+                    <p className="text-xl_small truncate-text">
+                      {selectFromSub}
+                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {openDateRage ? (
-              <AppDateRage
-                openToDateRange={openToDateRange}
-                setDatedep={setDatedep}
-              />
-            ) : null}
-          </div>
-          {selectedPlan === "round-trip" || selectedPlan === "multi-city" ? (
-            <div className="text_start b_right_2px g_w_4 css_pointer">
-              <div
-                className="flex pl-6 justify_content_space"
-                onClick={openToDateRangeR}
-              >
-                <div className="ml__txt">
-                  <div className="pt-2 pb-2">{ddr_strdate}</div>
+                {showSearchState ? (
+                  <div className="searchFfromSelect searchFfromSelect_1">
+                    <AppListSearch
+                      operEngLocation={openfrom}
+                      setSelectFrom={setSelectFrom}
+                      setSelectFromSub={setSelectFromSub}
+                    />
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="searchReplaceLocation">
+                <svg
+                  onClick={locationSwap}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="40"
+                  height="40"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fill="#e88400"
+                    d="M4.993 11.016a1 1 0 0 1-.531-1.848L7.15 6.48a1 1 0 0 1 1.414 1.415l-1.121 1.12h7.55a1 1 0 0 1 0 2zm14.014 1.969a1 1 0 0 1 .531 1.848L16.85 17.52a1 1 0 1 1-1.414-1.415l1.121-1.12h-7.55a1 1 0 1 1 0-2z"
+                  />
+                </svg>
+              </div>
+
+              <div className="text_start b_right_2px g_w_2 css_pointer relative ">
+                <div className="" onClick={openTo}>
+                  <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">
+                    To
+                  </div>
+                  <div className="pl-6 pb-4 relative">
+                    <h2 className="text_4xl font_bold text-black tracking-wide">
+                      {" "}
+                      {selectFromTo}{" "}
+                    </h2>
+                    <p className="text-xl_small truncate-text">
+                      {selectFromSubTo}
+                    </p>
+                  </div>
+                </div>
+                {showSearchStateTo ? (
+                  <div className="searchFfromSelect searchFfromSelect_1">
+                    <AppListSearch
+                      operEngLocation={openTo}
+                      setSelectFrom={setSelectFromTo}
+                      setSelectFromSub={setSelectFromSubTo}
+                    />
+                  </div>
+                ) : null}
+              </div>
+
+              <div className="text_start b_right_2px g_w_3 css_pointer">
+                <div
+                  className="flex pl-6 justify_content_space"
+                  onClick={openToDateRange}
+                >
                   <div>
-                    <span className="text-4xl font-bold text-gray-900">
-                      {" "}
-                      {ddr_date}{" "}
-                    </span>{" "}
-                    <sub className="sub_txt1"> {ddr_monthStr}</sub>
-                  </div>
+                    <div className="pt-2 pb-2">{dd_strdate}</div>
 
-                  <div className="text_start mt-0 flex">
-                    <div className="txt_travelSelect3 txt_travelreturn">
-                      {" "}
-                      Return
+                    <div className="">
+                      <span className="text-4xl font-bold text-gray-900">
+                        {" "}
+                        {dd_date}{" "}
+                      </span>{" "}
+                      <sub className="sub_txt1">{dd_monthStr}</sub>{" "}
+                    </div>
+                    <div className="text_start mt-0 flex">
+                      <div className="txt_travelSelect3 txt_travelFrom">
+                        {" "}
+                        Departure Date
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {openDateRageR ? (
-                <AppDateRage
-                  openToDateRange={openToDateRangeR}
-                  setDatedep={setDatedepr}
-                />
+                {openDateRage ? (
+                  <AppDateRage
+                    openToDateRange={openToDateRange}
+                    setDatedep={setDatedep}
+                  />
+                ) : null}
+              </div>
+              {selectedPlan === "round-trip" ? (
+                <div className="text_start b_right_2px g_w_4 css_pointer">
+                  <div
+                    className="flex pl-6 justify_content_space"
+                    onClick={openToDateRangeR}
+                  >
+                    <div className="ml__txt">
+                      <div className="pt-2 pb-2">{ddr_strdate}</div>
+                      <div>
+                        <span className="text-4xl font-bold text-gray-900">
+                          {" "}
+                          {ddr_date}{" "}
+                        </span>{" "}
+                        <sub className="sub_txt1"> {ddr_monthStr}</sub>
+                      </div>
+
+                      <div className="text_start mt-0 flex">
+                        <div className="txt_travelSelect3 txt_travelreturn">
+                          {" "}
+                          Return
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {openDateRageR ? (
+                    <AppDateRage
+                      openToDateRange={openToDateRangeR}
+                      setDatedep={setDatedepr}
+                    />
+                  ) : null}
+                </div>
               ) : null}
+
+              <div
+                className="b_right_2px g_w_5 css_pointer relative box_left_ddr2"
+                onClick={openTraveller}
+              >
+                <div className="text_start flex pl-6 slider-labels">
+                  <div className="">
+                    <span className="text-7xl font-bold text-gray-900">
+                      {" "}
+                      {adult + countchildren + countinfant}{" "}
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <div className="txt_travelSelect">Traveller</div>
+                    <p className="txt_travelSelect2">
+                      {classLabels[travellerClass]}
+                    </p>
+                  </div>
+                </div>
+                <div className="text_start pl-6 flex">
+                  <div className="txt_travelSelect3 txt_travelClass">
+                    {" "}
+                    Traveller / Class
+                  </div>
+                </div>
+              </div>
             </div>
-          ) : null}
+            {/* <div className="flex">{selectedPlan == "multi-city" && <MultiCityContainer />}</div> */}
+            {selectedPlan === "multi-city" && (
+              <div className="w-full mt-4">
+                <MultiCityContainer
+                  segments={multicitySegments}
+                  updateSegment={multicityUpdateSegment}
+                  addSegment={multicityAddSegment}
+                  removeSegment={multicityRemoveSegment}
+                />
+              </div>
+            )}
+          </div>
+
+          <TravellerForm
+            showTraveller={showTraveller}
+            adult={adult}
+            opentrvForm={openTraveller}
+            clickMinus={clickMinus}
+            clickPlus={clickPlus}
+            clickMinusChildren={clickMinusChildren}
+            clickPlusChildren={clickPlusChildren}
+            countchildren={countchildren}
+            countinfant={countinfant}
+            clickMinusinfant={clickMinusinfant}
+            clickPlusinfant={clickPlusinfant}
+            handleChangeClass={handleChangeClass}
+            travellerClass={travellerClass}
+            totalPassenderCount={totalPassenderCount}
+            specificStyle={{ right: "0", top: "" }}
+            setTravellerClass={setTravellerClass}
+          />
+
+          <div className="">
+            <PassengerType
+              selectedPassengerType={selectedPassengerType}
+              setSelectedPassengerType={setSelectedPassengerType}
+            />
+            <DirectFlight
+              isDirectFlight={isDirectFlight}
+              setIsDirectFlight={setIsDirectFlight}
+            />
+          </div>
 
           <div
-            className="b_right_2px g_w_5 css_pointer relative box_left_ddr2"
-            onClick={openTraveller}
+            className="search_btn bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto"
+            style={{ position: "relative" }}
           >
-            <div className="text_start flex pl-6 slider-labels">
-              <div className="">
-                <span className="text-7xl font-bold text-gray-900">
-                  {" "}
-                  {adult + countchildren + countinfant}{" "}
-                </span>
-              </div>
-              <div className="mt-3">
-                <div className="txt_travelSelect">Traveller</div>
-                <p className="txt_travelSelect2">
-                  {classLabels[travellerClass]}
-                </p>
-              </div>
-            </div>
-            <div className="text_start pl-6 flex">
-              <div className="txt_travelSelect3 txt_travelClass">
-                {" "}
-                Traveller / Class
-              </div>
+            <div
+              onClick={searchTickets}
+              className="search_btn_font text-white uppercase tracking-wide cursor-pointer"
+            >
+              {" "}
+              Search
             </div>
           </div>
         </div>
-
-        <div className="">
-          <PassengerType
-            selectedPassengerType={selectedPassengerType}
-            setSelectedPassengerType={setSelectedPassengerType}
-          />
-          <DirectFlight
-            isDirectFlight={isDirectFlight}
-            setIsDirectFlight={setIsDirectFlight}
-          />
-        </div>
-
-        <TravellerForm
-          showTraveller={showTraveller}
-          adult={adult}
-          opentrvForm={openTraveller}
-          clickMinus={clickMinus}
-          clickPlus={clickPlus}
-          clickMinusChildren={clickMinusChildren}
-          clickPlusChildren={clickPlusChildren}
-          countchildren={countchildren}
-          countinfant={countinfant}
-          clickMinusinfant={clickMinusinfant}
-          clickPlusinfant={clickPlusinfant}
-          handleChangeClass={handleChangeClass}
-          travellerClass={travellerClass}
-          totalPassenderCount={totalPassenderCount}
-          specificStyle={{ right: "0", top: "" }}
-          setTravellerClass={setTravellerClass}
-        />
       </div>
     </section>
   );

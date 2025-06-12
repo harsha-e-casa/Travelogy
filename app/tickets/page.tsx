@@ -101,18 +101,89 @@ export default function Tickets() {
     setCookie("gy_child", 0);
   }
 
-  const adults = getCookie('gy_adult')
-  const children = getCookie('gy_child')
-  const cabinType = getCookie('gy_class')
-  const departDate = getCookie('gy_trd')
-  const returnDate = getCookie('gy_return')
+  const adults = getCookie("gy_adult");
+  const children = getCookie("gy_child");
+  const cabinType = getCookie("gy_class");
+  const departDate = getCookie("gy_trd");
+  const returnDate = getCookie("gy_return");
 
-  const departureFromSr = getCookie('gy_da_str')
-  const arrivalToSr = getCookie('gy_aa_str');
-  const tripType = getCookie('gy_triptype');
-  const passengerType = getCookie('gy_passender_type')
- const isDirectFlight = (getCookie('gy_direct_flight') || 'false').toLowerCase() === 'true';
-  const infant = getCookie('gy_infant')
+  const departureFromSr = getCookie("gy_da_str");
+  const arrivalToSr = getCookie("gy_aa_str");
+  const tripType = getCookie("gy_triptype");
+  const passengerType = getCookie("gy_passender_type");
+  const isDirectFlight =
+    (getCookie("gy_direct_flight") || "false").toLowerCase() === "true";
+  const infant = getCookie("gy_infant");
+
+  const [multicitySegments, setMulticitySegments] = useState(() => {
+    const cookieValue = getCookie("gy_multi_city");
+    console.error("existing multi city value in cookie: ", cookieValue);
+
+    try {
+      const parsed = cookieValue ? JSON.parse(cookieValue) : null;
+
+      // If parsed is a non-empty array, use it. Otherwise, return default.
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+
+      // Default value when cookie is empty or invalid
+      return [
+        {
+          from: "Select City",
+          fromCode: "NIL",
+          to: "Select City",
+          toCode: "NIL",
+          departureDate: "",
+        },
+      ];
+    } catch (e) {
+      console.error("Failed to parse multi-city cookie:", e);
+      return [
+        {
+          from: "Delhi",
+          fromCode: "DEL",
+          to: "Bengaluru",
+          toCode: "BLR",
+          departureDate: "",
+        },
+      ];
+    }
+  });
+
+  useEffect(() => {
+    setCookie("gy_multi_city", JSON.stringify(multicitySegments));
+  }, [setMulticitySegments]);
+
+  const addSegment = () => {
+    setMulticitySegments((prev) => [
+      ...prev,
+      { from: "", fromCode: "", to: "", toCode: "", departureDate: "" },
+    ]);
+  };
+
+  const removeSegment = (index) => {
+    setMulticitySegments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // const multicitySegments = JSON.parse(getCookie("gy_multi_city"));
+
+  let firstSegment = [
+    {
+      from: departureFromSr,
+      fromCode: departureFrom,
+      to: arrivalToSr,
+      toCode: arrivalTo,
+      departureDate: departDate,
+    },
+  ];
+
+  console.log("firstSegment == ", firstSegment);
+  console.log("multicitySegments == ", multicitySegments);
+
+  let combinedMulticitySegment = [...firstSegment, ...multicitySegments];
+
+  console.log("combinedMulticitySegment == ", combinedMulticitySegment);
 
   const mydata = {
     departureFrom: departureFrom,
@@ -137,6 +208,14 @@ export default function Tickets() {
   // hide or not ??
   // router.push(`/tickets?${queryString}`);
 
+  // const modifySearchRef = useRef(false);
+  const [modifySearchRef, setModifySearchRef] = useState(false);
+
+  const handleModifySearch = () => {
+    alert(" search modified ");
+    setModifySearchRef(true);
+  };
+
   const [true_Tripconst, setTripconst] = useState<boolean>(false);
   const [searchFlight, SetSearchFlight] = useState<boolean>(true);
   const hasFetchedRef = useRef(false);
@@ -159,6 +238,10 @@ export default function Tickets() {
     if (!searchFlight || hasFetchedRef.current) return;
     closeAllFields();
     hasFetchedRef.current = true;
+
+    if (srx_tripType?.toLowerCase() === "multi-city") {
+      setModifySearchRef(false);
+    }
 
     // Ensure all required query parameters are available before making the API call.
     if (!departureFrom || !arrivalTo || !cabinType || !departDate) {
@@ -211,17 +294,63 @@ export default function Tickets() {
       ];
     }
 
-    const mapPassengerType = {
-      "SENIOR CITIZEN": "SENIOR_CITIZEN",
-      "STUDENT": "STUDENT",
-      "REGULAR": "REGULAR"
+    let parsedSegments = [];
+
+    if (typeof multicitySegments === "string") {
+      try {
+        parsedSegments = JSON.parse(multicitySegments);
+      } catch (err) {
+        console.error("Failed to parse multicitySegments:", err);
+      }
+    } else {
+      parsedSegments = multicitySegments;
     }
 
-    // console.log("tripBasedRouteInfo == ",tripBasedRouteInfo);
+    if (
+      srx_tripType.toLowerCase() === "multi-city" &&
+      Array.isArray(parsedSegments) &&
+      parsedSegments.length > 0
+    ) {
+      let tripBasedRouteInfoMain = [
+        {
+          fromCityOrAirport: {
+            code: departureFrom,
+          },
+          toCityOrAirport: {
+            code: arrivalTo,
+          },
+          travelDate: departDate,
+        },
+      ];
+      console.log("tripBasedRouteInfoMain ==> ", tripBasedRouteInfoMain);
+      let tripBasedRouteInfoSub = parsedSegments.map((item) => ({
+        fromCityOrAirport: {
+          code: item.fromCode,
+        },
+        toCityOrAirport: {
+          code: item.toCode,
+        },
+        travelDate: item.departureDate.split("T")[0],
+      }));
+      console.log("tripBasedRouteInfoSub ==> ", tripBasedRouteInfoSub);
+
+      tripBasedRouteInfo = [
+        ...tripBasedRouteInfoMain,
+        ...tripBasedRouteInfoSub,
+      ];
+    }
+
+    const mapPassengerType = {
+      "SENIOR CITIZEN": "SENIOR_CITIZEN",
+      STUDENT: "STUDENT",
+      REGULAR: "REGULAR",
+    };
+
+    console.log("tripBasedRouteInfo == ", tripBasedRouteInfo);
 
     // Build the parameter object without extra curly braces
-    console.log("222222222222 ",cabinType);
-    console.log("222222222222 ",classLabels[cabinType]);
+    console.log("222222222222 ", cabinType);
+    console.log("222222222222 ", classLabels[cabinType]);
     const parameter = {
       searchQuery: {
         cabinClass: classLabels[cabinType],
@@ -231,12 +360,10 @@ export default function Tickets() {
           INFANT: countInfant,
         },
         routeInfos: tripBasedRouteInfo,
-        "searchModifiers": {
-          "pfts": [
-            mapPassengerType[passengerType]
-          ],
-            isDirectFlight: isDirectFlight, // always true if isDirectFlight is false
-            isConnectingFlight: false
+        searchModifiers: {
+          pfts: [mapPassengerType[passengerType]],
+          isDirectFlight: isDirectFlight, // always true if isDirectFlight is false
+          isConnectingFlight: false,
           // "sourceId": 0,
           // "pnrCreditInfo": {
           //   "pnr": ""
@@ -245,8 +372,6 @@ export default function Tickets() {
         },
       },
     };
-
-    
 
     // Async function to fetch flight data
     const loadData = async () => {
@@ -306,6 +431,10 @@ export default function Tickets() {
     {
       label: "Round-Trip",
       key: "Round-Trip",
+    },
+    {
+      label: "Multi-city",
+      key: "Multi-city",
     },
   ];
 
@@ -418,6 +547,26 @@ export default function Tickets() {
   };
 
   const [showSearchState, setShowSearchState] = useState<boolean>(false);
+  const [openFromMultiIndex, setOpenFromMultiIndex] = useState<number | null>(
+    null
+  );
+  const [openToMultiIndex, setOpenToMultiIndex] = useState<number | null>(null);
+  const [openDepartMultiIndex, setOpenDepartMultiIndex] = useState<
+    number | null
+  >(null);
+
+  const multiOpenfrom = (idx: number) => {
+    setOpenFromMultiIndex((prev) => (prev === idx ? null : idx));
+  };
+
+  const multiOpenToSecond = (idx: number) => {
+    setOpenToMultiIndex((prev) => (prev === idx ? null : idx));
+  };
+
+  const multiOpenToDateRange = (idx: number) => {
+    setOpenDepartMultiIndex((prev) => (prev === idx ? null : idx));
+  };
+
   const [showTraveller, setShowYTraveller] = useState<boolean>(false);
   const [showSearchStateTo, setShowSearchStateTo] = useState<boolean>(false);
   const [openDateRage, setOpenDateRage] = useState<boolean>(false);
@@ -563,7 +712,6 @@ export default function Tickets() {
       setDd_strdate(formattedDate.format("dddd")); // Format as string
       setDd_date(formattedDate.format("DD")); // Format as string
       setDd_year(formattedDate.format("YY")); // Format as string
-
     }
   }, [datedep]);
 
@@ -604,8 +752,9 @@ export default function Tickets() {
         <main className="main">
           {/* <EngineTabs active_border={'1'} /> */}
 
-          <div className="h-20 w-full z-20 sticky top-0 bg_cs_search">
+          <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
             {/* Header Section */}
+
             <div className="hdt_header">
               <div className="hdt_header-item">
                 <label>Trip Type</label>
@@ -618,59 +767,116 @@ export default function Tickets() {
                   <div
                     className="hdt_value"
                     // onClick={() => setOpen(prev => !prev)}  // ← your toggle
-                    onClick={() => handleOpen()}
+                    onClick={() => {
+                      if (
+                        (srx_tripType.toLowerCase() === "multi-city" &&
+                          modifySearchRef) ||
+                        srx_tripType.toLowerCase() !== "multi-city"
+                      ) {
+                        handleOpen();
+                      }
+                    }}
                     style={{ cursor: "pointer", display: "inline-block" }}
                   >
                     {srx_tripType}
                   </div>
                 </Dropdown>
               </div>
-              <div className="hdt_header-item relative">
-                <label>From</label>
-                <div onClick={openfrom} className="hdt_value">
-                  {srx_departureFrom}
-                </div>
-
-                {showSearchState ? (
-                  <div className="searchFfromSelect searchFfromSelect_2">
-                    <AppListSearch
-                      operEngLocation={openfrom}
-                      setSelectFrom={setdepartureFrom}
-                      setSelectFromSub={setDepartureToCode}
-                    />
+              {srx_tripType.toLowerCase() === "multi-city" &&
+                !modifySearchRef && (
+                  <div className="hdt_header-item" style={{ width: "25%" }}>
+                    <label>Trip Info</label>
+                    <div className="multicity-scrollplace">
+                      {combinedMulticitySegment.map((segment, idx) => (
+                        <div key={idx} className="place-flights hdt_value">
+                          <ul className="al-selist al-selist-positionHandle">
+                            <li className="whitecolor">
+                              {segment.fromCode}
+                              <br />
+                            </li>
+                            <li>
+                              <div className="right-arrow"></div>
+                            </li>
+                            <li className="whitecolor">
+                              {segment.toCode}
+                              <br />
+                            </li>
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                ) : null}
-              </div>
+                )}
 
-              <div className="hdt_header-item relative">
-                <label>To</label>
-                <div onClick={openTo} className="hdt_value">
-                  {srx_arrivalTo}
-                </div>
+              {((srx_tripType.toLowerCase() === "multi-city" &&
+                modifySearchRef) ||
+                srx_tripType.toLowerCase() !== "multi-city") && (
+                <>
+                  <div className="hdt_header-item relative">
+                    <label>From</label>
+                    <div onClick={openfrom} className="hdt_value">
+                      {srx_departureFrom}
+                    </div>
 
-                {showSearchStateTo ? (
-                  <div className="searchFfromSelect searchFfromSelect_2">
-                    <AppListSearch
-                      operEngLocation={openTo}
-                      setSelectFrom={setArrivalTo}
-                      setSelectFromSub={setArrivalToCode}
-                    />
+                    {showSearchState ? (
+                      <div className="searchFfromSelect searchFfromSelect_2">
+                        <AppListSearch
+                          operEngLocation={openfrom}
+                          setSelectFrom={setdepartureFrom}
+                          setSelectFromSub={setDepartureToCode}
+                        />
+                      </div>
+                    ) : null}
                   </div>
-                ) : null}
-              </div>
-              <div className="hdt_header-item">
-                <label>Depart</label>
-                <div onClick={openToDateRange} className="hdt_value">
-                  {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                </div>
 
-                {openDateRage ? (
-                  <AppDateRage
-                    openToDateRange={openToDateRange}
-                    setDatedep={setDatedep}
-                  />
-                ) : null}
-              </div>
+                  <div className="hdt_header-item relative">
+                    <label>To</label>
+                    <div onClick={openTo} className="hdt_value">
+                      {srx_arrivalTo}
+                    </div>
+
+                    {showSearchStateTo ? (
+                      <div className="searchFfromSelect searchFfromSelect_2">
+                        <AppListSearch
+                          operEngLocation={openTo}
+                          setSelectFrom={setArrivalTo}
+                          setSelectFromSub={setArrivalToCode}
+                        />
+                      </div>
+                    ) : null}
+                  </div>
+                </>
+              )}
+
+              {((srx_tripType.toLowerCase() === "multi-city" &&
+                modifySearchRef) ||
+                srx_tripType.toLowerCase() !== "multi-city") && (
+                <div className="hdt_header-item">
+                  <label>Depart</label>
+                  <div
+                    onClick={() => {
+                      if (
+                        (srx_tripType.toLowerCase() === "multi-city" &&
+                          modifySearchRef) ||
+                        srx_tripType.toLowerCase() !== "multi-city"
+                      ) {
+                        openToDateRange();
+                      }
+                    }}
+                    className="hdt_value"
+                  >
+                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
+                  </div>
+
+                  {openDateRage ? (
+                    <AppDateRage
+                      openToDateRange={openToDateRange}
+                      setDatedep={setDatedep}
+                    />
+                  ) : null}
+                </div>
+              )}
+
               {srx_tripType.toLowerCase() === "round-trip" ? (
                 <>
                   <div className="hdt_header-item">
@@ -687,28 +893,185 @@ export default function Tickets() {
                   </div>
                 </> 
               ) : null}
-              {/* <div className="hdt_header-item">
-      <label>Return</label>
-      <div className="hdt_value">Select Return</div>
-    </div> */}
-              <div className="hdt_header-item" onClick={openTraveller}>
+
+              <div
+                className="hdt_header-item"
+                onClick={() => {
+                  if (
+                    (srx_tripType.toLowerCase() === "multi-city" &&
+                      modifySearchRef) ||
+                    srx_tripType.toLowerCase() !== "multi-city"
+                  ) {
+                    openTraveller();
+                  }
+                }}
+              >
                 <label>Passengers &amp; Class</label>
                 <div className="hdt_value">
                   <span>
                     {srx_traveller}{" "}
                     {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
-                    <span className="text-sm">{classLabels[srx_cabinType]}</span>
+                    <span className="text-sm">
+                      {classLabels[srx_cabinType]}
+                    </span>
                   </span>
                 </div>
               </div>
-              <button
-                // onClick={() => SetSearchFlight((prev) => !prev)}
-                onClick={() => SetSearchFlight(true)}
-                className="hdt_search-btn"
-              >
-                Search
-              </button>
+              {srx_tripType.toLowerCase() === "multi-city" &&
+              !modifySearchRef ? (
+                <>
+                  <button
+                    onClick={handleModifySearch}
+                    className="hdt_search-btn"
+                  >
+                    Modify Search
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    // onClick={() => SetSearchFlight((prev) => !prev)}
+                    onClick={() => SetSearchFlight(true)}
+                    className="hdt_search-btn"
+                  >
+                    Search
+                  </button>
+                </>
+              )}
             </div>
+            {srx_tripType.toLowerCase() === "multi-city" && modifySearchRef && (
+              <div style={{ width: "48%", margin: "0 auto" }}>
+                {multicitySegments.map((segment: any, idx: any) => (
+                  <div key={idx} className="flex justify-left items-center">
+                    <div
+                      className="hdt_header-item relative"
+                      style={{ width: "20%" }}
+                    >
+                      <div>
+                        <label>From</label>
+                        <div
+                          onClick={() => multiOpenfrom(idx)}
+                          className="hdt_value"
+                        >
+                          {segment.from}
+                        </div>
+                      </div>
+                      {openFromMultiIndex === idx && (
+                        <div className="searchFfromSelect searchFfromSelect_2">
+                          <AppListSearch
+                            operEngLocation={() => multiOpenfrom(idx)}
+                            setSelectFrom={(val) => {
+                              const newSegs = [...multicitySegments];
+                              newSegs[idx].from = val;
+                              setMulticitySegments(newSegs);
+                            }}
+                            setSelectFromSub={(val) => {
+                              const newSegs = [...multicitySegments];
+                              newSegs[idx].fromCode = val;
+                              setMulticitySegments(newSegs);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className="hdt_header-item relative"
+                      style={{ width: "20%" }}
+                    >
+                      <div>
+                        <label>To</label>
+                        <div
+                          onClick={() => multiOpenToSecond(idx)}
+                          className="hdt_value"
+                        >
+                          {segment.to}
+                        </div>
+                      </div>
+                      {openToMultiIndex === idx && (
+                        <div className="searchFfromSelect searchFfromSelect_2">
+                          <AppListSearch
+                            operEngLocation={() => multiOpenToSecond(idx)}
+                            setSelectFrom={(val) => {
+                              const newSegs = [...multicitySegments];
+                              newSegs[idx].to = val;
+                              setMulticitySegments(newSegs);
+                            }}
+                            setSelectFromSub={(val) => {
+                              const newSegs = [...multicitySegments];
+                              newSegs[idx].toCode = val;
+                              setMulticitySegments(newSegs);
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="hdt_header-item">
+                      <label>Depart</label>
+                      <div
+                        onClick={() => multiOpenToDateRange(idx)}
+                        className="hdt_value"
+                      >
+                        {segment.departureDate
+                          ? dayjs(segment.departureDate).format(
+                              "ddd, MMM D YYYY"
+                            )
+                          : "Select Date"}
+                      </div>
+                      {openDepartMultiIndex === idx && (
+                        <AppDateRage
+                          openToDateRange={() => multiOpenToDateRange(idx)}
+                          setDatedep={(val) => {
+                            const newSegs = [...multicitySegments];
+                            newSegs[idx].departureDate = val;
+                            setMulticitySegments(newSegs);
+                          }}
+                        />
+                      )}
+                    </div>
+
+                    {/* Add/Remove buttons */}
+                    <div
+                      className="hdt_segment-controls"
+                      style={{ paddingTop: "10px" }}
+                    >
+                      {idx === multicitySegments.length - 1 && (
+                        <>
+                          {multicitySegments.length > 1 && (
+                            <button
+                              style={{
+                                background: "grey",
+                                borderRadius: "10px",
+                                margin: "10px",
+                              }}
+                              onClick={() => removeSegment(idx)}
+                              className="remove-segment text-white"
+                            >
+                              Remove
+                            </button>
+                          )}
+
+                          {multicitySegments.length < 5 && (
+                            <button
+                              style={{
+                                background: "grey",
+                                borderRadius: "10px",
+                                margin: "10px",
+                              }}
+                              onClick={addSegment}
+                              className="add-segment text-white"
+                            >
+                              Add
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* <AppListSearch operEngLocation={openTo} setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} /> */}
           </div>
