@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Select } from "antd";
 const apiListAirLineState = require("./apiListAirLineState");
 
-const AppListSeacrh = ({
+const AppListSearch = ({
   setSelectFrom,
   operEngLocation,
   // setSelectFromSub,
@@ -222,8 +222,8 @@ const AppListSeacrh = ({
   // ]
 
   const handleChange = (value) => {
-    // alert("asdasdasdas")
     const getDtaa = value.split(",");
+    alert(getDtaa)
 
     setSelectFrom(getDtaa[0]);
     // setSelectFromSub(getDtaa[1]);
@@ -236,8 +236,13 @@ const AppListSeacrh = ({
       return;
     }
 
-    const filtered = apiListAirLineState.filter((item) =>
-      item.city.toLowerCase().startsWith(searchText.toLowerCase())
+    // const filtered = apiListAirLineState.filter((item) =>
+    //   item.city.toLowerCase().startsWith(searchText.toLowerCase())
+    // );
+    const filtered = apiListAirLineState.filter(
+      (item) =>
+        item?.key?.toLowerCase().startsWith(searchText.toLowerCase()) ||
+        item?.city?.toLowerCase().startsWith(searchText.toLowerCase())
     );
 
     setFilteredOptions(filtered.slice(0, 10)); // Show top 10 only
@@ -352,4 +357,4 @@ const AppListSeacrh = ({
     />
   );
 };
-export default AppListSeacrh;
+export default AppListSearch;

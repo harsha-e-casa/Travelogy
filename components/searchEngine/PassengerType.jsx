@@ -14,7 +14,7 @@ export const PassengerType = ({
   };
 
   return (
-    <div className="plans mt-35 mb_8 ml_10">
+    <div className="plans ml_10 ">
       <label className="plan basic-plan" htmlFor="regular">
         <input
           type="radio"

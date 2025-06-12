@@ -1,15 +1,22 @@
 import { useContext, useEffect, useState } from "react";
-import { postDataBookingDetails } from "@/services/NetworkAdapter";
+import {
+  postDataBookingDetails,
+  postAirDataBookingDetails,
+  postFareValidate,
+  postUnHold,
+} from "@/services/NetworkAdapter";
 import dayjs from "dayjs";
 import { AppContext } from "@/util/AppContext";
 import { format } from "date-fns";
 import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
-const Alldetails = () => {
+const Alldetails = ({ totalpricee }) => {
   const searchParams = useSearchParams();
-  
+  const router = useRouter();
+
   const bookingId = searchParams.get("booking_id");
-  console.log("bookingid from alldetails",bookingId)
+  console.log("bookingid from alldetails", bookingId);
 
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
@@ -22,8 +29,70 @@ const Alldetails = () => {
     setShowAllPassengers((prev) => !prev);
   };
 
+  const handleCancellation = () => {
+    console.log("handleCancellation function == > ");
+  }
+
+  const handleUnHold = async () => {
+    console.log("handleUnHold ==> ");
+    console.log(bookingDetails);
+    const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos;
+    const pnrs = [];
+
+    if (Array.isArray(travellerInfos)) {
+      travellerInfos.forEach((traveller) => {
+        const pnrDetails = traveller.pnrDetails;
+        if (pnrDetails && typeof pnrDetails === "object") {
+          const pnrValues = Object.values(pnrDetails); // gets array of values like ["X8B25P"]
+          pnrs.push(...pnrValues); // append all values
+        }
+      });
+    }
+
+    const unHoldParams = {
+      bookingId: bookingId,
+      pnrs: pnrs,
+    };
+
+    console.log("unHoldParams ----------- ", unHoldParams);
+
+    const result = await postUnHold(unHoldParams);
+    console.log("resulttttttttttttttt ==> ", result);
+
+    if (result?.status?.success === true) {
+      // router.push(`/BookingDetails?booking_id=${bookingId}`);
+      window.location.reload();
+    }
+  };
+
+  const handlePayNow = async () => {
+    console.log("handlePayNow ==> ");
+    const parameter = { bookingId: bookingId };
+    try {
+      const result = await postFareValidate(parameter);
+      console.log("resultttttttt ", result);
+
+      if (result?.status && result.status === true) {
+        // payment
+        // then
+        const airBookParameter = {
+          bookingId: bookingId,
+          paymentInfos: [
+            {
+              amount: totalpricee?.fC?.TF,
+            },
+          ],
+        };
+        const callAirBookResult = await postAirDat;
+        aBookingDetails(airBookParameter);
+        console.log("callAirBookResult ==> ", callAirBookResult);
+      }
+    } catch (error) {
+      console.log("zzzzzzzzzz ", error);
+    }
+  };
+
   const bookingDetailsapi = async (bookingId) => {
-   
     setLoading(true);
     setError(null);
 
@@ -31,154 +100,15 @@ const Alldetails = () => {
       setError("Booking ID is missing");
       setLoading(false);
       return;
-    }
-    else{
-      console.log("found")
+    } else {
+      console.log("found");
     }
 
     try {
       const parameter = { bookingId: bookingId, requirePaxPricing: true };
-      console.log("paramerter",parameter)
+      console.log("paramerter", parameter);
 
       const data = await postDataBookingDetails(parameter);
-    //   const data={
-    //     "order": {
-    //         "bookingId": "TJS108500125746",
-    //         "amount": 5020.70,
-    //         "markup": 0.00,
-    //         "deliveryInfo": {
-    //             "emails": [
-    //                 "xyz@xyz.com"
-    //             ],
-    //             "contacts": [
-    //                 "9489275524"
-    //             ]
-    //         },
-    //         "status": "SUCCESS",
-    //         "createdOn": "2021-10-20T13:10:29.850"
-    //     },
-    //     "itemInfos": {
-    //         "AIR": {
-    //             "tripInfos": [
-    //                 {
-    //                     "sI": [
-    //                         {
-    //                             "id": "42306",
-    //                             "fD": {
-    //                                 "aI": {
-    //                                     "code": "SG",
-    //                                     "name": "SpiceJet",
-    //                                     "isLcc": true
-    //                                 },
-    //                                 "fN": "8105",
-    //                                 "eT": "737"
-    //                             },
-    //                             "stops": 0,
-    //                             "duration": 175,
-    //                             "da": {
-    //                                 "code": "DEL",
-    //                                 "name": "Delhi Indira Gandhi Intl",
-    //                                 "cityCode": "DEL",
-    //                                 "city": "Delhi",
-    //                                 "country": "India",
-    //                                 "countryCode": "IN",
-    //                                 "terminal": "Terminal 3"
-    //                             },
-    //                             "aa": {
-    //                                 "code": "MAA",
-    //                                 "name": "Chennai Arpt",
-    //                                 "cityCode": "MAA",
-    //                                 "city": "Chennai",
-    //                                 "country": "India",
-    //                                 "countryCode": "IN",
-    //                                 "terminal": "Terminal 1"
-    //                             },
-    //                             "dt": "2021-12-19T20:15",
-    //                             "at": "2021-12-19T23:10",
-    //                             "iand": false,
-    //                             "sN": 0,
-    //                             "bI": {
-    //                                 "tI": [
-    //                                     {
-    //                                         "fd": {
-    //                                             "fC": {
-    //                                                 "NF": 5020.70,
-    //                                                 "IGST": 2.70,
-    //                                                 "BF": 4385.00,
-    //                                                 "TF": 5020.70,
-    //                                                 "TAF": 635.70
-    //                                             },
-    //                                             "afC": {
-    //                                                 "TAF": {
-    //                                                     "MFT": 2.70,
-    //                                                     "YQ": 0.00,
-    //                                                     "AGST": 223.00,
-    //                                                     "OT": 395.00,
-    //                                                     "MF": 15.00
-    //                                                 }
-    //                                             },
-    //                                             "bI": {
-    //                                                 "iB": "15 Kg",
-    //                                                 "cB": "7 Kg"
-    //                                             },
-    //                                             "rT": 1,
-    //                                             "cc": "ECONOMY",
-    //                                             "cB": "RS",
-    //                                             "fB": "USAV",
-    //                                             "mI": false
-    //                                         },
-    //                                         "ti": "Mr",
-    //                                         "pt": "ADULT",
-    //                                         "fN": "TestA",
-    //                                         "lN": "AdultA",
-    //                                         "dob": "1996-08-09"
-    //                                     }
-    //                                 ]
-    //                             }
-    //                         }
-    //                     ]
-    //                 }
-    //             ],
-    //             "travellerInfos": [
-    //                 {
-    //                     "pnrDetails": {
-    //                         "DEL-MAA": "ODPPHN"
-    //                     },
-    //                     "ti": "Mr",
-    //                     "pt": "ADULT",
-    //                     "fN": "TestA",
-    //                     "lN": "AdultA",
-    //                     "dob": "1996-08-09"
-    //                 }
-    //             ],
-    //             "totalPriceInfo": {
-    //                 "totalFareDetail": {
-    //                     "fC": {
-    //                         "NF": 5020.70,
-    //                         "IGST": 2.70,
-    //                         "BF": 4385.00,
-    //                         "TF": 5020.70,
-    //                         "TAF": 635.70
-    //                     },
-    //                     "afC": {
-    //                         "TAF": {
-    //                             "MFT": 2.70,
-    //                             "YQ": 0.00,
-    //                             "AGST": 223.00,
-    //                             "OT": 395.00,
-    //                             "MF": 15.00
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     },
-    //     "gstInfo": {},
-    //     "status": {
-    //         "success": true,
-    //         "httpStatus": 200
-    //     }
-    // }
       console.log("Booking details:", data);
 
       setBookingdetails(data); // Update state with flight details
@@ -246,6 +176,10 @@ const Alldetails = () => {
       (traveller) => traveller
     ) ?? [];
   console.log("segments", segments);
+  console.log(
+    "bookingDetails?.itemInfos?.AIR?.travellerInfos ",
+    bookingDetails?.itemInfos?.AIR?.travellerInfos
+  );
 
   return (
     <>
@@ -258,7 +192,7 @@ const Alldetails = () => {
                 Booking status:{" "}
                 <span
                   className={
-                    bookingDetails?.order?.status==="SUCCESS"
+                    bookingDetails?.order?.status === "SUCCESS"
                       ? "bg-green-600 text-white pl-1 pr-1 rounded-full"
                       : "bg-red-600 text-white pl-1 pr-1 rounded-full"
                   }
@@ -272,15 +206,40 @@ const Alldetails = () => {
             </div>
 
             <div>
-              {bookingDetails?.order?.status==="SUCCESS"?<button className="border border-grey rounded">More</button>:
-              (<>
-              <div className="flex flex-row gap-3">
-                <button className="border border-grey rounded">Unhold</button>
-                <button className="border border-grey rounded">Pay Now</button>
+              {bookingDetails?.order?.status === "SUCCESS" && (
+                <div className="flex flex-row gap-3">
+                  <button
+                    className="border border-grey rounded"
+                    onClick={handleCancellation}
+                  >
+                    Cancellation
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div>
+              {bookingDetails?.order?.status === "SUCCESS" ? (
                 <button className="border border-grey rounded">More</button>
-              </div>
-              </>)}
-              
+              ) : (
+                <>
+                  <div className="flex flex-row gap-3">
+                    <button
+                      className="border border-grey rounded"
+                      onClick={handleUnHold}
+                    >
+                      Unhold
+                    </button>
+                    <button
+                      className="border border-grey rounded"
+                      onClick={handlePayNow}
+                    >
+                      Pay Now
+                    </button>
+                    <button className="border border-grey rounded">More</button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -322,7 +281,10 @@ const Alldetails = () => {
 
               return (
                 <>
-                  <div className="shadow rounded-md p-3 mb-5 ">
+                  <div
+                    key={`${tripIndex}-${segIndex}`}
+                    className="shadow rounded-md p-3 mb-5 "
+                  >
                     {/* header */}
                     <div className="flex flex-col justify-start  items-start">
                       {/* City and direction row */}
@@ -531,12 +493,57 @@ const Alldetails = () => {
                 </tr>
               </thead>
               <tbody>
-                {travellerinfos.map((traveller, travellerIndex) => {
+                {/* {travellerinfos.map((traveller, travellerIndex) => {
+                  console.log("render traveller --> ",traveller);
                   const segmentKeys = Object.keys(traveller.pnrDetails || {});
+                  console.log("render segmentKeys --> ",segmentKeys);
                   return segmentKeys.map((segmentKey, segmentIndex) => {
                     const pnr = traveller.pnrDetails?.[segmentKey] ?? "N/A";
                     const ticket =
                       traveller.ticketNumberDetails?.[segmentKey] ?? "N/A";
+
+                    return (
+                      <tr key={`${travellerIndex}-${segmentIndex}`}>
+                        <td className="px-4 py-3 border-b border-gray-200 text-black">
+                          {travellerIndex + 1}
+                        </td>
+                        <td className="px-4 py-3 border-b border-gray-200 text-black">
+                          {`${traveller.ti}. ${traveller.fN} ${traveller.lN}`}
+                        </td>
+                        <td className="px-4 py-3 border-b border-gray-200 text-black">
+                          {traveller.pt}
+                        </td>
+                        <td className="px-4 py-3 border-b border-gray-200 text-black">
+                          {segmentKey}
+                        </td>
+                        <td className="px-4 py-3 border-b border-gray-200 text-black">
+                          {pnr}
+                        </td>
+                        <td className="px-4 py-3 border-b border-gray-200 text-black">
+                          {ticket}
+                        </td>
+                      </tr>
+                    );
+                  });
+                })} */}
+                {travellerinfos?.map((traveller, travellerIndex) => {
+                  const segmentKeys = Object.keys(
+                    traveller.pnrDetails || { "N/A": undefined }
+                  );
+
+                  return segmentKeys.map((segmentKey, segmentIndex) => {
+                    const pnr = traveller.pnrDetails?.[segmentKey] ?? "N/A";
+                    const ticket =
+                      traveller.ticketNumberDetails?.[segmentKey] ?? "N/A";
+                    console.log("segmentKey ========== ", segmentKey);
+                    if (segmentKey === "N/A") {
+                      const fallbackKeys = Object.keys(
+                        traveller.checkinStatusMap || {}
+                      );
+                      if (fallbackKeys.length > 0) {
+                        segmentKey = fallbackKeys[0]; // or handle multiple if needed
+                      }
+                    }
 
                     return (
                       <tr key={`${travellerIndex}-${segmentIndex}`}>

@@ -118,7 +118,7 @@ export default function BookTicket() {
   const [totalpricee, setTotalpricee] = useState<string | null>(null);
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
-   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
+  const [isBaggageOpen, setIsBaggageOpen] = useState(false);
   const [numAdults, setNumAdults] = useState(null); // Example: You can dynamically set numAdults here
   const [numChild, setNumChild] = useState(null); // Example: You can dynamically set numAdults here
   const [numInfants, setNumInfants] = useState(null);
@@ -129,7 +129,10 @@ export default function BookTicket() {
 
   const [travellerInfoV, setTravellerInfoV] = useState(null);
 
+
+  const [baggageinfo, setBaggageinfo] = useState([]);
   const fetchFlights = async (priceId: string) => {
+
     setLoading(true);
     setError(null);
 
@@ -159,17 +162,18 @@ export default function BookTicket() {
         const apiErrorMessage =
           data.errors?.[0]?.message || "Unknown API error";
         const apiErrorDetails = data.errors?.[0]?.details || "";
-        const fullErrorMessage = `${apiErrorMessage}${
-          apiErrorDetails ? ` - ${apiErrorDetails}` : ""
-        }`;
+        const fullErrorMessage = `${apiErrorMessage}${apiErrorDetails ? ` - ${apiErrorDetails}` : ""
+          }`;
 
         throw new Error(fullErrorMessage);
       }
 
-      console.log("data from page.tsx",data);
+      console.log("data from page.tsx", data);
+      localStorage.setItem("apiData", JSON.stringify(data));
+      console.log("apidata from book-ticket page.tsx", apiData)
 
       setApiData(data);
-      console.log(apiData)
+
 
       const firstTrip = data.tripInfos?.[0];
       setBookingId(data.bookingId);
@@ -193,7 +197,7 @@ export default function BookTicket() {
       setNetFare(netFare);
 
       const ssrInfo = segs?.[0]?.ssrInfo;
-      console.log("ssr info from page.tsx",ssrInfo)
+      console.log("ssr info from page.tsx", ssrInfo)
       const mealOptions = ssrInfo?.MEAL || [];
 
       const fareRuleInformation = firstTrip?.fareRuleInformation || {};
@@ -241,7 +245,7 @@ export default function BookTicket() {
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
     if (tcs_id) fetchFlights(tcs_id);
-  }, [tcs_id]);
+  }, []);
 
   const { Option } = Select;
 
@@ -263,14 +267,14 @@ export default function BookTicket() {
     }
   }, [totalpricee]);
 
-  useEffect(()=>{
-    if(apiData){
+  useEffect(() => {
+    if (apiData) {
       console.log("api data from the page.tsx kk", apiData.tripInfos)
     }
-  },[apiData])
+  }, [apiData])
 
   const searchTickets = () => {
-    let departureFrom = getCookie("gy_da");
+    let departureFrom = Cookieget("gy_da");
     let arrivalTo = getCookie("gy_aa");
     let adults = getCookie("gy_adult");
     let children = getCookie("gy_child");
@@ -558,469 +562,525 @@ export default function BookTicket() {
         // console.log("groupedadults", groupedAdults);
 
 
-//          const data={
-//     "tripInfos": [
-//         {
-//             "sI": [
-//                 {
-//                     "id": "409",
-//                     "fD": {
-//                         "aI": {
-//                             "code": "SG",
-//                             "name": "SpiceJet",
-//                             "isLcc": true
-//                         },
-//                         "fN": "8153",
-//                         "eT": "737"
-//                     },
-//                     "stops": 0,
-//                     "so": [],
-//                     "duration": 135,
-//                     "da": {
-//                         "code": "DEL",
-//                         "name": "Delhi Indira Gandhi Intl",
-//                         "cityCode": "DEL",
-//                         "city": "Delhi",
-//                         "country": "India",
-//                         "countryCode": "IN",
-//                         "terminal": "Terminal 3"
-//                     },
-//                     "aa": {
-//                         "code": "BOM",
-//                         "name": "Chhatrapati Shivaji",
-//                         "cityCode": "BOM",
-//                         "city": "Mumbai",
-//                         "country": "India",
-//                         "countryCode": "IN",
-//                         "terminal": "Terminal 2"
-//                     },
-//                     "dt": "2020-11-19T06:20",
-//                     "at": "2020-11-19T08:35",
-//                     "iand": false,
-//                     "isRs": false,
-//                     "sN": 0,
-//                     "ssrInfo": {
-//                         "BAGGAGE": [
-//                             {
-//                                 "code": "BOF1",
-//                                 "amount": 100.00,
-//                                 "desc": "Bag Out First with 1 Bag"
-//                             },
-//                             {
-//                                 "code": "BOF2",
-//                                 "amount": 200.00,
-//                                 "desc": "Bag Out First with 2 Bag"
-//                             },
-//                             {
-//                                 "code": "BOF3",
-//                                 "amount": 450.00,
-//                                 "desc": "Bag Out First with 3 Bag"
-//                             },
-//                             {
-//                                 "code": "EB05",
-//                                 "amount": 1900.00,
-//                                 "desc": "5KG"
-//                             },
-//                             {
-//                                 "code": "EB15",
-//                                 "amount": 5700.00,
-//                                 "desc": "15KG"
-//                             },
-//                             {
-//                                 "code": "EB20",
-//                                 "amount": 7600.00,
-//                                 "desc": "20KG"
-//                             },
-//                             {
-//                                 "code": "EB30",
-//                                 "amount": 11400.00,
-//                                 "desc": "30KG"
-//                             }
-//                         ],
-//                         "MEAL": [
-//                             {
-//                                 "code": "LCVS",
-//                                 "amount": 0.00,
-//                                 "desc": "Low cal salad Vegetarian"
-//                             },
-//                             {
-//                                 "code": "LCNS",
-//                                 "amount": 0.00,
-//                                 "desc": "Low cal salad Non Vegetarian"
-//                             },
-//                             {
-//                                 "code": "VGSW",
-//                                 "amount": 180.00,
-//                                 "desc": "Veg Sandwich/Wrap/Sub"
-//                             },
-//                             {
-//                                 "code": "NVSW",
-//                                 "amount": 180.00,
-//                                 "desc": "Non Veg Sandwich/Wrap/Sub"
-//                             },
-//                             {
-//                                 "code": "JNSW",
-//                                 "amount": 180.00,
-//                                 "desc": "Jain Cold Sandwich (current Cucumber and Tomato sandwich)"
-//                             },
-//                             {
-//                                 "code": "VGML",
-//                                 "amount": 275.00,
-//                                 "desc": "Veg Meal"
-//                             },
-//                             {
-//                                 "code": "NVML",
-//                                 "amount": 275.00,
-//                                 "desc": "Non Veg Meal"
-//                             },
-//                             {
-//                                 "code": "VCC2",
-//                                 "amount": 300.00,
-//                                 "desc": "Vegetable in Red Thai Curry with Steamed Rice"
-//                             },
-//                             {
-//                                 "code": "NCC6",
-//                                 "amount": 300.00,
-//                                 "desc": "Chicken schezwan on bed of fried rice"
-//                             },
-//                             {
-//                                 "code": "NCC5",
-//                                 "amount": 300.00,
-//                                 "desc": "Tawa Fish masala on bed of  Steamed rice with tadka masoordal"
-//                             },
-//                             {
-//                                 "code": "NCC4",
-//                                 "amount": 300.00,
-//                                 "desc": "Tandoori Chicken tangri with chicken haryali tikka & vegetable shami kebab"
-//                             },
-//                             {
-//                                 "code": "NCC2",
-//                                 "amount": 300.00,
-//                                 "desc": "Chicken in Red Thai Curry with Steamed Rice"
-//                             },
-//                             {
-//                                 "code": "NCC1",
-//                                 "amount": 300.00,
-//                                 "desc": "Grilled Chicken Breast with Mushroom Sauce, Yellow Rice, Saut Carrot & Beans Baton"
-//                             },
-//                             {
-//                                 "code": "JNML",
-//                                 "amount": 350.00,
-//                                 "desc": "Jain Hot Meal"
-//                             },
-//                             {
-//                                 "code": "GFVG",
-//                                 "amount": 350.00,
-//                                 "desc": "Vegetarian Gluten-free Hot Meal"
-//                             },
-//                             {
-//                                 "code": "GFNV",
-//                                 "amount": 350.00,
-//                                 "desc": "Non Vegetarian Gluten-free Hot Meal"
-//                             },
-//                             {
-//                                 "code": "GFCM",
-//                                 "amount": 350.00,
-//                                 "desc": "Vegetarian Gluten-free Cold Meal"
-//                             },
-//                             {
-//                                 "code": "FPML",
-//                                 "amount": 350.00,
-//                                 "desc": "Fruit Platter"
-//                             },
-//                             {
-//                                 "code": "DNVL",
-//                                 "amount": 350.00,
-//                                 "desc": "Non Vegetarian Diabetic Hot Meal"
-//                             },
-//                             {
-//                                 "code": "DBML",
-//                                 "amount": 350.00,
-//                                 "desc": "Vegetarian Diabetic Hot Meal"
-//                             },
-//                             {
-//                                 "code": "CHML",
-//                                 "amount": 350.00,
-//                                 "desc": "Kids meal"
-//                             }
-//                         ]
-//                     },
-//                     "ac": []
-//                 }
-//             ],
-//             "totalPriceList": [
-//                 {
-//                     "fd": {
-//                         "INFANT": {
-//                             "fC": {
-//                                 "TF": 1277.70,
-//                                 "TAF": 77.70,
-//                                 "NF": 1277.70,
-//                                 "BF": 1200.00
-//                             },
-//                             "afC": {
-//                                 "TAF": {
-//                                     "MF": 15.00,
-//                                     "OT": 0.00,
-//                                     "AGST": 60.00,
-//                                     "MFT": 2.70
-//                                 }
-//                             },
-//                             "isHB": true
-//                         },
-//                         "ADULT": {
-//                             "fC": {
-//                                 "NCM": 471.20,
-//                                 "TAF": 1155.00,
-//                                 "TF": 3635.00,
-//                                 "NF": 3163.80,
-//                                 "BF": 2480.00
-//                             },
-//                             "afC": {
-//                                 "NCM": {
-//                                     "TDS": -24.80,
-//                                     "OT": 496.00
-//                                 },
-//                                 "TAF": {
-//                                     "MF": 500.00,
-//                                     "OT": 433.00,
-//                                     "AGST": 132.00,
-//                                     "MFT": 90.00
-//                                 }
-//                             },
-//                             "sR": 1,
-//                             "bI": {
-//                                 "iB": "0Default"
-//                             },
-//                             "isHB": true,
-//                             "rT": 2,
-//                             "cc": "ECONOMY",
-//                             "cB": "HO",
-//                             "fB": "UHBO"
-//                         },
-//                         "CHILD": {
-//                             "fC": {
-//                                 "NCM": 471.20,
-//                                 "TAF": 1155.00,
-//                                 "TF": 3635.00,
-//                                 "NF": 3163.80,
-//                                 "BF": 2480.00
-//                             },
-//                             "afC": {
-//                                 "NCM": {
-//                                     "TDS": -24.80,
-//                                     "OT": 496.00
-//                                 },
-//                                 "TAF": {
-//                                     "MF": 500.00,
-//                                     "OT": 433.00,
-//                                     "AGST": 132.00,
-//                                     "MFT": 90.00
-//                                 }
-//                             },
-//                             "sR": 1,
-//                             "bI": {
-//                                 "iB": "0Default"
-//                             },
-//                             "isHB": true,
-//                             "rT": 2,
-//                             "cc": "ECONOMY",
-//                             "cB": "HO",
-//                             "fB": "UHBO"
-//                         }
-//                     },
-//                     "fareIdentifier": "HANDBAGGAGE",
-//                     "id": "4-0333594672_DELBOMSG8153_811996401394509",
-//                     "messages": [],
-//                     "pc": {
-//                         "code": "SG",
-//                         "name": "SpiceJet",
-//                         "isLcc": true
-//                     }
-//                 }
-//             ]
-//         }
-//     ],
-//     "alerts": [
-//         {
-//             "oldFare": 7403.10,
-//             "newFare": 8547.70,
-//             "type": "FAREALERT"
-//         }
-//     ],
-//     "searchQuery": {
-//         "routeInfos": [
-//             {
-//                 "fromCityOrAirport": {
-//                     "code": "DEL",
-//                     "name": "Delhi Indira Gandhi Intl",
-//                     "cityCode": "DEL",
-//                     "city": "Delhi",
-//                     "country": "India",
-//                     "countryCode": "IN"
-//                 },
-//                 "toCityOrAirport": {
-//                     "code": "BOM",
-//                     "name": "Chhatrapati Shivaji",
-//                     "cityCode": "BOM",
-//                     "city": "Mumbai",
-//                     "country": "India",
-//                     "countryCode": "IN"
-//                 },
-//                 "travelDate": "2020-11-19"
-//             }
-//         ],
-//         "cabinClass": "ECONOMY",
-//         "paxInfo": {
-//             "ADULT": 1,
-//             "CHILD": 1,
-//             "INFANT": 1
-//         },
-//         "searchType": "ONEWAY",
-//         "searchModifiers": {},
-//         "sourceIds": [
-//             4
-//         ],
-//         "isDomestic": true,
-//         "isCustomCombination": false,
-//         "isOneWay": true,
-//         "isDomesticMultiCity": false,
-//         "isDomesticReturn": false,
-//         "isMultiCity": false
-//     },
-//     "bookingId": "TJS105300003497",
-//     "totalPriceInfo": {
-//         "totalFareDetail": {
-//             "fC": {
-//                 "NCM": 942.40,
-//                 "TF": 8547.70,
-//                 "TAF": 2387.70,
-//                 "NF": 7605.30,
-//                 "BF": 6160.00
-//             },
-//             "afC": {
-//                 "NCM": {
-//                     "TDS": -49.60,
-//                     "OT": 992.00
-//                 },
-//                 "TAF": {
-//                     "MF": 1015.00,
-//                     "OT": 866.00,
-//                     "AGST": 324.00,
-//                     "MFT": 182.70
-//                 }
-//             }
-//         }
-//     },
-//     "status": {
-//         "success": true,
-//         "httpStatus": 200
-//     },
-//     "conditions": {
-//         "ffas": [],
-//         "isa": true,
-//         "dob": {
-//             "adobr": false,
-//             "cdobr": false,
-//             "idobr": true
-//         },
-//         "isBA": true,
-//         "st": 840,
-//         "sct": "2020-02-13T20:53:57.285",
-//         "gst": {
-//             "gstappl": true,
-//             "igm": false
-//         }
-//     }
-// }
+        //          const data={
+        //     "tripInfos": [
+        //         {
+        //             "sI": [
+        //                 {
+        //                     "id": "409",
+        //                     "fD": {
+        //                         "aI": {
+        //                             "code": "SG",
+        //                             "name": "SpiceJet",
+        //                             "isLcc": true
+        //                         },
+        //                         "fN": "8153",
+        //                         "eT": "737"
+        //                     },
+        //                     "stops": 0,
+        //                     "so": [],
+        //                     "duration": 135,
+        //                     "da": {
+        //                         "code": "DEL",
+        //                         "name": "Delhi Indira Gandhi Intl",
+        //                         "cityCode": "DEL",
+        //                         "city": "Delhi",
+        //                         "country": "India",
+        //                         "countryCode": "IN",
+        //                         "terminal": "Terminal 3"
+        //                     },
+        //                     "aa": {
+        //                         "code": "BOM",
+        //                         "name": "Chhatrapati Shivaji",
+        //                         "cityCode": "BOM",
+        //                         "city": "Mumbai",
+        //                         "country": "India",
+        //                         "countryCode": "IN",
+        //                         "terminal": "Terminal 2"
+        //                     },
+        //                     "dt": "2020-11-19T06:20",
+        //                     "at": "2020-11-19T08:35",
+        //                     "iand": false,
+        //                     "isRs": false,
+        //                     "sN": 0,
+        //                     "ssrInfo": {
+        //                         "BAGGAGE": [
+        //                             {
+        //                                 "code": "BOF1",
+        //                                 "amount": 100.00,
+        //                                 "desc": "Bag Out First with 1 Bag"
+        //                             },
+        //                             {
+        //                                 "code": "BOF2",
+        //                                 "amount": 200.00,
+        //                                 "desc": "Bag Out First with 2 Bag"
+        //                             },
+        //                             {
+        //                                 "code": "BOF3",
+        //                                 "amount": 450.00,
+        //                                 "desc": "Bag Out First with 3 Bag"
+        //                             },
+        //                             {
+        //                                 "code": "EB05",
+        //                                 "amount": 1900.00,
+        //                                 "desc": "5KG"
+        //                             },
+        //                             {
+        //                                 "code": "EB15",
+        //                                 "amount": 5700.00,
+        //                                 "desc": "15KG"
+        //                             },
+        //                             {
+        //                                 "code": "EB20",
+        //                                 "amount": 7600.00,
+        //                                 "desc": "20KG"
+        //                             },
+        //                             {
+        //                                 "code": "EB30",
+        //                                 "amount": 11400.00,
+        //                                 "desc": "30KG"
+        //                             }
+        //                         ],
+        //                         "MEAL": [
+        //                             {
+        //                                 "code": "LCVS",
+        //                                 "amount": 0.00,
+        //                                 "desc": "Low cal salad Vegetarian"
+        //                             },
+        //                             {
+        //                                 "code": "LCNS",
+        //                                 "amount": 0.00,
+        //                                 "desc": "Low cal salad Non Vegetarian"
+        //                             },
+        //                             {
+        //                                 "code": "VGSW",
+        //                                 "amount": 180.00,
+        //                                 "desc": "Veg Sandwich/Wrap/Sub"
+        //                             },
+        //                             {
+        //                                 "code": "NVSW",
+        //                                 "amount": 180.00,
+        //                                 "desc": "Non Veg Sandwich/Wrap/Sub"
+        //                             },
+        //                             {
+        //                                 "code": "JNSW",
+        //                                 "amount": 180.00,
+        //                                 "desc": "Jain Cold Sandwich (current Cucumber and Tomato sandwich)"
+        //                             },
+        //                             {
+        //                                 "code": "VGML",
+        //                                 "amount": 275.00,
+        //                                 "desc": "Veg Meal"
+        //                             },
+        //                             {
+        //                                 "code": "NVML",
+        //                                 "amount": 275.00,
+        //                                 "desc": "Non Veg Meal"
+        //                             },
+        //                             {
+        //                                 "code": "VCC2",
+        //                                 "amount": 300.00,
+        //                                 "desc": "Vegetable in Red Thai Curry with Steamed Rice"
+        //                             },
+        //                             {
+        //                                 "code": "NCC6",
+        //                                 "amount": 300.00,
+        //                                 "desc": "Chicken schezwan on bed of fried rice"
+        //                             },
+        //                             {
+        //                                 "code": "NCC5",
+        //                                 "amount": 300.00,
+        //                                 "desc": "Tawa Fish masala on bed of  Steamed rice with tadka masoordal"
+        //                             },
+        //                             {
+        //                                 "code": "NCC4",
+        //                                 "amount": 300.00,
+        //                                 "desc": "Tandoori Chicken tangri with chicken haryali tikka & vegetable shami kebab"
+        //                             },
+        //                             {
+        //                                 "code": "NCC2",
+        //                                 "amount": 300.00,
+        //                                 "desc": "Chicken in Red Thai Curry with Steamed Rice"
+        //                             },
+        //                             {
+        //                                 "code": "NCC1",
+        //                                 "amount": 300.00,
+        //                                 "desc": "Grilled Chicken Breast with Mushroom Sauce, Yellow Rice, Saut Carrot & Beans Baton"
+        //                             },
+        //                             {
+        //                                 "code": "JNML",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Jain Hot Meal"
+        //                             },
+        //                             {
+        //                                 "code": "GFVG",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Vegetarian Gluten-free Hot Meal"
+        //                             },
+        //                             {
+        //                                 "code": "GFNV",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Non Vegetarian Gluten-free Hot Meal"
+        //                             },
+        //                             {
+        //                                 "code": "GFCM",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Vegetarian Gluten-free Cold Meal"
+        //                             },
+        //                             {
+        //                                 "code": "FPML",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Fruit Platter"
+        //                             },
+        //                             {
+        //                                 "code": "DNVL",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Non Vegetarian Diabetic Hot Meal"
+        //                             },
+        //                             {
+        //                                 "code": "DBML",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Vegetarian Diabetic Hot Meal"
+        //                             },
+        //                             {
+        //                                 "code": "CHML",
+        //                                 "amount": 350.00,
+        //                                 "desc": "Kids meal"
+        //                             }
+        //                         ]
+        //                     },
+        //                     "ac": []
+        //                 }
+        //             ],
+        //             "totalPriceList": [
+        //                 {
+        //                     "fd": {
+        //                         "INFANT": {
+        //                             "fC": {
+        //                                 "TF": 1277.70,
+        //                                 "TAF": 77.70,
+        //                                 "NF": 1277.70,
+        //                                 "BF": 1200.00
+        //                             },
+        //                             "afC": {
+        //                                 "TAF": {
+        //                                     "MF": 15.00,
+        //                                     "OT": 0.00,
+        //                                     "AGST": 60.00,
+        //                                     "MFT": 2.70
+        //                                 }
+        //                             },
+        //                             "isHB": true
+        //                         },
+        //                         "ADULT": {
+        //                             "fC": {
+        //                                 "NCM": 471.20,
+        //                                 "TAF": 1155.00,
+        //                                 "TF": 3635.00,
+        //                                 "NF": 3163.80,
+        //                                 "BF": 2480.00
+        //                             },
+        //                             "afC": {
+        //                                 "NCM": {
+        //                                     "TDS": -24.80,
+        //                                     "OT": 496.00
+        //                                 },
+        //                                 "TAF": {
+        //                                     "MF": 500.00,
+        //                                     "OT": 433.00,
+        //                                     "AGST": 132.00,
+        //                                     "MFT": 90.00
+        //                                 }
+        //                             },
+        //                             "sR": 1,
+        //                             "bI": {
+        //                                 "iB": "0Default"
+        //                             },
+        //                             "isHB": true,
+        //                             "rT": 2,
+        //                             "cc": "ECONOMY",
+        //                             "cB": "HO",
+        //                             "fB": "UHBO"
+        //                         },
+        //                         "CHILD": {
+        //                             "fC": {
+        //                                 "NCM": 471.20,
+        //                                 "TAF": 1155.00,
+        //                                 "TF": 3635.00,
+        //                                 "NF": 3163.80,
+        //                                 "BF": 2480.00
+        //                             },
+        //                             "afC": {
+        //                                 "NCM": {
+        //                                     "TDS": -24.80,
+        //                                     "OT": 496.00
+        //                                 },
+        //                                 "TAF": {
+        //                                     "MF": 500.00,
+        //                                     "OT": 433.00,
+        //                                     "AGST": 132.00,
+        //                                     "MFT": 90.00
+        //                                 }
+        //                             },
+        //                             "sR": 1,
+        //                             "bI": {
+        //                                 "iB": "0Default"
+        //                             },
+        //                             "isHB": true,
+        //                             "rT": 2,
+        //                             "cc": "ECONOMY",
+        //                             "cB": "HO",
+        //                             "fB": "UHBO"
+        //                         }
+        //                     },
+        //                     "fareIdentifier": "HANDBAGGAGE",
+        //                     "id": "4-0333594672_DELBOMSG8153_811996401394509",
+        //                     "messages": [],
+        //                     "pc": {
+        //                         "code": "SG",
+        //                         "name": "SpiceJet",
+        //                         "isLcc": true
+        //                     }
+        //                 }
+        //             ]
+        //         }
+        //     ],
+        //     "alerts": [
+        //         {
+        //             "oldFare": 7403.10,
+        //             "newFare": 8547.70,
+        //             "type": "FAREALERT"
+        //         }
+        //     ],
+        //     "searchQuery": {
+        //         "routeInfos": [
+        //             {
+        //                 "fromCityOrAirport": {
+        //                     "code": "DEL",
+        //                     "name": "Delhi Indira Gandhi Intl",
+        //                     "cityCode": "DEL",
+        //                     "city": "Delhi",
+        //                     "country": "India",
+        //                     "countryCode": "IN"
+        //                 },
+        //                 "toCityOrAirport": {
+        //                     "code": "BOM",
+        //                     "name": "Chhatrapati Shivaji",
+        //                     "cityCode": "BOM",
+        //                     "city": "Mumbai",
+        //                     "country": "India",
+        //                     "countryCode": "IN"
+        //                 },
+        //                 "travelDate": "2020-11-19"
+        //             }
+        //         ],
+        //         "cabinClass": "ECONOMY",
+        //         "paxInfo": {
+        //             "ADULT": 1,
+        //             "CHILD": 1,
+        //             "INFANT": 1
+        //         },
+        //         "searchType": "ONEWAY",
+        //         "searchModifiers": {},
+        //         "sourceIds": [
+        //             4
+        //         ],
+        //         "isDomestic": true,
+        //         "isCustomCombination": false,
+        //         "isOneWay": true,
+        //         "isDomesticMultiCity": false,
+        //         "isDomesticReturn": false,
+        //         "isMultiCity": false
+        //     },
+        //     "bookingId": "TJS105300003497",
+        //     "totalPriceInfo": {
+        //         "totalFareDetail": {
+        //             "fC": {
+        //                 "NCM": 942.40,
+        //                 "TF": 8547.70,
+        //                 "TAF": 2387.70,
+        //                 "NF": 7605.30,
+        //                 "BF": 6160.00
+        //             },
+        //             "afC": {
+        //                 "NCM": {
+        //                     "TDS": -49.60,
+        //                     "OT": 992.00
+        //                 },
+        //                 "TAF": {
+        //                     "MF": 1015.00,
+        //                     "OT": 866.00,
+        //                     "AGST": 324.00,
+        //                     "MFT": 182.70
+        //                 }
+        //             }
+        //         }
+        //     },
+        //     "status": {
+        //         "success": true,
+        //         "httpStatus": 200
+        //     },
+        //     "conditions": {
+        //         "ffas": [],
+        //         "isa": true,
+        //         "dob": {
+        //             "adobr": false,
+        //             "cdobr": false,
+        //             "idobr": true
+        //         },
+        //         "isBA": true,
+        //         "st": 840,
+        //         "sct": "2020-02-13T20:53:57.285",
+        //         "gst": {
+        //             "gstappl": true,
+        //             "igm": false
+        //         }
+        //     }
+        // }
 
 
-const segmentinfo =apiData.tripInfos
-  .flatMap(trip => trip.sI || [])      
 
-const segmentId=segmentinfo      
-  .map(segment => segment.id).join(",")  
-  
 
-      const groupedAdults = [];
+        const segmentinfo = apiData.tripInfos.flatMap(trip => trip.sI || []);
+        const segmentId = segmentinfo.map(segment => segment.id).join(",");
+
+        let baggageinfo = [];
+        let mealinfo = [];
+       const groupedAdults = [];
+
 for (let i = 0; i < numAdults; i++) {
   const ti = formValues[`select-${i}`];
   const fN = formValues[`fname-${i}`];
   const lN = formValues[`lname-${i}`];
-  const baggageCode = formValues[`adultBaggage-${i}`]; 
-  const mealCode=formValues[`adultMeal-${i}`];
-
-  const segmentKey = segmentId; 
+  const documentId = formValues[`documentId-${i}`];
 
   if (ti && fN && lN) {
-    const traveller = {
-      ti,
-      fN,
-      lN,
-      pt: "ADULT"
-    };
+    const traveller = { ti, fN, lN, pt: "ADULT" };
 
-    if (baggageCode) {
-      traveller.ssrBaggageInfos = [
-        {
-          key: segmentKey,
-          code: baggageCode
-        }
-      ];
+    if (documentId) {
+      traveller.di = documentId;
     }
 
-    
+    const baggageInfos = [];
+    const mealInfos = [];
 
-    if(mealCode){
-        traveller.ssrMealInfos = [
-        {
+    segmentinfo.forEach((segment, flightIndex) => {
+      const baggageValue = formValues[`adultBaggage-${flightIndex}-${i}`];
+      if (baggageValue) {
+        const [segmentId, baggageCode] = baggageValue.split("|");
+
+        baggageInfos.push({
           key: segmentId,
-          code: mealCode
+          code: baggageCode,
+        });
+
+        const matchedSegment = segmentinfo.find(seg => seg.id === segmentId);
+        const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+
+        if (baggageOption) {
+          baggageinfo.push({
+            key: segmentId,
+            code: baggageCode,
+            amount: baggageOption.amount,
+          });
         }
-      ];
+      }
+
+      const mealValue = formValues[`adultMeal-${flightIndex}-${i}`];
+      if (mealValue) {
+        const [segmentId, mealCode] = mealValue.split("|");
+
+        mealInfos.push({
+          key: segmentId,
+          code: mealCode,
+        });
+
+        const matchedSegment = segmentinfo.find(seg => seg.id === segmentId);
+        const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(meal => meal.code === mealCode);
+
+        if (mealOption) {
+          mealinfo.push({
+            key: segmentId,
+            code: mealCode,
+            amount: mealOption.amount,
+            desc: mealOption.desc,
+          });
+        }
+      }
+    });
+
+    if (baggageInfos.length > 0) {
+      traveller.ssrBaggageInfos = baggageInfos;
     }
+
+    if (mealInfos.length > 0) {
+      traveller.ssrMealInfos = mealInfos;
+    }
+    
     groupedAdults.push(traveller);
+console.log("Final baggageInfos for ADULT", i, ":", baggageInfos);
+
   }
-
-
-
-
 }
-console.log("grouped adults",groupedAdults)
-
-
         // Group children
         const groupedChildren = [];
-for (let i = 0; i < numChild; i++) {
+
+        for (let i = 0; i < numChild; i++) {
   const ti = formValues[`childselect-${i}`];
   const fN = formValues[`childName-${i}`];
   const lN = formValues[`childlast-${i}`];
-  const baggageCode = formValues[`childBaggage-${i}`];
-  const mealCode=formValues[`childMeal-${i}`];
 
   if (ti && fN && lN) {
-    const traveller = {
-      ti,
-      fN,
-      lN,
-      pt: "CHILD"
-    };
+    const traveller = { ti, fN, lN, pt: "CHILD" };
 
-    if (baggageCode) {
-      traveller.ssrBaggageInfos = [
-        {
-          key: segmentId,
-          code: baggageCode
+    const baggageInfos = [];
+    const mealInfos = [];
+
+    segmentinfo.forEach((segment, flightIndex) => {
+      const baggageValue = formValues[`childBaggage-${flightIndex}-${i}`];
+      if (baggageValue) {
+        const [segmentId, baggageCode] = baggageValue.split("|");
+
+        baggageInfos.push({ key: segmentId, code: baggageCode });
+
+        const matchedSegment = segmentinfo.find(seg => seg.id === segmentId);
+        const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+
+        if (baggageOption) {
+          baggageinfo.push({
+            key: segmentId,
+            code: baggageCode,
+            amount: baggageOption.amount,
+          });
         }
-      ];
+      }
+
+      const mealValue = formValues[`childMeal-${flightIndex}-${i}`];
+      if (mealValue) {
+        const [segmentId, mealCode] = mealValue.split("|");
+
+        mealInfos.push({ key: segmentId, code: mealCode });
+
+        const matchedSegment = segmentinfo.find(seg => seg.id === segmentId);
+        const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(meal => meal.code === mealCode);
+
+        if (mealOption) {
+          mealinfo.push({
+            key: segmentId,
+            code: mealCode,
+            amount: mealOption.amount,
+            desc: mealOption.desc,
+          });
+        }
+      }
+    });
+
+    if (baggageInfos.length > 0) {
+      traveller.ssrBaggageInfos = baggageInfos;
     }
-    if(mealCode){
-        traveller.ssrMealInfos = [
-        {
-          key: segmentId,
-          code: mealCode
-        }
-      ];
+
+    if (mealInfos.length > 0) {
+      traveller.ssrMealInfos = mealInfos;
     }
 
     groupedChildren.push(traveller);
@@ -1029,71 +1089,108 @@ for (let i = 0; i < numChild; i++) {
 
 
         // Group infants
-      const groupedInfants = [];
+        const groupedInfants = [];
+
         for (let i = 0; i < numInfants; i++) {
-          const ti = formValues[`infantselect-${i}`];
-          const fN = formValues[`infantName-${i}`];
-          const lN = formValues[`infantLast-${i}`];
-          const rawDob = formValues[`infantDOB-${i}`];
-          console.log("sssssss ",rawDob)
-          const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
-           const baggageCode = formValues[`infantBaggage-${i}`];
-           const mealCode=formValues[`infantMeal-${i}`]; 
-             
-           if (ti && fN && lN) {
-    const traveller = {
-      ti,
-      fN,
-      lN,
-      pt: "INFANT",
-      dob
-    };
+  const ti = formValues[`infantselect-${i}`];
+  const fN = formValues[`infantName-${i}`];
+  const lN = formValues[`infantLast-${i}`];
+  const rawDob = formValues[`infantDOB-${i}`];
+  const dob = rawDob ? new Date(rawDob).toISOString().split("T")[0] : "";
 
-    if (baggageCode) {
-      traveller.ssrBaggageInfos = [
-        {
-          key: segmentId,
-          code: baggageCode
+  if (ti && fN && lN && dob) {
+    const traveller = { ti, fN, lN, pt: "INFANT", dob };
+
+    const baggageInfos = [];
+    const mealInfos = [];
+
+    segmentinfo.forEach((segment, flightIndex) => {
+      const baggageValue = formValues[`infantBaggage-${flightIndex}-${i}`];
+      if (baggageValue) {
+        const [segmentId, baggageCode] = baggageValue.split("|");
+
+        baggageInfos.push({ key: segmentId, code: baggageCode });
+
+        const matchedSegment = segmentinfo.find(seg => seg.id === segmentId);
+        const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(bag => bag.code === baggageCode);
+
+        if (baggageOption) {
+          baggageinfo.push({
+            key: segmentId,
+            code: baggageCode,
+            amount: baggageOption.amount,
+          });
         }
-      ];
-    }
-    if(mealCode){
-        traveller.ssrMealInfos = [
-        {
-          key: segmentId,
-          code: mealCode
+      }
+
+      const mealValue = formValues[`infantMeal-${flightIndex}-${i}`];
+      if (mealValue) {
+        const [segmentId, mealCode] = mealValue.split("|");
+
+        mealInfos.push({ key: segmentId, code: mealCode });
+
+        const matchedSegment = segmentinfo.find(seg => seg.id === segmentId);
+        const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(meal => meal.code === mealCode);
+
+        if (mealOption) {
+          mealinfo.push({
+            key: segmentId,
+            code: mealCode,
+            amount: mealOption.amount,
+            desc: mealOption.desc,
+          });
         }
-      ];
+      }
+    });
+
+    if (baggageInfos.length > 0) {
+      traveller.ssrBaggageInfos = baggageInfos;
     }
 
-    groupedChildren.push(traveller);
+    if (mealInfos.length > 0) {
+      traveller.ssrMealInfos = mealInfos;
+    }
+
+    groupedInfants.push(traveller);
   }
-        }
+}
 
 
-        
+        // Set all grouped travelers and cookie
+        setBaggageinfo(baggageinfo);
+
+
+        setCookie("baggageinfo", JSON.stringify(baggageinfo), {
+          expires: 7,
+        });
+        setCookie("mealinfo", JSON.stringify(mealinfo), {
+          expires: 7,
+        });
+
+
+
 
         // const adultBaggage = [];
-// for (let i = 0; i < numAdults; i++) {
-//   const baggageCode = formValues[`adultBaggage-${i}`];
-//   if (baggageCode) adultBaggage.push({ key:segmentId, baggageCode });
-// }
+        // for (let i = 0; i < numAdults; i++) {
+        //   const baggageCode = formValues[`adultBaggage-${i}`];
+        //   if (baggageCode) adultBaggage.push({ key:segmentId, baggageCode });
+        // }
 
-// const childBaggage = [];
-// for (let i = 0; i < numChild; i++) {
-//   const baggageCode = formValues[`childBaggage-${i}`];
-//   if (baggageCode) childBaggage.push({ key:segmentId, baggageCode });
-// }
+        // const childBaggage = [];
+        // for (let i = 0; i < numChild; i++) {
+        //   const baggageCode = formValues[`childBaggage-${i}`];
+        //   if (baggageCode) childBaggage.push({ key:segmentId, baggageCode });
+        // }
 
-// const infantBaggage = [];
-// for (let i = 0; i < numInfants; i++) {
-//   const baggageCode = formValues[`infantBaggage-${i}`];
-//   if (baggageCode) infantBaggage.push({ key:segmentId, baggageCode });
-// }
+        // const infantBaggage = [];
+        // for (let i = 0; i < numInfants; i++) {
+        //   const baggageCode = formValues[`infantBaggage-${i}`];
+        //   if (baggageCode) infantBaggage.push({ key:segmentId, baggageCode });
+        // }
 
-// console.log("Adult Baggage:", adultBaggage);
-// console.log("Child Baggage:", childBaggage);
-// console.log("Infant Baggage:", infantBaggage);
+        // console.log("Adult Baggage:", adultBaggage);
+        // console.log("Child Baggage:", childBaggage);
+        // console.log("Infant Baggage:", infantBaggage);
 
 
 
@@ -1123,9 +1220,9 @@ for (let i = 0; i < numChild; i++) {
             email: getCookie("email"),
             number: getCookie("number")
           }
-          console.log("reqTravellerInfo === > ",reqTravellerInfo)
+          console.log("reqTravellerInfo === > ", reqTravellerInfo)
           const result = await postData('travelogy/flight/save-traveller-info', reqTravellerInfo);
-          console.log("reqTravellerInfo result === > ",result)
+          console.log("reqTravellerInfo result === > ", result)
         }
         saveTravellerInfo();
 
@@ -1272,7 +1369,9 @@ for (let i = 0; i < numChild; i++) {
                       const segments = trip?.sI || [];
                       return (
                         <>
-                          {segmentsPrice.length > 0 && (
+                          {idx == 0 && (<h5>Onward Journey</h5>)}
+                          {idx == 1 && (<h5 className="pt-15">Return Journey</h5>)}
+                          {/* {segmentsPrice.length > 0 && (
                             <div key={idx} className="fare-summary mb-20">
                               <h5 className="text-lg-bold neutral-1000">
                                 Available Fares
@@ -1290,7 +1389,7 @@ for (let i = 0; i < numChild; i++) {
                                 ))}
                               </ul>
                             </div>
-                          )}
+                          )} */}
                           <div className="row mt-20">
                             <div>
                               <div className="box-content-tickets-detail">
@@ -1488,6 +1587,7 @@ for (let i = 0; i < numChild; i++) {
                       <BookingForm
                         totalpricee={totalpricee}
                         segmentsPrice={segmentsPrice}
+                        baggageinfo={baggageinfo}
                       />
                     </div>
                   </div>
@@ -1755,6 +1855,7 @@ for (let i = 0; i < numChild; i++) {
                                           <AppFormAdult
                                             form={form}
                                             index={index}
+                                            showDocumentField={apiData?.conditions?.dc?.ida === true}
                                           />
                                         </div>
                                       )
@@ -1874,7 +1975,7 @@ for (let i = 0; i < numChild; i++) {
                                 </div>
                               </dl>
                             ) : null}
-                              
+
                           </div>
 
                           <div className="px-4 py-3 border_xcolor_1px">
@@ -1912,81 +2013,82 @@ for (let i = 0; i < numChild; i++) {
                             </a>
                           </div>
                           <AppFormCustomer form={form} />
-                         
-                         <div>
+                          <div className="text-lg leading-6 font-bold text-gray-900 p-4">Add Meal and Baggage
+                            <div>
                               <div className="px-4 py-3 border_xcolor_1px">
-                            <h2
-                              id="applicant-information-title"
-                              className="text-lg leading-6 font-bold text-gray-900"
-                            >
-                              Baggage
-                            </h2>
-                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                              <ExtraBaggage form={form} numAdults={numAdults} numChild={numChild} numInfants={numInfants} apiData={apiData} />
-                            </p>
-
-                            <a
-                              className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
-                              href="#"
-                            >
-                              Login
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 16 16"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M8 15L15 8L8 1M15 8L1 8"
-                                  stroke=""
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
+                                <h2
+                                  id="applicant-information-title"
+                                  className="text-lg leading-6 font-bold text-gray-900"
                                 >
-                                  {" "}
-                                </path>
-                              </svg>
-                            </a>
+                                  Baggage
+                                </h2>
+                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                  <ExtraBaggage form={form} numAdults={numAdults} numChild={numChild} numInfants={numInfants} apiData={apiData} />
+                                </p>
+
+                                <a
+                                  className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
+                                  href="#"
+                                >
+                                  Login
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M8 15L15 8L8 1M15 8L1 8"
+                                      stroke=""
+                                      stroke-width="1.5"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    >
+                                      {" "}
+                                    </path>
+                                  </svg>
+                                </a>
+                              </div>
+
+                              <div className="px-4 py-3 border_xcolor_1px">
+                                <h2
+                                  id="applicant-information-title"
+                                  className="text-lg leading-6 font-bold text-gray-900"
+                                >
+                                  Meal
+                                </h2>
+                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                  <MealInfo form={form} numAdults={numAdults} numChild={numChild} numInfants={numInfants} apiData={apiData} />
+                                </p>
+
+                                <a
+                                  className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
+                                  href="#"
+                                >
+                                  Login
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M8 15L15 8L8 1M15 8L1 8"
+                                      stroke=""
+                                      stroke-width="1.5"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    >
+                                      {" "}
+                                    </path>
+                                  </svg>
+                                </a>
+                              </div>
+                            </div>
                           </div>
 
-                          <div className="px-4 py-3 border_xcolor_1px">
-                            <h2
-                              id="applicant-information-title"
-                              className="text-lg leading-6 font-bold text-gray-900"
-                            >
-                              Meal
-                            </h2>
-                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                             <MealInfo form={form} numAdults={numAdults} numChild={numChild} numInfants={numInfants} apiData={apiData} />
-                            </p>
 
-                            <a
-                              className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
-                              href="#"
-                            >
-                              Login
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 16 16"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M8 15L15 8L8 1M15 8L1 8"
-                                  stroke=""
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                >
-                                  {" "}
-                                </path>
-                              </svg>
-                            </a>
-                          </div>
-                         </div>
 
-                        
-                            
                           <div className="bg-white shadow sm:rounded-lg relative">
                             <div className="px-4 py-3 border_xcolor_1px flex justify-between">
                               <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition">
@@ -2003,7 +2105,7 @@ for (let i = 0; i < numChild; i++) {
                           </div>
 
                           <div className="px-4 py-3 border_xcolor_1px">
-                           
+
                             <a
                               className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
                               href="#"
@@ -2064,7 +2166,7 @@ for (let i = 0; i < numChild; i++) {
                         </div>
                         <br />
                         <br />
-                       
+
                       </section>
                     </div>
                     {/* <div className="col-lg-4">

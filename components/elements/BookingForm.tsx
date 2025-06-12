@@ -1,5 +1,6 @@
-
-export default function BookingForm({ segmentsPrice, totalpricee }) {
+import { AppContext } from "@/util/AppContext";
+import { useContext } from "react";
+export default function BookingForm({ segmentsPrice, totalpricee,baggageinfo }) {
 	
 	const basefare=totalpricee?.fC?.BF
 	const taxAndFees=totalpricee?.fC?.TAF
@@ -7,7 +8,13 @@ export default function BookingForm({ segmentsPrice, totalpricee }) {
 	const othertaxes=totalpricee?.afC?.TAF?.OT;
 	const totalfare=totalpricee?.fC?.TF;
 	const netprice= totalpricee?.fC?.NF;
-
+	  const { getCookie } =
+    useContext(AppContext);
+	const savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
+	const savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
+	console.log("saved baggage",savedBaggage)
+	console.log("saved meal",savedMeal)
+	
 	return (
 		<>
 			<div className="content-booking-form">
@@ -26,6 +33,14 @@ export default function BookingForm({ segmentsPrice, totalpricee }) {
 			<div className="item-line-booking">
 				<div className="box-tickets">
 					<div className="flex flex-row justify-between">
+						<div><strong className="text-md-bold neutral-1000">Baggage Amount</strong></div>
+						<div className="text-md-bold neutral-1000">₹{savedBaggage.reduce((acc, curr) => acc + curr.amount, 0)}</div>
+					</div>
+					<div className="flex flex-row justify-between">
+						<div><strong className="text-md-bold neutral-1000">Meal Amount</strong></div>
+						<div className="text-md-bold neutral-1000">₹{savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}</div>
+					</div>
+					<div className="flex flex-row justify-between">
 						<div><strong className="text-md-bold neutral-1000">Taxes and fees</strong></div>
 						<div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
 					</div>
@@ -36,7 +51,7 @@ export default function BookingForm({ segmentsPrice, totalpricee }) {
 							
 						</div>
 						<div className="dropdown-quantity">
-						<p>₹{Airlinegst}</p>
+						<p>₹{Airlinegst ? Airlinegst : "0.0"}</p>
 						</div>
 					</div>
 					<div className="line-booking-tickets">
@@ -44,6 +59,7 @@ export default function BookingForm({ segmentsPrice, totalpricee }) {
 							<p className="text-small neutral-500 mr-30">Other Taxes</p>
 							
 						</div>
+
 						<div className="dropdown-quantity">
 						<p>₹{othertaxes}</p>
 						</div>
@@ -57,7 +73,9 @@ export default function BookingForm({ segmentsPrice, totalpricee }) {
 				<div className="box-tickets">
 					<div className="flex flex-row justify-between">
 						<div><strong className="text-md-bold neutral-1000">Amount to Pay</strong></div>
-						<div className="text-xl-bold neutral-1000">₹{totalfare}</div>
+						<div className="text-xl-bold neutral-1000">₹{Number(totalfare) + 
+    savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) + 
+    savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}</div>
 					</div>
 				
 					<div className="line-booking-tickets">
@@ -128,7 +146,9 @@ export default function BookingForm({ segmentsPrice, totalpricee }) {
 			</div> */}
 			<div className="item-line-booking last-item"> <strong className="text-md-bold neutral-1000">Total Amount:</strong>
 				<div className="line-booking-right">
-					<p className="text-xl-bold neutral-1000">₹ {totalfare}</p>
+					<p className="text-xl-bold neutral-1000"> ₹{Number(totalfare) + 
+    savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) + 
+    savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}</p>
 				</div>
 			</div>
 			{/* <div className="box-button-book"> <a className="btn btn-book" href="#">Book Now

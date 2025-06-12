@@ -17852,7 +17852,8 @@ h2 span {
   text-align: -webkit-center;
   /*    background: url(https://imgak.mmtcdn.com/pwa_v3/pwa_commons_assets/desktop/bg4.jpg);*/
   /*    height: 550px;*/
-  height: 500px;
+  min-height: 500px;
+  height: auto;
   top: 0px;
   bottom: 0px;
   display: flex;

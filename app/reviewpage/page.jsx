@@ -6,6 +6,7 @@ import {
   postDataFareDetails,
   postDataFlightDetails,
   postDataTJBookingAir,
+  postFareValidate,
   postData,
 } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
@@ -16,7 +17,6 @@ import { useContext, useEffect, useState } from "react";
 import { Tabs } from "antd";
 
 // import "./style.css"
-
 
 import { format } from "date-fns";
 import * as React from "react";
@@ -52,7 +52,22 @@ const Page = () => {
   console.log("number", number);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
-  
+  const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
+  const MealAmount              = JSON.parse(getCookie("mealinfo") || "[]");
+
+
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedApiData = localStorage.getItem("apiData");
+      console.log("storedApi",storedApiData)
+      if (storedApiData) {
+        setFlightData(JSON.parse(storedApiData));
+        console.log("fakjsdhfalshfkjsadf",flightData)
+      }
+    }
+  }, []);
   const router = useRouter();
   useEffect(() => {
     const data = getCookie("travellerInfo");
@@ -60,7 +75,7 @@ const Page = () => {
       try {
         console.log(data);
         const parsedData = JSON.parse(data);
-        console.log("parseddata from review page",parsedData)
+        console.log("parseddata from review page", parsedData);
         setTravellers(parsedData);
       } catch (err) {
         console.error("Invalid JSON in cookie:", err);
@@ -95,46 +110,45 @@ const Page = () => {
   }, []);
 
   // Function to fetch flight details
-  const fetchFlightDetails = async (priceId) => {
-    setLoading(true);
-    setError(null);
+  // const fetchFlightDetails = async (priceId) => {
+  //   setLoading(true);
+  //   setError(null);
 
-    if (!priceId) {
-      setError("Price ID is missing");
-      setLoading(false);
-      return;
-    }
+  //   if (!priceId) {
+  //     setError("Price ID is missing");
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    try {
-      // const parameter = { priceIds: [priceId] };
-      console.log("Fetching with parameter FOR REVIEW:", parameter);
+  //   try {
+  //     // const parameter = { priceIds: [priceId] };
+  //     console.log("Fetching with parameter FOR REVIEW:", parameter);
 
-      const data = await postDataFlightDetails(parameter);
-      console.log("Flight detailsssss FOR REVIEW:", data);
-      setFlightData(data); // Update state with flight details
+  //     const data = await postDataFlightDetails(parameter);
+  //     console.log("Flight detailsssss FOR REVIEW:", data);
+  //     setFlightData(data); // Update state with flight details
+  //   } catch (err) {
+  //     console.error("error caused", err);
 
-    } catch (err) {
-      console.error("error caused", err);
+  //     if (err?.response?.data?.errors?.length) {
+  //       const firstError = err.response.data.errors[0];
+  //       const message = firstError?.message || "An unknown error occurred.";
+  //       const details = firstError?.details ? ` - ${firstError.details}` : "";
+  //       setError(`${message}`);
 
-      if (err?.response?.data?.errors?.length) {
-        const firstError = err.response.data.errors[0];
-        const message = firstError?.message || "An unknown error occurred.";
-        const details = firstError?.details ? ` - ${firstError.details}` : "";
-        setError(`${message}`); 
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
-      } else if (err?.message) {
-        setError(err.message);
-        console.log("Generic error message:", err.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  //       console.log("API error message:", message);
+  //       console.log("Error details:", details);
+  //       console.log("Error status code:", err.response.status);
+  //     } else if (err?.message) {
+  //       setError(err.message);
+  //       console.log("Generic error message:", err.message);
+  //     } else {
+  //       setError("Something went wrong. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   //to fetch fare rule
   const fetchFareRule = async (params) => {
@@ -177,14 +191,14 @@ const Page = () => {
   }, [flightData]);
 
   // UseEffect to call the function when 'tcs_id' is available in the search params
-  useEffect(() => {
-    console.log("fetchFlightDetails Extracted tcs_id:", priceId); // Debug log to check if tcs_id is correct
-    if (priceId) {
-      fetchFlightDetails(priceId);
-    } else {
-      setError("No valid tcs_id found in the URL.");
-    }
-  }, [priceId]);
+  // useEffect(() => {
+  //   console.log("fetchFlightDetails Extracted tcs_id:", priceId); // Debug log to check if tcs_id is correct
+  //   if (priceId) {
+  //     fetchFlightDetails(priceId);
+  //   } else {
+  //     setError("No valid tcs_id found in the URL.");
+  //   }
+  // }, [priceId]);
 
   useEffect(() => {
     console.log("fetchFareRule Extracted tcs_id:", priceId);
@@ -255,8 +269,11 @@ const Page = () => {
 
   // Trip info
   const segments = flightData?.tripInfos.flatMap((trip) => trip.sI) ?? [];
-  const segmentId=flightData?.tripInfos?.map((e,i)=>e.sI?.map((data)=>data.id)).join("")
-  console.log("segment id from review",segmentId)
+  const segmentId = flightData?.tripInfos
+    ?.map((e, i) => e.sI?.map((data) => data.id))
+    .join("");
+
+  console.log("segment id from review", segmentId);
   const totalpriceinfos =
     flightData?.tripInfos.flatMap((trip) => trip.totalPriceList) ?? [];
   const cabinBaggage = totalpriceinfos.map((e) => e.fd?.ADULT?.bI?.iB);
@@ -331,7 +348,12 @@ const Page = () => {
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
+  const baggageTotal =
+    BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
+    const mealTotal=
+    MealAmount.reduce((acc, curr) => acc + curr.amount, 0)
 
+  const finalAmountToPay = totalprice + baggageTotal + mealTotal;
   //fare rule api
   const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
 
@@ -385,6 +407,7 @@ const Page = () => {
     let children = getCookie("gy_child");
     let cabinType = getCookie("gy_class");
     let departDate = getCookie("gy_trd");
+    let returnDate = getCookie("gy_return");
 
     const mydata = {
       departureFrom: departureFrom,
@@ -510,10 +533,12 @@ const Page = () => {
                             ))}
                           <p>
                             ₹
-                            {
-                              fareRulesData.fareRuleInformation.tfr
-                                .CANCELLATION[0].amount
-                            }
+                            {fareRulesData?.fareRuleInformation?.tfr
+                              ?.CANCELLATION?.[0]?.amount
+                              ? fareRulesData?.fareRuleInformation?.tfr
+                                  ?.CANCELLATION?.[0]?.amount
+                              : fareRulesData?.fareRuleInformation?.tfr
+                                  ?.CANCELLATION?.[0]?.additionalFee}
                           </p>
                         </>
                       ) : null}
@@ -523,10 +548,12 @@ const Page = () => {
                   <p>
                     {" "}
                     ₹
-                    {
-                      fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                        ?.amount
-                    }{" "}
+                    {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                      ?.amount
+                      ? fareRulesData?.fareRuleInformation?.tfr
+                          ?.CANCELLATION?.[0]?.amount
+                      : fareRulesData?.fareRuleInformation?.tfr
+                          ?.CANCELLATION?.[0]?.additionalFee}{" "}
                   </p>
                 )}
               </div>
@@ -589,13 +616,26 @@ const Page = () => {
                             .map((line, index) => (
                               <div key={index}>{line.trim()}</div>
                             ))}
-                          <p>₹{dateChange?.amount}</p>
+                          <p>
+                            ₹
+                            {dateChange?.amount
+                              ? dateChange?.amount
+                              : dateChange?.additionalFee}
+                          </p>
                         </>
                       ) : null}
                     </p>
                   );
                 } else {
-                  return <p> ₹{dateChange?.amount}</p>;
+                  return (
+                    <p>
+                      {" "}
+                      ₹
+                      {dateChange?.amount
+                        ? dateChange?.amount
+                        : dateChange?.additionalFee}
+                    </p>
+                  );
                 }
               })()}
             </div>
@@ -735,66 +775,112 @@ const Page = () => {
       console.log("loadDataBook =========== ", result);
       router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
     } catch (err) {
-      console.error("Error while fetching flight data:", err);
+      console.error("Error while fetching flight data 1 :", err);
+
+      if (err?.response?.data?.errors?.length) {
+        const firstError = err.response.data.errors[0];
+        const message = firstError?.message || "An unknown error occurred.";
+        const details = firstError?.details ? ` - ${firstError.details}` : "";
+        setError(`${message}`);
+
+        console.log("API error message:", message);
+        console.log("Error details:", details);
+        console.log("Error status code:", err.response.status);
+      } else if (err?.message) {
+        setError(err.message);
+        console.log("Generic error message:", err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
 
       // Optionally, you can show an error message to the user here
     }
   };
 
   // Function to handle booking review and trigger loadDataBook
-// Function to handle booking review and trigger loadDataBook
-const bookingReview = () => {
-  console.log("travellers (before update)", travellers);
-  console.log("totalprice bookingId", totalprice, bookingId);
+  const bookingReview = () => {
+    console.log("travellers (before update)", travellers);
+    console.log("totalprice bookingId", totalprice, bookingId);
 
-  const updatedTravellers = travellers.map((traveller) => {
-    if (Array.isArray(traveller.ssrMealInfos)) {
-      return {
-        ...traveller,
-        ssrMealInfos: traveller.ssrMealInfos.map((meal) => ({
-          ...meal,
-          key: segmentId, // Replace with dynamic segmentId
-        })),
-      };
-    }
-    return traveller;
-  });
+    const segmentinfo =
+      flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
-  if (totalprice && bookingId) {
-    const parameter = {
-      bookingId: bookingId,
-      paymentInfos: [
-        {
-          amount: totalprice,
+    
+    if (totalprice && bookingId) {
+      const parameter = {
+        bookingId,
+        paymentInfos: [{ amount: finalAmountToPay }],
+        travellerInfo: travellers,
+        deliveryInfo: {
+          emails: [email],
+          contacts: [`${number.code}${number.number}`],
         },
-      ],
-      travellerInfo: updatedTravellers, // ✅ Use updatedTravellers here
-      deliveryInfo: {
-        emails: [email],
-        contacts: [`${number.code}${number.number}`],
-      },
-    };
-
-    console.log("travellerInfo (final):", parameter.travellerInfo);
-    console.log("parameter for book:", parameter);
-
-    const saveBookingId = async () => {
-      const reqSaveBookingId = {
-        booking_id: bookingId,
-        phone: number.number,
       };
-      console.log("reqSaveBookingId ===>", reqSaveBookingId);
-      const result = await postData("travelogy/flight/save-booking", reqSaveBookingId);
-      console.log("saveBookingId result ===>", result);
-    };
-    saveBookingId();
 
-    loadDataBook(parameter);
-  } else {
-    console.error("Booking ID or total price is missing");
-  }
-};
+      console.log("travellerInfo (final):", parameter.travellerInfo);
+      console.log("parameter for book:", parameter);
 
+      const saveBookingId = async () => {
+        const reqSaveBookingId = {
+          booking_id: bookingId,
+          phone: number.number,
+        };
+        const result = await postData(
+          "travelogy/flight/save-booking",
+          reqSaveBookingId
+        );
+        console.log("saveBookingId result ===>", result);
+      };
+      saveBookingId();
+
+      loadDataBook(parameter);
+    } else {
+      console.error("Booking ID or total price is missing");
+    }
+  };
+
+  const handleHoldBooking = () => {
+    console.log("handleHoldBooking =========== ");
+
+    console.log("traveelers", travellers);
+    console.log("totalprice bookingid", totalprice, bookingId);
+    if (Array.isArray(travellers) && travellers.length > 0) {
+      if (bookingId) {
+        // handlePayment();
+        // openNotificationWithIcon('success');
+        // Build the parameter object without extra curly braces
+        const parameter = {
+          bookingId: bookingId,
+          travellerInfo: travellers,
+          deliveryInfo: {
+            emails: [email],
+            contacts: [`${number.code}${number.number}`],
+          },
+        };
+
+        const saveBookingId = async () => {
+          const reqSaveBookingId = {
+            booking_id: bookingId,
+            phone: number.number,
+          };
+          console.log("reqSaveBookingId === > ", reqSaveBookingId);
+          const result = await postData(
+            "travelogy/flight/save-booking",
+            reqSaveBookingId
+          );
+          console.log("saveBookingId result === > ", result);
+        };
+        saveBookingId();
+
+        loadDataBook(parameter);
+      } else {
+        console.error("bookingId Is empty");
+      }
+    } else {
+      // Handle case when totalpricee is not set
+      console.error("Total price is not set");
+    }
+  };
 
   return (
     <>
@@ -1147,7 +1233,9 @@ const bookingReview = () => {
                                       </div>
                                     </div>
 
-                                    
+                                    <div className="mt-30 mb-10 text-sm-medium neutral-1000 p-3 bg-blue-100">
+                                      {`Got excess baggage? Don’t stress, buy extra check-in baggage allowance for ${seg?.da?.cityCode}-${seg?.aa?.cityCode} at fab rates!`}
+                                    </div>
                                   </div>
                                 </>
                               );
@@ -1519,17 +1607,22 @@ const bookingReview = () => {
                                     <div className="flex items-center flex-col">
                                       <p className="text-sm-medium neutral-500">
                                         ₹{" "}
-                                        {
-                                          fareRulesData?.fareRuleInformation
-                                            ?.tfr?.CANCELLATION?.[0]?.amount
-                                        }
+                                        {fareRulesData?.fareRuleInformation?.tfr
+                                          ?.CANCELLATION?.[0]?.amount
+                                          ? fareRulesData?.fareRuleInformation
+                                              ?.tfr?.CANCELLATION?.[0]?.amount
+                                          : fareRulesData?.fareRuleInformation
+                                              ?.tfr?.CANCELLATION?.[0]
+                                              ?.additionalFee}
                                         <span className="mx-1"></span>
                                       </p>
                                       <p className="text-secondary text-sm">
-                                        {
-                                          fareRulesData?.fareRuleInformation
-                                            ?.tfr?.CANCELLATION?.[0]?.policyInfo
-                                        }
+                                        {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo
+                                          ?.split("__nls__")
+                                          .filter(Boolean)
+                                          .map((line, index) => (
+                                            <div key={index}>{line.trim()}</div>
+                                          ))}
                                       </p>
                                     </div>
                                   </div>
@@ -1700,9 +1793,6 @@ const bookingReview = () => {
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
                                           Last Name
                                         </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          meal code
-                                        </th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1727,9 +1817,6 @@ const bookingReview = () => {
                                               </td>
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
                                                 {traveller?.lN?.trim() || "N/A"}
-                                              </td>
-                                              <td>
-                                                {traveller?.ssrMealInfos?.map((e,i)=>e.code) || "N/A"}
                                               </td>
                                             </tr>
                                           );
@@ -1795,6 +1882,14 @@ const bookingReview = () => {
                                 >
                                   Back
                                 </Link>
+                                {flightData?.conditions?.isBA === true && (
+                                  <div
+                                    onClick={handleHoldBooking}
+                                    className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
+                                  >
+                                    hold booking
+                                  </div>
+                                )}
                                 <div
                                   onClick={bookingReview}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"

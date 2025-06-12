@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // for local dev
   reactStrictMode: false,
   async redirects() {
     return [
