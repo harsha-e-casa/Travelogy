@@ -294,7 +294,7 @@ export default function HotelListing() {
           {/* </div> */}
 
           <section className="box-section block-content-tourlist background-body">
-            <div className="container">
+            <div className="container-fluid" style={{width:"93%"}}>
               <div className="box-content-main">
                 <div className="content-right">
                   <div className="box-filters mb-25 pb-5 border-bottom border-1">

@@ -27,10 +27,10 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form }) => {
                       ADULT {index + 1}
                     </span>
                     <Form.Item name={`adultMeal-${flightIndex}-${index}`} style={{ marginBottom: 0,width:"500px"}}>
-                      <Select className="h-10 " placeholder="Add Meal">
+                      <Select className="h-10 " placeholder="Add Meal" disabled={mealOptions.every((meal) => !meal.amount)}>
                         {mealOptions.map((meal) => (
-                          <Option key={meal.code} value={meal.code}>
-                            {meal.desc} - ₹{meal.amount}
+                          <Option key={meal.code}  value={`${segment.id}|${meal.code}`}>
+                          {segment.id}- {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
                       </Select>
@@ -47,7 +47,7 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form }) => {
                     <Form.Item name={`childMeal-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
                       <Select className="h-10 w-100" placeholder="Add Meal">
                         {mealOptions.map((meal) => (
-                          <Option key={meal.code} value={meal.code}>
+                          <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
                             {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
@@ -65,8 +65,8 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form }) => {
                     <Form.Item name={`infantMeal-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
                       <Select className="h-10 w-100" placeholder="Add Meal">
                         {mealOptions.map((meal) => (
-                          <Option key={meal.code} value={meal.code}>
-                            {meal.desc} - ₹{meal.amount}
+                          <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
+                           {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
                       </Select>

@@ -55,6 +55,19 @@ const Page = () => {
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
   const MealAmount              = JSON.parse(getCookie("mealinfo") || "[]");
 
+
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedApiData = localStorage.getItem("apiData");
+      console.log("storedApi",storedApiData)
+      if (storedApiData) {
+        setFlightData(JSON.parse(storedApiData));
+        console.log("fakjsdhfalshfkjsadf",flightData)
+      }
+    }
+  }, []);
   const router = useRouter();
   useEffect(() => {
     const data = getCookie("travellerInfo");
@@ -97,45 +110,45 @@ const Page = () => {
   }, []);
 
   // Function to fetch flight details
-  const fetchFlightDetails = async (priceId) => {
-    setLoading(true);
-    setError(null);
+  // const fetchFlightDetails = async (priceId) => {
+  //   setLoading(true);
+  //   setError(null);
 
-    if (!priceId) {
-      setError("Price ID is missing");
-      setLoading(false);
-      return;
-    }
+  //   if (!priceId) {
+  //     setError("Price ID is missing");
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    try {
-      // const parameter = { priceIds: [priceId] };
-      console.log("Fetching with parameter FOR REVIEW:", parameter);
+  //   try {
+  //     // const parameter = { priceIds: [priceId] };
+  //     console.log("Fetching with parameter FOR REVIEW:", parameter);
 
-      const data = await postDataFlightDetails(parameter);
-      console.log("Flight detailsssss FOR REVIEW:", data);
-      setFlightData(data); // Update state with flight details
-    } catch (err) {
-      console.error("error caused", err);
+  //     const data = await postDataFlightDetails(parameter);
+  //     console.log("Flight detailsssss FOR REVIEW:", data);
+  //     setFlightData(data); // Update state with flight details
+  //   } catch (err) {
+  //     console.error("error caused", err);
 
-      if (err?.response?.data?.errors?.length) {
-        const firstError = err.response.data.errors[0];
-        const message = firstError?.message || "An unknown error occurred.";
-        const details = firstError?.details ? ` - ${firstError.details}` : "";
-        setError(`${message}`);
+  //     if (err?.response?.data?.errors?.length) {
+  //       const firstError = err.response.data.errors[0];
+  //       const message = firstError?.message || "An unknown error occurred.";
+  //       const details = firstError?.details ? ` - ${firstError.details}` : "";
+  //       setError(`${message}`);
 
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
-      } else if (err?.message) {
-        setError(err.message);
-        console.log("Generic error message:", err.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  //       console.log("API error message:", message);
+  //       console.log("Error details:", details);
+  //       console.log("Error status code:", err.response.status);
+  //     } else if (err?.message) {
+  //       setError(err.message);
+  //       console.log("Generic error message:", err.message);
+  //     } else {
+  //       setError("Something went wrong. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   //to fetch fare rule
   const fetchFareRule = async (params) => {
@@ -178,14 +191,14 @@ const Page = () => {
   }, [flightData]);
 
   // UseEffect to call the function when 'tcs_id' is available in the search params
-  useEffect(() => {
-    console.log("fetchFlightDetails Extracted tcs_id:", priceId); // Debug log to check if tcs_id is correct
-    if (priceId) {
-      fetchFlightDetails(priceId);
-    } else {
-      setError("No valid tcs_id found in the URL.");
-    }
-  }, [priceId]);
+  // useEffect(() => {
+  //   console.log("fetchFlightDetails Extracted tcs_id:", priceId); // Debug log to check if tcs_id is correct
+  //   if (priceId) {
+  //     fetchFlightDetails(priceId);
+  //   } else {
+  //     setError("No valid tcs_id found in the URL.");
+  //   }
+  // }, [priceId]);
 
   useEffect(() => {
     console.log("fetchFareRule Extracted tcs_id:", priceId);
@@ -792,35 +805,12 @@ const Page = () => {
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
-    const updatedTravellers = travellers.map((traveller) => {
-      const updatedTraveller = { ...traveller };
-
-      if (Array.isArray(traveller.ssrMealInfos)) {
-        updatedTraveller.ssrMealInfos = traveller.ssrMealInfos.map(
-          (meal, idx) => ({
-            ...meal,
-            key: segmentinfo[idx]?.id || "",
-          })
-        );
-      }
-
-      if (Array.isArray(traveller.ssrBaggageInfos)) {
-        updatedTraveller.ssrBaggageInfos = traveller.ssrBaggageInfos.map(
-          (bag, idx) => ({
-            ...bag,
-            key: segmentinfo[idx]?.id || "",
-          })
-        );
-      }
-
-      return updatedTraveller;
-    });
-
+    
     if (totalprice && bookingId) {
       const parameter = {
         bookingId,
         paymentInfos: [{ amount: finalAmountToPay }],
-        travellerInfo: updatedTravellers,
+        travellerInfo: travellers,
         deliveryInfo: {
           emails: [email],
           contacts: [`${number.code}${number.number}`],
