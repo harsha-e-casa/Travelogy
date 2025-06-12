@@ -132,8 +132,12 @@ const EngineTabs = ({ active_border }) => {
     };
 
     if (tripType == "multi-city") {
-      mydata.multicitySegments = multicitySegments
-      setCookie('gy_multi_city', JSON.stringify(multicitySegments));
+      mydata.multicitySegments = multicitySegments;
+      console.log(
+        " flight search save ==? ",
+        JSON.stringify(multicitySegments)
+      );
+      setCookie("gy_multi_city", JSON.stringify(multicitySegments));
     }
 
     if (returnDate != undefined || returnDate != "Nan") {
@@ -335,8 +339,9 @@ const EngineTabs = ({ active_border }) => {
     setShowYTraveller(false);
   };
 
+  const displayDate = dayjs().add(2, "day");
   const [multicitySegments, setMulticitySegments] = useState([
-    { from: "", fromCode: "", to: "", toCode: "", departureDate: null },
+    { from: "", fromCode: "", to: "", toCode: "", departureDate: displayDate },
   ]);
 
   const multicityUpdateSegment = (index, newData) => {
@@ -360,7 +365,7 @@ const EngineTabs = ({ active_border }) => {
     }
   };
 
-  console.log("multicitySegmentsmulticitySegments ==> ",multicitySegments)
+  console.log("multicitySegmentsmulticitySegments ==> ", multicitySegments);
 
   return (
     <section
