@@ -11,6 +11,7 @@ import SortTicketsFilter from "@/components/elements/SortTicketsFilter";
 import TicketCard1 from "@/components/elements/ticketcard/TicketCard1";
 import DomesticRoundTripTicketCard from "@/components/elements/ticketcard/DomesticRoundTripTicketCard";
 import RoundTripSelectionView from "@/components/elements/ticketcard/RoundTripSelectionView";
+import MulticitySelectionView from "@/components/elements/ticketcard/MulticitySelectionView.jsx"
 import Layout from "@/components/layout/Layout";
 import SwiperGroupPayment10Slider from "@/components/slider/SwiperGroupPayment10Slider";
 import rawticketsData from "@/util/tickets.json";
@@ -265,6 +266,7 @@ export default function Tickets() {
         if (result && result.searchResult && result.searchResult.tripInfos) {
           // setFlightData(result.searchResult.tripInfos.ONWARD)
           setFlightData(result.searchResult.tripInfos);
+          
         } else {
           console.log("no dataaaaaaaa");
           setError("");
@@ -683,7 +685,7 @@ export default function Tickets() {
                       />
                     ) : null}
                   </div>
-                </>
+                </> 
               ) : null}
               {/* <div className="hdt_header-item">
       <label>Return</label>
@@ -725,7 +727,7 @@ export default function Tickets() {
             clickMinusinfant={clickMinusinfant}
             clickPlusinfant={clickPlusinfant}
             totalPassenderCount={totalPassenderCount}
-            specificStyle={{ top: "22%", right: "9%" }}
+            specificStyle={{ top: "23%", right: "9%" }}
           />
 
           {/* Block Banner Tickets */}
@@ -742,9 +744,9 @@ export default function Tickets() {
           {/* Ticket List Section */}
 
           <section className="box-section block-content-tourlist background-body">
-            <div className="container">
+            <div className="container-fluid" style={{width:"93%"}}>
               <div className="box-content-main">
-                <div className="content-right">
+                <div className="content-right border ">
                   {/* <div className="box-filters mb-25 pb-5 border-bottom border-1">
                     <SortTicketsFilter
                       sortCriteria={sortCriteria}
@@ -835,7 +837,7 @@ export default function Tickets() {
                                   <div className="box-list-flights box-list-flights-2">
                                     {tripInfo.map((ticket: any) => (
                                       <React.Fragment key={ticket.id}>
-                                        <TicketCard1 ticket={ticket} />
+                                        <TicketCard1 ticket={ticket} flightData={flightData} />
                                       </React.Fragment>
                                     ))}
                                   </div>
@@ -926,6 +928,35 @@ export default function Tickets() {
                       )}
                     </>
                   ) : null}
+                 {srx_tripType &&
+                  srx_tripType.trim().toLowerCase() === "multi-city" ? (
+                    <>
+                      {flightData?(
+                       
+
+                        <MulticitySelectionView
+                          flightData={flightData}
+                          departureFrom={departureFrom}
+                          arrivalTo={arrivalTo}
+                        />
+                      ) : (
+                        <>
+                          {loading === false && (
+                            <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                              <p className="text-xl font-semibold">
+                                No result found
+                              </p>
+                              <p className="text-sm mt-2 text-gray-400">
+                                Try adjusting your filters or search criteria.
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </>
+                  ) : null}
+
+                 
 
                   {/* Invalid airport */}
                   {error && (

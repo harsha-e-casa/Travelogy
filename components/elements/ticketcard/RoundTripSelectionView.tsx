@@ -57,14 +57,200 @@ export default function RoundTripSelectionView({ flightData }: any) {
   return (
     <>
       {/* render departure ticket with cancell */}
-      {selectedOnwardTicket && tripPhase === "RETURN" && (
+      
+
+      {/* {selectedOnwardTicket && tripPhase === "RETURN" && (
         <div
-          className="items-center p-3 bg-yellow-50 border border-yellow-300 rounded-md mb-4 shadow-sm fixed"
+          className="flex justify-between items-center p-3 bg-yellow-50 border border-yellow-300 rounded-md mb-4 shadow-sm fixed"
           style={{
             zIndex: "10",
             bottom: "-24px",
             width: "61%",
             background: "#1a1a2e",
+          }}
+        >
+          <div className="">
+            <div style={{ width: "175%" }}>
+              <p className="text-sm font-semibold text-white mb-2">
+                Selected Departure Flight
+              </p>
+              <div className="flex justify-evenly">
+                {selectedOnwardTicket?.ticket?.sI?.map(
+                  (segment: any, index: number) => (
+                    <div key={index} className="mb-2 w-full justify-around items-center border border-white rounded px-2 py-0.5 flex">
+                      <img
+                        style={{
+                          width: "35px",
+                          height: "35px",
+                          padding: "1px",
+                        }}
+                        src={`/assets/imgs/airlines/${segment[
+                          "fD"
+                        ].aI.code.toLowerCase()}.png`}
+                      />
+                      <div>
+                        <p className="text-sm font-semibold text-white">
+                          {segment.da.city}
+                        </p>
+                        <p className="text-sm font-semibold text-white">
+                          {dayjs(segment.dt).format("hh:mm A")}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <p className="text-sm font-semibold text-white">
+                          {Math.floor(segment.duration / 60)}h{" "}
+                          {segment.duration % 60}m
+                        </p>
+                        <img
+                          src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
+                          alt=""
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">
+                          {segment.aa.city}
+                        </p>
+                        <p className="text-sm font-semibold text-white">
+                          {dayjs(segment.at).format("hh:mm A")}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            <p className="text-sm text-white font-medium">
+              Fare: ₹
+              {(() => {
+                console.log("ssss");
+                let adultCost = 0;
+                let childCost = 0;
+                let infantCost = 0;
+                if (
+                  selectedOnwardTicket.ticket.totalPriceList[
+                    selectedOnwardTicket.selectedPriceIndex
+                  ].fd?.ADULT
+                ) {
+                  if (
+                    getCookie("gy_adult") !== undefined &&
+                    getCookie("gy_adult") !== "Nan"
+                  ) {
+                    console.log("adult count state == ", adultCount);
+                    adultCost =
+                      adultCount *
+                      selectedOnwardTicket.ticket.totalPriceList[
+                        selectedOnwardTicket.selectedPriceIndex
+                      ].fd?.ADULT?.fC?.NF;
+                    console.log("adult total cost = ", adultCost);
+                  }
+                }
+                if (
+                  selectedOnwardTicket.ticket.totalPriceList[
+                    selectedOnwardTicket.selectedPriceIndex
+                  ].fd?.CHILD
+                ) {
+                  if (
+                    getCookie("gy_child") !== undefined &&
+                    getCookie("gy_child") !== "Nan"
+                  ) {
+                    console.log("child count state == ", childCount);
+                    childCost =
+                      childCount *
+                      selectedOnwardTicket.ticket.totalPriceList[
+                        selectedOnwardTicket.selectedPriceIndex
+                      ].fd?.CHILD?.fC?.NF;
+                    console.log("child total cost = ", childCost);
+                  }
+                }
+                if (
+                  selectedOnwardTicket.ticket.totalPriceList[
+                    selectedOnwardTicket.selectedPriceIndex
+                  ].fd?.INFANT
+                ) {
+                  if (
+                    getCookie("gy_infant") !== undefined &&
+                    getCookie("gy_infant") !== "Nan"
+                  ) {
+                    console.log("infant count state == ", infantCount);
+                    infantCost =
+                      infantCount *
+                      selectedOnwardTicket.ticket.totalPriceList[
+                        selectedOnwardTicket.selectedPriceIndex
+                      ].fd?.INFANT?.fC?.NF;
+                    console.log("infant total cost = ", infantCost);
+                  }
+                }
+
+                return new Intl.NumberFormat("en-IN").format(
+                  adultCost + childCost + infantCost
+                );
+              })()}{" "}
+              <span className="text-xs text-white-500">
+                (
+                {
+                  selectedOnwardTicket.ticket.totalPriceList[
+                    selectedOnwardTicket.selectedPriceIndex
+                  ].fareIdentifier
+                }
+                )
+              </span>
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              setSelectedOnwardTicket(null);
+              setTripPhase("ONWARD");
+              setCurrentTickets(flightData.ONWARD);
+            }}
+            className="text-sm text-red-500 underline hover:text-red-600"
+          >
+            Cancel
+          </button>
+        </div>
+      )} */}
+
+      {/* render onward and return ticket */}
+      {currentTickets && currentTickets.length > 0 ? (
+        <>
+          <div>
+            {tripPhase == "ONWARD" ? (
+              <>
+                <h6 className="pb-10">Departure to {departureFrom}</h6>
+              </>
+            ) : (
+              <h6 className="pb-10">Return from {arrivalTo}</h6>
+            )}
+          </div>
+          <div className="box-list-flights box-list-flights-2">
+            {currentTickets.map((ticket: any) => (
+              <DomesticRoundTripTicketCard
+                ticket={ticket}
+                handleTicketSelected={handleTicketSelected}
+                tripPhase={tripPhase}
+                selectedOnwardTicket={selectedOnwardTicket}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="text-center text-grey-500 py-12">
+          <p className="text-xl font-semibold">No results found</p>
+          <p className="text-sm mt-2 text-grey-400">
+            Try adjusting your filters or search criteria.
+          </p>
+        </div>
+      )}
+      {selectedOnwardTicket && tripPhase === "RETURN" && (
+        <div
+          className="items-center p-3 border border-yellow-300 rounded-md mb-4 shadow-sm"
+          style={{
+            position: "sticky",
+            bottom: "0px",
+            zIndex: 10,
+            background: "#1a1a2e",
+            width: "100%",
           }}
         >
           <div className="row">
@@ -254,190 +440,6 @@ export default function RoundTripSelectionView({ flightData }: any) {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* {selectedOnwardTicket && tripPhase === "RETURN" && (
-        <div
-          className="flex justify-between items-center p-3 bg-yellow-50 border border-yellow-300 rounded-md mb-4 shadow-sm fixed"
-          style={{
-            zIndex: "10",
-            bottom: "-24px",
-            width: "61%",
-            background: "#1a1a2e",
-          }}
-        >
-          <div className="">
-            <div style={{ width: "175%" }}>
-              <p className="text-sm font-semibold text-white mb-2">
-                Selected Departure Flight
-              </p>
-              <div className="flex justify-evenly">
-                {selectedOnwardTicket?.ticket?.sI?.map(
-                  (segment: any, index: number) => (
-                    <div key={index} className="mb-2 w-full justify-around items-center border border-white rounded px-2 py-0.5 flex">
-                      <img
-                        style={{
-                          width: "35px",
-                          height: "35px",
-                          padding: "1px",
-                        }}
-                        src={`/assets/imgs/airlines/${segment[
-                          "fD"
-                        ].aI.code.toLowerCase()}.png`}
-                      />
-                      <div>
-                        <p className="text-sm font-semibold text-white">
-                          {segment.da.city}
-                        </p>
-                        <p className="text-sm font-semibold text-white">
-                          {dayjs(segment.dt).format("hh:mm A")}
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <p className="text-sm font-semibold text-white">
-                          {Math.floor(segment.duration / 60)}h{" "}
-                          {segment.duration % 60}m
-                        </p>
-                        <img
-                          src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">
-                          {segment.aa.city}
-                        </p>
-                        <p className="text-sm font-semibold text-white">
-                          {dayjs(segment.at).format("hh:mm A")}
-                        </p>
-                      </div>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-
-            <p className="text-sm text-white font-medium">
-              Fare: ₹
-              {(() => {
-                console.log("ssss");
-                let adultCost = 0;
-                let childCost = 0;
-                let infantCost = 0;
-                if (
-                  selectedOnwardTicket.ticket.totalPriceList[
-                    selectedOnwardTicket.selectedPriceIndex
-                  ].fd?.ADULT
-                ) {
-                  if (
-                    getCookie("gy_adult") !== undefined &&
-                    getCookie("gy_adult") !== "Nan"
-                  ) {
-                    console.log("adult count state == ", adultCount);
-                    adultCost =
-                      adultCount *
-                      selectedOnwardTicket.ticket.totalPriceList[
-                        selectedOnwardTicket.selectedPriceIndex
-                      ].fd?.ADULT?.fC?.NF;
-                    console.log("adult total cost = ", adultCost);
-                  }
-                }
-                if (
-                  selectedOnwardTicket.ticket.totalPriceList[
-                    selectedOnwardTicket.selectedPriceIndex
-                  ].fd?.CHILD
-                ) {
-                  if (
-                    getCookie("gy_child") !== undefined &&
-                    getCookie("gy_child") !== "Nan"
-                  ) {
-                    console.log("child count state == ", childCount);
-                    childCost =
-                      childCount *
-                      selectedOnwardTicket.ticket.totalPriceList[
-                        selectedOnwardTicket.selectedPriceIndex
-                      ].fd?.CHILD?.fC?.NF;
-                    console.log("child total cost = ", childCost);
-                  }
-                }
-                if (
-                  selectedOnwardTicket.ticket.totalPriceList[
-                    selectedOnwardTicket.selectedPriceIndex
-                  ].fd?.INFANT
-                ) {
-                  if (
-                    getCookie("gy_infant") !== undefined &&
-                    getCookie("gy_infant") !== "Nan"
-                  ) {
-                    console.log("infant count state == ", infantCount);
-                    infantCost =
-                      infantCount *
-                      selectedOnwardTicket.ticket.totalPriceList[
-                        selectedOnwardTicket.selectedPriceIndex
-                      ].fd?.INFANT?.fC?.NF;
-                    console.log("infant total cost = ", infantCost);
-                  }
-                }
-
-                return new Intl.NumberFormat("en-IN").format(
-                  adultCost + childCost + infantCost
-                );
-              })()}{" "}
-              <span className="text-xs text-white-500">
-                (
-                {
-                  selectedOnwardTicket.ticket.totalPriceList[
-                    selectedOnwardTicket.selectedPriceIndex
-                  ].fareIdentifier
-                }
-                )
-              </span>
-            </p>
-          </div>
-
-          <button
-            onClick={() => {
-              setSelectedOnwardTicket(null);
-              setTripPhase("ONWARD");
-              setCurrentTickets(flightData.ONWARD);
-            }}
-            className="text-sm text-red-500 underline hover:text-red-600"
-          >
-            Cancel
-          </button>
-        </div>
-      )} */}
-
-      {/* render onward and return ticket */}
-      {currentTickets && currentTickets.length > 0 ? (
-        <>
-          <div>
-            {tripPhase == "ONWARD" ? (
-              <>
-                <h6 className="pb-10">Departure to {departureFrom}</h6>
-              </>
-            ) : (
-              <h6 className="pb-10">Return from {arrivalTo}</h6>
-            )}
-          </div>
-          <div className="box-list-flights box-list-flights-2">
-            {currentTickets.map((ticket: any) => (
-              <DomesticRoundTripTicketCard
-                ticket={ticket}
-                handleTicketSelected={handleTicketSelected}
-                tripPhase={tripPhase}
-                selectedOnwardTicket={selectedOnwardTicket}
-              />
-            ))}
-          </div>
-        </>
-      ) : (
-        <div className="text-center text-grey-500 py-12">
-          <p className="text-xl font-semibold">No results found</p>
-          <p className="text-sm mt-2 text-grey-400">
-            Try adjusting your filters or search criteria.
-          </p>
         </div>
       )}
     </>

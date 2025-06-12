@@ -39,8 +39,8 @@ const hasBaggage = ssrInfo.some(e => Array.isArray(e.BAGGAGE) && e.BAGGAGE.lengt
               <Select className="h-10" placeholder="Add Baggage" disabled={baggageOptions.every((bag) => !bag.amount)}
 >
                 {baggageOptions.map((bag) => (
-                  <Option key={bag.code} value={bag.code}  disabled={!bag.amount}>
-                    {bag.desc} - ₹{bag.amount}
+                  <Option key={bag.code}  value={`${segment.id}|${bag.code}`}  disabled={!bag.amount}>
+                    {segment.id}-{bag.desc} - ₹{bag.amount}
                   </Option>
                 ))}
               </Select>
@@ -58,7 +58,7 @@ const hasBaggage = ssrInfo.some(e => Array.isArray(e.BAGGAGE) && e.BAGGAGE.lengt
               <Select className="h-10 w-100" placeholder="Add Baggage" disabled={baggageOptions.every((bag) => !bag.amount)}
 >
                 {baggageOptions.map((bag) => (
-                  <Option key={bag.code} value={bag.code}  disabled={!bag.amount}>
+                  <Option key={bag.code}  value={`${segment.id}|${bag.code}`}  disabled={!bag.amount}>
                     {bag.desc} - ₹{bag.amount}
                   </Option>
                 ))}
@@ -77,7 +77,7 @@ const hasBaggage = ssrInfo.some(e => Array.isArray(e.BAGGAGE) && e.BAGGAGE.lengt
               <Select className="h-10 w-100" placeholder="Add Baggage" disabled={baggageOptions.every((bag) => !bag.amount)}
 >
                 {baggageOptions.map((bag) => (
-                  <Option key={bag.code} value={bag.code}  disabled={!bag.amount}>
+                  <Option key={bag.code}  value={`${segment.id}|${bag.code}`}  disabled={!bag.amount}>
                     {bag.desc} - ₹{bag.amount}
                   </Option>
                 ))}
