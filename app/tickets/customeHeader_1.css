@@ -112,7 +112,7 @@
     width: 75%;
     margin: 0px auto;
   }
-  .hdt_header-item { margin-right: 24px; }
+  .hdt_header-item { margin-right: 24px; padding: 10px 0px;}
   .hdt_header-item:last-child { margin-right: 0; }
   .hdt_header-item label { font-size: 0.85rem; display: block; color: #ddd; padding-left: 8px; }
   .hdt_header-item .hdt_value { font-size: 1rem; font-weight: bold; }
@@ -146,3 +146,76 @@
     .hdt_container { flex-direction: column; }
     .hdt_sidebar { width: 100%; margin-right: 0; margin-bottom: 20px; }
   }
+
+.multicity-scrollplace {
+  width: 75%;
+  overflow-x: auto;
+  display: inline-flex;
+  padding: 7px;
+}
+
+.multicity-scrollplace::-webkit-scrollbar {
+  height: 1px; /* since it's horizontal */
+}
+
+.multicity-scrollplace::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.multicity-scrollplace::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+  border-radius: 10px;
+}
+
+/* .multicity-scrollplace::-webkit-scrollbar {
+  height: 6px;
+}
+
+.multicity-scrollplace::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 10px;
+}
+
+.multicity-scrollplace::-webkit-scrollbar-track {
+  background: transparent;
+} */
+
+
+.place-flights {
+  margin-right: 20px;
+}
+
+.al-selist {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.al-selist-positionHandle li {
+  margin: 0 5px;
+  text-align: center;
+}
+
+.whitecolor {
+  color: #fff;
+}
+
+.right-arrow {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid white;
+  border-right: 2px solid white;
+  transform: rotate(45deg);
+  margin-left: 5px; /* optional spacing */
+}
+
+.vertical-line {
+  width: 2px;
+  height: 20px; /* adjust height */
+  background-color: white; /* or any color */
+}
+

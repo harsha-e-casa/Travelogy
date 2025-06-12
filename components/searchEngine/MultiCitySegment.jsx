@@ -22,14 +22,14 @@ const MultiCitySegment = ({
   const handleFromChange = (field, value) => {
     fromRef.current = {
       ...fromRef.current,
-      [field]: value
+      [field]: value,
     };
 
     if (fromRef.current.from && fromRef.current.fromCode) {
       updateSegment(index, {
         ...segment,
         from: fromRef.current.from,
-        fromCode: fromRef.current.fromCode
+        fromCode: fromRef.current.fromCode,
       });
     }
   };
@@ -37,19 +37,23 @@ const MultiCitySegment = ({
   const handleToChange = (field, value) => {
     toRef.current = {
       ...toRef.current,
-      [field]: value
+      [field]: value,
     };
 
     if (toRef.current.to && toRef.current.toCode) {
       updateSegment(index, {
         ...segment,
         to: toRef.current.to,
-        toCode: toRef.current.toCode
+        toCode: toRef.current.toCode,
       });
     }
   };
 
   console.log("segment ==> ", segment);
+
+  const displayDate = segment.departureDate
+    ? dayjs(segment.departureDate)
+    : dayjs().add(2, "day");
 
   return (
     <div
@@ -139,21 +143,16 @@ const MultiCitySegment = ({
           onClick={() => setShowDatePicker(!showDatePicker)}
         >
           <div>
-            <div className="pt-2 pb-2">
-              {segment.departureDate
-                ? dayjs(segment.departureDate).format("dddd")
-                : "Departure Day"}
-            </div>
+            <div className="pt-2 pb-2">{displayDate.format("dddd")}</div>
             <div>
-              <span className="font-bold text-gray-900" style={{ fontSize: "20px" }}>
-                {segment.departureDate
-                  ? dayjs(segment.departureDate).format("DD")
-                  : "--"}
+              <span
+                className="font-bold text-gray-900"
+                style={{ fontSize: "20px" }}
+              >
+                {displayDate.format("DD")}
               </span>
               <sub className="sub_txt1" style={{ margin: "5px" }}>
-                {segment.departureDate
-                  ? dayjs(segment.departureDate).format("MMM")
-                  : "---"}
+                {displayDate.format("MMM")}
               </sub>
             </div>
             <div className="text_start mt-0 flex">
@@ -167,7 +166,10 @@ const MultiCitySegment = ({
           <AppDateRage
             openToDateRange={() => setShowDatePicker(false)}
             setDatedep={(date) =>
-              handleFromChange("departureDate", dayjs(date))
+              updateSegment(index, {
+                ...segment,
+                departureDate: dayjs(date),
+              })
             }
           />
         )}
@@ -191,26 +193,6 @@ const MultiCitySegment = ({
           </button>
         )}
       </div>
-
-      {/* Action Buttons */}
-      {/* <div className="flex flex-col justify-center items-center gap-2 ml-4 mt-6">
-        {!disableRemove && (
-          <button
-            onClick={() => removeSegment(index)}
-            className="text-red-600 font-bold text-lg px-2 py-1 border border-red-500 rounded-full"
-          >
-            ×
-          </button>
-        )}
-        {isLast && (
-          <button
-            onClick={addSegment}
-            className="text-blue-600 font-semibold text-sm px-3 py-1 border border-blue-600 rounded"
-          >
-            + Add City
-          </button>
-        )}
-      </div> */}
     </div>
   );
 };
