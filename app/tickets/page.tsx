@@ -330,7 +330,7 @@ export default function Tickets() {
         toCityOrAirport: {
           code: item.toCode,
         },
-        travelDate: item.departureDate.split("T")[0],
+        travelDate: item?.departureDate?.split("T")[0],
       }));
       console.log("tripBasedRouteInfoSub ==> ", tripBasedRouteInfoSub);
 
