@@ -1,4 +1,6 @@
 "use client";
+
+import React, { useState, useEffect } from "react";
 import ByAmenities from "@/components/Filter/ByAmenities";
 import ByHotelType from "@/components/Filter/ByHotelType";
 import ByLocation from "@/components/Filter/ByLocation";
@@ -13,22 +15,26 @@ import Layout from "@/components/layout/Layout";
 import SwiperGroup8Slider from "@/components/slider/SwiperGroup8Slider";
 import rawHotelsData from "@/util/hotels.json";
 import useHotelFilter from "@/util/useHotelFilter";
-import EngineTabsHotel from "@/components/searchEngine/engineHeaderHotel";
+import "../tickets/customeHeader_1.css";
 import { useSearchParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import Link from "next/link";
-// import AppTravellerHotel from "@/components/searchEngine/TravellerForm";
+import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 const hotelsData = rawHotelsData.map((hotel) => ({
   ...hotel,
   rating: parseFloat(hotel.rating as string),
 }));
+import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppListSearch from "@/components/searchEngine/AppListSearch.jsx";
 
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const location = searchParams.get("location");
-  const checkinDate = searchParams.get("checkinDate");
-  const checkoutDate = searchParams.get("checkoutDate");
+  const location = searchParams.get("location") || "Goa"; // or any default
+
+  // const checkinDate = searchParams.get("checkinDate");
+  // const checkoutDate = searchParams.get("checkoutDate");
+
   const city = searchParams.get("city") || "699261"; // Static default city if none
   const nationality = searchParams.get("nationality") || "106"; // Static default nationality
   const currency = searchParams.get("currency") || "INR"; // Static default currency
@@ -37,87 +43,81 @@ export default function HotelListing() {
   const children = Number(searchParams.get("children")) || 0; // Default to 0 if no children in query
   const childAges = JSON.parse(searchParams.get("childAges") || "[]"); // Default to empty array if no childAges
 
-  console.log(
-    checkinDate,
-    checkoutDate,
-    location,
-    city,
-    nationality,
-    currency,
-    rooms,
-    adults,
-    children,
-    childAges
+  const [openDateRage, setOpenDateRage] = useState(false);
+  const [openCheckin, setOpenCheckin] = useState(false);
+  const [openCheckout, setOpenCheckout] = useState(false);
+  const [checkinDate, setCheckinDate] = useState<string>(
+    searchParams.get("checkinDate") || dayjs().format("YYYY-MM-DD")
+  );
+  const [checkoutDate, setCheckoutDate] = useState<string>(
+    searchParams.get("checkoutDate") ||
+      dayjs().add(1, "day").format("YYYY-MM-DD")
   );
 
-  //   const handleSearch = async () => {
-  //     const formattedCheckIn = dayjs(datedep).format("YYYY-MM-DD");
-  //     const formattedCheckOut = dayjs(datedepr).format("YYYY-MM-DD");
+  const [adult, setAdult] = useState(adults);
+  const [countchildren, setCountchildren] = useState(children);
+  const [room1, setRoom1] = useState(rooms);
+  const [childAgesPerRoom, setChildAgesPerRoom] = useState(childAges);
+  const [showTraveller, setShowTraveller] = useState(false);
+  const clickRoomAdd = () => setRoom1((prev) => Math.min(prev + 1, 10));
+  const clickRoomMinus = () => setRoom1((prev) => Math.max(prev - 1, 1));
+  const [selectFrom, setSelectFrom] = useState(location);
+  const clickPlus = () => setAdult((prev) => Math.min(prev + 1, 10));
+  const clickMinus = () => setAdult((prev) => Math.max(prev - 1, 1));
 
-  //     // Generate roomInfo array
-  //     const roomInfo = [];
+  const clickPlusChildren = () => {
+    if (countchildren < 10) {
+      setCountchildren((prev) => prev + 1);
+      setChildAgesPerRoom((prev) => [...prev]);
+    }
+  };
+  const opentrvForm = () => {
+    setShowTraveller(false);
+    // Optional: Trigger search with new data
+    handleSearch();
+  };
 
-  //     for (let i = 0; i < rooms; i++) {
-  //       roomInfo.push({
-  //         numberOfAdults: adult,
-  //         numberOfChild: countchildren,
-  //         ...(countchildren > 0 ? { childAge: childAgesPerRoom[i] || [] } : {}),
-  //       });
-  //     }
+  const clickMinusChildren = () => {
+    if (countchildren > 0) {
+      setCountchildren((prev) => prev - 1);
+      setChildAgesPerRoom((prev) => prev.slice(0, -1));
+    }
+  };
 
-  //     // Construct query parameters
-  //     const queryParams = new URLSearchParams({
-  //       checkinDate: formattedCheckIn,
-  //       checkoutDate: formattedCheckOut,
-  //       city: "699261", // Static city ID (can be dynamic if needed)
-  //       nationality: "106", // Static nationality (can be dynamic if needed)
-  //       currency: "INR", // Static currency (can be dynamic if needed)
-  //       rooms: rooms.toString(),
-  //       adults: adult.toString(),
-  //       children: countchildren.toString(),
-  //       childAges: JSON.stringify(childAgesPerRoom), // If you want to pass child ages as a JSON string
-  //     }).toString();
+  useEffect(() => {
+    if (!checkinDate) setCheckinDate(dayjs().format("YYYY-MM-DD"));
+    if (!checkoutDate)
+      setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
+  }, []);
 
-  //     try {
-  //       // Optionally, make a POST request (payload structure as before)
-  //       const payload = {
-  //         searchQuery: {
-  //           checkinDate: formattedCheckIn,
-  //           checkoutDate: formattedCheckOut,
-  //           roomInfo,
-  //           searchCriteria: {
-  //             city: "699261",
-  //             nationality: "106",
-  //             currency: "INR",
-  //           },
-  //           searchPreferences: {
-  //             fsc: true,
-  //           },
-  //         },
-  //         sync: true,
-  //       };
+  const [datedep, setDatedep] = useState(dayjs());
+  const openfrom = () => {
+    console.log("Location clicked");
+    if (showSearchState) {
+      closeAllFields();
+    } else {
+      closeAllFields();
+      setShowSearchState(true);
+    }
+  };
 
-  //       const response = await fetch(
-  //         "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
-  //           },
-  //           body: JSON.stringify(payload),
-  //         }
-  //       );
+  const closeAllFields = () => {
+    setShowSearchState(false);
+    setOpenDateRage(false);
+  };
+  // console.log(
+  //   checkinDate,
+  //   checkoutDate,
+  //   location,
+  //   city,
+  //   nationality,
+  //   currency,
+  //   rooms,
+  //   adults,
+  //   children,
+  //   childAges
+  // );
 
-  //       const data = await response.json();
-  //       console.log("Search result:", data);
-
-  //       // Redirect to HotelListing with query parameters
-  //       router.push(`/hotel-listing?${queryParams}`);
-  //     } catch (error) {
-  //       console.error("Search API error:", error);
-  //     }
-  //   };
   const {
     filter,
     sortCriteria,
@@ -144,7 +144,6 @@ export default function HotelListing() {
   } = useHotelFilter(hotelsData);
 
   const handleSearch = async () => {
-    // Validate check-in and check-out dates
     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
@@ -212,86 +211,119 @@ export default function HotelListing() {
       alert("An error occurred while searching for hotels. Please try again.");
     }
   };
+  const openToDateRange = () => {
+    setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+    closeallform();
+    setOpenDateRage(true);
+  };
+  const closeallform = () => {
+    setOpenDateRage(false);
+  };
+  const toggleCheckin = () => {
+    setOpenCheckin(!openCheckin);
+    setOpenCheckout(false); // Close other
+  };
+
+  const toggleCheckout = () => {
+    setOpenCheckout(!openCheckout);
+    setOpenCheckin(false); // Close other
+  };
+
+  const [showSearchState, setShowSearchState] = useState(false);
+  type AppListSearchProps = {
+    operEngLocation: () => void;
+    setSelectFrom: (val: string) => void;
+    // setSelectFromSub: (val: string) => void;
+    categoryType?: string;
+  };
+
+  const SafeAppListSearch = AppListSearch as React.FC<AppListSearchProps>;
 
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          {/* <EngineTabsHotel active_border={'2'} /> */}
-          {/* <div className="h-20 w-full z-20 sticky top-0 bg_cs_search"> */}
-          {/* Search Engine section */}
-          <div className="pt-4 flex items-center justify-center space-x-4">
+          <div className="h-20 w-full z-20 sticky top-0 bg_cs_search">
             {/* Location */}
-            <div className="flex items-center space-x-2 hdt_header-item">
-              <label>Location</label>
-              <input
-                type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Enter Location"
-                className="input-field"
-              />
-            </div>
+            <div className="hdt_header">
+              <div className="hdt_header-item">
+                <label>Location</label>
 
-            {/* Check-in Date */}
-            <div className="flex items-center space-x-2 hdt_header-item">
-              <label>Check-in</label>
-              <input
-                type="date"
-                value={checkinDate}
-                onChange={(e) => setCheckinDate(e.target.value)}
-                className="input-field"
-              />
-            </div>
+                <span className="input-field font-bold" onClick={openfrom}>
+                  {selectFrom}
+                </span>
+                {showSearchState && (
+                  <div className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact">
+                    <AppListSearch
+                      operEngLocation={openfrom}
+                      setSelectFrom={setSelectFrom}
+                      // setSelectFromSub={setSelectFromSub}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="hdt_header-item">
+                <label>Check-in</label>
+                {checkinDate && (
+                  <button
+                    onClick={toggleCheckin}
+                    className="input-field font-bold"
+                  >
+                    {checkinDate}
+                  </button>
+                )}
 
-            {/* Check-out Date */}
-            <div className="flex items-center space-x-2 hdt_header-item">
-              <label>Check-out</label>
-              <input
-                type="date"
-                value={checkoutDate}
-                onChange={(e) => setCheckoutDate(e.target.value)}
-                className="input-field"
-              />
-            </div>
-
-            {/* Rooms */}
-            <div className="flex items-center space-x-2 hdt_header-item">
-              <label>Rooms</label>
-              <input
-                type="number"
-                value={rooms}
-                onChange={(e) => setRooms(Number(e.target.value))}
-                min="1"
-                className="input-field"
-              />
-            </div>
-
-            {/* Adults */}
-            <div className="flex items-center space-x-2 hdt_header-item">
-              <label>Adults</label>
-              <input
-                type="number"
-                value={adults}
-                onChange={(e) => setAdults(Number(e.target.value))}
-                min="1"
-                className="input-field"
-              />
-            </div>
-
-            {/* Children */}
-            <div className="flex items-center space-x-2 hdt_header-item">
-              <label>Children</label>
-              <input
-                type="number"
-                value={children}
-                onChange={(e) => setChildren(Number(e.target.value))}
-                min="0"
-                className="input-field"
-              />
+                {openCheckin && (
+                  <AppDateRage
+                    openToDateRange={() => setOpenCheckin(false)}
+                    setDatedep={(date) => setCheckinDate(date)}
+                  />
+                )}
+              </div>
+              <div className="hdt_header-item">
+                <label>Check-out</label>
+                <button
+                  onClick={toggleCheckout}
+                  className="input-field font-bold"
+                >
+                  {checkoutDate}
+                </button>
+                {openCheckout && (
+                  <AppDateRage
+                    openToDateRange={() => setOpenCheckout(false)}
+                    setDatedep={(date) => setCheckoutDate(date)}
+                  />
+                )}
+              </div>
+              <div className="hdt_header-item hotel_room">
+                <label>Rooms & Guest</label>
+                <button onClick={() => setShowTraveller((prev) => !prev)}>
+                  <div className="input-field text-base font-bold">
+                    {adult} Adult{adult > 1 ? "s" : ""}, {countchildren} Child,
+                    {room1} Room{room1 > 1 ? "s" : ""}
+                  </div>
+                </button>
+                <AppTravellerHotel
+                  showTraveller={showTraveller}
+                  adult={adult}
+                  clickMinus={clickMinus}
+                  clickPlus={clickPlus}
+                  clickMinusChildren={clickMinusChildren}
+                  clickPlusChildren={clickPlusChildren}
+                  countchildren={countchildren}
+                  rooms={rooms}
+                  clickRoomAdd={clickRoomAdd}
+                  clickRoomMinus={clickRoomMinus}
+                  travellerClass={"a"} // Optional class field
+                  handleChangeClass={() => {}}
+                  opentrvForm={() => setShowTraveller(false)}
+                  childAgesPerRoom={childAgesPerRoom}
+                  setChildAgesPerRoom={setChildAgesPerRoom}
+                />
+              </div>
+              <button className="hdt_search-btn">Search</button>
             </div>
           </div>
-          {/* </div> */}
 
           <section className="box-section block-content-tourlist background-body">
             <div className="container-fluid" style={{width:"93%"}}>
@@ -339,20 +371,6 @@ export default function HotelListing() {
                         <ByPrice
                           filter={filter}
                           handlePriceRangeChange={handlePriceRangeChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Hotel Type
-                        </h6>
-                        <ByHotelType
-                          uniqueHotelsType={uniqueHotelsType}
-                          filter={filter}
-                          handleCheckboxChange={handleCheckboxChange}
                         />
                       </div>
                     </div>

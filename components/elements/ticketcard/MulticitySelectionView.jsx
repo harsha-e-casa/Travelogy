@@ -83,6 +83,7 @@ export default function MulticitySelectionView({ flightData }) {
       });
     });
 
+
     return {
       from,
       to,
@@ -142,9 +143,42 @@ export default function MulticitySelectionView({ flightData }) {
             pair.flights.map((ticket, i) => (
               <div key={i}>
                 <div className="" style={{ paddingBottom: "10px" }}>
-                  {ticket.sI.map((segment, index) => (
-                    <>
-                      <div className="relative flex flex-col">
+                  
+                  
+                  {ticket.sI.length === 2 ? (
+  // 🟢 Combined view for connecting flights
+  <div className="combined-connecting-flight">
+    <div className="flex justify-between gap-4 border rounded-md p-4">
+      {ticket.sI.map((segment, index) => (
+        <div key={index} className="w-1/2 border-r last:border-none pr-4 last:pr-0">
+          <div className="flex items-center gap-2 mb-2">
+            <img
+              className="w-8 h-8"
+              src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
+              alt={segment.fD.aI.name}
+            />
+            <div className="text-xs">{segment.fD.aI.name}</div>
+          </div>
+          <div className="text-sm mb-1">
+            <strong>{segment.da.city} ({segment.da.code})</strong> →
+            <strong> {segment.aa.city} ({segment.aa.code})</strong>
+          </div>
+          <div className="flex justify-between text-xs text-gray-600">
+            <span>{dayjs(segment.dt).format("HH:mm")}</span>
+            <span>{formatTime(segment.duration)}</span>
+            <span>{dayjs(segment.at).format("HH:mm")}</span>
+          </div>
+          <div className="text-xs mt-1">
+            {segment.stops > 0 ? `${segment.stops} stops` : "Non-stop"}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+) : (
+  // 🔵 Normal single-segment logic (same as before)
+  ticket.sI.map((segment, index) => (
+     <div className="relative flex flex-col">
                         <div
                           className="air_detailes  "
                           style={{
@@ -183,7 +217,8 @@ export default function MulticitySelectionView({ flightData }) {
                                   </p>
                                   <p className="text-sm-medium time-flight timelogo">
                                     <span className="neutral-1000 time">
-                                      {dayjs(segment.dt).format("hh:mm A")}
+                                      {dayjs(segment.dt).format("HH:mm")
+                                      }
                                     </span>
                                   </p>
                                 </div>
@@ -228,7 +263,7 @@ export default function MulticitySelectionView({ flightData }) {
                                   </p>
                                   <p className="text-sm-medium time-flight timelogo">
                                     <span className="neutral-1000 time">
-                                      {dayjs(segment.at).format("hh:mm A")}
+                                      {dayjs(segment.at).format("HH:mm")}
                                     </span>
                                   </p>
                                 </div>
@@ -332,6 +367,8 @@ export default function MulticitySelectionView({ flightData }) {
                                 const adultFare = fareFD.ADULT?.fC?.NF || 0;
 
                                 const updatedFlight = {
+                                  priceId: selectedFare.id,
+
                                   flightName: segment.fD.aI.name,
                                   depCityCode: segment.da.code,
                                   arrCityCode: segment.aa.code,
@@ -339,13 +376,12 @@ export default function MulticitySelectionView({ flightData }) {
                                   flightNumber: segment.fD.fN,
                                   depCity: segment.da.city,
                                   arrCity: segment.aa.city,
-                                  depTime: dayjs(segment.dt).format("hh:mm A"),
-                                  arrTime: dayjs(segment.at).format("hh:mm A"),
+                                  depTime: dayjs(segment.dt).format("HH:mm"),
+                                  arrTime: dayjs(segment.at).format("HH:mm"),
+
                                   airlineLogo: `/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`,
                                   price: totalPrice,
-                                  adultFare: new Intl.NumberFormat(
-                                    "en-IN"
-                                  ).format(adultFare),
+                                  adultFare: new Intl.NumberFormat("en-IN").format(adultFare),
                                 };
 
                                 setSelectedFlights((prev) => {
@@ -368,9 +404,10 @@ export default function MulticitySelectionView({ flightData }) {
                             </button>
                           </div>
                         </div>
-                      </div>{" "}
-                    </>
-                  ))}
+                      </div>
+  ))
+)}
+
 
                   {/* Pricing and fare selection */}
                 </div>
@@ -466,14 +503,29 @@ export default function MulticitySelectionView({ flightData }) {
                           totalFlightPrice
                         )}
                       </div>
-                      <button className=" btn btn-gray btn">BOOK</button>
+                      <Link
+                        href={`/book-ticket?tcs_id=${Object.values(selectedFlights)
+                          .slice(0, 3) // get up to 3 priceIds
+                          .map(f => f?.priceId || "")
+                          .join(",")}`}
+                        passHref
+                      >
+                        <button
+                          className="book-button"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          BOOK
+                        </button>
+                      </Link>
+
+
                     </div>
                   </div>
                 </div>
               );
             })()}
         </>
-      ),
+      )
     };
   });
 

@@ -96,7 +96,8 @@ export default function DomesticRoundTripTicketCard({
 
                         <p className="text-sm-medium time-flight timelogo">
                           <span className="neutral-1000 time ">
-                            {dayjs(segment["dt"]).format("hh:mm A")}
+                            {dayjs(segment["dt"]).format("HH:mm")
+                            }
                           </span>
                         </p>
                       </div>
@@ -149,7 +150,8 @@ export default function DomesticRoundTripTicketCard({
 
                         <p className="text-sm-medium time-flight timelogo">
                           <span className="neutral-1000 time">
-                            {dayjs(segment["at"]).format("hh:mm A")}{" "}
+                            {dayjs(segment["at"]).format("HH:mm")}
+                            {" "}
                           </span>
                         </p>
                       </div>
@@ -248,7 +250,7 @@ export default function DomesticRoundTripTicketCard({
               {ticket.totalPriceList.length > 2 && (
                 <button
                   className="view-more-txt"
-                  style={{ textAlign: "right", fontSize: "10px"}}
+                  style={{ textAlign: "right", fontSize: "10px" }}
                   onClick={() => {
                     setShowAllFares((prev) => !prev);
                   }}
@@ -271,11 +273,10 @@ export default function DomesticRoundTripTicketCard({
               ) : (
                 selectedOnwardTicket && (
                   <Link
-                    href={`book-ticket?tcs_id=${
-                      selectedOnwardTicket.ticket.totalPriceList[
+                    href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
                         selectedOnwardTicket.selectedPriceIndex
                       ]?.id
-                    },${ticket.totalPriceList[value]?.id}`}
+                      },${ticket.totalPriceList[value]?.id}`}
                     className="btn btn-gray booknow btn"
                   >
                     Book Now
