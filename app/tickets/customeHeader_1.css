@@ -148,7 +148,7 @@
   }
 
 .multicity-scrollplace {
-  width: 75%;
+  width: 100%;
   overflow-x: auto;
   display: inline-flex;
   padding: 7px;
