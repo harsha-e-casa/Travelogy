@@ -13,6 +13,7 @@ export default function BookingForm({ segmentsPrice, totalpricee,baggageinfo }) 
 	const savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
 	const savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
 	console.log("saved baggage",savedBaggage)
+	console.log("saved meal",savedMeal)
 	
 	return (
 		<>
@@ -72,7 +73,9 @@ export default function BookingForm({ segmentsPrice, totalpricee,baggageinfo }) 
 				<div className="box-tickets">
 					<div className="flex flex-row justify-between">
 						<div><strong className="text-md-bold neutral-1000">Amount to Pay</strong></div>
-						<div className="text-xl-bold neutral-1000">₹{totalfare}</div>
+						<div className="text-xl-bold neutral-1000">₹{Number(totalfare) + 
+    savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) + 
+    savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}</div>
 					</div>
 				
 					<div className="line-booking-tickets">
