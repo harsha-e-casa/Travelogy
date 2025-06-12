@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import dayjs from "dayjs";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -53,7 +54,7 @@ const Page = () => {
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
-  const MealAmount              = JSON.parse(getCookie("mealinfo") || "[]");
+  const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
 
 
 
@@ -61,10 +62,10 @@ const Page = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedApiData = localStorage.getItem("apiData");
-      console.log("storedApi",storedApiData)
+      console.log("storedApi", storedApiData)
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
-        console.log("fakjsdhfalshfkjsadf",flightData)
+        console.log("fakjsdhfalshfkjsadf", flightData)
       }
     }
   }, []);
@@ -350,7 +351,7 @@ const Page = () => {
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
   const baggageTotal =
     BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
-    const mealTotal=
+  const mealTotal =
     MealAmount.reduce((acc, curr) => acc + curr.amount, 0)
 
   const finalAmountToPay = totalprice + baggageTotal + mealTotal;
@@ -395,8 +396,11 @@ const Page = () => {
   const dateChangePenaltyPeriod = dateChange.map((e) => e.pp);
   const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
   const dateChangeSt = dateChange.map((e) => e.st ?? 0);
-  const dateChangeEt = dateChange.map((e) => e.et / 24 ?? 365);
+const dateChangeEt = dateChange.map((e) => (e.et / 24) ?? 365);
 
+
+
+ 
   //seat charge
   const seatChargeSt = seatCharge.map((e) => e.st ?? null);
   const seatChargeEt = seatCharge.map((e) => e.et / 24 ?? null);
@@ -463,6 +467,35 @@ const Page = () => {
       }
     });
   });
+  const reviewMap = {};
+ 
+if (flightData?.tripInfos) {
+  flightData.tripInfos.forEach((trip) => {
+    const segs = trip.sI;
+    if (!segs || segs.length === 0) return;
+    const key = `${segs[0].da.code}-${segs[segs.length - 1].aa.code}`;
+
+    // fare rule
+    trip.totalPriceList.forEach((p) => {
+      if (p.fareRuleInformation) {
+        fareRulesMap[key] = {
+          fareRuleInformation: p.fareRuleInformation,
+          refundType: p.fd.ADULT.rT === 0 ? "Refundable" : "Non-Refundable",
+        };
+      }
+    });
+
+    // review dt
+    reviewMap[key] = segs;
+  });
+}
+
+    const getDepartureTimeForRoute = (routeKey) => {
+  const segs = reviewMap[routeKey];
+  if (!segs?.length) return "N/A";
+  return dayjs(segs[0].dt).format("HH:mm");
+};
+
 
   const [selectedRoute, setSelectedRoute] = useState();
 
@@ -498,15 +531,13 @@ const Page = () => {
                 {" "}
                 {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                   ?.st &&
-                fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                  ?.et ? (
-                  <div>{`${
-                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.st
-                  } hrs to ${
-                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                  fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                    ?.et ? (
+                  <div>{`${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                    ?.st
+                    } hrs to ${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                       ?.et / 24
-                  } days`}</div>
+                    } days`}</div>
                 ) : (
                   <p>
                     {
@@ -536,9 +567,9 @@ const Page = () => {
                             {fareRulesData?.fareRuleInformation?.tfr
                               ?.CANCELLATION?.[0]?.amount
                               ? fareRulesData?.fareRuleInformation?.tfr
-                                  ?.CANCELLATION?.[0]?.amount
+                                ?.CANCELLATION?.[0]?.amount
                               : fareRulesData?.fareRuleInformation?.tfr
-                                  ?.CANCELLATION?.[0]?.additionalFee}
+                                ?.CANCELLATION?.[0]?.additionalFee}
                           </p>
                         </>
                       ) : null}
@@ -551,9 +582,9 @@ const Page = () => {
                     {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                       ?.amount
                       ? fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.amount
+                        ?.CANCELLATION?.[0]?.amount
                       : fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.additionalFee}{" "}
+                        ?.CANCELLATION?.[0]?.additionalFee}{" "}
                   </p>
                 )}
               </div>
@@ -590,9 +621,8 @@ const Page = () => {
                 if (st && et) {
                   return (
                     <div>
-                      {`${st} hrs to ${
-                        et > 24 ? et / 24 + " days" : et + " hrs"
-                      }`}
+                      {`${st} hrs to ${et > 24 ? et / 24 + " days" : et + " hrs"
+                        }`}
                     </div>
                   );
                 } else {
@@ -665,11 +695,10 @@ const Page = () => {
                 if (noShow?.et && noShow?.st) {
                   return (
                     <div>
-                      {`${noShow?.st} hrs to ${
-                        noShow?.et > 24
-                          ? noShow?.et / 24 + " days"
-                          : noShow?.et + " hrs"
-                      }`}
+                      {`${noShow?.st} hrs to ${noShow?.et > 24
+                        ? noShow?.et / 24 + " days"
+                        : noShow?.et + " hrs"
+                        }`}
                     </div>
                   );
                 } else {
@@ -724,11 +753,10 @@ const Page = () => {
                   if (seatChangable?.st && seatChangable?.et) {
                     return (
                       <div>
-                        {`${seatChangable?.st} hrs to ${
-                          seatChangable?.et > 24
-                            ? seatChangable?.et / 24 + " days"
-                            : seatChangable?.et + " hrs"
-                        }`}
+                        {`${seatChangable?.st} hrs to ${seatChangable?.et > 24
+                          ? seatChangable?.et / 24 + " days"
+                          : seatChangable?.et + " hrs"
+                          }`}
                       </div>
                     );
                   } else {
@@ -805,7 +833,7 @@ const Page = () => {
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
-    
+
     if (totalprice && bookingId) {
       const parameter = {
         bookingId,
@@ -997,10 +1025,14 @@ const Page = () => {
                           {/* for loop rendering */}
                           {/* <div className="shadow rounded-md p-3"> */}
                           {flightData?.tripInfos?.map((trip, tripIndex) => {
+                            const tripInfosLength = flightData?.tripInfos?.length;
+
                             const trevellInfo =
-                              tripIndex === 0
-                                ? "Onward journey"
-                                : "Return journey";
+                              tripInfosLength > 2
+                                ? " "
+                                : tripIndex === 0
+                                  ? "Onward journey"
+                                  : "Return journey";
                             const trevellInfoStyle =
                               tripIndex === 0
                                 ? { padding: "0 0 1rem 0" }
@@ -1469,7 +1501,7 @@ const Page = () => {
                             </div> */}
                           </div>
 
-                          <div className="mt-50 shadow rounded-md p-3">
+                          <div className="mt-50 shadow rounded-md p-3 border border-black">
                             <div className="flex flex-row justify-between">
                               <div className="text-xl-bold neutral-1000">
                                 Cancellation and Refund
@@ -1481,11 +1513,10 @@ const Page = () => {
                                     <button
                                       key={route}
                                       onClick={() => setSelectedRoute(route)}
-                                      className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
-                                        selectedRoute === route
-                                          ? "bg-white text-black shadow"
-                                          : "text-gray-600 hover:text-black"
-                                      }`}
+                                      className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${selectedRoute === route
+                                        ? "bg-white text-black shadow"
+                                        : "text-gray-600 hover:text-black"
+                                        }`}
                                     >
                                       {route}
                                     </button>
@@ -1610,10 +1641,10 @@ const Page = () => {
                                         {fareRulesData?.fareRuleInformation?.tfr
                                           ?.CANCELLATION?.[0]?.amount
                                           ? fareRulesData?.fareRuleInformation
-                                              ?.tfr?.CANCELLATION?.[0]?.amount
+                                            ?.tfr?.CANCELLATION?.[0]?.amount
                                           : fareRulesData?.fareRuleInformation
-                                              ?.tfr?.CANCELLATION?.[0]
-                                              ?.additionalFee}
+                                            ?.tfr?.CANCELLATION?.[0]
+                                            ?.additionalFee}
                                         <span className="mx-1"></span>
                                       </p>
                                       <p className="text-secondary text-sm">
@@ -1627,17 +1658,15 @@ const Page = () => {
                                     </div>
                                   </div>
                                 </div>
+
                                 <div className="flex flex-col justify-center items-center">
                                   <p className="text-sm-medium neutral-1000">
-                                    {dt}
-                                  </p>
-                                  {/* <p>departure</p> */}
-                                  {/* <p className="text-sm-medium neutral-1000">
-                                    {formattedDate.split(",")[1]}
-                                  </p> */}
+              {getDepartureTimeForRoute(selectedRoute)}
+            </p>
                                 </div>
                               </div>
                             </div>
+
 
                             {/* Show More / Show Less Button */}
 
