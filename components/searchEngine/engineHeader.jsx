@@ -100,6 +100,7 @@ const EngineTabs = ({ active_border }) => {
 
   const searchTickets = () => {
     console.log("fn searchTickettttttttttt ");
+    console.log(multicitySegments);
 
     let departureFrom = getCookie("gy_da");
     let arrivalTo = getCookie("gy_aa");
@@ -114,6 +115,8 @@ const EngineTabs = ({ active_border }) => {
     let tripType = getCookie("gy_triptype");
     let passengerType = getCookie("gy_passender_type");
 
+    // save multicity condition
+
     const mydata = {
       departureFrom: departureFrom,
       arrivalTo: arrivalTo,
@@ -127,6 +130,11 @@ const EngineTabs = ({ active_border }) => {
       tripType: tripType,
       passengerType: passengerType,
     };
+
+    if (tripType == "multi-city") {
+      mydata.multicitySegments = multicitySegments
+      setCookie('gy_multi_city', JSON.stringify(multicitySegments));
+    }
 
     if (returnDate != undefined || returnDate != "Nan") {
       mydata.returnDate = returnDate;
@@ -327,6 +335,33 @@ const EngineTabs = ({ active_border }) => {
     setShowYTraveller(false);
   };
 
+  const [multicitySegments, setMulticitySegments] = useState([
+    { from: "", fromCode: "", to: "", toCode: "", departureDate: null },
+  ]);
+
+  const multicityUpdateSegment = (index, newData) => {
+    const newSegments = [...multicitySegments];
+    newSegments[index] = newData;
+    setMulticitySegments(newSegments);
+  };
+
+  const multicityAddSegment = () => {
+    if (multicitySegments.length < 5) {
+      setMulticitySegments([
+        ...multicitySegments,
+        { from: "", fromCode: "", to: "", toCode: "", departureDate: null },
+      ]);
+    }
+  };
+
+  const multicityRemoveSegment = (index) => {
+    if (multicitySegments.length > 1) {
+      setMulticitySegments(multicitySegments.filter((_, i) => i !== index));
+    }
+  };
+
+  console.log("multicitySegmentsmulticitySegments ==> ",multicitySegments)
+
   return (
     <section
       className="section_main_book_dash_01 relative_MainBanner "
@@ -517,7 +552,12 @@ const EngineTabs = ({ active_border }) => {
             {/* <div className="flex">{selectedPlan == "multi-city" && <MultiCityContainer />}</div> */}
             {selectedPlan === "multi-city" && (
               <div className="w-full mt-4">
-                <MultiCityContainer />
+                <MultiCityContainer
+                  segments={multicitySegments}
+                  updateSegment={multicityUpdateSegment}
+                  addSegment={multicityAddSegment}
+                  removeSegment={multicityRemoveSegment}
+                />
               </div>
             )}
           </div>
