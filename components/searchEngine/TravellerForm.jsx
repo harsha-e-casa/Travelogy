@@ -216,9 +216,9 @@ export const AppTravellerHotel = ({
     <>
       {showTraveller ? (
         <>
-          <div className="lg:w-2/5 md:w-2/5w-full absolute h-auto bg-white right-0 -mt-5 p-4 bx_shadow_dr1">
+          <div className="lg:w-2/5 md:w-2/5w-full absolute h-auto bg-white right-5 -mt-5 p-4 bx_shadow_dr1 z-50">
             <div className="form_dr1 flex justify-between items-center pt-4">
-              <div className="text-base font-bold">Rooms</div>
+              <div className="text-base font-bold text-black">Rooms</div>
               <div className="flex custome_addBtn1">
                 <div
                   className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
@@ -228,7 +228,7 @@ export const AppTravellerHotel = ({
                   <MinusOutlined className="text-blue-700" />
                 </div>
                 <div
-                  className="w-10 h-8 flex justify-center items-center prevent-select"
+                  className="w-10 h-8 flex justify-center items-center prevent-select text-black"
                   type="number"
                   id="number"
                 >
@@ -244,7 +244,7 @@ export const AppTravellerHotel = ({
               </div>
             </div>
             <div className="form_dr1 flex justify-between items-center pt-4">
-              <div className="text-base font-bold">Adults</div>
+              <div className="text-base font-bold text-black">Adults</div>
               <div className="flex custome_addBtn1">
                 <div
                   className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
@@ -254,7 +254,7 @@ export const AppTravellerHotel = ({
                   <MinusOutlined className="text-blue-700" />
                 </div>
                 <div
-                  className="w-10 h-8 flex justify-center items-center prevent-select"
+                  className="w-10 h-8 flex justify-center items-center prevent-select text-black"
                   type="number"
                   id="number"
                 >
@@ -271,7 +271,7 @@ export const AppTravellerHotel = ({
             </div>
 
             <div className="form_dr1 flex justify-between items-center pt-4">
-              <div className="text-base font-bold">Children</div>
+              <div className="text-base font-bold text-black">Children</div>
               <div className="flex custome_addBtn1">
                 <div
                   className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
@@ -283,7 +283,7 @@ export const AppTravellerHotel = ({
                   <MinusOutlined className="text-blue-700" />
                 </div>
                 <div
-                  className="w-10 h-8 flex justify-center items-center prevent-select"
+                  className="w-10 h-8 flex justify-center items-center prevent-select text-black"
                   type="number"
                   id="number"
                 >
@@ -291,10 +291,10 @@ export const AppTravellerHotel = ({
                 </div>
                 <div
                   className="value-button flex justify-center items-center w-10 h-8 bg-white p-2"
-                  onClick={countchildren < 10 ? clickPlusChildren : null} 
+                  onClick={countchildren < 10 ? clickPlusChildren : null}
                   style={{
                     cursor: countchildren < 10 ? "pointer" : "not-allowed",
-                  }} 
+                  }}
                 >
                   <PlusOutlined className="text-blue-700" />
                 </div>
@@ -313,7 +313,7 @@ export const AppTravellerHotel = ({
                 <div className="grid grid-cols-2 gap-4">
                   {[...Array(countchildren)].map((_, index) => (
                     <div className="flex items-center gap-2 ">
-                      <div className="text-base font-bold ">
+                      <div className="text-base font-bold text-black ">
                         Child {index + 1}
                       </div>
                       <Select

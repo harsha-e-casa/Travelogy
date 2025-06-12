@@ -19072,8 +19072,51 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 }
 
 .input-field {
-  width: 150px;
-  padding: 8px;
-  border: 1px solid #ccc;
+  width: max-content;
+  padding: 4px 8px 0px 8px;
   border-radius: 4px;
+  cursor: pointer;
+  background: #2a2a44;
+  color: #fff;
+  margin: 2px;
+  height: 33px;
+  border: none;
+  /* border-radius: 0%; */
+  display: block;
+}
+
+.hotel_room .bx_shadow_dr1 {
+  width: 29%;
+  right: 27%;
+  top: 100px;
+}
+
+/* Adjust dropdown width and position */
+.appListDropdownCompact {
+  width: 320px;
+  max-width: 90vw;
+  position: absolute;
+  z-index: 999;
+  top: 100%;
+  left: 233px;
+}
+
+/* Override Ant Design Select dropdown styles */
+.custom-select-dropdown {
+  padding: 4px 8px;
+  font-size: 14px;
+  max-height: 280px !important;
+  overflow-y: auto;
+}
+
+/* Style for each option inside the dropdown */
+.custom-select-dropdown .ant-select-item {
+  padding: 6px 8px;
+}
+
+/* Reduce the suggestion title font size */
+.custom-select-dropdown .ant-select-item-group {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
 }

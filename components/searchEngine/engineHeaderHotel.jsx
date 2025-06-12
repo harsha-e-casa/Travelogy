@@ -16,9 +16,9 @@ const EngineHeaderHotel = ({ active_border }) => {
   const [showSearchState, setShowSearchState] = useState(false); // Consistent naming
   const [showSearchStateTo, setShowSearchStateTo] = useState(false); // Consistent naming
   const [selectFrom, setSelectFrom] = useState("Goa"); // Consistent naming
-  const [selectFromSub, setSelectFromSub] = useState(
-    "Indira Gandhi International Airp"
-  ); // Consistent naming
+  // const [selectFromSub, setSelectFromSub] = useState(
+  //   "Indira Gandhi International Airp"
+  // ); // Consistent naming
 
   const router = useRouter();
   const [openDateRage, setOpenDateRage] = useState(false);
@@ -208,7 +208,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                 <h2 className="text_4xl font_bold text-black tracking-wide">
                   {selectFrom}
                 </h2>
-                <p className="text-xl_small truncate-text">{selectFromSub}</p>
+                {/* <p className="text-xl_small truncate-text">{selectFromSub}</p> */}
               </div>
             </div>
 
@@ -217,7 +217,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                 <AppListSearch
                   operEngLocation={openfrom}
                   setSelectFrom={setSelectFrom}
-                  setSelectFromSub={setSelectFromSub}
+                  // setSelectFromSub={setSelectFromSub}
                 />
               </div>
             ) : null}
