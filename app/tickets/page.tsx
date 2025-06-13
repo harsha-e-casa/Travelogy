@@ -213,6 +213,10 @@ export default function Tickets() {
   console.log("firstSegment == ", firstSegment);
   console.log("multicitySegments == ", multicitySegments);
 
+  useEffect(() => {
+    setCookie("gy_multi_city", JSON.stringify(multicitySegments));
+  }, [multicitySegments]);
+
   let combinedMulticitySegment = [...firstSegment, ...multicitySegments];
 
   console.log("combinedMulticitySegment == ", combinedMulticitySegment);
@@ -248,6 +252,36 @@ export default function Tickets() {
     setModifySearchRef(true);
   };
 
+  const handlesearFlight = () => {
+    if (srx_tripType.toLowerCase() === "multi-city") {
+      let hasError = false;
+
+      for (let i = 0; i < multicitySegments.length; i++) {
+        const segment = multicitySegments[i];
+
+        if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
+          setErrorMsg(`Please fill all fields in segment ${i + 2}.`);
+          hasError = true;
+          break;
+        }
+
+        if (segment.fromCode === segment.toCode) {
+          setErrorMsg(`From and To cannot be the same in segment ${i + 2}.`);
+          hasError = true;
+          break;
+        }
+      }
+
+      if (!hasError) {
+        setErrorMsg(""); // Clear error
+        SetSearchFlight(true);
+      }
+    } else {
+      // single and round trip
+      SetSearchFlight(true);
+    }
+  };
+
   const [true_Tripconst, setTripconst] = useState<boolean>(false);
   const [searchFlight, SetSearchFlight] = useState<boolean>(true);
   const hasFetchedRef = useRef(false);
@@ -265,8 +299,6 @@ export default function Tickets() {
   };
 
   useEffect(() => {
-    console.log("xxxxxxxxxxxxxxxxxx 1");
-    // 2 time api call fix
     if (!searchFlight || hasFetchedRef.current) return;
     closeAllFields();
     hasFetchedRef.current = true;
@@ -777,6 +809,13 @@ export default function Tickets() {
     setError("");
   };
 
+  let searchEnginewidth = {};
+  if (srx_tripType.toLowerCase() === "multi-city") {
+    searchEnginewidth = {
+      width: "65%",
+    };
+  }
+
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
@@ -786,7 +825,7 @@ export default function Tickets() {
           <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
             {/* Header Section */}
 
-            <div className="hdt_header">
+            <div className="hdt_header" style={{ ...searchEnginewidth }}>
               <div className="hdt_header-item">
                 <label>Trip Type</label>
                 <Dropdown
@@ -962,7 +1001,8 @@ export default function Tickets() {
                 <>
                   <button
                     // onClick={() => SetSearchFlight((prev) => !prev)}
-                    onClick={() => SetSearchFlight(true)}
+                    // onClick={() => SetSearchFlight(true)}
+                    onClick={handlesearFlight}
                     className="hdt_search-btn"
                   >
                     Search
@@ -1104,7 +1144,10 @@ export default function Tickets() {
                   ))}
                 </div>
                 {errorMsg && (
-                  <div className="text-red-500 mt-2 text-sm font-medium" style={{ textAlign: "center", padding: "10px" }}>
+                  <div
+                    className="text-red-500 mt-2 text-sm font-medium"
+                    style={{ textAlign: "center", padding: "10px" }}
+                  >
                     {errorMsg}
                   </div>
                 )}
