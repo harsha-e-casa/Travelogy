@@ -25,7 +25,7 @@ const hotelsData = rawHotelsData.map((hotel) => ({
   rating: parseFloat(hotel.rating as string),
 }));
 import AppDateRage from "@/components/searchEngine/AppDateRage";
-import AppListSearch from "@/components/searchEngine/AppListSearch.jsx";
+import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 
 export default function HotelListing() {
   const router = useRouter();
@@ -73,7 +73,6 @@ export default function HotelListing() {
   };
   const opentrvForm = () => {
     setShowTraveller(false);
-    // Optional: Trigger search with new data
     handleSearch();
   };
 
@@ -91,15 +90,6 @@ export default function HotelListing() {
   }, []);
 
   const [datedep, setDatedep] = useState(dayjs());
-  const openfrom = () => {
-    console.log("Location clicked");
-    if (showSearchState) {
-      closeAllFields();
-    } else {
-      closeAllFields();
-      setShowSearchState(true);
-    }
-  };
 
   const closeAllFields = () => {
     setShowSearchState(false);
@@ -142,7 +132,6 @@ export default function HotelListing() {
     startItemIndex,
     endItemIndex,
   } = useHotelFilter(hotelsData);
-
   const handleSearch = async () => {
     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
       alert("Check-out date cannot be earlier than check-in date.");
@@ -153,25 +142,25 @@ export default function HotelListing() {
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
     const roomInfo = [];
-    for (let i = 0; i < rooms; i++) {
+    for (let i = 0; i < room1; i++) {
       roomInfo.push({
-        numberOfAdults: adults,
-        numberOfChild: children,
-        ...(children > 0 ? { childAge: childAges[i] || [] } : {}),
+        numberOfAdults: adult,
+        numberOfChild: countchildren,
+        ...(countchildren > 0 ? { childAge: childAgesPerRoom[i] || [] } : {}),
       });
     }
 
     const queryParams = new URLSearchParams({
       checkinDate: formattedCheckIn,
       checkoutDate: formattedCheckOut,
-      location: location.toString(),
+      location: selectFrom,
       city,
       nationality,
       currency,
-      rooms: rooms.toString(),
-      adults: adults.toString(),
-      children: children.toString(),
-      childAges: JSON.stringify(childAges),
+      rooms: room1.toString(),
+      adults: adult.toString(),
+      children: countchildren.toString(),
+      childAges: JSON.stringify(childAgesPerRoom),
     }).toString();
 
     try {
@@ -201,16 +190,14 @@ export default function HotelListing() {
       const data = await response.json();
       console.log("Search result:", data);
 
-      if (response.ok) {
-        router.push(`/hotel-listing?${queryParams}`);
-      } else {
-        throw new Error("API call failed");
-      }
+      // Push the latest query into the URL bar
+      router.push(`/hotel-listing?${queryParams}`);
     } catch (error) {
       console.error("Search API error:", error);
       alert("An error occurred while searching for hotels. Please try again.");
     }
   };
+
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
     closeallform();
@@ -219,14 +206,47 @@ export default function HotelListing() {
   const closeallform = () => {
     setOpenDateRage(false);
   };
+  const closeAllDropdowns = () => {
+    setShowSearchState(false); // Location
+    setOpenCheckin(false); // Check-in calendar
+    setOpenCheckout(false); // Check-out calendar
+    setShowTraveller(false); // Rooms & Guest
+  };
+
+  const openfrom = () => {
+    if (showSearchState) {
+      setShowSearchState(false);
+    } else {
+      closeAllDropdowns(); // CLOSE others before opening
+      setShowSearchState(true);
+    }
+  };
+
   const toggleCheckin = () => {
-    setOpenCheckin(!openCheckin);
-    setOpenCheckout(false); // Close other
+    if (!openCheckin) {
+      closeAllDropdowns(); // CLOSE others before opening
+      setOpenCheckin(true);
+    } else {
+      setOpenCheckin(false);
+    }
   };
 
   const toggleCheckout = () => {
-    setOpenCheckout(!openCheckout);
-    setOpenCheckin(false); // Close other
+    if (!openCheckout) {
+      closeAllDropdowns(); // CLOSE others before opening
+      setOpenCheckout(true);
+    } else {
+      setOpenCheckout(false);
+    }
+  };
+
+  const toggleTraveller = () => {
+    if (!showTraveller) {
+      closeAllDropdowns(); // CLOSE others before opening
+      setShowTraveller(true);
+    } else {
+      setShowTraveller(false);
+    }
   };
 
   const [showSearchState, setShowSearchState] = useState(false);
@@ -237,24 +257,44 @@ export default function HotelListing() {
     categoryType?: string;
   };
 
-  const SafeAppListSearch = AppListSearch as React.FC<AppListSearchProps>;
+  const SafeAppListSearch = CityListSearch as React.FC<AppListSearchProps>;
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setShowSearchState(false);
+      setOpenCheckin(false);
+      setOpenCheckout(false);
+      setShowTraveller(false);
+    };
+
+    window.addEventListener("click", handleClickOutside);
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          <div className="h-20 w-full z-20 sticky top-0 bg_cs_search">
+          <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">
             {/* Location */}
             <div className="hdt_header">
-              <div className="hdt_header-item">
+              <div
+                className="hdt_header-item"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <label>Location</label>
 
                 <span className="input-field font-bold" onClick={openfrom}>
                   {selectFrom}
                 </span>
                 {showSearchState && (
-                  <div className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact">
-                    <AppListSearch
+                  <div
+                    className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <CityListSearch
                       operEngLocation={openfrom}
                       setSelectFrom={setSelectFrom}
                       // setSelectFromSub={setSelectFromSub}
@@ -262,7 +302,10 @@ export default function HotelListing() {
                   </div>
                 )}
               </div>
-              <div className="hdt_header-item">
+              <div
+                className="hdt_header-item"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <label>Check-in</label>
                 {checkinDate && (
                   <button
@@ -274,13 +317,18 @@ export default function HotelListing() {
                 )}
 
                 {openCheckin && (
-                  <AppDateRage
-                    openToDateRange={() => setOpenCheckin(false)}
-                    setDatedep={(date) => setCheckinDate(date)}
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <AppDateRage
+                      openToDateRange={() => setOpenCheckin(false)}
+                      setDatedep={(date) => setCheckinDate(date)}
+                    />
+                  </div>
                 )}
               </div>
-              <div className="hdt_header-item">
+              <div
+                className="hdt_header-item"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <label>Check-out</label>
                 <button
                   onClick={toggleCheckout}
@@ -289,44 +337,57 @@ export default function HotelListing() {
                   {checkoutDate}
                 </button>
                 {openCheckout && (
-                  <AppDateRage
-                    openToDateRange={() => setOpenCheckout(false)}
-                    setDatedep={(date) => setCheckoutDate(date)}
-                  />
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <AppDateRage
+                      openToDateRange={() => setOpenCheckout(false)}
+                      setDatedep={(date) => setCheckoutDate(date)}
+                    />
+                  </div>
                 )}
               </div>
-              <div className="hdt_header-item hotel_room">
+
+              <div
+                className="hdt_header-item hotel_room"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <label>Rooms & Guest</label>
-                <button onClick={() => setShowTraveller((prev) => !prev)}>
+                <button onClick={toggleTraveller}>
                   <div className="input-field text-base font-bold">
                     {adult} Adult{adult > 1 ? "s" : ""}, {countchildren} Child,
                     {room1} Room{room1 > 1 ? "s" : ""}
                   </div>
                 </button>
-                <AppTravellerHotel
-                  showTraveller={showTraveller}
-                  adult={adult}
-                  clickMinus={clickMinus}
-                  clickPlus={clickPlus}
-                  clickMinusChildren={clickMinusChildren}
-                  clickPlusChildren={clickPlusChildren}
-                  countchildren={countchildren}
-                  rooms={rooms}
-                  clickRoomAdd={clickRoomAdd}
-                  clickRoomMinus={clickRoomMinus}
-                  travellerClass={"a"} // Optional class field
-                  handleChangeClass={() => {}}
-                  opentrvForm={() => setShowTraveller(false)}
-                  childAgesPerRoom={childAgesPerRoom}
-                  setChildAgesPerRoom={setChildAgesPerRoom}
-                />
+                {showTraveller && (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    {" "}
+                    <AppTravellerHotel
+                      showTraveller={showTraveller}
+                      adult={adult}
+                      clickMinus={clickMinus}
+                      clickPlus={clickPlus}
+                      clickMinusChildren={clickMinusChildren}
+                      clickPlusChildren={clickPlusChildren}
+                      countchildren={countchildren}
+                      rooms={room1}
+                      clickRoomAdd={clickRoomAdd}
+                      clickRoomMinus={clickRoomMinus}
+                      travellerClass={"a"} // Optional class field
+                      handleChangeClass={() => {}}
+                      opentrvForm={() => setShowTraveller(false)}
+                      childAgesPerRoom={childAgesPerRoom}
+                      setChildAgesPerRoom={setChildAgesPerRoom}
+                    />{" "}
+                  </div>
+                )}
               </div>
-              <button className="hdt_search-btn">Search</button>
+              <button className="hdt_search-btn" onClick={handleSearch}>
+                Search
+              </button>
             </div>
           </div>
 
           <section className="box-section block-content-tourlist background-body">
-            <div className="container-fluid" style={{width:"93%"}}>
+            <div className="container-fluid" style={{ width: "93%" }}>
               <div className="box-content-main">
                 <div className="content-right">
                   <div className="box-filters mb-25 pb-5 border-bottom border-1">
