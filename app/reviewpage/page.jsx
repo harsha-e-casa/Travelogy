@@ -396,11 +396,11 @@ const Page = () => {
   const dateChangePenaltyPeriod = dateChange.map((e) => e.pp);
   const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
   const dateChangeSt = dateChange.map((e) => e.st ?? 0);
-const dateChangeEt = dateChange.map((e) => (e.et / 24) ?? 365);
+  const dateChangeEt = dateChange.map((e) => (e.et / 24) ?? 365);
 
 
 
- 
+
   //seat charge
   const seatChargeSt = seatCharge.map((e) => e.st ?? null);
   const seatChargeEt = seatCharge.map((e) => e.et / 24 ?? null);
@@ -468,33 +468,33 @@ const dateChangeEt = dateChange.map((e) => (e.et / 24) ?? 365);
     });
   });
   const reviewMap = {};
- 
-if (flightData?.tripInfos) {
-  flightData.tripInfos.forEach((trip) => {
-    const segs = trip.sI;
-    if (!segs || segs.length === 0) return;
-    const key = `${segs[0].da.code}-${segs[segs.length - 1].aa.code}`;
 
-    // fare rule
-    trip.totalPriceList.forEach((p) => {
-      if (p.fareRuleInformation) {
-        fareRulesMap[key] = {
-          fareRuleInformation: p.fareRuleInformation,
-          refundType: p.fd.ADULT.rT === 0 ? "Refundable" : "Non-Refundable",
-        };
-      }
+  if (flightData?.tripInfos) {
+    flightData.tripInfos.forEach((trip) => {
+      const segs = trip.sI;
+      if (!segs || segs.length === 0) return;
+      const key = `${segs[0].da.code}-${segs[segs.length - 1].aa.code}`;
+
+      // fare rule
+      trip.totalPriceList.forEach((p) => {
+        if (p.fareRuleInformation) {
+          fareRulesMap[key] = {
+            fareRuleInformation: p.fareRuleInformation,
+            refundType: p.fd.ADULT.rT === 0 ? "Refundable" : "Non-Refundable",
+          };
+        }
+      });
+
+      // review dt
+      reviewMap[key] = segs;
     });
+  }
 
-    // review dt
-    reviewMap[key] = segs;
-  });
-}
-
-    const getDepartureTimeForRoute = (routeKey) => {
-  const segs = reviewMap[routeKey];
-  if (!segs?.length) return "N/A";
-  return dayjs(segs[0].dt).format("HH:mm");
-};
+  const getDepartureTimeForRoute = (routeKey) => {
+    const segs = reviewMap[routeKey];
+    if (!segs?.length) return "N/A";
+    return dayjs(segs[0].dt).format("HH:mm");
+  };
 
 
   const [selectedRoute, setSelectedRoute] = useState();
@@ -535,8 +535,8 @@ if (flightData?.tripInfos) {
                     ?.et ? (
                   <div>{`${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                     ?.st
-                    } hrs to ${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.et / 24
+                    } hrs to ${ Math.floor(fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                      ?.et /24)
                     } days`}</div>
                 ) : (
                   <p>
@@ -562,17 +562,17 @@ if (flightData?.tripInfos) {
                             .map((line, index) => (
                               <div key={index}>{line.trim()}</div>
                             ))}
-                          <p>
-                            ₹
-                            {fareRulesData?.fareRuleInformation?.tfr
-                              ?.CANCELLATION?.[0]?.amount
-                              ? fareRulesData?.fareRuleInformation?.tfr
-                                ?.CANCELLATION?.[0]?.amount
-                              : fareRulesData?.fareRuleInformation?.tfr
-                                ?.CANCELLATION?.[0]?.additionalFee}
-                          </p>
                         </>
                       ) : null}
+                      <p>
+                        ₹
+                        {fareRulesData?.fareRuleInformation?.tfr
+                          ?.CANCELLATION?.[0]?.amount
+                          ? fareRulesData?.fareRuleInformation?.tfr
+                            ?.CANCELLATION?.[0]?.amount
+                          : fareRulesData?.fareRuleInformation?.tfr
+                            ?.CANCELLATION?.[0]?.additionalFee}
+                      </p>
                     </p>
                   </>
                 ) : (
@@ -621,7 +621,7 @@ if (flightData?.tripInfos) {
                 if (st && et) {
                   return (
                     <div>
-                      {`${st} hrs to ${et > 24 ? et / 24 + " days" : et + " hrs"
+                      {`${st} hrs to ${et > 24 ? Math.floor(et / 24 )+ " days" : et + " hrs"
                         }`}
                     </div>
                   );
@@ -1661,8 +1661,8 @@ if (flightData?.tripInfos) {
 
                                 <div className="flex flex-col justify-center items-center">
                                   <p className="text-sm-medium neutral-1000">
-              {getDepartureTimeForRoute(selectedRoute)}
-            </p>
+                                    {getDepartureTimeForRoute(selectedRoute)}
+                                  </p>
                                 </div>
                               </div>
                             </div>

@@ -153,7 +153,7 @@ export default function Tickets() {
 
   useEffect(() => {
     setCookie("gy_multi_city", JSON.stringify(multicitySegments));
-  }, [setMulticitySegments]);
+  }, [multicitySegments]);
 
   const [errorMsg, setErrorMsg] = useState("");
 
