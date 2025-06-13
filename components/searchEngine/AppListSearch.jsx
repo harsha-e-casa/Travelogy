@@ -5,7 +5,7 @@ const apiListAirLineState = require("./apiListAirLineState");
 const AppListSearch = ({
   setSelectFrom,
   operEngLocation,
-  // setSelectFromSub,
+  setSelectFromSub,
   categoryType,
 }) => {
   const [filteredOptions, setFilteredOptions] = useState(apiListAirLineState);
@@ -223,10 +223,10 @@ const AppListSearch = ({
 
   const handleChange = (value) => {
     const getDtaa = value.split(",");
-    alert(getDtaa)
+    alert(getDtaa);
 
     setSelectFrom(getDtaa[0]);
-    // setSelectFromSub(getDtaa[1]);
+    setSelectFromSub(getDtaa[1]);
     operEngLocation();
   };
 
