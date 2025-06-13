@@ -341,7 +341,13 @@ const EngineTabs = ({ active_border }) => {
 
   const displayDate = dayjs().add(2, "day");
   const [multicitySegments, setMulticitySegments] = useState([
-    { from: "", fromCode: "", to: "", toCode: "", departureDate: displayDate },
+    {
+      from: selectFromTo,
+      fromCode: selectFromSubTo,
+      to: "",
+      toCode: "",
+      departureDate: displayDate,
+    },
   ]);
 
   const multicityUpdateSegment = (index, newData) => {
@@ -352,9 +358,27 @@ const EngineTabs = ({ active_border }) => {
 
   const multicityAddSegment = () => {
     if (multicitySegments.length < 5) {
+      const prevSegment = multicitySegments[multicitySegments.length - 1];
+
+      // Validate previous segment
+      if (
+        !prevSegment.to ||
+        !prevSegment.toCode ||
+        !prevSegment.departureDate
+      ) {
+        alert("Please complete the previous segment before adding a new one.");
+        return;
+      }
+
       setMulticitySegments([
         ...multicitySegments,
-        { from: "", fromCode: "", to: "", toCode: "", departureDate: null },
+        {
+          from: prevSegment.to,
+          fromCode: prevSegment.toCode,
+          to: "",
+          toCode: "",
+          departureDate: displayDate,
+        },
       ]);
     }
   };

@@ -64,7 +64,7 @@ const MultiCitySegment = ({
       <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
         <div onClick={() => setShowFromSearch(!showFromSearch)}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">From</div>
-          <div className="pl-6 relative">
+          <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
             <h6 className="font_bold text-black tracking-wide">
               {segment.from || "Select City"}
             </h6>
@@ -116,7 +116,7 @@ const MultiCitySegment = ({
       <div className="text_start b_right_2px g_w_2 css_pointer relative">
         <div onClick={() => setShowToSearch(!showToSearch)}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
-          <div className="pl-6 relative">
+          <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
             <h6 className="font_bold text-black tracking-wide">
               {segment.to || "Select City"}
             </h6>
@@ -137,7 +137,10 @@ const MultiCitySegment = ({
       </div>
 
       {/* Departure Date */}
-      <div className="text_start b_right_2px g_w_3 css_pointer">
+      <div
+        className="text_start b_right_2px g_w_3 css_pointer"
+        style={{ paddingBottom: "13px" }}
+      >
         <div
           className="flex pl-6 justify_content_space"
           onClick={() => setShowDatePicker(!showDatePicker)}
@@ -175,24 +178,27 @@ const MultiCitySegment = ({
         )}
       </div>
 
-      <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2">
+      {/* <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2"> */}
+      <div style={{ display: "flex" , justifyContent: "space-around", width: "20%" }}>
         {!disableRemove && (
-          <button
+          <div
             onClick={() => removeSegment(index)}
-            className="text-red-600 font-bold text-lg px-2 py-1 border border-red-500 rounded-full"
+            className="text-red-600 font-bold text-lg px-2 py-1 border border-red-500 rounded-full css_pointer"
+            style={{ fontSize: "30px" }}
           >
             ×
-          </button>
+          </div>
         )}
         {isLast && (
-          <button
+          <div
             onClick={addSegment}
-            className="text-blue-600 font-semibold text-sm px-3 py-1 border border-blue-600 rounded"
+            className="text-blue-600 font-semibold text-sm px-3 py-1 border border-blue-600 rounded css_pointer"
           >
             + Add City
-          </button>
+          </div>
         )}
       </div>
+      {/* </div> */}
     </div>
   );
 };

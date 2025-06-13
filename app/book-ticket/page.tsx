@@ -140,10 +140,10 @@ export default function BookTicket() {
       let ids = [];
       let splitIds = [];
 
-      if (priceId.includes(",")) {
-        splitIds = priceId.split(",");
-        ids = [splitIds[0], splitIds[1]];
-      } else {
+     if (priceId.includes(",")) {
+  splitIds = priceId.split(",");
+  ids = splitIds.slice(0, 3)
+} else {
         ids = [priceId];
       }
       const parameter = { priceIds: ids };
@@ -1369,8 +1369,19 @@ console.log("Final baggageInfos for ADULT", i, ":", baggageInfos);
                       const segments = trip?.sI || [];
                       return (
                         <>
-                          {idx == 0 && (<h5>Onward Journey</h5>)}
-                          {idx == 1 && (<h5 className="pt-15">Return Journey</h5>)}
+                          {apiData?.tripInfos?.length <= 2 ? (
+  idx === 0 ? (
+    <h5>Onward Journey</h5>
+  ) : idx === 1 ? (
+    <h5 className="pt-15">Return Journey</h5>
+  ) : null
+) : (<>
+  <h5 className="pt-15">
+    {trip?.sI?.[0]?.da?.city} → {trip?.sI?.[trip?.sI.length - 1]?.aa?.city}</h5>
+
+  
+</>)}
+
                           {/* {segmentsPrice.length > 0 && (
                             <div key={idx} className="fare-summary mb-20">
                               <h5 className="text-lg-bold neutral-1000">
