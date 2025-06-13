@@ -31,7 +31,7 @@ const Alldetails = ({ totalpricee }) => {
 
   const handleCancellation = () => {
     console.log("handleCancellation function == > ");
-  }
+  };
 
   const handleUnHold = async () => {
     console.log("handleUnHold ==> ");
@@ -180,6 +180,8 @@ const Alldetails = ({ totalpricee }) => {
     "bookingDetails?.itemInfos?.AIR?.travellerInfos ",
     bookingDetails?.itemInfos?.AIR?.travellerInfos
   );
+  console.log(
+    "travellerinfos =============> ",travellerinfos);
 
   return (
     <>
