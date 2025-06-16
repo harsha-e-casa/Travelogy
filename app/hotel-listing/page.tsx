@@ -57,7 +57,8 @@ export default function HotelListing() {
   const [adult, setAdult] = useState(adults);
   const [countchildren, setCountchildren] = useState(children);
   const [room1, setRoom1] = useState(rooms);
-  const [childAgesPerRoom, setChildAgesPerRoom] = useState(childAges);
+  const [childAgesPerRoom, setChildAgesPerRoom] = useState<number[]>([]);
+
   const [showTraveller, setShowTraveller] = useState(false);
   const clickRoomAdd = () => setRoom1((prev) => Math.min(prev + 1, 10));
   const clickRoomMinus = () => setRoom1((prev) => Math.max(prev - 1, 1));
@@ -68,7 +69,7 @@ export default function HotelListing() {
   const clickPlusChildren = () => {
     if (countchildren < 10) {
       setCountchildren((prev) => prev + 1);
-      setChildAgesPerRoom((prev) => [...prev]);
+      setChildAgesPerRoom((prev) => [...prev, 0]);
     }
   };
   const opentrvForm = () => {
@@ -79,7 +80,7 @@ export default function HotelListing() {
   const clickMinusChildren = () => {
     if (countchildren > 0) {
       setCountchildren((prev) => prev - 1);
-      setChildAgesPerRoom((prev) => prev.slice(0, -1));
+      setChildAgesPerRoom((prev: any) => prev.slice(0, -1));
     }
   };
 
@@ -90,6 +91,7 @@ export default function HotelListing() {
   }, []);
 
   const [datedep, setDatedep] = useState(dayjs());
+  const [apiHotelData, setApiHotelData] = useState([]);
 
   const closeAllFields = () => {
     setShowSearchState(false);
@@ -132,6 +134,30 @@ export default function HotelListing() {
     startItemIndex,
     endItemIndex,
   } = useHotelFilter(hotelsData);
+  const apiCall = async (payload: any) => {
+    try {
+      const response = await fetch(
+        "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await response.json();
+      console.log("Search result:", data);
+      return data; // ✅ Return the response data
+    } catch (error) {
+      console.error("Search API error:", error);
+      alert("An error occurred while searching for hotels. Please try again.");
+      return null; // ✅ Return null on error
+    }
+  };
+
   const handleSearch = async () => {
     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
       alert("Check-out date cannot be earlier than check-in date.");
@@ -142,6 +168,7 @@ export default function HotelListing() {
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
     const roomInfo = [];
+
     for (let i = 0; i < room1; i++) {
       roomInfo.push({
         numberOfAdults: adult,
@@ -163,7 +190,44 @@ export default function HotelListing() {
       childAges: JSON.stringify(childAgesPerRoom),
     }).toString();
 
-    try {
+    const payload = {
+      searchQuery: {
+        checkinDate: formattedCheckIn,
+        checkoutDate: formattedCheckOut,
+        roomInfo,
+        searchCriteria: { city, nationality, currency },
+        searchPreferences: { fsc: true },
+      },
+      sync: true,
+    };
+
+    const data = await apiCall(payload); // ✅ Await and receive returned data
+
+    if (data) {
+      console.log("Search result in handleSearch:", data);
+      router.push(`/hotel-listing?${queryParams}`);
+    }
+  };
+
+  useEffect(() => {
+    if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
+      alert("Check-out date cannot be earlier than check-in date.");
+      return;
+    }
+
+    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+    const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+
+    const roomInfo: any = [];
+    for (let i = 0; i < room1; i++) {
+      roomInfo.push({
+        numberOfAdults: adult,
+        numberOfChild: countchildren,
+        ...(countchildren > 0 ? { childAge: childAgesPerRoom[i] || [] } : {}),
+      });
+    }
+
+    const fetchData = async () => {
       const payload = {
         searchQuery: {
           checkinDate: formattedCheckIn,
@@ -175,28 +239,17 @@ export default function HotelListing() {
         sync: true,
       };
 
-      const response = await fetch(
-        "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const data = await apiCall(payload); // ✅ Await and receive returned data
 
-      const data = await response.json();
-      console.log("Search result:", data);
+      if (data) {
+        console.log("Search result in handleSearch:", data);
+        setApiHotelData(data.searchResult?.his || []);
 
-      // Push the latest query into the URL bar
-      router.push(`/hotel-listing?${queryParams}`);
-    } catch (error) {
-      console.error("Search API error:", error);
-      alert("An error occurred while searching for hotels. Please try again.");
-    }
-  };
+        // console.log("HotelCard1 data", data.searchResult.his);
+      }
+    };
+    fetchData();
+  }, []);
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
@@ -297,6 +350,7 @@ export default function HotelListing() {
                     <CityListSearch
                       operEngLocation={openfrom}
                       setSelectFrom={setSelectFrom}
+                      categoryType={undefined}
                       // setSelectFromSub={setSelectFromSub}
                     />
                   </div>
@@ -320,7 +374,7 @@ export default function HotelListing() {
                   <div onClick={(e) => e.stopPropagation()}>
                     <AppDateRage
                       openToDateRange={() => setOpenCheckin(false)}
-                      setDatedep={(date) => setCheckinDate(date)}
+                      setDatedep={(date: any) => setCheckinDate(date)}
                     />
                   </div>
                 )}
@@ -340,7 +394,7 @@ export default function HotelListing() {
                   <div onClick={(e) => e.stopPropagation()}>
                     <AppDateRage
                       openToDateRange={() => setOpenCheckout(false)}
-                      setDatedep={(date) => setCheckoutDate(date)}
+                      setDatedep={(date: any) => setCheckoutDate(date)}
                     />
                   </div>
                 )}
@@ -403,8 +457,21 @@ export default function HotelListing() {
                     />
                   </div>
                   <div className="box-grid-tours wow fadeIn">
-                    <div className="row">
+                    {/* <div className="row">
                       {paginatedHotels.map((hotel) => (
+                        <div
+                          className="col-xl-4 col-lg-6 col-md-6"
+                          key={hotel.id}
+                        >
+                          <HotelCard1 hotel={hotel} />
+                        </div>
+                      ))}
+                    </div> */}
+                    <div className="row">
+                      {(apiHotelData.length > 0
+                        ? apiHotelData
+                        : paginatedHotels
+                      ).map((hotel) => (
                         <div
                           className="col-xl-4 col-lg-6 col-md-6"
                           key={hotel.id}
