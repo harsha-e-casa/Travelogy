@@ -274,7 +274,7 @@ export default function BookTicket() {
   }, [apiData])
 
   const searchTickets = () => {
-    let departureFrom = Cookieget("gy_da");
+    let departureFrom = getCookie("gy_da");
     let arrivalTo = getCookie("gy_aa");
     let adults = getCookie("gy_adult");
     let children = getCookie("gy_child");

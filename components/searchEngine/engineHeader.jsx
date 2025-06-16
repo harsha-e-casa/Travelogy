@@ -356,6 +356,8 @@ const EngineTabs = ({ active_border }) => {
     setMulticitySegments(newSegments);
   };
 
+  const [segmentError, setSegmentError] = useState("");
+
   const multicityAddSegment = () => {
     if (multicitySegments.length < 5) {
       const prevSegment = multicitySegments[multicitySegments.length - 1];
@@ -366,7 +368,10 @@ const EngineTabs = ({ active_border }) => {
         !prevSegment.toCode ||
         !prevSegment.departureDate
       ) {
-        alert("Please complete the previous segment before adding a new one.");
+        setSegmentError(
+          "Please complete the previous segment before adding a new one."
+        );
+        setTimeout(() => setSegmentError(""), 3500);
         return;
       }
 
@@ -587,6 +592,11 @@ const EngineTabs = ({ active_border }) => {
                   addSegment={multicityAddSegment}
                   removeSegment={multicityRemoveSegment}
                 />
+                {segmentError && (
+                  <div className="text-red-500 text-sm font-medium my-2">
+                    {segmentError}
+                  </div>
+                )}
               </div>
             )}
           </div>

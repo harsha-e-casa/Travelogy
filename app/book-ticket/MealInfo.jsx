@@ -30,7 +30,7 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form }) => {
                       <Select className="h-10 " placeholder="Add Meal" disabled={mealOptions.every((meal) => !meal.amount)}>
                         {mealOptions.map((meal) => (
                           <Option key={meal.code}  value={`${segment.id}|${meal.code}`}>
-                          {segment.id}- {meal.desc} - ₹{meal.amount}
+                           {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
                       </Select>

@@ -40,7 +40,7 @@ const hasBaggage = ssrInfo.some(e => Array.isArray(e.BAGGAGE) && e.BAGGAGE.lengt
 >
                 {baggageOptions.map((bag) => (
                   <Option key={bag.code}  value={`${segment.id}|${bag.code}`}  disabled={!bag.amount}>
-                    {segment.id}-{bag.desc} - ₹{bag.amount}
+                    {bag.desc} - ₹{bag.amount}
                   </Option>
                 ))}
               </Select>

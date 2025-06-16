@@ -150,7 +150,7 @@ export default function MulticitySelectionView({ flightData }) {
   <div className="combined-connecting-flight">
     <div className="flex justify-between gap-4 border rounded-md p-4">
       {ticket.sI.map((segment, index) => (
-        <div key={index} className="w-1/2 border-r last:border-none pr-4 last:pr-0">
+        <div key={index} className="w-1/2 border-r last:border-none pr-4 last:pr-0  flex flex-col">
           <div className="flex items-center gap-2 mb-2">
             <img
               className="w-8 h-8"
