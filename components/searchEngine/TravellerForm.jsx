@@ -23,14 +23,13 @@ export const TravellerForm = ({
   totalPassenderCount,
   specificStyle
 }) => {
-  console.log("travellerClass 11111111111 ", travellerClass);
   return (
     <>
       {showTraveller ? (
         <>
           <div
             className="lg:w-[35%] md:w-2/5w-full absolute h-auto bg-white right-0 -mt-5 bx_shadow_dr1 passenger-details"
-            style={...specificStyle}
+            style={{ ...specificStyle }}
           >
             <div
               className="form_dr1 flex justify-between items-center"

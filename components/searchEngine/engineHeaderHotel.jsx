@@ -224,7 +224,7 @@ const EngineHeaderHotel = ({ active_border }) => {
           </div>
 
           <div
-            className="text_start b_right_2px grid_w_2 css_pointer"
+            className="text_start b_right_2px grid_w_2 css_pointer pb-6"
             onClick={openToDateRange}
           >
             <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
