@@ -178,7 +178,7 @@ export default function TicketCard1({ ticket,flightData }: any) {
                         width="16"
                         height="16"
                         fill="currentColor"
-                        class="bi bi-arrow-right"
+                        className="bi bi-arrow-right"
                         viewBox="0 0 16 16"
                       >
                         <path

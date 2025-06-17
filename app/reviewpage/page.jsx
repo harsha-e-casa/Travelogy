@@ -30,11 +30,9 @@ const Page = () => {
 
   //
   let ids = [];
-  let splitIds = [];
   if (priceId.includes(",")) {
-    splitIds = priceId.split(",");
-    ids = [splitIds[0], splitIds[1]];
-  } else {
+  ids = priceId.split(","); // all split values
+} else {
     ids = [priceId];
   }
   const parameter = { priceIds: ids };

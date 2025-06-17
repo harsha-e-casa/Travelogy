@@ -255,6 +255,30 @@ export const postUnHold = async (parameter) => {
     throw error;
   }
 };
+export const postSumbitAmendment=async(parameter)=>{
+
+  try {
+    const response= await apiInstanceTripJack.post("oms/v1/air/amendment/submit-amendment",parameter)
+     return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const postAmendmentDetails = async (parameter) => {
+  try {
+    console.log("🚀 Calling Amendment Details API with:", parameter); // <== Add this
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/air/amendment/amendment-details",
+      parameter
+    );
+    console.log("✅ Amendment Details API Success:", response.data); // <== Add this
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error in postAmendmentDetails:", error); // <== Add this
+    throw error;
+  }
+};
 
 
 // Add additional functions as needed (PUT, DELETE, etc.)
