@@ -8,14 +8,12 @@ const MultiCitySegment = ({
   segment,
   updateSegment,
   removeSegment,
-  disableRemove,
   addSegment,
-  isLast,
+  showAdd,
+  showRemove,
+  openSection,
+  onToggleSection,
 }) => {
-  const [showFromSearch, setShowFromSearch] = useState(false);
-  const [showToSearch, setShowToSearch] = useState(false);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
   const fromRef = useRef({ from: segment.from, fromCode: segment.fromCode });
   const toRef = useRef({ to: segment.to, toCode: segment.toCode });
 
@@ -49,11 +47,24 @@ const MultiCitySegment = ({
     }
   };
 
-  console.log("segment ==> ", segment);
-
   const displayDate = segment.departureDate
     ? dayjs(segment.departureDate)
     : dayjs().add(2, "day");
+
+  const isOpen = (type) =>
+    openSection.segmentIndex === index && openSection.type === type;
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        onToggleSection(null, null);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onToggleSection]);
 
   return (
     <div
@@ -62,7 +73,7 @@ const MultiCitySegment = ({
     >
       {/* From */}
       <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
-        <div onClick={() => setShowFromSearch(!showFromSearch)}>
+        <div onClick={() => onToggleSection(index, "from")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">From</div>
           <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
             <h6 className="font_bold text-black tracking-wide">
@@ -73,10 +84,10 @@ const MultiCitySegment = ({
             </p>
           </div>
         </div>
-        {showFromSearch && (
+        {isOpen("from") && (
           <div className="searchFfromSelect searchFfromSelect_1">
             <AppListSearch
-              operEngLocation={() => setShowFromSearch(false)}
+              operEngLocation={() => onToggleSection(null, null)}
               setSelectFrom={(val) => handleFromChange("from", val)}
               setSelectFromSub={(val) => handleFromChange("fromCode", val)}
             />
@@ -114,7 +125,7 @@ const MultiCitySegment = ({
 
       {/* To */}
       <div className="text_start b_right_2px g_w_2 css_pointer relative">
-        <div onClick={() => setShowToSearch(!showToSearch)}>
+        <div onClick={() => onToggleSection(index, "to")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
           <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
             <h6 className="font_bold text-black tracking-wide">
@@ -125,10 +136,10 @@ const MultiCitySegment = ({
             </p>
           </div>
         </div>
-        {showToSearch && (
+        {isOpen("to") && (
           <div className="searchFfromSelect searchFfromSelect_1">
             <AppListSearch
-              operEngLocation={() => setShowToSearch(false)}
+              operEngLocation={() => onToggleSection(null, null)}
               setSelectFrom={(val) => handleToChange("to", val)}
               setSelectFromSub={(val) => handleToChange("toCode", val)}
             />
@@ -143,7 +154,7 @@ const MultiCitySegment = ({
       >
         <div
           className="flex pl-6 justify_content_space"
-          onClick={() => setShowDatePicker(!showDatePicker)}
+          onClick={() => onToggleSection(index, "date")}
         >
           <div>
             <div className="pt-2 pb-2">{displayDate.format("dddd")}</div>
@@ -165,9 +176,9 @@ const MultiCitySegment = ({
             </div>
           </div>
         </div>
-        {showDatePicker && (
+        {isOpen("date") && (
           <AppDateRage
-            openToDateRange={() => setShowDatePicker(false)}
+            openToDateRange={() => onToggleSection(null, null)}
             setDatedep={(date) =>
               updateSegment(index, {
                 ...segment,
@@ -178,9 +189,15 @@ const MultiCitySegment = ({
         )}
       </div>
 
-      {/* <div className="b_right_2px g_w_5 css_pointer relative box_left_ddr2"> */}
-      <div style={{ display: "flex" , justifyContent: "space-around", width: "20%" }}>
-        {!disableRemove && (
+      {/* Actions */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-around",
+          width: "20%",
+        }}
+      >
+        {showRemove && (
           <div
             onClick={() => removeSegment(index)}
             className="text-red-600 font-bold text-lg px-2 py-1 border border-red-500 rounded-full css_pointer"
@@ -189,7 +206,7 @@ const MultiCitySegment = ({
             ×
           </div>
         )}
-        {isLast && (
+        {showAdd && (
           <div
             onClick={addSegment}
             className="text-blue-600 font-semibold text-sm px-3 py-1 border border-blue-600 rounded css_pointer"
@@ -198,7 +215,6 @@ const MultiCitySegment = ({
           </div>
         )}
       </div>
-      {/* </div> */}
     </div>
   );
 };

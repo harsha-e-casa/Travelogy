@@ -64,6 +64,14 @@ const EngineTabs = ({ active_border }) => {
     adult + countchildren
   );
 
+  // reset
+  useEffect(() => {
+    // Reset all traveller cookies when arriving at this page
+    setCookie("gy_adult", 1);
+    setCookie("gy_child", 0);
+    setCookie("gy_infant", 0);
+  }, []);
+
   useEffect(() => {
     if (getCookie("gy_adult") == undefined || getCookie("gy_adult") == "Nan") {
       setCookie("gy_adult", 1);
@@ -338,6 +346,18 @@ const EngineTabs = ({ active_border }) => {
     setOpenDateRageR(false);
     setShowYTraveller(false);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeAllFields();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const displayDate = dayjs().add(2, "day");
   const [multicitySegments, setMulticitySegments] = useState([

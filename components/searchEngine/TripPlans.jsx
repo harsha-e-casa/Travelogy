@@ -53,6 +53,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
           value="multi-city"
           checked={selectedPlan === 'multi-city'}
           onChange={handlePlanChange}
+          style={{ width: "auto" }}
         />
         <div className="plan-content">
           <div className="plan-details">
