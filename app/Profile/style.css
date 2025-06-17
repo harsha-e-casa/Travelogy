@@ -236,8 +236,15 @@ font-size: 10px;
  }
   }
 
-  
-  
- 
- 
+   @media print {
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .mytestCas{
+              background-color: red;
+            }
+
+        }
+
   
