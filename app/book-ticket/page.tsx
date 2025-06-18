@@ -137,15 +137,11 @@ export default function BookTicket() {
     setError(null);
 
     try {
-      let ids = [];
-      let splitIds = [];
+     let ids = [];
 
-     if (priceId.includes(",")) {
-  splitIds = priceId.split(",");
-  ids = splitIds.slice(0, 3)
-} else {
-        ids = [priceId];
-      }
+if (priceId && typeof priceId === "string") {
+  ids = priceId.includes(",") ? priceId.split(",") : [priceId];
+}
       const parameter = { priceIds: ids };
       console.log(parameter);
 
@@ -219,7 +215,8 @@ export default function BookTicket() {
       if (paxInfo.INFANT) {
         setNumInfants(paxInfo.INFANT);
       }
-    } catch (err: any) {
+    } 
+    catch (err: any) {
       console.error("error caused", err);
 
       if (err?.response?.data?.errors?.length) {
@@ -2033,9 +2030,9 @@ console.log("Final baggageInfos for ADULT", i, ":", baggageInfos);
                                 >
                                   Baggage
                                 </h2>
-                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                <div className="mt-1 max-w-2xl text-sm text-gray-500">
                                   <ExtraBaggage form={form} numAdults={numAdults} numChild={numChild} numInfants={numInfants} apiData={apiData} />
-                                </p>
+                                </div>
 
                                 <a
                                   className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"

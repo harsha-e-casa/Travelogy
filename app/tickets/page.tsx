@@ -158,6 +158,9 @@ export default function Tickets() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const addSegment = () => {
+    setOpenFromMultiIndex(null);
+    setOpenToMultiIndex(null);
+    setOpenDepartMultiIndex(null);
     const lastSegment = multicitySegments[multicitySegments.length - 1];
 
     if (
@@ -248,7 +251,6 @@ export default function Tickets() {
   const [modifySearchRef, setModifySearchRef] = useState(false);
 
   const handleModifySearch = () => {
-    alert(" search modified ");
     setModifySearchRef(true);
   };
 
@@ -260,15 +262,29 @@ export default function Tickets() {
         const segment = multicitySegments[i];
 
         if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
-          setErrorMsg(`Please fill all fields in segment ${i + 2}.`);
+          setErrorMsg(`Please fill all fields in segment ${i + 1}.`);
           hasError = true;
           break;
         }
 
         if (segment.fromCode === segment.toCode) {
-          setErrorMsg(`From and To cannot be the same in segment ${i + 2}.`);
+          setErrorMsg(`From and To cannot be the same in segment ${i + 1}.`);
           hasError = true;
           break;
+        }
+
+        // Check date order (must be ascending)
+        if (i > 0) {
+          const prevDate = new Date(multicitySegments[i - 1].departureDate);
+          const currentDate = new Date(segment.departureDate);
+
+          if (currentDate <= prevDate) {
+            setErrorMsg(
+              `Departure date in segment ${i + 1} must be after segment ${i}.`
+            );
+            hasError = true;
+            break;
+          }
         }
       }
 
@@ -281,6 +297,21 @@ export default function Tickets() {
       SetSearchFlight(true);
     }
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        closeAllFields();
+        setOpenToMultiIndex(null);
+        setOpenDepartMultiIndex(null);
+        setOpenFromMultiIndex(null);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const [true_Tripconst, setTripconst] = useState<boolean>(false);
   const [searchFlight, SetSearchFlight] = useState<boolean>(true);
@@ -300,7 +331,12 @@ export default function Tickets() {
 
   useEffect(() => {
     if (!searchFlight || hasFetchedRef.current) return;
+
     closeAllFields();
+    setOpenToMultiIndex(null);
+    setOpenDepartMultiIndex(null);
+    setOpenFromMultiIndex(null);
+
     hasFetchedRef.current = true;
 
     if (srx_tripType?.toLowerCase() === "multi-city") {
@@ -594,7 +630,7 @@ export default function Tickets() {
     const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
     const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
     setTraveller(dfadu + dfchi + dfinf);
-  }, [countChildren, adultCount, countInfant]);
+  }, []);
 
   const [dd_monthStr, setDd_monthStr] = useState<string | null>(null);
   const [dd_strdate, setDd_strdate] = useState<string | null>(null);
@@ -620,14 +656,23 @@ export default function Tickets() {
 
   const multiOpenfrom = (idx: number) => {
     setOpenFromMultiIndex((prev) => (prev === idx ? null : idx));
+    closeAllFields();
+    setOpenToMultiIndex(null);
+    setOpenDepartMultiIndex(null);
   };
 
   const multiOpenToSecond = (idx: number) => {
     setOpenToMultiIndex((prev) => (prev === idx ? null : idx));
+    closeAllFields();
+    setOpenFromMultiIndex(null);
+    setOpenDepartMultiIndex(null);
   };
 
   const multiOpenToDateRange = (idx: number) => {
     setOpenDepartMultiIndex((prev) => (prev === idx ? null : idx));
+    closeAllFields();
+    setOpenFromMultiIndex(null);
+    setOpenToMultiIndex(null);
   };
 
   const [showTraveller, setShowYTraveller] = useState<boolean>(false);
@@ -650,6 +695,9 @@ export default function Tickets() {
       closeAllFields();
     } else {
       closeAllFields();
+      setOpenToMultiIndex(null);
+      setOpenDepartMultiIndex(null);
+      setOpenFromMultiIndex(null);
       setShowSearchState(true);
     }
   };
@@ -659,6 +707,9 @@ export default function Tickets() {
       closeAllFields();
     } else {
       closeAllFields();
+      setOpenToMultiIndex(null);
+      setOpenDepartMultiIndex(null);
+      setOpenFromMultiIndex(null);
       setShowSearchStateTo(true);
     }
   };
@@ -668,6 +719,9 @@ export default function Tickets() {
       closeAllFields();
     } else {
       closeAllFields();
+      setOpenToMultiIndex(null);
+      setOpenDepartMultiIndex(null);
+      setOpenFromMultiIndex(null);
       setOpenDateRage(true);
     }
   };
@@ -677,6 +731,9 @@ export default function Tickets() {
       closeAllFields();
     } else {
       closeAllFields();
+      setOpenToMultiIndex(null);
+      setOpenDepartMultiIndex(null);
+      setOpenFromMultiIndex(null);
       setShowYTraveller(true);
     }
   };
@@ -686,6 +743,9 @@ export default function Tickets() {
       closeAllFields();
     } else {
       closeAllFields();
+      setOpenToMultiIndex(null);
+      setOpenDepartMultiIndex(null);
+      setOpenFromMultiIndex(null);
       setOpen(true);
     }
   };
@@ -695,6 +755,9 @@ export default function Tickets() {
       closeAllFields();
     } else {
       closeAllFields();
+      setOpenToMultiIndex(null);
+      setOpenDepartMultiIndex(null);
+      setOpenFromMultiIndex(null);
       setOpenDateRageR(true);
     }
   };
@@ -810,10 +873,21 @@ export default function Tickets() {
   };
 
   let searchEnginewidth = {};
+  let cursorNotAllowed = {};
   if (srx_tripType.toLowerCase() === "multi-city") {
     searchEnginewidth = {
       width: "65%",
     };
+    console.log("modifySearchRef -- ", modifySearchRef);
+    if (!modifySearchRef) {
+      // searchEnginewidth = {
+      //   width: "65%",
+      //   cursor: "not-allowed",
+      // };
+      cursorNotAllowed = {
+        cursor: "not-allowed",
+      };
+    }
   }
 
   return (
@@ -831,12 +905,11 @@ export default function Tickets() {
                 <Dropdown
                   menu={{ items, onClick: handleMenuClick }}
                   open={open}
-                  trigger={[]} // ← disable all built‑in open/close triggers
-                  placement="bottomLeft" // or wherever you like
+                  trigger={[]}
+                  placement="bottomLeft"
                 >
                   <div
                     className="hdt_value"
-                    // onClick={() => setOpen(prev => !prev)}  // ← your toggle
                     onClick={() => {
                       if (
                         (srx_tripType.toLowerCase() === "multi-city" &&
@@ -846,7 +919,7 @@ export default function Tickets() {
                         handleOpen();
                       }
                     }}
-                    style={{ cursor: "pointer", display: "inline-block" }}
+                    style={{ ...cursorNotAllowed, display: "inline-block" }}
                   >
                     {srx_tripType}
                   </div>
@@ -858,7 +931,11 @@ export default function Tickets() {
                     <label>Trip Info</label>
                     <div className="multicity-scrollplace">
                       {combinedMulticitySegment.map((segment, idx) => (
-                        <div key={idx} className="place-flights hdt_value">
+                        <div
+                          key={idx}
+                          className="place-flights hdt_value"
+                          style={{ cursor: "not-allowed" }}
+                        >
                           <ul className="al-selist al-selist-positionHandle">
                             <li className="whitecolor">
                               {segment.fromCode}
@@ -977,7 +1054,7 @@ export default function Tickets() {
                 }}
               >
                 <label>Passengers &amp; Class</label>
-                <div className="hdt_value">
+                <div className="hdt_value" style={{ ...cursorNotAllowed }}>
                   <span>
                     {srx_traveller}{" "}
                     {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
