@@ -19086,9 +19086,11 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 }
 
 .hotel_room .bx_shadow_dr1 {
-  width: 29%;
+  width: 22%;
   right: 27%;
   top: 100px;
+  min-height: 250px;
+  color: #000;
 }
 
 /* Adjust dropdown width and position */
