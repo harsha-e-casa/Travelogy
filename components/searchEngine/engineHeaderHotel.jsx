@@ -61,6 +61,9 @@ const EngineHeaderHotel = ({ active_border }) => {
   };
 
   const [selectedPlan, setSelectedPlan] = useState("round-trip");
+  const [roomsData, setRoomsData] = useState([
+    { adults: 1, children: 0, childAges: [] },
+  ]);
 
   const clickMinus = () => {
     setAdult(adult - 1); // Correct way to toggle the state
@@ -147,21 +150,16 @@ const EngineHeaderHotel = ({ active_border }) => {
     };
   }, []);
   const handleSearch = () => {
+    const totalAdults = roomsData.reduce((sum, room) => sum + room.adults, 0);
+    const totalChildren = roomsData.reduce(
+      (sum, room) => sum + room.children,
+      0
+    );
+    const childAges = roomsData.flatMap((room) => room.childAges || []);
+
     const formattedCheckIn = dayjs(datedep).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(datedepr).format("YYYY-MM-DD");
 
-    // Generate roomInfo array
-    const roomInfo = [];
-
-    for (let i = 0; i < rooms; i++) {
-      roomInfo.push({
-        numberOfAdults: adult,
-        numberOfChild: countchildren,
-        ...(countchildren > 0 ? { childAge: childAgesPerRoom[i] || [] } : {}),
-      });
-    }
-
-    // Construct query parameters
     const queryParams = new URLSearchParams({
       checkinDate: formattedCheckIn,
       checkoutDate: formattedCheckOut,
@@ -169,10 +167,11 @@ const EngineHeaderHotel = ({ active_border }) => {
       city: "699261",
       nationality: "106",
       currency: "INR",
-      rooms: rooms.toString(),
-      adults: adult.toString(),
-      children: countchildren.toString(),
-      childAges: JSON.stringify(childAgesPerRoom),
+      rooms: roomsData.length.toString(),
+      adults: totalAdults.toString(),
+      children: totalChildren.toString(),
+      childAges: JSON.stringify(childAges),
+      roomsData: JSON.stringify(roomsData),
     }).toString();
 
     router.push(`/hotel-listing?${queryParams}`);
@@ -347,23 +346,28 @@ const EngineHeaderHotel = ({ active_border }) => {
           </div>
         </div>
 
-        <AppTravellerHotel
-          showTraveller={showTraveller}
-          adult={adult}
-          opentrvForm={openTraveller}
-          clickMinus={clickMinus}
-          clickPlus={clickPlus}
-          clickMinusChildren={clickMinusChildren}
-          clickPlusChildren={clickPlusChildren}
-          countchildren={countchildren}
-          handleChangeClass={handleChangeClass}
-          travellerClass={travellerClass}
-          clickRoomAdd={clickRoomAdd}
-          clickRoomMinus={clickRoomMinus}
-          rooms={rooms}
-          childAgesPerRoom={childAgesPerRoom}
-          setChildAgesPerRoom={setChildAgesPerRoom}
-        />
+        {showTraveller && (
+          <AppTravellerHotel
+            roomsData={roomsData}
+            onClose={(updatedRooms) => {
+              setRoomsData(updatedRooms);
+              const totalAdults = updatedRooms.reduce(
+                (sum, r) => sum + r.adults,
+                0
+              );
+              const totalChildren = updatedRooms.reduce(
+                (sum, r) => sum + r.children,
+                0
+              );
+
+              setAdult(totalAdults);
+              setcountChildren(totalChildren);
+              setRooms(updatedRooms.length);
+              setChildAgesPerRoom(updatedRooms.map((r) => r.childAges || []));
+              setShowYTraveller(false);
+            }}
+          />
+        )}
       </div>
     </section>
   );

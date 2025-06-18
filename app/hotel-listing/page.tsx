@@ -8,11 +8,9 @@ import ByPagination from "@/components/Filter/ByPagination";
 import ByPrice from "@/components/Filter/ByPrice";
 import ByRating from "@/components/Filter/ByRating";
 import ByRoom from "@/components/Filter/ByRoom";
-import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
 import SortHotelsFilter from "@/components/elements/SortHotelsFilter";
 import HotelCard1 from "@/components/elements/hotelcard/HotelCard1";
 import Layout from "@/components/layout/Layout";
-import SwiperGroup8Slider from "@/components/slider/SwiperGroup8Slider";
 import rawHotelsData from "@/util/hotels.json";
 import useHotelFilter from "@/util/useHotelFilter";
 import "../tickets/customeHeader_1.css";
@@ -38,10 +36,18 @@ export default function HotelListing() {
   const city = searchParams.get("city") || "699261"; // Static default city if none
   const nationality = searchParams.get("nationality") || "106"; // Static default nationality
   const currency = searchParams.get("currency") || "INR"; // Static default currency
-  const rooms = Number(searchParams.get("rooms")) || 1; // Default to 1 if no rooms in query
-  const adults = Number(searchParams.get("adults")) || 1; // Default to 1 if no adults in query
-  const children = Number(searchParams.get("children")) || 0; // Default to 0 if no children in query
-  const childAges = JSON.parse(searchParams.get("childAges") || "[]"); // Default to empty array if no childAges
+  const rooms = Number(searchParams.get("rooms")) || 1;
+  const adults = Number(searchParams.get("adults")) || 1;
+  const children = Number(searchParams.get("children")) || 0;
+  const childAgesRaw = searchParams.get("childAges");
+
+  let parsedChildAges: number[][] = [];
+
+  try {
+    parsedChildAges = childAgesRaw ? JSON.parse(childAgesRaw) : [];
+  } catch (e) {
+    console.warn("Invalid childAges in query params", e);
+  }
 
   const [openDateRage, setOpenDateRage] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
@@ -53,36 +59,23 @@ export default function HotelListing() {
     searchParams.get("checkoutDate") ||
       dayjs().add(1, "day").format("YYYY-MM-DD")
   );
+  const rawRoomsData = searchParams.get("roomsData");
+  let initialRoomsData = [{ adults: 1, children: 0, childAges: [] }];
+  try {
+    initialRoomsData = rawRoomsData
+      ? JSON.parse(rawRoomsData)
+      : initialRoomsData;
+  } catch (e) {
+    console.warn("Invalid roomsData JSON", e);
+  }
+  const [roomsData, setRoomsData] = useState(initialRoomsData);
 
-  const [adult, setAdult] = useState(adults);
-  const [countchildren, setCountchildren] = useState(children);
-  const [room1, setRoom1] = useState(rooms);
-  const [childAgesPerRoom, setChildAgesPerRoom] = useState<number[]>([]);
+  const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
+  const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
+  const childAges = roomsData.flatMap((r) => r.childAges);
 
   const [showTraveller, setShowTraveller] = useState(false);
-  const clickRoomAdd = () => setRoom1((prev) => Math.min(prev + 1, 10));
-  const clickRoomMinus = () => setRoom1((prev) => Math.max(prev - 1, 1));
   const [selectFrom, setSelectFrom] = useState(location);
-  const clickPlus = () => setAdult((prev) => Math.min(prev + 1, 10));
-  const clickMinus = () => setAdult((prev) => Math.max(prev - 1, 1));
-
-  const clickPlusChildren = () => {
-    if (countchildren < 10) {
-      setCountchildren((prev) => prev + 1);
-      setChildAgesPerRoom((prev) => [...prev, 0]);
-    }
-  };
-  const opentrvForm = () => {
-    setShowTraveller(false);
-    handleSearch();
-  };
-
-  const clickMinusChildren = () => {
-    if (countchildren > 0) {
-      setCountchildren((prev) => prev - 1);
-      setChildAgesPerRoom((prev: any) => prev.slice(0, -1));
-    }
-  };
 
   useEffect(() => {
     if (!checkinDate) setCheckinDate(dayjs().format("YYYY-MM-DD"));
@@ -157,7 +150,14 @@ export default function HotelListing() {
       return null; // ✅ Return null on error
     }
   };
-
+  const cleanRoomInfo = roomsData.map((room) => {
+    const childAgeList = Array.isArray(room.childAges) ? room.childAges : [];
+    return {
+      numberOfAdults: room.adults,
+      numberOfChild: childAgeList.length,
+      ...(childAgeList.length > 0 ? { childAge: childAgeList } : {}),
+    };
+  });
   const handleSearch = async () => {
     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
       alert("Check-out date cannot be earlier than check-in date.");
@@ -167,34 +167,31 @@ export default function HotelListing() {
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
-    const roomInfo = [];
-
-    for (let i = 0; i < room1; i++) {
-      roomInfo.push({
-        numberOfAdults: adult,
-        numberOfChild: countchildren,
-        ...(countchildren > 0 ? { childAge: childAgesPerRoom[i] || [] } : {}),
-      });
-    }
+    const roomInfo = roomsData.map((room) => ({
+      numberOfAdults: room.adults,
+      numberOfChild: room.children,
+      ...(room.children > 0 ? { childAge: room.childAges } : {}),
+    }));
 
     const queryParams = new URLSearchParams({
       checkinDate: formattedCheckIn,
       checkoutDate: formattedCheckOut,
       location: selectFrom,
-      city,
-      nationality,
-      currency,
-      rooms: room1.toString(),
-      adults: adult.toString(),
-      children: countchildren.toString(),
-      childAges: JSON.stringify(childAgesPerRoom),
+      city: "699261",
+      nationality: "106",
+      currency: "INR",
+      rooms: roomsData.length.toString(),
+      adults: totalAdults.toString(),
+      children: totalChildren.toString(),
+      childAges: JSON.stringify(childAges),
+      roomsData: JSON.stringify(roomsData),
     }).toString();
 
     const payload = {
       searchQuery: {
         checkinDate: formattedCheckIn,
         checkoutDate: formattedCheckOut,
-        roomInfo,
+        roomInfo: cleanRoomInfo,
         searchCriteria: { city, nationality, currency },
         searchPreferences: { fsc: true },
       },
@@ -218,21 +215,18 @@ export default function HotelListing() {
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
-    const roomInfo: any = [];
-    for (let i = 0; i < room1; i++) {
-      roomInfo.push({
-        numberOfAdults: adult,
-        numberOfChild: countchildren,
-        ...(countchildren > 0 ? { childAge: childAgesPerRoom[i] || [] } : {}),
-      });
-    }
+    const roomInfo = roomsData.map((room) => ({
+      numberOfAdults: room.adults,
+      numberOfChild: room.children,
+      ...(room.children > 0 ? { childAge: room.childAges } : {}),
+    }));
 
     const fetchData = async () => {
       const payload = {
         searchQuery: {
           checkinDate: formattedCheckIn,
           checkoutDate: formattedCheckOut,
-          roomInfo,
+          roomInfo: cleanRoomInfo,
           searchCriteria: { city, nationality, currency },
           searchPreferences: { fsc: true },
         },
@@ -407,30 +401,21 @@ export default function HotelListing() {
                 <label>Rooms & Guest</label>
                 <button onClick={toggleTraveller}>
                   <div className="input-field text-base font-bold">
-                    {adult} Adult{adult > 1 ? "s" : ""}, {countchildren} Child,
-                    {room1} Room{room1 > 1 ? "s" : ""}
+                    {totalAdults} Adult{totalAdults > 1 ? "s" : ""},
+                    {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                    {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
                   </div>
                 </button>
                 {showTraveller && (
                   <div onClick={(e) => e.stopPropagation()}>
                     {" "}
                     <AppTravellerHotel
-                      showTraveller={showTraveller}
-                      adult={adult}
-                      clickMinus={clickMinus}
-                      clickPlus={clickPlus}
-                      clickMinusChildren={clickMinusChildren}
-                      clickPlusChildren={clickPlusChildren}
-                      countchildren={countchildren}
-                      rooms={room1}
-                      clickRoomAdd={clickRoomAdd}
-                      clickRoomMinus={clickRoomMinus}
-                      travellerClass={"a"} // Optional class field
-                      handleChangeClass={() => {}}
-                      opentrvForm={() => setShowTraveller(false)}
-                      childAgesPerRoom={childAgesPerRoom}
-                      setChildAgesPerRoom={setChildAgesPerRoom}
-                    />{" "}
+                      roomsData={roomsData}
+                      onClose={(updatedRooms) => {
+                        setRoomsData(updatedRooms);
+                        setShowTraveller(false); // Close the form
+                      }}
+                    />
                   </div>
                 )}
               </div>

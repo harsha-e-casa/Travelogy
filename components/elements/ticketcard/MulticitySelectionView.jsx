@@ -61,21 +61,20 @@ export default function MulticitySelectionView({ flightData }) {
 
   const cities = [...firstIdxCity, ...simplifiedSegments];
 
-  const moveToNextTab = (maxTabs) => {
-    const currentIndex = parseInt(activeTabKey, 10);
-    if (currentIndex < maxTabs) {
-      setActiveTabKey(String(currentIndex + 1));
-    }
-  };
-
   const matchedFlights = cities.map(({ from, to }) => {
     const flights = [];
 
     Object.values(flightData).forEach((flightGroup) => {
       flightGroup.forEach((flight) => {
-        const segment = flight?.sI?.[0];
-        const depCity = segment?.da?.city;
-        const arrCity = segment?.aa?.city;
+        const segments = flight?.sI;
+
+        if (!segments || segments.length === 0) return;
+
+        const firstSegment = segments[0];
+        const lastSegment = segments[segments.length - 1];
+
+        const depCity = firstSegment.da.city;
+        const arrCity = lastSegment.aa.city;
 
         if (depCity === from && arrCity === to) {
           flights.push(flight);
@@ -83,16 +82,14 @@ export default function MulticitySelectionView({ flightData }) {
       });
     });
 
-
     return {
       from,
       to,
-      flights, // all matching flights for this city pair
+      flights,
     };
   });
-  console.log("matched flight", matchedFlights);
-  console.log("Moving from tab:", activeTabKey, "to max:", matchedFlights.length);
 
+  console.log("matched flight", matchedFlights);
 
   const formatTime = (durationInMinutes) => {
     const hours = Math.floor(durationInMinutes / 60);
@@ -143,273 +140,193 @@ export default function MulticitySelectionView({ flightData }) {
             pair.flights.map((ticket, i) => (
               <div key={i}>
                 <div className="" style={{ paddingBottom: "10px" }}>
-                  
-                  
-                  {ticket.sI.length === 2 ? (
-  // 🟢 Combined view for connecting flights
-  <div className="combined-connecting-flight">
-    <div className="flex justify-between gap-4 border rounded-md p-4">
-      {ticket.sI.map((segment, index) => (
-        <div key={index} className="w-1/2 border-r last:border-none pr-4 last:pr-0  flex flex-col">
-          <div className="flex items-center gap-2 mb-2">
-            <img
-              className="w-8 h-8"
-              src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
-              alt={segment.fD.aI.name}
-            />
-            <div className="text-xs">{segment.fD.aI.name}</div>
-          </div>
-          <div className="text-sm mb-1">
-            <strong>{segment.da.city} ({segment.da.code})</strong> →
-            <strong> {segment.aa.city} ({segment.aa.code})</strong>
-          </div>
-          <div className="flex justify-between text-xs text-gray-600">
-            <span>{dayjs(segment.dt).format("HH:mm")}</span>
-            <span>{formatTime(segment.duration)}</span>
-            <span>{dayjs(segment.at).format("HH:mm")}</span>
-          </div>
-          <div className="text-xs mt-1">
-            {segment.stops > 0 ? `${segment.stops} stops` : "Non-stop"}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-) : (
-  // 🔵 Normal single-segment logic (same as before)
-  ticket.sI.map((segment, index) => (
-     <div className="relative flex flex-col">
-                        <div
-                          className="air_detailes  "
-                          style={{
-                            width: "unset",
-                            top: index === 0 ? "0" : "49%",
-                            marginBottom: "00px",
-                            display: "block",
-                          }}
-                        >
-                          <div className="flex items-center justify-center  ">
-                            <img
-                              style={{
-                                width: "35px",
-                                height: "35px",
-                                padding: "5px",
-                              }}
-                              src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
-                            />
-                            <div className="text-[10px]">
-                              {segment.fD.aI.name}
-                            </div>
-                          </div>
-                        </div>
 
-                        <div
-                          className="flex justify-evenly items-center border rounded-md "
-                          style={{ padding: "40px 20px 20px 20px" }}
-                          key={index}
-                        >
-                          <div className="flight-route flight-route-type-2 city1">
-                            <div className="flight-route-1">
-                              <div className="flight-name">
-                                <div className="flight-info flex flex-col justify-center items-center">
-                                  <p className="text-md-bold neutral-1000 city1name">
-                                    {segment.da.city} ({segment.da.code})
-                                  </p>
-                                  <p className="text-sm-medium time-flight timelogo">
-                                    <span className="neutral-1000 time">
-                                      {dayjs(segment.dt).format("HH:mm")
-                                      }
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="flight-route flight-route-type-2 city1">
-                            <div className="flight-route-1">
-                              <div className=" flight-name duration flex flex-col items-center align-center duration">
-                                <p className="text-sm-medium neutral-500 totalduration">
-                                  {formatTime(segment.duration)}
-                                </p>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-arrow-right"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                  {ticket.sI.length >= 1 ? (
+                    <div className="combined-connecting-flight  ">
+                      <div className="flex gap-4 border rounded-md justify-between items-center pr-20 ">
+                        <div className="flex flex-col">
+                          {ticket.sI.map((segment, index) => (
+                            <div key={index} className="relative flex flex-col rounded-md p-5">
+                              <div
+                                className="air_detailes  "
+                                style={{
+                                  width: "unset",
+                                  top: index === 0 ? "0" : "0%",
+                                  marginBottom: "00px",
+                                  display: "block",
+                                }}
+                              >
+                                <div className="flex items-center justify-center  ">
+                                  <img
+                                    style={{
+                                      width: "35px",
+                                      height: "35px",
+                                      padding: "5px",
+                                    }}
+                                    src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
                                   />
-                                </svg>
-                                <p className="text-sm-medium neutral-500 totalduration">
-                                  {segment.stops > 0
-                                    ? `${segment.stops} stops`
-                                    : "non stop"}
-                                </p>
+                                  <div className="text-[10px]">
+                                    {segment.fD.aI.name}
+                                  </div>
+                                </div>
                               </div>
-                            </div>
-                          </div>
+                              <div className="flex  justify-between" style={{ width: "500px" }}>
+                                <div className="text-sm  flex flex-col justify-center items-center " style={{ width: "150px" }}>
+                                  <p className="text-md-bold neutral-1000 city1name">{segment.da.city} ({segment.da.code})</p>
+                                  <p className="neutral-1000 time">{dayjs(segment.dt).format("HH:mm")}</p>
 
-                          <div className="flight-route flight-route-type-2 city1">
-                            <div className="flight-route-1">
-                              <div className="flight-name">
-                                <div className="flight-info flex flex-col items-center align-center">
-                                  <p className="text-md-bold neutral-1000 align-center city1name">
-                                    {segment.aa.city} ({segment.aa.code})
-                                  </p>
-                                  <p className="text-sm-medium time-flight timelogo">
-                                    <span className="neutral-1000 time">
-                                      {dayjs(segment.at).format("HH:mm")}
-                                    </span>
-                                  </p>
+
+                                </div>
+                                <div className="text-xs text-center  " style={{ width: "100px" }}>
+                                  < p className="text-sm-medium neutral-500">{formatTime(segment.duration)}</p>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    fill="currentColor"
+                                    className="bi bi-arrow-right"
+                                    viewBox="0 0 16 16"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                                    />
+                                  </svg>
+                                  <p className="text-sm-medium neutral-500">  {segment.stops > 0 ? `${segment.stops} stops` : "non-stop"}</p>
+
+
+                                </div>
+                                <div className="text-sm  flex flex-col justify-center items-center gap-1 " style={{ width: "200px" }}>
+                                  <p className="text-md-bold neutral-1000 city1name">{segment.aa.city} ({segment.aa.code})</p>
+                                  <p className="neutral-1000 time">{dayjs(segment.at).format("HH:mm")}</p>
                                 </div>
                               </div>
                             </div>
-                          </div>
-
-                          <div
-                            className="flight-price-1 border-1  price-div flex justify-center items-center flex-col "
-                            style={{ width: "245px", paddingLeft: "20px" }}
-                          >
-                            <Radio.Group
-                              onChange={(e) =>
-                                setSelectedFare(i, e.target.value)
-                              }
-                              value={selectedFares[i] || 0}
-                              className="fare-options flex flex-col gap-2  w-full"
-                            >
-                              {(showAllFares
-                                ? ticket.totalPriceList
-                                : ticket.totalPriceList.slice(0, 2)
-                              ).map((e, j) => {
-                                const fareValue = calculateTotalFare(
-                                  e.fd,
-                                  adultCount,
-                                  childCount,
-                                  infantCount,
-                                  getCookie
-                                );
-                                return (
-                                  <Radio
-                                    key={j}
-                                    value={j}
-                                    className="w-full radiocomp"
-                                  >
-                                    <div className="p-0 rounded-lg border-2 transition-all duration-200 radiodiv border-gray-300 hover:border-gray-500">
-                                      <div className="flex flex-row gap-2 items-center">
-                                        <div className="text-lg font-bold text-gray-800 price">
-                                          ₹{fareValue}
-                                        </div>
-                                        <span
-                                          className="fareidentifier text-xs font-bold"
-                                          style={{
-                                            backgroundColor: "#f5deb3",
-                                            color: "#5c4033",
-                                            padding: "1px 2px",
-                                          }}
-                                        >
-                                          {e.fareIdentifier}
-                                        </span>
-                                      </div>
-                                      <div className="text-xs text-gray-600">
-                                        <span className="ml-2 cabinclass">
-                                          {e.fd.ADULT.cc} |{" "}
-                                          <span className="refundable">
-                                            {e.fd.rT === 1
-                                              ? "Non-refundable"
-                                              : "Refundable"}
-                                          </span>
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </Radio>
-                                );
-                              })}
-                              {ticket.totalPriceList.length > 2 && (
-                                <button
-                                  className="view-more-txt"
-                                  style={{
-                                    textAlign: "right",
-                                    fontSize: "10px",
-                                  }}
-                                  onClick={() =>
-                                    setShowAllFares((prev) => !prev)
-                                  }
-                                >
-                                  {showAllFares
-                                    ? "(-) View Less"
-                                    : "(+) View More"}
-                                </button>
-                              )}
-                            </Radio.Group>
-                          </div>
-
-                          <div>
-                            <button
-                              className="btn btn-gray btn"
-                              onClick={() => {
-                                const selectedFareIndex = selectedFares[i] || 0;
-                                const selectedFare =
-                                  ticket.totalPriceList[selectedFareIndex];
-                                const fareFD = selectedFare.fd;
-
-                                const totalPrice = calculateTotalFare(
-                                  fareFD,
-                                  adultCount,
-                                  childCount,
-                                  infantCount,
-                                  getCookie
-                                );
-                                const adultFare = fareFD.ADULT?.fC?.NF || 0;
-
-                                const updatedFlight = {
-                                  priceId: selectedFare.id,
-
-                                  flightName: segment.fD.aI.name,
-                                  depCityCode: segment.da.code,
-                                  arrCityCode: segment.aa.code,
-                                  airlineCode: segment.fD.aI.code,
-                                  flightNumber: segment.fD.fN,
-                                  depCity: segment.da.city,
-                                  arrCity: segment.aa.city,
-                                  depTime: dayjs(segment.dt).format("HH:mm"),
-                                  arrTime: dayjs(segment.at).format("HH:mm"),
-
-                                  airlineLogo: `/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`,
-                                  price: totalPrice,
-                                  adultFare: new Intl.NumberFormat("en-IN").format(adultFare),
-                                };
-
-                                setSelectedFlights((prev) => {
-                                  const newFlights = {
-                                    ...prev,
-                                    [tabIndex]: updatedFlight,
-                                  };
-
-                                  // Move to next tab if on tab 1 or 2 (i.e., index 0 or 1)
-                                  // if (tabIndex === 0 || tabIndex === 1) {
-                                  //   setActiveTabKey(String(tabIndex + 2));
-                                  // }
-                                  moveToNextTab(matchedFlights.length);
-
-                                  return newFlights;
-                                });
-                              }}
-                            >
-                              Select
-                            </button>
-                          </div>
+                          ))}
                         </div>
+
+                        <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
+                          <Radio.Group
+                            onChange={(e) => setSelectedFare(i, e.target.value)}
+                            value={selectedFares[i] || 0}
+                            className="fare-options flex flex-col gap-2 w-full"
+                          >
+                            {(showAllFares
+                              ? ticket.totalPriceList
+                              : ticket.totalPriceList.slice(0, 2)
+                            ).map((e, j) => {
+                              const fareValue = calculateTotalFare(
+                                e.fd,
+                                adultCount,
+                                childCount,
+                                infantCount,
+                                getCookie
+                              );
+                              return (
+                                <Radio key={j} value={j} className="w-full radiocomp">
+                                  <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
+                                    <div className="flex flex-row gap-2 items-center">
+                                      <div className="text-lg font-bold text-gray-800 price">
+                                        ₹{fareValue}
+                                      </div>
+                                      <span
+                                        className="fareidentifier text-xs font-bold"
+                                        style={{
+                                          backgroundColor: "#f5deb3",
+                                          color: "#5c4033",
+                                          padding: "1px 2px",
+                                        }}
+                                      >
+                                        {e.fareIdentifier}
+                                      </span>
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                      <span className="ml-2 cabinclass">
+                                        {e.fd.ADULT.cc} |{" "}
+                                        <span className="refundable">
+                                          {e.fd.rT === 1 ? "Non-refundable" : "Refundable"}
+                                        </span>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </Radio>
+                              );
+                            })}
+                            {ticket.totalPriceList.length > 2 && (
+                              <button
+                                className="view-more-txt"
+                                style={{ textAlign: "right", fontSize: "10px" }}
+                                onClick={() => setShowAllFares((prev) => !prev)}
+                              >
+                                {showAllFares ? "(-) View Less" : "(+) View More"}
+                              </button>
+                            )}
+                          </Radio.Group>
+
+
+                        </div>
+                        <div>
+                          <button
+                            className="btn btn-gray mt-2 "
+                            onClick={() => {
+                              const selectedFareIndex = selectedFares[i] || 0;
+                              const selectedFare = ticket.totalPriceList[selectedFareIndex];
+                              const fareFD = selectedFare.fd;
+
+                              const totalPrice = calculateTotalFare(
+                                fareFD,
+                                adultCount,
+                                childCount,
+                                infantCount,
+                                getCookie
+                              );
+                              const firstSegment = ticket.sI[0];
+                              const lastSegment =
+                                ticket.sI[ticket.sI.length - 1];
+
+                              const updatedFlight = {
+                                priceId: selectedFare.id,
+                                flightName: firstSegment.fD.aI.name,
+                                depCityCode: firstSegment.da.code,
+                                arrCityCode: lastSegment.aa.code,
+                                airlineCode: firstSegment.fD.aI.code,
+                                flightNumber: firstSegment.fD.fN,
+                                depCity: firstSegment.da.city,
+                                arrCity: lastSegment.aa.city,
+                                depTime: dayjs(firstSegment.dt).format("HH:mm"),
+                                arrTime: dayjs(lastSegment.at).format("HH:mm"),
+                                airlineLogo: `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`,
+                                price: totalPrice,
+                                adultFare: new Intl.NumberFormat("en-IN").format(
+                                  fareFD.ADULT?.fC?.NF || 0
+                                ),
+                              };
+
+                              setSelectedFlights((prev) => {
+                                const newFlights = {
+                                  ...prev,
+                                  [tabIndex]: updatedFlight,
+                                };
+                                const nextTabIndex = tabIndex + 1;
+                                if (nextTabIndex < matchedFlights.length) {
+                                  setActiveTabKey(String(nextTabIndex + 1)); // Because tab keys are 1-based
+                                }
+
+                                return newFlights;
+                              });
+                            }}
+                          >
+                            Select
+                          </button>
+                        </div>
+
                       </div>
-  ))
-)}
+                    </div>
+
+                  ) : (null)}
 
 
-                  {/* Pricing and fare selection */}
+
                 </div>
               </div>
             ))
@@ -505,7 +422,7 @@ export default function MulticitySelectionView({ flightData }) {
                       </div>
                       <Link
                         href={`/book-ticket?tcs_id=${Object.values(selectedFlights)
-                          .slice(0, 3) // get up to 3 priceIds
+                          .slice(0, cities.length) // get up to 3 priceIds
                           .map(f => f?.priceId || "")
                           .join(",")}`}
                         passHref

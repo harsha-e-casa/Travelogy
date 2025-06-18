@@ -136,15 +136,12 @@ export default function BookTicket() {
     setError(null);
 
     try {
-      let ids = [];
-      let splitIds = [];
+     let ids = [];
 
-      if (priceId.includes(",")) {
-        splitIds = priceId.split(",");
-        ids = splitIds.slice(0, 3);
-      } else {
-        ids = [priceId];
-      }
+
+if (priceId && typeof priceId === "string") {
+  ids = priceId.includes(",") ? priceId.split(",") : [priceId];
+}
       const parameter = { priceIds: ids };
       console.log(parameter);
 
@@ -218,7 +215,8 @@ export default function BookTicket() {
       if (paxInfo.INFANT) {
         setNumInfants(paxInfo.INFANT);
       }
-    } catch (err: any) {
+    } 
+    catch (err: any) {
       console.error("error caused", err);
 
       if (err?.response?.data?.errors?.length) {
