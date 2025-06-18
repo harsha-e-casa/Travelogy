@@ -6,6 +6,7 @@ export default function HotelCard1({ hotel }: any) {
   const rating = hotel?.rt || "N/A";
   const id = hotel?.id || "unknown-id";
   const image = hotel?.img?.[0]?.url;
+  const totalPrice = hotel?.ops?.[0]?.tp ?? "N/A";
 
   return (
     <div className="card-journey-small background-card setHeightSlider">
@@ -35,9 +36,9 @@ export default function HotelCard1({ hotel }: any) {
         </Link>
       </div>
       <div className="card-info">
-        <div className="card-rating">
+        {/* <div className="card-rating">
           <span className="rating">{rating}</span>
-        </div>
+        </div> */}
         <div className="card-title">
           <Link
             className="text-lg-bold neutral-1000"
@@ -51,19 +52,30 @@ export default function HotelCard1({ hotel }: any) {
             <p className="text-location text-sm-medium neutral-500">{city}</p>
             {/* Replace below with dynamic stars if required */}
             <p className="text-star">
-              {[...Array(5)].map((_, i) => (
-                <img
-                  key={i}
-                  className="light-mode"
-                  src="/assets/imgs/template/icons/star-black.svg"
-                  alt="Star"
-                />
-              ))}
+              {[...Array(5)].map((_, i) =>
+                i < rating ? (
+                  <img
+                    key={i}
+                    className="light-mode"
+                    src="/assets/imgs/template/icons/star-black.svg"
+                    alt="Star"
+                  />
+                ) : null
+              )}
             </p>
           </div>
           <div className="endtime">
+            <Link
+              className="text-lg-bold neutral-1000"
+              href={`/hotel-detail/${id}`}
+            >
+              ₹ {totalPrice}
+            </Link>
             <div className="card-button">
-              <Link className="btn btn-gray" href={`/hotel-detail/${id}`}>
+              <Link
+                className="btn btn-gray"
+                href={`/hotel-listing/book-details`}
+              >
                 Book Now
               </Link>
             </div>

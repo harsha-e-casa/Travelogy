@@ -69,6 +69,29 @@ export default function HotelListing() {
     console.warn("Invalid roomsData JSON", e);
   }
   const [roomsData, setRoomsData] = useState(initialRoomsData);
+  const [apiHotelData, setApiHotelData] = useState([]);
+  const [apiCurrentPage, setApiCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+  const apiTotalPages = Math.ceil(apiHotelData.length / itemsPerPage);
+  const paginatedApiHotels = apiHotelData.slice(
+    (apiCurrentPage - 1) * itemsPerPage,
+    apiCurrentPage * itemsPerPage
+  );
+  const handleApiPageChange = (pageNumber: any) => {
+    setApiCurrentPage(pageNumber);
+  };
+
+  const handleApiPreviousPage = () => {
+    if (apiCurrentPage > 1) {
+      setApiCurrentPage(apiCurrentPage - 1);
+    }
+  };
+
+  const handleApiNextPage = () => {
+    if (apiCurrentPage < apiTotalPages) {
+      setApiCurrentPage(apiCurrentPage + 1);
+    }
+  };
 
   const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
@@ -82,9 +105,9 @@ export default function HotelListing() {
     if (!checkoutDate)
       setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
   }, []);
+  const [loading, setLoading] = useState(false);
 
   const [datedep, setDatedep] = useState(dayjs());
-  const [apiHotelData, setApiHotelData] = useState([]);
 
   const closeAllFields = () => {
     setShowSearchState(false);
@@ -106,7 +129,7 @@ export default function HotelListing() {
   const {
     filter,
     sortCriteria,
-    itemsPerPage,
+    // itemsPerPage,
     currentPage,
     uniqueRoomStyles,
     uniqueAmenities,
@@ -143,11 +166,11 @@ export default function HotelListing() {
 
       const data = await response.json();
       console.log("Search result:", data);
-      return data; // ✅ Return the response data
+      return data;
     } catch (error) {
       console.error("Search API error:", error);
       alert("An error occurred while searching for hotels. Please try again.");
-      return null; // ✅ Return null on error
+      return null;
     }
   };
   const cleanRoomInfo = roomsData.map((room) => {
@@ -163,7 +186,7 @@ export default function HotelListing() {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
-
+    setLoading(true);
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
@@ -198,8 +221,8 @@ export default function HotelListing() {
       sync: true,
     };
 
-    const data = await apiCall(payload); // ✅ Await and receive returned data
-
+    const data = await apiCall(payload);
+    setLoading(false);
     if (data) {
       console.log("Search result in handleSearch:", data);
       router.push(`/hotel-listing?${queryParams}`);
@@ -211,6 +234,7 @@ export default function HotelListing() {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
+    setLoading(true);
 
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
@@ -233,8 +257,8 @@ export default function HotelListing() {
         sync: true,
       };
 
-      const data = await apiCall(payload); // ✅ Await and receive returned data
-
+      const data = await apiCall(payload);
+      setLoading(false);
       if (data) {
         console.log("Search result in handleSearch:", data);
         setApiHotelData(data.searchResult?.his || []);
@@ -453,25 +477,47 @@ export default function HotelListing() {
                       ))}
                     </div> */}
                     <div className="row">
-                      {(apiHotelData.length > 0
-                        ? apiHotelData
-                        : paginatedHotels
-                      ).map((hotel) => (
-                        <div
-                          className="col-xl-4 col-lg-6 col-md-6"
-                          key={hotel.id}
-                        >
-                          <HotelCard1 hotel={hotel} />
+                      {loading ? (
+                        <div className="col-12 d-flex justify-center py-5">
+                          <div className="loader"></div>
                         </div>
-                      ))}
+                      ) : (
+                        (apiHotelData.length > 0
+                          ? paginatedApiHotels
+                          : paginatedHotels
+                        ).map((hotel) => (
+                          <div
+                            className="col-xl-4 col-lg-6 col-md-6"
+                            key={hotel.id}
+                          >
+                            <HotelCard1 hotel={hotel} />
+                          </div>
+                        ))
+                      )}
                     </div>
                   </div>
                   <ByPagination
-                    handlePreviousPage={handlePreviousPage}
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    handleNextPage={handleNextPage}
-                    handlePageChange={handlePageChange}
+                    handlePreviousPage={
+                      apiHotelData.length > 0
+                        ? handleApiPreviousPage
+                        : handlePreviousPage
+                    }
+                    totalPages={
+                      apiHotelData.length > 0 ? apiTotalPages : totalPages
+                    }
+                    currentPage={
+                      apiHotelData.length > 0 ? apiCurrentPage : currentPage
+                    }
+                    handleNextPage={
+                      apiHotelData.length > 0
+                        ? handleApiNextPage
+                        : handleNextPage
+                    }
+                    handlePageChange={
+                      apiHotelData.length > 0
+                        ? handleApiPageChange
+                        : handlePageChange
+                    }
                   />
                 </div>
                 <div className="content-left order-lg-first">
