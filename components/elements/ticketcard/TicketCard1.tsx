@@ -62,12 +62,12 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import "./ticketCard1.css";
 import { AppContext } from "@/util/AppContext";
 
-export default function TicketCard1({ ticket,flightData }: any) {
-  console.log("flightData from ticketcard",flightData)
+export default function TicketCard1({ ticket, flightData }: any) {
+  console.log("flightData from ticketcard", flightData)
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
   const [totalPrice, setTotalprice] = useState();
-  console.log("tickets",ticket)
+  console.log("tickets", ticket)
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -98,6 +98,15 @@ export default function TicketCard1({ ticket,flightData }: any) {
     }
   }, [ticket]);
 
+  let flightLogo = { width: "unset" }
+  let paddingNone = {}
+
+  if (getCookie("gy_triptype") === "multi-city") {
+    console.log("ddddddddddddddddddddd ", getCookie("gy_triptype"));
+    flightLogo = { width: "150px", position: "unset" }
+    paddingNone = { padding: "unset" }
+  }
+
   const style: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -111,41 +120,40 @@ export default function TicketCard1({ ticket,flightData }: any) {
     console.log("the value is", value);
   };
 
-  console.log("ticket.totalPriceList ========= ",ticket.totalPriceList);
+  console.log("ticket.totalPriceList ========= ", ticket.totalPriceList);
 
   return (
     <>
       <div>
-        <div></div>
-        <div className="item-flight background-card border-1 ticket-container relative">
-          {/* city1 */}
 
+        <div style={{ ...paddingNone }} className="item-flight background-card border-1 ticket-container relative ">
           <div style={{ width: "55%" }}>
-            {ticket.sI.map((segment: any, index: number) => (
-              <div className="flex justify-evenly items-center">
-                <div
-                  className="air_detailes"
-                  style={{ width: "unset", top: index === 0 ? "0" : "49%" }}
-                >
-                  <div className="flex items-center justify-center">
-                    <img
-                      style={{ width: "35px", height: "35px", padding: "5px" }}
-                      src={`/assets/imgs/airlines/${segment[
-                        "fD"
-                      ].aI.code.toLowerCase()}.png`}
-                    />
-                    <div className="text-[10px]" style={{ fontSize: "10px" }}>
-                      {segment["fD"].aI.name}
-                    </div>
+            {ticket.sI.map((segment: any, index: number) => (<>
+              <div
+                className="air_detailes"
+                style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
+              >
+                <div className="flex items-center justify-center w-max">
+                  <img
+                    style={{ width: "35px", height: "35px", padding: "5px" }}
+                    src={`/assets/imgs/airlines/${segment[
+                      "fD"
+                    ].aI.code.toLowerCase()}.png`}
+                  />
+                  <div className="text-[10px]" style={{ fontSize: "10px" }}>
+                    {segment["fD"].aI.name}
                   </div>
                 </div>
+              </div>
+              <div className="flex justify-evenly items-center  pl-20 pr-5">
+
                 {/* <div className="air_detailes">{segment["fD"].aI.name}</div> */}
                 {/* <img
                   src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
                   alt={segment["fD"].aI.name}
                 /> */}
 
-                <div className="flight-route flight-route-type-2 city1">
+                < div className="flight-route flight-route-type-2 city1" >
                   <div className="flight-route-1">
                     <div className="flight-name">
                       <div className="flight-info flex flex-col justify-center items-center">
@@ -218,7 +226,7 @@ export default function TicketCard1({ ticket,flightData }: any) {
                   </div>
                 </div>
               </div>
-            ))}
+            </>))}
           </div>
 
 
@@ -315,7 +323,7 @@ export default function TicketCard1({ ticket,flightData }: any) {
               {ticket.totalPriceList.length > 2 && (
                 <button
                   className="view-more-txt"
-                  style={{ textAlign: "right", fontSize: "10px"}}
+                  style={{ textAlign: "right", fontSize: "10px" }}
                   onClick={() => {
                     setShowAllFares((prev) => !prev);
                   }}
@@ -327,7 +335,7 @@ export default function TicketCard1({ ticket,flightData }: any) {
           </div>
 
           {/* btn */}
-          <div className="flight-price-2 border-1 btndiv">
+          <div className="flight-price-2 border-1 btndiv pr-20">
             <Link
               href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
               className="btn btn-gray booknow btn"
@@ -335,8 +343,8 @@ export default function TicketCard1({ ticket,flightData }: any) {
               Book Now
             </Link>
           </div>
-        </div>
-      </div>
+        </div >
+      </div >
     </>
   );
 }

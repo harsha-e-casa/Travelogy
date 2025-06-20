@@ -34,11 +34,11 @@ export default function BookingForm({ segmentsPrice, totalpricee,baggageinfo }) 
 				<div className="box-tickets">
 					<div className="flex flex-row justify-between">
 						<div><strong className="text-md-bold neutral-1000">Baggage Amount</strong></div>
-						<div className="text-md-bold neutral-1000">₹{savedBaggage.reduce((acc, curr) => acc + curr.amount, 0)}</div>
+						<div className="text-md-bold neutral-1000">₹{savedBaggage?.reduce((acc, curr) => acc + curr.amount, 0)||0}</div>
 					</div>
 					<div className="flex flex-row justify-between">
 						<div><strong className="text-md-bold neutral-1000">Meal Amount</strong></div>
-						<div className="text-md-bold neutral-1000">₹{savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}</div>
+						<div className="text-md-bold neutral-1000">₹{savedMeal?.reduce((acc, curr) => acc + curr.amount, 0)}</div>
 					</div>
 					<div className="flex flex-row justify-between">
 						<div><strong className="text-md-bold neutral-1000">Taxes and fees</strong></div>
