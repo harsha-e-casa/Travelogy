@@ -63,7 +63,8 @@ export default function MulticitySelectionView({ flightData }) {
 
   const matchedFlights = cities.map(({ from, to }) => {
     const flights = [];
-
+    
+    
     Object.values(flightData).forEach((flightGroup) => {
       flightGroup.forEach((flight) => {
         const segments = flight?.sI;

@@ -1,40 +1,54 @@
 import { useState } from "react";
 import TravellerDetailsModal from "./TravellerDetailsModal";
 
-const AmendmentPopup = ({ bookingId, onSubmit }) => {
+const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
   const [showModal, setShowModal] = useState(false);
   const [amendmentType, setAmendmentType] = useState("");
   const [showTravellerModal, setShowTravellerModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [selectedAmendmentId, setSelectedAmendmentId] = useState(null);
+  const [selectedAmendmentType, setSelectedAmendmentType] = useState("");
 
   const handleOpen = () => setShowModal(true);
   const handleClose = () => setShowModal(false);
 
+  const tripInfos = bookingDetails?.itemInfos?.AIR?.tripInfos || [];
 
-  const getTravellerInfo = (bookingId, amendmentId) => {
+  const firstTrip = tripInfos[0];
+  const segmentList = firstTrip?.sI || [];
+  const firstSegment = segmentList[0];
+  const lastSegment = segmentList[segmentList.length - 1];
+
+  const getTravellerInfo = (bookingId, amendmentId, type) => {
     setSelectedBookingId(bookingId);
     setSelectedAmendmentId(amendmentId);
-    setShowTravellerModal(true); // 👈 Opens the TravellerModal
+    setSelectedAmendmentType(type); // ✅ Now it works
+    setShowTravellerModal(true);
   };
 
+
   const handleSubmit = () => {
-  console.log("Submitting Amendment");
+    console.log("Submitting Amendment ", amendmentType);
 
-  if (!amendmentType) {
-    alert("Please select an amendment type.");
-    return;
-  }
+    if (!amendmentType) {
+      alert("Please select an amendment type.");
+      return;
+    }
 
-   onSubmit(bookingId, amendmentType, "Cancel due to rescheduling", (data) => {
-      if (data?.amendmentId) {
-        // Now open traveller modal
-        getTravellerInfo(bookingId, data.amendmentId);
-      } else {
-        alert("Amendment ID not found.");
-      }
-    });
-};
+    getTravellerInfo(bookingId, "", amendmentType);
+
+    handleClose();
+    
+
+    // onSubmit(bookingId, amendmentType, "Cancel due to rescheduling", (data) => {
+    //   console.log("sssddddd ", data)
+    //   if (data?.amendmentId) {
+    //     getTravellerInfo(bookingId, data.amendmentId, amendmentType); // ✅ Pass it here
+    //   } else {
+    //     alert("Amendment ID not found.");
+    //   }
+    // });
+  };
 
   // const handleSubmit = () => {
   //   console.log("Submitting Amendment");
@@ -83,7 +97,7 @@ const AmendmentPopup = ({ bookingId, onSubmit }) => {
                 >
                   <option value="">-- Select --</option>
                   <option value="CANCELLATION">Cancellation</option>
-                  <option value="ssr">SSR</option>
+                  <option value="SSR">SSR</option>
                   <option value="full_refund">Full Refund</option>
                 </select>
               </div>
@@ -99,10 +113,13 @@ const AmendmentPopup = ({ bookingId, onSubmit }) => {
         </div>
       )}
 
-         {showTravellerModal && (
+      {showTravellerModal && (
         <TravellerDetailsModal
           bookingId={selectedBookingId}
           amendmentId={selectedAmendmentId}
+          amendmentType={selectedAmendmentType}
+          bookingDetails={bookingDetails}
+          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${firstSegment?.dt?.split("T")[0]}`}
           onClose={() => setShowTravellerModal(false)}
         />
       )}
