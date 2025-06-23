@@ -169,7 +169,7 @@ export default function HotelListing() {
       return data;
     } catch (error) {
       console.error("Search API error:", error);
-      alert("An error occurred while searching for hotels. Please try again.");
+      // alert("An error occurred while searching for hotels. Please try again.");
       return null;
     }
   };
