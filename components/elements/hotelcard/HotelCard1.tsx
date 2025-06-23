@@ -15,7 +15,6 @@ export default function HotelCard1({ hotel }: any) {
           Top Rated
         </Link>
         <Link className="wish" href="#">
-          {/* Heart Icon */}
           <svg
             width={20}
             height={18}
@@ -31,18 +30,15 @@ export default function HotelCard1({ hotel }: any) {
             />
           </svg>
         </Link>
-        <Link href={`/hotel-detail/${id}`}>
+        <Link href={`/hotel-listing/book-details?id=${id}`}>
           <img src={image} alt={name} />
         </Link>
       </div>
       <div className="card-info">
-        {/* <div className="card-rating">
-          <span className="rating">{rating}</span>
-        </div> */}
         <div className="card-title">
           <Link
             className="text-lg-bold neutral-1000"
-            href={`/hotel-detail/${id}`}
+            href={`/hotel-listing/book-details?id=${id}`}
           >
             {name}
           </Link>
@@ -50,7 +46,6 @@ export default function HotelCard1({ hotel }: any) {
         <div className="card-program">
           <div className="card-location">
             <p className="text-location text-sm-medium neutral-500">{city}</p>
-            {/* Replace below with dynamic stars if required */}
             <p className="text-star">
               {[...Array(5)].map((_, i) =>
                 i < rating ? (
@@ -67,15 +62,12 @@ export default function HotelCard1({ hotel }: any) {
           <div className="endtime">
             <Link
               className="text-lg-bold neutral-1000"
-              href={`/hotel-detail/${id}`}
+              href={`/hotel-listing/book-details?id=${id}`}
             >
               ₹ {totalPrice}
             </Link>
             <div className="card-button">
-              <Link
-                className="btn btn-gray"
-                href={`/hotel-listing/book-details`}
-              >
+              <Link className="btn btn-gray" href={`/hotel-listing/${id}`}>
                 Book Now
               </Link>
             </div>
