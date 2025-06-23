@@ -32,11 +32,15 @@ const Alldetails = ({ totalpricee }) => {
   const printRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [amendmentId, setAmendmentId] = useState(null)
-  const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null)
   const [amendmentDetailData, setAmendmentDetailData] = useState(null)
   const { flightData } = useContext(AppContext);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+
   const [showTravellerModal, setShowTravellerModal] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [selectedAmendmentId, setSelectedAmendmentId] = useState(null);
+  const [travellerData, setTravellerData] = useState(null)
+
 
   const toggleAllPassengers = () => {
     setShowAllPassengers((prev) => !prev);
@@ -127,7 +131,7 @@ const Alldetails = ({ totalpricee }) => {
   const handlePrint = (ref) => {
     const content = ref.current.innerHTML;
 
-    const fullHtml = `
+    const fullHtml =`
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -234,6 +238,90 @@ const Alldetails = ({ totalpricee }) => {
       setLoading(false);
     }
   };
+  const getTravellerInfo = (bookingId, amendmentId) => {
+    setSelectedBookingId(bookingId);
+    setSelectedAmendmentId(amendmentId);
+    setShowTravellerModal(true);
+  };
+
+  // const sumbitAmendmentapi = async (bookingId, amendmentType, remarks, callback) => {
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     if (!bookingId || !amendmentType) {
+  //       setError("Booking ID or amendment type is missing");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     const parameter = { bookingId, type: amendmentType, remarks };
+  //     console.log("📤 Sending parameters to API:", parameter);
+
+  //     const response = await postSumbitAmendment(parameter);
+  //     const data = response; // direct response, no .data nesting
+
+  //     console.log("📌 amendmentId received:", data?.amendmentId);
+
+  //     setSumitAmendmentDetails(data);
+  //     setAmendmentId(data?.amendmentId);
+
+  //     // if (data?.amendmentId) {
+  //     //   try {
+  //     //     console.log("📨 Sending amendmentId to details API:", { amendmentId: data.amendmentId });
+
+  //     //     const amendmentDetails = await postAmendmentDetails({ amendmentId: data.amendmentId });
+
+  //     //     console.log("📋 Amendment Details:", amendmentDetails);
+  //     //     setAmendmentDetailData(amendmentDetails);
+  //     //     setShowDetailsModal(true);
+  //     //   } catch (err) {
+  //     //     console.error("error caused", err);
+
+  //     //     if (err?.response?.data?.errors?.length) {
+  //     //       const firstError = err.response.data.errors[0];
+  //     //       const message = firstError?.message || "An unknown error occurred.";
+  //     //       const details = firstError?.details ? ` - ${firstError.details}` : "";
+  //     //       setError(`${message}`);
+
+  //     //       console.log("API error message:", message);
+  //     //       console.log("Error details:", details);
+  //     //       console.log("Error status code:", err.response.status);
+  //     //     } else if (err?.message) {
+  //     //       setError(err.message);
+  //     //       console.log("Generic error message:", err.message);
+  //     //     } else {
+  //     //       setError("Something went wrong. Please try again.");
+  //     //     }
+  //     //   }
+  //     // }
+  //     <TravellerDetailsModal />
+
+  //     if (callback && typeof callback === "function") {
+  //       callback(data);
+  //     }
+  //   } catch (err) {
+  //     console.error("error caused", err);
+
+  //     if (err?.response?.data?.errors?.length) {
+  //       const firstError = err.response.data.errors[0];
+  //       const message = firstError?.message || "An unknown error occurred.";
+  //       const details = firstError?.details ? ` - ${firstError.details}` : "";
+  //       setError(`${message}`);
+
+  //       console.log("API error message:", message);
+  //       console.log("Error details:", details);
+  //       console.log("Error status code:", err.response.status);
+  //     } else if (err?.message) {
+  //       setError(err.message);
+  //       console.log("Generic error message:", err.message);
+  //     } else {
+  //       setError("Something went wrong. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 
   const sumbitAmendmentapi = async (bookingId, amendmentType, remarks, callback) => {
@@ -247,73 +335,50 @@ const Alldetails = ({ totalpricee }) => {
         return;
       }
 
-      const parameter = { bookingId, type: amendmentType, remarks };
-      console.log("📤 Sending parameters to API:", parameter);
+      // const parameter = { bookingId, type: amendmentType, remarks };
+      // console.log("📤 Sending parameters to API:", parameter);
 
-      const response = await postSumbitAmendment(parameter);
-      const data = response; // direct response, no .data nesting
+      // const response = await postSumbitAmendment(parameter);
+      // const data = response;
 
-      console.log("📌 amendmentId received:", data?.amendmentId);
+      // console.log("📌 amendmentId received:", data?.amendmentId);
 
-      setSumitAmendmentDetails(data);
-      setAmendmentId(data?.amendmentId);
+      // setSumitAmendmentDetails(data);
+      // setAmendmentId(data?.amendmentId);
 
-      if (data?.amendmentId) {
-        try {
-          console.log("📨 Sending amendmentId to details API:", { amendmentId: data.amendmentId });
+      // ✅ Show Traveller Modal
+      // if (data?.amendmentId) {
+      setTravellerData({ bookingId, amendmentId: "dal;kdja;j" });
+      setShowTravellerModal(true);
+      // }
 
-          const amendmentDetails = await postAmendmentDetails({ amendmentId: data.amendmentId });
-
-          console.log("📋 Amendment Details:", amendmentDetails);
-          setAmendmentDetailData(amendmentDetails);
-          setShowDetailsModal(true);
-        } catch (err) {
-          console.error("error caused", err);
-
-          if (err?.response?.data?.errors?.length) {
-            const firstError = err.response.data.errors[0];
-            const message = firstError?.message || "An unknown error occurred.";
-            const details = firstError?.details ? ` - ${firstError.details}` : "";
-            setError(`${message}`);
-
-            console.log("API error message:", message);
-            console.log("Error details:", details);
-            console.log("Error status code:", err.response.status);
-          } else if (err?.message) {
-            setError(err.message);
-            console.log("Generic error message:", err.message);
-          } else {
-            setError("Something went wrong. Please try again.");
-          }
-        }
-      }
-
-      if (callback && typeof callback === "function") {
-        callback(data);
-      }
+      // if (callback && typeof callback === "function") {
+      //   callback(data);
+      // }
     } catch (err) {
       console.error("error caused", err);
 
-      if (err?.response?.data?.errors?.length) {
-        const firstError = err.response.data.errors[0];
-        const message = firstError?.message || "An unknown error occurred.";
-        const details = firstError?.details ? ` - ${firstError.details}` : "";
-        setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
-      } else if (err?.message) {
-        setError(err.message);
-        console.log("Generic error message:", err.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+      // if (err?.response?.data?.errors?.length) {
+      //   const firstError = err.response.data.errors[0];
+      //   const message = firstError?.message || "An unknown error occurred.";
+      //   const details = firstError?.details ? ` - ${firstError.details}` : "";
+      //   setError(`${message}`);
+      // } else if (err?.message) {
+      //   setError(err.message);
+      // } else {
+      //   setError("Something went wrong. Please try again.");
+      // }
     } finally {
       setLoading(false);
     }
   };
+  const tripInfos = bookingDetails?.itemInfos?.AIR?.tripInfos || [];
 
+  const firstTrip = tripInfos[0];
+  const segmentList = firstTrip?.sI || [];
+
+  const firstSegment = segmentList[0];
+  const lastSegment = segmentList[segmentList.length - 1];
 
   const BookingSkeleton = () => {
     return (
@@ -473,6 +538,7 @@ const Alldetails = ({ totalpricee }) => {
                     /> */}
                       <AmendmentPopup
                         bookingId={bookingId}
+                        bookingDetails={bookingDetails}
                         onSubmit={(bookingId, amendmentType, remarks, callback) =>
                           sumbitAmendmentapi(
                             bookingId,
@@ -487,7 +553,7 @@ const Alldetails = ({ totalpricee }) => {
                       />
 
 
-                      {showDetailsModal && (
+                      {/* {showDetailsModal && (
                         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                           <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
                             <button
@@ -506,14 +572,17 @@ const Alldetails = ({ totalpricee }) => {
                             </div>
                           </div>
                         </div>
-                      )}
-                      
-                      {showTravellerModal && (
-  <TravellerDetailsModal
-    bookingId={bookingId}
-    onClose={() => setShowTravellerModal(false)}
-  />
-)}
+                      )} */}
+
+                      {/* {showTravellerModal && (
+                        <TravellerDetailsModal
+                          bookingId={travellerData.bookingId}
+                          amendmentId={travellerData.amendmentId}
+                          bookingDetails={bookingDetails}
+                          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${firstSegment?.dt?.split("T")[0]}`}
+                          onClose={() => setShowTravellerModal(false)}
+                        />
+                      )} */}
 
 
                     </button>
