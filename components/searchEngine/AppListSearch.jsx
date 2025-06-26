@@ -252,7 +252,7 @@ const AppListSearch = ({
   const mappedOptions = filteredOptions.map((item) => ({
     // The label is rendered as custom JSX – you can adjust the layout as required.
     label: (
-      <div className="inline_flex">
+      <div className="inline_flex"  >
         {/* Conditionally show the SVG icon if categoryType is falsy */}
         {!categoryType && (
           <svg
@@ -354,6 +354,12 @@ const AppListSearch = ({
       options={options}
       placeholder="Select an airport..."
       filterOption={false} // disables built-in search
+      className="z-40"
+      dropdownStyle={{
+        zIndex: 10000, // High z-index to ensure it's on top
+        maxHeight: "300px", // Optional: for better control on dropdown height
+      }}
+
     />
   );
 };
