@@ -20,9 +20,10 @@ const Alldetails = ({ totalpricee }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const bookingId = searchParams.get("booking_id");
+  // const bookingId = searchParams.get("booking_id");
+  const bookingId="TJS108001480691"
   console.log("bookingid from alldetails", bookingId);
-
+  
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
   const [bookingDetails, setBookingdetails] = useState(null);
@@ -40,7 +41,7 @@ const Alldetails = ({ totalpricee }) => {
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [selectedAmendmentId, setSelectedAmendmentId] = useState(null);
   const [travellerData, setTravellerData] = useState(null)
-
+const[validateSuccess,setValidateSuccess]=useState(null)
 
   const toggleAllPassengers = () => {
     setShowAllPassengers((prev) => !prev);
@@ -54,36 +55,86 @@ const Alldetails = ({ totalpricee }) => {
 
 
   const handleUnHold = async () => {
-    console.log("handleUnHold ==> ");
-    console.log(bookingDetails);
-    const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos;
-    const pnrs = [];
+  console.log("handleUnHold ==> ");
+  console.log(bookingDetails);
 
-    if (Array.isArray(travellerInfos)) {
-      travellerInfos.forEach((traveller) => {
-        const pnrDetails = traveller.pnrDetails;
-        if (pnrDetails && typeof pnrDetails === "object") {
-          const pnrValues = Object.values(pnrDetails); // gets array of values like ["X8B25P"]
-          pnrs.push(...pnrValues); // append all values
-        }
-      });
-    }
-
-    const unHoldParams = {
-      bookingId: bookingId,
-      pnrs: pnrs,
-    };
-
-    console.log("unHoldParams ----------- ", unHoldParams);
-
-    const result = await postUnHold(unHoldParams);
-    console.log("resulttttttttttttttt ==> ", result);
-
-    if (result?.status?.success === true) {
-      // router.push(`/BookingDetails?booking_id=${bookingId}`);
-      window.location.reload();
+  // Validate Fare
+  const validateFare = async () => {
+    try {
+      const response = await postFareValidate({ "bookingId": bookingId });
+      
+      if (response.status.success) {
+        setValidateSuccess(response); // Storing success response in state
+      } else {
+        // Handle error scenario and store error message
+        setError(response.errors[0]?.message || 'Unknown error occurred');
+      }
+    } catch (err) {
+      // Handle any other errors that may occur during the fetch
+      setError('Error fetching booking data');
     }
   };
+
+  // Call validateFare function to validate the booking details
+  await validateFare();
+
+  // Extract traveller information and PNRs
+  const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos || [];
+  const pnrs = [];
+
+  if (Array.isArray(travellerInfos)) {
+    travellerInfos.forEach((traveller) => {
+      const pnrDetails = traveller.pnrDetails;
+      if (pnrDetails && typeof pnrDetails === "object") {
+        const pnrValues = Object.values(pnrDetails); // gets array of values like ["X8B25P"]
+        pnrs.push(...pnrValues); // append all values to pnrs array
+      }
+    });
+  }
+
+  // Prepare unhold parameters
+  const unHoldParams = {
+    bookingId: bookingId,
+    pnrs: pnrs,
+  };
+
+  console.log("unHoldParams ----------- ", unHoldParams);
+
+  try {
+    
+    const result = await postUnHold(unHoldParams);
+    console.log("Result => ", result);
+
+    if (result?.status?.success === true) {
+      // Reload page or redirect to the booking details page
+      window.location.reload(); // Refreshing the page
+    } else {
+      setError('Unhold operation failed');
+    }
+  } catch (err) {
+      console.error("error caused", err);
+
+      if (err?.response?.data?.errors?.length) {
+        const firstError = err.response.data.errors[0];
+        const message = firstError?.message || "An unknown error occurred.";
+        setError(message);
+      } else if (err?.message) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+};
+
+
+
+
+
+
+
+
   const handleDownload = (ref) => {
     const content = ref.current.innerHTML;
     const fullHtml = `
@@ -93,28 +144,51 @@ const Alldetails = ({ totalpricee }) => {
         <meta charset="UTF-8" />
         <title>Ticket</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
-        <script src="https://cdn.tailwindcss.com"></script>
         <style>
+                 .flightsDetail{
+              display:flex;
+              flex-direction:row;
+              justify-content:flex-between;
+              align-items:center;
+              margin-bottom:20px
+              }
 
-        .mytestCas{
-              background: red;
-            }
+              .logo-flight{
+              margin-bottom:0px}
 
+              .citydetails{
+              
+                margin-bottom:20px
+              }
+                .citynames{
+                font-weight:bolder;
+                }
+                .timeduration{
+                margin-bottom:0px;
+                }
+                .timediv{
+                display:flex;
+                flex-direction:row;
+                gap: 40px;
+                list-style-type: disc; 
+               
+                }
+                .passengerinfo, .contactinfo{
+                font-weight:bold;}
+                .ticketdiv{
+                padding:20px}
           @media print {
             body {
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
-            
-            
-
           }
+            
         </style>
       </head>
       <body class="p-6 bg-white text-black">
         ${content}
-      <div class="mytestCas">my case</div>
+    
       </body>
     </html>
   `;
@@ -126,12 +200,12 @@ const Alldetails = ({ totalpricee }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+    };
 
   const handlePrint = (ref) => {
     const content = ref.current.innerHTML;
 
-    const fullHtml =`
+    const fullHtml = `
     <!DOCTYPE html>
     <html lang="en">
       <head>
@@ -139,8 +213,38 @@ const Alldetails = ({ totalpricee }) => {
         <title>Ticket</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
-          
+                 .flightsDetail{
+              display:flex;
+              flex-direction:row;
+              justify-content:flex-between;
+              align-items:center;
+              margin-bottom:20px
+              }
 
+              .logo-flight{
+              margin-bottom:0px}
+
+              .citydetails{
+              
+                margin-bottom:20px
+              }
+                .citynames{
+                font-weight:bolder;
+                }
+                .timeduration{
+                margin-bottom:0px;
+                }
+                .timediv{
+                display:flex;
+                flex-direction:row;
+                gap: 40px;
+                list-style-type: disc; 
+               
+                }
+                .passengerinfo, .contactinfo{
+                font-weight:bold;}
+                .ticketdiv{
+                padding:20px}
           @media print {
             body {
               -webkit-print-color-adjust: exact;
@@ -165,7 +269,7 @@ const Alldetails = ({ totalpricee }) => {
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
-    }, 500); // Small delay to ensure styles are applied
+    }, 500);
   };
 
 
@@ -217,7 +321,197 @@ const Alldetails = ({ totalpricee }) => {
       const data = await postDataBookingDetails(parameter);
       console.log("Booking details:", data);
 
-      setBookingdetails(data); // Update state with flight details
+      setBookingdetails(data);  // Update state with flight details
+//       setBookingdetails({
+//     "order": {
+//         "bookingId": "TJS108201504365",
+//         "amount": 7697.50,
+//         "markup": 0.00,
+//         "deliveryInfo": {
+//             "emails": [
+//                 "bala@gmail.com"
+//             ],
+//             "contacts": [
+//                 "+9123123213"
+//             ]
+//         },
+//         "status": "ON_HOLD",
+//         "createdOn": "2025-06-23T09:22:07.911",
+//         "isPassportConsentTaken": false
+//     },
+//     "itemInfos": {
+//         "AIR": {
+//             "tripInfos": [
+//                 {
+//                     "sI": [
+//                         {
+//                             "id": "286776",
+//                             "fD": {
+//                                 "aI": {
+//                                     "code": "SG",
+//                                     "name": "SpiceJet",
+//                                     "isLcc": true
+//                                 },
+//                                 "fN": "151",
+//                                 "eT": "737"
+//                             },
+//                             "stops": 0,
+//                             "duration": 170,
+//                             "da": {
+//                                 "code": "DEL",
+//                                 "name": "Delhi Indira Gandhi Intl",
+//                                 "cityCode": "DEL",
+//                                 "city": "Delhi",
+//                                 "country": "India",
+//                                 "countryCode": "IN",
+//                                 "terminal": "Terminal 1D"
+//                             },
+//                             "aa": {
+//                                 "code": "BLR",
+//                                 "name": "Bengaluru Intl Arpt",
+//                                 "cityCode": "BLR",
+//                                 "city": "Bengaluru",
+//                                 "country": "India",
+//                                 "countryCode": "IN",
+//                                 "terminal": "Terminal 1"
+//                             },
+//                             "dt": "2025-06-23T17:45",
+//                             "at": "2025-06-23T20:35",
+//                             "iand": false,
+//                             "isRs": false,
+//                             "sN": 0,
+//                             "bI": {
+//                                 "tI": [
+//                                     {
+//                                         "ssrInfo": {},
+//                                         "osi": {},
+//                                         "fd": {
+//                                             "fC": {
+//                                                 "TF": 7697.50,
+//                                                 "BF": 6135.00,
+//                                                 "IGST": 13.50,
+//                                                 "TAF": 1562.50,
+//                                                 "NF": 7697.50
+//                                             },
+//                                             "afC": {
+//                                                 "TAF": {
+//                                                     "MF": 75.00,
+//                                                     "YQ": 900.00,
+//                                                     "OT": 218.00,
+//                                                     "MFT": 13.50,
+//                                                     "AGST": 356.00
+//                                                 }
+//                                             },
+//                                             "sfc": {
+//                                                 "YQ": 900.00,
+//                                                 "PSF": 91.00,
+//                                                 "AT": 65.00,
+//                                                 "UDF": 12.00,
+//                                                 "BF": 6135.00,
+//                                                 "RCF": 50.00,
+//                                                 "AGST": 356.00
+//                                             },
+//                                             "bI": {
+//                                                 "iB": "15 Kg",
+//                                                 "cB": "7 Kg"
+//                                             },
+//                                             "rT": 2,
+//                                             "cc": "ECONOMY",
+//                                             "cB": "RS",
+//                                             "fB": "FSAV",
+//                                             "mI": false
+//                                         },
+//                                         "ti": "Mr",
+//                                         "pt": "ADULT",
+//                                         "fN": "ajfa;lkjfa",
+//                                         "lN": "a;ljfd;adlfkj",
+//                                         "ipct": false
+//                                     }
+//                                 ]
+//                             },
+//                             "ifo": false,
+//                             "isbpo": false,
+//                             "israa": true,
+//                             "sid": 4
+//                         }
+//                     ]
+//                 }
+//             ],
+//             "travellerInfos": [
+//                 {
+//                     "checkinStatusMap": {
+//                         "DEL-BLR": false
+//                     },
+//                     "fd": {
+//                         "fC": {
+//                             "MF": 75.00,
+//                             "YQ": 900.00,
+//                             "PSF": 91.00,
+//                             "AT": 65.00,
+//                             "TF": 7697.50,
+//                             "UDF": 12.00,
+//                             "MFT": 13.50,
+//                             "BF": 6135.00,
+//                             "IGST": 13.50,
+//                             "TAF": 1562.50,
+//                             "RCF": 50.00,
+//                             "AGST": 356.00
+//                         },
+//                         "sfc": {
+//                             "YQ": 900.00,
+//                             "PSF": 91.00,
+//                             "AT": 65.00,
+//                             "UDF": 12.00,
+//                             "BF": 6135.00,
+//                             "RCF": 50.00,
+//                             "AGST": 356.00
+//                         },
+//                         "bI": {
+//                             "iB": "15 Kg",
+//                             "cB": "7 Kg"
+//                         },
+//                         "rT": 2,
+//                         "cc": "ECONOMY",
+//                         "cB": "RS",
+//                         "fB": "FSAV",
+//                         "mI": false
+//                     },
+//                     "ti": "Mr",
+//                     "pt": "ADULT",
+//                     "fN": "ajfa;lkjfa",
+//                     "lN": "a;ljfd;adlfkj",
+//                     "ipct": false
+//                 }
+//             ],
+//             "totalPriceInfo": {
+//                 "totalFareDetail": {
+//                     "fC": {
+//                         "TF": 7697.50,
+//                         "BF": 6135.00,
+//                         "IGST": 13.50,
+//                         "TAF": 1562.50,
+//                         "NF": 7697.50
+//                     },
+//                     "afC": {
+//                         "TAF": {
+//                             "MF": 75.00,
+//                             "YQ": 900.00,
+//                             "OT": 218.00,
+//                             "MFT": 13.50,
+//                             "AGST": 356.00
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     },
+//     "gstInfo": {},
+//     "isSotoBooking": false,
+//     "status": {
+//         "success": true,
+//         "httpStatus": 200
+//     }
+// })
       setSegmentPrices(
         data?.AIR?.tripInfos?.map((trip) => trip.sI.map((seg) => seg.price)) ??
         []
@@ -624,9 +918,7 @@ const Alldetails = ({ totalpricee }) => {
                     )}
                   </div>
                 ) : bookingDetails?.order?.status === "PENDING" ? (<>
-                  {/* <button className="border border-grey rounded" onClick={handlePayNow}>
-                Pay Now
-              </button> */}
+
                   <div className="relative inline-block">
                     <button
                       onClick={() => setShowDropdown(!showDropdown)}
@@ -714,10 +1006,10 @@ const Alldetails = ({ totalpricee }) => {
                       className="shadow rounded-md p-3 mb-5 "
                     >
                       {/* header */}
-                      <div className="flex flex-col justify-start  items-start">
+                      <div className=" citydetails flex flex-col justify-start  items-start">
                         {/* City and direction row */}
-                        <div className="flex flex-row gap-3 items-center mb-2">
-                          <p className="text-xl-bold neutral-1000">
+                        <div className="  flex flex-row gap-3 items-center mb-2">
+                          <p className="text-xl-bold neutral-1000 citynames">
                             {seg?.da?.city || "DELHI"}
                             <span> ({seg?.da?.code})</span>
                           </p>
@@ -734,18 +1026,18 @@ const Alldetails = ({ totalpricee }) => {
                               d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
                             />
                           </svg>
-                          <p className="text-xl-bold neutral-1000">
+                          <p className="text-xl-bold neutral-1000 citynames">
                             {seg?.aa?.city}
                             <span>({seg?.aa?.code})</span>
                           </p>
                         </div>
 
-                        <div className="flex flex-row gap-2">
+                        <div className="flex flex-row gap-2 timediv">
                           <p className="text-sm-bold neutral-500 ">
                             {formattedDate || "Date not available"}
                           </p>
                           {/* Info list below the cities */}
-                          <ul className="flex flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc">
+                          <ul className="flex timeduration flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc timeul">
                             {/* <li className="text-sm-medium neutral-500 ">
                             {segments.map((segment) =>
                               segment.stops === 0
@@ -755,7 +1047,7 @@ const Alldetails = ({ totalpricee }) => {
                                   }`
                             ) || "No stop info"}
                           </li> */}
-                            <li className="text-sm-medium neutral-500 ">
+                            <li className=" text-sm-medium neutral-500 ">
                               {`${hours}h ${minutes}m` ||
                                 "Duration not available"}
                             </li>
@@ -763,7 +1055,7 @@ const Alldetails = ({ totalpricee }) => {
                         </div>
                       </div>
 
-                      <div className="flex flex-row justify-between">
+                      <div className="flex flex-row justify-between flightsDetail">
                         <div className="logo-flight flex flex-row gap-3 items-center mb-20">
                           <div className="text-md-bold neutral-900">
                             {seg?.fD?.aI?.name}
@@ -791,7 +1083,7 @@ const Alldetails = ({ totalpricee }) => {
                       </div>
 
                       {/* flightdetails    */}
-                      <div className=" flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
+                      <div className=" ticketdiv flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
                         <div className="text-left space-y-1">
                           <h4
                             className=""
@@ -882,9 +1174,7 @@ const Alldetails = ({ totalpricee }) => {
                         </div>
                       </div>
 
-                      <div className="mt-30 text-sm-medium neutral-1000 p-3 bg-blue-100">
-                        {`Got excess baggage? Don’t stress, buy extra check-in baggage allowance for ${seg?.da?.code}-${seg?.aa?.code} at fab rates!`}
-                      </div>
+
                     </div>
                   </>
                 );
@@ -894,7 +1184,7 @@ const Alldetails = ({ totalpricee }) => {
             {/* //table */}
             <div className="shadow rounded-md mt-50 p-3 bg-white">
               {/* Passenger Information */}
-              <p className="text-xl-bold neutral-1000 mb-10">
+              <p className="text-xl-bold neutral-1000 mb-10 passengerinfo">
                 Passenger Information
               </p>
               <table className="w-full border-collapse mb-20">
@@ -1040,7 +1330,7 @@ const Alldetails = ({ totalpricee }) => {
               </table>
 
               {/* Contact Information */}
-              <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
+              <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas contactinfo">
                 Contact Information
               </p>
               <div className="ant-form-item">

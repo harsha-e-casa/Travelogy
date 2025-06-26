@@ -17,6 +17,7 @@ import DirectFlight from "./DirectFlight.jsx";
 import MultiCityContainer from "./MultiCityContainer.jsx";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
+import { Tooltip } from "antd";
 
 const EngineTabs = ({ active_border }) => {
   const searchParams = useSearchParams();
@@ -63,7 +64,13 @@ const EngineTabs = ({ active_border }) => {
   const [totalPassenderCount, setTotalPassenderCount] = useState(
     adult + countchildren
   );
+  const [fromError, setFromError] = useState("");
+  const [toError, setToError] = useState("");
 
+
+  const handleReturnDateChange = (newDate) => {
+    setDatedepr(newDate);  // This will trigger the effect above to check the dates
+  };
   // reset
   useEffect(() => {
     // Reset all traveller cookies when arriving at this page
@@ -347,6 +354,29 @@ const EngineTabs = ({ active_border }) => {
     setShowYTraveller(false);
   };
 
+  const handleSelectFrom = (city, subCity) => {
+    setSelectFrom(city);
+    setSelectFromSub(subCity);
+
+    if (city === selectFromTo) {
+      setFromError("From and To cities cannot be the same.");
+    } else {
+      setFromError("");
+    }
+  };
+
+  const handleSelectTo = (city, subCity) => {
+    setSelectFromTo(city);
+    setSelectFromSubTo(subCity);
+
+    if (city === selectFrom) {
+      setToError("From and To cities cannot be the same.");
+    } else {
+      setToError("");
+    }
+  };
+
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -444,31 +474,51 @@ const EngineTabs = ({ active_border }) => {
             className="custom-grid justify-center"
             style={{ flexDirection: "column" }}
           >
-            <div className="flex">
+            <div className="flex" >
               <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
                 <div className="" onClick={openfrom}>
                   <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
                     From
                   </div>
                   <div className="pl-6 relative">
-                    <h2 className="text_4xl font_bold text-black tracking-wide">
+                    <h2 className="text_4xl font_bold text-black tracking-wide ">
                       {selectFrom}
+
                     </h2>
                     <p className="text-xl_small truncate-text">
                       {selectFromSub}
                     </p>
                   </div>
+
+
+
                 </div>
 
                 {showSearchState ? (
-                  <div className="searchFfromSelect searchFfromSelect_1">
+                  <div className="searchFfromSelect searchFfromSelect_1 " style={{ position: 'relative', zIndex: 10000 }}>
                     <AppListSearch
                       operEngLocation={openfrom}
-                      setSelectFrom={setSelectFrom}
+                      setSelectFrom={(city, subCity) => handleSelectFrom(city, subCity)}
                       setSelectFromSub={setSelectFromSub}
                     />
+
                   </div>
                 ) : null}
+                <Tooltip
+                  className="flex shadow-md z-10"
+                  placement="bottom"
+                  title={fromError}
+                  open={!!fromError}
+                  arrow={{ pointAtCenter: true }}
+                  overlayInnerStyle={{
+                    backgroundColor: '#ffeaea',
+                    color: '#ff4d4f',
+                    fontWeight: 500
+                  }}
+                >
+
+
+                </Tooltip>
               </div>
 
               <div className="searchReplaceLocation">
@@ -505,11 +555,27 @@ const EngineTabs = ({ active_border }) => {
                   <div className="searchFfromSelect searchFfromSelect_1">
                     <AppListSearch
                       operEngLocation={openTo}
-                      setSelectFrom={setSelectFromTo}
+                      setSelectFrom={(city, subCity) => handleSelectTo(city, subCity)}
                       setSelectFromSub={setSelectFromSubTo}
                     />
+
                   </div>
                 ) : null}
+                <Tooltip
+                  className="flex shadow-md z-50"
+                  placement="bottom"
+                  title={toError}
+                  open={!!toError}
+                  arrow={{ pointAtCenter: true }}
+                  overlayInnerStyle={{
+                    backgroundColor: '#ffeaea',
+                    color: '#ff4d4f',
+                    fontWeight: 500
+                  }}
+                >
+
+
+                </Tooltip>
               </div>
 
               <div className="text_start b_right_2px g_w_3 css_pointer">
@@ -658,6 +724,7 @@ const EngineTabs = ({ active_border }) => {
             <div
               onClick={searchTickets}
               className="search_btn_font text-white uppercase tracking-wide cursor-pointer"
+              disabled={fromError || toError || !selectFrom || !selectFromTo}
             >
               {" "}
               Search
