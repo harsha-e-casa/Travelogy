@@ -1,6 +1,6 @@
 "use client";
 
-import BookingForm from "@/components/elements/BookingForm";
+import BookingCard from "../booking";
 import VideoPopup from "@/components/elements/VideoPopup";
 import Layout from "@/components/layout/Layout";
 import Slider from "react-slick";
@@ -9,41 +9,41 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const SlickArrowLeft = (props) => (
-  <button {...props} className="slick-prev slick-arrow" type="button">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
-      <path
-        d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </button>
-);
+// const SlickArrowLeft = (props) => (
+//   <button {...props} className="slick-prev slick-arrow" type="button">
+//     <svg
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="16"
+//       height="16"
+//       viewBox="0 0 16 16"
+//       fill="none"
+//     >
+//       <path
+//         d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666"
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//       />
+//     </svg>
+//   </button>
+// );
 
-const SlickArrowRight = (props) => (
-  <button {...props} className="slick-next slick-arrow" type="button">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
-      <path
-        d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33325 7.99992"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </button>
-);
+// const SlickArrowRight = (props) => (
+//   <button {...props} className="slick-next slick-arrow" type="button">
+//     <svg
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="16"
+//       height="16"
+//       viewBox="0 0 16 16"
+//       fill="none"
+//     >
+//       <path
+//         d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33325 7.99992"
+//         strokeLinecap="round"
+//         strokeLinejoin="round"
+//       />
+//     </svg>
+//   </button>
+// );
 
 export default function ActivitiesDetail() {
   const { id } = useParams();
@@ -53,7 +53,8 @@ export default function ActivitiesDetail() {
   const [nav2, setNav2] = useState(undefined);
   const [hotelData, setHotelData] = useState(null);
   const [isAccordion, setIsAccordion] = useState(null);
-
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
   useEffect(() => {
     setNav1(slider1.current ?? undefined);
     setNav2(slider2.current ?? undefined);
@@ -62,6 +63,7 @@ export default function ActivitiesDetail() {
   useEffect(() => {
     async function fetchHotelDetails() {
       try {
+        setLoading(true);
         const response = await axios.post(
           "https://apitest.tripjack.com/hms/v1/hotelDetail-search",
           { id },
@@ -73,21 +75,25 @@ export default function ActivitiesDetail() {
           }
         );
         setHotelData(response.data.hotel);
+        setSelectedImage(response.data.hotel?.img[0]?.url);
       } catch (error) {
         console.error("Error fetching hotel data", error);
+      } finally {
+        setLoading(false);
       }
     }
-    if (id) fetchHotelDetails();
-  }, [id]);
+    fetchHotelDetails();
+  }, []);
 
   const settingsMain = {
-    asNavFor: nav2,
+    asNavFor: slider2.current, // Sync with the thumbnail slider
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
     fade: false,
-    prevArrow: <SlickArrowLeft />,
-    nextArrow: <SlickArrowRight />,
+    // prevArrow: <SlickArrowLeft />,
+    // nextArrow: <SlickArrowRight />,
+    // infinite: true, // Enable infinite loop to cycle through images
   };
 
   const settingsThumbs = {
@@ -95,7 +101,8 @@ export default function ActivitiesDetail() {
     slidesToScroll: 1,
     dots: false,
     focusOnSelect: true,
-    asNavFor: nav1,
+    infinite: true,
+    asNavFor: slider1.current,
     responsive: [
       { breakpoint: 1200, settings: { slidesToShow: 5 } },
       { breakpoint: 1024, settings: { slidesToShow: 4 } },
@@ -103,10 +110,29 @@ export default function ActivitiesDetail() {
       { breakpoint: 480, settings: { slidesToShow: 2 } },
     ],
   };
-
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  };
+  console.log(hotelData?.img);
   const handleAccordion = (key) => {
     setIsAccordion((prev) => (prev === key ? null : key));
   };
+  if (loading) {
+    return (
+      <Layout headerStyle={1} footerStyle={1}>
+        <div className="col-12 d-flex justify-center py-5">
+          <div className="loader"></div>
+        </div>
+      </Layout>
+    );
+  }
+  const basefare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.BF;
+  const taxAndFees = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.TAF;
+  const totalfare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.TF;
+  const netprice = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.NF;
+
+  const baggageinfo = []; // Example: you can fetch baggage info here if needed
+  const mealinfo = []; // Example: you can fetch meal info here if needed
 
   return (
     <Layout headerStyle={1} footerStyle={1}>
@@ -134,18 +160,24 @@ export default function ActivitiesDetail() {
                   ref={slider1}
                   className="banner-activities-detail"
                 >
-                  {hotelData?.img?.map((img, i) => (
-                    <div className="banner-slide-activity" key={i}>
-                      <img src={img.url} alt="" />
-                    </div>
-                  ))}
+                  {hotelData?.img
+                    ?.filter((img) => img.sz === "Standard" || !img.sz)
+                    .map((img, i) => (
+                      <div className="banner-slide-activity" key={i}>
+                        <img
+                          className="w_500"
+                          src={selectedImage || img.url}
+                          alt={`Image ${i + 1}`}
+                        />
+                      </div>
+                    ))}
                 </Slider>
-                <div className="box-button-abs">
+                {/* <div className="box-button-abs">
                   <Link className="btn btn-brand-secondary" href="#">
                     See All Photos
                   </Link>
                   <VideoPopup vdocls="btn btn-white-md popup-youtube" style2 />
-                </div>
+                </div> */}
               </div>
 
               <div className="slider-thumnail-activities">
@@ -154,11 +186,17 @@ export default function ActivitiesDetail() {
                   ref={slider2}
                   className="slider-nav-thumbnails-activities-detail"
                 >
-                  {hotelData?.img?.map((img, i) => (
-                    <div className="banner-slide" key={i}>
-                      <img src={img.url} alt="" />
-                    </div>
-                  ))}
+                  {hotelData?.img
+                    ?.filter((img) => img.sz === "Standard" || !img.sz)
+                    .map((img, i) => (
+                      <div
+                        className="banner-slide"
+                        key={i}
+                        onClick={() => handleImageClick(img.url)}
+                      >
+                        <img src={img.url} alt={`Thumbnail ${i + 1}`} />
+                      </div>
+                    ))}
                 </Slider>
               </div>
             </div>
@@ -242,10 +280,18 @@ export default function ActivitiesDetail() {
                   <div className="head-booking-form">
                     <p className="text-xl-bold neutral-1000">Booking Form</p>
                   </div>
-                  <BookingForm
-                    segmentsPrice={undefined}
-                    totalpricee={undefined}
-                    baggageinfo={undefined}
+                  <BookingCard
+                    segmentsPrice={hotelData?.ops} // Pass the full operations data if necessary
+                    totalpricee={{
+                      fC: {
+                        BF: basefare,
+                        TAF: taxAndFees,
+                        TF: totalfare,
+                        NF: netprice,
+                      },
+                    }}
+                    baggageinfo={baggageinfo} // Populate this as needed
+                    mealinfo={mealinfo} // Populate this as needed
                   />
                 </div>
               </div>
