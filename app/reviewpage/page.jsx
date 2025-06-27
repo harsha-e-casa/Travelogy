@@ -53,6 +53,7 @@ const Page = () => {
   const [showMore, setShowMore] = useState(false);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
   const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
+  const SeatAmount = JSON.parse(getCookie("seatSsr_amount") || 0);
 
 
 
@@ -351,8 +352,11 @@ const Page = () => {
     BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
   const mealTotal =
     MealAmount.reduce((acc, curr) => acc + curr.amount, 0)
+    console.log("mame seat amount cookie lendhu == ",SeatAmount)
+  const seatTotal = (SeatAmount && SeatAmount !== "") ? SeatAmount : 0;
+  console.log("mame seatTotal cookie lendhu == ",seatTotal)
 
-  const finalAmountToPay = totalprice + baggageTotal + mealTotal;
+  const finalAmountToPay = totalprice + baggageTotal + mealTotal + seatTotal;
   //fare rule api
   const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
 
@@ -884,19 +888,19 @@ const Page = () => {
           },
         };
 
-        const saveBookingId = async () => {
-          const reqSaveBookingId = {
-            booking_id: bookingId,
-            phone: number.number,
-          };
-          console.log("reqSaveBookingId === > ", reqSaveBookingId);
-          const result = await postData(
-            "travelogy/flight/save-booking",
-            reqSaveBookingId
-          );
-          console.log("saveBookingId result === > ", result);
-        };
-        saveBookingId();
+        // const saveBookingId = async () => {
+        //   const reqSaveBookingId = {
+        //     booking_id: bookingId,
+        //     phone: number.number,
+        //   };
+        //   console.log("reqSaveBookingId === > ", reqSaveBookingId);
+        //   const result = await postData(
+        //     "travelogy/flight/save-booking",
+        //     reqSaveBookingId
+        //   );
+        //   console.log("saveBookingId result === > ", result);
+        // };
+        // saveBookingId();
 
         loadDataBook(parameter);
       } else {
@@ -1820,6 +1824,9 @@ const Page = () => {
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
                                           Last Name
                                         </th>
+                                        {/* <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                          Seat No
+                                        </th> */}
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1845,6 +1852,9 @@ const Page = () => {
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
                                                 {traveller?.lN?.trim() || "N/A"}
                                               </td>
+                                              {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                {traveller?.ssrBaggageInfos?.trim() || "N/A"}
+                                              </td> */}
                                             </tr>
                                           );
                                         })
@@ -1862,6 +1872,9 @@ const Page = () => {
                                           <td className="px-4 py-3 border-b border-gray-200 text-black">
                                             N/A
                                           </td>
+                                          {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                            N/A
+                                          </td> */}
                                         </tr>
                                       )}
                                     </tbody>
@@ -1914,7 +1927,7 @@ const Page = () => {
                                     onClick={handleHoldBooking}
                                     className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                   >
-                                    hold booking
+                                    Hold Booking
                                   </div>
                                 )}
                                 <div

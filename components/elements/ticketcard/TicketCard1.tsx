@@ -63,11 +63,9 @@ import "./ticketCard1.css";
 import { AppContext } from "@/util/AppContext";
 
 export default function TicketCard1({ ticket,flightData }: any) {
-  console.log("flightData from ticketcard",flightData)
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
   const [totalPrice, setTotalprice] = useState();
-  console.log("tickets",ticket)
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -110,8 +108,6 @@ export default function TicketCard1({ ticket,flightData }: any) {
     setValue(e.target.value);
     console.log("the value is", value);
   };
-
-  console.log("ticket.totalPriceList ========= ",ticket.totalPriceList);
 
   return (
     <>

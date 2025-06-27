@@ -73,7 +73,7 @@ export default function Tickets() {
     endItemIndex,
   } = useTicketFilter(ticketsData);
 
-  const { setCookie, getCookie } = useContext(AppContext);
+  const { setCookie, getCookie, removeCookie } = useContext(AppContext);
   const [flightData, setFlightData] = useState<any>(null);
   const [activeFlight, setActiveFlight] = useState<any>(true);
   const [loading, setloading] = useState<boolean>(false);
@@ -91,6 +91,25 @@ export default function Tickets() {
 
   // const departureFromSr =  searchParams.get('gy_da_str')
   // const arrivalToSr     =  searchParams.get('gy_aa_str');
+
+  useEffect(() => {
+    console.log("sssssssssddddddddddddd")
+    removeCookie("seatSsr_amount");
+    removeCookie("mealinfo");
+    removeCookie("travellerInfo");
+    removeCookie("baggageinfo");
+    // remove seat map data
+    for (let i = 1; i <= 9; i++) {
+      const adultKey = `adult_seat_map-${i}`;
+      const childKey = `child_seat_map-${i}`;
+      if (getCookie(adultKey) != null) {
+        removeCookie(adultKey)
+      }
+      if (getCookie(childKey) != null) {
+        removeCookie(childKey)
+      }
+    }
+  }, []);
 
   const departureFrom = getCookie("gy_da");
   const arrivalTo = getCookie("gy_aa");

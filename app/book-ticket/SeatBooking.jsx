@@ -12,6 +12,8 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
   const [seatSelections, setSeatSelections] = useState([]); // Array of objects like { seatNo: "1A", cost: 500 }
 
   const [selectedAmounts, setSelectedAmounts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [seatNo, setSeatNo] = useState({});
 
   useEffect(() => {
     if (flightSeat) {
@@ -27,6 +29,8 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
 
   const handleViewSeat = async ({ id, seg }) => {
     try {
+      setLoading(true); // Start loading
+
       let reqData = {
         action: "seatMap",
         requestData: {
@@ -37,18 +41,95 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
 
       if (result?.tripSeatMap?.tripSeat?.[id]) {
         setFlightSeat({ seat: result.tripSeatMap.tripSeat[id], seg: seg });
-        setCookie("f_sm_current_id", id);
       } else {
         alert("No seat data found");
       }
     } catch (error) {
       console.log("SeatBooking error = ", error);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
   const handleProceed = () => {
     console.log("handleProceed functionality == ");
-    // ssrSeatInfos
+
+    calculateAndStoreTotalAmount();
+
+    showSeatNo();
+
+    // close
+    setFlightSeat(null);
+  };
+
+  const showSeatNo = () => {
+    let setData = {};
+
+    for (let i = 1; i <= 9; i++) {
+      let cookieData = getCookie(`adult_seat_map-${i}`);
+      if (!cookieData) continue; // skip if no cookie for this adult
+
+      let adultSeatArray = JSON.parse(cookieData);
+
+      adultSeatArray.forEach((item) => {
+        const { seat, flightId } = item;
+
+        if (!setData[flightId]) {
+          setData[flightId] = [];
+        }
+
+        setData[flightId].push({ [`adult-${i}`]: seat });
+      });
+    }
+
+    for (let i = 1; i <= 9; i++) {
+      let cookieData = getCookie(`child_seat_map-${i}`);
+      if (!cookieData) continue; // skip if no cookie for this child
+
+      let childSeatArray = JSON.parse(cookieData);
+
+      childSeatArray.forEach((item) => {
+        const { seat, flightId } = item;
+
+        if (!setData[flightId]) {
+          setData[flightId] = [];
+        }
+
+        setData[flightId].push({ [`child-${i}`]: seat });
+      });
+    }
+
+    console.log("setData == ", setData);
+    setSeatNo(setData);
+  };
+
+  const calculateAndStoreTotalAmount = () => {
+    let totalAmount = 0;
+
+    const collectKeys = [
+      ...Array.from({ length: 9 }, (_, i) => `adult_seat_map-${i + 1}`),
+      ...Array.from({ length: 9 }, (_, i) => `child_seat_map-${i + 1}`),
+    ];
+
+    collectKeys.forEach((key) => {
+      const cookieData = getCookie(key);
+      if (cookieData) {
+        try {
+          const parsedArray = JSON.parse(cookieData); // Expecting an array
+          parsedArray.forEach((item) => {
+            if (item?.amount) {
+              totalAmount += parseInt(item.amount);
+            }
+          });
+        } catch (err) {
+          console.error(`Error parsing cookie for key ${key}:`, err);
+        }
+      }
+    });
+
+    // Set final total into seatSsr_amount
+    setCookie("seatSsr_amount", String(totalAmount));
+    console.log("Total amount calculated and stored:", totalAmount);
   };
 
   const handleSeatSelect = (seatNo, cost) => {
@@ -56,6 +137,50 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     const updatedSelections = [...seatSelections];
     updatedSelections[selectedPassengerIndex] = { seatNo, cost };
     setSeatSelections(updatedSelections);
+
+    const passengerKey =
+      selectedPassengerIndex < numAdults
+        ? `adult_seat_map-${selectedPassengerIndex + 1}`
+        : `child_seat_map-${selectedPassengerIndex - numAdults + 1}`;
+
+    const flightId = flightSeat?.seg?.id || null;
+
+    // Prepare new seat entry
+    const newSeatData = {
+      seat: seatNo,
+      amount: String(cost),
+      flightId: String(flightId),
+    };
+
+    // Check existing cookie
+    let existingData = getCookie(passengerKey);
+    let updatedData = [];
+
+    if (existingData) {
+      try {
+        updatedData = JSON.parse(existingData);
+        let foundIndex = updatedData.findIndex(
+          (entry) => entry.flightId === newSeatData.flightId
+        );
+
+        if (foundIndex !== -1) {
+          // FlightId already exists => update seat & amount
+          updatedData[foundIndex].seat = newSeatData.seat;
+          updatedData[foundIndex].amount = newSeatData.amount;
+        } else {
+          // FlightId not present => add new entry
+          updatedData.push(newSeatData);
+        }
+      } catch (err) {
+        console.error("Invalid cookie data, resetting:", err);
+        updatedData = [newSeatData];
+      }
+    } else {
+      updatedData = [newSeatData];
+    }
+
+    setCookie(passengerKey, JSON.stringify(updatedData));
+    console.log("Cookie updated:", passengerKey, updatedData);
   };
 
   const renderSeatMap = (sInfo) => {
@@ -156,6 +281,41 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                         </p>
                         <p>{dep.format("DD MMM YYYY")}</p>
                       </div>
+
+                      {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
+                        {[...Array(numAdults)].map((_, index) => (
+                          <div key={`adult-${index}`}>
+                            Adult {index + 1}:{" "}
+                            {seatSelections[index]?.seatNo || "—"}
+                          </div>
+                        ))}
+
+                        {numChild !== null &&
+                          [...Array(numChild)].map((_, index) => {
+                            const passengerIndex = numAdults + index;
+                            return (
+                              <div key={`child-${index}`}>
+                                Child {index + 1}:{" "}
+                                {seatSelections[passengerIndex]?.seatNo || "—"}
+                              </div>
+                            );
+                          })}
+                      </div> */}
+
+                      {/* change data based on seatNo use seg.id */}
+                      <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
+                        {(seatNo?.[seg.id] || []).map((item, index) => {
+                          const key = Object.keys(item)[0]; // like 'adult-1' or 'child-1'
+                          const seatNo = item[key];
+
+                          return (
+                            <div key={index}>
+                              {key}: {seatNo}
+                            </div>
+                          );
+                        })}
+                      </div>
+
                       <button
                         onClick={() => handleViewSeat({ id: seg.id, seg })}
                         className="border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black"
@@ -170,6 +330,15 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
           </div>
         );
       })}
+
+      {loading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-4 rounded shadow text-center">
+            <p className="font-semibold text-lg mb-2">Loading seat map...</p>
+            <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+          </div>
+        </div>
+      )}
 
       {/* Seat Map Modal */}
       {flightSeat && (

@@ -128,6 +128,7 @@ export function AppContextProvider({ children }) {
         updateValue,
         setCookie,
         getCookie,
+        removeCookie,
         travelerInfo,
         updateTravelerInfo,
         email,
