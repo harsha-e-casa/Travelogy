@@ -13494,6 +13494,7 @@ h1 span {
 .slider-thumnail-activities {
   margin: 12px -12px 0px -12px;
   padding-bottom: 12px;
+  height: 130px;
 }
 
 .slider-thumnail-activities .slick-next,
@@ -19141,7 +19142,9 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   100% {
     transform: rotate(360deg);
   }
-}.pagination button {
+}
+
+.pagination button {
   margin: 0 4px;
   padding: 6px 10px;
   border-radius: 50%;
@@ -19152,4 +19155,22 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .pagination button.active {
   background: #333;
   color: white;
+}
+
+.banner-slide-activity {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.box-banner-activities {
+  height: 350px !important;
+}
+
+.banner-activities-detail button {
+  display: none !important;
+}
+
+.w_500 {
+  width: 500px;
 }
