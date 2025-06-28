@@ -195,7 +195,7 @@ export default function Footer1() {
             <div className="row">
               <div className="col-md-6 text-md-start text-center mb-20">
                 <p className="text-sm color-white">
-                  © {new Date().getFullYear()} Developed By{" "}
+                  © {new Date().getFullYear()} Developed and Designed By{" "}
                   <a href="https://digilogy.co/">Digilogy</a>. All rights
                   reserved.
                 </p>

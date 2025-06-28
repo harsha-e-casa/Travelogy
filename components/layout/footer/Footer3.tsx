@@ -146,7 +146,7 @@ export default function Footer3() {
               <div className="row align-items-center">
                 <div className="col-md-6 text-md-start text-center mb-20">
                   <p className="text-sm neutral-1000">
-                    © {new Date().getFullYear()} Developed By Digilogy. All
+                    © {new Date().getFullYear()} Developed and Designed By Digilogy. All
                     rights reserved.
                   </p>
                 </div>

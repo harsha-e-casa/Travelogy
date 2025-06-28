@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 import { Tabs } from 'antd';
 import Link from "next/link";
 import "./style.css"
+import { postData } from "@/services/NetworkAdapter";
 
 const page = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -68,13 +69,13 @@ const page = () => {
           phone: "9677179800",
         };
 
-        // const result = await postData(
-        //   "/travelogy/flight/fetech-bookings",
-        //   reqParams
-        // );
-        const result = {
-          bookings: ["TJS108101470162", "TJS106301474288", "TJS102401473514"]
-        }
+        const result = await postData(
+          "/travelogy/flight/fetech-bookings",
+          reqParams
+        );
+        // const result = {
+        //   bookings: ["TJS108101470162", "TJS106301474288", "TJS102401473514"]
+        // }
         console.log("fetchflightBookingsresssssssssssss = ", result);
         setUserBookingData(result);
         setloading(false);

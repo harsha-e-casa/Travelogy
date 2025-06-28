@@ -160,7 +160,7 @@ export default function Footer5() {
             <div className="row align-items-center">
               <div className="col-md-6 text-md-start text-center mb-20">
                 <p className="text-sm color-white">
-                  © 2024 Developed By Digilogy. All rights reserved.
+                  © 2024 Developed and Designed By Digilogy. All rights reserved.
                 </p>
               </div>
               <div className="col-md-6 text-md-end text-center mb-20">

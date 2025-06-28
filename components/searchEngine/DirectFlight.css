@@ -1,0 +1,22 @@
+/* Custom Checkbox Styles */
+.direct-flight-checkbox {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #e9970038;
+  border-radius: 50%;
+  background-color: #e997001a;
+  position: relative;
+  cursor: pointer;
+}
+
+.direct-flight-checkbox:checked {
+  background-color: #e9970038;  
+}
+
+.direct-flight-checkbox:checked {
+  background-color: #e9970038;
+  border-color: orange;
+}
