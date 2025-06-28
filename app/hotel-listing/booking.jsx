@@ -196,7 +196,10 @@ export default function BookingCard({
           </a>
         </div>
 
-        {/* <div className="box-need-help"> <a href="help-center.html"></a> */}
+        <div className="box-need-help">
+          {" "}
+          <a href="help-center.html"></a>
+        </div>
         <div className="box-need-help">
           {" "}
           <a href="#">

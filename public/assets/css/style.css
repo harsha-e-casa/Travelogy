@@ -19172,5 +19172,9 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 }
 
 .w_500 {
-  width: 500px;
+  width: 400px !important;
+}
+
+.slider-nav-thumbnails-activities-detail .banner-slide img {
+  height: 150px !important;
 }
