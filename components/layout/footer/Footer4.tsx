@@ -142,7 +142,7 @@ export default function Footer4() {
             <div className="row align-items-center">
               <div className="col-md-6 text-md-start text-center mb-20">
                 <p className="text-sm color-white">
-                  © {new Date().getFullYear()} Developed By Digilogy. All rights
+                  © {new Date().getFullYear()} Developed and Designed By Digilogy. All rights
                   reserved.
                 </p>
               </div>

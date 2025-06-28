@@ -120,8 +120,6 @@ export default function TicketCard1({ ticket, flightData }: any) {
     console.log("the value is", value);
   };
 
-  console.log("ticket.totalPriceList ========= ", ticket.totalPriceList);
-
   return (
     <>
       <div>
