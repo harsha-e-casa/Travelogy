@@ -3,7 +3,13 @@
 import BookingForm from "@/components/elements/BookingForm";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import {
   postDataFlightDetails,
   postDataTJBookingAir,
@@ -22,8 +28,11 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import Razorpay from "razorpay";
 import "./MealInfo.jsx";
 import "./ExtraBaggage.jsx";
+import "./SessionTime.jsx";
 import { notification } from "antd";
-
+import "./style.css";
+import useSessionTime from "./useSessionTime.js";
+import useForceUpdate from "./useForceUpdate.js";
 import {
   AutoComplete,
   Button,
@@ -39,6 +48,7 @@ import {
 
 import ExtraBaggage from "./ExtraBaggage.jsx";
 import MealInfo from "./MealInfo.jsx";
+import SessionTime from "./SessionTime.jsx";
 import SeatBooking from "./SeatBooking.jsx";
 
 const url =
@@ -516,7 +526,7 @@ export default function BookTicket() {
 
         let baggageInfosPayload = [];
         let mealinfosPaylode = [];
-        
+
         let groupedAdults = [];
 
         for (let i = 0; i < numAdults; i++) {
@@ -624,177 +634,177 @@ export default function BookTicket() {
         // Group children
         const groupedChildren = [];
 
-        // for (let i = 0; i < numChild; i++) {
-        //   const ti = formValues[`childselect-${i}`];
-        //   const fN = formValues[`childName-${i}`];
-        //   const lN = formValues[`childlast-${i}`];
+        for (let i = 0; i < numChild; i++) {
+          const ti = formValues[`childselect-${i}`];
+          const fN = formValues[`childName-${i}`];
+          const lN = formValues[`childlast-${i}`];
 
-        //   const seatCookie = getCookie(`child_seat_map-${i + 1}`);
-        //   let seatInfo = [];
+          const seatCookie = getCookie(`child_seat_map-${i + 1}`);
+          let seatInfo = [];
 
-        //   try {
-        //     seatInfo = seatCookie ? JSON.parse(seatCookie) : [];
-        //   } catch (error) {
-        //     console.error(
-        //       "Error parsing seat info for child " + (i + 1),
-        //       error
-        //     );
-        //   }
+          try {
+            seatInfo = seatCookie ? JSON.parse(seatCookie) : [];
+          } catch (error) {
+            console.error(
+              "Error parsing seat info for child " + (i + 1),
+              error
+            );
+          }
 
-        //   const baggageInfos = [];
-        //   const mealInfos = [];
+          const baggageInfos = [];
+          const mealInfos = [];
 
-        //   console.log("groupedChildren seatInfo = ", seatInfo);
+          console.log("groupedChildren seatInfo = ", seatInfo);
 
-        //   if (ti && fN && lN) {
-        //     const traveller = { ti, fN, lN, pt: "CHILD" };
+          if (ti && fN && lN) {
+            const traveller = { ti, fN, lN, pt: "CHILD" };
 
-        //     segmentinfo.forEach((segment, flightIndex) => {
-        //       const baggageValue =
-        //         formValues[`childBaggage-${flightIndex}-${i}`];
-        //       if (baggageValue) {
-        //         const [segmentId, baggageCode] = baggageValue.split("|");
+            segmentinfo.forEach((segment, flightIndex) => {
+              const baggageValue =
+                formValues[`childBaggage-${flightIndex}-${i}`];
+              if (baggageValue) {
+                const [segmentId, baggageCode] = baggageValue.split("|");
 
-        //         baggageInfosPayload.push({ key: segmentId, code: baggageCode });
+                baggageInfosPayload.push({ key: segmentId, code: baggageCode });
 
-        //         const matchedSegment = segmentinfo.find(
-        //           (seg) => seg.id === segmentId
-        //         );
-        //         const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
-        //           (bag) => bag.code === baggageCode
-        //         );
+                const matchedSegment = segmentinfo.find(
+                  (seg) => seg.id === segmentId
+                );
+                const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
+                  (bag) => bag.code === baggageCode
+                );
 
-        //         if (baggageOption) {
-        //           baggageInfos.push({
-        //             key: segmentId,
-        //             code: baggageCode,
-        //             amount: baggageOption.amount,
-        //           });
-        //         }
-        //       }
+                if (baggageOption) {
+                  baggageInfos.push({
+                    key: segmentId,
+                    code: baggageCode,
+                    amount: baggageOption.amount,
+                  });
+                }
+              }
 
-        //       const mealValue = formValues[`childMeal-${flightIndex}-${i}`];
-        //       if (mealValue) {
-        //         const [segmentId, mealCode] = mealValue.split("|");
+              const mealValue = formValues[`childMeal-${flightIndex}-${i}`];
+              if (mealValue) {
+                const [segmentId, mealCode] = mealValue.split("|");
 
-        //         mealinfosPaylode.push({ key: segmentId, code: mealCode });
+                mealinfosPaylode.push({ key: segmentId, code: mealCode });
 
-        //         const matchedSegment = segmentinfo.find(
-        //           (seg) => seg.id === segmentId
-        //         );
-        //         const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
-        //           (meal) => meal.code === mealCode
-        //         );
+                const matchedSegment = segmentinfo.find(
+                  (seg) => seg.id === segmentId
+                );
+                const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
+                  (meal) => meal.code === mealCode
+                );
 
-        //         if (mealOption) {
-        //           mealInfos.push({
-        //             key: segmentId,
-        //             code: mealCode,
-        //             amount: mealOption.amount,
-        //             desc: mealOption.desc,
-        //           });
-        //         }
-        //       }
-        //     });
+                if (mealOption) {
+                  mealInfos.push({
+                    key: segmentId,
+                    code: mealCode,
+                    amount: mealOption.amount,
+                    desc: mealOption.desc,
+                  });
+                }
+              }
+            });
 
-        //     const childSeatInfo = [];
-        //     if (seatInfo?.length > 0) {
-        //       for (let i = 0; i < seatInfo.length; i++) {
-        //         const item = seatInfo[i];
-        //         childSeatInfo.push({
-        //           key: item.flightId,
-        //           code: item.seat,
-        //         });
-        //       }
-        //       traveller.ssrSeatInfos = childSeatInfo;
-        //     }
+            const childSeatInfo = [];
+            if (seatInfo?.length > 0) {
+              for (let i = 0; i < seatInfo.length; i++) {
+                const item = seatInfo[i];
+                childSeatInfo.push({
+                  key: item.flightId,
+                  code: item.seat,
+                });
+              }
+              traveller.ssrSeatInfos = childSeatInfo;
+            }
 
-        //     if (baggageInfosPayload.length > 0) {
-        //       traveller.ssrBaggageInfos = baggageInfosPayload;
-        //     }
+            if (baggageInfosPayload.length > 0) {
+              traveller.ssrBaggageInfos = baggageInfosPayload;
+            }
 
-        //     if (mealinfosPaylode.length > 0) {
-        //       traveller.ssrMealInfos = mealinfosPaylode;
-        //     }
+            if (mealinfosPaylode.length > 0) {
+              traveller.ssrMealInfos = mealinfosPaylode;
+            }
 
-        //     groupedChildren.push(traveller);
-        //   }
-        // }
+            groupedChildren.push(traveller);
+          }
+        }
 
         // Group infants
         const groupedInfants = [];
 
-        // for (let i = 0; i < numInfants; i++) {
-        //   const ti = formValues[`infantselect-${i}`];
-        //   const fN = formValues[`infantName-${i}`];
-        //   const lN = formValues[`infantLast-${i}`];
-        //   const rawDob = formValues[`infantDOB-${i}`];
-        //   const dob = rawDob
-        //     ? new Date(rawDob).toISOString().split("T")[0]
-        //     : "";
+        for (let i = 0; i < numInfants; i++) {
+          const ti = formValues[`infantselect-${i}`];
+          const fN = formValues[`infantName-${i}`];
+          const lN = formValues[`infantLast-${i}`];
+          const rawDob = formValues[`infantDOB-${i}`];
+          const dob = rawDob
+            ? new Date(rawDob).toISOString().split("T")[0]
+            : "";
 
-        //   if (ti && fN && lN && dob) {
-        //     const traveller = { ti, fN, lN, pt: "INFANT", dob };
+          if (ti && fN && lN && dob) {
+            const traveller = { ti, fN, lN, pt: "INFANT", dob };
 
-        //     segmentinfo.forEach((segment, flightIndex) => {
-        //       const baggageValue =
-        //         formValues[`infantBaggage-${flightIndex}-${i}`];
-        //       if (baggageValue) {
-        //         const [segmentId, baggageCode] = baggageValue.split("|");
+            segmentinfo.forEach((segment, flightIndex) => {
+              const baggageValue =
+                formValues[`infantBaggage-${flightIndex}-${i}`];
+              if (baggageValue) {
+                const [segmentId, baggageCode] = baggageValue.split("|");
 
-        //         baggageInfos.push({ key: segmentId, code: baggageCode });
+                baggageInfos.push({ key: segmentId, code: baggageCode });
 
-        //         const matchedSegment = segmentinfo.find(
-        //           (seg) => seg.id === segmentId
-        //         );
-        //         const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
-        //           (bag) => bag.code === baggageCode
-        //         );
+                const matchedSegment = segmentinfo.find(
+                  (seg) => seg.id === segmentId
+                );
+                const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
+                  (bag) => bag.code === baggageCode
+                );
 
-        //         if (baggageOption) {
-        //           baggageInfos.push({
-        //             key: segmentId,
-        //             code: baggageCode,
-        //             amount: baggageOption.amount,
-        //           });
-        //         }
-        //       }
+                if (baggageOption) {
+                  baggageInfos.push({
+                    key: segmentId,
+                    code: baggageCode,
+                    amount: baggageOption.amount,
+                  });
+                }
+              }
 
-        //       const mealValue = formValues[`infantMeal-${flightIndex}-${i}`];
-        //       if (mealValue) {
-        //         const [segmentId, mealCode] = mealValue.split("|");
+              const mealValue = formValues[`infantMeal-${flightIndex}-${i}`];
+              if (mealValue) {
+                const [segmentId, mealCode] = mealValue.split("|");
 
-        //         mealinfo.push({ key: segmentId, code: mealCode });
+                mealinfo.push({ key: segmentId, code: mealCode });
 
-        //         const matchedSegment = segmentinfo.find(
-        //           (seg) => seg.id === segmentId
-        //         );
-        //         const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
-        //           (meal) => meal.code === mealCode
-        //         );
+                const matchedSegment = segmentinfo.find(
+                  (seg) => seg.id === segmentId
+                );
+                const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
+                  (meal) => meal.code === mealCode
+                );
 
-        //         if (mealOption) {
-        //           mealinfo.push({
-        //             key: segmentId,
-        //             code: mealCode,
-        //             amount: mealOption.amount,
-        //             desc: mealOption.desc,
-        //           });
-        //         }
-        //       }
-        //     });
+                if (mealOption) {
+                  mealinfo.push({
+                    key: segmentId,
+                    code: mealCode,
+                    amount: mealOption.amount,
+                    desc: mealOption.desc,
+                  });
+                }
+              }
+            });
 
-        //     if (baggageInfos.length > 0) {
-        //       traveller.ssrBaggageInfos = baggageInfos;
-        //     }
+            if (baggageInfos.length > 0) {
+              traveller.ssrBaggageInfos = baggageInfos;
+            }
 
-        //     if (mealinfo.length > 0) {
-        //       traveller.ssrMealInfos = mealinfo;
-        //     }
+            if (mealinfo.length > 0) {
+              traveller.ssrMealInfos = mealinfo;
+            }
 
-        //     groupedInfants.push(traveller);
-        //   }
-        // }
+            groupedInfants.push(traveller);
+          }
+        }
 
         // Set all grouped travelers and cookie
         // setBaggageinfo(baggageInfos);
@@ -805,28 +815,6 @@ export default function BookTicket() {
         setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
           expires: 7,
         });
-
-        // const adultBaggage = [];
-        // for (let i = 0; i < numAdults; i++) {
-        //   const baggageCode = formValues[`adultBaggage-${i}`];
-        //   if (baggageCode) adultBaggage.push({ key:segmentId, baggageCode });
-        // }
-
-        // const childBaggage = [];
-        // for (let i = 0; i < numChild; i++) {
-        //   const baggageCode = formValues[`childBaggage-${i}`];
-        //   if (baggageCode) childBaggage.push({ key:segmentId, baggageCode });
-        // }
-
-        // const infantBaggage = [];
-        // for (let i = 0; i < numInfants; i++) {
-        //   const baggageCode = formValues[`infantBaggage-${i}`];
-        //   if (baggageCode) infantBaggage.push({ key:segmentId, baggageCode });
-        // }
-
-        // console.log("Adult Baggage:", adultBaggage);
-        // console.log("Child Baggage:", childBaggage);
-        // console.log("Infant Baggage:", infantBaggage);
 
         // Combine all
         const travellerInfoV = [
@@ -933,12 +921,59 @@ export default function BookTicket() {
     );
   };
 
+  // if (apiData?.conditions?.sct && apiData?.conditions?.st) {
+  //   // Parse session created time
+  //   const sessionCreatedTime = new Date(apiData.conditions.sct);
+
+  //   // Get session duration (assuming it's in seconds)
+  //   const sessionDuration = apiData.conditions.st;
+
+  //   // Calculate session end time
+  //   const sessionEndTime = new Date(sessionCreatedTime.getTime() + sessionDuration * 1000);
+
+  //   console.log("Session Start Time:", sessionCreatedTime);
+  //   console.log("Session Duration (seconds):", sessionDuration);
+  //   console.log("Session End Time:", sessionEndTime);
+  // } else {
+  //   console.warn("Session timing information not available in API response.");
+  // }
+
+  // const timeLeft = SessionTime(apiData?.conditions?.sct, apiData?.conditions?.st);
+  // const hasExpired = useRef(false);
+
+  // function handleSessionExpire() {
+  //   if (!hasExpired.current) {
+  //     hasExpired.current = true;
+  //     console.log("Session expired");
+  //     // Additional logic like redirect, alert, etc.
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   if (timeLeft === 0 && !hasExpired.current) {
+  //     handleSessionExpire();
+  //   }
+  // }, [timeLeft]);
+  const handleSessionExpire = useCallback(() => {
+    if (!hasExpired.current) {
+      hasExpired.current = true;
+      console.log("Session expired");
+    }
+  }, []);
+  const timeLeftRef = useSessionTime(
+    apiData?.conditions?.sct,
+    apiData?.conditions?.st,
+    handleSessionExpire
+  );
+
+  const hasExpired = useRef(false);
+
   return (
     <>
       {contextHolder}
 
       <Layout headerStyle={1} footerStyle={1}>
-        <main className="main">
+        <main className="main relative">
           <section className="box-section box-breadcrumb background-body">
             <div className="container pt-1">
               <ul className="breadcrumbs">
@@ -1265,7 +1300,7 @@ export default function BookTicket() {
                             )} */}
 
                   <div className="row mt-20">
-                    <div className="col-lg-8">
+                    <div className="col-lg-8 ">
                       {/* <div className="box-content-tickets-detail">
                         {!loading && !error && (
                           <div className="box-timeline">
@@ -1822,6 +1857,7 @@ export default function BookTicket() {
                   </div>
                 </>
               )}
+
               {error && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                   <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
@@ -1840,6 +1876,14 @@ export default function BookTicket() {
               )}
             </div>
           </section>
+          {loading ? null : (
+            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+              <SessionTime
+                timeLeftRef={timeLeftRef}
+                searchTickets={searchTickets}
+              />
+            </div>
+          )}
         </main>
       </Layout>
     </>

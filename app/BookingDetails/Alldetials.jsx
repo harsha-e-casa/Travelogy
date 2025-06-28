@@ -34,7 +34,8 @@ const Alldetails = ({ totalpricee }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const bookingId = searchParams.get("booking_id");
+  // const bookingId = searchParams.get("booking_id");
+  const bookingId = "TJS108001480691";
   console.log("bookingid from alldetails", bookingId);
 
   const [loading, setLoading] = useState(null);
@@ -45,12 +46,19 @@ const Alldetails = ({ totalpricee }) => {
   const [showContact, setShowContact] = useState(false);
   const printRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
+
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
   const [amendmentDetailData, setAmendmentDetailData] = useState(null);
+
   const { flightData } = useContext(AppContext);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+
   const [showTravellerModal, setShowTravellerModal] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [selectedAmendmentId, setSelectedAmendmentId] = useState(null);
+  const [travellerData, setTravellerData] = useState(null);
+  const [validateSuccess, setValidateSuccess] = useState(null);
 
   const toggleAllPassengers = () => {
     setShowAllPassengers((prev) => !prev);
@@ -63,7 +71,15 @@ const Alldetails = ({ totalpricee }) => {
   const handleUnHold = async () => {
     console.log("handleUnHold ==> ");
     console.log(bookingDetails);
-    const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos;
+
+    // Validate Fare
+    const validateFare = async () => {};
+
+    // Call validateFare function to validate the booking details
+    await validateFare();
+
+    // Extract traveller information and PNRs
+    const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos || [];
     const pnrs = [];
 
     if (Array.isArray(travellerInfos)) {
@@ -71,11 +87,12 @@ const Alldetails = ({ totalpricee }) => {
         const pnrDetails = traveller.pnrDetails;
         if (pnrDetails && typeof pnrDetails === "object") {
           const pnrValues = Object.values(pnrDetails); // gets array of values like ["X8B25P"]
-          pnrs.push(...pnrValues); // append all values
+          pnrs.push(...pnrValues); // append all values to pnrs array
         }
       });
     }
 
+    // Prepare unhold parameters
     const unHoldParams = {
       bookingId: bookingId,
       pnrs: pnrs,
@@ -83,17 +100,33 @@ const Alldetails = ({ totalpricee }) => {
 
     console.log("unHoldParams ----------- ", unHoldParams);
 
-    let reqData = { action: "unholdBooking", requestData: unHoldParams };
-    const result = await postData("travelogy/one-way/fetch-data", reqData);
+    try {
+      const result = await postUnHold(unHoldParams);
+      console.log("Result => ", result);
 
-    // const result = await postUnHold(unHoldParams);
-    console.log("resulttttttttttttttt ==> ", result);
+      if (result?.status?.success === true) {
+        // Reload page or redirect to the booking details page
+        window.location.reload(); // Refreshing the page
+      } else {
+        setError("Unhold operation failed");
+      }
+    } catch (err) {
+      console.error("error caused", err);
 
-    if (result?.status?.success === true) {
-      // router.push(`/BookingDetails?booking_id=${bookingId}`);
-      window.location.reload();
+      if (err?.response?.data?.errors?.length) {
+        const firstError = err.response.data.errors[0];
+        const message = firstError?.message || "An unknown error occurred.";
+        setError(message);
+      } else if (err?.message) {
+        setError(err.message);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
+
   const handleDownload = (ref) => {
     const content = ref.current.innerHTML;
     const fullHtml = `
@@ -103,28 +136,51 @@ const Alldetails = ({ totalpricee }) => {
         <meta charset="UTF-8" />
         <title>Ticket</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
-        <script src="https://cdn.tailwindcss.com"></script>
         <style>
+                 .flightsDetail{
+              display:flex;
+              flex-direction:row;
+              justify-content:flex-between;
+              align-items:center;
+              margin-bottom:20px
+              }
 
-        .mytestCas{
-              background: red;
-            }
+              .logo-flight{
+              margin-bottom:0px}
 
+              .citydetails{
+              
+                margin-bottom:20px
+              }
+                .citynames{
+                font-weight:bolder;
+                }
+                .timeduration{
+                margin-bottom:0px;
+                }
+                .timediv{
+                display:flex;
+                flex-direction:row;
+                gap: 40px;
+                list-style-type: disc; 
+               
+                }
+                .passengerinfo, .contactinfo{
+                font-weight:bold;}
+                .ticketdiv{
+                padding:20px}
           @media print {
             body {
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
-            
-            
-
           }
+            
         </style>
       </head>
       <body class="p-6 bg-white text-black">
         ${content}
-      <div class="mytestCas">my case</div>
+    
       </body>
     </html>
   `;
@@ -149,8 +205,38 @@ const Alldetails = ({ totalpricee }) => {
         <title>Ticket</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
-          
+                 .flightsDetail{
+              display:flex;
+              flex-direction:row;
+              justify-content:flex-between;
+              align-items:center;
+              margin-bottom:20px
+              }
 
+              .logo-flight{
+              margin-bottom:0px}
+
+              .citydetails{
+              
+                margin-bottom:20px
+              }
+                .citynames{
+                font-weight:bolder;
+                }
+                .timeduration{
+                margin-bottom:0px;
+                }
+                .timediv{
+                display:flex;
+                flex-direction:row;
+                gap: 40px;
+                list-style-type: disc; 
+               
+                }
+                .passengerinfo, .contactinfo{
+                font-weight:bold;}
+                .ticketdiv{
+                padding:20px}
           @media print {
             body {
               -webkit-print-color-adjust: exact;
@@ -175,7 +261,7 @@ const Alldetails = ({ totalpricee }) => {
     setTimeout(() => {
       printWindow.print();
       printWindow.close();
-    }, 500); // Small delay to ensure styles are applied
+    }, 500);
   };
 
   const handlePayNow = async () => {
@@ -224,11 +310,12 @@ const Alldetails = ({ totalpricee }) => {
       // const data = await postDataBookingDetails(parameter);
       console.log("Booking details:", data);
 
-      setBookingdetails(data); // Update state with flight details
+      setBookingdetails(data);
+
       setSegmentPrices(
         data?.AIR?.tripInfos?.map((trip) => trip.sI.map((seg) => seg.price)) ??
           []
-      ); // Storing segment prices
+      );
     } catch (err) {
       console.error("error caused", err);
 
@@ -245,6 +332,90 @@ const Alldetails = ({ totalpricee }) => {
       setLoading(false);
     }
   };
+  const getTravellerInfo = (bookingId, amendmentId) => {
+    setSelectedBookingId(bookingId);
+    setSelectedAmendmentId(amendmentId);
+    setShowTravellerModal(true);
+  };
+
+  // const sumbitAmendmentapi = async (bookingId, amendmentType, remarks, callback) => {
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     if (!bookingId || !amendmentType) {
+  //       setError("Booking ID or amendment type is missing");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     const parameter = { bookingId, type: amendmentType, remarks };
+  //     console.log("📤 Sending parameters to API:", parameter);
+
+  //     const response = await postSumbitAmendment(parameter);
+  //     const data = response; // direct response, no .data nesting
+
+  //     console.log("📌 amendmentId received:", data?.amendmentId);
+
+  //     setSumitAmendmentDetails(data);
+  //     setAmendmentId(data?.amendmentId);
+
+  //     // if (data?.amendmentId) {
+  //     //   try {
+  //     //     console.log("📨 Sending amendmentId to details API:", { amendmentId: data.amendmentId });
+
+  //     //     const amendmentDetails = await postAmendmentDetails({ amendmentId: data.amendmentId });
+
+  //     //     console.log("📋 Amendment Details:", amendmentDetails);
+  //     //     setAmendmentDetailData(amendmentDetails);
+  //     //     setShowDetailsModal(true);
+  //     //   } catch (err) {
+  //     //     console.error("error caused", err);
+
+  //     //     if (err?.response?.data?.errors?.length) {
+  //     //       const firstError = err.response.data.errors[0];
+  //     //       const message = firstError?.message || "An unknown error occurred.";
+  //     //       const details = firstError?.details ? ` - ${firstError.details}` : "";
+  //     //       setError(`${message}`);
+
+  //     //       console.log("API error message:", message);
+  //     //       console.log("Error details:", details);
+  //     //       console.log("Error status code:", err.response.status);
+  //     //     } else if (err?.message) {
+  //     //       setError(err.message);
+  //     //       console.log("Generic error message:", err.message);
+  //     //     } else {
+  //     //       setError("Something went wrong. Please try again.");
+  //     //     }
+  //     //   }
+  //     // }
+  //     <TravellerDetailsModal />
+
+  //     if (callback && typeof callback === "function") {
+  //       callback(data);
+  //     }
+  //   } catch (err) {
+  //     console.error("error caused", err);
+
+  //     if (err?.response?.data?.errors?.length) {
+  //       const firstError = err.response.data.errors[0];
+  //       const message = firstError?.message || "An unknown error occurred.";
+  //       const details = firstError?.details ? ` - ${firstError.details}` : "";
+  //       setError(`${message}`);
+
+  //       console.log("API error message:", message);
+  //       console.log("Error details:", details);
+  //       console.log("Error status code:", err.response.status);
+  //     } else if (err?.message) {
+  //       setError(err.message);
+  //       console.log("Generic error message:", err.message);
+  //     } else {
+  //       setError("Something went wrong. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const sumbitAmendmentapi = async (
     bookingId,
@@ -262,92 +433,50 @@ const Alldetails = ({ totalpricee }) => {
         return;
       }
 
-      const parameter = { bookingId, type: amendmentType, remarks };
-      console.log("📤 Sending parameters to API:", parameter);
-
-      let reqData = { action: "submitAmendment", requestData: parameter };
-      const response = await postData("travelogy/one-way/fetch-data", reqData);
+      // const parameter = { bookingId, type: amendmentType, remarks };
+      // console.log("📤 Sending parameters to API:", parameter);
 
       // const response = await postSumbitAmendment(parameter);
-      const data = response; // direct response, no .data nesting
+      // const data = response;
 
-      console.log("📌 amendmentId received:", data?.amendmentId);
+      // console.log("📌 amendmentId received:", data?.amendmentId);
 
-      setSumitAmendmentDetails(data);
-      setAmendmentId(data?.amendmentId);
+      // setSumitAmendmentDetails(data);
+      // setAmendmentId(data?.amendmentId);
 
-      if (data?.amendmentId) {
-        try {
-          console.log("📨 Sending amendmentId to details API:", {
-            amendmentId: data.amendmentId,
-          });
+      // ✅ Show Traveller Modal
+      // if (data?.amendmentId) {
+      setTravellerData({ bookingId, amendmentId: "dal;kdja;j" });
+      setShowTravellerModal(true);
+      // }
 
-          // const amendmentDetails = await postAmendmentDetails({
-          //   amendmentId: data.amendmentId,
-          // });
-
-          let reqData = {
-            action: "pollAmendment",
-            requestData: {
-              amendmentId: data.amendmentId,
-            },
-          };
-          const amendmentDetails = await postData(
-            "travelogy/one-way/fetch-data",
-            reqData
-          );
-
-          console.log("📋 Amendment Details:", amendmentDetails);
-          setAmendmentDetailData(amendmentDetails);
-          setShowDetailsModal(true);
-        } catch (err) {
-          console.error("error caused", err);
-
-          if (err?.response?.data?.errors?.length) {
-            const firstError = err.response.data.errors[0];
-            const message = firstError?.message || "An unknown error occurred.";
-            const details = firstError?.details
-              ? ` - ${firstError.details}`
-              : "";
-            setError(`${message}`);
-
-            console.log("API error message:", message);
-            console.log("Error details:", details);
-            console.log("Error status code:", err.response.status);
-          } else if (err?.message) {
-            setError(err.message);
-            console.log("Generic error message:", err.message);
-          } else {
-            setError("Something went wrong. Please try again.");
-          }
-        }
-      }
-
-      if (callback && typeof callback === "function") {
-        callback(data);
-      }
+      // if (callback && typeof callback === "function") {
+      //   callback(data);
+      // }
     } catch (err) {
       console.error("error caused", err);
 
-      if (err?.response?.data?.errors?.length) {
-        const firstError = err.response.data.errors[0];
-        const message = firstError?.message || "An unknown error occurred.";
-        const details = firstError?.details ? ` - ${firstError.details}` : "";
-        setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
-      } else if (err?.message) {
-        setError(err.message);
-        console.log("Generic error message:", err.message);
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+      // if (err?.response?.data?.errors?.length) {
+      //   const firstError = err.response.data.errors[0];
+      //   const message = firstError?.message || "An unknown error occurred.";
+      //   const details = firstError?.details ? ` - ${firstError.details}` : "";
+      //   setError(`${message}`);
+      // } else if (err?.message) {
+      //   setError(err.message);
+      // } else {
+      //   setError("Something went wrong. Please try again.");
+      // }
     } finally {
       setLoading(false);
     }
   };
+  const tripInfos = bookingDetails?.itemInfos?.AIR?.tripInfos || [];
+
+  const firstTrip = tripInfos[0];
+  const segmentList = firstTrip?.sI || [];
+
+  const firstSegment = segmentList[0];
+  const lastSegment = segmentList[segmentList.length - 1];
 
   const BookingSkeleton = () => {
     return (
@@ -555,6 +684,7 @@ const Alldetails = ({ totalpricee }) => {
                     /> */}
                         <AmendmentPopup
                           bookingId={bookingId}
+                          bookingDetails={bookingDetails}
                           onSubmit={(
                             bookingId,
                             amendmentType,
@@ -573,44 +703,36 @@ const Alldetails = ({ totalpricee }) => {
                           }
                         />
 
-                        {showDetailsModal && (
-                          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                            <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
-                              <button
-                                onClick={() => setShowDetailsModal(false)}
-                                className="absolute top-4 right-4 text-2xl text-black"
-                              >
-                                &times;
-                              </button>
+                        {/* {showDetailsModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
+                            <button
+                              onClick={() => setShowDetailsModal(false)}
+                              className="absolute top-4 right-4 text-2xl text-black"
+                            >
+                              &times;
+                            </button>
 
-                              <h3 className="text-xl font-bold text-green-700 mb-4">
-                                Amendment Details
-                              </h3>
+                            <h3 className="text-xl font-bold text-green-700 mb-4">Amendment Details</h3>
 
-                              <div className="space-y-3 text-gray-700">
-                                <p>
-                                  <strong>Status:</strong>{" "}
-                                  {amendmentDetailData?.amendmentStatus}
-                                </p>
-                                <p>
-                                  <strong>Refundable Amount:</strong> ₹
-                                  {amendmentDetailData?.refundableAmount}
-                                </p>
-                                <p>
-                                  <strong>Remarks:</strong>{" "}
-                                  {amendmentDetailData?.remarks}
-                                </p>
-                              </div>
+                            <div className="space-y-3 text-gray-700">
+                              <p><strong>Status:</strong> {amendmentDetailData?.amendmentStatus}</p>
+                              <p><strong>Refundable Amount:</strong> ₹{amendmentDetailData?.refundableAmount}</p>
+                              <p><strong>Remarks:</strong> {amendmentDetailData?.remarks}</p>
                             </div>
                           </div>
-                        )}
+                        </div>
+                      )} */}
 
-                        {showTravellerModal && (
-                          <TravellerDetailsModal
-                            bookingId={bookingId}
-                            onClose={() => setShowTravellerModal(false)}
-                          />
-                        )}
+                        {/* {showTravellerModal && (
+                        <TravellerDetailsModal
+                          bookingId={travellerData.bookingId}
+                          amendmentId={travellerData.amendmentId}
+                          bookingDetails={bookingDetails}
+                          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${firstSegment?.dt?.split("T")[0]}`}
+                          onClose={() => setShowTravellerModal(false)}
+                        />
+                      )} */}
                       </button>
                     </div>
                   )}
@@ -650,9 +772,6 @@ const Alldetails = ({ totalpricee }) => {
                     </div>
                   ) : bookingDetails?.order?.status === "PENDING" ? (
                     <>
-                      {/* <button className="border border-grey rounded" onClick={handlePayNow}>
-                Pay Now
-              </button> */}
                       <div className="relative inline-block">
                         <button
                           onClick={() => setShowDropdown(!showDropdown)}
@@ -750,10 +869,19 @@ const Alldetails = ({ totalpricee }) => {
                           className="shadow rounded-md p-3 mb-5 "
                         >
                           {/* header */}
-                          <div className="flex flex-col justify-start  items-start">
+                          <div className=" citydetails flex flex-col justify-start  items-start">
                             {/* City and direction row */}
-                            <div className="flex flex-row gap-3 items-center mb-2">
-                              <p className="text-xl-bold neutral-1000">
+                            {/* <li className="text-sm-medium neutral-500 ">
+                            {segments.map((segment) =>
+                              segment.stops === 0
+                                ? "Non Stop"
+                                : `${segment.stops} Stop${
+                                    segment.stops > 1 ? "s" : ""
+                                  }`
+                            ) || "No stop info"}
+                          </li> */}
+                            <div className="  flex flex-row gap-3 items-center mb-2">
+                              <p className="text-xl-bold neutral-1000 citynames">
                                 {seg?.da?.city || "DELHI"}
                                 <span> ({seg?.da?.code})</span>
                               </p>
@@ -770,163 +898,152 @@ const Alldetails = ({ totalpricee }) => {
                                   d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
                                 />
                               </svg>
-                              <p className="text-xl-bold neutral-1000">
+                              <p className="text-xl-bold neutral-1000 citynames">
                                 {seg?.aa?.city}
                                 <span>({seg?.aa?.code})</span>
                               </p>
                             </div>
 
-                            <div className="flex flex-row gap-2">
+                            <div className="flex flex-row gap-2 timediv">
                               <p className="text-sm-bold neutral-500 ">
                                 {formattedDate || "Date not available"}
                               </p>
                               {/* Info list below the cities */}
-                              <ul className="flex flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc">
-                                {/* <li className="text-sm-medium neutral-500 ">
-                            {segments.map((segment) =>
-                              segment.stops === 0
-                                ? "Non Stop"
-                                : `${segment.stops} Stop${
-                                    segment.stops > 1 ? "s" : ""
-                                  }`
-                            ) || "No stop info"}
-                          </li> */}
+                              <ul className="flex timeduration flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc timeul">
                                 <li className="text-sm-medium neutral-500 ">
                                   {`${hours}h ${minutes}m` ||
                                     "Duration not available"}
                                 </li>
                               </ul>
                             </div>
-                          </div>
 
-                          <div className="flex flex-row justify-between">
-                            <div className="logo-flight flex flex-row gap-3 items-center mb-20">
-                              <div className="text-md-bold neutral-900">
-                                {seg?.fD?.aI?.name}
-                              </div>
-                              <div className="text-md-medium neutral-500">
-                                {seg?.fD?.fN}
-                              </div>
-                              <div className="text-md-medium neutral-500 border border-black-200 rounded-lg pl-10 pr-10">
-                                {seg?.fD?.eT}
-                              </div>
-                            </div>
-                            <div className="flex flex-row items-center gap-3">
-                              {/* <p className="text-sm-medium neutral-500 ">{cabinclass}</p> */}
-                              <span
-                                className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
-                                style={{
-                                  backgroundColor: "rgb(245, 222, 179)",
-                                  color: "rgb(92, 64, 51)",
-                                  padding: "1px 2px",
-                                }}
-                              >
-                                {fareIdentifier}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* flightdetails    */}
-                          <div className=" flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
-                            <div className="text-left space-y-1">
-                              <h4
-                                className=""
-                                style={{
-                                  fontSize: "28px",
-                                  fontWeight: "normal",
-                                }}
-                              >
-                                {seg?.dt.split("T")[1]}
-                              </h4>
-                              <p className="text-sm-medium neutral-500 ">
-                                {seg?.da?.city} {seg?.da?.country}
-                              </p>
-                              <p className="text-sm-medium neutral-500 ">
-                                {seg?.da?.name}
-                              </p>
-                              <p className="text-sm-medium neutral-1000 ">
-                                {seg?.da?.terminal}
-                              </p>
-                            </div>
-
-                            <div className="text-center space-y-1">
-                              <p className="text-sm-medium neutral-500 ">
-                                {`${hours}h ${minutes}m` ||
-                                  "Duration not available"}
-                              </p>
-                              <img
-                                src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
-                                alt="flight line"
-                                className="mx-auto w-20"
-                              />
-                            </div>
-
-                            <div className="text-right space-y-1">
-                              {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
-                              <h4
-                                className=""
-                                style={{
-                                  fontSize: "28px",
-                                  fontWeight: "normal",
-                                }}
-                              >
-                                {seg?.at?.split("T")[1]}
-                              </h4>
-                              <p className="text-sm-medium neutral-500 ">
-                                {seg?.aa?.city} {seg?.aa?.country}
-                              </p>
-                              <p className="text-sm-medium neutral-500 ">
-                                {seg?.aa?.name}
-                              </p>
-                              <p className="text-sm-medium neutral-1000 ">
-                                {seg?.aa?.terminal}
-                              </p>
-                            </div>
-
-                            {/* Baggage Info */}
-                            <div className="flex flex-col items-start justify-start gap-3">
-                              <div className="flex items-center space-x-2">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  class="bi bi-suitcase-lg-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
-                                </svg>
-                                <p className="text-sm-bold neutral-900">
-                                  Cabin:{" "}
-                                  <span className="text-sm-medium neutral-500">
-                                    {" "}
-                                    {baggageInfo.cabinBaggage || "N/A"}
+                            <div>
+                              <div className="flex flex-row justify-between">
+                                <div className="logo-flight flex flex-row gap-3 items-center mb-20">
+                                  <div className="text-md-bold neutral-900">
+                                    {seg?.fD?.aI?.name}
+                                  </div>
+                                  <div className="text-md-medium neutral-500">
+                                    {seg?.fD?.fN}
+                                  </div>
+                                  <div className="text-md-medium neutral-500 border border-black-200 rounded-lg pl-10 pr-10">
+                                    {seg?.fD?.eT}
+                                  </div>
+                                </div>
+                                <div className="flex flex-row items-center gap-3">
+                                  {/* <p className="text-sm-medium neutral-500 ">{cabinclass}</p> */}
+                                  <span
+                                    className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
+                                    style={{
+                                      backgroundColor: "rgb(245, 222, 179)",
+                                      color: "rgb(92, 64, 51)",
+                                      padding: "1px 2px",
+                                    }}
+                                  >
+                                    {fareIdentifier}
                                   </span>
-                                </p>
+                                </div>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  class="bi bi-suitcase2-fill"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
-                                </svg>
-                                <p className="text-sm-bold neutral-900 ">
-                                  Check-in:{" "}
-                                  <span className="text-sm-medium neutral-500 ">
-                                    {baggageInfo.checkinBaggage || "N/A"}
-                                  </span>
-                                </p>
+
+                              {/* flightdetails    */}
+                              <div className=" flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
+                                <div className="text-left space-y-1">
+                                  <h4
+                                    className=""
+                                    style={{
+                                      fontSize: "28px",
+                                      fontWeight: "normal",
+                                    }}
+                                  >
+                                    {seg?.dt.split("T")[1]}
+                                  </h4>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.da?.city} {seg?.da?.country}
+                                  </p>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.da?.name}
+                                  </p>
+                                  <p className="text-sm-medium neutral-1000 ">
+                                    {seg?.da?.terminal}
+                                  </p>
+                                </div>
+
+                                <div className="text-center space-y-1">
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {`${hours}h ${minutes}m` ||
+                                      "Duration not available"}
+                                  </p>
+                                  <img
+                                    src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
+                                    alt="flight line"
+                                    className="mx-auto w-20"
+                                  />
+                                </div>
+
+                                <div className="text-right space-y-1">
+                                  {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
+                                  <h4
+                                    className=""
+                                    style={{
+                                      fontSize: "28px",
+                                      fontWeight: "normal",
+                                    }}
+                                  >
+                                    {seg?.at?.split("T")[1]}
+                                  </h4>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.aa?.city} {seg?.aa?.country}
+                                  </p>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.aa?.name}
+                                  </p>
+                                  <p className="text-sm-medium neutral-1000 ">
+                                    {seg?.aa?.terminal}
+                                  </p>
+                                </div>
+
+                                {/* Baggage Info */}
+                                <div className="flex flex-col items-start justify-start gap-3">
+                                  <div className="flex items-center space-x-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      fill="currentColor"
+                                      class="bi bi-suitcase-lg-fill"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
+                                    </svg>
+                                    <p className="text-sm-bold neutral-900">
+                                      Cabin:{" "}
+                                      <span className="text-sm-medium neutral-500">
+                                        {" "}
+                                        {baggageInfo.cabinBaggage || "N/A"}
+                                      </span>
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      fill="currentColor"
+                                      class="bi bi-suitcase2-fill"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
+                                    </svg>
+                                    <p className="text-sm-bold neutral-900 ">
+                                      Check-in:{" "}
+                                      <span className="text-sm-medium neutral-500 ">
+                                        {baggageInfo.checkinBaggage || "N/A"}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-
-                          <div className="mt-30 text-sm-medium neutral-1000 p-3 bg-blue-100">
-                            {`Got excess baggage? Don’t stress, buy extra check-in baggage allowance for ${seg?.da?.code}-${seg?.aa?.code} at fab rates!`}
                           </div>
                         </div>
                       </>
@@ -935,149 +1052,159 @@ const Alldetails = ({ totalpricee }) => {
                 }
               )}
 
+              {/* //table */}
               <div className="shadow rounded-md mt-50 p-3 bg-white">
-                <p className="text-xl-bold neutral-1000 mb-10">
-                  Passenger Information
-                </p>
-                <table className="w-full border-collapse mb-20">
-                  <thead style={{ borderBottom: "1px solid grey" }}>
-                    <tr>
-                      <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                        S.No
-                      </th>
-                      <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                        Name
-                      </th>
-                      <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                        Person Type
-                      </th>
-                      <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                        Segment
-                      </th>
-                      <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                        PNR
-                      </th>
-                      <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                        Ticket Number
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {travellerinfos?.map((traveller, travellerIndex) => {
-                      const segmentKeys = Object.keys(
-                        traveller.pnrDetails || { "N/A": undefined }
-                      );
+                {/* Passenger Information */}
 
-                      return segmentKeys.map((segmentKey, segmentIndex) => {
-                        const pnr = traveller.pnrDetails?.[segmentKey] ?? "N/A";
-                        console.log("pnrrrrrrrrrrrrrrrr varudha daaaaaaaaaaa ",pnr);
-                        const ticket =
-                          traveller.ticketNumberDetails?.[segmentKey] ?? "N/A";
+                <div className="shadow rounded-md mt-50 p-3 bg-white">
+                  <p className="text-xl-bold neutral-1000 mb-10">
+                    Passenger Information
+                  </p>
+                  <table className="w-full border-collapse mb-20">
+                    <thead style={{ borderBottom: "1px solid grey" }}>
+                      <tr>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          S.No
+                        </th>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          Person Type
+                        </th>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          Segment
+                        </th>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          PNR
+                        </th>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          Ticket Number
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {travellerinfos?.map((traveller, travellerIndex) => {
+                        const segmentKeys = Object.keys(
+                          traveller.pnrDetails || { "N/A": undefined }
+                        );
 
-                        if (segmentKey === "N/A") {
-                          const fallbackKeys = Object.keys(
-                            traveller.checkinStatusMap || {}
-                          );
-                          if (fallbackKeys.length > 0) {
-                            segmentKey = fallbackKeys[0];
-                          }
-                        }
-
-                        let passengerDetailsData = [];
-
-                        if (pnr !== "N/A") {
-                          console.log("ulleeeeeeeeeeeeeeee")
-                          const [fromCitySplit, toCitySplit] =
-                            segmentKey.split("-");
-
-                          // Get flightNumber and julianDate for each traveller's segment
-                          const { flightNumber, julianDate } =
-                            processTravellerInfo(
-                              traveller,
-                              bookingDetails?.itemInfos
-                            );
-
-                          passengerDetailsData = [
-                            {
-                              passengerName: `${traveller.lN}/${traveller.fN}`
-                                .trim()
-                                .toUpperCase()
-                                .padEnd(20, " "),
-                              pnrCode: pnr,
-                              fromCityCode: fromCitySplit,
-                              toCityCode: toCitySplit,
-                              flightNumber: flightNumber,
-                              julianDate: julianDate,
-                            },
-                          ];
-
+                        return segmentKeys.map((segmentKey, segmentIndex) => {
+                          const pnr =
+                            traveller.pnrDetails?.[segmentKey] ?? "N/A";
                           console.log(
-                            "passengerDetailsData =========> ",
-                            passengerDetailsData
+                            "pnrrrrrrrrrrrrrrrr varudha daaaaaaaaaaa ",
+                            pnr
                           );
-                        }
+                          const ticket =
+                            traveller.ticketNumberDetails?.[segmentKey] ??
+                            "N/A";
 
-                        return (
-                          <>
-                            <tr key={`${travellerIndex}-${segmentIndex}`}>
-                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                {travellerIndex + 1}
-                              </td>
-                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                {`${traveller.ti}. ${traveller.fN} ${traveller.lN}`}
-                              </td>
-                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                {traveller.pt}
-                              </td>
-                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                {segmentKey}
-                              </td>
-                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                {pnr}
-                              </td>
-                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                {ticket}
-                              </td>
-                            </tr>
+                          if (segmentKey === "N/A") {
+                            const fallbackKeys = Object.keys(
+                              traveller.checkinStatusMap || {}
+                            );
+                            if (fallbackKeys.length > 0) {
+                              segmentKey = fallbackKeys[0];
+                            }
+                          }
 
-                            {pnr !== "N/A" && (
-                              <tr>
-                                <td
-                                  colSpan="6"
-                                  className="px-4 py-3 border-b border-gray-200"
-                                >
-                                  <BarcodeGenerator
-                                    passengerDetails={passengerDetailsData}
-                                  />
+                          let passengerDetailsData = [];
+
+                          if (pnr !== "N/A") {
+                            console.log("ulleeeeeeeeeeeeeeee");
+                            const [fromCitySplit, toCitySplit] =
+                              segmentKey.split("-");
+
+                            // Get flightNumber and julianDate for each traveller's segment
+                            const { flightNumber, julianDate } =
+                              processTravellerInfo(
+                                traveller,
+                                bookingDetails?.itemInfos
+                              );
+
+                            passengerDetailsData = [
+                              {
+                                passengerName: `${traveller.lN}/${traveller.fN}`
+                                  .trim()
+                                  .toUpperCase()
+                                  .padEnd(20, " "),
+                                pnrCode: pnr,
+                                fromCityCode: fromCitySplit,
+                                toCityCode: toCitySplit,
+                                flightNumber: flightNumber,
+                                julianDate: julianDate,
+                              },
+                            ];
+
+                            console.log(
+                              "passengerDetailsData =========> ",
+                              passengerDetailsData
+                            );
+                          }
+
+                          return (
+                            <>
+                              <tr key={`${travellerIndex}-${segmentIndex}`}>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  {travellerIndex + 1}
+                                </td>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  {`${traveller.ti}. ${traveller.fN} ${traveller.lN}`}
+                                </td>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  {traveller.pt}
+                                </td>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  {segmentKey}
+                                </td>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  {pnr}
+                                </td>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  {ticket}
                                 </td>
                               </tr>
-                            )}
-                          </>
-                        );
-                      });
-                    })}
-                  </tbody>
-                </table>
 
-                <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
-                  Contact Information
-                </p>
-                <div className="ant-form-item">
-                  <div className="text-md neutral-1000 mb-2">
-                    Email:{" "}
-                    <strong>
-                      {bookingDetails?.order?.deliveryInfo?.emails?.join(
-                        ", "
-                      ) || "N/A"}
-                    </strong>
-                  </div>
-                  <div className="text-md neutral-1000">
-                    Phone Number:{" "}
-                    <strong>
-                      {bookingDetails?.order?.deliveryInfo?.contacts?.join(
-                        ", "
-                      ) || "N/A"}
-                    </strong>
+                              {pnr !== "N/A" && (
+                                <tr>
+                                  <td
+                                    colSpan="6"
+                                    className="px-4 py-3 border-b border-gray-200"
+                                  >
+                                    <BarcodeGenerator
+                                      passengerDetails={passengerDetailsData}
+                                    />
+                                  </td>
+                                </tr>
+                              )}
+                            </>
+                          );
+                        });
+                      })}
+                    </tbody>
+                  </table>
+
+                  <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
+                    Contact Information
+                  </p>
+                  <div className="ant-form-item">
+                    <div className="text-md neutral-1000 mb-2">
+                      Email:{" "}
+                      <strong>
+                        {bookingDetails?.order?.deliveryInfo?.emails?.join(
+                          ", "
+                        ) || "N/A"}
+                      </strong>
+                    </div>
+                    <div className="text-md neutral-1000">
+                      Phone Number:{" "}
+                      <strong>
+                        {bookingDetails?.order?.deliveryInfo?.contacts?.join(
+                          ", "
+                        ) || "N/A"}
+                      </strong>
+                    </div>
                   </div>
                 </div>
               </div>

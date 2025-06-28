@@ -23,6 +23,9 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import dayjs from "dayjs";
+import SessionTime from "../book-ticket/SessionTime";
+import useSessionTime from "../book-ticket/useSessionTime";
+
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -31,8 +34,8 @@ const Page = () => {
   //
   let ids = [];
   if (priceId.includes(",")) {
-  ids = priceId.split(","); // all split values
-} else {
+    ids = priceId.split(","); // all split values
+  } else {
     ids = [priceId];
   }
   const parameter = { priceIds: ids };
@@ -55,8 +58,15 @@ const Page = () => {
   const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
   const SeatAmount = JSON.parse(getCookie("seatSsr_amount") || 0);
 
+  const handleSessionExpire = React.useCallback(() => {
+    if (!hasExpired.current) {
+      hasExpired.current = true;
+      console.log("Session expired");
+    }
+  }, []);
+  const timeLeftRef = useSessionTime(flightData?.conditions?.sct, flightData?.conditions?.st, handleSessionExpire);
 
-
+  const hasExpired = React.useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -211,7 +221,7 @@ const Page = () => {
 
   const BookingSkeleton = () => {
     return (
-      <section className="section-box block-content-book-tickets background-card mb-20">
+      <section className="section-box block-content-book-tickets background-card mb-20 ">
         <div className="container pt-1">
           <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
 
@@ -537,8 +547,8 @@ const Page = () => {
                     ?.et ? (
                   <div>{`${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                     ?.st
-                    } hrs to ${ Math.floor(fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.et /24)
+                    } hrs to ${Math.floor(fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                      ?.et / 24)
                     } days`}</div>
                 ) : (
                   <p>
@@ -554,7 +564,7 @@ const Page = () => {
                 {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                   ?.pp === undefined ? (
                   <>
-                    <p>
+                    <div>
                       {fareRulesData?.fareRuleInformation?.tfr
                         ?.CANCELLATION?.[0]?.policyInfo ? (
                         <>
@@ -566,7 +576,7 @@ const Page = () => {
                             ))}
                         </>
                       ) : null}
-                      <p>
+                      <div>
                         ₹
                         {fareRulesData?.fareRuleInformation?.tfr
                           ?.CANCELLATION?.[0]?.amount
@@ -574,11 +584,11 @@ const Page = () => {
                             ?.CANCELLATION?.[0]?.amount
                           : fareRulesData?.fareRuleInformation?.tfr
                             ?.CANCELLATION?.[0]?.additionalFee}
-                      </p>
-                    </p>
+                      </div>
+                    </div>
                   </>
                 ) : (
-                  <p>
+                  <div>
                     {" "}
                     ₹
                     {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
@@ -587,7 +597,7 @@ const Page = () => {
                         ?.CANCELLATION?.[0]?.amount
                       : fareRulesData?.fareRuleInformation?.tfr
                         ?.CANCELLATION?.[0]?.additionalFee}{" "}
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -623,7 +633,7 @@ const Page = () => {
                 if (st && et) {
                   return (
                     <div>
-                      {`${st} hrs to ${et > 24 ? Math.floor(et / 24 )+ " days" : et + " hrs"
+                      {`${st} hrs to ${et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
                         }`}
                     </div>
                   );
@@ -639,7 +649,7 @@ const Page = () => {
 
                 if (dateChange?.policyInfo) {
                   return (
-                    <p>
+                    <div>
                       {dateChange?.policyInfo ? (
                         <>
                           {dateChange.policyInfo
@@ -648,15 +658,15 @@ const Page = () => {
                             .map((line, index) => (
                               <div key={index}>{line.trim()}</div>
                             ))}
-                          <p>
+                          <div>
                             ₹
                             {dateChange?.amount
                               ? dateChange?.amount
                               : dateChange?.additionalFee}
-                          </p>
+                          </div>
                         </>
                       ) : null}
-                    </p>
+                    </div>
                   );
                 } else {
                   return (
@@ -879,28 +889,37 @@ const Page = () => {
         // handlePayment();
         // openNotificationWithIcon('success');
         // Build the parameter object without extra curly braces
+        const trimmedTravellerInfo = travellers.map(traveller => ({
+        ti: traveller.ti,
+        fN: traveller.fN,
+        lN: traveller.lN,
+        pt: traveller.pt
+      }));
+
         const parameter = {
           bookingId: bookingId,
-          travellerInfo: travellers,
+          travellerInfo: trimmedTravellerInfo,
           deliveryInfo: {
             emails: [email],
             contacts: [`${number.code}${number.number}`],
           },
         };
 
-        // const saveBookingId = async () => {
-        //   const reqSaveBookingId = {
-        //     booking_id: bookingId,
-        //     phone: number.number,
-        //   };
-        //   console.log("reqSaveBookingId === > ", reqSaveBookingId);
-        //   const result = await postData(
-        //     "travelogy/flight/save-booking",
-        //     reqSaveBookingId
-        //   );
-        //   console.log("saveBookingId result === > ", result);
-        // };
-        // saveBookingId();
+        console.log("parameter for hold",parameter)
+
+        const saveBookingId = async () => {
+          const reqSaveBookingId = {
+            booking_id: bookingId,
+            phone: number.number,
+          };
+          console.log("reqSaveBookingId === > ", reqSaveBookingId);
+          const result = await postData(
+            "travelogy/flight/save-booking",
+            reqSaveBookingId
+          );
+          console.log("saveBookingId result === > ", result);
+        };
+        saveBookingId();
 
         loadDataBook(parameter);
       } else {
@@ -915,7 +934,7 @@ const Page = () => {
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
-        <main className="main">
+        <main className="main relative">
           <section className="box-section box-breadcrumb background-body">
             <div className="container pt-1">
               <ul className="breadcrumbs">
@@ -1649,14 +1668,14 @@ const Page = () => {
                                             ?.additionalFee}
                                         <span className="mx-1"></span>
                                       </p>
-                                      <p className="text-secondary text-sm">
+                                      <div className="text-secondary text-sm">
                                         {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo
                                           ?.split("__nls__")
                                           .filter(Boolean)
                                           .map((line, index) => (
                                             <div key={index}>{line.trim()}</div>
                                           ))}
-                                      </p>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -1973,6 +1992,11 @@ const Page = () => {
               )}
             </div>
           </section>
+           {loading ? null : (<div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+                      <SessionTime timeLeftRef={timeLeftRef} searchTickets={searchTickets} />
+                    </div>
+                    )}
+          
         </main>
       </Layout>
     </>

@@ -31,6 +31,58 @@ export default function BookingForm({
             </div>
           </div>
         </div>
+        
+        <div className="item-line-booking">
+          <div className="box-tickets">
+            <div className="flex flex-row justify-between">
+              <div>
+                <strong className="text-md-bold neutral-1000">
+                  Baggage Amount
+                </strong>
+              </div>
+              <div className="text-md-bold neutral-1000">
+                ₹
+                {savedBaggage?.reduce((acc, curr) => acc + curr.amount, 0) || 0}
+              </div>
+            </div>
+            <div className="flex flex-row justify-between">
+              <div>
+                <strong className="text-md-bold neutral-1000">
+                  Meal Amount
+                </strong>
+              </div>
+              <div className="text-md-bold neutral-1000">
+                ₹{savedMeal?.reduce((acc, curr) => acc + curr.amount, 0)}
+              </div>
+            </div>
+            <div className="flex flex-row justify-between">
+              <div>
+                <strong className="text-md-bold neutral-1000">
+                  Taxes and fees
+                </strong>
+              </div>
+              <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
+            </div>
+
+            <div className="line-booking-tickets">
+              <div className="item-ticket">
+                <p className="text-small neutral-500 mr-30">Airline GST</p>
+              </div>
+              <div className="dropdown-quantity">
+                <p>₹{Airlinegst ? Airlinegst : "0.0"}</p>
+              </div>
+            </div>
+            <div className="line-booking-tickets">
+              <div className="item-ticket">
+                <p className="text-small neutral-500 mr-30">Other Taxes</p>
+              </div>
+
+              <div className="dropdown-quantity">
+                <p>₹{othertaxes}</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div className="item-line-booking">
           <div className="box-tickets">

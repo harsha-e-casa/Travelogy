@@ -309,7 +309,7 @@ const page = () => {
             </section>
           )}
 
-          {/* {error && (
+          {error && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
                 <p className="text-red-600 mb-4 font-semibold">
@@ -324,7 +324,7 @@ const page = () => {
                 </button>
               </div>
             </div>
-          )} */}
+          )}
 
         </main>
       </Layout>
