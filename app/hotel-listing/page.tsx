@@ -261,7 +261,11 @@ export default function HotelListing() {
       setLoading(false);
       if (data) {
         console.log("Search result in handleSearch:", data);
-        setApiHotelData(data.searchResult?.his || []);
+        // setApiHotelData(data.searchResult?.his || []);
+        const hotelOnlyResults = (data.searchResult?.his || []).filter(
+          (item:any) => item.pt === "HOTEL"
+        );
+        setApiHotelData(hotelOnlyResults);
 
         // console.log("HotelCard1 data", data.searchResult.his);
       }

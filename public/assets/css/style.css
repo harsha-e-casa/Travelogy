@@ -2291,7 +2291,8 @@ body {
 
 .btn.btn-gray {
   padding: 8px 18px !important;
-  color: var(--bs-neutral-1000) !important;
+  /* color: var(--bs-neutral-1000) !important; */
+  color: #fff !important;
   font-size: 14px !important;
   line-height: 22px !important;
   font-family: var(--manrope);
@@ -13601,6 +13602,11 @@ h1 span {
 
 .box-banner-activities-detail-4 img {
   border-radius: 8px;
+  max-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 .box-banner-activities-detail-4 .container-banner-activities {
@@ -19177,4 +19183,141 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 .slider-nav-thumbnails-activities-detail .banner-slide img {
   height: 150px !important;
+}
+
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #ffffffa9;
+  padding: 20px;
+  position: relative;
+  width: 80%;
+  max-width: 800px;
+}
+
+.modal-slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-image {
+  width: auto;
+  max-width: 1000px;
+  max-height: 1000px;
+  height: auto;
+}
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  font-size: 2rem;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.prev {
+  left: 10px;
+}
+
+.next {
+  right: 10px;
+}
+
+.image-thumbnails {
+  display: flex;
+  margin-top: 20px;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+}
+
+.close-modal-btn {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+}
+
+.image-gallery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.image-row {
+  display: flex;
+  gap: 10px;
+  justify-content: start;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.image-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-row-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.image-item img {
+  width: 100%;
+  height: auto;
+  max-height: 100px;
+  max-width: 200px;
+  object-fit: cover;
+  cursor: pointer;
+  min-width: 194px;
+  min-height: 100px !important;
+}
+
+.see-all-photos-btn {
+  background-color: yellow;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.main-banner-img {
+  max-height: 400px !important;
+  max-width: 490px;
+  min-height: 392px;
+  min-width: 592px;
+}
+
+.image-row-3 img {
+  min-height: 124px !important;
 }
