@@ -28,7 +28,7 @@ import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const location = searchParams.get("location") || "Goa"; // or any default
+  const location = searchParams.get("location") || "Goa";
 
   // const checkinDate = searchParams.get("checkinDate");
   // const checkoutDate = searchParams.get("checkoutDate");
