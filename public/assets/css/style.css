@@ -14421,7 +14421,7 @@ a.link-black:hover svg {
 
 .content-booking-form .item-line-booking {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
   /* padding-bottom: 24px; */
   /* margin-bottom: 24px; */
@@ -19320,4 +19320,50 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 .image-row-3 img {
   min-height: 124px !important;
+}
+
+.bg-black-40 {
+  background-color: #000000c4;
+}
+
+.book-now-btn {
+  background-color: #f58220;
+  color: white;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 4px 12px;
+  /* py-1 = 4px top/bottom, px-3 = 12px left/right */
+  border: none;
+  border-radius: 4px;
+  /* matches Tailwind's `rounded` */
+  cursor: pointer;
+}
+
+.room_fac {
+  color: #f58220 !important;
+}
+
+.room_option {
+  background: #000;
+  color: #fff;
+  padding: 0px 4px;
+  font-size: 11px;
+  margin: 0;
+}
+
+.item-line-booking>div:nth-child(1),
+.item-line-booking>div:nth-child(2) {
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  padding: 10px 0px;
+}
+
+.hotel_tab button {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.border-r-1 {
+  border-right: 1px solid #00000040;
 }

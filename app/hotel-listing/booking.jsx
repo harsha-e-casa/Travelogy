@@ -1,183 +1,72 @@
 import { useEffect, useState } from "react";
 import { AppContext } from "@/util/AppContext";
 import { useContext } from "react";
+import Link from "next/link";
+
 export default function BookingCard({
   segmentsPrice,
   totalpricee,
-  baggageinfo,
+  onSelectOtherRoom,
 }) {
   const basefare = totalpricee?.fC?.BF;
-  const taxAndFees = totalpricee?.fC?.TAF;
+  const RoomType = totalpricee?.fC?.TAF;
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;
+  const hotelId = totalpricee?.fC?.HID || totalpricee?.hotelId;
+  const optionId = totalpricee?.fC?.OID || totalpricee?.optionId;
+
+  console.log("totalfare", totalfare);
+  console.log("optionId", optionId);
+  console.log("hotelId", hotelId);
+
   const netprice = totalpricee?.fC?.NF;
   const { getCookie } = useContext(AppContext);
-  const savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
-  const savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
-  console.log("saved baggage", savedBaggage);
-  console.log("saved meal", savedMeal);
 
   return (
     <>
       <div className="content-booking-form">
-        <div className="item-line-booking flex flex-row">
-          <div className="box-tickets">
-            <strong className="text-md-bold neutral-1000">Base Fare:</strong>
+        <div className="item-line-booking flex flex-col gap-2">
+          <div className="line-booking-tickets text-md-bold neutral-1000">
+            <h5>₹{totalfare}</h5>
           </div>
-          <div className="line-booking-tickets ">
-            <div className="dropdown-quantity text-md-bold neutral-1000">
-              <p>₹{Number(basefare)}</p>
-            </div>
+          <div className="line-booking-tickets text-md-medium neutral-700">
+            {RoomType}
           </div>
-        </div>
 
-        <div className="item-line-booking">
-          <div className="box-tickets">
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Baggage Amount
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹
-                {savedBaggage?.reduce((acc, curr) => acc + curr.amount, 0) || 0}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Meal Amount
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹{savedMeal?.reduce((acc, curr) => acc + curr.amount, 0)}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Taxes and fees
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
-            </div>
-
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Airline GST</p>
-              </div>
-              <div className="dropdown-quantity">
-                <p>₹{Airlinegst ? Airlinegst : "0.0"}</p>
-              </div>
-            </div>
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Other Taxes</p>
-              </div>
-
-              <div className="dropdown-quantity">
-                <p>₹{othertaxes}</p>
-              </div>
-            </div>
+          <div className="line-booking-tickets">
+            <a
+              onClick={(e) => {
+                e.preventDefault();
+                onSelectOtherRoom?.();
+              }}
+              className="room_fac flex items-center gap-1 text-md cursor-pointer"
+            >
+              Select Other Room
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </a>
           </div>
         </div>
 
-        <div className="item-line-booking">
-          <div className="box-tickets">
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Amount to Pay
-                </strong>
-              </div>
-              <div className="text-xl-bold neutral-1000">
-                ₹
-                {Number(totalfare) +
-                  savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
-                  savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}
-              </div>
-            </div>
-
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Commisiion</p>
-              </div>
-              <div className="dropdown-quantity">
-                <p>₹0.0</p>
-              </div>
-            </div>
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">TDS</p>
-              </div>
-              <div className="dropdown-quantity">
-                <p>₹0.0</p>
-              </div>
-            </div>
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Net Price</p>
-              </div>
-              <div className="dropdown-quantity">
-                <p>₹{netprice}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* <div className="item-line-booking">
-                <div className="box-tickets"><strong className="text-md-bold neutral-1000">Add Extra:</strong>
-                    <div className="line-booking-tickets">
-                        <div className="item-ticket">
-                            <ul className="list-filter-checkbox">
-                                <li>
-                                    <label className="cb-container">
-                                        <input type="checkbox" /><span className="text-sm-medium">Add service per Booking </span><span className="checkmark" />
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="include-price">
-                            <p className="text-md-bold neutral-1000
-                            
-                            ">$32.00</p>
-                        </div>
-                    </div>
-                    <div className="line-booking-tickets">
-                        <div className="item-ticket">
-                            <ul className="list-filter-checkbox">
-                                <li>
-                                    <label className="cb-container">
-                                        <input type="checkbox" /><span className="text-sm-medium">Add service per Personal </span><span className="checkmark" />
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <div className="include-price">
-                            <p className="text-md-bold neutral-1000">$24.00</p>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
-        <div className="item-line-booking last-item">
-          {" "}
-          <strong className="text-md-bold neutral-1000">Total Amount:</strong>
-          <div className="line-booking-right">
-            <p className="text-xl-bold neutral-1000">
-              {" "}
-              ₹
-              {Number(totalfare) +
-                savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
-                savedMeal.reduce((acc, curr) => acc + curr.amount, 0)}
-            </p>
-          </div>
-        </div>
         <div className="box-button-book">
-          {" "}
-          <a className="btn btn-book" href="#">
-            Book Now
+          <Link
+            href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
+            className="btn btn-book"
+          >
+            Book Nows
             <svg
               width={16}
               height={16}
@@ -193,7 +82,7 @@ export default function BookingCard({
                 strokeLinejoin="round"
               />
             </svg>
-          </a>
+          </Link>
         </div>
 
         <div className="box-need-help">
