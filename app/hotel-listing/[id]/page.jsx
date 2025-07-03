@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import BookingCard from "../booking";
@@ -83,6 +83,7 @@ const Modal = ({
   );
 };
 export default function ActivitiesDetail4() {
+  const hotelDataRef = useRef(null);
   const [hotelData, setHotelData] = useState(null);
   const [isAccordion, setIsAccordion] = useState(null);
   const { id } = useParams(); // Assuming you have an ID for the hotel detail
@@ -90,6 +91,9 @@ export default function ActivitiesDetail4() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [error, setError] = useState(null); // Initialize the error state to store error messages
+  const scrollToHotelData = () => {
+    hotelDataRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     async function fetchHotelDetails() {
@@ -144,8 +148,18 @@ export default function ActivitiesDetail4() {
     );
   }
   const basefare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.BF;
-  const taxAndFees = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.TAF;
-  const totalfare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.TF;
+  // const taxAndFees = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.TAF;
+  // const totalfare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.TF;
+
+  const RoomType = hotelData?.pops?.[0]?.fc?.[0];
+  const totalfare = hotelData?.pops?.[0]?.tpc;
+  const hotelId = hotelData?.id;
+  const optionId = hotelData?.ops?.[0]?.id;
+  
+  console.log("hotelId =>", hotelData?.id);
+  console.log("optionId =>", hotelData?.ops?.[0]?.id);
+  console.log("Hotel ID", hotelId);
+  console.log("OPTION ID", optionId);
   const netprice = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.NF;
 
   const baggageinfo = []; // Example: you can fetch baggage info here if needed
@@ -257,7 +271,7 @@ export default function ActivitiesDetail4() {
                 </div>
 
                 {/* Tour Info */}
-                <div className="box-info-tour">
+                {/* <div className="box-info-tour">
                   <div className="tour-info-group">
                     <div className="icon-item">
                       <svg
@@ -347,7 +361,7 @@ export default function ActivitiesDetail4() {
                       <p className="text-lg-bold neutral-1000">English</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Overview Accordion */}
                 <div className="box-collapse-expand">
@@ -434,17 +448,20 @@ export default function ActivitiesDetail4() {
                     <p className="text-xl-bold neutral-1000">Booking Form</p>
                   </div>
                   <BookingCard
-                    segmentsPrice={hotelData?.ops} // Pass the full operations data if necessary
+                    segmentsPrice={hotelData?.ops}
                     totalpricee={{
                       fC: {
                         BF: basefare,
-                        TAF: taxAndFees,
+                        TAF: RoomType,
                         TF: totalfare,
                         NF: netprice,
+                        OID: hotelData?.ops?.[0]?.id, // ✅ optionId here
+                        HID: hotelData?.id, // ✅ hotelId here
                       },
                     }}
                     baggageinfo={baggageinfo} // Populate this as needed
                     mealinfo={mealinfo} // Populate this as needed
+                    onSelectOtherRoom={scrollToHotelData}
                   />
                 </div>
               </div>
@@ -452,7 +469,8 @@ export default function ActivitiesDetail4() {
           </div>
         </section>
         <section>
-          <div className="py-10 container">
+          <div className="py-10 container" ref={hotelDataRef}>
+            <hr />
             <HotelData
               facilities={hotelData?.fl || []}
               longitude={hotelData?.gl?.lt}
