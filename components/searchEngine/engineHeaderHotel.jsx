@@ -10,8 +10,6 @@ import Link from "next/link";
 import { AppTravellerHotel } from "./TravellerForm";
 import { useRouter } from "next/navigation";
 
-import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
-
 const EngineHeaderHotel = ({ active_border }) => {
   const [showSearchState, setShowSearchState] = useState(false); // Consistent naming
   const [showSearchStateTo, setShowSearchStateTo] = useState(false); // Consistent naming

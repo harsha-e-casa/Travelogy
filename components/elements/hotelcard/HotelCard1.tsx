@@ -32,7 +32,7 @@ export default function HotelCard1({ hotel }: any) {
             />
           </svg>
         </Link>
-        <Link href={`/hotel-listing/book-details?id=${id}`}>
+        <Link href={`/hotel-listing/${id}`}>
           <img src={image} alt={name} />
         </Link>
       </div>
@@ -40,7 +40,7 @@ export default function HotelCard1({ hotel }: any) {
         <div className="card-title">
           <Link
             className="text-lg-bold neutral-1000"
-            href={`/hotel-listing/book-details?id=${id}`}
+            href={`/hotel-listing/${id}`}
           >
             {name}
           </Link>
