@@ -30,9 +30,6 @@ export default function HotelListing() {
   const searchParams = useSearchParams();
   const location = searchParams.get("location") || "Goa";
 
-  // const checkinDate = searchParams.get("checkinDate");
-  // const checkoutDate = searchParams.get("checkoutDate");
-
   const city = searchParams.get("city") || "699261"; // Static default city if none
   const nationality = searchParams.get("nationality") || "106"; // Static default nationality
   const currency = searchParams.get("currency") || "INR"; // Static default currency
@@ -225,6 +222,13 @@ export default function HotelListing() {
     setLoading(false);
     if (data) {
       console.log("Search result in handleSearch:", data);
+      // setApiHotelData(data.searchResult?.his || []);
+      const hotelOnlyResults = data.searchResult?.his || [];
+      // .filter((item: any) => item.pt === "HOTEL");
+      setApiHotelData(hotelOnlyResults);
+
+      console.log("Search result in handleSearch:", data);
+      console.log("queryParams", queryParams);
       router.push(`/hotel-listing?${queryParams}`);
     }
   };
@@ -262,9 +266,8 @@ export default function HotelListing() {
       if (data) {
         console.log("Search result in handleSearch:", data);
         // setApiHotelData(data.searchResult?.his || []);
-        const hotelOnlyResults = (data.searchResult?.his || []).filter(
-          (item:any) => item.pt === "HOTEL"
-        );
+        const hotelOnlyResults = (data.searchResult?.his || [])
+        // .filter((item: any) => item.pt === "HOTEL");
         setApiHotelData(hotelOnlyResults);
 
         // console.log("HotelCard1 data", data.searchResult.his);

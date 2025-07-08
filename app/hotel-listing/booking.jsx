@@ -66,17 +66,17 @@ export default function BookingCard({
             href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
             className="btn btn-book"
           >
-            Book Nows
+            Book Now
             <svg
               width={16}
               height={16}
               viewBox="0 0 16 16"
-              fill="none"
+              fill="#fff"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 d="M8 15L15 8L8 1M15 8L1 8"
-                stroke="#0D0D0D"
+                stroke="#fff"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"

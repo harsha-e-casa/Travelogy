@@ -1,19 +1,61 @@
-import React, { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { fetchHotelReviewData } from "../../../util/HotelApi"; // Import the function
 
-export function Step1TravellerDetails({ formData, setFormData, onNext }) {
+export function HotelReviewComponent({ setHotelReviewData }) {
+  const [error, setError] = useState(null);
+  const searchParams = useSearchParams();
+  const hid = searchParams.get("hid");
+  const oid = searchParams.get("oid");
+
+  useEffect(() => {
+    if (hid && oid) {
+      fetchHotelReviewData(hid, oid)
+        .then((data) => {
+          setHotelReviewData(data);
+        })
+        .catch((err) => {
+          setError(err.message);
+        });
+    }
+  }, [hid, oid]);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+}
+
+export function Step1TravellerDetails({
+  formData,
+  setFormData,
+  onNext,
+  hotelReviewData,
+}) {
+  console.log("Step1TravellerDetails Hotel Review Data:", hotelReviewData);
+
+  // Check for the hotel name
+  // const hotelName = hotelReviewData?.hInfo?.name || "Hotel name is loading...";
+
   return (
     <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
       {/* Hotel Info */}
       <div className="border-b pb-4">
         <h2 className="text-xl font-semibold">
-          Fabhotel 24*7 Residency <span className="text-orange-500">★★★☆☆</span>
+          {hotelReviewData?.hInfo?.name}
+          <span className="text-orange-500">★★★☆☆</span>
         </h2>
         <p className="text-gray-600">
-          Nilesh Chember Gali, Near by Amol Hotel, Navi Mumbai
+          {hotelReviewData?.hInfo?.ad?.adr}
+          <br />
+          {hotelReviewData?.hInfo?.ad?.ctn}, {hotelReviewData?.hInfo?.ad?.cn}.
+          Psotal code: {hotelReviewData?.hInfo?.ad?.postalCode}
         </p>
         <p className="text-gray-500 text-sm">
-          Last Cancellation Date:{" "}
-          <span className="text-blue-700 font-semibold">03-07-2025</span>
+          Last Cancellation Date:
+          <span className="text-blue-700 font-semibold">
+            <strong>Doubt</strong>
+          </span>
         </p>
       </div>
 
@@ -48,7 +90,7 @@ export function Step1TravellerDetails({ formData, setFormData, onNext }) {
       {/* Guest Details */}
       <div className="space-y-2">
         <h3 className="font-semibold text-base">
-          Guest Details{" "}
+          Guest Details
           <span className="text-xs text-red-500">
             (Only Lead Guest Name is Required)
           </span>
@@ -169,7 +211,7 @@ export function Step2Review({ formData, onNext, onPrev }) {
           400703
         </p>
         <p className="text-gray-500 text-sm">
-          Last Cancellation Date:{" "}
+          Last Cancellation Date:
           <span className="text-blue-700 font-semibold">03-07-2025</span>
         </p>
       </div>
@@ -621,11 +663,11 @@ export function Step4Payment({ amount = 969.13, onConfirmPayment }) {
               <p>
                 <strong>Please note:</strong> You may be redirected to a bank
                 page to complete your transaction. By making this booking, you
-                agree to our{" "}
+                agree to our
                 <a href="#" className="text-blue-600 underline">
                   Terms of Use
-                </a>{" "}
-                and{" "}
+                </a>
+                and
                 <a href="#" className="text-blue-600 underline">
                   Privacy Policy
                 </a>

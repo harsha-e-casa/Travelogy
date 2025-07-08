@@ -1,12 +1,18 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { fetchHotelReviewData } from "../../../util/HotelApi"; // Import the API utility
+
 import {
   Step1TravellerDetails,
   Step2Review,
   Step3PersonalDocuments,
   Step4Payment,
+  HotelReviewComponent,
 } from "./Stepper";
+
+import Layout from "@/components/layout/Layout";
+
 const CheckIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
     <path
@@ -82,6 +88,10 @@ const CreditCardIcon = () => (
 );
 
 export default function Stepper() {
+  const [hotelReviewData, setHotelReviewData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     title: "Mr",
@@ -92,12 +102,34 @@ export default function Stepper() {
     email: "",
     specialRequest: "",
   });
+  // const [hotelReviewData, setHotelReviewData] = useState(null); // Lift the state up
 
   const { hotelId, optionId } = useParams();
   const cleanedHotelId = hotelId;
   const cleanedOptionId = optionId;
 
-  console.log("hotelId", cleanedHotelId, cleanedOptionId);
+  const fetchHotelReviewData = async () => {
+    // Simulating fetching data (you should use your actual fetching logic)
+    const data = await fetchHotelData(cleanedHotelId, cleanedOptionId);
+    setHotelReviewData(data);
+  };
+  useEffect(() => {
+    if (hotelId && optionId) {
+      setLoading(true);
+      fetchHotelReviewData(hotelId, optionId)
+        .then((data) => {
+          setHotelReviewData(data); // Store the fetched data
+          setLoading(false); // Stop loading once data is fetched
+        })
+        .catch((err) => {
+          setError("Failed to load hotel review data");
+          setLoading(false); // Stop loading on error
+        });
+    }
+  }, [hotelId, optionId]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   const steps = [
     {
@@ -138,36 +170,38 @@ export default function Stepper() {
     // window.location.href = '/bank-payment'; // real redirect
   };
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-10 px-4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">
-        Booking Progress
-      </h1>
-      <div className="w-full max-w-6xl relative flex justify-between mb-10">
-        <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200 z-0">
-          <div
-            className="h-full bg-grey-500 transition-all duration-500"
-            style={{
-              width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
-            }}
-          />
-        </div>
-
-        {steps.map((step) => {
-          const status =
-            currentStep > step.id
-              ? "completed"
-              : currentStep === step.id
-              ? "current"
-              : "upcoming";
-
-          return (
-            <div
-              key={step.id}
-              onClick={() => handleStepClick(step.id)}
-              className="relative z-10 flex flex-col items-center cursor-pointer group"
-            >
+    <Layout headerStyle={1} footerStyle={1}>
+      <main className="main">
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-10 px-4">
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">
+            Booking Progress
+          </h1>
+          <div className="w-full max-w-6xl relative flex justify-between mb-10">
+            <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200 z-0">
               <div
-                className={`w-12 h-12 flex items-center justify-center rounded-full border-2 mb-2
+                className="h-full bg-grey-500 transition-all duration-500"
+                style={{
+                  width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
+                }}
+              />
+            </div>
+
+            {steps.map((step) => {
+              const status =
+                currentStep > step.id
+                  ? "completed"
+                  : currentStep === step.id
+                  ? "current"
+                  : "upcoming";
+
+              return (
+                <div
+                  key={step.id}
+                  onClick={() => handleStepClick(step.id)}
+                  className="relative z-10 flex flex-col items-center cursor-pointer group"
+                >
+                  <div
+                    className={`w-12 h-12 flex items-center justify-center rounded-full border-2 mb-2
                 ${
                   status === "completed"
                     ? "bg-green-500 border-green-500 text-white"
@@ -175,72 +209,80 @@ export default function Stepper() {
                     ? "bg-blue-500 border-blue-500 text-white ring-4 ring-blue-200"
                     : "bg-gray-300 border-gray-300 text-white"
                 }`}
-              >
-                {status === "completed" ? <CheckIcon /> : step.icon}
-              </div>
-              <div className="text-center">
-                <p className="text-xs font-medium text-gray-600">
-                  {step.title}
-                </p>
-                <p className="text-xs text-gray-400">{step.subtitle}</p>
+                  >
+                    {status === "completed" ? <CheckIcon /> : step.icon}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs font-medium text-gray-600">
+                      {step.title}
+                    </p>
+                    <p className="text-xs text-gray-400">{step.subtitle}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
+            {/* Stepper + Progress Bar */}
+            <div className="md:col-span-8 border-r-1">
+              <div className="rounded-lg">
+                {currentStep === 1 && (
+                  <Step1TravellerDetails
+                    formData={{}} // Pass your form data here
+                    setFormData={() => {}} // Pass your setFormData handler here
+                    onNext={() => {}} // Pass your onNext function here
+                    hotelReviewData={hotelReviewData} // Pass the hotel review data as prop
+                  />
+                )}
+                {currentStep === 2 && (
+                  <Step2Review
+                    formData={formData}
+                    onPrev={goPrev}
+                    onNext={goNext}
+                    hotelReviewData={hotelReviewData} // Pass hotelReviewData here as well
+                  />
+                )}
+
+                {currentStep === 3 && (
+                  <Step3PersonalDocuments
+                    formData={formData}
+                    onPrev={goPrev}
+                    onNext={goNext}
+                  />
+                )}
+                {currentStep === 4 && (
+                  <Step4Payment
+                    amount={433.45}
+                    onConfirmPayment={handlePayment}
+                  />
+                )}
               </div>
             </div>
-          );
-        })}
-      </div>
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Stepper + Progress Bar */}
-        <div className="md:col-span-8 border-r-1">
-          <div className="rounded-lg">
-            {currentStep === 1 && (
-              <Step1TravellerDetails
-                formData={formData}
-                setFormData={setFormData}
-                onNext={goNext}
-              />
-            )}
-            {currentStep === 2 && (
-              <Step2Review
-                formData={formData}
-                onPrev={goPrev}
-                onNext={goNext}
-              />
-            )}
 
-            {currentStep === 3 && (
-              <Step3PersonalDocuments
-                formData={formData}
-                onPrev={goPrev}
-                onNext={goNext}
-              />
-            )}
-            {currentStep === 4 && (
-              <Step4Payment amount={433.45} onConfirmPayment={handlePayment} />
-            )}
+            {/* Fare Summary (col-4) */}
+            <div className="md:col-span-4">
+              <HotelReviewComponent setHotelReviewData={setHotelReviewData} />
+              <div className="p-6 rounded-md text-sm space-y-4 ">
+                <h3 className="font-semibold text-base text-gray-600">
+                  FARE SUMMARY
+                </h3>
+                <div className="flex justify-between border-b pb-2">
+                  <span>Base Fare</span>
+                  <span>₹818.50</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span>Taxes and fees</span>
+                  <span>₹11.80</span>
+                </div>
+                <div className="flex justify-between font-semibold text-gray-800">
+                  <span>Total Amount Payable</span>
+                  <span>₹830.30</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Fare Summary (col-4) */}
-        <div className="md:col-span-4">
-          <div className="p-6 rounded-md text-sm space-y-4 ">
-            <h3 className="font-semibold text-base text-gray-600">
-              FARE SUMMARY
-            </h3>
-            <div className="flex justify-between border-b pb-2">
-              <span>Base Fare</span>
-              <span>₹818.50</span>
-            </div>
-            <div className="flex justify-between border-b pb-2">
-              <span>Taxes and fees</span>
-              <span>₹11.80</span>
-            </div>
-            <div className="flex justify-between font-semibold text-gray-800">
-              <span>Total Amount Payable</span>
-              <span>₹830.30</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </main>
+    </Layout>
   );
 }

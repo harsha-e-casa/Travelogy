@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+// import Link from "next/link";
 
 const HotelData = ({ facilities, longitude, latitude, fetchHotelData }) => {
   const [activeTab, setActiveTab] = useState("Rooms");
@@ -93,6 +94,10 @@ const HotelData = ({ facilities, longitude, latitude, fetchHotelData }) => {
                               {room.chd ? ` & ${room.chd} child` : ""}
                             </div>
                             <button className="book-now-btn">BOOK NOW</button>
+                            {/* <Link
+                              href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
+                              className="btn btn-book"
+                            >Book Now</Link> */}
                             {/* <div className="text-[#f58220] text-xs mt-1">
                               Add to Quote
                             </div> */}
@@ -169,7 +174,7 @@ const HotelData = ({ facilities, longitude, latitude, fetchHotelData }) => {
   return (
     <>
       <div className="flex border-b hotel_tab mt-20 mb-2">
-        {["Rooms", "Facilities", "Location"].map((tab) => (
+        {["Rooms"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
