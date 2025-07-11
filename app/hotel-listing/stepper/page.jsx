@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { fetchHotelReviewData } from "../../../util/HotelApi"; // Import the API utility
+// import { fetchHotelReviewData } from "../../../util/HotelApi";
 
 import {
   Step1TravellerDetails,
@@ -9,6 +9,7 @@ import {
   Step3PersonalDocuments,
   Step4Payment,
   HotelReviewComponent,
+  FareAmount,
 } from "./Stepper";
 
 import Layout from "@/components/layout/Layout";
@@ -89,7 +90,6 @@ const CreditCardIcon = () => (
 
 export default function Stepper() {
   const [hotelReviewData, setHotelReviewData] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -102,33 +102,24 @@ export default function Stepper() {
     email: "",
     specialRequest: "",
   });
-  // const [hotelReviewData, setHotelReviewData] = useState(null); // Lift the state up
 
-  const { hotelId, optionId } = useParams();
-  const cleanedHotelId = hotelId;
-  const cleanedOptionId = optionId;
+  // useEffect(() => {
+  //   const loadHotelData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const data = await fetchHotelReviewData(hotelId, optionId);
+  //       setHotelReviewData(data);
+  //       console.log("1111111111111111111111111111", data);
+  //     } catch (err) {
+  //       setError("Failed to load hotel review data");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-  const fetchHotelReviewData = async () => {
-    // Simulating fetching data (you should use your actual fetching logic)
-    const data = await fetchHotelData(cleanedHotelId, cleanedOptionId);
-    setHotelReviewData(data);
-  };
-  useEffect(() => {
-    if (hotelId && optionId) {
-      setLoading(true);
-      fetchHotelReviewData(hotelId, optionId)
-        .then((data) => {
-          setHotelReviewData(data); // Store the fetched data
-          setLoading(false); // Stop loading once data is fetched
-        })
-        .catch((err) => {
-          setError("Failed to load hotel review data");
-          setLoading(false); // Stop loading on error
-        });
-    }
-  }, [hotelId, optionId]);
+  //   if (hotelId && optionId) loadHotelData();
+  // }, [hotelId, optionId]);
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   const steps = [
@@ -165,9 +156,7 @@ export default function Stepper() {
     if (stepId <= currentStep) setCurrentStep(stepId);
   };
   const handlePayment = () => {
-    // Redirect to bank/payment gateway
     alert("Redirecting to payment gateway...");
-    // window.location.href = '/bank-payment'; // real redirect
   };
   return (
     <Layout headerStyle={1} footerStyle={1}>
@@ -223,15 +212,14 @@ export default function Stepper() {
             })}
           </div>
           <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Stepper + Progress Bar */}
             <div className="md:col-span-8 border-r-1">
               <div className="rounded-lg">
                 {currentStep === 1 && (
                   <Step1TravellerDetails
-                    formData={{}} // Pass your form data here
-                    setFormData={() => {}} // Pass your setFormData handler here
-                    onNext={() => {}} // Pass your onNext function here
-                    hotelReviewData={hotelReviewData} // Pass the hotel review data as prop
+                    formData={formData}
+                    setFormData={setFormData}
+                    onNext={goNext}
+                    hotelReviewData={hotelReviewData}
                   />
                 )}
                 {currentStep === 2 && (
@@ -239,7 +227,7 @@ export default function Stepper() {
                     formData={formData}
                     onPrev={goPrev}
                     onNext={goNext}
-                    hotelReviewData={hotelReviewData} // Pass hotelReviewData here as well
+                    hotelReviewData={hotelReviewData}
                   />
                 )}
 
@@ -259,25 +247,10 @@ export default function Stepper() {
               </div>
             </div>
 
-            {/* Fare Summary (col-4) */}
             <div className="md:col-span-4">
               <HotelReviewComponent setHotelReviewData={setHotelReviewData} />
               <div className="p-6 rounded-md text-sm space-y-4 ">
-                <h3 className="font-semibold text-base text-gray-600">
-                  FARE SUMMARY
-                </h3>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Base Fare</span>
-                  <span>₹818.50</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Taxes and fees</span>
-                  <span>₹11.80</span>
-                </div>
-                <div className="flex justify-between font-semibold text-gray-800">
-                  <span>Total Amount Payable</span>
-                  <span>₹830.30</span>
-                </div>
+                <FareAmount hotelReviewData={hotelReviewData} />
               </div>
             </div>
           </div>

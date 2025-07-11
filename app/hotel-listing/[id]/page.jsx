@@ -100,8 +100,8 @@ export default function ActivitiesDetail4() {
   const [roomsData, setRoomsData] = useState([
     { adults: 1, children: 0, childAges: [] },
   ]);
-  const [totalAdults, setTotalAdults] = useState(1);
-  const [totalChildren, setTotalChildren] = useState(0);
+  // const [totalAdults, setTotalAdults] = useState(1);
+  // const [totalChildren, setTotalChildren] = useState(0);
   const [showSearchState, setShowSearchState] = useState(false);
   const [showTraveller, setShowTraveller] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
@@ -114,6 +114,16 @@ export default function ActivitiesDetail4() {
     console.log("Location:", selectFrom);
     console.log("Rooms Data:", roomsData);
   };
+  useEffect(() => {
+    if (searchQueryData?.roomInfo) {
+      const convertedRooms = searchQueryData.roomInfo.map((room) => ({
+        adults: room.numberOfAdults,
+        children: room.numberOfChild,
+        childAges: room.childAge || [],
+      }));
+      setRoomsData(convertedRooms);
+    }
+  }, [searchQueryData?.roomInfo]);
 
   const toggleCheckin = () => {
     setOpenCheckin((prevState) => !prevState);
@@ -215,6 +225,19 @@ export default function ActivitiesDetail4() {
   const { ln, lt } = hotelData?.gl || {};
   const googleMapsUrl = `https://www.google.com/maps?q=${lt},${ln}`;
   const images = hotelData?.img || [];
+  // Calculate total adults, children, and rooms
+  const roomInfo = searchQueryData?.roomInfo || [];
+  const totalAdults = roomInfo.reduce(
+    (sum, room) => sum + (room.numberOfAdults || 0),
+    0
+  );
+  const totalChildren = roomInfo.reduce(
+    (sum, room) => sum + (room.numberOfChild || 0),
+    0
+  );
+  const roomCount = roomInfo.length;
+
+  console.log("Rooms & Guest", searchQueryData?.roomInfo);
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
@@ -524,14 +547,14 @@ export default function ActivitiesDetail4() {
                     </div>
 
                     <div className="flex space-x-4">
-                      <div className="flex-1">
+                      <div className="flex-1 check-avail-modal">
                         <label>Rooms & Guests</label>
                         <button onClick={toggleTraveller}>
                           <div className=" text-base font-bold">
                             {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{" "}
                             {totalChildren} Child
-                            {totalChildren > 1 ? "ren" : ""}, {roomsData.length}{" "}
-                            Room{roomsData.length > 1 ? "s" : ""}
+                            {totalChildren > 1 ? "ren" : ""}, {roomCount} Room
+                            {roomCount > 1 ? "s" : ""}
                           </div>
                         </button>
                         {showTraveller && (

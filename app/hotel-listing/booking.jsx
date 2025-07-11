@@ -64,6 +64,7 @@ export default function BookingCard({
         <div className="box-button-book">
           <Link
             href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
+            // http://localhost:3000/hotel-listing/stepper?hid=hsid9682562766-38242689&oid=44_7_17835336
             className="btn btn-book"
           >
             Book Now

@@ -24,14 +24,27 @@ const hotelsData = rawHotelsData.map((hotel) => ({
 }));
 import AppDateRage from "@/components/searchEngine/AppDateRage";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
+import { useNationalities } from "@/util/HotelApi";
+type Nationality = {
+  countryName: string;
+  name: string;
+  dialCode: string;
+  countryId: string;
+  code: string;
+  isoCode: string;
+};
 
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const location = searchParams.get("location") || "Goa";
+  const { nationalities } = useNationalities() as {
+    nationalities: Nationality[];
+    loading: boolean;
+  };
 
   const city = searchParams.get("city") || "699261"; // Static default city if none
-  const nationality = searchParams.get("nationality") || "106"; // Static default nationality
+  // const nationality = searchParams.get("nationality") || "106"; // Static default nationality
   const currency = searchParams.get("currency") || "INR"; // Static default currency
   const rooms = Number(searchParams.get("rooms")) || 1;
   const adults = Number(searchParams.get("adults")) || 1;
@@ -95,7 +108,37 @@ export default function HotelListing() {
   const childAges = roomsData.flatMap((r) => r.childAges);
 
   const [showTraveller, setShowTraveller] = useState(false);
-  const [selectFrom, setSelectFrom] = useState(location);
+  const [selectFrom, setSelectFrom] = useState<{
+    cityName: string;
+    countryName: string;
+    id?: string;
+  } | null>(null);
+  const [nationalityId, setNationalityId] = useState<string | null>(null);
+  // useEffect(() => {
+  //   if (selectFrom && selectFrom.countryName && nationalities.length > 0) {
+  //     const matched = nationalities.find(
+  //       (n) =>
+  //         n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+  //     );
+  //     setNationalityId(matched ? matched.countryId : null);
+  //   }
+  // }, [selectFrom, nationalities]);
+  useEffect(() => {
+    if (selectFrom && nationalities.length > 0) {
+      const matched = nationalities.find(
+        (n) =>
+          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+      );
+      if (matched) {
+        console.log("Matched Nationality:", matched);
+
+        setNationalityId(matched.countryId);
+      } else {
+        alert("Nationality could not be determined from selected city.");
+      }
+    }
+  }, [selectFrom, nationalities]);
+  
 
   useEffect(() => {
     if (!checkinDate) setCheckinDate(dayjs().format("YYYY-MM-DD"));
@@ -183,8 +226,21 @@ export default function HotelListing() {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
+    const matchedNationality = nationalities.find(
+      (n) =>
+        selectFrom &&
+        n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+    );
+
+    if (!matchedNationality) {
+      alert("Could not determine nationality for selected city.");
+      return;
+    }
+
+    const nationalityIdToUse = matchedNationality.countryId;
+
     setLoading(true);
-    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+      const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
     const roomInfo = roomsData.map((room) => ({
@@ -196,9 +252,9 @@ export default function HotelListing() {
     const queryParams = new URLSearchParams({
       checkinDate: formattedCheckIn,
       checkoutDate: formattedCheckOut,
-      location: selectFrom,
-      city: "699261",
-      nationality: "106",
+      location: selectFrom?.cityName || "",
+      city: selectFrom?.id || "",
+      nationality: nationalityIdToUse,
       currency: "INR",
       rooms: roomsData.length.toString(),
       adults: totalAdults.toString(),
@@ -212,7 +268,7 @@ export default function HotelListing() {
         checkinDate: formattedCheckIn,
         checkoutDate: formattedCheckOut,
         roomInfo: cleanRoomInfo,
-        searchCriteria: { city, nationality, currency },
+        searchCriteria: { city, nationality: nationalityIdToUse, currency },
         searchPreferences: { fsc: true },
       },
       sync: true,
@@ -255,7 +311,7 @@ export default function HotelListing() {
           checkinDate: formattedCheckIn,
           checkoutDate: formattedCheckOut,
           roomInfo: cleanRoomInfo,
-          searchCriteria: { city, nationality, currency },
+          searchCriteria: { city, nationality: nationalityId, currency },
           searchPreferences: { fsc: true },
         },
         sync: true,
@@ -266,7 +322,7 @@ export default function HotelListing() {
       if (data) {
         console.log("Search result in handleSearch:", data);
         // setApiHotelData(data.searchResult?.his || []);
-        const hotelOnlyResults = (data.searchResult?.his || [])
+        const hotelOnlyResults = data.searchResult?.his || [];
         // .filter((item: any) => item.pt === "HOTEL");
         setApiHotelData(hotelOnlyResults);
 
@@ -365,8 +421,9 @@ export default function HotelListing() {
                 <label>Location</label>
 
                 <span className="input-field font-bold" onClick={openfrom}>
-                  {selectFrom}
+                  {selectFrom?.cityName || "Select City"}
                 </span>
+
                 {showSearchState && (
                   <div
                     className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
@@ -474,15 +531,15 @@ export default function HotelListing() {
                   </div>
                   <div className="box-grid-tours wow fadeIn">
                     {/* <div className="row">
-                      {paginatedHotels.map((hotel) => (
-                        <div
-                          className="col-xl-4 col-lg-6 col-md-6"
-                          key={hotel.id}
-                        >
-                          <HotelCard1 hotel={hotel} />
-                        </div>
-                      ))}
-                    </div> */}
+                        {paginatedHotels.map((hotel) => (
+                          <div
+                            className="col-xl-4 col-lg-6 col-md-6"
+                            key={hotel.id}
+                          >
+                            <HotelCard1 hotel={hotel} />
+                          </div>
+                        ))}
+                      </div> */}
                     <div className="row">
                       {loading ? (
                         <div className="col-12 d-flex justify-center py-5">
