@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { fetchHotelReviewData } from "../../../util/HotelApi"; // Import the function
+import { fetchHotelReviewData } from "../../../util/HotelApi";
 
 export function HotelReviewComponent({ setHotelReviewData }) {
   const [error, setError] = useState(null);
@@ -34,12 +34,8 @@ export function Step1TravellerDetails({
 }) {
   console.log("Step1TravellerDetails Hotel Review Data:", hotelReviewData);
 
-  // Check for the hotel name
-  // const hotelName = hotelReviewData?.hInfo?.name || "Hotel name is loading...";
-
   return (
     <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
-      {/* Hotel Info */}
       <div className="border-b pb-4">
         <h2 className="text-xl font-semibold">
           {hotelReviewData?.hInfo?.name}
@@ -59,22 +55,23 @@ export function Step1TravellerDetails({
         </p>
       </div>
 
-      {/* Booking Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-50 p-4 rounded-md">
         <div>
           <strong>Check In</strong>
           <p className="text-gray-700">
-            05-07-2025
+            {hotelReviewData?.query?.checkinDate}
             <br />
-            12:00 PM
+            {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
+              "No Clock-in Time"}
           </p>
         </div>
         <div>
           <strong>Check Out</strong>
           <p className="text-gray-700">
-            06-07-2025
+            {hotelReviewData?.query?.checkoutDate}
             <br />
-            11:00 AM
+            {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
+              "No Clock-out Time"}{" "}
           </p>
         </div>
         <div>
@@ -87,7 +84,6 @@ export function Step1TravellerDetails({
         </div>
       </div>
 
-      {/* Guest Details */}
       <div className="space-y-2">
         <h3 className="font-semibold text-base">
           Guest Details
@@ -136,7 +132,6 @@ export function Step1TravellerDetails({
         </button>
       </div>
 
-      {/* Contact Details */}
       <div className="space-y-2">
         <h3 className="font-semibold text-base">Contact Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -172,7 +167,6 @@ export function Step1TravellerDetails({
         </div>
       </div>
 
-      {/* Special Requests */}
       <div>
         <h3 className="font-semibold text-base">
           Special Request(s) (Optional)
@@ -188,7 +182,6 @@ export function Step1TravellerDetails({
         />
       </div>
 
-      {/* Submit */}
       <button className="rounded-none book-now-btn" onClick={onNext}>
         PROCEED TO REVIEW
       </button>
@@ -196,42 +189,47 @@ export function Step1TravellerDetails({
   );
 }
 
-export function Step2Review({ formData, onNext, onPrev }) {
+export function Step2Review({ formData, onNext, hotelReviewData }) {
   const [accepted, setAccepted] = useState(false);
 
   return (
     <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
-      {/* Hotel Info */}
       <div className="border-b pb-4">
         <h2 className="text-xl font-semibold">
-          Fabhotel 24*7 Residency <span className="text-orange-500">★★★☆☆</span>
+          {hotelReviewData?.hInfo?.name}
+          <span className="text-orange-500">★★★☆☆</span>
         </h2>
         <p className="text-gray-600">
-          Nilesh Chember Gali, Near by Amol Hotel, Navi Mumbai, Postal Code:
-          400703
+          {hotelReviewData?.hInfo?.ad?.adr}
+          <br />
+          {hotelReviewData?.hInfo?.ad?.ctn}, {hotelReviewData?.hInfo?.ad?.cn}.
+          Psotal code: {hotelReviewData?.hInfo?.ad?.postalCode}
         </p>
         <p className="text-gray-500 text-sm">
           Last Cancellation Date:
-          <span className="text-blue-700 font-semibold">03-07-2025</span>
+          <span className="text-blue-700 font-semibold">
+            <strong>Doubt</strong>
+          </span>
         </p>
       </div>
 
-      {/* Booking Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-50 p-4 rounded-md">
         <div>
           <strong>Check In</strong>
-          <p>
-            05-07-2025
+          <p className="text-gray-700">
+            {hotelReviewData?.query?.checkinDate}
             <br />
-            12:00 PM
+            {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
+              "No Clock-in Time"}
           </p>
         </div>
         <div>
           <strong>Check Out</strong>
-          <p>
-            06-07-2025
+          <p className="text-gray-700">
+            {hotelReviewData?.query?.checkoutDate}
             <br />
-            11:00 AM
+            {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
+              "No Clock-out Time"}{" "}
           </p>
         </div>
         <div>
@@ -244,7 +242,6 @@ export function Step2Review({ formData, onNext, onPrev }) {
         </div>
       </div>
 
-      {/* Contact Info */}
       <div className="border-t pt-4 space-y-1">
         <h3 className="font-semibold text-base">Contact Details</h3>
         <p>Email: {formData.email}</p>
@@ -253,7 +250,6 @@ export function Step2Review({ formData, onNext, onPrev }) {
         </p>
       </div>
 
-      {/* Cancellation Policy */}
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">Cancellation Policy</h3>
         <table className="w-full border text-center text-sm">
@@ -300,7 +296,6 @@ export function Step2Review({ formData, onNext, onPrev }) {
         </ul>
       </div>
 
-      {/* Booking Notes */}
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base">Booking Notes</h3>
         <p className="text-sm mt-2">
@@ -309,7 +304,6 @@ export function Step2Review({ formData, onNext, onPrev }) {
         </p>
       </div>
 
-      {/* Terms & Conditions */}
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">
           General Terms & Conditions
@@ -359,15 +353,7 @@ export function Step2Review({ formData, onNext, onPrev }) {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex justify-between items-center mt-6">
-        {/* <button
-          onClick={onPrev}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium px-6 py-2 rounded"
-        >
-          Back
-        </button> */}
-
         <div className="flex gap-4">
           <button
             disabled={!accepted}
@@ -416,7 +402,6 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
       setPanError("Invalid PAN format (e.g., ABCDE1234F)");
     } else {
       setPanError("");
-      // Proceed with validation (API call etc.)
     }
   };
 
@@ -432,7 +417,6 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
         Below documents are mandatory for completing this booking:
       </p>
 
-      {/* Guest Box */}
       <div className="border rounded-md p-4 mb-4">
         <div className="flex items-center justify-between border rounded bg-[#f5f5f5] p-2 mb-4 text-sm font-medium">
           <div className="flex items-center gap-2 px-2 py-1 border-r w-1/2">
@@ -457,7 +441,6 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
           </div>
         </div>
 
-        {/* PAN Options */}
         <div className="flex justify-between items-center mb-2">
           <span className="text-[#cc3300] text-lg font-semibold">Room 1 -</span>
           <div className="flex flex-col md:flex-row gap-4 text-sm font-medium text-[#cc3300] mb-3">
@@ -492,7 +475,6 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
           </div>
         </div>
 
-        {/* Guardian Fields */}
         {useGuardianPAN && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <input
@@ -531,7 +513,6 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
           </div>
         )}
 
-        {/* Shared PAN Field */}
         {samePANForAll && (
           <div className="flex flex-col md:flex-row items-start md:items-center gap-3 mb-2">
             <input
@@ -551,17 +532,14 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
         )}
         {panError && <p className="text-red-600 text-sm mt-1">❌ {panError}</p>}
 
-        {/* Guest Display */}
         <div className="text-base font-medium pl-1 mt-4">Mr test tests</div>
       </div>
 
-      {/* PAN Note */}
       <p className="text-xs text-gray-600 mb-4">
         Note: Please enter valid PAN linked with Aadhar and If PAN not exists,
         click on "Parent/Guardian PAN" and then provide details.
       </p>
 
-      {/* TCS Declaration */}
       <div className="border rounded-md p-4 mb-6">
         <h3 className="text-base font-semibold border-b pb-2 mb-4">
           TCS Declaration
@@ -623,7 +601,6 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
         </p>
       </div>
 
-      {/* Submit */}
       <button
         className={`book-now-btn ${
           canProceed ? "" : "cursor-not-allowed bg-gray-300"
@@ -641,7 +618,7 @@ export function Step4Payment({ amount = 969.13, onConfirmPayment }) {
   const [showModal, setShowModal] = useState(false);
 
   const handlePayClick = () => {
-    setShowModal(true); // Open the modal
+    setShowModal(true);
   };
 
   const handleCloseModal = () => {
@@ -650,7 +627,7 @@ export function Step4Payment({ amount = 969.13, onConfirmPayment }) {
 
   const handleConfirm = () => {
     setShowModal(false);
-    onConfirmPayment(); // Call the real payment function
+    onConfirmPayment();
   };
 
   return (
@@ -687,7 +664,6 @@ export function Step4Payment({ amount = 969.13, onConfirmPayment }) {
         </div>
       </div>
 
-      {/* === Modal === */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
@@ -720,5 +696,28 @@ export function Step4Payment({ amount = 969.13, onConfirmPayment }) {
         </div>
       )}
     </div>
+  );
+}
+export function FareAmount({ hotelReviewData }) {
+  console.log(
+    "Step1TravellerDetails Hotel Review Data:",
+    hotelReviewData?.hInfo?.ops?.[0]?.tp
+  );
+  return (
+    <>
+      <h3 className="font-semibold text-base text-gray-600">FARE SUMMARY</h3>
+      <div className="flex justify-between border-b pb-2">
+        <span>Base Fare</span>
+        <span>₹{hotelReviewData?.hInfo?.ops?.[0]?.tp?.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between border-b pb-2">
+        <span>Taxes and fees</span>
+        <span>₹11.80</span>
+      </div>
+      <div className="flex justify-between font-semibold text-gray-800">
+        <span>Total Amount Payable</span>
+        <span>₹830.30</span>
+      </div>
+    </>
   );
 }

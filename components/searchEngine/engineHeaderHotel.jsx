@@ -9,14 +9,18 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { AppTravellerHotel } from "./TravellerForm";
 import { useRouter } from "next/navigation";
+import { useNationalities } from "../../util/HotelApi";
 
 const EngineHeaderHotel = ({ active_border }) => {
   const [showSearchState, setShowSearchState] = useState(false); // Consistent naming
   const [showSearchStateTo, setShowSearchStateTo] = useState(false); // Consistent naming
-  const [selectFrom, setSelectFrom] = useState("Goa"); // Consistent naming
+  const [selectFrom, setSelectFrom] = useState(null);
   // const [selectFromSub, setSelectFromSub] = useState(
   //   "Indira Gandhi International Airp"
   // ); // Consistent naming
+  const [nationalityId, setNationalityId] = useState("106"); // fallback to India
+
+  const { nationalities } = useNationalities();
 
   const router = useRouter();
   const [openDateRage, setOpenDateRage] = useState(false);
@@ -45,6 +49,22 @@ const EngineHeaderHotel = ({ active_border }) => {
   const [childAgesPerRoom, setChildAgesPerRoom] = useState([]);
 
   const [travellerClass, setTravellerClass] = useState("a"); // Default value is 'a'
+
+  useEffect(() => {
+    if (selectFrom && nationalities.length > 0) {
+      const matched = nationalities.find(
+        (n) =>
+          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+      );
+      if (matched) {
+        console.log("Matched Nationality:", matched);
+
+        setNationalityId(matched.countryId);
+      } else {
+        alert("Nationality could not be determined from selected city.");
+      }
+    }
+  }, [selectFrom, nationalities]);
 
   const classLabels = {
     a: "Economy/Premium Economy",
@@ -147,7 +167,29 @@ const EngineHeaderHotel = ({ active_border }) => {
       window.removeEventListener("click", handleclick);
     };
   }, []);
+  const [errorMessage, setErrorMessage] = useState(null);
+
   const handleSearch = () => {
+    if (!selectFrom) {
+      setErrorMessage("Please select a city before proceeding.");
+      return;
+    }
+
+    setErrorMessage(null);
+    const matchedNationality = nationalities.find(
+      (n) =>
+        selectFrom &&
+        n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+    );
+
+    if (!matchedNationality) {
+      alert("Could not determine nationality for selected city.");
+      return;
+    }
+
+    const nationalityIdToUse = matchedNationality.countryId;
+    console.log("nationalityId", nationalityId, nationalityIdToUse);
+
     const totalAdults = roomsData.reduce((sum, room) => sum + room.adults, 0);
     const totalChildren = roomsData.reduce(
       (sum, room) => sum + room.children,
@@ -161,9 +203,14 @@ const EngineHeaderHotel = ({ active_border }) => {
     const queryParams = new URLSearchParams({
       checkinDate: formattedCheckIn,
       checkoutDate: formattedCheckOut,
-      location: selectFrom,
-      city: "699261",
-      nationality: "106",
+      location: selectFrom?.cityName || "",
+      city: selectFrom?.id?.toString() || "",
+
+      // location: selectFrom,
+      // city: "699261",
+      // nationality: "106",
+      nationality: nationalityIdToUse,
+
       currency: "INR",
       rooms: roomsData.length.toString(),
       adults: totalAdults.toString(),
@@ -203,8 +250,13 @@ const EngineHeaderHotel = ({ active_border }) => {
               </div>
               <div className="pl-6 relative">
                 <h2 className="text_4xl font_bold text-black tracking-wide">
-                  {selectFrom}
-                </h2>
+                  {selectFrom?.cityName || "Select City"}
+                </h2>{" "}
+                {errorMessage && (
+                  <div className="text-red-500 text-sm mt-2">
+                    {errorMessage}
+                  </div>
+                )}
                 {/* <p className="text-xl_small truncate-text">{selectFromSub}</p> */}
               </div>
             </div>
