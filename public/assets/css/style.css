@@ -14493,9 +14493,9 @@ a.link-black:hover svg {
 
 .booking-form {
   border-radius: 8px;
-  box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.07);
+  /* box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.07); */
   position: relative;
-  border: 1px solid var(--bs-border-color);
+  /* border: 1px solid var(--bs-border-color); */
   margin-bottom: 32px;
 }
 
@@ -14606,7 +14606,7 @@ a.link-black:hover svg {
 }
 
 .tour-header {
-  margin-bottom: 36px;
+  margin-bottom: 0px;
 }
 
 .box-header-on-top {
@@ -19367,7 +19367,38 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .border-r-1 {
   border-right: 1px solid #00000040;
 }
-
+.border-l-1{
+    border-left: 1px solid #00000040;
+}
 .check-avail-modal .lg\:w-2\/6 {
   width: 83.333333%;
+}
+
+.form-field {
+  height: 42px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  /* Tailwind's border-gray-300 */
+  border-radius: 0.375rem;
+  /* rounded-md */
+  font-size: 0.875rem;
+  /* text-sm */
+  line-height: 1.25rem;
+  box-sizing: border-box;
+}
+
+.form-field:focus {
+  outline: none;
+  border-color: #3b82f6;
+  /* Tailwind's blue-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  /* ring */
+  border-radius: 0%;
+}
+
+.form-error {
+  color: #ef4444;
+  /* Tailwind red-500 */
+  font-size: 0.75rem;
+  margin-top: 4px;
 }

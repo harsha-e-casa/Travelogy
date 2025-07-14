@@ -106,6 +106,7 @@ export default function ActivitiesDetail4() {
   const [showTraveller, setShowTraveller] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
+  const [openDateRange, setOpenDateRange] = useState(false);
 
   const handleSearch = () => {
     console.log("Searching with the following data:");
@@ -160,8 +161,15 @@ export default function ActivitiesDetail4() {
           }
         );
         if (response.data.status.success) {
-          setHotelData(response.data.hotel);
-          setSearchQueryData(response.data.searchQuery);
+          const hotel = response.data.hotel;
+          const searchData = response.data.searchQuery;
+
+          setHotelData(hotel);
+          setSearchQueryData(searchData);
+
+          // ✅ Set check-in and check-out dates from searchQuery
+          setCheckinDate(searchData?.checkinDate || null);
+          setCheckoutDate(searchData?.checkoutDate || null);
           console.log(response.data.hotel);
           console.log(response.data.searchQuery);
         } else {
@@ -209,7 +217,9 @@ export default function ActivitiesDetail4() {
   }
   const basefare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.BF;
 
-  const RoomType = hotelData?.pops?.[0]?.fc?.[0];
+  const RoomType = hotelData?.ops?.[0]?.ris?.[0]?.mb;
+  const RoomCategory = hotelData?.ops?.[0]?.ris?.[0]?.rc;
+
   const totalfare = hotelData?.pops?.[0]?.tpc;
   const hotelId = hotelData?.id;
   const optionId = hotelData?.ops?.[0]?.id;
@@ -236,15 +246,14 @@ export default function ActivitiesDetail4() {
     0
   );
   const roomCount = roomInfo.length;
-
   console.log("Rooms & Guest", searchQueryData?.roomInfo);
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
         <section className="box-section box-content-tour-detail background-body">
           <div className="container">
-            <div className="row">
-              <div className="col-lg-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-8">
                 <div className="box-banner-activities-detail-4">
                   <div className="image-gallery">
                     <div className="image-row">
@@ -435,158 +444,179 @@ export default function ActivitiesDetail4() {
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="col-lg-4">
-                <div className="tour-header">
-                  <div className="tour-title-main">
-                    <h4 className="neutral-1000">
-                      {hotelData?.name || "Hotel Name"}
-                    </h4>
-                  </div>
-                  <div className="tour-rate">
-                    <div className="rates-element">
-                      <span className="rating">
-                        {[...Array(filledStars)].map((_, index) => (
-                          <svg
-                            key={`filled-${index}`}
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            fill="gold"
-                            viewBox="0 0 16 16"
-                          >
-                            <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
-                          </svg>
-                        ))}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="tour-metas">
-                    <div className="tour-meta-left">
-                      <p className="text-md-medium neutral-500 mr-20 tour-location">
-                        <svg
-                          width={12}
-                          height={16}
-                          viewBox="0 0 12 16"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M5.99967 0C2.80452 0 0.205078 2.59944 0.205078 5.79456C0.205078 9.75981 5.39067 15.581 5.61145 15.8269C5.81883 16.0579 6.18089 16.0575 6.38789 15.8269C6.60867 15.581 11.7943 9.75981 11.7943 5.79456C11.7942 2.59944 9.1948 0 5.99967 0ZM5.99967 8.70997C4.39211 8.70997 3.0843 7.40212 3.0843 5.79456C3.0843 4.187 4.39214 2.87919 5.99967 2.87919C7.6072 2.87919 8.91502 4.18703 8.91502 5.79459C8.91502 7.40216 7.6072 8.70997 5.99967 8.70997Z" />
-                        </svg>
-                        {hotelData?.ad?.city?.name},
-                        {hotelData?.ad?.country?.name}
-                      </p>
-                      <Link
-                        className="text-md-medium neutral-1000 mr-30"
-                        href={googleMapsUrl}
-                        target="_blank"
-                      >
-                        Show on map
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-                <div className="booking-form">
-                  <div className="head-booking-form">
-                    <p className="text-xl-bold neutral-1000">Booking Form</p>
-                  </div>
-                  <BookingCard
-                    segmentsPrice={hotelData?.ops}
-                    totalpricee={{
-                      fC: {
-                        BF: basefare,
-                        TAF: RoomType,
-                        TF: totalfare,
-                        NF: netprice,
-                        OID: hotelData?.ops?.[0]?.id,
-                        HID: hotelData?.id,
-                      },
-                    }}
-                    baggageinfo={baggageinfo}
-                    mealinfo={mealinfo}
-                    onSelectOtherRoom={scrollToHotelData}
+                <div className="py-10 container" ref={hotelDataRef}>
+                  <hr />
+                  <HotelData
+                    facilities={hotelData?.fl || []}
+                    longitude={hotelData?.gl?.lt}
+                    latitude={hotelData?.gl?.ln}
+                    fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
                   />
                 </div>
-                <div className="booking-form">
-                  <div className="head-booking-form">
-                    <p className="text-xl-bold neutral-1000">
-                      Check Availability
-                    </p>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex space-x-4">
-                      <div className="flex-1">
-                        <label>Check-in</label>
-                        <button className=" font-bold">
-                          {searchQueryData?.checkinDate || "No Check-in Date"}
-                        </button>
-                      </div>
-
-                      <div className="flex-1">
-                        <label>Check-out</label>
-                        <button className=" font-bold">
-                          {searchQueryData?.checkoutDate || "No Check-out Date"}
-                        </button>
+              </div>
+              <div className="lg:col-span-4">
+                <div className="sticky top-4">
+                  <div className="tour-header">
+                    <div className="tour-title-main">
+                      <h6 className="neutral-1000">
+                        {hotelData?.name || "Hotel Name"}
+                      </h6>
+                      <>
+                        <p>
+                          {hotelData?.ad?.adr}, {hotelData?.ad?.city?.name},{" "}
+                          {hotelData?.ad?.postalCode}
+                        </p>
+                      </>
+                    </div>
+                    <div className="tour-rate">
+                      <div className="rates-element">
+                        <span className="rating">
+                          {[...Array(filledStars)].map((_, index) => (
+                            <svg
+                              key={`filled-${index}`}
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              fill="gold"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
+                            </svg>
+                          ))}
+                        </span>
                       </div>
                     </div>
-
-                    <div className="flex space-x-4">
-                      <div className="flex-1">
-                        <label>Clock-in</label>
-                        <button className=" font-bold">
-                          {hotelData?.checkInTime?.beginTime ||
-                            "No Clock-in Time"}
-                        </button>
-                      </div>
-                      <div className="flex-1">
-                        <label>Clock-out</label>
-                        <button className=" font-bold">
-                          {hotelData?.checkOutTime?.beginTime ||
-                            "No Clock-out Time"}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex space-x-4">
-                      <div className="flex-1 check-avail-modal">
-                        <label>Rooms & Guests</label>
-                        <button onClick={toggleTraveller}>
-                          <div className=" text-base font-bold">
-                            {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{" "}
-                            {totalChildren} Child
-                            {totalChildren > 1 ? "ren" : ""}, {roomCount} Room
-                            {roomCount > 1 ? "s" : ""}
-                          </div>
-                        </button>
-                        {showTraveller && (
-                          <div onClick={(e) => e.stopPropagation()}>
-                            <AppTravellerHotel
-                              roomsData={roomsData}
-                              onClose={(updatedRooms) => {
-                                setRoomsData(updatedRooms);
-                                setShowTraveller(false);
-                              }}
-                            />
-                          </div>
-                        )}
+                    <div className="tour-metas">
+                      <div className="tour-meta-left">
+                        <p className="text-md-medium neutral-500 mr-20 tour-location">
+                          <svg
+                            width={12}
+                            height={16}
+                            viewBox="0 0 12 16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M5.99967 0C2.80452 0 0.205078 2.59944 0.205078 5.79456C0.205078 9.75981 5.39067 15.581 5.61145 15.8269C5.81883 16.0579 6.18089 16.0575 6.38789 15.8269C6.60867 15.581 11.7943 9.75981 11.7943 5.79456C11.7942 2.59944 9.1948 0 5.99967 0ZM5.99967 8.70997C4.39211 8.70997 3.0843 7.40212 3.0843 5.79456C3.0843 4.187 4.39214 2.87919 5.99967 2.87919C7.6072 2.87919 8.91502 4.18703 8.91502 5.79459C8.91502 7.40216 7.6072 8.70997 5.99967 8.70997Z" />
+                          </svg>
+                          {hotelData?.ad?.city?.name},
+                          {hotelData?.ad?.country?.name}
+                        </p>
+                        <Link
+                          className="text-md-medium neutral-1000 mr-30"
+                          href={googleMapsUrl}
+                          target="_blank"
+                        >
+                          Show on map
+                        </Link>
                       </div>
                     </div>
                   </div>
+                  <div className="booking-form">
+                    {/* <div className="head-booking-form">
+                      <p className="text-xl-bold neutral-1000">Booking Form</p>
+                    </div> */}
+                    <BookingCard
+                      segmentsPrice={hotelData?.ops}
+                      totalpricee={{
+                        fC: {
+                          BF: basefare,
+                          MB: RoomType,
+                          TF: totalfare,
+                          NF: netprice,
+                          OID: hotelData?.ops?.[0]?.id,
+                          RC: RoomCategory,
+                          HID: hotelData?.id,
+                        },
+                      }}
+                      baggageinfo={baggageinfo}
+                      mealinfo={mealinfo}
+                      onSelectOtherRoom={scrollToHotelData}
+                      searchData={searchQueryData}
+                      hotelData={hotelData}
+                      checkinDate={checkinDate}
+                      checkoutDate={checkoutDate}
+                      setCheckinDate={setCheckinDate}
+                      setCheckoutDate={setCheckoutDate}
+                      setOpenCheckin={setOpenCheckin}
+                      setOpenCheckout={setOpenCheckout}
+                      toggleTraveller={toggleTraveller}
+                      showTraveller={showTraveller}
+                      roomsData={roomsData}
+                      setRoomsData={setRoomsData}
+                    />
+                  </div>
+                  {/* <div className="booking-form">
+                    <div className="head-booking-form">
+                      <p className="text-xl-bold neutral-1000">
+                        Check Availability
+                      </p>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex space-x-4">
+                        <div className="flex-1">
+                          <label>Check-in</label>
+                          <button className=" font-bold">
+                            {searchQueryData?.checkinDate || "No Check-in Date"}
+                          </button>
+                        </div>
+
+                        <div className="flex-1">
+                          <label>Check-out</label>
+                          <button className=" font-bold">
+                            {searchQueryData?.checkoutDate ||
+                              "No Check-out Date"}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex space-x-4">
+                        <div className="flex-1">
+                          <label>Clock-in</label>
+                          <button className=" font-bold">
+                            {hotelData?.checkInTime?.beginTime ||
+                              "No Clock-in Time"}
+                          </button>
+                        </div>
+                        <div className="flex-1">
+                          <label>Clock-out</label>
+                          <button className=" font-bold">
+                            {hotelData?.checkOutTime?.beginTime ||
+                              "No Clock-out Time"}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex space-x-4">
+                        <div className="flex-1 check-avail-modal">
+                          <label>Rooms & Guests</label>
+                          <button onClick={toggleTraveller}>
+                            <div className=" text-base font-bold">
+                              {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{" "}
+                              {totalChildren} Child
+                              {totalChildren > 1 ? "ren" : ""}, {roomCount} Room
+                              {roomCount > 1 ? "s" : ""}
+                            </div>
+                          </button>
+                          {showTraveller && (
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <AppTravellerHotel
+                                roomsData={roomsData}
+                                onClose={(updatedRooms) => {
+                                  setRoomsData(updatedRooms);
+                                  setShowTraveller(false);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div> */}
                 </div>
               </div>
             </div>
           </div>
         </section>
-        <section>
-          <div className="py-10 container" ref={hotelDataRef}>
-            <hr />
-            <HotelData
-              facilities={hotelData?.fl || []}
-              longitude={hotelData?.gl?.lt}
-              latitude={hotelData?.gl?.ln}
-              fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
-            />
-          </div>
-        </section>
+        {/* <section></section> */}
       </main>
     </Layout>
   );
