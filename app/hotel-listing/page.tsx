@@ -37,14 +37,13 @@ type Nationality = {
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const location = searchParams.get("location") || "Goa";
+  const location = searchParams.get("location");
   const { nationalities } = useNationalities() as {
     nationalities: Nationality[];
     loading: boolean;
   };
 
   const city = searchParams.get("city") || "699261"; // Static default city if none
-  // const nationality = searchParams.get("nationality") || "106"; // Static default nationality
   const currency = searchParams.get("currency") || "INR"; // Static default currency
   const rooms = Number(searchParams.get("rooms")) || 1;
   const adults = Number(searchParams.get("adults")) || 1;
@@ -113,7 +112,9 @@ export default function HotelListing() {
     countryName: string;
     id?: string;
   } | null>(null);
-  const [nationalityId, setNationalityId] = useState<string | null>(null);
+  const [nationalityId, setNationalityId] = useState<string | null>(
+    searchParams.get("nationality") || null
+  );
   // useEffect(() => {
   //   if (selectFrom && selectFrom.countryName && nationalities.length > 0) {
   //     const matched = nationalities.find(
@@ -124,21 +125,26 @@ export default function HotelListing() {
   //   }
   // }, [selectFrom, nationalities]);
   useEffect(() => {
-    if (selectFrom && nationalities.length > 0) {
-      const matched = nationalities.find(
-        (n) =>
-          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
-      );
-      if (matched) {
-        console.log("Matched Nationality:", matched);
+    // Auto-initialize selectFrom from query param and nationality list
+    if (!selectFrom && location && nationalities.length > 0) {
+      const locationLower = location.toLowerCase();
 
-        setNationalityId(matched.countryId);
-      } else {
-        alert("Nationality could not be determined from selected city.");
+      // Try to find a nationality whose countryName is contained in location
+      const matchedNationality = nationalities.find((n) =>
+        locationLower.includes(n.countryName.toLowerCase())
+      );
+
+      if (matchedNationality) {
+        setSelectFrom({
+          cityName: location,
+          countryName: matchedNationality.countryName,
+          id: city,
+        });
+
+        setNationalityId(matchedNationality?.countryId || nationalityId);
       }
     }
-  }, [selectFrom, nationalities]);
-  
+  }, [location, city, nationalities]);
 
   useEffect(() => {
     if (!checkinDate) setCheckinDate(dayjs().format("YYYY-MM-DD"));
@@ -226,21 +232,34 @@ export default function HotelListing() {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
-    const matchedNationality = nationalities.find(
-      (n) =>
-        selectFrom &&
-        n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
-    );
+    let matchedNationality = null;
 
-    if (!matchedNationality) {
-      alert("Could not determine nationality for selected city.");
-      return;
+    if (selectFrom?.countryName) {
+      matchedNationality = nationalities.find(
+        (n) =>
+          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+      );
     }
 
-    const nationalityIdToUse = matchedNationality.countryId;
+    // Fallback using query param if above fails
+    if (!matchedNationality && nationalityId) {
+      matchedNationality = nationalities.find(
+        (n) => n.countryId === nationalityId
+      );
+    }
+
+    // if (!matchedNationality) {
+    //   alert("Could not determine nationality for selected city.");
+    //   return;
+    // }
+
+    const nationalityIdToUse =
+      matchedNationality?.countryId || nationalityId || "";
+    console.log("selectFrom is:", selectFrom);
+    console.log("nationalities:", nationalities);
 
     setLoading(true);
-      const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
     const roomInfo = roomsData.map((room) => ({
@@ -289,48 +308,92 @@ export default function HotelListing() {
     }
   };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
+  //     alert("Check-out date cannot be earlier than check-in date.");
+  //     return;
+  //   }
+  //   setLoading(true);
+
+  //   const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+  //   const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+
+  //   const roomInfo = roomsData.map((room) => ({
+  //     numberOfAdults: room.adults,
+  //     numberOfChild: room.children,
+  //     ...(room.children > 0 ? { childAge: room.childAges } : {}),
+  //   }));
+
+  //   const fetchData = async () => {
+  //     const payload = {
+  //       searchQuery: {
+  //         checkinDate: formattedCheckIn,
+  //         checkoutDate: formattedCheckOut,
+  //         roomInfo: cleanRoomInfo,
+  //         searchCriteria: { city, nationality: nationalityId, currency },
+  //         searchPreferences: { fsc: true },
+  //       },
+  //       sync: true,
+  //     };
+
+  //     const data = await apiCall(payload);
+  //     setLoading(false);
+  //     if (data) {
+  //       console.log("Search result in handleSearch:", data);
+  //       // setApiHotelData(data.searchResult?.his || []);
+  //       const hotelOnlyResults = data.searchResult?.his || [];
+  //       // .filter((item: any) => item.pt === "HOTEL");
+  //       setApiHotelData(hotelOnlyResults);
+
+  //       // console.log("HotelCard1 data", data.searchResult.his);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+useEffect(() => {
+  const fetchData = async () => {
     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
-    setLoading(true);
 
+    setLoading(true);
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
-    const roomInfo = roomsData.map((room) => ({
-      numberOfAdults: room.adults,
-      numberOfChild: room.children,
-      ...(room.children > 0 ? { childAge: room.childAges } : {}),
-    }));
-
-    const fetchData = async () => {
-      const payload = {
-        searchQuery: {
-          checkinDate: formattedCheckIn,
-          checkoutDate: formattedCheckOut,
-          roomInfo: cleanRoomInfo,
-          searchCriteria: { city, nationality: nationalityId, currency },
-          searchPreferences: { fsc: true },
+    const payload = {
+      searchQuery: {
+        checkinDate: formattedCheckIn,
+        checkoutDate: formattedCheckOut,
+        roomInfo: cleanRoomInfo,
+        searchCriteria: {
+          city,
+          nationality: nationalityId,
+          currency,
         },
-        sync: true,
-      };
-
-      const data = await apiCall(payload);
-      setLoading(false);
-      if (data) {
-        console.log("Search result in handleSearch:", data);
-        // setApiHotelData(data.searchResult?.his || []);
-        const hotelOnlyResults = data.searchResult?.his || [];
-        // .filter((item: any) => item.pt === "HOTEL");
-        setApiHotelData(hotelOnlyResults);
-
-        // console.log("HotelCard1 data", data.searchResult.his);
-      }
+        searchPreferences: { fsc: true },
+      },
+      sync: true,
     };
-    fetchData();
-  }, []);
+
+    const data = await apiCall(payload);
+    setLoading(false);
+    if (data) {
+      const hotelOnlyResults = data.searchResult?.his || [];
+      setApiHotelData(hotelOnlyResults);
+    }
+  };
+
+  fetchData();
+}, [
+  city,
+  checkinDate,
+  checkoutDate,
+  nationalityId,
+  currency,
+  roomsData,
+  location,
+]);
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
@@ -421,7 +484,7 @@ export default function HotelListing() {
                 <label>Location</label>
 
                 <span className="input-field font-bold" onClick={openfrom}>
-                  {selectFrom?.cityName || "Select City"}
+                  {selectFrom?.cityName || location}
                 </span>
 
                 {showSearchState && (

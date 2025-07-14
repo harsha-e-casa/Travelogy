@@ -18,7 +18,7 @@ const EngineHeaderHotel = ({ active_border }) => {
   // const [selectFromSub, setSelectFromSub] = useState(
   //   "Indira Gandhi International Airp"
   // ); // Consistent naming
-  const [nationalityId, setNationalityId] = useState("106"); // fallback to India
+  const [nationalityId, setNationalityId] = useState(null); // fallback to India
 
   const { nationalities } = useNationalities();
 
@@ -208,7 +208,6 @@ const EngineHeaderHotel = ({ active_border }) => {
 
       // location: selectFrom,
       // city: "699261",
-      // nationality: "106",
       nationality: nationalityIdToUse,
 
       currency: "INR",

@@ -22,17 +22,33 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
       }
     );
 
-    if (response.status === 200) {
+    //     if (response.status === 200) {
+    //       return response.data;
+    //     } else {
+    //       throw new Error("Failed to fetch hotel data");
+    //     }
+    //   } catch (err) {
+    //     console.error("Error fetching hotel data:", err);
+    //     throw new Error("Failed to fetch hotel data");
+    //   }
+    // };
+    if (response.data?.status?.success) {
       return response.data;
     } else {
-      throw new Error("Failed to fetch hotel data");
+      const apiError =
+        response.data?.errors?.[0]?.message ||
+        "Unknown error occurred from server";
+      throw new Error(apiError);
     }
   } catch (err) {
-    console.error("Error fetching hotel data:", err);
-    throw new Error("Failed to fetch hotel data");
+    // If Axios throws because of HTTP error (e.g. 400)
+    const apiMessage =
+      err?.response?.data?.errors?.[0]?.message ||
+      err?.message ||
+      "Unknown error occurred";
+    throw new Error(apiMessage);
   }
 };
-
 // Hook to fetch cities
 export const useCities = () => {
   const [cities, setCities] = useState([]);

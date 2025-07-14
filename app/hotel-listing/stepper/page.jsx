@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 // import { fetchHotelReviewData } from "../../../util/HotelApi";
-
+import Skeleton from "../Skeleton";
 import {
   Step1TravellerDetails,
   Step2Review,
@@ -91,10 +91,11 @@ const CreditCardIcon = () => (
 export default function Stepper() {
   const [hotelReviewData, setHotelReviewData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Add this with hotelReviewData
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    title: "Mr",
+    title: "Mrs",
     firstName: "",
     lastName: "",
     countryCode: "+91",
@@ -120,7 +121,30 @@ export default function Stepper() {
   //   if (hotelId && optionId) loadHotelData();
   // }, [hotelId, optionId]);
 
-  if (error) return <div>{error}</div>;
+  if (error) {
+    return (
+      <Layout headerStyle={1} footerStyle={1}>
+        <main className="main">
+          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+            {/* <div className="p-6 rounded-lg  border-red-200 text-center"> */}
+            <h2 className="text-xl font-semibold mb-2">
+              Oops! Something went wrong.
+            </h2>
+            <p className="text-sm">{error}</p>
+            <div className="flex justify-center mt-4">
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+              >
+                Retry Hotel Load
+              </button>
+            </div>
+            {/* </div> */}
+          </div>
+        </main>
+      </Layout>
+    );
+  }
 
   const steps = [
     {
@@ -212,7 +236,7 @@ export default function Stepper() {
             })}
           </div>
           <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
-            <div className="md:col-span-8 border-r-1">
+            {/* <div className="md:col-span-8 border-r-1">
               <div className="rounded-lg">
                 {currentStep === 1 && (
                   <Step1TravellerDetails
@@ -252,7 +276,58 @@ export default function Stepper() {
               <div className="p-6 rounded-md text-sm space-y-4 ">
                 <FareAmount hotelReviewData={hotelReviewData} />
               </div>
-            </div>
+            </div> */}
+
+            <HotelReviewComponent
+              setHotelReviewData={setHotelReviewData}
+              setLoading={setLoading}
+              setError={setError}
+            />
+
+            {loading ? (
+              <Skeleton />
+            ) : (
+              <>
+                <div className="md:col-span-8 border-r border-gray-200">
+                  {currentStep === 1 && (
+                    <Step1TravellerDetails
+                      formData={formData}
+                      setFormData={setFormData}
+                      onNext={goNext}
+                      hotelReviewData={hotelReviewData}
+                      // handleNext={handleNext}
+                    />
+                  )}
+                  {currentStep === 2 && (
+                    <Step2Review
+                      formData={formData}
+                      onPrev={goPrev}
+                      onNext={goNext}
+                      hotelReviewData={hotelReviewData}
+                    />
+                  )}
+                  {currentStep === 3 && (
+                    <Step3PersonalDocuments
+                      formData={formData}
+                      onPrev={goPrev}
+                      onNext={goNext}
+                    />
+                  )}
+                  {currentStep === 4 && (
+                    <Step4Payment
+                      amount={hotelReviewData?.hInfo?.ops?.[0]?.tp || 433.45}
+                      onConfirmPayment={handlePayment}
+                    />
+                  )}
+                </div>
+
+                <div className="md:col-span-4">
+                  <div className="p-6 rounded-md text-sm space-y-4">
+                    <FareAmount hotelReviewData={hotelReviewData} />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </main>

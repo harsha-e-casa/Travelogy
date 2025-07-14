@@ -1,29 +1,34 @@
 "use client";
+import dayjs from "dayjs";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData } from "../../../util/HotelApi";
 
-export function HotelReviewComponent({ setHotelReviewData }) {
-  const [error, setError] = useState(null);
+export function HotelReviewComponent({
+  setHotelReviewData,
+  setLoading,
+  setError,
+}) {
+  // const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const hid = searchParams.get("hid");
   const oid = searchParams.get("oid");
 
   useEffect(() => {
     if (hid && oid) {
+      setLoading(true);
       fetchHotelReviewData(hid, oid)
-        .then((data) => {
-          setHotelReviewData(data);
-        })
-        .catch((err) => {
-          setError(err.message);
-        });
+        .then((data) => setHotelReviewData(data))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
     }
   }, [hid, oid]);
 
-  if (error) {
-    return <div>{error}</div>;
-  }
+  // if (error) {
+  //   return <div className="text-red-500 text-center">{error}</div>;
+  // }
+
+  return null; // This component only handles fetching.
 }
 
 export function Step1TravellerDetails({
@@ -32,7 +37,44 @@ export function Step1TravellerDetails({
   onNext,
   hotelReviewData,
 }) {
-  console.log("Step1TravellerDetails Hotel Review Data:", hotelReviewData);
+  const [errors, setErrors] = useState({});
+
+  // console.log("Step1TravellerDetails Hotel Review Data:", hotelReviewData);
+  useEffect(() => {
+    localStorage.setItem("bookingFormData", JSON.stringify(formData));
+  }, [formData]);
+  const validateFields = () => {
+    const newErrors = {};
+
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = "Last name is required";
+    }
+
+    if (!formData.mobile.trim()) {
+      newErrors.mobile = "Mobile number is required";
+    } else if (!/^\d{10}$/.test(formData.mobile)) {
+      newErrors.mobile = "Mobile must be 10 digits";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    if (validateFields()) {
+      onNext();
+    }
+  };
 
   return (
     <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
@@ -55,115 +97,266 @@ export function Step1TravellerDetails({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-blue-50 p-4 rounded-md">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
         <div>
-          <strong>Check In</strong>
+          <strong className="block text-gray-900">Check In</strong>
           <p className="text-gray-700">
-            {hotelReviewData?.query?.checkinDate}
+            {hotelReviewData?.query?.checkinDate || "N/A"}
             <br />
             {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
               "No Clock-in Time"}
           </p>
         </div>
-        <div>
-          <strong>Check Out</strong>
+
+        <div className="border-l-1 pl-4">
+          <strong className="block text-gray-900">Check Out</strong>
           <p className="text-gray-700">
-            {hotelReviewData?.query?.checkoutDate}
+            {hotelReviewData?.query?.checkoutDate || "N/A"}
             <br />
             {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
-              "No Clock-out Time"}{" "}
+              "No Clock-out Time"}
           </p>
         </div>
-        <div>
-          <strong>Total Rooms</strong>
-          <p>1</p>
+
+        <div className="border-l-1 pl-4">
+          <strong className="block text-gray-900">Total Rooms</strong>
+          <p className="text-gray-700 text-xs">
+            {hotelReviewData?.query?.roomInfo?.length || 0}
+          </p>
         </div>
-        <div>
-          <strong>Total Guests</strong>
-          <p>2 Adults</p>
+
+        <div className="border-l-1 pl-4 md:col-span-2">
+          <strong className="block text-gray-900 text-base">
+            Total Guests
+          </strong>
+          <p className="text-gray-700 text-sm">
+            {(() => {
+              const rooms = hotelReviewData?.query?.roomInfo || [];
+              const totalAdults = rooms.reduce(
+                (sum, r) => sum + (r.numberOfAdults || 0),
+                0
+              );
+              const totalChildren = rooms.reduce(
+                (sum, r) => sum + (r.numberOfChild || 0),
+                0
+              );
+              return `${totalAdults} Adults, ${totalChildren} Children`;
+            })()}
+          </p>
+        </div>
+
+        <div className="border-l-1 pl-4">
+          <strong className="block text-gray-900">Total Nights</strong>
+          <p className="text-gray-700">
+            {(() => {
+              const checkin = hotelReviewData?.query?.checkinDate;
+              const checkout = hotelReviewData?.query?.checkoutDate;
+              if (checkin && checkout) {
+                const nights = dayjs(checkout).diff(dayjs(checkin), "day");
+                return `${nights} Night${nights > 1 ? "s" : ""}`;
+              }
+              return "N/A";
+            })()}
+          </p>
         </div>
       </div>
+      <>
+        <h6> Guest Details</h6>
+        {hotelReviewData?.query?.roomInfo?.map((room, roomIndex) => {
+          const roomDetails =
+            hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex];
+          return (
+            <div key={roomIndex} className="space-y-3">
+              {/* <p className="font-semibold text-sm mt-6">
+                Room {roomIndex + 1}: {roomDetails?.rc} ({roomDetails?.mb}) (
+                {room.numberOfAdults} Adults {room.numberOfChild}{" "}
+                {room.numberOfChild === 1 ? "Child" : "Children"})
+              </p> */}
+              <h4 className="font-semibold text-sm mt-6">
+                For Room {roomIndex + 1} - {roomDetails?.rc} ({roomDetails?.mb}){" "}
+                <span className="text-gray-500 font-normal">
+                  ({room.numberOfAdults} Adults {room.numberOfChild}{" "}
+                  {room.numberOfChild === 1 ? "Child" : "Children"})
+                </span>
+              </h4>
 
-      <div className="space-y-2">
-        <h3 className="font-semibold text-base">
-          Guest Details
-          <span className="text-xs text-red-500">
-            (Only Lead Guest Name is Required)
-          </span>
-        </h3>
-        <p className="text-sm text-gray-600">
-          For Room 1 - Deluxe Room (ROOM ONLY) (2 Adults 0 Child)
-        </p>
+              {[...Array(room.numberOfAdults)].map((_, adultIndex) => (
+                <div
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  key={`room-${roomIndex}-adult-${adultIndex}`}
+                >
+                  <div className="flex flex-col">
+                    <select
+                      className="border p-2 rounded form-field"
+                      value={
+                        formData[`room${roomIndex}-adult${adultIndex}-title`] ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [`room${roomIndex}-adult${adultIndex}-title`]:
+                            e.target.value,
+                        })
+                      }
+                    >
+                      <option>Mr</option>
+                      <option>Ms</option>
+                      <option>Mrs</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      className="border p-2 rounded form-field"
+                      placeholder={
+                        adultIndex === 0 ? "Lead Pax First Name" : "First Name"
+                      }
+                      value={
+                        formData[`room${roomIndex}-adult${adultIndex}-first`] ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [`room${roomIndex}-adult${adultIndex}-first`]:
+                            e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      className="border p-2 rounded form-field"
+                      placeholder="Last Name"
+                      value={
+                        formData[`room${roomIndex}-adult${adultIndex}-last`] ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [`room${roomIndex}-adult${adultIndex}-last`]:
+                            e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select
-            className="border p-2 rounded"
-            value={formData.title}
-            onChange={(e) =>
-              setFormData({ ...formData, title: e.target.value })
-            }
-          >
-            <option>Mr</option>
-            <option>Ms</option>
-            <option>Mrs</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Lead Pax First Name"
-            className="border p-2 rounded"
-            value={formData.firstName}
-            onChange={(e) =>
-              setFormData({ ...formData, firstName: e.target.value })
-            }
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            className="border p-2 rounded"
-            value={formData.lastName}
-            onChange={(e) =>
-              setFormData({ ...formData, lastName: e.target.value })
-            }
-          />
-        </div>
-
-        <button className="text-orange-600 text-sm mt-2">
-          + Add Guest(s) Details
-        </button>
-      </div>
-
+              {/* Children */}
+              {[...Array(room.numberOfChild)].map((_, childIndex) => (
+                <div
+                  className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                  key={`room-${roomIndex}-child-${childIndex}`}
+                >
+                  <div className="flex flex-col">
+                    <select
+                      className="border p-2 rounded form-field"
+                      value={
+                        formData[`room${roomIndex}-child${childIndex}-title`] ||
+                        "Master"
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [`room${roomIndex}-child${childIndex}-title`]:
+                            e.target.value,
+                        })
+                      }
+                    >
+                      <option>Master</option>
+                      <option>Miss</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      className="border p-2 rounded form-field"
+                      placeholder="First Name"
+                      value={
+                        formData[`room${roomIndex}-child${childIndex}-first`] ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [`room${roomIndex}-child${childIndex}-first`]:
+                            e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      className="border p-2 rounded form-field"
+                      placeholder="Last Name"
+                      value={
+                        formData[`room${roomIndex}-child${childIndex}-last`] ||
+                        ""
+                      }
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          [`room${roomIndex}-child${childIndex}-last`]:
+                            e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </>
       <div className="space-y-2">
         <h3 className="font-semibold text-base">Contact Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <select
-            className="border p-2 rounded"
-            value={formData.countryCode}
-            onChange={(e) =>
-              setFormData({ ...formData, countryCode: e.target.value })
-            }
-          >
-            <option value="+91">India (+91)</option>
-            <option value="+1">USA (+1)</option>
-            <option value="+44">UK (+44)</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Mobile No."
-            className="border p-2 rounded"
-            value={formData.mobile}
-            onChange={(e) =>
-              setFormData({ ...formData, mobile: e.target.value })
-            }
-          />
-          <input
-            type="email"
-            placeholder="Email ID"
-            className="border p-2 rounded"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-          />
+          <div className="flex flex-col">
+            <select
+              className="border p-2 rounded form-field"
+              value={formData.countryCode}
+              onChange={(e) =>
+                setFormData({ ...formData, countryCode: e.target.value })
+              }
+            >
+              <option value="+91">India (+91)</option>
+              <option value="+1">USA (+1)</option>
+              <option value="+44">UK (+44)</option>
+            </select>
+          </div>
+          <div className="flex flex-col">
+            {" "}
+            <input
+              type="text"
+              placeholder="Mobile No."
+              className="border p-2 rounded form-field"
+              value={formData.mobile}
+              onChange={(e) =>
+                setFormData({ ...formData, mobile: e.target.value })
+              }
+            />{" "}
+            {errors.mobile && (
+              <span className="form-error">{errors.mobile}</span>
+            )}
+          </div>
+          <div className="flex flex-col">
+            {" "}
+            <input
+              type="email"
+              placeholder="Email ID"
+              className="border p-2 rounded form-field"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+            />{" "}
+            {errors.email && <span className="form-error">{errors.email}</span>}
+          </div>
         </div>
       </div>
 
@@ -182,7 +375,7 @@ export function Step1TravellerDetails({
         />
       </div>
 
-      <button className="rounded-none book-now-btn" onClick={onNext}>
+      <button className="rounded-none book-now-btn" onClick={handleNext}>
         PROCEED TO REVIEW
       </button>
     </div>
@@ -232,17 +425,19 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
               "No Clock-out Time"}{" "}
           </p>
         </div>
-        <div>
+        {/* <div>
           <strong>Total Rooms</strong>
-          <p>1</p>
+          <p>{hotelReviewData?.query?.roomInfo?.[0]}</p>
         </div>
         <div>
           <strong>Total Guests</strong>
-          <p>2 Adults</p>
-        </div>
+          <p>{hotelReviewData?.query?.roomInfo?.[0]}</p>
+        </div> */}
       </div>
 
       <div className="border-t pt-4 space-y-1">
+        <h3 className="font-semibold text-base">Special request(s)</h3>
+        <p>{formData.specialRequest}</p>
         <h3 className="font-semibold text-base">Contact Details</h3>
         <p>Email: {formData.email}</p>
         <p>
@@ -413,7 +608,7 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
   return (
     <div className="max-w-5xl mx-auto p-6 text-sm text-[#1e1e1e] font-sans">
       <h2 className="text-xl font-semibold mb-1">Personal Documents</h2>
-      <p className="text-red-500 text-xs mb-4">
+      <p className="form-error mb-4">
         Below documents are mandatory for completing this booking:
       </p>
 
@@ -532,7 +727,11 @@ export function Step3PersonalDocuments({ formData, onPrev, onNext }) {
         )}
         {panError && <p className="text-red-600 text-sm mt-1">❌ {panError}</p>}
 
-        <div className="text-base font-medium pl-1 mt-4">Mr test tests</div>
+        <div className="text-base font-medium pl-1 mt-4">
+          <p>
+            {formData.title} {formData.firstName} {formData.lastName}
+          </p>
+        </div>
       </div>
 
       <p className="text-xs text-gray-600 mb-4">
@@ -698,25 +897,36 @@ export function Step4Payment({ amount = 969.13, onConfirmPayment }) {
     </div>
   );
 }
+
 export function FareAmount({ hotelReviewData }) {
   console.log(
-    "Step1TravellerDetails Hotel Review Data:",
-    hotelReviewData?.hInfo?.ops?.[0]?.tp
+    "FareAmount Hotel Review Data:",
+    // hotelReviewData?.hInfo?.ops?.[0]?.tp?.toFixed(2)
+    //     // hotelReviewData?.hInfo?.ops?.[0],
+    // hotelReviewData?.hInfo?.ops?.[0]?.tfcs?.TAF
+
+    hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF,
+    hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF
   );
+  const tfcs = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs;
+
+  const baseFare = tfcs?.BF || 0;
+  const taxes = tfcs?.TAF || 0;
+  const total = baseFare + taxes;
   return (
     <>
       <h3 className="font-semibold text-base text-gray-600">FARE SUMMARY</h3>
       <div className="flex justify-between border-b pb-2">
         <span>Base Fare</span>
-        <span>₹{hotelReviewData?.hInfo?.ops?.[0]?.tp?.toFixed(2)}</span>
+        <span>₹{baseFare.toFixed(2)}</span>
       </div>
       <div className="flex justify-between border-b pb-2">
-        <span>Taxes and fees</span>
-        <span>₹11.80</span>
+        <span>Taxes and Fees</span>
+        <span>₹{taxes.toFixed(2)}</span>
       </div>
       <div className="flex justify-between font-semibold text-gray-800">
         <span>Total Amount Payable</span>
-        <span>₹830.30</span>
+        <span>₹{total.toFixed(2)}</span>
       </div>
     </>
   );
