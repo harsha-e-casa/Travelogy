@@ -18,6 +18,18 @@ export default function BookingForm({
   console.log("saved baggage", savedBaggage);
   console.log("saved meal", savedMeal);
 
+  const computedAmount =
+    Number(totalfare) +
+    savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
+    savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +
+    (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+
+  const displayAmount = computedAmount > Number(totalfare) ? computedAmount : Number(totalfare);
+
+  console.log("Computed Amount:", computedAmount);
+  console.log("totalfare Amount:", Number(totalfare));
+  console.log("displayAmount:", displayAmount);
+
   return (
     <>
       <div className="content-booking-form">
@@ -28,58 +40,6 @@ export default function BookingForm({
           <div className="line-booking-tickets ">
             <div className="dropdown-quantity text-md-bold neutral-1000">
               <p>₹{Number(basefare)}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="item-line-booking">
-          <div className="box-tickets">
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Baggage Amount
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹
-                {savedBaggage?.reduce((acc, curr) => acc + curr.amount, 0) || 0}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Meal Amount
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹{savedMeal?.reduce((acc, curr) => acc + curr.amount, 0)}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Taxes and fees
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
-            </div>
-
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Airline GST</p>
-              </div>
-              <div className="dropdown-quantity">
-                <p>₹{Airlinegst ? Airlinegst : "0.0"}</p>
-              </div>
-            </div>
-            <div className="line-booking-tickets">
-              <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Other Taxes</p>
-              </div>
-
-              <div className="dropdown-quantity">
-                <p>₹{othertaxes}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -158,11 +118,11 @@ export default function BookingForm({
                 </strong>
               </div>
               <div className="text-xl-bold neutral-1000">
-                ₹
-                {Number(totalfare) +
+                ₹{displayAmount}
+                {/* {Number(totalfare) +
                   savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
                   savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +
-                  (ssrSeatAmount ? Number(ssrSeatAmount) : 0)}
+                  (ssrSeatAmount ? Number(ssrSeatAmount) : 0)} */}
               </div>
             </div>
 
@@ -233,11 +193,11 @@ export default function BookingForm({
           <div className="line-booking-right">
             <p className="text-xl-bold neutral-1000">
               {" "}
-              ₹
-              {Number(totalfare) +
+              ₹{displayAmount}
+              {/* {Number(totalfare) +
                 savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
                 savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +
-                (ssrSeatAmount ? Number(ssrSeatAmount) : 0)}
+                (ssrSeatAmount ? Number(ssrSeatAmount) : 0)} */}
             </p>
           </div>
         </div>

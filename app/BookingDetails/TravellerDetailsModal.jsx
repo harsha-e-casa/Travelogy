@@ -201,7 +201,6 @@ const TravellerDetailsModal = ({ bookingId, amendmentType, onClose, bookingDetai
 
             // ✅ Call the API function immediately
             const submitAmendmentapi = async () => {
-              console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
               try {
 
                 const parameter = {

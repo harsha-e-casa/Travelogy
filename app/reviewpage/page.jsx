@@ -26,7 +26,6 @@ import dayjs from "dayjs";
 import SessionTime from "../book-ticket/SessionTime";
 import useSessionTime from "../book-ticket/useSessionTime";
 
-
 const Page = () => {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
@@ -56,7 +55,7 @@ const Page = () => {
   const [showMore, setShowMore] = useState(false);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
   const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
-  const SeatAmount = JSON.parse(getCookie("seatSsr_amount") || 0);
+  const SeatAmount = Number(getCookie("seatSsr_amount") || 0);
 
   const handleSessionExpire = React.useCallback(() => {
     if (!hasExpired.current) {
@@ -64,17 +63,21 @@ const Page = () => {
       console.log("Session expired");
     }
   }, []);
-  const timeLeftRef = useSessionTime(flightData?.conditions?.sct, flightData?.conditions?.st, handleSessionExpire);
+  const timeLeftRef = useSessionTime(
+    flightData?.conditions?.sct,
+    flightData?.conditions?.st,
+    handleSessionExpire
+  );
 
   const hasExpired = React.useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedApiData = localStorage.getItem("apiData");
-      console.log("storedApi", storedApiData)
+      console.log("storedApi", storedApiData);
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
-        console.log("fakjsdhfalshfkjsadf", flightData)
+        console.log("fakjsdhfalshfkjsadf", flightData);
       }
     }
   }, []);
@@ -358,13 +361,18 @@ const Page = () => {
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
+  console.log("mame totalprice amount cookie lendhu == ", totalprice);
+  console.log("mame totalprice amount cookie lendhu == ", typeof totalprice);
   const baggageTotal =
     BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
-  const mealTotal =
-    MealAmount.reduce((acc, curr) => acc + curr.amount, 0)
-    console.log("mame seat amount cookie lendhu == ",SeatAmount)
-  const seatTotal = (SeatAmount && SeatAmount !== "") ? SeatAmount : 0;
-  console.log("mame seatTotal cookie lendhu == ",seatTotal)
+  console.log("mame baggage amount cookie lendhu == ", baggageTotal);
+  console.log("mame baggage amount cookie lendhu == ", typeof baggageTotal);
+  const mealTotal = MealAmount.reduce((acc, curr) => acc + curr.amount, 0);
+  console.log("mame seat amount cookie lendhu == ", mealTotal);
+  console.log("mame seat amount cookie lendhu == ", typeof mealTotal);
+  const seatTotal = SeatAmount && SeatAmount !== "" ? SeatAmount : 0;
+  console.log("mame seatTotal cookie lendhu == ", seatTotal);
+  console.log("mame seatTotal cookie lendhu == ", typeof seatTotal);
 
   const finalAmountToPay = totalprice + baggageTotal + mealTotal + seatTotal;
   //fare rule api
@@ -408,10 +416,7 @@ const Page = () => {
   const dateChangePenaltyPeriod = dateChange.map((e) => e.pp);
   const dateChangeFee = dateChange.map((e) => e.fcs?.ARF);
   const dateChangeSt = dateChange.map((e) => e.st ?? 0);
-  const dateChangeEt = dateChange.map((e) => (e.et / 24) ?? 365);
-
-
-
+  const dateChangeEt = dateChange.map((e) => e.et / 24 ?? 365);
 
   //seat charge
   const seatChargeSt = seatCharge.map((e) => e.st ?? null);
@@ -508,7 +513,6 @@ const Page = () => {
     return dayjs(segs[0].dt).format("HH:mm");
   };
 
-
   const [selectedRoute, setSelectedRoute] = useState();
 
   useEffect(() => {
@@ -543,13 +547,15 @@ const Page = () => {
                 {" "}
                 {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                   ?.st &&
-                  fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                    ?.et ? (
-                  <div>{`${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                    ?.st
-                    } hrs to ${Math.floor(fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.et / 24)
-                    } days`}</div>
+                fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                  ?.et ? (
+                  <div>{`${
+                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                      ?.st
+                  } hrs to ${Math.floor(
+                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                      ?.et / 24
+                  )} days`}</div>
                 ) : (
                   <p>
                     {
@@ -581,9 +587,9 @@ const Page = () => {
                         {fareRulesData?.fareRuleInformation?.tfr
                           ?.CANCELLATION?.[0]?.amount
                           ? fareRulesData?.fareRuleInformation?.tfr
-                            ?.CANCELLATION?.[0]?.amount
+                              ?.CANCELLATION?.[0]?.amount
                           : fareRulesData?.fareRuleInformation?.tfr
-                            ?.CANCELLATION?.[0]?.additionalFee}
+                              ?.CANCELLATION?.[0]?.additionalFee}
                       </div>
                     </div>
                   </>
@@ -594,9 +600,9 @@ const Page = () => {
                     {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                       ?.amount
                       ? fareRulesData?.fareRuleInformation?.tfr
-                        ?.CANCELLATION?.[0]?.amount
+                          ?.CANCELLATION?.[0]?.amount
                       : fareRulesData?.fareRuleInformation?.tfr
-                        ?.CANCELLATION?.[0]?.additionalFee}{" "}
+                          ?.CANCELLATION?.[0]?.additionalFee}{" "}
                   </div>
                 )}
               </div>
@@ -633,8 +639,9 @@ const Page = () => {
                 if (st && et) {
                   return (
                     <div>
-                      {`${st} hrs to ${et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
-                        }`}
+                      {`${st} hrs to ${
+                        et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
+                      }`}
                     </div>
                   );
                 } else {
@@ -707,10 +714,11 @@ const Page = () => {
                 if (noShow?.et && noShow?.st) {
                   return (
                     <div>
-                      {`${noShow?.st} hrs to ${noShow?.et > 24
-                        ? noShow?.et / 24 + " days"
-                        : noShow?.et + " hrs"
-                        }`}
+                      {`${noShow?.st} hrs to ${
+                        noShow?.et > 24
+                          ? noShow?.et / 24 + " days"
+                          : noShow?.et + " hrs"
+                      }`}
                     </div>
                   );
                 } else {
@@ -765,10 +773,11 @@ const Page = () => {
                   if (seatChangable?.st && seatChangable?.et) {
                     return (
                       <div>
-                        {`${seatChangable?.st} hrs to ${seatChangable?.et > 24
-                          ? seatChangable?.et / 24 + " days"
-                          : seatChangable?.et + " hrs"
-                          }`}
+                        {`${seatChangable?.st} hrs to ${
+                          seatChangable?.et > 24
+                            ? seatChangable?.et / 24 + " days"
+                            : seatChangable?.et + " hrs"
+                        }`}
                       </div>
                     );
                   } else {
@@ -813,6 +822,20 @@ const Page = () => {
       // Call your API function with the properly constructed parameter
       const result = await postDataTJBookingAir(parameter);
       console.log("loadDataBook =========== ", result);
+      // const saveBookingId = async () => {
+      //   const reqSaveBookingId = {
+      //     booking_id: bookingId,
+      //     phone: number.number,
+      //     amount: finalAmountToPay,
+      //   };
+      //   console.log("reqSaveBookingId === > ", reqSaveBookingId);
+      //   const result = await postData(
+      //     "travelogy/flight/save-booking",
+      //     reqSaveBookingId
+      //   );
+      //   console.log("saveBookingId result === > ", result);
+      // };
+      // saveBookingId();
       router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
     } catch (err) {
       console.error("Error while fetching flight data 1 :", err);
@@ -844,7 +867,6 @@ const Page = () => {
 
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
-
 
     if (totalprice && bookingId) {
       const parameter = {
@@ -883,18 +905,18 @@ const Page = () => {
     console.log("handleHoldBooking =========== ");
 
     console.log("traveelers", travellers);
-    console.log("totalprice bookingid", totalprice, bookingId);
+    console.log("finalAmountToPay bookingid", finalAmountToPay, bookingId);
     if (Array.isArray(travellers) && travellers.length > 0) {
       if (bookingId) {
         // handlePayment();
         // openNotificationWithIcon('success');
         // Build the parameter object without extra curly braces
-        const trimmedTravellerInfo = travellers.map(traveller => ({
-        ti: traveller.ti,
-        fN: traveller.fN,
-        lN: traveller.lN,
-        pt: traveller.pt
-      }));
+        const trimmedTravellerInfo = travellers.map((traveller) => ({
+          ti: traveller.ti,
+          fN: traveller.fN,
+          lN: traveller.lN,
+          pt: traveller.pt,
+        }));
 
         const parameter = {
           bookingId: bookingId,
@@ -905,12 +927,13 @@ const Page = () => {
           },
         };
 
-        console.log("parameter for hold",parameter)
+        console.log("parameter for hold", parameter);
 
         const saveBookingId = async () => {
           const reqSaveBookingId = {
             booking_id: bookingId,
             phone: number.number,
+            amount: finalAmountToPay,
           };
           console.log("reqSaveBookingId === > ", reqSaveBookingId);
           const result = await postData(
@@ -1046,14 +1069,15 @@ const Page = () => {
                           {/* for loop rendering */}
                           {/* <div className="shadow rounded-md p-3"> */}
                           {flightData?.tripInfos?.map((trip, tripIndex) => {
-                            const tripInfosLength = flightData?.tripInfos?.length;
+                            const tripInfosLength =
+                              flightData?.tripInfos?.length;
 
                             const trevellInfo =
                               tripInfosLength > 2
                                 ? " "
                                 : tripIndex === 0
-                                  ? "Onward journey"
-                                  : "Return journey";
+                                ? "Onward journey"
+                                : "Return journey";
                             const trevellInfoStyle =
                               tripIndex === 0
                                 ? { padding: "0 0 1rem 0" }
@@ -1534,10 +1558,11 @@ const Page = () => {
                                     <button
                                       key={route}
                                       onClick={() => setSelectedRoute(route)}
-                                      className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${selectedRoute === route
-                                        ? "bg-white text-black shadow"
-                                        : "text-gray-600 hover:text-black"
-                                        }`}
+                                      className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
+                                        selectedRoute === route
+                                          ? "bg-white text-black shadow"
+                                          : "text-gray-600 hover:text-black"
+                                      }`}
                                     >
                                       {route}
                                     </button>
@@ -1662,10 +1687,10 @@ const Page = () => {
                                         {fareRulesData?.fareRuleInformation?.tfr
                                           ?.CANCELLATION?.[0]?.amount
                                           ? fareRulesData?.fareRuleInformation
-                                            ?.tfr?.CANCELLATION?.[0]?.amount
+                                              ?.tfr?.CANCELLATION?.[0]?.amount
                                           : fareRulesData?.fareRuleInformation
-                                            ?.tfr?.CANCELLATION?.[0]
-                                            ?.additionalFee}
+                                              ?.tfr?.CANCELLATION?.[0]
+                                              ?.additionalFee}
                                         <span className="mx-1"></span>
                                       </p>
                                       <div className="text-secondary text-sm">
@@ -1687,7 +1712,6 @@ const Page = () => {
                                 </div>
                               </div>
                             </div>
-
 
                             {/* Show More / Show Less Button */}
 
@@ -1992,11 +2016,14 @@ const Page = () => {
               )}
             </div>
           </section>
-           {loading ? null : (<div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
-                      <SessionTime timeLeftRef={timeLeftRef} searchTickets={searchTickets} />
-                    </div>
-                    )}
-          
+          {loading ? null : (
+            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+              <SessionTime
+                timeLeftRef={timeLeftRef}
+                searchTickets={searchTickets}
+              />
+            </div>
+          )}
         </main>
       </Layout>
     </>

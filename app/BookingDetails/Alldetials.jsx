@@ -17,25 +17,13 @@ import "./TravellerDetailsModal.jsx";
 import AmendmentPopup from "./AmendmentPopup.jsx";
 import TravellerDetailsModal from "./TravellerDetailsModal.jsx";
 import BarcodeGenerator from "./BarcodeGenerator.jsx";
-
-// test purpose
-// const passengerDetails = [
-//   {
-//     passengerName: "SRIVASTAVA/PANKAJ",
-//     pnrCode: "ABCDEF",
-//     fromCityCode: "DEL",
-//     toCityCode: "BOM",
-//     flightNumber: 123,
-//     julianDate: "040",
-//   },
-// ];
+import { request } from "http";
 
 const Alldetails = ({ totalpricee }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // const bookingId = searchParams.get("booking_id");
-  const bookingId = "TJS108001480691";
+  const bookingId = searchParams.get("booking_id");
   console.log("bookingid from alldetails", bookingId);
 
   const [loading, setLoading] = useState(null);
@@ -51,7 +39,7 @@ const Alldetails = ({ totalpricee }) => {
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
   const [amendmentDetailData, setAmendmentDetailData] = useState(null);
 
-  const { flightData } = useContext(AppContext);
+  const { setCookie } = useContext(AppContext);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const [showTravellerModal, setShowTravellerModal] = useState(false);
@@ -60,12 +48,267 @@ const Alldetails = ({ totalpricee }) => {
   const [travellerData, setTravellerData] = useState(null);
   const [validateSuccess, setValidateSuccess] = useState(null);
 
+  const [rescheduleDate, setRescheduleDate] = useState("");
+
   const toggleAllPassengers = () => {
     setShowAllPassengers((prev) => !prev);
   };
 
-  const handleCancellation = () => {
+  const [isReIssueModalOpen, setIsReIssueModalOpen] = useState(false);
+  const [selectedTravellers, setSelectedTravellers] = useState([]);
+
+  // const createStructuredData = (bookingDetails) => {
+  //   console.log("bookingDetailsbookingDetails -------- bookingDetails ",bookingDetails)
+  //   const result = {
+  //     pnrs: {},
+  //     pnrFlightDetails: {},
+  //     pnrPassengerDetails: {},
+  //   };
+
+  //   const pnrMap = {};
+  //   const pnrPassengers = {};
+
+  //   bookingDetails.itemInfos.AIR.travellerInfos.forEach((traveller) => {
+  //     Object.entries(traveller.pnrDetails).forEach(([segmentKey, pnr]) => {
+  //       bookingDetails.itemInfos.AIR.tripInfos.forEach((trip) => {
+  //         trip.sI.forEach((segment) => {
+  //           if (
+  //             segment.da.code === segmentKey.split("-")[0] &&
+  //             segment.aa.code === segmentKey.split("-")[1]
+  //           ) {
+
+  //             if (!pnrMap[pnr]) pnrMap[pnr] = [];
+  //             pnrMap[pnr].push(segment);
+
+  //             if (!pnrPassengers[pnr]) pnrPassengers[pnr] = [];
+  //             pnrPassengers[pnr].push({
+  //               firstName: traveller.fN,
+  //               lastName: traveller.lN,
+  //               title: traveller.ti,
+  //               passengerType: traveller.pt,
+  //             });
+  //           }
+  //         });
+  //       });
+  //     });
+  //   });
+
+  //   Object.entries(pnrMap).forEach(([pnr, segments]) => {
+  //     segments.sort((a, b) => new Date(a.dt) - new Date(b.dt));
+  //     const fromCode = segments[0].da.code;
+  //     const toCode = segments[segments.length - 1].aa.code;
+  //     const journeyKey = `${fromCode}-${toCode}`;
+
+  //     result.pnrs[journeyKey] = pnr;
+
+  //     result.pnrFlightDetails[journeyKey] = {
+  //       flightNumber: segments.map((s) => s.fD.fN).join("/"),
+  //       from: segments[0].da.city,
+  //       to: segments[segments.length - 1].aa.city,
+  //       departureTime: segments[0].dt,
+  //       arrivalTime: segments[segments.length - 1].at,
+  //     };
+
+  //     const uniquePassengers = [];
+  //     const seen = new Set();
+  //     pnrPassengers[pnr].forEach((p) => {
+  //       const key = `${p.firstName}-${p.lastName}-${p.title}`;
+  //       if (!seen.has(key)) {
+  //         uniquePassengers.push(p);
+  //         seen.add(key);
+  //       }
+  //     });
+  //     result.pnrPassengerDetails[journeyKey] = uniquePassengers;
+  //   });
+
+  //   console.log("resultresultresult--result == ",result)
+
+  //   return result;
+  // };
+
+  const createStructuredData = (bookingDetails) => {
+    console.log("bookingDetails -------- bookingDetails ", bookingDetails);
+    const result = {
+      pnrs: {},
+      pnrFlightDetails: {},
+      pnrPassengerDetails: {},
+    };
+
+    const pnrMap = {};
+    const pnrPassengers = {};
+
+    // Build segment-to-PNR and passenger map as before
+    bookingDetails.itemInfos.AIR.travellerInfos.forEach((traveller) => {
+      Object.entries(traveller.pnrDetails).forEach(([segmentKey, pnr]) => {
+        bookingDetails.itemInfos.AIR.tripInfos.forEach((trip) => {
+          trip.sI.forEach((segment) => {
+            if (
+              segment.da.code === segmentKey.split("-")[0] &&
+              segment.aa.code === segmentKey.split("-")[1]
+            ) {
+              if (!pnrMap[pnr]) pnrMap[pnr] = [];
+              pnrMap[pnr].push(segment);
+
+              if (!pnrPassengers[pnr]) pnrPassengers[pnr] = [];
+              pnrPassengers[pnr].push({
+                firstName: traveller.fN,
+                lastName: traveller.lN,
+                title: traveller.ti,
+                passengerType: traveller.pt,
+              });
+            }
+          });
+        });
+      });
+    });
+
+    // Instead of grouping all segments for a PNR into one journeyKey,
+    // create a separate entry for each segment
+    Object.entries(pnrMap).forEach(([pnr, segments]) => {
+      segments.forEach((segment) => {
+        const journeyKey = `${segment.da.code}-${segment.aa.code}`;
+        result.pnrs[journeyKey] = pnr;
+        result.pnrFlightDetails[journeyKey] = {
+          flightNumber: segment.fD.fN,
+          from: segment.da.city,
+          to: segment.aa.city,
+          departureTime: segment.dt,
+          arrivalTime: segment.at,
+        };
+
+        const uniquePassengers = [];
+        const seen = new Set();
+        pnrPassengers[pnr].forEach((p) => {
+          const key = `${p.firstName}-${p.lastName}-${p.title}`;
+          if (!seen.has(key)) {
+            uniquePassengers.push(p);
+            seen.add(key);
+          }
+        });
+        result.pnrPassengerDetails[journeyKey] = uniquePassengers;
+      });
+    });
+
+    console.log("result == ", result);
+
+    return result;
+  };
+
+  const [rescheduleData, setRescheduleData] = useState(null);
+  const [selectedPNR, setSelectedPNR] = useState(null);
+
+  const handlePNRSelect = (pnr) => {
+    console.log("ssssssssssssssssss 11111111111 ", pnr);
+    console.log(rescheduleData.pnrFlightDetails);
+    console.log(rescheduleData.pnrFlightDetails[selectedPNR]);
+    setSelectedPNR(pnr);
+    setSelectedTravellers([]);
+  };
+
+  const getTravellerCategoryCount = (type) => {
+    // type should be 'ADULT', 'CHILD', or 'INFANT'
+    return selectedTravellers.filter(
+      (traveller) => traveller.passengerType === type
+    ).length;
+  };
+
+  const [rescheduleError, setRescheduleError] = useState("");
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
+
+  const handleSubmitReIssue = async () => {
+    console.log("handleSubmitReIssue ==> ");
+    console.log("Reschedule Date:", rescheduleDate);
+    console.log("Selected Travellers:", selectedTravellers);
+    console.log("rescheduleData == > ", rescheduleData);
+
+    setRescheduleLoading(true);
+
+    const pnr = rescheduleData.pnrs[selectedPNR] || "";
+    const pnrKey = Object.keys(rescheduleData.pnrs).find(
+      (key) => rescheduleData.pnrs[key] === pnr
+    );
+
+    console.log("pnrKeypnrKey == > ", pnrKey);
+
+    const [from, to] = pnrKey.split("-");
+
+    const parameter = {
+      paxInfo: {
+        ADULT: getTravellerCategoryCount("ADULT"),
+        CHILD: getTravellerCategoryCount("CHILD"),
+        INFANT: getTravellerCategoryCount("INFANT"),
+      },
+      routeInfos: [
+        {
+          fromCityOrAirport: {
+            code: from,
+          },
+          toCityOrAirport: {
+            code: to,
+          },
+          travelDate: rescheduleDate,
+        },
+      ],
+      oldBookingId: bookingId,
+      pnr: pnr,
+      paxIds: [
+        getTravellerCategoryCount("ADULT") +
+          getTravellerCategoryCount("CHILD") +
+          getTravellerCategoryCount("INFANT"),
+      ],
+    };
+
+    console.log("parameterparameter ===> ", parameter);
+
+    try {
+      let reqData = { action: "searchQuery", requestData: parameter };
+      const result = await postData("travelogy/one-way/fetch-data", reqData);
+
+      console.log("resultttttttttt ", result);
+
+      if (result?.searchQuery?.requestId) {
+        // call search using requestid
+        setCookie("rs_data", JSON.stringify(result));
+        const mydata = {
+          requestId: result?.searchQuery?.requestId,
+        };
+        const queryString = new URLSearchParams(mydata).toString();
+        // router.push(`/tickets?${queryString}`);
+        setRescheduleLoading(false);
+        router.push(`/rescheduletickets?${queryString}`);
+      }
+      if (result?.errors?.[0]?.message) {
+        console.log("errorrrrrrrrrrrrrrrr ", result?.errors?.[0]?.message);
+        setRescheduleError(result?.errors?.[0]?.message);
+        setRescheduleLoading(false);
+      }
+    } catch (error) {
+      console.log("handlePayNow error ", error);
+    }
+  };
+
+  const openReIssueModal = () => {
+    console.log("openReIssueModal == >");
+    const rescheduleData = createStructuredData(bookingDetails);
+    console.log("rescheduleDatarescheduleData == ", rescheduleData);
+    setRescheduleData(rescheduleData);
+    setIsReIssueModalOpen(true);
+  };
+
+  const closeReIssueModal = () => {
+    setRescheduleError("");
+    setIsReIssueModalOpen(false);
+  };
+
+  const handleCancellation = async () => {
     console.log("handleCancellation function == > ");
+    // try {
+    //   let reqData = { action: "amendmentCharges", requestData: parameter };
+    //   const result = await postData("travelogy/one-way/fetch-data", reqData);
+    //   console.log("resultttttttttt ", result);
+    // } catch (error) {
+    //   console.log("handlePayNow error ", error);
+    // }
   };
 
   const handleUnHold = async () => {
@@ -265,28 +508,49 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   const handlePayNow = async () => {
-    console.log("handlePayNow ==> ");
     const parameter = { bookingId: bookingId };
     try {
       let reqData = { action: "fareValidate", requestData: parameter };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
 
-      if (result?.status && result.status === true) {
+      if (result?.status?.success === true) {
+        const fetchBookingData = await postData(
+          "travelogy/flight/fetch-booking-data",
+          { bookingId: bookingId }
+        );
         const airBookParameter = {
           bookingId: bookingId,
           paymentInfos: [
             {
-              amount: totalpricee?.fC?.TF,
+              amount: fetchBookingData?.data?.[0]?.amount,
             },
           ],
         };
-        const callAirBookResult = await postAirDat;
-        aBookingDetails(airBookParameter);
+        let reqData = { action: "conformBook", requestData: airBookParameter };
+        const airBookResponse = await postData(
+          "travelogy/one-way/fetch-data",
+          reqData
+        );
+        window.location.reload();
       }
     } catch (error) {
       console.log("handlePayNow error ", error);
     }
   };
+
+  function formatDateTime(isoString) {
+    if (!isoString) return "";
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    };
+    const date = new Date(isoString);
+    return date.toLocaleString("en-IN", options); // Change locale as needed
+  }
 
   const bookingDetailsapi = async (bookingId) => {
     setLoading(true);
@@ -308,7 +572,7 @@ const Alldetails = ({ totalpricee }) => {
       const data = await postData("travelogy/one-way/fetch-data", reqData);
 
       // const data = await postDataBookingDetails(parameter);
-      console.log("Booking details:", data);
+      console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
       setBookingdetails(data);
 
@@ -579,6 +843,7 @@ const Alldetails = ({ totalpricee }) => {
       (traveller) => traveller
     ) ?? [];
   console.log("segments", segments);
+
   console.log(
     "bookingDetails?.itemInfos?.AIR?.travellerInfos ",
     bookingDetails?.itemInfos?.AIR?.travellerInfos
@@ -668,20 +933,6 @@ const Alldetails = ({ totalpricee }) => {
                   {bookingDetails?.order?.status === "SUCCESS" && (
                     <div className="flex flex-row gap-3">
                       <button onClick={handleCancellation}>
-                        {/* <AmendmentPopup
-                      bookingId={bookingId}
-                      onSubmit={(bookingId, amendmentType) =>
-                        sumbitAmendmentapi(
-                          bookingId,
-                          amendmentType,
-                          "Cancel due to rescheduling",
-                          (data) => {
-                            alert(`Amendment raised successfully. ID: ${data?.amendmentId}`);
-                            handleClose(); // ✅ This will work now
-                          }
-                        )
-                      }
-                    /> */}
                         <AmendmentPopup
                           bookingId={bookingId}
                           bookingDetails={bookingDetails}
@@ -696,47 +947,376 @@ const Alldetails = ({ totalpricee }) => {
                               amendmentType,
                               remarks,
                               (data) => {
-                                callback?.(data); // Keep your original callback logic
-                                setShowTravellerModal(true); // ✅ Show traveller modal after amendment submit
+                                callback?.(data);
+                                setShowTravellerModal(true);
                               }
                             )
                           }
                         />
-
-                        {/* {showDetailsModal && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
-                            <button
-                              onClick={() => setShowDetailsModal(false)}
-                              className="absolute top-4 right-4 text-2xl text-black"
-                            >
-                              &times;
-                            </button>
-
-                            <h3 className="text-xl font-bold text-green-700 mb-4">Amendment Details</h3>
-
-                            <div className="space-y-3 text-gray-700">
-                              <p><strong>Status:</strong> {amendmentDetailData?.amendmentStatus}</p>
-                              <p><strong>Refundable Amount:</strong> ₹{amendmentDetailData?.refundableAmount}</p>
-                              <p><strong>Remarks:</strong> {amendmentDetailData?.remarks}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )} */}
-
-                        {/* {showTravellerModal && (
-                        <TravellerDetailsModal
-                          bookingId={travellerData.bookingId}
-                          amendmentId={travellerData.amendmentId}
-                          bookingDetails={bookingDetails}
-                          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${firstSegment?.dt?.split("T")[0]}`}
-                          onClose={() => setShowTravellerModal(false)}
-                        />
-                      )} */}
                       </button>
                     </div>
                   )}
                 </div>
+
+                {bookingDetails?.order?.status === "SUCCESS" && (
+                  <div>
+                    <button
+                      className="border border-grey rounded px-4 py-2"
+                      onClick={openReIssueModal}
+                    >
+                      Reschedule
+                    </button>
+                  </div>
+                )}
+
+                {/* {isReIssueModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div
+                      className="bg-white rounded-lg p-6 shadow-lg relative"
+                      style={{ width: "75%" }}
+                    >
+                      <button
+                        onClick={closeReIssueModal}
+                        className="absolute top-4 right-4 text-2xl text-black"
+                      >
+                        &times;
+                      </button>
+                      <h2 className="text-xl font-bold text-blue-800 mb-6">
+                        Reschedule Flight
+                      </h2>
+                      <div className="flex flex-col gap-4 mb-6">
+                        <div>
+                          <label className="text-gray-500 mb-1 block">
+                            Select Passenger for Flight Rescheduling
+                          </label>
+
+                          <table className="min-w-full table-auto border-collapse border border-gray-200">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="px-4 py-2 border-b text-center">
+                                  Si No
+                                </th>
+                                <th className="px-4 py-2 border-b text-center">
+                                  Name
+                                </th>
+                                <th className="px-4 py-2 border-b text-center">
+                                  From-To
+                                </th>
+                                <th className="px-4 py-2 border-b text-center">
+                                  PNR
+                                </th>
+                                <th className="px-4 py-2 border-b text-center">
+                                  Departure Date
+                                </th>
+                                <th className="px-4 py-2 border-b text-center">
+                                  Departure Time
+                                </th>
+                                <th className="px-4 py-2 border-b text-center">
+                                  Select
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {bookingDetails.itemInfos.AIR.travellerInfos.map(
+                                (traveller, index) => {
+                                  return Object.keys(traveller.pnrDetails).map(
+                                    (pnrKey, pnrIndex) => {
+                                      const tripInfo =
+                                        bookingDetails.itemInfos.AIR.tripInfos.find(
+                                          (trip) =>
+                                            trip.sI.some(
+                                              (sI) =>
+                                                sI.da.code ===
+                                                  pnrKey.split("-")[0] &&
+                                                sI.aa.code ===
+                                                  pnrKey.split("-")[1]
+                                            )
+                                        );
+
+                                      const flightDate = tripInfo?.sI?.find(
+                                        (sI) =>
+                                          sI.da.code === pnrKey.split("-")[0] &&
+                                          sI.aa.code === pnrKey.split("-")[1]
+                                      )?.dt;
+
+                                      const [date, time] = flightDate
+                                        ? flightDate.split("T")
+                                        : ["", ""];
+                                      const [hours, minutes] = time
+                                        ? time.split(":")
+                                        : ["", ""];
+                                      const formattedTime = `${hours}:${minutes}`;
+
+                                      return (
+                                        <tr key={`${index}-${pnrIndex}`}>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            {index + 1}
+                                          </td>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            {traveller.ti} {traveller.fN}{" "}
+                                            {traveller.lN}
+                                          </td>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            {pnrKey.split("-")[0]} -{" "}
+                                            {pnrKey.split("-")[1]}
+                                          </td>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            {traveller.pnrDetails[pnrKey]}
+                                          </td>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            {date}
+                                          </td>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            {formattedTime}
+                                          </td>
+                                          <td className="px-4 py-2 border-b text-center">
+                                            <input
+                                              style={{ height: "20px" }}
+                                              type="checkbox"
+                                            />
+                                          </td>
+                                        </tr>
+                                      );
+                                    }
+                                  );
+                                }
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
+                      <button
+                        // onClick={handleSubmitReIssue}
+                        className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                )} */}
+
+                {isReIssueModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div
+                      className="bg-white rounded-lg p-6 shadow-lg relative"
+                      style={{ width: "75%" }}
+                    >
+                      <button
+                        onClick={closeReIssueModal}
+                        className="absolute top-4 right-4 text-2xl text-black"
+                      >
+                        &times;
+                      </button>
+                      <h2 className="text-xl font-bold text-blue-800 mb-6">
+                        Reschedule Flight
+                      </h2>
+
+                      <div className="mb-4">
+                        <label
+                          htmlFor="pnr-select"
+                          className="block text-gray-500 mb-2"
+                        >
+                          Select PNR
+                        </label>
+                        <select
+                          id="pnr-select"
+                          value={selectedPNR}
+                          onChange={(e) => handlePNRSelect(e.target.value)}
+                          className="w-full border-b border-gray-400 py-2 px-4"
+                        >
+                          <option value="">-- Select PNR --</option>
+                          {Object.keys(rescheduleData.pnrs).map(
+                            (pnr, index) => (
+                              <option key={index} value={pnr}>
+                                {pnr} - {rescheduleData.pnrs[pnr]}{" "}
+                              </option>
+                            )
+                          )}
+                        </select>
+                      </div>
+
+                      {/* Display travel details after PNR selection */}
+                      {selectedPNR && (
+                        <div className="mb-6 flex justify-around items-center">
+                          <div>
+                            <h6 className="font-bold text-gray-700">
+                              Travel Details:
+                            </h6>
+                            <p className="text-gray-600">
+                              From:{" "}
+                              {
+                                rescheduleData.pnrFlightDetails[selectedPNR]
+                                  .from
+                              }
+                            </p>
+                            <p className="text-gray-600">
+                              To:{" "}
+                              {rescheduleData.pnrFlightDetails[selectedPNR].to}
+                            </p>
+                            {/* <p className="text-gray-600">
+                            Flight Number: {pnrFlightDetails.flightNumber}
+                          </p> */}
+                            <p className="text-gray-600">
+                              Departure Time:{" "}
+                              {formatDateTime(
+                                rescheduleData.pnrFlightDetails[selectedPNR]
+                                  .departureTime
+                              )}
+                            </p>
+                            <p className="text-gray-600">
+                              Arrival Time:{" "}
+                              {formatDateTime(
+                                rescheduleData.pnrFlightDetails[selectedPNR]
+                                  .arrivalTime
+                              )}
+                            </p>
+                          </div>
+                          <div>
+                            {/* date picker */}
+                            <label
+                              className="block text-gray-700 font-medium mb-2"
+                              htmlFor="reschedule-date"
+                            >
+                              Select New Travel Date:
+                            </label>
+                            <input
+                              type="date"
+                              id="reschedule-date"
+                              className="border border-gray-400 px-4 py-2 rounded"
+                              value={rescheduleDate} // You need to manage this state!
+                              onChange={(e) =>
+                                setRescheduleDate(e.target.value)
+                              }
+                              disabled={!selectedPNR}
+                              min={new Date().toISOString().split("T")[0]}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* List of travellers with checkboxes */}
+                      {selectedPNR &&
+                        rescheduleData.pnrPassengerDetails[selectedPNR] && (
+                          <div className="mb-6">
+                            <h6 className="font-bold text-gray-700">
+                              Travellers:
+                            </h6>
+                            <div className="">
+                              {rescheduleData.pnrPassengerDetails[
+                                selectedPNR
+                              ].map((passenger, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-2"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    style={{ width: "20px" }}
+                                    id={`traveller-${index}`}
+                                    className="form-checkbox"
+                                    checked={selectedTravellers.some(
+                                      (p) =>
+                                        p.firstName === passenger.firstName &&
+                                        p.lastName === passenger.lastName &&
+                                        p.title === passenger.title &&
+                                        p.passengerType ===
+                                          passenger.passengerType
+                                    )}
+                                    onChange={(e) => {
+                                      let updated;
+                                      if (e.target.checked) {
+                                        updated = [
+                                          ...selectedTravellers,
+                                          passenger,
+                                        ];
+                                      } else {
+                                        updated = selectedTravellers.filter(
+                                          (p) =>
+                                            !(
+                                              p.firstName ===
+                                                passenger.firstName &&
+                                              p.lastName ===
+                                                passenger.lastName &&
+                                              p.title === passenger.title &&
+                                              p.passengerType ===
+                                                passenger.passengerType
+                                            )
+                                        );
+                                      }
+                                      console.log(
+                                        "Updated selectedTravellers:",
+                                        updated
+                                      );
+                                      setSelectedTravellers(updated);
+                                    }}
+                                  />
+
+                                  <label htmlFor={`traveller-${index}`}>
+                                    {passenger.title} {passenger.firstName}{" "}
+                                    {passenger.lastName} (
+                                    {passenger.passengerType})
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                      {/* <button
+                        onClick={handleSubmitReIssue}
+                        className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
+                        disabled={
+                          !rescheduleDate || selectedTravellers.length === 0
+                        }
+                      >
+                        Submit
+                      </button> */}
+                      <button
+                        onClick={handleSubmitReIssue}
+                        className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
+                        disabled={
+                          !rescheduleDate ||
+                          selectedTravellers.length === 0 ||
+                          rescheduleLoading // Disable while loading!
+                        }
+                      >
+                        {rescheduleLoading ? (
+                          <>
+                            <svg
+                              className="animate-spin h-5 w-5 mr-2"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="white"
+                                strokeWidth="4"
+                                fill="none"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="white"
+                                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
+                              />
+                            </svg>
+                            Loading...
+                          </>
+                        ) : (
+                          "Submit"
+                        )}
+                      </button>
+
+                      {rescheduleError !== "" && (
+                        <p className="text-sm-medium text-red-400">
+                          {rescheduleError}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   {bookingDetails?.order?.status === "SUCCESS" ? (
@@ -917,7 +1497,7 @@ const Alldetails = ({ totalpricee }) => {
                               </ul>
                             </div>
 
-                            <div>
+                            <div className="w-full">
                               <div className="flex flex-row justify-between">
                                 <div className="logo-flight flex flex-row gap-3 items-center mb-20">
                                   <div className="text-md-bold neutral-900">
