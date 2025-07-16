@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Select } from "antd";
-const apiListAirLineState = require("./apiListAirLineState");
+// const apiListAirLineState = require("./apiListAirLineState");
+import { useCities } from "../../util/HotelApi"; // or same file
 
 const CityListSearch = ({
   setSelectFrom,
@@ -8,86 +9,88 @@ const CityListSearch = ({
   // setSelectFromSub,
   categoryType,
 }) => {
-  const [filteredOptions, setFilteredOptions] = useState(apiListAirLineState);
-
+  const { cities, loading } = useCities();
+  const [filteredOptions, setFilteredOptions] = useState([]);
   const handleChange = (value) => {
     const getDtaa = value.split(",");
     // alert(getDtaa);
+    const selectedCity = filteredOptions.find(
+      (item) => `${item.cityName},${item.id},${item.countryName}` === value
+    );
 
-    setSelectFrom(getDtaa[0]);
+    if (selectedCity) {
+      setSelectFrom({
+        cityName: selectedCity.cityName,
+        countryName: selectedCity.countryName,
+        id: selectedCity.id,
+      });
+    }
+
+    // setSelectFrom(getDtaa[0]);
     // setSelectFromSub(getDtaa[1]);
     operEngLocation();
   };
+  useEffect(() => {
+    if (cities.length > 0) {
+      setFilteredOptions(cities);
+      // setSelectFrom(cities[4]); // ✅ Immediately select the first city
+    }
+  }, [cities]);
 
   const handleSearch = (searchText) => {
     if (!searchText) {
-      setFilteredOptions(apiListAirLineState); // Show all if input is cleared
+      setFilteredOptions(cities);
       return;
     }
 
-    const filtered = apiListAirLineState.filter(
+    const filtered = cities.filter(
       (item) =>
-        item?.key?.toLowerCase().startsWith(searchText.toLowerCase()) ||
-        item?.city?.toLowerCase().startsWith(searchText.toLowerCase())
+        item?.cityName?.toLowerCase().includes(searchText.toLowerCase()) ||
+        item?.fullRegionName?.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    setFilteredOptions(filtered.slice(0, 10)); // Show top 10 only
+    setFilteredOptions(filtered.slice(0, 10));
   };
+  {
+    !loading && cities.length === 0 && (
+      <div className="p-4 text-center text-gray-500">No cities available</div>
+    );
+  }
 
   const mappedOptions = filteredOptions.map((item) => ({
     label: (
-      <div className="inline_flex">
-        {!categoryType && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="#000"
-              d="M3 21v-2h18v2zm1.75-5L1 9.75l2.4-.65l2.8 2.35l3.5-.925l-5.175-6.9l2.9-.775L14.9 9.125l4.25-1.15q.8-.225 1.513.187t.937 1.213t-.187 1.513t-1.213.937z"
-            />
-          </svg>
-        )}
-        <div>
-          {categoryType === "hotel" ? (
-            <div>{item.city}</div>
-          ) : (
-            <>
-              <div>
-                {item.city} ({item.country})
-              </div>
-              <div>{item.name}</div>
-            </>
-          )}
-        </div>
+      <div>
+        <div className="font-semibold text-gray-800">{item.cityName}</div>
+        <div className="text-xs text-gray-500">{item.fullRegionName}</div>
       </div>
     ),
-    value: `${item.city},${item.key},${item.country}`,
+
+    value: `${item.cityName},${item.id},${item.countryName}`,
   }));
 
   const options = [
     {
-      label: <span>Suggestion</span>,
-      title: "manager",
+      label: "Suggestions",
       options: mappedOptions,
     },
   ];
 
   return (
-    <Select
-      dropdownClassName="custom-select-dropdown" // custom class name for dropdown styling
-      autoFocus
-      showSearch
-      open={true}
-      style={{ width: "100%" }}
-      onSearch={handleSearch}
-      onChange={handleChange}
-      options={options}
-      placeholder="Select an airport..."
-      filterOption={false} // disables built-in search
-    />
+    <>
+      {loading ? (
+        <div className="p-4 text-center text-gray-500">Loading cities...</div>
+      ) : (
+        <Select
+          showSearch
+          onSearch={handleSearch}
+          onChange={handleChange}
+          options={options}
+          placeholder="Select a city..."
+          filterOption={false}
+          style={{ width: "100%" }}
+        />
+      )}
+    </>
   );
 };
 export default CityListSearch;

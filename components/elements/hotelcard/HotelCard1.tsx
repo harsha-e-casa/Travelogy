@@ -7,6 +7,8 @@ export default function HotelCard1({ hotel }: any) {
   const id = hotel?.id || "unknown-id";
   const image = hotel?.img?.[0]?.url;
   const totalPrice = hotel?.ops?.[0]?.tp ?? "N/A";
+  const refund = hotel?.ops?.cnp?.ifra;
+  const noRefund = hotel?.ops?.cnp?.inra;
 
   return (
     <div className="card-journey-small background-card setHeightSlider">
@@ -30,7 +32,7 @@ export default function HotelCard1({ hotel }: any) {
             />
           </svg>
         </Link>
-        <Link href={`/hotel-listing/book-details?id=${id}`}>
+        <Link href={`/hotel-listing/${id}`}>
           <img src={image} alt={name} />
         </Link>
       </div>
@@ -38,7 +40,7 @@ export default function HotelCard1({ hotel }: any) {
         <div className="card-title">
           <Link
             className="text-lg-bold neutral-1000"
-            href={`/hotel-listing/book-details?id=${id}`}
+            href={`/hotel-listing/${id}`}
           >
             {name}
           </Link>
@@ -60,12 +62,14 @@ export default function HotelCard1({ hotel }: any) {
             </p>
           </div>
           <div className="endtime">
-            <Link
+            <p
               className="text-lg-bold neutral-1000"
-              href={`/hotel-listing/book-details?id=${id}`}
+              // href={`/hotel-listing/book-details?id=${id}`}
             >
               ₹ {totalPrice}
-            </Link>
+            </p>
+            {refund}
+            {noRefund}
             <div className="card-button">
               <Link className="btn btn-gray" href={`/hotel-listing/${id}`}>
                 Book Now

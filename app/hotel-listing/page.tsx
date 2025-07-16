@@ -24,17 +24,26 @@ const hotelsData = rawHotelsData.map((hotel) => ({
 }));
 import AppDateRage from "@/components/searchEngine/AppDateRage";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
+import { useNationalities } from "@/util/HotelApi";
+type Nationality = {
+  countryName: string;
+  name: string;
+  dialCode: string;
+  countryId: string;
+  code: string;
+  isoCode: string;
+};
 
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const location = searchParams.get("location") || "Goa"; // or any default
-
-  // const checkinDate = searchParams.get("checkinDate");
-  // const checkoutDate = searchParams.get("checkoutDate");
+  const location = searchParams.get("location");
+  const { nationalities } = useNationalities() as {
+    nationalities: Nationality[];
+    loading: boolean;
+  };
 
   const city = searchParams.get("city") || "699261"; // Static default city if none
-  const nationality = searchParams.get("nationality") || "106"; // Static default nationality
   const currency = searchParams.get("currency") || "INR"; // Static default currency
   const rooms = Number(searchParams.get("rooms")) || 1;
   const adults = Number(searchParams.get("adults")) || 1;
@@ -98,7 +107,44 @@ export default function HotelListing() {
   const childAges = roomsData.flatMap((r) => r.childAges);
 
   const [showTraveller, setShowTraveller] = useState(false);
-  const [selectFrom, setSelectFrom] = useState(location);
+  const [selectFrom, setSelectFrom] = useState<{
+    cityName: string;
+    countryName: string;
+    id?: string;
+  } | null>(null);
+  const [nationalityId, setNationalityId] = useState<string | null>(
+    searchParams.get("nationality") || null
+  );
+  // useEffect(() => {
+  //   if (selectFrom && selectFrom.countryName && nationalities.length > 0) {
+  //     const matched = nationalities.find(
+  //       (n) =>
+  //         n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+  //     );
+  //     setNationalityId(matched ? matched.countryId : null);
+  //   }
+  // }, [selectFrom, nationalities]);
+  useEffect(() => {
+    // Auto-initialize selectFrom from query param and nationality list
+    if (!selectFrom && location && nationalities.length > 0) {
+      const locationLower = location.toLowerCase();
+
+      // Try to find a nationality whose countryName is contained in location
+      const matchedNationality = nationalities.find((n) =>
+        locationLower.includes(n.countryName.toLowerCase())
+      );
+
+      if (matchedNationality) {
+        setSelectFrom({
+          cityName: location,
+          countryName: matchedNationality.countryName,
+          id: city,
+        });
+
+        setNationalityId(matchedNationality?.countryId || nationalityId);
+      }
+    }
+  }, [location, city, nationalities]);
 
   useEffect(() => {
     if (!checkinDate) setCheckinDate(dayjs().format("YYYY-MM-DD"));
@@ -186,6 +232,32 @@ export default function HotelListing() {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
+    let matchedNationality = null;
+
+    if (selectFrom?.countryName) {
+      matchedNationality = nationalities.find(
+        (n) =>
+          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+      );
+    }
+
+    // Fallback using query param if above fails
+    if (!matchedNationality && nationalityId) {
+      matchedNationality = nationalities.find(
+        (n) => n.countryId === nationalityId
+      );
+    }
+
+    // if (!matchedNationality) {
+    //   alert("Could not determine nationality for selected city.");
+    //   return;
+    // }
+
+    const nationalityIdToUse =
+      matchedNationality?.countryId || nationalityId || "";
+    console.log("selectFrom is:", selectFrom);
+    console.log("nationalities:", nationalities);
+
     setLoading(true);
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
@@ -199,9 +271,9 @@ export default function HotelListing() {
     const queryParams = new URLSearchParams({
       checkinDate: formattedCheckIn,
       checkoutDate: formattedCheckOut,
-      location: selectFrom,
-      city: "699261",
-      nationality: "106",
+      location: selectFrom?.cityName || "",
+      city: selectFrom?.id || "",
+      nationality: nationalityIdToUse,
       currency: "INR",
       rooms: roomsData.length.toString(),
       adults: totalAdults.toString(),
@@ -215,7 +287,7 @@ export default function HotelListing() {
         checkinDate: formattedCheckIn,
         checkoutDate: formattedCheckOut,
         roomInfo: cleanRoomInfo,
-        searchCriteria: { city, nationality, currency },
+        searchCriteria: { city, nationality: nationalityIdToUse, currency },
         searchPreferences: { fsc: true },
       },
       sync: true,
@@ -225,49 +297,103 @@ export default function HotelListing() {
     setLoading(false);
     if (data) {
       console.log("Search result in handleSearch:", data);
+      // setApiHotelData(data.searchResult?.his || []);
+      const hotelOnlyResults = data.searchResult?.his || [];
+      // .filter((item: any) => item.pt === "HOTEL");
+      setApiHotelData(hotelOnlyResults);
+
+      console.log("Search result in handleSearch:", data);
+      console.log("queryParams", queryParams);
       router.push(`/hotel-listing?${queryParams}`);
     }
   };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
+  //     alert("Check-out date cannot be earlier than check-in date.");
+  //     return;
+  //   }
+  //   setLoading(true);
+
+  //   const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+  //   const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+
+  //   const roomInfo = roomsData.map((room) => ({
+  //     numberOfAdults: room.adults,
+  //     numberOfChild: room.children,
+  //     ...(room.children > 0 ? { childAge: room.childAges } : {}),
+  //   }));
+
+  //   const fetchData = async () => {
+  //     const payload = {
+  //       searchQuery: {
+  //         checkinDate: formattedCheckIn,
+  //         checkoutDate: formattedCheckOut,
+  //         roomInfo: cleanRoomInfo,
+  //         searchCriteria: { city, nationality: nationalityId, currency },
+  //         searchPreferences: { fsc: true },
+  //       },
+  //       sync: true,
+  //     };
+
+  //     const data = await apiCall(payload);
+  //     setLoading(false);
+  //     if (data) {
+  //       console.log("Search result in handleSearch:", data);
+  //       // setApiHotelData(data.searchResult?.his || []);
+  //       const hotelOnlyResults = data.searchResult?.his || [];
+  //       // .filter((item: any) => item.pt === "HOTEL");
+  //       setApiHotelData(hotelOnlyResults);
+
+  //       // console.log("HotelCard1 data", data.searchResult.his);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+useEffect(() => {
+  const fetchData = async () => {
     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
       alert("Check-out date cannot be earlier than check-in date.");
       return;
     }
-    setLoading(true);
 
+    setLoading(true);
     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
-    const roomInfo = roomsData.map((room) => ({
-      numberOfAdults: room.adults,
-      numberOfChild: room.children,
-      ...(room.children > 0 ? { childAge: room.childAges } : {}),
-    }));
-
-    const fetchData = async () => {
-      const payload = {
-        searchQuery: {
-          checkinDate: formattedCheckIn,
-          checkoutDate: formattedCheckOut,
-          roomInfo: cleanRoomInfo,
-          searchCriteria: { city, nationality, currency },
-          searchPreferences: { fsc: true },
+    const payload = {
+      searchQuery: {
+        checkinDate: formattedCheckIn,
+        checkoutDate: formattedCheckOut,
+        roomInfo: cleanRoomInfo,
+        searchCriteria: {
+          city,
+          nationality: nationalityId,
+          currency,
         },
-        sync: true,
-      };
-
-      const data = await apiCall(payload);
-      setLoading(false);
-      if (data) {
-        console.log("Search result in handleSearch:", data);
-        setApiHotelData(data.searchResult?.his || []);
-
-        // console.log("HotelCard1 data", data.searchResult.his);
-      }
+        searchPreferences: { fsc: true },
+      },
+      sync: true,
     };
-    fetchData();
-  }, []);
+
+    const data = await apiCall(payload);
+    setLoading(false);
+    if (data) {
+      const hotelOnlyResults = data.searchResult?.his || [];
+      setApiHotelData(hotelOnlyResults);
+    }
+  };
+
+  fetchData();
+}, [
+  city,
+  checkinDate,
+  checkoutDate,
+  nationalityId,
+  currency,
+  roomsData,
+  location,
+]);
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
@@ -358,8 +484,9 @@ export default function HotelListing() {
                 <label>Location</label>
 
                 <span className="input-field font-bold" onClick={openfrom}>
-                  {selectFrom}
+                  {selectFrom?.cityName || location}
                 </span>
+
                 {showSearchState && (
                   <div
                     className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
@@ -467,15 +594,15 @@ export default function HotelListing() {
                   </div>
                   <div className="box-grid-tours wow fadeIn">
                     {/* <div className="row">
-                      {paginatedHotels.map((hotel) => (
-                        <div
-                          className="col-xl-4 col-lg-6 col-md-6"
-                          key={hotel.id}
-                        >
-                          <HotelCard1 hotel={hotel} />
-                        </div>
-                      ))}
-                    </div> */}
+                        {paginatedHotels.map((hotel) => (
+                          <div
+                            className="col-xl-4 col-lg-6 col-md-6"
+                            key={hotel.id}
+                          >
+                            <HotelCard1 hotel={hotel} />
+                          </div>
+                        ))}
+                      </div> */}
                     <div className="row">
                       {loading ? (
                         <div className="col-12 d-flex justify-center py-5">
