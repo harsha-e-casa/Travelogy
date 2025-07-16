@@ -98,7 +98,7 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
                   <option value="">-- Select --</option>
                   <option value="CANCELLATION">Cancellation</option>
                   <option value="SSR">SSR</option>
-                  <option value="full_refund">Full Refund</option>
+                  <option value="FULL_REFUND">Full Refund</option>
                 </select>
               </div>
             </div>

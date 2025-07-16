@@ -62,12 +62,16 @@ import { ArrowRightOutlined } from "@ant-design/icons";
 import "./ticketCard1.css";
 import { AppContext } from "@/util/AppContext";
 
-export default function TicketCard1({ ticket, flightData }: any) {
-  console.log("flightData from ticketcard", flightData)
+export default function TicketCard1({
+  ticket,
+  flightData,
+  reschedule = false,
+}: any) {
+  console.log("flightData from ticketcard", flightData);
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
   const [totalPrice, setTotalprice] = useState();
-  console.log("tickets", ticket)
+  console.log("tickets", ticket);
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -98,13 +102,12 @@ export default function TicketCard1({ ticket, flightData }: any) {
     }
   }, [ticket]);
 
-  let flightLogo = { width: "unset" }
-  let paddingNone = {}
+  let flightLogo = { width: "unset" };
+  let paddingNone = {};
 
   if (getCookie("gy_triptype") === "multi-city") {
-    console.log("ddddddddddddddddddddd ", getCookie("gy_triptype"));
-    flightLogo = { width: "150px", position: "unset" }
-    paddingNone = { padding: "unset" }
+    flightLogo = { width: "150px", position: "unset" };
+    paddingNone = { padding: "unset" };
   }
 
   const style: React.CSSProperties = {
@@ -123,110 +126,112 @@ export default function TicketCard1({ ticket, flightData }: any) {
   return (
     <>
       <div>
-
-        <div style={{ ...paddingNone }} className="item-flight background-card border-1 ticket-container relative ">
+        <div
+          style={{ ...paddingNone }}
+          className="item-flight background-card border-1 ticket-container relative "
+        >
           <div style={{ width: "55%" }}>
-            {ticket.sI.map((segment: any, index: number) => (<>
-              <div
-                className="air_detailes"
-                style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
-              >
-                <div className="flex items-center justify-center w-max">
-                  <img
-                    style={{ width: "35px", height: "35px", padding: "5px" }}
-                    src={`/assets/imgs/airlines/${segment[
-                      "fD"
-                    ].aI.code.toLowerCase()}.png`}
-                  />
-                  <div className="text-[10px]" style={{ fontSize: "10px" }}>
-                    {segment["fD"].aI.name}
+            {ticket.sI.map((segment: any, index: number) => (
+              <>
+                <div
+                  className="air_detailes"
+                  style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
+                >
+                  <div className="flex items-center justify-center w-max">
+                    <img
+                      style={{ width: "35px", height: "35px", padding: "5px" }}
+                      src={`/assets/imgs/airlines/${segment[
+                        "fD"
+                      ].aI.code.toLowerCase()}.png`}
+                    />
+                    <div className="text-[10px]" style={{ fontSize: "10px" }}>
+                      {segment["fD"].aI.name}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-evenly items-center  pl-20 pr-5">
-
-                {/* <div className="air_detailes">{segment["fD"].aI.name}</div> */}
-                {/* <img
+                <div className="flex justify-evenly items-center  pl-20 pr-5">
+                  {/* <div className="air_detailes">{segment["fD"].aI.name}</div> */}
+                  {/* <img
                   src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
                   alt={segment["fD"].aI.name}
                 /> */}
 
-                < div className="flight-route flight-route-type-2 city1" >
-                  <div className="flight-route-1">
-                    <div className="flight-name">
-                      <div className="flight-info flex flex-col justify-center items-center">
-                        <p className="text-md-bold neutral-1000 city1name">
-                          {segment["da"].city}
-                          <span className="text-md-bold neutral-1000">
-                            ({segment["da"].code})
-                          </span>{" "}
-                        </p>
+                  <div className="flight-route flight-route-type-2 city1">
+                    <div className="flight-route-1">
+                      <div className="flight-name">
+                        <div className="flight-info flex flex-col justify-center items-center">
+                          <p className="text-md-bold neutral-1000 city1name">
+                            {segment["da"].city}
+                            <span className="text-md-bold neutral-1000">
+                              ({segment["da"].code})
+                            </span>{" "}
+                          </p>
 
-                        <p className="text-sm-medium time-flight timelogo">
-                          <span className="neutral-1000 time ">
-                            {dayjs(segment["dt"]).format("hh:mm A")}
-                          </span>
+                          <p className="text-sm-medium time-flight timelogo">
+                            <span className="neutral-1000 time ">
+                              {dayjs(segment["dt"]).format("HH:mm")}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flight-route flight-route-type-2 city1">
+                    <div className="flight-route-1">
+                      <div className=" flight-name duration flex flex-col items-center align-center duration">
+                        <p className="text-sm-medium neutral-500 totalduration">
+                          {" "}
+                          {formatTime(segment["duration"])}{" "}
+                        </p>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="currentColor"
+                          className="bi bi-arrow-right"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                          />
+                        </svg>
+
+                        <p className="text-sm-medium neutral-500 totalduration">
+                          {" "}
+                          {segment?.["stops"] > 0
+                            ? `${segment?.["stops"]} stops`
+                            : "non stop"}
                         </p>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="flight-route flight-route-type-2 city1">
-                  <div className="flight-route-1">
-                    <div className=" flight-name duration flex flex-col items-center align-center duration">
-                      <p className="text-sm-medium neutral-500 totalduration">
-                        {" "}
-                        {formatTime(segment["duration"])}{" "}
-                      </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        fill="currentColor"
-                        className="bi bi-arrow-right"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                        />
-                      </svg>
+                  <div className="flight-route flight-route-type-2 city1">
+                    <div className="flight-route-1">
+                      <div className="flight-name">
+                        <div className="flight-info flex flex-col items-center align-center">
+                          <p className="text-md-bold neutral-1000 align-center city1name">
+                            {segment["aa"].city}{" "}
+                            <span className="text-md-bold neutral-1000 citycode">
+                              ({segment["aa"].code})
+                            </span>
+                          </p>
 
-                      <p className="text-sm-medium neutral-500 totalduration">
-                        {" "}
-                        {segment?.["stops"] > 0
-                          ? `${segment?.["stops"]} stops`
-                          : "non stop"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flight-route flight-route-type-2 city1">
-                  <div className="flight-route-1">
-                    <div className="flight-name">
-                      <div className="flight-info flex flex-col items-center align-center">
-                        <p className="text-md-bold neutral-1000 align-center city1name">
-                          {segment["aa"].city}{" "}
-                          <span className="text-md-bold neutral-1000 citycode">
-                            ({segment["aa"].code})
-                          </span>
-                        </p>
-
-                        <p className="text-sm-medium time-flight timelogo">
-                          <span className="neutral-1000 time">
-                            {dayjs(segment["at"]).format("hh:mm A")}{" "}
-                          </span>
-                        </p>
+                          <p className="text-sm-medium time-flight timelogo">
+                            <span className="neutral-1000 time">
+                              {dayjs(segment["at"]).format("HH:mm")}
+                            </span>
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </>))}
+              </>
+            ))}
           </div>
-
 
           <div
             className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center    "
@@ -334,15 +339,32 @@ export default function TicketCard1({ ticket, flightData }: any) {
 
           {/* btn */}
           <div className="flight-price-2 border-1 btndiv pr-20">
-            <Link
+            {reschedule && (
+              <Link
+                href={`reschedule-book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
+                className="btn btn-gray booknow btn"
+              >
+                Book Now
+              </Link>
+            )}
+            {!reschedule && (
+              <Link
+                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
+                className="btn btn-gray booknow btn"
+              >
+                Book Now
+              </Link>
+            )}
+            {/* <Link
               href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
+              // href={`reschedule-book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
               className="btn btn-gray booknow btn"
             >
               Book Now
-            </Link>
+            </Link> */}
           </div>
-        </div >
-      </div >
+        </div>
+      </div>
     </>
   );
 }
