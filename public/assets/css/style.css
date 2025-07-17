@@ -19367,9 +19367,11 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .border-r-1 {
   border-right: 1px solid #00000040;
 }
-.border-l-1{
-    border-left: 1px solid #00000040;
+
+.border-l-1 {
+  border-left: 1px solid #00000040;
 }
+
 .check-avail-modal .lg\:w-2\/6 {
   width: 83.333333%;
 }
@@ -19396,9 +19398,47 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   border-radius: 0%;
 }
 
-.form-error {
-  color: #ef4444;
-  /* Tailwind red-500 */
+.form-error-space {
+  min-height: 1.25rem;
+  margin-top: 0.25rem;
   font-size: 0.75rem;
-  margin-top: 4px;
+  color: #ef4444;
+}
+.text-4aa301 {
+  color: #4aa301;
+}
+
+.bg-4aa301 {
+  background-color: #4aa301;
+}
+
+.stepper_input {
+  width: 200px !important;
+  height: 40px !important;
+}
+
+.stepper_select {
+  width: 100px !important;
+  height: 40px !important;
+}
+
+/* styles.css or global.css */
+.stepper-guest-row {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  /* Default for mobile */
+  gap: 0.5rem !important;
+  /* Tailwind's gap-2 = 0.5rem */
+}
+
+@media (min-width: 768px) {
+  .stepper-guest-row {
+    grid-template-columns: 100px 200px 200px 100px !important;
+    /* Title | First | Last | Action */
+    align-items: center !important;
+  }
+}
+
+.stepper_input::placeholder {
+  font-size: 13px;
 }
