@@ -94,32 +94,7 @@ export default function Stepper() {
   const [loading, setLoading] = useState(false); // Add this with hotelReviewData
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
-    title: "Mrs",
-    firstName: "",
-    lastName: "",
-    countryCode: "+91",
-    mobile: "",
-    email: "",
-    specialRequest: "",
-  });
-
-  // useEffect(() => {
-  //   const loadHotelData = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const data = await fetchHotelReviewData(hotelId, optionId);
-  //       setHotelReviewData(data);
-  //       console.log("1111111111111111111111111111", data);
-  //     } catch (err) {
-  //       setError("Failed to load hotel review data");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (hotelId && optionId) loadHotelData();
-  // }, [hotelId, optionId]);
+  const [formData, setFormData] = useState({});
 
   if (error) {
     return (
@@ -168,9 +143,46 @@ export default function Stepper() {
     },
   ];
 
+  // const goNext = () => {
+  //   if (currentStep < steps.length) setCurrentStep(currentStep + 1);
+  // };
+
   const goNext = () => {
-    if (currentStep < steps.length) setCurrentStep(currentStep + 1);
+    // Inject guest details before going to Step 3
+    if (
+      currentStep === 2 &&
+      formData?.guests &&
+      hotelReviewData?.query?.roomInfo
+    ) {
+      const updatedRoomInfo = hotelReviewData.query.roomInfo.map(
+        (room, index) => ({
+          ...room,
+          guests: [
+            {
+              name: `${formData.guests?.[index]?.firstName || ""} ${
+                formData.guests?.[index]?.lastName || ""
+              }`.trim(),
+            },
+            ...(formData.guests?.[index]?.extraGuests || []),
+          ],
+        })
+      );
+
+      setHotelReviewData((prev) => ({
+        ...prev,
+        query: {
+          ...prev.query,
+          roomInfo: updatedRoomInfo,
+        },
+      }));
+    }
+
+    // Proceed to next step
+    if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+    }
   };
+
 
   const goPrev = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
@@ -182,58 +194,78 @@ export default function Stepper() {
   const handlePayment = () => {
     alert("Redirecting to payment gateway...");
   };
+
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
-        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-10 px-4">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Booking Progress
-          </h1>
+        <div className="bg-gray-50 flex flex-col items-center justify-center py-4">
           <div className="w-full max-w-6xl relative flex justify-between mb-10">
-            <div className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200 z-0">
-              <div
-                className="h-full bg-grey-500 transition-all duration-500"
-                style={{
-                  width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
-                }}
-              />
-            </div>
+            <div className="w-full flex justify-between items-center relative mb-10">
+              {steps.map((step, index) => {
+                const status =
+                  currentStep > step.id
+                    ? "completed"
+                    : currentStep === step.id
+                    ? "current"
+                    : "upcoming";
 
-            {steps.map((step) => {
-              const status =
-                currentStep > step.id
-                  ? "completed"
-                  : currentStep === step.id
-                  ? "current"
-                  : "upcoming";
+                const stepLabelMap = [
+                  "FIRST STEP",
+                  "SECOND STEP",
+                  "THIRD STEP",
+                  "FINISH",
+                ];
 
-              return (
-                <div
-                  key={step.id}
-                  onClick={() => handleStepClick(step.id)}
-                  className="relative z-10 flex flex-col items-center cursor-pointer group"
-                >
+                return (
                   <div
-                    className={`w-12 h-12 flex items-center justify-center rounded-full border-2 mb-2
-                ${
-                  status === "completed"
-                    ? "bg-green-500 border-green-500 text-white"
-                    : status === "current"
-                    ? "bg-blue-500 border-blue-500 text-white ring-4 ring-blue-200"
-                    : "bg-gray-300 border-gray-300 text-white"
-                }`}
+                    key={step.id}
+                    onClick={() => handleStepClick(step.id)}
+                    className="flex items-center gap-2 w-full group cursor-pointer"
                   >
-                    {status === "completed" ? <CheckIcon /> : step.icon}
+                    {/* Icon + Labels */}
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div
+                        className={`w-10 h-10 flex items-center justify-center rounded-full
+                        ${
+                          status === "completed"
+                            ? "bg-4aa301 text-white"
+                            : status === "current"
+                            ? "bg-black text-white ring-2 ring-gray-400"
+                            : "bg-gray-200 text-gray-400"
+                        }`}
+                      >
+                        {status === "completed" ? <CheckIcon /> : step.icon}
+                      </div>
+                    </div>
+
+                    {/* Texts */}
+                    <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] tracking-wide text-gray-500 uppercase">
+                        {stepLabelMap[index]}
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${
+                          status === "completed"
+                            ? "text-4aa301"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {step.title}
+                      </span>
+                    </div>
+
+                    {/* Line */}
+                    {index !== steps.length - 1 && (
+                      <div
+                        className={`flex-1 h-px mx-4 ${
+                          currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
+                        }`}
+                      ></div>
+                    )}
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs font-medium text-gray-600">
-                      {step.title}
-                    </p>
-                    <p className="text-xs text-gray-400">{step.subtitle}</p>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
           <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
             {/* <div className="md:col-span-8 border-r-1">
@@ -309,13 +341,19 @@ export default function Stepper() {
                   {currentStep === 3 && (
                     <Step3PersonalDocuments
                       formData={formData}
-                      onPrev={goPrev}
+                      setFormData={setFormData}
+                      hotelReviewData={hotelReviewData}
                       onNext={goNext}
                     />
                   )}
                   {currentStep === 4 && (
                     <Step4Payment
-                      amount={hotelReviewData?.hInfo?.ops?.[0]?.tp || 433.45}
+                      formData={formData}
+                      hotelReviewData={hotelReviewData}
+                      amount={
+                        hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF +
+                        hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF
+                      }
                       onConfirmPayment={handlePayment}
                     />
                   )}

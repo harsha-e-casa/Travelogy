@@ -167,7 +167,6 @@ export default function ActivitiesDetail4() {
           setHotelData(hotel);
           setSearchQueryData(searchData);
 
-          // ✅ Set check-in and check-out dates from searchQuery
           setCheckinDate(searchData?.checkinDate || null);
           setCheckoutDate(searchData?.checkoutDate || null);
           console.log(response.data.hotel);
@@ -247,6 +246,13 @@ export default function ActivitiesDetail4() {
   );
   const roomCount = roomInfo.length;
   console.log("Rooms & Guest", searchQueryData?.roomInfo);
+  let hotelDescription = {};
+  try {
+    hotelDescription = hotelData?.des ? JSON.parse(hotelData.des) : {};
+  } catch (err) {
+    console.error("Invalid hotel description JSON", err);
+  }
+
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
@@ -365,12 +371,56 @@ export default function ActivitiesDetail4() {
                       id="collapseOverview"
                     >
                       <div className="cards card-body">
-                        {hotelData?.des && (
+                        {/* {hotelData?.des && (
                           <>
                             <p>{JSON.parse(hotelData.des).amenities}</p>
                             <p>{JSON.parse(hotelData.des).rooms}</p>
                           </>
-                        )}
+                        )} */}
+                        <div className="space-y-4">
+                          {Object.entries(hotelDescription).map(
+                            ([key, value]) => {
+                              if (!value?.trim()) return null; // skip empty or null values
+
+                              // Convert key like "onsite_payments" => "Onsite Payments"
+                              const label = key
+                                .split("_")
+                                .map(
+                                  (word) =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                )
+                                .join(" ");
+
+                              const hasDoubleSpace = value.includes("  ");
+                              const listItems = hasDoubleSpace
+                                ? value
+                                    .split(/ {2,}/)
+                                    .map((item) => item.trim())
+                                    .filter(Boolean)
+                                : [];
+
+                              return (
+                                <div key={key} className="mb-6">
+                                  <h3 className="text-base font-semibold text-gray-800 mb-1">
+                                    {label}
+                                  </h3>
+
+                                  {hasDoubleSpace ? (
+                                    <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                                      {listItems.map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-sm text-gray-700 whitespace-pre-line">
+                                      {value}
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

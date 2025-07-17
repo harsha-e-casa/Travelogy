@@ -1,0 +1,31 @@
+bookingId:"TJS203101536601"
+deliveryInfo:code:["+91"]
+contacts:["9003681903"]
+emails:["deepak@casagrandtravelogy.co.in"]
+icpb:false
+ipaf:false
+isCorporateBooking:false
+isSamePanForAllRooms:false
+isoc:false
+ispfar:false
+itp:false
+paymentInfos:[{paymentMediu:WALLET", bookingI:TJS203101536601", amoun:32.74, paymentFe:, ruleI:}]
+roomTravellerInfo:[{travellerInf:,…], i:325664152_398895034_37407##1"}]
+0:{travellerInf:,…], i:325664152_398895034_37407##1"}
+id:"325664152_398895034_37407##1"
+travellerInfo:0:ed:"0.0"
+errors:{f:rue, l:rue, at:rue, pNu:rue, pe:rue, pa:rue}
+ats:true
+fN:true
+lN:true
+pNum:true
+pan:true
+peD:true
+fN:"test"
+isPaxOpen:false
+isTba:false
+lN:"lead"
+pan:"ABCDE1234F"
+pt:"ADULT"
+ti:"Mr"
+type:"HOTEL"

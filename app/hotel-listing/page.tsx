@@ -43,11 +43,17 @@ export default function HotelListing() {
     loading: boolean;
   };
 
-  const city = searchParams.get("city") || "699261"; // Static default city if none
-  const currency = searchParams.get("currency") || "INR"; // Static default currency
-  const rooms = Number(searchParams.get("rooms")) || 1;
-  const adults = Number(searchParams.get("adults")) || 1;
-  const children = Number(searchParams.get("children")) || 0;
+  // const city = searchParams.get("city") || "699261";
+  // const currency = searchParams.get("currency") || "INR";
+  // const rooms = Number(searchParams.get("rooms")) || 1;
+  // const adults = Number(searchParams.get("adults")) || 1;
+  // const children = Number(searchParams.get("children")) || 0;
+  const city = searchParams.get("city");
+  const currency = searchParams.get("currency");
+  const rooms = Number(searchParams.get("rooms"));
+  const adults = Number(searchParams.get("adults"));
+  const children = Number(searchParams.get("children"));
+
   const childAgesRaw = searchParams.get("childAges");
 
   let parsedChildAges: number[][] = [];
@@ -138,7 +144,7 @@ export default function HotelListing() {
         setSelectFrom({
           cityName: location,
           countryName: matchedNationality.countryName,
-          id: city,
+          id: city ?? undefined,
         });
 
         setNationalityId(matchedNationality?.countryId || nationalityId);
@@ -350,50 +356,50 @@ export default function HotelListing() {
   //   };
   //   fetchData();
   // }, []);
-useEffect(() => {
-  const fetchData = async () => {
-    if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-      alert("Check-out date cannot be earlier than check-in date.");
-      return;
-    }
+  useEffect(() => {
+    const fetchData = async () => {
+      if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
+        alert("Check-out date cannot be earlier than check-in date.");
+        return;
+      }
 
-    setLoading(true);
-    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-    const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+      setLoading(true);
+      const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+      const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
-    const payload = {
-      searchQuery: {
-        checkinDate: formattedCheckIn,
-        checkoutDate: formattedCheckOut,
-        roomInfo: cleanRoomInfo,
-        searchCriteria: {
-          city,
-          nationality: nationalityId,
-          currency,
+      const payload = {
+        searchQuery: {
+          checkinDate: formattedCheckIn,
+          checkoutDate: formattedCheckOut,
+          roomInfo: cleanRoomInfo,
+          searchCriteria: {
+            city,
+            nationality: nationalityId,
+            currency,
+          },
+          searchPreferences: { fsc: true },
         },
-        searchPreferences: { fsc: true },
-      },
-      sync: true,
+        sync: true,
+      };
+
+      const data = await apiCall(payload);
+      setLoading(false);
+      if (data) {
+        const hotelOnlyResults = data.searchResult?.his || [];
+        setApiHotelData(hotelOnlyResults);
+      }
     };
 
-    const data = await apiCall(payload);
-    setLoading(false);
-    if (data) {
-      const hotelOnlyResults = data.searchResult?.his || [];
-      setApiHotelData(hotelOnlyResults);
-    }
-  };
-
-  fetchData();
-}, [
-  city,
-  checkinDate,
-  checkoutDate,
-  nationalityId,
-  currency,
-  roomsData,
-  location,
-]);
+    fetchData();
+  }, [
+    city,
+    checkinDate,
+    checkoutDate,
+    nationalityId,
+    currency,
+    roomsData,
+    location,
+  ]);
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state

@@ -1,1596 +1,783 @@
 {
-    "hInfo": {
-        "id": "hsid6508544763-15660973",
-        "name": "Hotel Geetanjali St Bus Stand Panvel",
+    "id": "hsid6664620224-15628769",
+    "hotel": {
+        "id": "hsid6664620224-15628769",
+        "name": "City Stay Prime Hotel Apartment",
         "img": [
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f86a72f2_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f86a72f2_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f86a72f2_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/62620475_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/62620475_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/62620475_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5f8d88dc_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5f8d88dc_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5f8d88dc_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/57e0beb0_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/57e0beb0_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/57e0beb0_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ecb88c97_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ecb88c97_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ecb88c97_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/60e18eea_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/60e18eea_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/60e18eea_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/00c27f2e_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/00c27f2e_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/00c27f2e_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/942d5dc6_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/942d5dc6_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/942d5dc6_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8268ac7d_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8268ac7d_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8268ac7d_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d2ab82f4_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d2ab82f4_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d2ab82f4_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/56517741_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/56517741_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/56517741_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8e602a18_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8e602a18_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8e602a18_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ef2d5617_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ef2d5617_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ef2d5617_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c0814ad4_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c0814ad4_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c0814ad4_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f0c8b563_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f0c8b563_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f0c8b563_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/9b30e151_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/9b30e151_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/9b30e151_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c87c44c6_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c87c44c6_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c87c44c6_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ca86e8f7_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ca86e8f7_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ca86e8f7_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3bc9fb43_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3bc9fb43_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3bc9fb43_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/47dfca7a_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/47dfca7a_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/47dfca7a_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ed8aeff9_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ed8aeff9_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ed8aeff9_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5deea284_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5deea284_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5deea284_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/93d4e029_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/93d4e029_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/93d4e029_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/1910fb7f_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/1910fb7f_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/1910fb7f_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f55e01b2_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f55e01b2_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f55e01b2_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/677bbb52_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/677bbb52_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/677bbb52_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/04339334_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/04339334_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/04339334_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/fbdc4c3c_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/fbdc4c3c_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/fbdc4c3c_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b10cf994_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b10cf994_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b10cf994_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/58f5af2c_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/58f5af2c_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/58f5af2c_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/0b04bb1b_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/0b04bb1b_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/0b04bb1b_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/770abc2a_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/770abc2a_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/770abc2a_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b468988f_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b468988f_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b468988f_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ff3207b4_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ff3207b4_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ff3207b4_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ffde8047_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ffde8047_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ffde8047_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/84d2ca08_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/84d2ca08_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/84d2ca08_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c4a84fc1_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c4a84fc1_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c4a84fc1_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/06f54f50_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/06f54f50_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/06f54f50_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b0d04ce7_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b0d04ce7_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b0d04ce7_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a6094025_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a6094025_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a6094025_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a9101be0_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a9101be0_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a9101be0_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/617071e2_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/617071e2_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/617071e2_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3f077e3d_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3f077e3d_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3f077e3d_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/de8574c1_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/de8574c1_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/de8574c1_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7c1dd62f_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7c1dd62f_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7c1dd62f_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3c2b6a0b_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3c2b6a0b_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3c2b6a0b_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/307e9008_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/307e9008_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/307e9008_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4d749ae8_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4d749ae8_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4d749ae8_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ac6673c4_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ac6673c4_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ac6673c4_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3ff3deaf_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3ff3deaf_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3ff3deaf_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5167d74d_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5167d74d_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5167d74d_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b7a4d6e9_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b7a4d6e9_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b7a4d6e9_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/18d49c19_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/18d49c19_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/18d49c19_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/65199cb4_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/65199cb4_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/65199cb4_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/989b8808_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/989b8808_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/989b8808_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ce451e9e_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ce451e9e_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ce451e9e_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/63f15643_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/63f15643_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/63f15643_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c9bf1e62_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c9bf1e62_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c9bf1e62_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bd07f003_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bd07f003_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bd07f003_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b9ad3a8a_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b9ad3a8a_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b9ad3a8a_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/080e2045_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/080e2045_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/080e2045_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/16222386_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/16222386_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/16222386_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b3967fed_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b3967fed_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b3967fed_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f3e78c4e_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f3e78c4e_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f3e78c4e_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/856d2f35_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/856d2f35_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/856d2f35_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3404ffc5_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3404ffc5_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3404ffc5_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/972825ec_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/972825ec_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/972825ec_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c7b7875e_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c7b7875e_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c7b7875e_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8e68cc34_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8e68cc34_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8e68cc34_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/782ac14b_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/782ac14b_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/782ac14b_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/98ac34f0_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/98ac34f0_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/98ac34f0_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/128602de_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/128602de_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/128602de_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8ec49914_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8ec49914_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8ec49914_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/698029a4_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/698029a4_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/698029a4_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/cb447c6b_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/cb447c6b_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/cb447c6b_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/957db70e_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/957db70e_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/957db70e_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/990acdf7_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/990acdf7_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/990acdf7_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c983ac49_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c983ac49_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c983ac49_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/74cf9577_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/74cf9577_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/74cf9577_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8d7d92aa_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8d7d92aa_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8d7d92aa_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/2e37f870_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/2e37f870_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/2e37f870_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/712b8315_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/712b8315_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/712b8315_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7c5862ac_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7c5862ac_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7c5862ac_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/51da7b4c_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/51da7b4c_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/51da7b4c_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ca947110_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ca947110_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/ca947110_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/420bcdbb_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/420bcdbb_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/420bcdbb_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4606f65f_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4606f65f_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4606f65f_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c9738bde_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c9738bde_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c9738bde_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7055971d_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7055971d_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7055971d_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/994b3b9b_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/994b3b9b_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/994b3b9b_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/fee9eaca_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/fee9eaca_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/fee9eaca_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d605c137_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d605c137_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d605c137_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/281ae95c_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/281ae95c_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/281ae95c_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8f30fad3_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8f30fad3_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/8f30fad3_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/dd37b9d6_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/dd37b9d6_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/dd37b9d6_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b128915c_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b128915c_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b128915c_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f3563a16_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f3563a16_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f3563a16_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/e1df649b_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/e1df649b_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/e1df649b_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/dfba862e_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/dfba862e_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/dfba862e_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/484ddbf5_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/484ddbf5_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/484ddbf5_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/01355d12_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/01355d12_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/01355d12_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d5fecaa7_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d5fecaa7_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d5fecaa7_z.jpg",
-                "sz": "XXL"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5d6368f8_b.jpg",
-                "sz": "Standard"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5d6368f8_t.jpg",
-                "sz": "XS"
-            },
-            {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/5d6368f8_z.jpg",
-                "sz": "XXL"
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d757b4a1_z.jpg"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b303a70a_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d757b4a1_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b303a70a_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d757b4a1_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/b303a70a_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d757b4a1_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/6003fd4a_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7cbc2078_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/6003fd4a_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7cbc2078_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/6003fd4a_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7cbc2078_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a3d57937_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/984f8e8e_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a3d57937_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/984f8e8e_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/a3d57937_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/984f8e8e_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c2ee6ef1_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/ea7641bf_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c2ee6ef1_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/ea7641bf_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/c2ee6ef1_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/ea7641bf_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f757f4a5_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/01eeb056_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f757f4a5_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/01eeb056_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/f757f4a5_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/01eeb056_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3786d923_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/927ed8fe_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3786d923_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/927ed8fe_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/3786d923_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/927ed8fe_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/eb7a3b60_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/6c2c9bf4_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/eb7a3b60_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/6c2c9bf4_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/eb7a3b60_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/6c2c9bf4_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d23c54e7_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/4c6e2d75_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d23c54e7_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/4c6e2d75_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d23c54e7_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/4c6e2d75_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/47e2f05c_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/ef052085_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/47e2f05c_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/ef052085_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/47e2f05c_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/ef052085_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/85758666_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d8139369_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/85758666_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d8139369_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/85758666_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/d8139369_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4930007e_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7b45adb5_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4930007e_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7b45adb5_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/4930007e_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7b45adb5_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/6ff55569_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2858b318_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/6ff55569_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2858b318_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/6ff55569_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2858b318_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bb1844f0_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f7463ffd_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bb1844f0_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f7463ffd_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bb1844f0_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f7463ffd_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/80f4a6c2_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c3f73f9d_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/80f4a6c2_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c3f73f9d_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/80f4a6c2_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c3f73f9d_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/30133421_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/793a1b23_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/30133421_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/793a1b23_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/30133421_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/793a1b23_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/377688a1_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/6a3bedd6_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/377688a1_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/6a3bedd6_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/377688a1_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/6a3bedd6_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d0f4ea7c_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/24c92940_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d0f4ea7c_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/24c92940_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d0f4ea7c_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/24c92940_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7ef88106_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/97ed3f03_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7ef88106_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/97ed3f03_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/7ef88106_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/97ed3f03_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bda35c70_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/618965b6_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bda35c70_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/618965b6_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/bda35c70_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/618965b6_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/991c7268_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f11c701a_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/991c7268_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f11c701a_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/991c7268_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f11c701a_z.jpg",
                 "sz": "XXL"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d30abcbf_b.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7d7c164b_b.jpg",
                 "sz": "Standard"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d30abcbf_t.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7d7c164b_t.jpg",
                 "sz": "XS"
             },
             {
-                "url": "https://i.travelapi.com/lodging/20000000/19830000/19825800/19825729/d30abcbf_z.jpg",
+                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/7d7c164b_z.jpg",
                 "sz": "XXL"
             }
         ],
-        "tac": {
-            "sc": [
-                {
-                    "type": "URL",
-                    "info": "http://developer.ean.com/terms/en/",
-                    "label": "Supplier terms and conditions"
-                },
-                {
-                    "type": "URL",
-                    "info": "http://developer.ean.com/terms/agent/en/",
-                    "label": "Supplier terms and conditions for agent"
-                }
-            ]
+        "des": "{\"amenities\":\"Don't miss out on the many recreational opportunities, including a health club, an outdoor pool, and a sauna. This aparthotel also features complimentary wireless internet access, concierge services, and a hair salon.\",\"spoken_languages\":\"Hindi, Arabic, Filipino, English, Urdu\",\"rooms\":\"Make yourself at home in one of the 44 individually decorated guestrooms, featuring kitchens with full-sized refrigerators/freezers and stovetops. Rooms have private balconies. 40-inch flat-screen televisions with satellite programming provide entertainment, while complimentary wireless internet access keeps you connected. Conveniences include safes and desks, as well as phones with free local calls.\",\"onsite_payments\":\"Visa, Debit cards not accepted, Cash, Mastercard\",\"business_amenities\":\"Featured amenities include complimentary newspapers in the lobby, dry cleaning/laundry services, and a 24-hour front desk. A roundtrip airport shuttle is provided for a surcharge (available 24 hours), and free self parking is available onsite.\",\"location\":\"With a stay at City Stay Prime Hotel Apartment, you'll be centrally located in Dubai, within a 5-minute drive of Mall of the Emirates and Ski Dubai.  This aparthotel is 3.4 mi (5.4 km) from Burj Al Arab and 7.2 mi (11.6 km) from Marina Beach.\",\"attractions\":\"Distances are displayed to the nearest 0.1 mile and kilometer.  Ski Dubai - 1.3 km / 0.8 mi  Mall of the Emirates - 1.3 km / 0.8 mi  Souk Madinat Jumeirah - 3.3 km / 2.1 mi  Wild Wadi Water Park - 3.9 km / 2.4 mi  Burj Al Arab - 4.1 km / 2.5 mi  Alserkal Avenue Arts District - 4.8 km / 3 mi  Jebel Ali Race Course - 4.8 km / 3 mi  Dubai Hills Mall - 5.9 km / 3.7 mi  Umm Suqeim Beach - 6.7 km / 4.1 mi  Kite Beach - 7.7 km / 4.8 mi  Al Sufouh Beach - 7.7 km / 4.8 mi  Palm Islands - 7.9 km / 4.9 mi  Dubai Science Park - 8 km / 5 mi  Circle Mall - 9.1 km / 5.7 mi  Dubai Miracle Garden - 9.9 km / 6.1 mi  The nearest airports are:Dubai Intl. Airport (DXB) - 26.2 km / 16.3 mi Al Maktoum Intl. Airport (DWC) - 42 km / 26.1 mi Sharjah (SHJ-Sharjah Intl.) - 54 km / 33.6 mi The preferred airport for City Stay Prime Hotel Apartment is Dubai Intl. Airport (DXB). \",\"headline\":\"Near Mall of the Emirates\"}",
+        "rt": 4,
+        "gl": {
+            "ln": "55.2",
+            "lt": "25.11"
         },
-        "des": "{\"amenities\":\"Make use of convenient amenities, which include complimentary wireless internet access and bike parking.\",\"spoken_languages\":\"Hindi, English\",\"rooms\":\"Make yourself at home in one of the 21 air-conditioned rooms featuring LED televisions. Complimentary wireless internet access keeps you connected, and cable programming is available for your entertainment. Bathrooms with showers are provided. Conveniences include phones, as well as safes and ceiling fans.\",\"onsite_payments\":\"Visa, Debit cards not accepted, Cash, Google Pay, Mastercard, PhonePe, UnionPay, Paytm\",\"dining\":\"Enjoy a meal at the restaurant, or stay in and take advantage of the hotel's 24-hour room service.\",\"business_amenities\":\"Featured amenities include express check-in, express check-out, and a 24-hour front desk. Free self parking is available onsite.\",\"location\":\"A stay at Hotel Geetanjali St Bus Stand Panvel places you in the heart of Panvel, a 1-minute drive from Orion Mall and 9 minutes from Utsav Chowk.  This hotel is 6.9 mi (11 km) from Kharghar Valley Golf Course and 7.7 mi (12.3 km) from Karnala Bird Sanctuary.\",\"attractions\":\"Distances are displayed to the nearest 0.1 mile and kilometer.  Orion Mall - 0.3 km / 0.2 mi  Utsav Chowk - 9.4 km / 5.8 mi  Sri Sri Radha Madanmohan Temple - 9.5 km / 5.9 mi  Daridrya Harana Tirtha - 9.5 km / 5.9 mi  Kharghar Valley Golf Course - 11 km / 6.9 mi  Pandavkada Falls - 12.2 km / 7.6 mi  Karnala Bird Sanctuary - 12.3 km / 7.7 mi  Belapur Mango Garden - 12.5 km / 7.7 mi  DY Patil Stadium - 15.3 km / 9.5 mi  Wonder Park - 15.5 km / 9.7 mi  Seawoods Grand Central - 16.4 km / 10.2 mi  Seawoods Lake - 17.5 km / 10.9 mi  Nerul Balaji Temple - 17.6 km / 10.9 mi  Nerul Lake and nature park - 19.1 km / 11.8 mi  Inorbit Mall - 19.8 km / 12.3 mi  The nearest major airport is Chhatrapati Shivaji International Airport (BOM) - 40.1 km / 24.9 mi\",\"headline\":\"Near Orion Mall\"}",
-        "rt": 3,
-        "gl": {},
         "ad": {
-            "adr": "Plot. No. 386, Lokmanya Nagar",
-            "adr2": "Behind ST Bus Depot",
-            "postalCode": "410206",
+            "adr": "Behind Mall Of The Emirates Al Barsha 1",
+            "postalCode": "AlBarsha",
             "city": {
-                "name": "Panvel"
+                "name": "Dubai"
             },
             "state": {
-                "name": "Maharashtra"
+                "name": "Dubai"
             },
             "country": {
-                "code": "IN",
-                "name": "India"
+                "code": "AE",
+                "name": "United Arab Emirates"
             },
-            "ctn": "Panvel",
-            "cn": "India"
+            "ctn": "Dubai",
+            "cn": "United Arab Emirates"
         },
         "fl": [
-            "Covered parking",
-            "Secured parking",
-            "At least 80% of all lighting comes from LEDs",
-            "Tile flooring in public areas",
-            "Water-efficient toilets only",
-            "LED light bulbs",
-            "Wheelchair accessible – no",
-            "Water-efficient showers only",
-            "Express check-in",
-            "Express check-out",
-            "24-hour front desk",
+            "Dry cleaning/laundry service",
+            "Wheelchair accessible (may have limitations)",
+            "Lockers available",
+            "Pool umbrellas",
+            "Wheelchair-accessible path to elevator",
+            "Swimming pool",
+            "Wheelchair-accessible registration desk",
+            "Wheelchair-accessible fitness center",
+            "Wheelchair-accessible pool",
             "Free WiFi",
-            "Bicycle parking available",
-            "Number of restaurants - 1",
-            "Upper floors accessible by stairs only",
-            "Change of towels (on request)",
-            "Smoke-free property",
-            "Stair-free path to entrance",
+            "Wheelchair-accessible public washroom",
+            "Designated smoking areas",
+            "Health club",
+            "Well-lit path to entrance",
+            "Number of outdoor pools - 1",
+            "Wheelchair accessible parking",
+            "Free newspapers in lobby",
+            "Tours/ticket assistance",
+            "Airport transportation (surcharge)",
+            "Wheelchair-accessible on-site restaurant",
+            "Luggage storage",
+            "Multilingual staff",
+            "24-hour front desk",
+            "Wheelchairs available on site",
+            "Safe-deposit box at front desk",
+            "Sauna",
+            "Laundry facilities",
+            "Steam room",
             "Free self parking",
-            "Shopping mall on site"
+            "Elevator",
+            "Fitness facilities",
+            "Terrace",
+            "Hair salon",
+            "Pool sun loungers",
+            "Concierge services"
         ],
-        "pt": "HOTEL",
+        "pt": "APARTHOTEL",
         "ht": [],
-        "inst": [
-            {
-                "type": "POLICIES",
-                "msg": "{\"know_before_you_go\":\"No pets and no service animals are allowed at this property. Set meals are served in guestrooms only (no menus or public dining). Cashless payment methods are available for all transactions.Contactless check-in is available. \"}"
-            },
-            {
-                "type": "CHECKIN_INSTRUCTIONS",
-                "msg": "{\"Special Instructions\":\"This property's policy is to accept bookings only from citizens or residents of India. This property doesn't offer after-hours check-in. Front desk staff will greet guests on arrival at the property. \",\"Instructions\":\"Extra-person charges may apply and vary depending on property policyGovernment-issued photo identification and a credit card, debit card, or cash deposit may be required at check-in for incidental chargesSpecial requests are subject to availability upon check-in and may incur additional charges; special requests cannot be guaranteedThis property accepts credit cards, mobile payments, and cashMobile payment options include: Google Pay, Paytm, and PhonePeCashless transactions are availableSafety features at this property include a smoke detector, a security system, and outdoor lighting. \"}"
-            },
-            {
-                "type": "FEES",
-                "msg": "{\"Mandatory\":\"You'll be asked to pay the following charges at the property. Fees may include applicable taxes: Deposit: INR 1000 per accommodation, per night We have included all charges provided to us by the property. \"}"
-            }
-        ],
         "ops": [
             {
                 "ris": [
                     {
-                        "id": "324036640_393408319_37316##2",
-                        "rc": "AC Deluxe Room",
-                        "rt": "AC Deluxe Room-1 Double Bed - Package Deal",
-                        "srn": "Deluxe",
-                        "adt": 3,
-                        "chd": 1,
+                        "id": "217537158_270160989_37489##1",
+                        "rc": "Deluxe Apartment",
+                        "rt": "Deluxe Apartment-1 King Bed and 4 Twin Beds",
+                        "srn": "Deluxe Apartment",
+                        "adt": 6,
+                        "chd": 0,
                         "pdes": [],
                         "mb": "ROOM ONLY",
-                        "tp": 5311.18,
+                        "tp": 72222.46,
                         "tfcs": {
-                            "TF": 5311.18,
+                            "TF": 72222.46,
                             "CMU": 0.00,
-                            "TAF": 23.60,
-                            "NF": 5311.18,
-                            "BF": 5287.58
+                            "TAF": 94.40,
+                            "NF": 72222.46,
+                            "BF": 72128.06
                         },
-                      
-                        "checkInDate": "2025-07-15",
-                        "checkOutDate": "2025-07-17",
+                        "tafcs": {
+                            "TAF": {
+                                "SBP": 56463.00,
+                                "PRF": 8469.68,
+                                "SGP": 72128.06,
+                                "TSF": 7195.40,
+                                "SAC": 5939.04,
+                                "MF": 80.00,
+                                "TTSF": 15665.06,
+                                "TMF": 5939.04,
+                                "SNP": 66189.02,
+                                "MFT": 14.40,
+                                "SRC": 0.00
+                            }
+                        },
+                        "pis": [
+                            {
+                                "day": 1,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 2,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 3,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9841.03,
+                                    "TAF": 11.80,
+                                    "TF": 9852.83,
+                                    "NF": 9852.83
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7789.86,
+                                        "PRF": 1058.71,
+                                        "SGP": 9841.03,
+                                        "TSF": 992.47,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 2051.17,
+                                        "TMF": 742.38,
+                                        "SNP": 9098.65,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 4,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9841.03,
+                                    "TAF": 11.80,
+                                    "TF": 9852.83,
+                                    "NF": 9852.83
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7789.86,
+                                        "PRF": 1058.71,
+                                        "SGP": 9841.03,
+                                        "TSF": 992.47,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 2051.17,
+                                        "TMF": 742.38,
+                                        "SNP": 9098.65,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 5,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 6,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 7,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 8,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            }
+                        ],
+                        "fcs": [
+                            "Free self parking",
+                            "Free WiFi"
+                        ],
+                        "imgs": [
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            }
+                        ],
                         "radi": {
-                            "rid": "324036640"
+                            "rid": "217537158"
                         },
-                        "op": "3-1",
+                        "op": "6",
                         "rexb": {
                             "BENEFIT": [
                                 {
@@ -1603,29 +790,459 @@
                         }
                     },
                     {
-                        "id": "324036640_393408319_37316##1",
-                        "rc": "AC Deluxe Room",
-                        "rt": "AC Deluxe Room-1 Double Bed - Package Deal",
-                        "srn": "Deluxe",
-                        "adt": 1,
-                        "chd": 0,
+                        "id": "217537158_270160989_37489##2",
+                        "rc": "Deluxe Apartment",
+                        "rt": "Deluxe Apartment-1 King Bed and 4 Twin Beds",
+                        "srn": "Deluxe Apartment",
+                        "adt": 3,
+                        "chd": 1,
                         "pdes": [],
                         "mb": "ROOM ONLY",
-                        "tp": 3550.12,
+                        "tp": 72222.46,
                         "tfcs": {
-                            "TF": 3550.12,
+                            "TF": 72222.46,
                             "CMU": 0.00,
-                            "TAF": 23.60,
-                            "NF": 3550.12,
-                            "BF": 3526.52
+                            "TAF": 94.40,
+                            "NF": 72222.46,
+                            "BF": 72128.06
                         },
-                        
-                        "checkInDate": "2025-07-15",
-                        "checkOutDate": "2025-07-17",
+                        "tafcs": {
+                            "TAF": {
+                                "SBP": 56463.00,
+                                "PRF": 8469.68,
+                                "SGP": 72128.06,
+                                "TSF": 7195.40,
+                                "SAC": 5939.04,
+                                "MF": 80.00,
+                                "TTSF": 15665.06,
+                                "TMF": 5939.04,
+                                "SNP": 66189.02,
+                                "MFT": 14.40,
+                                "SRC": 0.00
+                            }
+                        },
+                        "pis": [
+                            {
+                                "day": 1,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 2,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 3,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9841.03,
+                                    "TAF": 11.80,
+                                    "TF": 9852.83,
+                                    "NF": 9852.83
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7789.86,
+                                        "PRF": 1058.71,
+                                        "SGP": 9841.03,
+                                        "TSF": 992.47,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 2051.17,
+                                        "TMF": 742.38,
+                                        "SNP": 9098.65,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 4,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9841.03,
+                                    "TAF": 11.80,
+                                    "TF": 9852.83,
+                                    "NF": 9852.83
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7789.86,
+                                        "PRF": 1058.71,
+                                        "SGP": 9841.03,
+                                        "TSF": 992.47,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 2051.17,
+                                        "TMF": 742.38,
+                                        "SNP": 9098.65,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 5,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 6,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 7,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 8,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 8741.00,
+                                    "TAF": 11.80,
+                                    "TF": 8752.80,
+                                    "NF": 8752.80
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 6813.88,
+                                        "PRF": 1058.71,
+                                        "SGP": 8741.00,
+                                        "TSF": 868.41,
+                                        "SAC": 742.38,
+                                        "MF": 10.00,
+                                        "TTSF": 1927.12,
+                                        "TMF": 742.38,
+                                        "SNP": 7998.62,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            }
+                        ],
+                        "fcs": [
+                            "Free self parking",
+                            "Free WiFi"
+                        ],
+                        "imgs": [
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            }
+                        ],
                         "radi": {
-                            "rid": "324036640"
+                            "rid": "217537158"
                         },
-                        "op": "1",
+                        "op": "3-1",
                         "rexb": {
                             "BENEFIT": [
                                 {
@@ -1638,35 +1255,1016 @@
                         }
                     }
                 ],
-                "id": "45_0_19825729",
-                "tp": 8861.30,
-                "sc": "INR",
-                "roe": 1.0,
+                "id": "44_0_11434593",
+                "tp": 144444.92,
+                "sc": "USD",
+                "roe": 71.71,
                 "cnp": {
-                    "id": "324036640_393408319_37316--48788660",
+                    "id": "217537158_270160989_37489",
                     "ifra": false,
-                    "inra": false,
+                    "inra": true,
                     "pd": [
                         {
-                            "fdt": "2025-07-14T11:47",
-                            "tdt": "2025-07-15T00:00",
-                            "am": 8814.10,
+                            "fdt": "2025-07-17T11:08",
+                            "tdt": "2025-07-23T00:00",
+                            "am": 144256.14,
                             "pp": 100.00
                         },
                         {
-                            "fdt": "2025-07-15T00:00",
-                            "tdt": "2025-07-17T23:59",
-                            "am": 8814.10
+                            "fdt": "2025-07-23T00:00",
+                            "tdt": "2025-07-31T23:59",
+                            "am": 144256.12
                         }
                     ]
                 },
-                "ddt": "2025-07-14T11:47:48.561",
+                "ddt": "2025-07-17T11:08:15.585",
+                "inst": [
+                    {
+                        "type": "MANDATORY_TAX",
+                        "msg": "65.34 USD"
+                    }
+                ],
                 "oai": {
-                    "sid": "45"
+                    "sid": "44"
                 },
-                "ispr": true,
                 "ipr": true,
-                "omid": "-1335442889-1335442889",
+                "omid": "-89709861-89709861",
+                "ipm": false,
+                "cpb": 24
+            },
+            {
+                "ris": [
+                    {
+                        "id": "217537158_270159052_37489##1",
+                        "rc": "Deluxe Apartment",
+                        "rt": "Deluxe Apartment-1 King Bed and 4 Twin Beds",
+                        "srn": "Deluxe Apartment",
+                        "adt": 6,
+                        "chd": 0,
+                        "pdes": [],
+                        "mb": "ROOM ONLY",
+                        "tp": 79438.62,
+                        "tfcs": {
+                            "TF": 79438.62,
+                            "CMU": 0.00,
+                            "TAF": 94.40,
+                            "NF": 79438.62,
+                            "BF": 79344.22
+                        },
+                        "tafcs": {
+                            "TAF": {
+                                "SBP": 62108.04,
+                                "PRF": 9316.56,
+                                "SGP": 79344.22,
+                                "TSF": 7919.62,
+                                "SAC": 6534.24,
+                                "MF": 80.00,
+                                "TTSF": 17236.18,
+                                "TMF": 6534.24,
+                                "SNP": 72810.04,
+                                "MFT": 14.40,
+                                "SRC": 0.00
+                            }
+                        },
+                        "pis": [
+                            {
+                                "day": 1,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 2,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 3,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 10825.34,
+                                    "TAF": 11.80,
+                                    "TF": 10837.14,
+                                    "NF": 10837.14
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 8568.63,
+                                        "PRF": 1164.57,
+                                        "SGP": 10825.34,
+                                        "TSF": 1092.14,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2256.71,
+                                        "TMF": 816.78,
+                                        "SNP": 10008.56,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 4,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 10825.34,
+                                    "TAF": 11.80,
+                                    "TF": 10837.14,
+                                    "NF": 10837.14
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 8568.63,
+                                        "PRF": 1164.57,
+                                        "SGP": 10825.34,
+                                        "TSF": 1092.14,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2256.71,
+                                        "TMF": 816.78,
+                                        "SNP": 10008.56,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 5,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 6,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 7,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 8,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            }
+                        ],
+                        "fcs": [
+                            "Free self parking",
+                            "Free WiFi"
+                        ],
+                        "imgs": [
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            }
+                        ],
+                        "radi": {
+                            "rid": "217537158"
+                        },
+                        "op": "6",
+                        "rexb": {
+                            "BENEFIT": [
+                                {
+                                    "values": [
+                                        "Free self parking",
+                                        "Free WiFi"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "id": "217537158_270159052_37489##2",
+                        "rc": "Deluxe Apartment",
+                        "rt": "Deluxe Apartment-1 King Bed and 4 Twin Beds",
+                        "srn": "Deluxe Apartment",
+                        "adt": 3,
+                        "chd": 1,
+                        "pdes": [],
+                        "mb": "ROOM ONLY",
+                        "tp": 79438.62,
+                        "tfcs": {
+                            "TF": 79438.62,
+                            "CMU": 0.00,
+                            "TAF": 94.40,
+                            "NF": 79438.62,
+                            "BF": 79344.22
+                        },
+                        "tafcs": {
+                            "TAF": {
+                                "SBP": 62108.04,
+                                "PRF": 9316.56,
+                                "SGP": 79344.22,
+                                "TSF": 7919.62,
+                                "SAC": 6534.24,
+                                "MF": 80.00,
+                                "TTSF": 17236.18,
+                                "TMF": 6534.24,
+                                "SNP": 72810.04,
+                                "MFT": 14.40,
+                                "SRC": 0.00
+                            }
+                        },
+                        "pis": [
+                            {
+                                "day": 1,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 2,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 3,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 10825.34,
+                                    "TAF": 11.80,
+                                    "TF": 10837.14,
+                                    "NF": 10837.14
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 8568.63,
+                                        "PRF": 1164.57,
+                                        "SGP": 10825.34,
+                                        "TSF": 1092.14,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2256.71,
+                                        "TMF": 816.78,
+                                        "SNP": 10008.56,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 4,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 10825.34,
+                                    "TAF": 11.80,
+                                    "TF": 10837.14,
+                                    "NF": 10837.14
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 8568.63,
+                                        "PRF": 1164.57,
+                                        "SGP": 10825.34,
+                                        "TSF": 1092.14,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2256.71,
+                                        "TMF": 816.78,
+                                        "SNP": 10008.56,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 5,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 6,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 7,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            },
+                            {
+                                "day": 8,
+                                "fc": {
+                                    "CMU": 0.00,
+                                    "BF": 9615.59,
+                                    "TAF": 11.80,
+                                    "TF": 9627.39,
+                                    "NF": 9627.39
+                                },
+                                "afc": {
+                                    "TAF": {
+                                        "SBP": 7495.13,
+                                        "PRF": 1164.57,
+                                        "SGP": 9615.59,
+                                        "TSF": 955.89,
+                                        "SAC": 816.78,
+                                        "MF": 10.00,
+                                        "TTSF": 2120.46,
+                                        "TMF": 816.78,
+                                        "SNP": 8798.82,
+                                        "MFT": 1.80,
+                                        "SRC": 0.00
+                                    }
+                                }
+                            }
+                        ],
+                        "fcs": [
+                            "Free self parking",
+                            "Free WiFi"
+                        ],
+                        "imgs": [
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/2eab9240_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f4432e7e_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/3a5dcebb_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f2d85b84_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/237b7518_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f40b24b4_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/00de21cc_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/f018f798_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/59d72b0d_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_b.jpg",
+                                "sz": "Standard",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_t.jpg",
+                                "sz": "XS",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            },
+                            {
+                                "url": "https://i.travelapi.com/lodging/12000000/11440000/11434600/11434593/c9047787_z.jpg",
+                                "sz": "XXL",
+                                "rids": [
+                                    "217537158"
+                                ]
+                            }
+                        ],
+                        "radi": {
+                            "rid": "217537158"
+                        },
+                        "op": "3-1",
+                        "rexb": {
+                            "BENEFIT": [
+                                {
+                                    "values": [
+                                        "Free self parking",
+                                        "Free WiFi"
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "id": "44_1_11434593",
+                "tp": 158877.24,
+                "sc": "USD",
+                "roe": 71.71,
+                "cnp": {
+                    "id": "217537158_270159052_37489",
+                    "ifra": true,
+                    "inra": false,
+                    "pd": [
+                        {
+                            "fdt": "2025-07-17T11:08",
+                            "tdt": "2025-07-21T19:30",
+                            "am": 0.00,
+                            "pp": 0.00
+                        },
+                        {
+                            "fdt": "2025-07-21T19:30",
+                            "tdt": "2025-07-23T00:00",
+                            "am": 19231.19,
+                            "rn": 1
+                        },
+                        {
+                            "fdt": "2025-07-23T00:00",
+                            "tdt": "2025-07-31T23:59",
+                            "am": 158688.44
+                        }
+                    ]
+                },
+                "ddt": "2025-07-21T19:30",
+                "inst": [
+                    {
+                        "type": "MANDATORY_TAX",
+                        "msg": "65.34 USD"
+                    }
+                ],
+                "oai": {
+                    "sid": "44"
+                },
+                "ipr": true,
+                "omid": "-89709861-89709861",
                 "ipm": false,
                 "cpb": 24
             }
@@ -1676,45 +2274,44 @@
                 "fc": [
                     "ROOM ONLY"
                 ],
-                "tpc": 8814.10,
+                "tpc": 144256.12,
                 "cb": 0.00
             }
         ],
-        "uid": "15660973",
-        "lhc": "68193df886716e44f915b33f",
+        "uid": "15628769",
+        "ifca": true,
         "istjv": false,
         "iuma": false,
-        "tjid": "100000201900",
+        "tjid": "100000106864",
         "checkInTime": {
-            "beginTime": "10:00 AM",
-            "endTime": "11:00 AM",
-            "minAge": 20.00
+            "beginTime": "2:00 PM",
+            "endTime": "midnight",
+            "minAge": 18.00
         },
         "checkOutTime": {
-            "beginTime": "10:00 AM"
+            "beginTime": "12:00 PM"
         }
     },
-    "bookingId": "TJS209501530107",
-    "query": {
-        "checkinDate": "2025-07-15",
-        "checkoutDate": "2025-07-17",
+    "searchQuery": {
+        "checkinDate": "2025-07-23",
+        "checkoutDate": "2025-07-31",
         "roomInfo": [
+            {
+                "numberOfAdults": 6,
+                "numberOfChild": 0
+            },
             {
                 "numberOfAdults": 3,
                 "numberOfChild": 1,
                 "childAge": [
                     1
                 ]
-            },
-            {
-                "numberOfAdults": 1,
-                "numberOfChild": 0
             }
         ],
         "searchCriteria": {
-            "city": "699261",
-            "countryName": "INDIA",
-            "cityName": "MUMBAI",
+            "city": "147862",
+            "countryName": "UNITED ARAB EMIRATES",
+            "cityName": "DUBAI",
             "nationality": "106",
             "countryOfResidence": "106",
             "regionType": "MULTI_CITY_VICINITY"
@@ -1726,48 +2323,15 @@
                 5
             ],
             "currency": "INR",
-            "fsc": true
+            "fsc": true,
+            "ldo": false
         },
-        "searchId": "hsid6508544763",
-        "isSearchCompleted": false,
+        "searchId": "hsid6664620224",
+        "isSearchCompleted": true,
         "miscInfo": {}
     },
-    "isPriceChanged": false,
-    "ntish": [
-        {
-            "travellerInfo": [
-                {
-                    "pt": "ADULT"
-                },
-                {
-                    "pt": "ADULT"
-                },
-                {
-                    "pt": "ADULT"
-                },
-                {
-                    "pt": "CHILD"
-                }
-            ],
-            "id": "324036640_393408319_37316##2"
-        },
-        {
-            "travellerInfo": [
-                {
-                    "pt": "ADULT"
-                }
-            ],
-            "id": "324036640_393408319_37316##1"
-        }
-    ],
-    "isTcsApplicable": false,
-    "isOptionChanged": false,
     "status": {
         "success": true,
         "httpStatus": 200
-    },
-    "conditions": {
-        "isBA": false,
-        "st": 385
     }
 }
