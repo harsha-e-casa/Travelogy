@@ -156,7 +156,7 @@ export default function ActivitiesDetail4() {
           {
             headers: {
               "Content-Type": "application/json",
-              apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
+              apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
             },
           }
         );
@@ -219,7 +219,9 @@ export default function ActivitiesDetail4() {
   const RoomType = hotelData?.ops?.[0]?.ris?.[0]?.mb;
   const RoomCategory = hotelData?.ops?.[0]?.ris?.[0]?.rc;
 
-  const totalfare = hotelData?.pops?.[0]?.tpc;
+  // const totalfare = hotelData?.pops?.[0]?.tpc;
+  const totalfare = hotelData?.ops?.[0]?.tp;
+
   const hotelId = hotelData?.id;
   const optionId = hotelData?.ops?.[0]?.id;
 
@@ -500,7 +502,8 @@ export default function ActivitiesDetail4() {
                     facilities={hotelData?.fl || []}
                     longitude={hotelData?.gl?.lt}
                     latitude={hotelData?.gl?.ln}
-                    fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
+                    fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}
+                    // fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
                   />
                 </div>
               </div>
