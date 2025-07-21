@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_KEY = "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1";
+const API_KEY = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
 
 // Fetch hotel review data
 export const fetchHotelReviewData = async (hotelId, optionId) => {
@@ -203,7 +203,7 @@ export async function hotelBooking({ formData, hotelReviewData }) {
     {
       headers: {
         "Content-Type": "application/json",
-        apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
+        apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
       },
     }
   );

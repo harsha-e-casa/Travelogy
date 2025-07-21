@@ -42,12 +42,6 @@ export default function HotelListing() {
     nationalities: Nationality[];
     loading: boolean;
   };
-
-  // const city = searchParams.get("city") || "699261";
-  // const currency = searchParams.get("currency") || "INR";
-  // const rooms = Number(searchParams.get("rooms")) || 1;
-  // const adults = Number(searchParams.get("adults")) || 1;
-  // const children = Number(searchParams.get("children")) || 0;
   const city = searchParams.get("city");
   const currency = searchParams.get("currency");
   const rooms = Number(searchParams.get("rooms"));
@@ -130,25 +124,19 @@ export default function HotelListing() {
   //     setNationalityId(matched ? matched.countryId : null);
   //   }
   // }, [selectFrom, nationalities]);
-  useEffect(() => {
-    // Auto-initialize selectFrom from query param and nationality list
-    if (!selectFrom && location && nationalities.length > 0) {
-      const locationLower = location.toLowerCase();
 
-      // Try to find a nationality whose countryName is contained in location
+  useEffect(() => {
+    if (!selectFrom && location && city && nationalities.length > 0) {
       const matchedNationality = nationalities.find((n) =>
-        locationLower.includes(n.countryName.toLowerCase())
+        location.toLowerCase().includes(n.countryName.toLowerCase())
       );
 
-      if (matchedNationality) {
-        setSelectFrom({
-          cityName: location,
-          countryName: matchedNationality.countryName,
-          id: city ?? undefined,
-        });
-
-        setNationalityId(matchedNationality?.countryId || nationalityId);
-      }
+      setSelectFrom({
+        cityName: location,
+        countryName: matchedNationality?.countryName || "India",
+        id: city || "699261", // fallback
+      });
+      setNationalityId(matchedNationality?.countryId || "94");
     }
   }, [location, city, nationalities]);
 
@@ -165,23 +153,10 @@ export default function HotelListing() {
     setShowSearchState(false);
     setOpenDateRage(false);
   };
-  // console.log(
-  //   checkinDate,
-  //   checkoutDate,
-  //   location,
-  //   city,
-  //   nationality,
-  //   currency,
-  //   rooms,
-  //   adults,
-  //   children,
-  //   childAges
-  // );
 
   const {
     filter,
     sortCriteria,
-    // itemsPerPage,
     currentPage,
     uniqueRoomStyles,
     uniqueAmenities,
@@ -210,7 +185,7 @@ export default function HotelListing() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
+            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
           },
           body: JSON.stringify(payload),
         }
@@ -234,51 +209,46 @@ export default function HotelListing() {
     };
   });
   const handleSearch = async () => {
-    if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-      alert("Check-out date cannot be earlier than check-in date.");
-      return;
-    }
-    let matchedNationality = null;
+    const safeCityId = selectFrom?.id || city || "699261"; // fallback to default city ID
+    const safeCityName = selectFrom?.cityName || location || "Chennai";
+    const safeCountry = selectFrom?.countryName || "India";
 
-    if (selectFrom?.countryName) {
-      matchedNationality = nationalities.find(
-        (n) =>
-          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
-      );
-    }
-
-    // Fallback using query param if above fails
-    if (!matchedNationality && nationalityId) {
-      matchedNationality = nationalities.find(
-        (n) => n.countryId === nationalityId
-      );
-    }
-
-    // if (!matchedNationality) {
-    //   alert("Could not determine nationality for selected city.");
-    //   return;
-    // }
+    const matchedNationality = nationalities.find(
+      (n) => n.countryName.toLowerCase() === safeCountry.toLowerCase()
+    );
 
     const nationalityIdToUse =
-      matchedNationality?.countryId || nationalityId || "";
-    console.log("selectFrom is:", selectFrom);
-    console.log("nationalities:", nationalities);
+      matchedNationality?.countryId || nationalityId || "94";
 
-    setLoading(true);
-    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-    const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+    // fallback selectFrom object if null
+    if (!selectFrom) {
+      setSelectFrom({
+        cityName: safeCityName,
+        countryName: safeCountry,
+        id: safeCityId,
+      });
+    }
 
-    const roomInfo = roomsData.map((room) => ({
-      numberOfAdults: room.adults,
-      numberOfChild: room.children,
-      ...(room.children > 0 ? { childAge: room.childAges } : {}),
-    }));
+    const payload = {
+      searchQuery: {
+        checkinDate: checkinDate,
+        checkoutDate: checkoutDate,
+        roomInfo: cleanRoomInfo,
+        searchCriteria: {
+          city: safeCityId,
+          nationality: nationalityIdToUse,
+          currency: currency || "INR",
+        },
+        searchPreferences: { fsc: true },
+      },
+      sync: true,
+    };
 
     const queryParams = new URLSearchParams({
-      checkinDate: formattedCheckIn,
-      checkoutDate: formattedCheckOut,
-      location: selectFrom?.cityName || "",
-      city: selectFrom?.id || "",
+      checkinDate,
+      checkoutDate,
+      location: safeCityName,
+      city: safeCityId,
       nationality: nationalityIdToUse,
       currency: "INR",
       rooms: roomsData.length.toString(),
@@ -288,74 +258,13 @@ export default function HotelListing() {
       roomsData: JSON.stringify(roomsData),
     }).toString();
 
-    const payload = {
-      searchQuery: {
-        checkinDate: formattedCheckIn,
-        checkoutDate: formattedCheckOut,
-        roomInfo: cleanRoomInfo,
-        searchCriteria: { city, nationality: nationalityIdToUse, currency },
-        searchPreferences: { fsc: true },
-      },
-      sync: true,
-    };
-
     const data = await apiCall(payload);
-    setLoading(false);
     if (data) {
-      console.log("Search result in handleSearch:", data);
-      // setApiHotelData(data.searchResult?.his || []);
-      const hotelOnlyResults = data.searchResult?.his || [];
-      // .filter((item: any) => item.pt === "HOTEL");
-      setApiHotelData(hotelOnlyResults);
-
-      console.log("Search result in handleSearch:", data);
-      console.log("queryParams", queryParams);
+      setApiHotelData(data.searchResult?.his || []);
       router.push(`/hotel-listing?${queryParams}`);
+      return;
     }
   };
-
-  // useEffect(() => {
-  //   if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-  //     alert("Check-out date cannot be earlier than check-in date.");
-  //     return;
-  //   }
-  //   setLoading(true);
-
-  //   const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-  //   const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
-
-  //   const roomInfo = roomsData.map((room) => ({
-  //     numberOfAdults: room.adults,
-  //     numberOfChild: room.children,
-  //     ...(room.children > 0 ? { childAge: room.childAges } : {}),
-  //   }));
-
-  //   const fetchData = async () => {
-  //     const payload = {
-  //       searchQuery: {
-  //         checkinDate: formattedCheckIn,
-  //         checkoutDate: formattedCheckOut,
-  //         roomInfo: cleanRoomInfo,
-  //         searchCriteria: { city, nationality: nationalityId, currency },
-  //         searchPreferences: { fsc: true },
-  //       },
-  //       sync: true,
-  //     };
-
-  //     const data = await apiCall(payload);
-  //     setLoading(false);
-  //     if (data) {
-  //       console.log("Search result in handleSearch:", data);
-  //       // setApiHotelData(data.searchResult?.his || []);
-  //       const hotelOnlyResults = data.searchResult?.his || [];
-  //       // .filter((item: any) => item.pt === "HOTEL");
-  //       setApiHotelData(hotelOnlyResults);
-
-  //       // console.log("HotelCard1 data", data.searchResult.his);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
   useEffect(() => {
     const fetchData = async () => {
       if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
@@ -402,7 +311,7 @@ export default function HotelListing() {
   ]);
 
   const openToDateRange = () => {
-    setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+    setOpenDateRage((prevState) => !prevState);
     closeallform();
     setOpenDateRage(true);
   };
@@ -410,24 +319,24 @@ export default function HotelListing() {
     setOpenDateRage(false);
   };
   const closeAllDropdowns = () => {
-    setShowSearchState(false); // Location
-    setOpenCheckin(false); // Check-in calendar
-    setOpenCheckout(false); // Check-out calendar
-    setShowTraveller(false); // Rooms & Guest
+    setShowSearchState(false);
+    setOpenCheckin(false);
+    setOpenCheckout(false);
+    setShowTraveller(false);
   };
 
   const openfrom = () => {
     if (showSearchState) {
       setShowSearchState(false);
     } else {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setShowSearchState(true);
     }
   };
 
   const toggleCheckin = () => {
     if (!openCheckin) {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setOpenCheckin(true);
     } else {
       setOpenCheckin(false);
@@ -436,7 +345,7 @@ export default function HotelListing() {
 
   const toggleCheckout = () => {
     if (!openCheckout) {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setOpenCheckout(true);
     } else {
       setOpenCheckout(false);
@@ -445,7 +354,7 @@ export default function HotelListing() {
 
   const toggleTraveller = () => {
     if (!showTraveller) {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setShowTraveller(true);
     } else {
       setShowTraveller(false);
@@ -501,7 +410,7 @@ export default function HotelListing() {
                     <CityListSearch
                       operEngLocation={openfrom}
                       setSelectFrom={setSelectFrom}
-                      categoryType={undefined}
+                      // categoryType={undefined}
                       // setSelectFromSub={setSelectFromSub}
                     />
                   </div>

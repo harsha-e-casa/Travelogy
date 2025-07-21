@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/holiday/page.tsx", "app/hotel-listing/[id]/page.jsx", "app/hotel-listing/[id]/Untitled-1.jsx", "util/HotelApi.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/holiday/page.tsx", "app/hotel-listing/[id]/page.jsx", "app/hotel-listing/[id]/Untitled-1.jsx", "util/HotelApi.js", "components/searchEngine/CityListSearch.jsx"],
   "exclude": ["node_modules"]
 }
