@@ -1,18 +1,17 @@
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const HotelData = ({ fetchHotelData = [] }) => {
+const HotelData = ({ fetchHotelData = [], hotelId }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [currentFacilities, setCurrentFacilities] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]); // ← This tracks ops[].ris[]
 
-  const handleBookNow = (room) => {
-    const isAlreadySelected = selectedRooms.some(
-      (r) => r.rid === room.rid // Assuming each room has unique `rid` (room ID)
-    );
-    if (!isAlreadySelected) {
-      setSelectedRooms([...selectedRooms, room]);
-    }
+  const router = useRouter();
+
+  const handleBookNow = (optionId) => {
+    router.push(`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`);
   };
+
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [cancellationPolicyData, setCancellationPolicyData] = useState([]);
 
@@ -69,7 +68,7 @@ const HotelData = ({ fetchHotelData = [] }) => {
                           </div>
                         ) : (
                           <div className="text-red-600 text-xs mb-1">
-                            ❌ No Free Cancellation / Non-Refundable
+                            No Free Cancellation / Non-Refundable
                           </div>
                         )}
 
@@ -113,15 +112,14 @@ const HotelData = ({ fetchHotelData = [] }) => {
                       <div className="text-xs text-blue-500 mb-2">
                         Per Night Price
                       </div>
-                      {dataLen == index2 + 1 ? (
+                      {dataLen === index2 + 1 && (
                         <button
-                          className={`book-now-btn `}
-                          onClick={() => handleBookNow(data)}
+                          className="book-now-btn"
+                          onClick={() => handleBookNow(room.id)}
                         >
-                          {/* {alreadyBooked ? "ADDED" : "BOOK NOW"} */}
                           Book Now
                         </button>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 );
