@@ -3729,12 +3729,15 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 45px;
+  margin-bottom: 15px;
+  min-height: 50px !important;
 }
 
 .card-journey-small .card-info .card-program .card-location .text-location {
-  background: url(../imgs/template/icons/location.svg) no-repeat left center;
+  background: url(../imgs/template/icons/location.svg) no-repeat;
   padding-left: 20px;
+  width: 200px !important;
+  background-position: left 0px top 2px;
 }
 
 .card-journey-small .card-info .card-program .card-location .text-star img {
@@ -14110,9 +14113,9 @@ a.link-black:hover svg {
   margin-bottom: 22px;
 }
 
-.tour-title-main {
+/* .tour-title-main {
   margin-bottom: 20px;
-}
+} */
 
 .tour-meta-right .btn-share {
   margin-right: 8px;
@@ -19446,4 +19449,9 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 .room_options {
   border-bottom: 2px solid #ccc !important;
+}
+
+.ant-message-notice-content {
+  background-color: #000 !important;
+  color: #fff !important;
 }

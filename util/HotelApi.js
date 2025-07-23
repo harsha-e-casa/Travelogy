@@ -16,7 +16,7 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           apikey: `${API_KEY}`,
         },
       }
@@ -144,22 +144,10 @@ export async function hotelBooking({ formData, hotelReviewData }) {
         ti: guest?.title || "Mr",
         pt: isChild ? "CHILD" : "ADULT",
         ...(isChild ? {} : { pan }),
-        isTba: false,
-        isPaxOpen: false,
-        ed: "0.0",
-        errors: {
-          fN: true,
-          lN: true,
-          ats: true,
-          pNum: true,
-          peD: true,
-          ...(isChild ? {} : { pan: true }),
-        },
       };
     });
 
     return {
-      id: room?.uniqueRoomId || `room-${roomIndex + 1}`,
       travellerInfo: travellers,
     };
   });
@@ -172,41 +160,68 @@ export async function hotelBooking({ formData, hotelReviewData }) {
       contacts: [mobile],
       code: [countryCode],
     },
-    isCorporateBooking: false,
-    isSamePanForAllRooms: panInfo?.mode === "same",
-    icpb: false,
-    ipaf: false,
-    ispfar: false,
-    isoc: false,
-    ics: false,
-    csi: {
-      ics: false,
-    },
-    itp: false,
+    // isCorporateBooking: false,
+    // isSamePanForAllRooms: panInfo?.mode === "same",
+    // icpb: false,
+    // ipaf: false,
+    // ispfar: false,
+    // isoc: false,
+    // ics: false,
+    // csi: {
+    //   ics: false,
+    // },
+    // itp: false,
     type: "HOTEL",
     paymentInfos: [
       {
-        bookingId,
+        // bookingId,
         amount: totalAmount,
-        paymentMedium: "WALLET",
-        paymentFee: 0,
-        ruleId: 1,
+        // paymentMedium: "WALLET",
+        // paymentFee: 0,
+        // ruleId: 1,
       },
     ],
   };
 
-  console.log("📦 Final Payload to API:", JSON.stringify(payload, null, 2));
+  console.log("Final Payload to API:", JSON.stringify(payload, null, 2));
 
   const response = await axios.post(
     "https://apitest.tripjack.com/oms/v1/hotel/book",
     payload,
     {
       headers: {
-        "Content-Type": "application/json",
-        apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+        // "Content-Type": "application/json",
+        apikey: API_KEY,
       },
     }
   );
 
   return response.data;
 }
+
+export async function getBookingDetails(bookingId) {
+  try {
+    const response = await fetch(
+      "https://apitest.tripjack.com/oms/v1/hotel/booking-details",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: API_KEY,
+        },
+        body: JSON.stringify({ bookingId }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.status.success) {
+      return data;
+    } else {
+      throw new Error("Failed to fetch booking details");
+    }
+  } catch (error) {
+    console.error("Error fetching booking details:", error);
+    throw error;
+  }
+};

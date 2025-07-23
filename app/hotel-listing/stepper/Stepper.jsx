@@ -1,6 +1,6 @@
 "use client";
 import dayjs from "dayjs";
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
 import { Input, Checkbox, Button, message } from "antd";
@@ -39,6 +39,9 @@ export function Step1TravellerDetails({
   onNext,
 }) {
   const [errors, setErrors] = useState({});
+  const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
+  const totalStars = 5;
+  const filledStars = Math.round(rating);
   useEffect(() => {
     if (hotelReviewData?.query?.roomInfo?.length) {
       const guests = {};
@@ -144,24 +147,63 @@ export function Step1TravellerDetails({
     updated.splice(index, 1);
     updateExtraGuests(roomIndex, updated);
   };
+  let freeCancellationDate = null;
+  const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
+
+  if (Array.isArray(policies)) {
+    const freeCancellation = policies.find((p) => p.am === 0);
+    if (freeCancellation?.tdt) {
+      const dateObj = new Date(freeCancellation.tdt);
+      freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // Formats as DD/MM/YYYY
+    }
+  }
 
   return (
     <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
       <div className="border-b pb-4">
         <h2 className="text-base font-semibold">
           {hotelReviewData?.hInfo?.name}
-          <span className="text-orange-500">★★★☆☆</span>
+          <span className="text-star ml-2">
+            {[...Array(filledStars)].map((_, index) => (
+              <svg
+                key={`filled-${index}`}
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="gold"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
+              </svg>
+            ))}
+          </span>
         </h2>
         <p className="text-xs text-gray-600">
-          {hotelReviewData?.hInfo?.ad?.adr}
+          {hotelReviewData?.hInfo?.ad?.adr && (
+            <>{hotelReviewData.hInfo.ad.adr} </>
+          )}
           <br />
-          {hotelReviewData?.hInfo?.ad?.ctn}, {hotelReviewData?.hInfo?.ad?.cn}.
-          Postal code: {hotelReviewData?.hInfo?.ad?.postalCode}
+          {hotelReviewData?.hInfo?.ad?.adr2 && (
+            <>{hotelReviewData.hInfo.ad.adr2}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.ctn && (
+            <>{hotelReviewData.hInfo.ad.ctn}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.cn && (
+            <>{hotelReviewData.hInfo.ad.cn} - </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.postalCode && (
+            <> Postal code: {hotelReviewData.hInfo.ad.postalCode}</>
+          )}
         </p>
         <p className="text-gray-500 text-sm">
-          Last Cancellation Date:
           <span className="text-blue-700 font-semibold">
-            <strong>Doubt</strong>
+            {freeCancellationDate && (
+              <div className="text-xs mb-1">
+                Last Cancellation Date:
+                {freeCancellationDate}
+              </div>
+            )}
           </span>
         </p>
       </div>
@@ -469,7 +511,16 @@ export function Step1TravellerDetails({
 
 export function Step2Review({ formData, onNext, hotelReviewData }) {
   const [accepted, setAccepted] = useState(false);
+  let freeCancellationDate = null;
+  const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
 
+  if (Array.isArray(policies)) {
+    const freeCancellation = policies.find((p) => p.am === 0);
+    if (freeCancellation?.tdt) {
+      const dateObj = new Date(freeCancellation.tdt);
+      freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // Formats as DD/MM/YYYY
+    }
+  }
   return (
     <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
       <div className="border-b pb-4">
@@ -478,16 +529,32 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
           {/* <span className="text-orange-700">★★★☆☆</span> */}
         </h2>
         <p className="text-xs text-gray-600">
-          {hotelReviewData?.hInfo?.ad?.adr}
+          {hotelReviewData?.hInfo?.ad?.adr && (
+            <>{hotelReviewData.hInfo.ad.adr} </>
+          )}
           <br />
-          {hotelReviewData?.hInfo?.ad?.ctn}, {hotelReviewData?.hInfo?.ad?.cn}.
-          Postal code: {hotelReviewData?.hInfo?.ad?.postalCode}
+          {hotelReviewData?.hInfo?.ad?.adr2 && (
+            <>{hotelReviewData.hInfo.ad.adr2}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.ctn && (
+            <>{hotelReviewData.hInfo.ad.ctn}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.cn && (
+            <>{hotelReviewData.hInfo.ad.cn} - </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.postalCode && (
+            <> Postal code: {hotelReviewData.hInfo.ad.postalCode}</>
+          )}
         </p>
         <br />
         <p className="text-blue-700 text-sm">
-          Last Cancellation Date:
           <span className="text-blue-700 font-semibold">
-            <strong>Doubt</strong>
+            {freeCancellationDate && (
+              <div className="text-xs mb-1">
+                Last Cancellation Date:
+                {freeCancellationDate}
+              </div>
+            )}
           </span>
         </p>
       </div>
@@ -772,7 +839,7 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
           >
             Proceed to Pay
           </button>
-          <button
+          {/* <button
             disabled={!accepted}
             className={`px-6 py-2 rounded text-white font-medium ${
               accepted
@@ -781,7 +848,7 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
             }`}
           >
             Block
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
@@ -1107,6 +1174,7 @@ export function Step4Payment({
   formData,
   hotelReviewData,
   amount,
+  bookingId,
   onConfirmPayment,
 }) {
   const [showModal, setShowModal] = useState(false);
@@ -1118,13 +1186,14 @@ export function Step4Payment({
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  console.log("hotelReviewData", hotelReviewData.bookingId);
 
   const handleConfirm = async () => {
     setShowModal(false);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
       console.log("Booking Success:", result);
-      onConfirmPayment(result);
+      onConfirmPayment(bookingId);
       // Optionally redirect
     } catch (error) {
       console.error("Booking failed:", error);
@@ -1200,17 +1269,38 @@ export function Step4Payment({
   );
 }
 
-export function FareAmount({ hotelReviewData }) {
-  console.log(
-    "FareAmount Hotel Review Data:",
-    // hotelReviewData?.hInfo?.ops?.[0]?.tp?.toFixed(2)
-    //     // hotelReviewData?.hInfo?.ops?.[0],
-    // hotelReviewData?.hInfo?.ops?.[0]?.tfcs?.TAF
+export function useFareBreakdown(hotelReviewData) {
+  const searchParams = useSearchParams();
+  const oid = searchParams.get("oid");
 
-    hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF,
-    hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF
-  );
+  const { totalBaseFare, totalTax } = useMemo(() => {
+    if (!hotelReviewData || !oid) return { totalBaseFare: 0, totalTax: 0 };
+
+    const selectedOption = hotelReviewData?.hInfo?.ops?.find(
+      (op) => op.id === oid
+    );
+
+    if (!selectedOption) return { totalBaseFare: 0, totalTax: 0 };
+
+    const { BF, TAF } = selectedOption.ris.reduce(
+      (acc, item) => {
+        const tfcs = item.tfcs || {};
+        acc.BF += tfcs.BF || 0;
+        acc.TAF += tfcs.TAF || 0;
+        return acc;
+      },
+      { BF: 0, TAF: 0 }
+    );
+
+    return { totalBaseFare: BF, totalTax: TAF };
+  }, [hotelReviewData, oid]);
+
+  return { totalBaseFare, totalTax };
+}
+
+export function FareAmount({ hotelReviewData }) {
   const tfcs = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs;
+  const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
 
   const baseFare = tfcs?.BF || 0;
   const taxes = tfcs?.TAF || 0;
@@ -1220,15 +1310,15 @@ export function FareAmount({ hotelReviewData }) {
       <h3 className="font-semibold text-base text-gray-600">FARE SUMMARY</h3>
       <div className="flex justify-between border-b pb-2">
         <span>Base Fare</span>
-        <span>₹{baseFare.toFixed(2)}</span>
+        <span>₹{totalBaseFare.toFixed(2)}</span>
       </div>
       <div className="flex justify-between border-b pb-2">
         <span>Taxes and Fees</span>
-        <span>₹{taxes.toFixed(2)}</span>
+        <span>₹{totalTax.toFixed(2)}</span>
       </div>
       <div className="flex justify-between font-semibold text-gray-800">
         <span>Total Amount Payable</span>
-        <span>₹{total.toFixed(2)}</span>
+        <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span>
       </div>
     </>
   );
