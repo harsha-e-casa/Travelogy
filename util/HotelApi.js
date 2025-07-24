@@ -111,9 +111,11 @@ export async function hotelBooking({ formData, hotelReviewData }) {
   const countryCode = formData?.countryCode || "+91";
 
   const baseFare = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF || 0;
-  const tax = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF || 0;
-  const totalAmount = Number(baseFare + tax);
+  const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
+  // const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
 
+  // const totalAmount = Number(baseFare + tax);
+  // const totalAmount = totalBaseFare + totalTax;
   const roomTravellerInfo = roomInfo.map((room, roomIndex) => {
     const guests = [
       ...(formData.guests?.[roomIndex]
@@ -224,4 +226,4 @@ export async function getBookingDetails(bookingId) {
     console.error("Error fetching booking details:", error);
     throw error;
   }
-};
+}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Select } from "antd";
-import citiesData from "../../util/cities.json"; // adjust path as needed
+import citiesData from "../../util/cities.json";
 
 const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
   const [filteredOptions, setFilteredOptions] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     setFilteredOptions(citiesData);
@@ -22,6 +23,7 @@ const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
   };
 
   const handleSearch = (searchText) => {
+    setSearchText(searchText);
     if (!searchText) {
       setFilteredOptions(citiesData);
       return;
@@ -57,12 +59,40 @@ const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
     <>
       <Select
         showSearch
+        autoFocus
         onSearch={handleSearch}
         onChange={handleChange}
         options={options}
         placeholder="Select a city..."
         filterOption={false}
         style={{ width: "100%" }}
+        open={true}
+        value={searchText}
+        onDropdownVisibleChange={(open) => {
+          if (open) {
+            handleSearch(searchText);
+          }
+        }}
+        className="z-40"
+        dropdownStyle={{
+          zIndex: 10000, // High z-index to ensure it's on top
+          maxHeight: "300px", // Optional: for better control on dropdown height
+        }}
+        dropdownClassName="custom-select-dropdown" // custom class name for dropdown styling
+        // autoFocus
+        // showSearch
+        // open={true}
+        // style={{ width: "100%" }}
+        // onSearch={handleSearch}
+        // onChange={handleChange}
+        // options={options}
+        // placeholder="Select an airport..."
+        // filterOption={false} // disables built-in search
+        // className="z-40"
+        // dropdownStyle={{
+        //   zIndex: 10000, // High z-index to ensure it's on top
+        //   maxHeight: "300px", // Optional: for better control on dropdown height
+        // }}
       />
       {filteredOptions.length === 0 && (
         <div className="p-4 text-center text-gray-500">No results found</div>

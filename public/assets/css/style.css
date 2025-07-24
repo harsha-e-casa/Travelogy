@@ -19455,3 +19455,22 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   background-color: #000 !important;
   color: #fff !important;
 }
+
+.tcs-radio {
+  display: block;
+  /* Ensures the radio button takes the full width */
+  margin-left: 0;
+  /* Removes any left margin that may be causing it to be centered */
+  text-align: left;
+  /* Aligns the text to the left */
+  padding-left: 10px;
+  /* Adds a little padding for better visual alignment */
+}
+
+.tcs-radio .ant-radio-inner {
+  margin-bottom: -4px;
+}
+
+.w-1-6 {
+  width: 29%;
+}

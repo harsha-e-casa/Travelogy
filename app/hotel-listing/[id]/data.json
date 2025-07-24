@@ -1,590 +1,223 @@
 {
-    "id": "hsid2293935176-39672532",
-    "hotel": {
-        "id": "hsid2293935176-39672532",
-        "name": "Hotel Galaxy's Vaibhav",
-        "rt": 3,
-        "gl": {
-            "ln": "72.8",
-            "lt": "19.34"
+    "bookingId": "TJS206801547707",
+    "icpb": false,
+    "itp": true,
+    "ispfar": false,
+    "isSamePanForAllRooms": false,
+    "isCorporateBooking": false,
+    "roomTravellerInfo": [
+        {
+            "travellerInfo": [
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "gfN": true,
+                        "glN": true,
+                        "gpan": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true
+                    },
+                    "fN": "test",
+                    "lN": "one",
+                    "gfN": "TEST",
+                    "glN": "TESR",
+                    "gpan": "HUYPM2801J",
+                    "pt": "ADULT",
+                    "isPaxOpen": false,
+                    "isTba": false,
+                    "ti": "Mr",
+                    "ed": "0.0",
+                    "gpd": {
+                        "gfN": "TEST",
+                        "glN": "TESR",
+                        "gpan": "HUYPM2801J"
+                    }
+                },
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true,
+                        "pan": true
+                    },
+                    "fN": "test",
+                    "lN": "two",
+                    "pt": "ADULT",
+                    "isPaxOpen": true,
+                    "isTba": false,
+                    "ti": "Mr",
+                    "ed": "0.0",
+                    "gpd": {
+                        "gfN": "TEST",
+                        "glN": "TESR",
+                        "gpan": "HUYPM2801J"
+                    }
+                },
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true,
+                        "pan": true
+                    },
+                    "fN": "test",
+                    "lN": "three",
+                    "pt": "CHILD",
+                    "isPaxOpen": true,
+                    "isTba": false,
+                    "ti": "Master",
+                    "ed": 0,
+                    "gpd": {
+                        "gfN": "TEST",
+                        "glN": "TESR",
+                        "gpan": "HUYPM2801J"
+                    }
+                },
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true,
+                        "pan": true
+                    },
+                    "fN": "test",
+                    "lN": "four",
+                    "pt": "CHILD",
+                    "isPaxOpen": true,
+                    "isTba": false,
+                    "ti": "Master",
+                    "ed": 0,
+                    "gpd": {
+                        "gfN": "TEST",
+                        "glN": "TESR",
+                        "gpan": "HUYPM2801J"
+                    }
+                }
+            ],
+            "id": "201171957_205555198_37663##1",
+            "isSamePanForAllPax": true
         },
-        "pt": "HOTEL",
-        "ops": [
-            {
-                "ris": [
-                    {
-                        "id": "201790378_209106499_37316##1",
-                        "rc": "Standard Double Room, 1 Bedroom, City View (Non A/C)",
-                        "rt": "Standard Double Room, 1 Bedroom, City View (Non A/C)-1 Double Bed",
-                        "srn": "Standard, Double, 1 Bedroom, City View, No Air Conditioner",
-                        "adt": 1,
-                        "chd": 0,
-                        "pdes": [],
-                        "mb": "ROOM ONLY",
-                        "tp": 850.81,
-                        "tfcs": {
-                            "TF": 850.81,
-                            "CMU": 0.00,
-                            "TAF": 11.80,
-                            "NF": 850.81,
-                            "BF": 839.01
-                        },
-                        "tafcs": {
-                            "TAF": {
-                                "SBP": 749.37,
-                                "SGP": 839.01,
-                                "TSF": 89.64,
-                                "SAC": 70.99,
-                                "MF": 10.00,
-                                "TTSF": 89.64,
-                                "TMF": 70.99,
-                                "SNP": 768.01,
-                                "MFT": 1.80,
-                                "SRC": 0.00
-                            }
-                        },
-                        "pis": [
-                            {
-                                "day": 1,
-                                "fc": {
-                                    "CMU": 0.00,
-                                    "BF": 839.01,
-                                    "TAF": 11.80,
-                                    "TF": 850.81,
-                                    "NF": 850.81
-                                },
-                                "afc": {
-                                    "TAF": {
-                                        "SBP": 749.37,
-                                        "SGP": 839.01,
-                                        "TSF": 89.64,
-                                        "SAC": 70.99,
-                                        "MF": 10.00,
-                                        "TTSF": 89.64,
-                                        "TMF": 70.99,
-                                        "SNP": 768.01,
-                                        "MFT": 1.80,
-                                        "SRC": 0.00
-                                    }
-                                },
-                                "mi": {
-                                    "sp": 839.01
-                                }
-                            }
-                        ],
-                        "fcs": [
-                            "Free self parking",
-                            "Free WiFi"
-                        ],
-                        "rmi": {
-                            "iuca": false
-                        },
-                        "radi": {
-                            "rid": "201790378",
-                            "vi": [
-                                "City"
-                            ],
-                            "bds": [
-                                {
-                                    "bt": "Double",
-                                    "bc": 1
-                                }
-                            ]
-                        },
-                        "op": "1",
-                        "rexb": {
-                            "BENEFIT": [
-                                {
-                                    "values": [
-                                        "Television",
-                                        "Free self parking",
-                                        "Internet",
-                                        "RoomService",
-                                        "Free WiFi"
-                                    ]
-                                }
-                            ],
-                            "SERVICE": [
-                                {
-                                    "values": [
-                                        "RoomSize: 23 SQM",
-                                        "NoAirConditioner: Yes"
-                                    ]
-                                }
-                            ]
-                        }
+        {
+            "travellerInfo": [
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "gfN": true,
+                        "glN": true,
+                        "gpan": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true
                     },
-                    {
-                        "id": "201790378_209106499_37316##2",
-                        "rc": "Standard Double Room, 1 Bedroom, City View (Non A/C)",
-                        "rt": "Standard Double Room, 1 Bedroom, City View (Non A/C)-1 Double Bed",
-                        "srn": "Standard, Double, 1 Bedroom, City View, No Air Conditioner",
-                        "adt": 2,
-                        "chd": 0,
-                        "pdes": [],
-                        "mb": "ROOM ONLY",
-                        "tp": 850.81,
-                        "tfcs": {
-                            "TF": 850.81,
-                            "CMU": 0.00,
-                            "TAF": 11.80,
-                            "NF": 850.81,
-                            "BF": 839.01
-                        },
-                        "tafcs": {
-                            "TAF": {
-                                "SBP": 749.37,
-                                "SGP": 839.01,
-                                "TSF": 89.64,
-                                "SAC": 70.99,
-                                "MF": 10.00,
-                                "TTSF": 89.64,
-                                "TMF": 70.99,
-                                "SNP": 768.01,
-                                "MFT": 1.80,
-                                "SRC": 0.00
-                            }
-                        },
-                        "pis": [
-                            {
-                                "day": 1,
-                                "fc": {
-                                    "CMU": 0.00,
-                                    "BF": 839.01,
-                                    "TAF": 11.80,
-                                    "TF": 850.81,
-                                    "NF": 850.81
-                                },
-                                "afc": {
-                                    "TAF": {
-                                        "SBP": 749.37,
-                                        "SGP": 839.01,
-                                        "TSF": 89.64,
-                                        "SAC": 70.99,
-                                        "MF": 10.00,
-                                        "TTSF": 89.64,
-                                        "TMF": 70.99,
-                                        "SNP": 768.01,
-                                        "MFT": 1.80,
-                                        "SRC": 0.00
-                                    }
-                                },
-                                "mi": {
-                                    "sp": 839.01
-                                }
-                            }
-                        ],
-                        "fcs": [
-                            "Free self parking",
-                            "Free WiFi"
-                        ],
-                        "rmi": {
-                            "iuca": false
-                        },
-                        "radi": {
-                            "rid": "201790378",
-                            "vi": [
-                                "City"
-                            ],
-                            "bds": [
-                                {
-                                    "bt": "Double",
-                                    "bc": 1
-                                }
-                            ]
-                        },
-                        "op": "2",
-                        "rexb": {
-                            "BENEFIT": [
-                                {
-                                    "values": [
-                                        "Television",
-                                        "Free self parking",
-                                        "Internet",
-                                        "RoomService",
-                                        "Free WiFi"
-                                    ]
-                                }
-                            ],
-                            "SERVICE": [
-                                {
-                                    "values": [
-                                        "RoomSize: 23 SQM",
-                                        "NoAirConditioner: Yes"
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "id": "44_1_17075407",
-                "tp": 1701.62,
-                "sc": "USD",
-                "roe": 71.71,
-                "cnp": {
-                    "id": "201790378_209106499_37316",
-                    "ifra": true,
-                    "inra": false,
-                    "pd": [
-                        {
-                            "fdt": "2025-07-19T11:52",
-                            "tdt": "2025-07-21T18:00",
-                            "am": 0.00,
-                            "pp": 0.00
-                        },
-                        {
-                            "fdt": "2025-07-21T18:00",
-                            "tdt": "2025-07-23T00:00",
-                            "am": 1678.01,
-                            "rn": 1
-                        },
-                        {
-                            "fdt": "2025-07-23T00:00",
-                            "tdt": "2025-07-24T23:59",
-                            "am": 1678.02,
-                            "pamah": 0.00,
-                            "tdpth": "2025-07-24T23:59"
-                        }
-                    ],
-                    "mi": {
-                        "iba": true,
-                        "iso": false,
-                        "isMarkUpApplied": true
+                    "fN": "test",
+                    "lN": "five",
+                    "gfN": "TESTSE",
+                    "glN": "TDTSGDTS",
+                    "gpan": "HUYPM2801J",
+                    "pt": "ADULT",
+                    "isPaxOpen": false,
+                    "isTba": false,
+                    "ti": "Mr",
+                    "ed": "0.0",
+                    "gpd": {
+                        "gfN": "TESTSE",
+                        "glN": "TDTSGDTS",
+                        "gpan": "HUYPM2801J"
                     }
                 },
-                "ddt": "2025-07-21T18:00",
-                "omi": {
-                    "ss": "EXPEDIA_USD",
-                    "shid": "17075407",
-                    "sid": "EXPEDIA_USD",
-                    "soid": 3,
-                    "imu": false,
-                    "isppr": false,
-                    "isopr": false,
-                    "ivsfp": true,
-                    "idh": true,
-                    "icpb": false
-                },
-                "oai": {
-                    "sid": "44"
-                },
-                "ipr": true,
-                "omid": "214294470214294470",
-                "ipm": false,
-                "cpb": 24
-            },
-            {
-                "ris": [
-                    {
-                        "id": "201790378_401179310_37316##1",
-                        "rc": "Standard Double Room, 1 Bedroom, City View (Non A/C)",
-                        "rt": "Standard Double Room, 1 Bedroom, City View (Non A/C)-1 Double Bed - Package Deal",
-                        "srn": "Standard, Double, 1 Bedroom, City View, No Air Conditioner",
-                        "adt": 1,
-                        "chd": 0,
-                        "pdes": [],
-                        "mb": "ROOM ONLY",
-                        "tp": 963.10,
-                        "tfcs": {
-                            "TF": 963.10,
-                            "CMU": 0.00,
-                            "TAF": 11.80,
-                            "NF": 963.10,
-                            "BF": 951.30
-                        },
-                        "tafcs": {
-                            "TAF": {
-                                "SBP": 843.30,
-                                "SGP": 951.30,
-                                "TSF": 108.00,
-                                "SAC": 53.91,
-                                "MF": 10.00,
-                                "TTSF": 108.00,
-                                "TMF": 53.91,
-                                "SNP": 897.39,
-                                "MFT": 1.80,
-                                "SRC": 0.00
-                            }
-                        },
-                        "pis": [
-                            {
-                                "day": 1,
-                                "fc": {
-                                    "CMU": 0.00,
-                                    "BF": 951.30,
-                                    "TAF": 11.80,
-                                    "TF": 963.10,
-                                    "NF": 963.10
-                                },
-                                "afc": {
-                                    "TAF": {
-                                        "SBP": 843.30,
-                                        "SGP": 951.30,
-                                        "TSF": 108.00,
-                                        "SAC": 53.91,
-                                        "MF": 10.00,
-                                        "TTSF": 108.00,
-                                        "TMF": 53.91,
-                                        "SNP": 897.39,
-                                        "MFT": 1.80,
-                                        "SRC": 0.00
-                                    }
-                                },
-                                "mi": {
-                                    "sp": 951.30
-                                }
-                            }
-                        ],
-                        "fcs": [
-                            "Free self parking",
-                            "Free WiFi"
-                        ],
-                        "rmi": {
-                            "iuca": false
-                        },
-                        "radi": {
-                            "rid": "201790378",
-                            "vi": [
-                                "City"
-                            ],
-                            "bds": [
-                                {
-                                    "bt": "Double",
-                                    "bc": 1
-                                }
-                            ]
-                        },
-                        "op": "1",
-                        "rexb": {
-                            "BENEFIT": [
-                                {
-                                    "values": [
-                                        "Television",
-                                        "Free self parking",
-                                        "Internet",
-                                        "RoomService",
-                                        "Free WiFi"
-                                    ]
-                                }
-                            ],
-                            "SERVICE": [
-                                {
-                                    "values": [
-                                        "RoomSize: 23 SQM",
-                                        "NoAirConditioner: Yes"
-                                    ]
-                                }
-                            ]
-                        }
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true,
+                        "pan": true
                     },
-                    {
-                        "id": "201790378_401179310_37316##2",
-                        "rc": "Standard Double Room, 1 Bedroom, City View (Non A/C)",
-                        "rt": "Standard Double Room, 1 Bedroom, City View (Non A/C)-1 Double Bed - Package Deal",
-                        "srn": "Standard, Double, 1 Bedroom, City View, No Air Conditioner",
-                        "adt": 2,
-                        "chd": 0,
-                        "pdes": [],
-                        "mb": "ROOM ONLY",
-                        "tp": 964.90,
-                        "tfcs": {
-                            "TF": 964.90,
-                            "CMU": 0.00,
-                            "TAF": 11.80,
-                            "NF": 964.90,
-                            "BF": 953.10
-                        },
-                        "tafcs": {
-                            "TAF": {
-                                "SBP": 845.10,
-                                "SGP": 953.10,
-                                "TSF": 108.00,
-                                "SAC": 54.91,
-                                "MF": 10.00,
-                                "TTSF": 108.00,
-                                "TMF": 54.91,
-                                "SNP": 898.19,
-                                "MFT": 1.80,
-                                "SRC": 0.00
-                            }
-                        },
-                        "pis": [
-                            {
-                                "day": 1,
-                                "fc": {
-                                    "CMU": 0.00,
-                                    "BF": 953.10,
-                                    "TAF": 11.80,
-                                    "TF": 964.90,
-                                    "NF": 964.90
-                                },
-                                "afc": {
-                                    "TAF": {
-                                        "SBP": 845.10,
-                                        "SGP": 953.10,
-                                        "TSF": 108.00,
-                                        "SAC": 54.91,
-                                        "MF": 10.00,
-                                        "TTSF": 108.00,
-                                        "TMF": 54.91,
-                                        "SNP": 898.19,
-                                        "MFT": 1.80,
-                                        "SRC": 0.00
-                                    }
-                                },
-                                "mi": {
-                                    "sp": 953.10
-                                }
-                            }
-                        ],
-                        "fcs": [
-                            "Free self parking",
-                            "Free WiFi"
-                        ],
-                        "rmi": {
-                            "iuca": false
-                        },
-                        "radi": {
-                            "rid": "201790378",
-                            "vi": [
-                                "City"
-                            ],
-                            "bds": [
-                                {
-                                    "bt": "Double",
-                                    "bc": 1
-                                }
-                            ]
-                        },
-                        "op": "2",
-                        "rexb": {
-                            "BENEFIT": [
-                                {
-                                    "values": [
-                                        "Television",
-                                        "Free self parking",
-                                        "Internet",
-                                        "RoomService",
-                                        "Free WiFi"
-                                    ]
-                                }
-                            ],
-                            "SERVICE": [
-                                {
-                                    "values": [
-                                        "RoomSize: 23 SQM",
-                                        "NoAirConditioner: Yes"
-                                    ]
-                                }
-                            ]
-                        }
+                    "fN": "test",
+                    "lN": "six",
+                    "pt": "CHILD",
+                    "isPaxOpen": true,
+                    "isTba": false,
+                    "ti": "Master",
+                    "ed": 0,
+                    "gpd": {
+                        "gfN": "TESTSE",
+                        "glN": "TDTSGDTS",
+                        "gpan": "HUYPM2801J"
                     }
-                ],
-                "id": "45_2_17075407",
-                "tp": 1928.00,
-                "sc": "INR",
-                "roe": 1.0,
-                "cnp": {
-                    "id": "201790378_401179310_37316--48788660",
-                    "ifra": true,
-                    "inra": false,
-                    "pd": [
-                        {
-                            "fdt": "2025-07-19T11:52",
-                            "tdt": "2025-07-21T18:00",
-                            "am": 0.00,
-                            "pp": 0.00
-                        },
-                        {
-                            "fdt": "2025-07-21T18:00",
-                            "tdt": "2025-07-23T00:00",
-                            "am": 1904.40,
-                            "rn": 1
-                        },
-                        {
-                            "fdt": "2025-07-23T00:00",
-                            "tdt": "2025-07-24T23:59",
-                            "am": 1904.40,
-                            "pamah": 0.00,
-                            "tdpth": "2025-07-24T23:59"
-                        }
-                    ],
-                    "mi": {
-                        "iba": true,
-                        "iso": false,
-                        "isMarkUpApplied": true
+                }
+            ],
+            "id": "201171957_205555198_37663##3",
+            "isSamePanForAllPax": true
+        },
+        {
+            "travellerInfo": [
+                {
+                    "errors": {
+                        "fN": true,
+                        "lN": true,
+                        "gfN": true,
+                        "glN": true,
+                        "gpan": true,
+                        "ats": true,
+                        "pNum": true,
+                        "peD": true
+                    },
+                    "fN": "test",
+                    "lN": "seven",
+                    "gfN": "DSCSDDSS",
+                    "glN": "DSDSDS",
+                    "gpan": "HUYPM2801J",
+                    "pt": "ADULT",
+                    "isPaxOpen": false,
+                    "isTba": false,
+                    "ti": "Mr",
+                    "ed": "0.0",
+                    "gpd": {
+                        "gfN": "DSCSDDSS",
+                        "glN": "DSDSDS",
+                        "gpan": "HUYPM2801J"
                     }
-                },
-                "ddt": "2025-07-21T18:00",
-                "omi": {
-                    "ss": "EXPEDIA_PACKAGE",
-                    "shid": "17075407",
-                    "sid": "EXPEDIA_PACKAGE",
-                    "soid": 3,
-                    "imu": false,
-                    "isppr": false,
-                    "isopr": false,
-                    "ivsfp": true,
-                    "idh": true,
-                    "icpb": false
-                },
-                "oai": {
-                    "sid": "45"
-                },
-                "ispr": true,
-                "ipr": true,
-                "omid": "214294470214294470",
-                "ipm": false,
-                "cpb": 24
-            }
+                }
+            ],
+            "id": "201171957_205555198_37663##2",
+            "isSamePanForAllPax": true
+        }
+    ],
+    "ipaf": false,
+    "deliveryInfo": {
+        "emails": [
+            "deepak@casagrandtravelogy.co.in"
+        ],
+        "contacts": [
+            "9632587410"
+        ],
+        "code": [
+            "+91"
         ]
     },
-    "searchQuery": {
-        "checkinDate": "2025-07-23",
-        "checkoutDate": "2025-07-24",
-        "roomInfo": [
-            {
-                "numberOfAdults": 2,
-                "numberOfChild": 0
-            },
-            {
-                "numberOfAdults": 1,
-                "numberOfChild": 0
-            }
-        ],
-        "searchCriteria": {
-            "city": "699261",
-            "countryName": "INDIA",
-            "cityName": "MUMBAI",
-            "nationality": "106",
-            "countryOfResidence": "106",
-            "regionType": "MULTI_CITY_VICINITY"
-        },
-        "searchPreferences": {
-            "ratings": [
-                3,
-                4,
-                5
-            ],
-            "currency": "INR",
-            "fsc": true,
-            "ldo": false
-        },
-        "searchId": "hsid2293935176",
-        "isSearchCompleted": true,
-        "miscInfo": {
-            "supplierIds": [
-                "EXPEDIA_USD",
-                "EXPEDIA_PACKAGE",
-                "EXPEDIA"
-            ]
-        },
-        "correlationId": "-1298915743"
-    },
-    "status": {
-        "success": true,
-        "httpStatus": 200
-    },
-    "retryInSecond": 1,
-    "metaInfo": {}
+    "type": "HOTEL",
+    "paymentInfos": [
+        {
+            "paymentMedium": "WALLET",
+            "bookingId": "TJS206801547707",
+            "amount": 92609.97,
+            "paymentFee": 0,
+            "ruleId": 1
+        }
+    ],
+    "isoc": false,
+    "csi": {
+        "ics": false
+    }
 }
