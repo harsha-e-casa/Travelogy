@@ -13,7 +13,6 @@ const ageOptions = Array.from({ length: 17 }, (_, i) => ({
   label: `${i + 1} Yrs`,
 }));
 
-
 export const TravellerForm = ({
   showTraveller,
   adult,
@@ -269,7 +268,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   return (
-    <div className="p-2 lg:w-2/6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden">
+    <div className="p-2 w-1-6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden">
       {Array.isArray(rooms) &&
         rooms.map((room, roomIndex) => (
           <div key={roomIndex} className="border p-4 mb-4 rounded-lg relative">

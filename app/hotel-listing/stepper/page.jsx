@@ -93,8 +93,16 @@ export default function Stepper() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({});
-
+  const [formData, setFormData] = useState(() => {
+    const savedFormData = localStorage.getItem("formData");
+    return savedFormData ? JSON.parse(savedFormData) : {};
+  });
+  const [Category1, setCategory1] = useState(null);
+  useEffect(() => {
+    if (formData) {
+      localStorage.setItem("formData", JSON.stringify(formData));
+    }
+  }, [formData]);
   if (error) {
     return (
       <Layout headerStyle={1} footerStyle={1}>
@@ -120,7 +128,6 @@ export default function Stepper() {
     );
   }
   const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
-
   const steps = [
     {
       id: 1,
@@ -129,16 +136,16 @@ export default function Stepper() {
       icon: <UserIcon />,
     },
     { id: 2, title: "Review", subtitle: "Check info", icon: <FileTextIcon /> },
-    ...(PanRequired === false
-      ? []
-      : [
+    ...(PanRequired !== false
+      ? [
           {
             id: 3,
             title: "Upload Document",
             subtitle: "Attach files",
             icon: <UploadIcon />,
           },
-        ]),
+        ]
+      : []),
     {
       id: 4,
       title: "Payments",
@@ -147,12 +154,8 @@ export default function Stepper() {
     },
   ];
 
-  // const goNext = () => {
-  //   if (currentStep < steps.length) setCurrentStep(currentStep + 1);
-  // };
-
+  // Handle Next Step
   const goNext = () => {
-    // Inject guest details before going to Step 3
     if (
       currentStep === 2 &&
       formData?.guests &&
@@ -181,37 +184,51 @@ export default function Stepper() {
       }));
     }
 
-    // Proceed to next step
-    if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1);
+    // Skip Step 3 (Upload Document) and go directly to Step 4 (Payment) if PanRequired is true
+    if (currentStep === 2 && PanRequired === false) {
+      setCurrentStep(4); // Directly go to Step 4 (Payment)
+    } else if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1); // Proceed to the next step
     }
   };
 
+  // Handle Previous Step
   const goPrev = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
+  // Handle Click on Step (for direct navigation)
   const handleStepClick = (stepId) => {
     if (stepId <= currentStep) setCurrentStep(stepId);
   };
-  // const handlePayment = () => {
-  //   alert("Redirecting to payment gateway...");
-  // };
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  console.log("Current Step:", currentStep);
+  console.log("PanRequired:", PanRequired);
+
   const handlePayment = async (bookingId) => {
     try {
       if (!bookingId) {
         throw new Error("Booking ID is missing.");
       }
 
-      // Log the fetched booking details to the console
       console.log("Fetched booking details:", bookingId);
-
-      // Example redirection with dynamic bookingId
+      localStorage.removeItem("formData");
+      setFormData({});
       window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${bookingId}`;
     } catch (error) {
       console.error("Error during payment handling:", error.message);
     }
   };
+  // useEffect(() => {
+  //   // Example: Dynamically set Category1 based on some condition
+  //   if (hotelReviewData) {
+  //     setCategory1(hotelReviewData?.someCondition ? "someCategory" : null);
+  //   }
+  // }, [hotelReviewData]);
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
@@ -232,18 +249,16 @@ export default function Stepper() {
                   ...(PanRequired === false ? [] : ["THIRD STEP"]),
                   "FINISH",
                 ];
+
                 return (
-                  <>
-                    {/* {false && step.id == "3" ? ( */}
-                    <div
-                      key={step.id}
-                      onClick={() => handleStepClick(step.id)}
-                      className="flex items-center gap-2 w-full group cursor-pointer"
-                    >
-                      {/* Icon + Labels */}
-                      <div className="flex flex-col items-center justify-center text-center">
-                        <div
-                          className={`w-10 h-10 flex items-center justify-center rounded-full
+                  <div
+                    key={step.id}
+                    onClick={() => handleStepClick(step.id)}
+                    className="flex items-center gap-2 w-full group cursor-pointer"
+                  >
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div
+                        className={`w-10 h-10 flex items-center justify-center rounded-full
                         ${
                           status === "completed"
                             ? "bg-4aa301 text-white"
@@ -251,40 +266,34 @@ export default function Stepper() {
                             ? "bg-black text-white ring-2 ring-gray-400"
                             : "bg-gray-200 text-gray-400"
                         }`}
-                        >
-                          {status === "completed" ? <CheckIcon /> : step.icon}
-                        </div>
+                      >
+                        {status === "completed" ? <CheckIcon /> : step.icon}
                       </div>
-
-                      {/* Texts */}
-                      <div className="flex flex-col leading-tight">
-                        <span className="text-[10px] tracking-wide text-gray-500 uppercase">
-                          {stepLabelMap[index]}
-                        </span>
-                        <span
-                          className={`text-sm font-medium ${
-                            status === "completed"
-                              ? "text-4aa301"
-                              : "text-gray-700"
-                          }`}
-                        >
-                          {step.title}
-                        </span>
-                      </div>
-
-                      {/* Line */}
-                      {index !== steps.length - 1 && (
-                        <div
-                          className={`flex-1 h-px mx-4 ${
-                            currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
-                          }`}
-                        ></div>
-                      )}
                     </div>
-                    {/* ) : (
-                      ""
-                    )} */}
-                  </>
+
+                    <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] tracking-wide text-gray-500 uppercase">
+                        {stepLabelMap[index]}
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${
+                          status === "completed"
+                            ? "text-4aa301"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {step.title}
+                      </span>
+                    </div>
+
+                    {index !== steps.length - 1 && (
+                      <div
+                        className={`flex-1 h-px mx-4 ${
+                          currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
+                        }`}
+                      ></div>
+                    )}
+                  </div>
                 );
               })}
             </div>
@@ -307,7 +316,6 @@ export default function Stepper() {
                       setFormData={setFormData}
                       onNext={goNext}
                       hotelReviewData={hotelReviewData}
-                      // handleNext={handleNext}
                     />
                   )}
                   {currentStep === 2 && (
@@ -315,10 +323,12 @@ export default function Stepper() {
                       formData={formData}
                       onPrev={goPrev}
                       onNext={goNext}
+                      Category1={Category1}
+                      Category={"bbook"}
                       hotelReviewData={hotelReviewData}
                     />
                   )}
-                  {currentStep === 3 && (
+                  {currentStep === 3 && PanRequired !== false && (
                     <Step3PersonalDocuments
                       formData={formData}
                       setFormData={setFormData}
@@ -326,15 +336,6 @@ export default function Stepper() {
                       onNext={goNext}
                     />
                   )}
-
-                  {/* {currentStep === 3 && ipr !== false && (
-                    <Step3PersonalDocuments
-                      formData={formData}
-                      setFormData={setFormData}
-                      hotelReviewData={hotelReviewData}
-                      onNext={goNext}
-                    />
-                  )} */}
 
                   {currentStep === 4 && (
                     <Step4Payment

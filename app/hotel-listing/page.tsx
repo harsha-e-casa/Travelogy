@@ -40,7 +40,7 @@ export default function HotelListing() {
   const location = searchParams.get("location");
   const { nationalities } = useNationalities() as {
     nationalities: Nationality[];
-    loading: boolean;
+    // loading: boolean;
   };
   const city = searchParams.get("city");
   const currency = searchParams.get("currency");
@@ -214,7 +214,8 @@ export default function HotelListing() {
     };
   });
   const handleSearch = async () => {
-    const safeCityId = selectFrom?.id || city || "699261"; // fallback to default city ID
+    setLoading(true);
+    const safeCityId = selectFrom?.id || city || "699261";
     const safeCityName = selectFrom?.cityName || location || "Chennai";
     const safeCountry = selectFrom?.countryName || "India";
 
@@ -225,7 +226,6 @@ export default function HotelListing() {
     const nationalityIdToUse =
       matchedNationality?.countryId || nationalityId || "94";
 
-    // fallback selectFrom object if null
     if (!selectFrom) {
       setSelectFrom({
         cityName: safeCityName,
@@ -263,11 +263,22 @@ export default function HotelListing() {
       roomsData: JSON.stringify(roomsData),
     }).toString();
 
-    const data = await apiCall(payload);
-    if (data) {
-      setApiHotelData(data.searchResult?.his || []);
-      router.push(`/hotel-listing?${queryParams}`);
-      return;
+    // const data = await apiCall(payload);
+    // if (data) {
+    //   setApiHotelData(data.searchResult?.his || []);
+    //   router.push(`/hotel-listing?${queryParams}`);
+    //   return;
+    // }
+    try {
+      const data = await apiCall(payload);
+      if (data) {
+        setApiHotelData(data.searchResult?.his || []);
+        router.push(`/hotel-listing?${queryParams}`);
+      }
+    } catch (error) {
+      console.error("Search API error:", error);
+    } finally {
+      setLoading(false); // Set loading to false after the API call completes
     }
   };
   useEffect(() => {
@@ -277,7 +288,7 @@ export default function HotelListing() {
         return;
       }
 
-      setLoading(true);
+      // setLoading(true);
       const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
       const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
@@ -297,7 +308,7 @@ export default function HotelListing() {
       };
 
       const data = await apiCall(payload);
-      setLoading(false);
+      // setLoading(false);
       if (data) {
         const hotelOnlyResults = data.searchResult?.his || [];
         setApiHotelData(hotelOnlyResults);

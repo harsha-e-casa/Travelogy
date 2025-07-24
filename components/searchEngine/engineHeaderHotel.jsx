@@ -12,12 +12,9 @@ import { useRouter } from "next/navigation";
 import { useNationalities } from "../../util/HotelApi";
 
 const EngineHeaderHotel = ({ active_border }) => {
-  const [showSearchState, setShowSearchState] = useState(false); // Consistent naming
-  const [showSearchStateTo, setShowSearchStateTo] = useState(false); // Consistent naming
+  const [showSearchState, setShowSearchState] = useState(false);
+  const [showSearchStateTo, setShowSearchStateTo] = useState(false);
   const [selectFrom, setSelectFrom] = useState(null);
-  // const [selectFromSub, setSelectFromSub] = useState(
-  //   "Indira Gandhi International Airp"
-  // ); // Consistent naming
   const [nationalityId, setNationalityId] = useState(null); // fallback to India
 
   const { nationalities } = useNationalities();

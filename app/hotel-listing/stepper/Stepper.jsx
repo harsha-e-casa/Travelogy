@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
-import { Input, Checkbox, Button, message } from "antd";
+import { Input, Checkbox, Button, message, Radio } from "antd";
 
 export function HotelReviewComponent({
   setHotelReviewData,
@@ -40,7 +40,6 @@ export function Step1TravellerDetails({
 }) {
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
-  const totalStars = 5;
   const filledStars = Math.round(rating);
   useEffect(() => {
     if (hotelReviewData?.query?.roomInfo?.length) {
@@ -106,7 +105,13 @@ export function Step1TravellerDetails({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
   const handleNext = () => {
     const isValid = validateFields();
     console.log("Is Valid:", isValid);
@@ -509,7 +514,14 @@ export function Step1TravellerDetails({
   );
 }
 
-export function Step2Review({ formData, onNext, hotelReviewData }) {
+export function Step2Review({
+  formData,
+  onNext,
+  hotelReviewData,
+  Category1,
+  Category2,
+  Category,
+}) {
   const [accepted, setAccepted] = useState(false);
   let freeCancellationDate = null;
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
@@ -518,15 +530,30 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
     const freeCancellation = policies.find((p) => p.am === 0);
     if (freeCancellation?.tdt) {
       const dateObj = new Date(freeCancellation.tdt);
-      freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // Formats as DD/MM/YYYY
+      freeCancellationDate = dateObj.toLocaleDateString("en-GB");
     }
   }
+  const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
+  const filledStars = Math.round(rating);
   return (
     <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
       <div className="border-b pb-4">
         <h2 className="text-base font-semibold">
           {hotelReviewData?.hInfo?.name}{" "}
-          {/* <span className="text-orange-700">★★★☆☆</span> */}
+          <span className="text-star ml-2">
+            {[...Array(filledStars)].map((_, index) => (
+              <svg
+                key={`filled-${index}`}
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="gold"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
+              </svg>
+            ))}
+          </span>
         </h2>
         <p className="text-xs text-gray-600">
           {hotelReviewData?.hInfo?.ad?.adr && (
@@ -562,22 +589,42 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
         <div>
           <strong className="block text-gray-900">Check In</strong>
-          <p className="text-gray-700">
+          {/* <p className="text-gray-700">
             {hotelReviewData?.query?.checkinDate || "N/A"}
             <br />
-            {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
-              "No Clock-in Time"}
+            (hotelReviewData?.hInfo?.checkInTime?.beginTime || "No Clock-in
+            Time")
           </p>
+
+          {Category == "abook" ? "after book contion" : "feforkrkr"} */}
+          {Category === "abook" ? (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkinDate || "N/A"}
+            </p>
+          ) : (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkinDate || "N/A"}
+              <br />
+              {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
+                "No Clock-in Time"}
+            </p>
+          )}
         </div>
 
         <div className="border-l-1 pl-4">
           <strong className="block text-gray-900">Check Out</strong>
-          <p className="text-gray-700">
-            {hotelReviewData?.query?.checkoutDate || "N/A"}
-            <br />
-            {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
-              "No Clock-out Time"}
-          </p>
+          {Category === "abook" ? (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkoutDate || "N/A"}
+            </p>
+          ) : (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkoutDate || "N/A"}
+              <br />
+              {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
+                "No Clock-out Time"}
+            </p>
+          )}
         </div>
 
         <div className="border-l-1 pl-4">
@@ -638,6 +685,14 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
         <p>
           Mobile: {formData.countryCode} {formData.mobile}
         </p>
+        {/* {showCategory1Details && (
+          <div>
+            <p>Email: {formData.email}</p>
+            <p>
+              Mobile: {formData.countryCode} {formData.mobile}
+            </p>
+          </div>
+        )} */}
       </div>
 
       <div className="border-t pt-4">
@@ -810,47 +865,40 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
             the guest.
           </li>
         </ul>
+        {Category === "bbook" ? (
+          <div className="flex items-center space-x-2 mt-4">
+            <input
+              type="checkbox"
+              id="acceptTerms"
+              className="w-3 h-3 border border-gray-400 rounded"
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+            />
 
-        <div className="flex items-center space-x-2 mt-4">
-          <input
-            type="checkbox"
-            id="acceptTerms"
-            className="w-3 h-3 border border-gray-400 rounded"
-            checked={accepted}
-            onChange={(e) => setAccepted(e.target.checked)}
-          />
-
-          <label for="acceptTerms" className="mb-0 text-sm text-gray-700">
-            Accept Terms & Conditions
-          </label>
-        </div>
+            <label for="acceptTerms" className="mb-0 text-sm text-gray-700">
+              Accept Terms & Conditions
+            </label>
+          </div>
+        ) : null}
       </div>
 
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex gap-4">
-          <button
-            disabled={!accepted}
-            className={`book-now-btn ${
-              accepted
-                ? "bg-orange-500 hover:bg-orange-600"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-            onClick={onNext}
-          >
-            Proceed to Pay
-          </button>
-          {/* <button
-            disabled={!accepted}
-            className={`px-6 py-2 rounded text-white font-medium ${
-              accepted
-                ? "bg-blue-500 hover:bg-blue-600"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Block
-          </button> */}
+      {Category === "bbook" ? (
+        <div className="flex justify-between items-center mt-6">
+          <div className="flex gap-4">
+            <button
+              disabled={!accepted}
+              className={`book-now-btn ${
+                accepted
+                  ? "bg-orange-500 hover:bg-orange-600"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+              onClick={onNext}
+            >
+              Proceed to Pay
+            </button>
+          </div>
         </div>
-      </div>
+      ) : null}
     </div>
   );
 }
@@ -866,6 +914,7 @@ export function Step3PersonalDocuments({
   const [individualPANs, setIndividualPANs] = useState({});
   const [samePANValue, setSamePANValue] = useState("");
   const [guardianMode, setGuardianMode] = useState({});
+  const [selectedTCS, setSelectedTCS] = useState(null);
 
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
@@ -894,6 +943,10 @@ export function Step3PersonalDocuments({
       [`${roomIdx}-${guestIdx}`]: value.toUpperCase(),
     }));
   };
+  const handleTCSChange = (e) => {
+    setSelectedTCS(e.target.value); // Update TCS declaration choice
+  };
+
   // const leadGuest = formData?.guests?.[rIdx];
   // const extraGuests = leadGuest?.extraGuests || [];
 
@@ -919,12 +972,24 @@ export function Step3PersonalDocuments({
         }
       }
     }
+    if (selectedTCS === null) {
+      return false; // TCS declaration is mandatory
+    }
+
     return true;
   };
 
   const handleProceed = () => {
+    if (samePANForAll && selectedTCS === null) {
+      message.warning("Please select a TCS declaration before proceeding.");
+      return false;
+    }
     if (!isAllValid()) {
-      message.error("Please enter valid PAN details before proceeding.");
+      if (selectedTCS === null) {
+        message.warning("Please select a TCS declaration before proceeding.");
+      } else {
+        message.error("Please enter valid PAN details before proceeding.");
+      }
       return;
     }
     const finalData = {};
@@ -949,6 +1014,7 @@ export function Step3PersonalDocuments({
         }
       });
     }
+    finalData.tcsDeclaration = selectedTCS;
     setFormData((prev) => ({ ...prev, panInfo: finalData }));
     onNext();
   };
@@ -987,6 +1053,7 @@ export function Step3PersonalDocuments({
               {guardianMode[rIdx] ? (
                 <div className="flex gap-2 mb-2">
                   <Input
+                    className="w-60 stepper_input"
                     placeholder="First Name"
                     value={guardianPANs[rIdx]?.first || ""}
                     onChange={(e) =>
@@ -1000,6 +1067,7 @@ export function Step3PersonalDocuments({
                     }
                   />
                   <Input
+                    className="w-60 stepper_input"
                     placeholder="Last Name"
                     value={guardianPANs[rIdx]?.last || ""}
                     onChange={(e) =>
@@ -1013,6 +1081,7 @@ export function Step3PersonalDocuments({
                     }
                   />
                   <Input
+                    className="w-60 stepper_input"
                     placeholder="PAN Number"
                     value={guardianPANs[rIdx]?.pan || ""}
                     onChange={(e) =>
@@ -1036,7 +1105,7 @@ export function Step3PersonalDocuments({
                         }`.trim()}
                       </p>
                       <Input
-                        className="w-60"
+                        className="w-60 stepper_input"
                         placeholder="Enter PAN"
                         value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                         onChange={(e) =>
@@ -1053,7 +1122,7 @@ export function Step3PersonalDocuments({
       ) : (
         <div className="flex gap-2 mb-4">
           <Input
-            className="w-60"
+            className="w-60 stepper_input"
             placeholder="Enter PAN"
             value={samePANValue}
             onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
@@ -1061,102 +1130,42 @@ export function Step3PersonalDocuments({
         </div>
       )}
 
-      {/* 
-      {!samePANForAll ? (
-        hotelReviewData?.query?.roomInfo?.map((room, rIdx) => (
-          <div key={`room-${rIdx}`} className="mb-6 border-t pt-4">
-            <div className="flex items-center mb-2">
-              <Checkbox
-                checked={guardianMode[rIdx]}
-                onChange={(e) => handleGuardianToggle(rIdx, e.target.checked)}
-              >
-                Room {rIdx + 1} - Use Only Guardian PAN
-              </Checkbox>
-            </div>
-
-            {guardianMode[rIdx] ? (
-              <div className="flex gap-2 mb-2">
-                <Input
-                  placeholder="First Name"
-                  value={guardianPANs[rIdx]?.first || ""}
-                  onChange={(e) =>
-                    setGuardianPANs((prev) => ({
-                      ...prev,
-                      [rIdx]: {
-                        ...prev[rIdx],
-                        first: e.target.value,
-                      },
-                    }))
-                  }
-                />
-                <Input
-                  placeholder="Last Name"
-                  value={guardianPANs[rIdx]?.last || ""}
-                  onChange={(e) =>
-                    setGuardianPANs((prev) => ({
-                      ...prev,
-                      [rIdx]: {
-                        ...prev[rIdx],
-                        last: e.target.value,
-                      },
-                    }))
-                  }
-                />
-                <Input
-                  placeholder="PAN Number"
-                  value={guardianPANs[rIdx]?.pan || ""}
-                  onChange={(e) =>
-                    setGuardianPANs((prev) => ({
-                      ...prev,
-                      [rIdx]: {
-                        ...prev[rIdx],
-                        pan: e.target.value.toUpperCase(),
-                      },
-                    }))
-                  }
-                />
-              </div>
-            ) : Array.isArray(room?.guests) && room.guests.length > 0 ? (
-              [
-                { name: `${leadGuest?.firstName} ${leadGuest?.lastName}` },
-                ...extraGuests.map((g) => ({
-                  name: `${g?.firstName || ""} ${g?.lastName || ""}`,
-                })),
-              ].map((guest, gIdx) => (
-                <div key={`guest-${rIdx}-${gIdx}`} className="mb-2">
-                  <p>{guest.name || `Guest ${gIdx + 1}`}</p>
-                  <Input
-                    className="w-60"
-                    placeholder="Enter PAN"
-                    value={individualPANs[`${rIdx}-${gIdx}`] || ""}
-                    onChange={(e) =>
-                      handlePANChange(rIdx, gIdx, e.target.value)
-                    }
-                  />
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400">
-                No guest data found for this room.
-              </p>
-            )}
-          </div>
-        ))
-      ) : (
-        <div className="flex gap-2 mb-4">
-          <Input
-            className="w-60"
-            placeholder="Enter PAN"
-            value={samePANValue}
-            onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
-          />
-        </div>
-      )} */}
-
       <p className="text-xs text-gray-500 mb-4">
         Note: Please enter valid PAN linked with Aadhar. If PAN not exists,
         click on “Parent/Guardian PAN” and provide details.
       </p>
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold">TCS Declaration</h3>
+        <div>
+          {" "}
+          <Radio.Group onChange={handleTCSChange} value={selectedTCS}>
+            <Radio className="tcs-radio" value="travel-products">
+              We are purchasing these travel products from Tripjack to be sold
+              to end customers as part of “Overseas Tour Program Package” and
+              confirm that we will collect / have collected TCS at applicable
+              rates from each traveller in accordance with Section 206C(1G)(b)
+              of the Income Tax Act, 1961. I am accepting the attached
+              declaration (link to the declaration)
+            </Radio>
+            <Radio className="tcs-radio" value="standalone-products">
+              We are purchasing these travel products from Tripjack to be sold
+              to end customers as standalone products.I am accepting the
+              attached declaration (link to the declaration). The total foreign
+              remittances made by the end customers during the current financial
+              year under the Liberalised Remittance Scheme of Reserve Bank of
+              India (including value of remittance intended to be made for these
+              travel products) (“TOTAL LRS REMITTANCE VALUE”) is less than the
+              threshold of INR 7,00,000.
+            </Radio>
+          </Radio.Group>
+        </div>
+        <br />
+        We hereby confirm that the above information is correct and validated on
+        the basis of documents / declarations provided by the end customers. We
+        further confirm that we have read and understood the detailed terms and
+        conditions w.r.t the TCS regulations under Section 206C(1G) of the
+        Income Tax Act, 1961
+      </div>
 
       <Button
         type="primary"
@@ -1178,6 +1187,7 @@ export function Step4Payment({
   onConfirmPayment,
 }) {
   const [showModal, setShowModal] = useState(false);
+  const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
 
   const handlePayClick = () => {
     setShowModal(true);
@@ -1227,8 +1237,9 @@ export function Step4Payment({
                 className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white"
                 onClick={handlePayClick}
               >
-                PAY NOW ₹{amount.toFixed(2)}
+                PAY NOW ₹{(totalBaseFare + totalTax).toFixed(2)}
               </button>
+              {/* <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span> */}
             </div>
           </div>
         </div>
@@ -1245,7 +1256,7 @@ export function Step4Payment({
               proceed.
             </p>
             <p className="text-center text-xl font-semibold mb-6">
-              ₹{amount.toFixed(2)}
+              ₹{(totalBaseFare + totalTax).toFixed(2)}
             </p>
 
             <div className="flex justify-center gap-4">
