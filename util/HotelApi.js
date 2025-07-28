@@ -16,22 +16,11 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
       },
       {
         headers: {
-          // "Content-Type": "application/json",
           apikey: `${API_KEY}`,
         },
       }
     );
 
-    //     if (response.status === 200) {
-    //       return response.data;
-    //     } else {
-    //       throw new Error("Failed to fetch hotel data");
-    //     }
-    //   } catch (err) {
-    //     console.error("Error fetching hotel data:", err);
-    //     throw new Error("Failed to fetch hotel data");
-    //   }
-    // };
     if (response.data?.status?.success) {
       return response.data;
     } else {
@@ -110,12 +99,7 @@ export async function hotelBooking({ formData, hotelReviewData }) {
   const mobile = formData?.mobile;
   const countryCode = formData?.countryCode || "+91";
 
-  const baseFare = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF || 0;
   const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
-  // const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
-
-  // const totalAmount = Number(baseFare + tax);
-  // const totalAmount = totalBaseFare + totalTax;
   const roomTravellerInfo = roomInfo.map((room, roomIndex) => {
     const guests = [
       ...(formData.guests?.[roomIndex]
@@ -129,7 +113,7 @@ export async function hotelBooking({ formData, hotelReviewData }) {
     const travellers = guests.map((guest, guestIndex) => {
       const isChild = guest?.type === "children";
       let pan = "";
-
+      let passportNumber = guest?.passportNumber || "";
       if (!isChild) {
         if (panInfo?.mode === "same") {
           pan = panInfo.pan;
@@ -144,7 +128,9 @@ export async function hotelBooking({ formData, hotelReviewData }) {
         fN: guest?.firstName || "TBA",
         lN: guest?.lastName || "Guest",
         ti: guest?.title || "Mr",
+        // passportNumber: passportNumber,
         pt: isChild ? "CHILD" : "ADULT",
+        passportNumber,
         ...(isChild ? {} : { pan }),
       };
     });

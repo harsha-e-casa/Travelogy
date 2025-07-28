@@ -89,22 +89,21 @@ export default function BookingCard({
         </div>
       </div>
       <div className="space-y-3">
-        <h5 className="text-md font-semibold text-neutral-800">
-          Check availability
+        <h5 className="text-md font-bold text-neutral-800">
+          {/* Check availability */}
+          Search Details
         </h5>
         <div className="grid grid-cols-3 gap-1">
           <div className="relative">
             <label className="text-xs text-gray-500 mb-1 block">Check-in</label>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenDateRange("checkin");
-              }}
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   setOpenDateRange("checkin");
+              // }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
-              <span className="text-sm font-medium">
-                {checkinDate || "Select Date"}
-              </span>
+              <span className="text-sm font-medium">{checkinDate}</span>
             </button>
 
             {openDateRange === "checkin" && (
@@ -131,15 +130,13 @@ export default function BookingCard({
               Check-out
             </label>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenDateRange("checkout");
-              }}
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   setOpenDateRange("checkout");
+              // }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
-              <span className="text-sm font-medium">
-                {checkoutDate || "Select Date"}
-              </span>
+              <span className="text-sm font-medium">{checkoutDate}</span>
             </button>
 
             {openDateRange === "checkout" && (
@@ -183,13 +180,13 @@ export default function BookingCard({
           <div className="flex flex-col border rounded p-2">
             <span className="text-xs text-gray-500">Check in From</span>
             <span className="font-medium">
-              {hotelData?.checkInTime?.beginTime || "12:00 PM"}
+              {hotelData?.checkInTime?.beginTime || "-"}
             </span>
           </div>
           <div className="flex flex-col border rounded p-2">
             <span className="text-xs text-gray-500">Check out Till</span>
             <span className="font-medium">
-              {hotelData?.checkOutTime?.beginTime || "10:00 AM"}
+              {hotelData?.checkOutTime?.beginTime || "-"}
             </span>
           </div>
         </div>
@@ -207,7 +204,7 @@ export default function BookingCard({
               {roomsData?.[0]?.children} Child
             </button> */}
             <button
-              onClick={toggleTraveller}
+              // onClick={toggleTraveller}
               className="w-full text-left font-medium mt-1"
             >
               {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}

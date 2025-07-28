@@ -353,7 +353,10 @@ export default function Stepper() {
 
                 <div className="md:col-span-4">
                   <div className="p-6 rounded-md text-sm space-y-4">
-                    <FareAmount hotelReviewData={hotelReviewData} />
+                    <FareAmount
+                      hotelReviewData={hotelReviewData}
+                      Category={"bbook"}
+                    />
                   </div>
                 </div>
               </>

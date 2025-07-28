@@ -83,7 +83,10 @@ const BookingDetailsPage = () => {
       </div>
       <div className="md:col-span-4">
         <div className="p-6 rounded-md text-sm space-y-4">
-          <FareAmount hotelReviewData={bookingDetails.itemInfos.HOTEL} />
+          <FareAmount
+            hotelReviewData={bookingDetails.itemInfos.HOTEL}
+            Category={"abook"}
+          />
         </div>
       </div>
     </div>

@@ -40,7 +40,7 @@ export default function HotelListing() {
   const location = searchParams.get("location");
   const { nationalities } = useNationalities() as {
     nationalities: Nationality[];
-    // loading: boolean;
+    loading: boolean;
   };
   const city = searchParams.get("city");
   const currency = searchParams.get("currency");
@@ -197,11 +197,10 @@ export default function HotelListing() {
       );
 
       const data = await response.json();
-      console.log("Search result:", data);
+      localStorage.clear();
       return data;
     } catch (error) {
       console.error("Search API error:", error);
-      // alert("An error occurred while searching for hotels. Please try again.");
       return null;
     }
   };
@@ -288,7 +287,7 @@ export default function HotelListing() {
         return;
       }
 
-      // setLoading(true);
+      setLoading(true);
       const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
       const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
 
@@ -308,7 +307,7 @@ export default function HotelListing() {
       };
 
       const data = await apiCall(payload);
-      // setLoading(false);
+      setLoading(false);
       if (data) {
         const hotelOnlyResults = data.searchResult?.his || [];
         setApiHotelData(hotelOnlyResults);
