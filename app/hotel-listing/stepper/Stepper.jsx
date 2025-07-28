@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
 import { Input, Checkbox, Button, message, Radio } from "antd";
+import AppDateRange from "@/components/searchEngine/AppDateRage";
 
 export function HotelReviewComponent({
   setHotelReviewData,
@@ -29,7 +30,7 @@ export function HotelReviewComponent({
   //   return <div className="text-red-500 text-center">{error}</div>;
   // }
 
-  return null; // This component only handles fetching.
+  return null;
 }
 
 export function Step1TravellerDetails({
@@ -38,6 +39,13 @@ export function Step1TravellerDetails({
   setFormData,
   onNext,
 }) {
+  // console.log(
+  //   hotelReviewData?.hInfo?.ops?.ipm,
+  //   "hotelRsetFormDataeviewData9688248969"
+  // );
+  const ipmValue = hotelReviewData?.hInfo?.ops?.[0]?.ipm;
+  console.log(ipmValue, "hotelReviewDataipm value");
+
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
   const filledStars = Math.round(rating);
@@ -162,6 +170,45 @@ export function Step1TravellerDetails({
       freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // Formats as DD/MM/YYYY
     }
   }
+  const [passportNumber, setPassportNumber] = useState(
+    formData?.guests?.[0]?.passportNumber || ""
+  );
+  const [passportExpiryDate, setPassportExpiryDate] = useState(
+    formData?.guests?.[0]?.passportExpiryDate || ""
+  );
+
+  const [openDatePicker, setOpenDatePicker] = useState(false); // Control datepicker visibility
+
+  const handleDateChange = (date) => {
+    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : "";
+    setPassportExpiryDate(formattedDate);
+    setFormData((prev) => ({
+      ...prev,
+      guests: {
+        ...prev.guests,
+        [0]: {
+          ...prev.guests?.[0],
+          passportExpiryDate: formattedDate,
+        },
+      },
+    }));
+    setOpenDatePicker(false); // Close the date picker after selecting a date
+  };
+
+  const handlePassportNumberChange = (e) => {
+    const value = e.target.value;
+    setPassportNumber(value);
+    setFormData((prev) => ({
+      ...prev,
+      guests: {
+        ...prev.guests,
+        [0]: {
+          ...prev.guests?.[0],
+          passportNumber: value,
+        },
+      },
+    }));
+  };
 
   return (
     <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
@@ -356,6 +403,34 @@ export function Step1TravellerDetails({
                     </span>
                   )}
                 </div>
+                {ipmValue && (
+                  <>
+                    <div className="flex flex-col">
+                      <input
+                        className="border p-2 rounded stepper_input"
+                        placeholder="Passport Number"
+                        value={passportNumber}
+                        onChange={handlePassportNumberChange}
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <input
+                        className="border p-2 rounded stepper_input"
+                        placeholder="Passport Expiry Date"
+                        value={passportExpiryDate}
+                        readOnly
+                        onClick={() => setOpenDatePicker(true)} // Open the date picker on click
+                      />
+                      {openDatePicker && (
+                        <AppDateRange
+                          openToDateRange={() => setOpenDatePicker(false)} // Close on selection
+                          setDatedep={handleDateChange}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
               {(formData.guests?.[roomIndex]?.extraGuests || []).map(
                 (guest, i) => (
@@ -514,18 +589,11 @@ export function Step1TravellerDetails({
   );
 }
 
-export function Step2Review({
-  formData,
-  onNext,
-  hotelReviewData,
-  Category1,
-  Category2,
-  Category,
-}) {
+export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
   const [accepted, setAccepted] = useState(false);
   let freeCancellationDate = null;
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
-
+  const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
   if (Array.isArray(policies)) {
     const freeCancellation = policies.find((p) => p.am === 0);
     if (freeCancellation?.tdt) {
@@ -585,18 +653,9 @@ export function Step2Review({
           </span>
         </p>
       </div>
-
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
         <div>
           <strong className="block text-gray-900">Check In</strong>
-          {/* <p className="text-gray-700">
-            {hotelReviewData?.query?.checkinDate || "N/A"}
-            <br />
-            (hotelReviewData?.hInfo?.checkInTime?.beginTime || "No Clock-in
-            Time")
-          </p>
-
-          {Category == "abook" ? "after book contion" : "feforkrkr"} */}
           {Category === "abook" ? (
             <p className="text-gray-700">
               {hotelReviewData?.query?.checkinDate || "N/A"}
@@ -669,32 +728,91 @@ export function Step2Review({
           </p>
         </div>
       </div>
-
-      <div className="border-t pt-4 space-y-1">
-        {formData.specialRequest?.trim() && (
-          <div className="mt-4">
-            <h3 className="font-semibold text-base">Special request(s)</h3>
-            <p className="text-sm text-gray-700 mt-1">
-              {formData.specialRequest}
+      {/* 
+      <h3 className="font-semibold text-base">Guest Details</h3>
+      {Object.values(formData.guests || {}).map((guest, roomIndex) => (
+        <div key={roomIndex}>
+          <p className="text-gray-700">
+            <strong>Room {roomIndex + 1}:</strong> {guest.firstName}{" "}
+            {guest.lastName}
+          </p>
+          {guest.extraGuests?.map((extraGuest, index) => (
+            <p key={index} className="text-gray-700">
+              {extraGuest.firstName} {extraGuest.lastName} ( {extraGuest.type} )
             </p>
-          </div>
-        )}
+          ))}
+        </div>
+      ))} */}
+      <h3 className="font-semibold text-base">Guest Details:</h3>
 
-        <h3 className="font-semibold text-base">Contact Details</h3>
-        <p>Email: {formData.email}</p>
-        <p>
-          Mobile: {formData.countryCode} {formData.mobile}
-        </p>
-        {/* {showCategory1Details && (
-          <div>
-            <p>Email: {formData.email}</p>
-            <p>
-              Mobile: {formData.countryCode} {formData.mobile}
-            </p>
-          </div>
-        )} */}
-      </div>
+      {Category !== "abook"
+        ? Object.values(formData.guests || {}).map((guest, roomIndex) => (
+            <div key={roomIndex} className="border-b pb-4">
+              <h4 className="font-bold text-sm">
+                <div>
+                  <p>
+                    {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.rc} -{" "}
+                    {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.mb}
+                    <span className="text-gray-500">
+                      {" "}
+                      ({guest.extraGuests?.length + 1}{" "}
+                      {guest.extraGuests?.length + 1 === 1 ? "Guest" : "Guests"}
+                      )
+                    </span>
+                  </p>
+                </div>
+              </h4>
+              <div className="space-y-2">
+                <p className="text-gray-700">
+                  {guest.title} {guest.firstName} {guest.lastName}
+                </p>
+                {guest.extraGuests?.map((extraGuest, index) => (
+                  <div key={index}>
+                    <p className="text-gray-700 text-sm">
+                      {extraGuest.title} {extraGuest.firstName}{" "}
+                      {extraGuest.lastName}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        : hotelPassenger?.map((room, roomIndex) => (
+            <div key={roomIndex} className="border-b pb-4 space-y-2">
+              <p className="text-gray-800 font-bold">
+                {room?.rc} <span className="text-xs">( {room?.mb})</span>
+              </p>
 
+              <p className="text-gray-700 text-sm">
+                {room?.ti?.map((passenger, passengerIndex) => (
+                  <>
+                    {passenger?.ti}
+                    {"."}
+                    {passenger?.fN} {passenger?.lN}
+                    {passengerIndex < room?.ti?.length - 1 && ", "}
+                  </>
+                ))}
+              </p>
+            </div>
+          ))}
+
+      {formData.specialRequest?.trim() && (
+        <div className="mt-4">
+          <h3 className="font-semibold text-base">Special request(s)</h3>
+          <p className="text-sm text-gray-700 mt-1">
+            {formData.specialRequest}
+          </p>
+        </div>
+      )}
+      {formData.email?.trim() && (
+        <>
+          <h3 className="font-semibold text-base">Contact Details</h3>
+          <p>Email: {formData.email}</p>
+          <p>
+            Mobile: {formData.countryCode} {formData.mobile}
+          </p>
+        </>
+      )}
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
         <table className="w-full border text-center text-sm">
@@ -738,7 +856,6 @@ export function Step2Review({
           <li className="text-red-600">* Taxes & fees are non-refundable.</li>
         </ul>
       </div>
-
       <div>
         {/* <h3 className="font-semibold text-base mb-2">Booking Notes:</h3> */}
         {Array.isArray(hotelReviewData?.hInfo?.inst) &&
@@ -793,7 +910,6 @@ export function Step2Review({
             </div>
           )}
       </div>
-
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">
           General Terms & Conditions:
@@ -881,7 +997,6 @@ export function Step2Review({
           </div>
         ) : null}
       </div>
-
       {Category === "bbook" ? (
         <div className="flex justify-between items-center mt-6">
           <div className="flex gap-4">
@@ -1309,28 +1424,64 @@ export function useFareBreakdown(hotelReviewData) {
   return { totalBaseFare, totalTax };
 }
 
-export function FareAmount({ hotelReviewData }) {
+export function FareAmount({ hotelReviewData, Category }) {
   const tfcs = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs;
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
-
+  const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
+  console.log(hotelPassenger, "hotelPassenger");
   const baseFare = tfcs?.BF || 0;
   const taxes = tfcs?.TAF || 0;
   const total = baseFare + taxes;
   return (
     <>
-      <h3 className="font-semibold text-base text-gray-600">FARE SUMMARY</h3>
-      <div className="flex justify-between border-b pb-2">
-        <span>Base Fare</span>
-        <span>₹{totalBaseFare.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between border-b pb-2">
-        <span>Taxes and Fees</span>
-        <span>₹{totalTax.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between font-semibold text-gray-800">
-        <span>Total Amount Payable</span>
-        <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span>
-      </div>
+      {Category !== "abook" ? (
+        <>
+          <h3 className="font-semibold text-base text-gray-600">
+            FARE SUMMARY
+          </h3>
+          <div className="flex justify-between border-b pb-2">
+            <span>Base Fare</span>
+            <span>₹{totalBaseFare.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between border-b pb-2">
+            <span>Taxes and Fees</span>
+            <span>₹{totalTax.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-gray-800">
+            <span>Total Amount Payable</span>
+            <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span>
+          </div>
+        </>
+      ) : (
+        hotelPassenger?.map((room, roomIndex) => (
+          <div key={roomIndex} className="border-b pb-4 space-y-2">
+            <h3 className="font-semibold text-base text-gray-600">
+              FARE SUMMARY
+            </h3>
+
+            {room?.tfcs && (
+              <>
+                <div className="flex justify-between border-b pb-2">
+                  <span>Base Fare</span>
+                  <span> ₹{room.tfcs?.BF?.toFixed(2) || 0}</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span>Taxes and Fees</span>
+                  <span className="text-xs">
+                    ₹{room.tfcs?.TAF?.toFixed(2) || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between font-semibold text-gray-800">
+                  <span>Total Amount Payable</span>
+                  <span className="text-gray-600">
+                    ₹{((room.tfcs?.BF || 0) + (room.tfcs?.TAF || 0)).toFixed(2)}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        ))
+      )}
     </>
   );
 }

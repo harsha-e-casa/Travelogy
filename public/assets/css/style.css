@@ -19375,7 +19375,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   border-left: 1px solid #00000040;
 }
 
-.check-avail-modal .lg\:w-2\/6 {
+.check-avail-modal .w-1-6 {
   width: 83.333333%;
 }
 
