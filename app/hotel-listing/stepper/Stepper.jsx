@@ -350,7 +350,6 @@ export function Step1TravellerDetails({
                   {room.numberOfChild === 1 ? "Child" : "Children"})
                 </span>
               </h4>
-              {/* Lead Guest */}
               <div className="stepper-guest-row">
                 <select
                   className="border p-2 rounded stepper_select"
@@ -728,23 +727,7 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
           </p>
         </div>
       </div>
-      {/* 
-      <h3 className="font-semibold text-base">Guest Details</h3>
-      {Object.values(formData.guests || {}).map((guest, roomIndex) => (
-        <div key={roomIndex}>
-          <p className="text-gray-700">
-            <strong>Room {roomIndex + 1}:</strong> {guest.firstName}{" "}
-            {guest.lastName}
-          </p>
-          {guest.extraGuests?.map((extraGuest, index) => (
-            <p key={index} className="text-gray-700">
-              {extraGuest.firstName} {extraGuest.lastName} ( {extraGuest.type} )
-            </p>
-          ))}
-        </div>
-      ))} */}
       <h3 className="font-semibold text-base">Guest Details:</h3>
-
       {Category !== "abook"
         ? Object.values(formData.guests || {}).map((guest, roomIndex) => (
             <div key={roomIndex} className="border-b pb-4">
@@ -795,15 +778,52 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
               </p>
             </div>
           ))}
-
-      {formData.specialRequest?.trim() && (
+      {/* {formData.specialRequest?.trim() && (
         <div className="mt-4">
           <h3 className="font-semibold text-base">Special request(s)</h3>
           <p className="text-sm text-gray-700 mt-1">
             {formData.specialRequest}
           </p>
         </div>
-      )}
+      )} */}{" "}
+      {/* {Category !== "abook" ? (
+        formData.specialRequest?.trim() ? (
+          <div className="mt-4">
+            <h3 className="font-semibold text-base">Special request(s)</h3>
+            <p className="text-sm text-gray-700 mt-1">
+              {formData.specialRequest}
+            </p>
+          </div>
+        ) : null
+      ) : Array.isArray(hotelPassenger) &&
+        hotelPassenger.length > 0 &&
+        hotelPassenger[0]?.ssr ? (
+        <div className="mt-4">
+          <h3 className="font-semibold text-base">Special request(s)</h3>
+          <p className="text-sm text-gray-700 mt-1">
+            {hotelPassenger[0]?.ssr?.[0]?.rm}
+          </p>
+        </div>
+      ) : null} */}
+      {Category !== "abook" ? (
+        formData.specialRequest?.trim() ? (
+          <div className="mt-4">
+            <h3 className="font-semibold text-base">Special request(s)</h3>
+            <p className="text-sm text-gray-700 mt-1">
+              {formData.specialRequest}
+            </p>
+          </div>
+        ) : null
+      ) : Array.isArray(hotelPassenger) &&
+        hotelPassenger.length > 0 &&
+        hotelPassenger[0]?.ssr?.[0]?.rm?.trim() ? ( // Check if rm is not empty
+        <div className="mt-4">
+          <h3 className="font-semibold text-base">Special request(s)</h3>
+          <p className="text-sm text-gray-700 mt-1">
+            {hotelPassenger[0]?.ssr?.[0]?.rm}
+          </p>
+        </div>
+      ) : null}
       {formData.email?.trim() && (
         <>
           <h3 className="font-semibold text-base">Contact Details</h3>
@@ -1059,11 +1079,8 @@ export function Step3PersonalDocuments({
     }));
   };
   const handleTCSChange = (e) => {
-    setSelectedTCS(e.target.value); // Update TCS declaration choice
+    setSelectedTCS(e.target.value);
   };
-
-  // const leadGuest = formData?.guests?.[rIdx];
-  // const extraGuests = leadGuest?.extraGuests || [];
 
   const isAllValid = () => {
     if (samePANForAll) return panRegex.test(samePANValue);
@@ -1282,14 +1299,17 @@ export function Step3PersonalDocuments({
         Income Tax Act, 1961
       </div>
 
-      <Button
-        type="primary"
+      <button
+        // type="primary"
         disabled={!isAllValid()}
         onClick={handleProceed}
-        className="bg-orange-500 hover:bg-orange-600"
+        // className={`book-now-btn ${
+        //   !isAllValid ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-400"
+        // }`}
+        className="rounded-none book-now-btn"
       >
         PROCEED TO PAY
-      </Button>
+      </button>
     </div>
   );
 }

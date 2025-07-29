@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { getBookingDetails } from "../../../../util/HotelApi";
 import { useSearchParams } from "next/navigation";
 import { Step2Review, FareAmount } from "../../stepper/Stepper";
+import Layout from "@/components/layout/Layout";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -65,31 +66,35 @@ const BookingDetailsPage = () => {
   console.log(`Contact: ${contact}`);
   console.log(`Country Code: ${countryCode}`);
   return (
-    <div className="container w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
-      <div className="md:col-span-8 border-r border-gray-200">
-        <h2 className="text-base font-semibold ml-6">
-          Booking ID: {orderBookingId}
-        </h2>
-        <div className="text-base font-semibold">
-          {bookingDetails ? (
-            <Step2Review
-              formData={formData}
-              Category2={Category2}
-              Category={"abook"}
-              hotelReviewData={bookingDetails.itemInfos.HOTEL}
-            />
-          ) : null}
+    <Layout headerStyle={1} footerStyle={1}>
+      <main className="main">
+        <div className="container w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
+          <div className="md:col-span-8 border-r border-gray-200">
+            <h2 className="text-base font-semibold ml-6">
+              Booking ID: {orderBookingId}
+            </h2>
+            <div className="text-base font-semibold">
+              {bookingDetails ? (
+                <Step2Review
+                  formData={formData}
+                  Category2={Category2}
+                  Category={"abook"}
+                  hotelReviewData={bookingDetails.itemInfos.HOTEL}
+                />
+              ) : null}
+            </div>
+          </div>
+          <div className="md:col-span-4">
+            <div className="p-6 rounded-md text-sm space-y-4">
+              <FareAmount
+                hotelReviewData={bookingDetails.itemInfos.HOTEL}
+                Category={"abook"}
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="md:col-span-4">
-        <div className="p-6 rounded-md text-sm space-y-4">
-          <FareAmount
-            hotelReviewData={bookingDetails.itemInfos.HOTEL}
-            Category={"abook"}
-          />
-        </div>
-      </div>
-    </div>
+      </main>
+    </Layout>
   );
 };
 

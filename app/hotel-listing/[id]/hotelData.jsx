@@ -5,6 +5,8 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [currentFacilities, setCurrentFacilities] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]); // ← This tracks ops[].ris[]
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [currentPriceDetails, setCurrentPriceDetails] = useState([]);
 
   const router = useRouter();
 
@@ -14,7 +16,14 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
 
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [cancellationPolicyData, setCancellationPolicyData] = useState([]);
+  const handlePriceClick = (pis) => {
+    setCurrentPriceDetails(pis); // Set pis data when clicking on the price
+    setShowPriceModal(true); // Show the modal
+  };
 
+  const closePriceModal = () => {
+    setShowPriceModal(false); // Close the modal
+  };
   return (
     <>
       <h6 className="mt-3">Rooms</h6>
@@ -32,9 +41,8 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
                 if (room?.cnp?.inra === false && Array.isArray(room?.cnp?.pd)) {
                   const freeCancellation = room.cnp.pd.find((p) => p.am === 0);
                   if (freeCancellation?.tdt) {
-                    // Format the date if needed
                     const dateObj = new Date(freeCancellation.tdt);
-                    freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // DD-MM-YYYY
+                    freeCancellationDate = dateObj.toLocaleDateString("en-GB");
                   }
                 }
                 return (
@@ -59,7 +67,7 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
                       </div>
                       <br />
                       <div className="flex flex-wrap justify-between items-center text-xs mb-1">
-                        {isRefundable === false && freeCancellationDate ? (
+                        {/* {isRefundable === false && freeCancellationDate ? (
                           <div className="text-xs mb-1">
                             Free Cancellation Till:{" "}
                             <span className="text-green-600 font-semibold">
@@ -70,7 +78,29 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
                           <div className="text-red-600 text-xs mb-1">
                             No Free Cancellation / Non-Refundable
                           </div>
-                        )}
+                        )} */}
+                        {room?.cnp?.ifra === false &&
+                        room?.cnp?.inra === true ? (
+                          <div className="text-red-600 text-xs mb-1">
+                            No Free Cancellation / Non-Refundable
+                          </div>
+                        ) : room?.cnp?.ifra === false &&
+                          room?.cnp?.inra === false ? (
+                          <div className="text-red-600 text-xs mb-1">
+                            No Free Cancellation
+                          </div>
+                        ) : room?.cnp?.ifra === true &&
+                          room?.cnp?.inra === false &&
+                          room?.cnp?.pd?.[0]?.tdt ? (
+                          <div className="text-xs mb-1">
+                            Free Cancellation Till:{" "}
+                            <span className="text-green-600 font-semibold">
+                              {new Date(
+                                room?.cnp?.pd[0]?.tdt
+                              ).toLocaleDateString("en-GB")}
+                            </span>
+                          </div>
+                        ) : null}
 
                         <div className="text-sm text-gray-700">{data.mb}</div>
                       </div>
@@ -99,7 +129,6 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
                       ) : null}
                     </div>
 
-                    {/* Price & Actions */}
                     <div className="col-span-6 text-right">
                       <div className="font-bold text-lg text-gray-900">
                         ₹{Number(price).toLocaleString("en-IN")}
@@ -109,7 +138,10 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
                         {data.adt > 1 ? "s" : ""}
                         {room.chd ? ` ${data.chd} child` : ""}
                       </div>
-                      <div className="text-xs text-blue-500 mb-2">
+                      <div
+                        className="text-xs text-blue-500 mb-2 underline cursor-pointer"
+                        onClick={() => handlePriceClick(data.pis)}
+                      >
                         Per Night Price
                       </div>
                       {dataLen === index2 + 1 && (
@@ -139,21 +171,28 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
             >
               ×
             </button>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">
+            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
               Room Facilities
             </h3>
             {currentFacilities.length > 0 ? (
-              <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm">
+              <div className="flex flex-wrap space-x-4">
                 {currentFacilities.map((item, index) => (
-                  <li key={index}>{item}</li>
+                  <div
+                    key={index}
+                    className="flex items-center space-x-2 text-gray-700 text-sm"
+                  >
+                    <span className="text-orange-500">•</span>
+                    <span>{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               <p className="text-gray-500 italic">No facilities available.</p>
             )}
           </div>
         </div>
       )}
+
       {showCancellationModal && (
         <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg relative overflow-auto max-h-[90vh]">
@@ -163,16 +202,20 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
             >
               ×
             </button>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">
+            <h3 className="text-center text-lg font-bold mb-4 text-gray-800">
               Cancellation Policy
             </h3>
 
             <table className="w-full border border-gray-300 text-sm">
               <thead className="bg-gray-100 text-left text-gray-700">
                 <tr>
-                  <th className="p-2 border">Cancellation on or After</th>
-                  <th className="p-2 border">Cancellation on or Before</th>
-                  <th className="p-2 border">
+                  <th className="text-center p-2 border">
+                    Cancellation on or After
+                  </th>
+                  <th className="text-center p-2 border">
+                    Cancellation on or Before
+                  </th>
+                  <th className="text-center p-2 border">
                     Cancellation Charges / Comments
                   </th>
                 </tr>
@@ -180,19 +223,58 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
               <tbody>
                 {cancellationPolicyData.map((item, index) => (
                   <tr key={index}>
-                    <td className="p-2 border">
+                    <td className="text-center p-2 border">
                       {new Date(item.fdt).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="p-2 border">
+                    <td className="text-center p-2 border">
                       {new Date(item.tdt).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="p-2 border">
+                    <td className="text-center p-2 border">
                       ₹{Number(item.am).toLocaleString("en-IN")}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+      {showPriceModal && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+            <button
+              onClick={closePriceModal}
+              className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-lg"
+            >
+              ×
+            </button>
+            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
+              Per Night Pricing Details
+            </h3>
+            {currentPriceDetails.length > 0 ? (
+              <table className="w-full border border-gray-300 text-sm">
+                <thead className="bg-gray-100 text-left text-gray-700">
+                  <tr>
+                    <th className="text-center p-2 border">Day</th>
+                    <th className="text-center p-2 border">Price </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentPriceDetails.map((item, index) => (
+                    <tr key={index}>
+                      <td className="text-center p-2 border">{item.day}</td>
+                      <td className="text-center p-2 border">
+                        ₹{Number(item.fc.TF).toLocaleString("en-IN")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-gray-500 italic">
+                No pricing details available.
+              </p>
+            )}{" "}
           </div>
         </div>
       )}
