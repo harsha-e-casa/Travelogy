@@ -113,7 +113,7 @@ export async function hotelBooking({ formData, hotelReviewData }) {
     const travellers = guests.map((guest, guestIndex) => {
       const isChild = guest?.type === "children";
       let pan = "";
-      let passportNumber = guest?.passportNumber || "";
+      let pNum = guest?.passportNumber || "";
       if (!isChild) {
         if (panInfo?.mode === "same") {
           pan = panInfo.pan;
@@ -130,7 +130,7 @@ export async function hotelBooking({ formData, hotelReviewData }) {
         ti: guest?.title || "Mr",
         // passportNumber: passportNumber,
         pt: isChild ? "CHILD" : "ADULT",
-        passportNumber,
+        pNum,
         ...(isChild ? {} : { pan }),
       };
     });
@@ -148,6 +148,29 @@ export async function hotelBooking({ formData, hotelReviewData }) {
       contacts: [mobile],
       code: [countryCode],
     },
+    ssr: roomInfo.map((room, roomIndex) => {
+      const guests = [
+        ...(formData.guests?.[roomIndex]
+          ? [
+              formData.guests[roomIndex],
+              ...(formData.guests[roomIndex].extraGuests || []),
+            ]
+          : []),
+      ];
+
+      const specialRequests = guests
+        .map((guest) => guest?.specialRequest)
+        .filter(Boolean);
+
+      const roomSpecialRequest =
+        specialRequests.length > 0
+          ? specialRequests.join(", ")
+          : formData.specialRequest;
+
+      return {
+        rm: roomSpecialRequest,
+      };
+    }),
     // isCorporateBooking: false,
     // isSamePanForAllRooms: panInfo?.mode === "same",
     // icpb: false,

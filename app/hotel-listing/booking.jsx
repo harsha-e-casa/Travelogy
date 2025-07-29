@@ -97,10 +97,10 @@ export default function BookingCard({
           <div className="relative">
             <label className="text-xs text-gray-500 mb-1 block">Check-in</label>
             <button
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   setOpenDateRange("checkin");
-              // }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDateRange("checkin");
+              }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
               <span className="text-sm font-medium">{checkinDate}</span>
@@ -130,10 +130,10 @@ export default function BookingCard({
               Check-out
             </label>
             <button
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   setOpenDateRange("checkout");
-              // }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDateRange("checkout");
+              }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
               <span className="text-sm font-medium">{checkoutDate}</span>

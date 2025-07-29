@@ -25,6 +25,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 import AppDateRage from "@/components/searchEngine/AppDateRage";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
+import HotelListingSearch from "./searchHeader";
 type Nationality = {
   countryName: string;
   name: string;
@@ -406,7 +407,8 @@ export default function HotelListing() {
         <main className="main">
           <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">
             {/* Location */}
-            <div className="hdt_header">
+            <HotelListingSearch />
+            {/* <div className="hdt_header">
               <div
                 className="hdt_header-item"
                 onClick={(e) => e.stopPropagation()}
@@ -503,7 +505,7 @@ export default function HotelListing() {
               <button className="hdt_search-btn" onClick={handleSearch}>
                 Search
               </button>
-            </div>
+            </div> */}
           </div>
 
           <section className="box-section block-content-tourlist background-body">
