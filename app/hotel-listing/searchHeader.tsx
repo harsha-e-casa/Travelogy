@@ -35,7 +35,6 @@ export default function HotelListingSearch() {
     console.warn("Invalid childAges in query params", e);
   }
 
-  const [openDateRage, setOpenDateRage] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [checkinDate, setCheckinDate] = useState<string>(
@@ -56,8 +55,6 @@ export default function HotelListingSearch() {
   }
   const [roomsData, setRoomsData] = useState(initialRoomsData);
   const [apiHotelData, setApiHotelData] = useState([]);
-  const [apiCurrentPage, setApiCurrentPage] = useState(1);
-  const itemsPerPage = 12;
   const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
   const childAges = roomsData.flatMap((r) => r.childAges);
@@ -93,15 +90,6 @@ export default function HotelListingSearch() {
       setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
   }, []);
   const [loading, setLoading] = useState(false);
-
-  const [datedep, setDatedep] = useState(dayjs());
-
-  const closeAllFields = () => {
-    setShowSearchState(false);
-    setOpenDateRage(false);
-  };
-
-  const [sortCriteria, setSortCriteria] = useState("default");
 
   const apiCall = async (payload: any) => {
     try {
@@ -183,12 +171,6 @@ export default function HotelListingSearch() {
       roomsData: JSON.stringify(roomsData),
     }).toString();
 
-    // const data = await apiCall(payload);
-    // if (data) {
-    //   setApiHotelData(data.searchResult?.his || []);
-    //   router.push(`/hotel-listing?${queryParams}`);
-    //   return;
-    // }
     try {
       const data = await apiCall(payload);
       if (data) {
@@ -198,7 +180,7 @@ export default function HotelListingSearch() {
     } catch (error) {
       console.error("Search API error:", error);
     } finally {
-      setLoading(false); // Set loading to false after the API call completes
+      setLoading(false); 
     }
   };
   useEffect(() => {
@@ -246,14 +228,6 @@ export default function HotelListingSearch() {
     location,
   ]);
 
-  const openToDateRange = () => {
-    setOpenDateRage((prevState) => !prevState);
-    closeallform();
-    setOpenDateRage(true);
-  };
-  const closeallform = () => {
-    setOpenDateRage(false);
-  };
   const closeAllDropdowns = () => {
     setShowSearchState(false);
     setOpenCheckin(false);
@@ -305,7 +279,6 @@ export default function HotelListingSearch() {
     categoryType?: string;
   };
 
-  const SafeAppListSearch = CityListSearch as React.FC<AppListSearchProps>;
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -340,8 +313,6 @@ export default function HotelListingSearch() {
                 <CityListSearch
                   operEngLocation={openfrom}
                   setSelectFrom={setSelectFrom}
-                  // categoryType={undefined}
-                  // setSelectFromSub={setSelectFromSub}
                 />
               </div>
             )}

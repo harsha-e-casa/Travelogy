@@ -95,7 +95,6 @@ export default function BookingCard({
         </h5>
         <div className="grid grid-cols-3 gap-1">
           <div className="relative">
-            <label className="text-xs text-gray-500 mb-1 block">Check-in</label>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -103,7 +102,11 @@ export default function BookingCard({
               }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
-              <span className="text-sm font-medium">{checkinDate}</span>
+              {" "}
+              <label className="text-xs text-gray-500 mb-1 block">
+                Check-in
+              </label>
+              <span className="text-xs font-semibold">{checkinDate}</span>
             </button>
 
             {openDateRange === "checkin" && (
@@ -126,9 +129,6 @@ export default function BookingCard({
           </div>
 
           <div className="relative">
-            <label className="text-xs text-gray-500 mb-1 block">
-              Check-out
-            </label>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -136,7 +136,10 @@ export default function BookingCard({
               }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
-              <span className="text-sm font-medium">{checkoutDate}</span>
+              <label className="text-xs text-gray-500 mb-1 block">
+                Check-out
+              </label>
+              <span className="text-xs font-semibold">{checkoutDate}</span>
             </button>
 
             {openDateRange === "checkout" && (
@@ -159,12 +162,11 @@ export default function BookingCard({
           </div>
 
           <div className="relative">
-            <label className="text-xs text-gray-500 mb-1 block">
-              Total Night(s)
-            </label>
             <div className="w-full border px-3 py-2 rounded text-left bg-white">
-              {/* <span className="text-xs text-gray-500 mb-1">Total Night(s)</span> */}
-              <span className="p-2 text-sm font-medium">
+              <label className="text-xs text-gray-500 mb-1 block">
+                Total Night(s)
+              </label>{" "}
+              <span className="p-2 text-xs font-semibold">
                 {checkinDate && checkoutDate
                   ? Math.ceil(
                       (new Date(checkoutDate) - new Date(checkinDate)) /
@@ -177,15 +179,15 @@ export default function BookingCard({
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-sm text-neutral-700">
-          <div className="flex flex-col border rounded p-2">
+          <div className="flex flex-col border rounded px-3 py-2">
             <span className="text-xs text-gray-500">Check in From</span>
-            <span className="font-medium">
+            <span className="text-xs font-semibold">
               {hotelData?.checkInTime?.beginTime || "-"}
             </span>
           </div>
-          <div className="flex flex-col border rounded p-2">
+          <div className="flex flex-col border rounded px-3 py-2">
             <span className="text-xs text-gray-500">Check out Till</span>
-            <span className="font-medium">
+            <span className="text-xs font-semibold">
               {hotelData?.checkOutTime?.beginTime || "-"}
             </span>
           </div>
@@ -194,18 +196,9 @@ export default function BookingCard({
         <div className="flex items-start gap-2 border rounded p-2 text-sm text-neutral-700">
           <div className="text-sm text-neutral-700">
             <label className="text-xs text-gray-500">Persons and Room</label>
-            {/* <button
-              onClick={toggleTraveller}
-              className="w-full text-left font-medium mt-1"
-            >
-              {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}
-              {roomsData?.[0]?.adults} Adult
-              {roomsData?.[0]?.adults > 1 ? "s" : ""},{" "}
-              {roomsData?.[0]?.children} Child
-            </button> */}
             <button
-              // onClick={toggleTraveller}
-              className="w-full text-left font-medium mt-1"
+              onClick={toggleTraveller}
+              className="w-full text-left text-xs font-semibold"
             >
               {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}
               {roomsData?.reduce((sum, room) => sum + room.adults, 0)} Adult
@@ -218,7 +211,6 @@ export default function BookingCard({
                 : ""}
             </button>
 
-            {/* Room modal */}
             {showTraveller && (
               <div
                 className="check-avail-modal"
@@ -236,11 +228,9 @@ export default function BookingCard({
           </div>
         </div>
       </div>
-      {/* Book Button */}{" "}
       <div className="box-button-book">
         <Link
           href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
-          //http://localhost:3000/hotel-listing/stepper?hid=hsid9682562766-38242689&oid=44_7_17835336
           className="btn btn-book"
         >
           Book This Room

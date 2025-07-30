@@ -288,9 +288,9 @@ export default function HotelListing() {
         return;
       }
 
-      setLoading(true);
       const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
       const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+      setLoading(true);
 
       const payload = {
         searchQuery: {
@@ -318,11 +318,11 @@ export default function HotelListing() {
     fetchData();
   }, [
     city,
-    checkinDate,
-    checkoutDate,
+    // checkinDate,
+    // checkoutDate,
     nationalityId,
     currency,
-    roomsData,
+    // roomsData,
     location,
   ]);
 
@@ -407,8 +407,8 @@ export default function HotelListing() {
         <main className="main">
           <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">
             {/* Location */}
-            <HotelListingSearch />
-            {/* <div className="hdt_header">
+            {/* <HotelListingSearch /> */}
+            <div className="hdt_header">
               <div
                 className="hdt_header-item"
                 onClick={(e) => e.stopPropagation()}
@@ -505,7 +505,7 @@ export default function HotelListing() {
               <button className="hdt_search-btn" onClick={handleSearch}>
                 Search
               </button>
-            </div> */}
+            </div>
           </div>
 
           <section className="box-section block-content-tourlist background-body">
