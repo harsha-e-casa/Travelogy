@@ -96,10 +96,10 @@ export default function BookingCard({
         <div className="grid grid-cols-3 gap-1">
           <div className="relative">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenDateRange("checkin");
-              }}
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   setOpenDateRange("checkin");
+              // }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
               {" "}
@@ -130,10 +130,10 @@ export default function BookingCard({
 
           <div className="relative">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenDateRange("checkout");
-              }}
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   setOpenDateRange("checkout");
+              // }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
               <label className="text-xs text-gray-500 mb-1 block">
@@ -197,7 +197,7 @@ export default function BookingCard({
           <div className="text-sm text-neutral-700">
             <label className="text-xs text-gray-500">Persons and Room</label>
             <button
-              onClick={toggleTraveller}
+              // onClick={toggleTraveller}
               className="w-full text-left text-xs font-semibold"
             >
               {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}
