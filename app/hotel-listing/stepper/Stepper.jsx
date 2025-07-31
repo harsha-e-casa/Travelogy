@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
-import { Input, Checkbox, Button, message, Radio } from "antd";
+import { Input, Checkbox, message, Radio } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
 
 export function HotelReviewComponent({
@@ -590,9 +590,43 @@ export function Step1TravellerDetails({
 
 export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
   const [accepted, setAccepted] = useState(false);
+  useEffect(() => {
+    const savedAccepted = localStorage.getItem("acceptTerms");
+    if (savedAccepted !== null) {
+      setAccepted(JSON.parse(savedAccepted));
+    }
+  }, []);
+  const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
+  console.log("Terms & Conditions before proceeding", PanRequired);
+  useEffect(() => {
+    localStorage.setItem("acceptTerms", JSON.stringify(accepted));
+  }, [accepted]);
+  const handleNext = () => {
+    if (!accepted) {
+      message.warning(
+        "Please accept the Terms & Conditions before proceeding."
+      );
+    } else {
+      onNext();
+    }
+  };
+  const handleBlock = async () => {
+    try {
+      const response = await hotelBooking({
+        formData,
+        hotelReviewData,
+        isBlock: true,
+      });
+
+      console.log("Booking (BLOCK) response:", response);
+    } catch (error) {
+      console.error("Error during block:", error.message);
+    }
+  };
   let freeCancellationDate = null;
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
+  const blockRoom = hotelReviewData?.conditions?.isBA;
   if (Array.isArray(policies)) {
     const freeCancellation = policies.find((p) => p.am === 0);
     if (freeCancellation?.tdt) {
@@ -1017,9 +1051,14 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
           </div>
         ) : null}
       </div>
-      {Category === "bbook" ? (
+      {Category === "bbook" && (
         <div className="flex justify-between items-center mt-6">
           <div className="flex gap-4">
+            {blockRoom && PanRequired === false && (
+              <button className="book-now-btn" onClick={handleBlock}>
+                BLOCK
+              </button>
+            )}
             <button
               disabled={!accepted}
               className={`book-now-btn ${
@@ -1027,13 +1066,13 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
                   ? "bg-orange-500 hover:bg-orange-600"
                   : "bg-gray-400 cursor-not-allowed"
               }`}
-              onClick={onNext}
+              onClick={handleNext}
             >
-              Proceed to Pay
+              PROCEED TO PAY
             </button>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
@@ -1050,10 +1089,20 @@ export function Step3PersonalDocuments({
   const [samePANValue, setSamePANValue] = useState("");
   const [guardianMode, setGuardianMode] = useState({});
   const [selectedTCS, setSelectedTCS] = useState(null);
-
+  const blockRoom = hotelReviewData?.conditions?.isBA;
+  console.log("blockRoom", blockRoom);
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
   useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem("personalDocumentsData"));
+    if (savedData) {
+      setSamePANForAll(savedData.samePANForAll || false);
+      setSamePANValue(savedData.samePANValue || "");
+      setGuardianPANs(savedData.guardianPANs || {});
+      setIndividualPANs(savedData.individualPANs || {});
+      setGuardianMode(savedData.guardianMode || {});
+      setSelectedTCS(savedData.selectedTCS || null);
+    }
     const initialGuardian = {};
     const initialPANs = {};
     hotelReviewData?.query?.roomInfo?.forEach((room, rIdx) => {
@@ -1067,6 +1116,24 @@ export function Step3PersonalDocuments({
     setGuardianMode(initialGuardian);
     setIndividualPANs(initialPANs);
   }, [hotelReviewData]);
+  useEffect(() => {
+    const formState = {
+      samePANForAll,
+      samePANValue,
+      guardianPANs,
+      individualPANs,
+      guardianMode,
+      selectedTCS,
+    };
+    localStorage.setItem("personalDocumentsData", JSON.stringify(formState));
+  }, [
+    samePANForAll,
+    samePANValue,
+    guardianPANs,
+    individualPANs,
+    guardianMode,
+    selectedTCS,
+  ]);
 
   const handleGuardianToggle = (roomIndex, checked) => {
     setGuardianMode((prev) => ({ ...prev, [roomIndex]: checked }));
@@ -1150,6 +1217,37 @@ export function Step3PersonalDocuments({
     setFormData((prev) => ({ ...prev, panInfo: finalData }));
     onNext();
   };
+  // Block button (no payment)
+  const handleBlock = async () => {
+    try {
+      const response = await hotelBooking({
+        formData,
+        hotelReviewData,
+        isBlock: true, // Indicate that this is a block request (no payment)
+      });
+
+      // Handle response (success/failure)
+      console.log("Booking (BLOCK) response:", response);
+    } catch (error) {
+      console.error("Error during block:", error.message);
+    }
+  };
+
+  // Proceed button (with payment)
+  // const handleProceed = async () => {
+  //   try {
+  //     const response = await hotelBooking({
+  //       formData,
+  //       hotelReviewData,
+  //       isBlock: false, // Indicate that this is a proceed request (with payment)
+  //     });
+
+  //     // Handle response (success/failure)
+  //     console.log("Booking (PROCEED) response:", response);
+  //   } catch (error) {
+  //     console.error("Error during proceed:", error.message);
+  //   }
+  // };
 
   return (
     <div>
@@ -1298,18 +1396,23 @@ export function Step3PersonalDocuments({
         conditions w.r.t the TCS regulations under Section 206C(1G) of the
         Income Tax Act, 1961
       </div>
-
-      <button
-        // type="primary"
-        disabled={!isAllValid()}
-        onClick={handleProceed}
-        // className={`book-now-btn ${
-        //   !isAllValid ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-400"
-        // }`}
-        className="rounded-none book-now-btn"
-      >
-        PROCEED TO PAY
-      </button>
+      {/* {Category === "bbook" && ( */}
+      <div className="flex justify-between items-center mt-6">
+        <div className="flex gap-4">
+          {blockRoom && (
+            <button className="book-now-btn" onClick={handleBlock}>
+              BLOCK
+            </button>
+          )}
+          <button
+            disabled={!isAllValid()}
+            onClick={handleProceed}
+            className="rounded-none book-now-btn"
+          >
+            PROCEED TO PAY
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1339,7 +1442,6 @@ export function Step4Payment({
       const result = await hotelBooking({ formData, hotelReviewData });
       console.log("Booking Success:", result);
       onConfirmPayment(bookingId);
-      // Optionally redirect
     } catch (error) {
       console.error("Booking failed:", error);
       alert("Booking failed. Please try again.");
