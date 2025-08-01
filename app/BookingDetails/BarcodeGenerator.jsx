@@ -53,13 +53,48 @@ const BarcodeGenerator = ({ passengerDetails }) => {
       fromCityCode,
       toCityCode,
       flightNumber,
+      flightCode,
       julianDate,
     } = details;
-    return `M1${passengerName} ${pnrCode.padEnd(7, " ")} ${fromCityCode}${toCityCode}6E ${flightNumber.toString().padStart(5, "0")} ${julianDate.toString().slice(-3)}Y00000000 000`;
+
+    let paddedFlightNumber = flightNumber.toString();
+    let ftCode = flightCode.toString()
+
+    if (paddedFlightNumber.length === 1) {
+      paddedFlightNumber = "000" + paddedFlightNumber + " ";
+    } else if (paddedFlightNumber.length === 2) {
+      paddedFlightNumber = "00" + paddedFlightNumber + " ";
+    } else if (paddedFlightNumber.length === 3) {
+      paddedFlightNumber = "0" + paddedFlightNumber + " ";
+    } else if (paddedFlightNumber.length === 4) {
+      paddedFlightNumber = paddedFlightNumber + " ";
+    }
+    
+    if (ftCode.length === 2) {
+      ftCode = ftCode + " "
+    }
+    if (ftCode.length === 1) {
+      ftCode = ftCode + "  "
+    }
+
+    // return `M1${passengerName} ${pnrCode.padEnd(7, " ")} ${fromCityCode}${toCityCode}6E ${flightNumber.toString().padStart(5, "0")} ${julianDate.toString().slice(-3)}Y00000000 000`;
+
+    return `M1${passengerName} ${pnrCode.padEnd(
+      7,
+      " "
+    )}${fromCityCode}${toCityCode}6E ${paddedFlightNumber}${julianDate.toString().slice(-3)}Y000000000000`;
   };
 
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "40px", overflow: "hidden" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "40px",
+        overflow: "hidden",
+      }}
+    >
       {passengerDetails.map((details, index) => {
         const barcodeData = generateBarcodeData(details);
         // Build TEC-IT PDF417 API URL

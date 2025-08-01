@@ -33,7 +33,10 @@ export default function BookingForm({
   return (
     <>
       <div className="content-booking-form">
-        <div className="item-line-booking flex flex-row">
+        <div 
+          // className="item-line-booking flex flex-row"
+          className="flex flex-row"
+        >
           <div className="box-tickets">
             <strong className="text-md-bold neutral-1000">Base Fare:</strong>
           </div>
@@ -187,7 +190,10 @@ export default function BookingForm({
 					</div>
 				</div>
 			</div> */}
-        <div className="item-line-booking last-item">
+        <div 
+          // className="item-line-booking last-item"
+          className="flex flex-row justify-between"
+        >
           {" "}
           <strong className="text-md-bold neutral-1000">Total Amount:</strong>
           <div className="line-booking-right">

@@ -26,7 +26,6 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
     setShowTravellerModal(true);
   };
 
-
   const handleSubmit = () => {
     console.log("Submitting Amendment ", amendmentType);
 
@@ -38,7 +37,6 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
     getTravellerInfo(bookingId, "", amendmentType);
 
     handleClose();
-    
 
     // onSubmit(bookingId, amendmentType, "Cancel due to rescheduling", (data) => {
     //   console.log("sssddddd ", data)
@@ -67,7 +65,10 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
 
   return (
     <div>
-      <button onClick={handleOpen} className="border border-gray-400 rounded px-4 py-2">
+      <button
+        onClick={handleOpen}
+        className="border border-gray-400 rounded px-4 py-2"
+      >
         Cancellation
       </button>
 
@@ -89,7 +90,9 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
                 <div className="text-md text-gray-700">{bookingId}</div>
               </div>
               <div>
-                <label className="text-gray-500 mb-1 block">Amendment Type</label>
+                <label className="text-gray-500 mb-1 block">
+                  Amendment Type
+                </label>
                 <select
                   value={amendmentType}
                   onChange={(e) => setAmendmentType(e.target.value)}
@@ -99,14 +102,14 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
                   <option value="CANCELLATION">Cancellation</option>
                   <option value="SSR">SSR</option>
                   <option value="FULL_REFUND">Full Refund</option>
+                  <option value="REQUEST_CANCELLATION">Get Cancellation Chareges</option>
+                  <option value="REQUEST_FULL_REFUND">Get Full Refund Chareges</option>
+                  <option value="REQUEST_VOIDED">Get Void Chareges</option>
                 </select>
               </div>
             </div>
 
-            <button
-              onClick={handleSubmit}
-              className="btn btn-gray"
-            >
+            <button onClick={handleSubmit} className="btn btn-gray">
               Raise
             </button>
           </div>
@@ -119,7 +122,9 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
           amendmentId={selectedAmendmentId}
           amendmentType={selectedAmendmentType}
           bookingDetails={bookingDetails}
-          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${firstSegment?.dt?.split("T")[0]}`}
+          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${
+            firstSegment?.dt?.split("T")[0]
+          }`}
           onClose={() => setShowTravellerModal(false)}
         />
       )}
