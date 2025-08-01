@@ -86,7 +86,6 @@ export const useNationalities = () => {
 
   return { nationalities, loading };
 };
-// While clicking block buttons, it should trigger thebol
 
 // export async function hotelBooking({ formData, hotelReviewData }) {
 //   const bookingId = hotelReviewData?.bookingId;
