@@ -18,6 +18,9 @@ import AmendmentPopup from "./AmendmentPopup.jsx";
 import TravellerDetailsModal from "./TravellerDetailsModal.jsx";
 import BarcodeGenerator from "./BarcodeGenerator.jsx";
 import { request } from "http";
+import { type } from "os";
+
+import staticBookingData from "./staticBookingData.json";
 
 const Alldetails = ({ totalpricee }) => {
   const searchParams = useSearchParams();
@@ -126,70 +129,133 @@ const Alldetails = ({ totalpricee }) => {
   //   return result;
   // };
 
+  // const createStructuredData = (bookingDetails) => {
+  //   console.log("bookingDetails -------- bookingDetails ", bookingDetails);
+  //   const result = {
+  //     pnrs: {},
+  //     pnrFlightDetails: {},
+  //     pnrPassengerDetails: {},
+  //   };
+
+  //   const pnrMap = {};
+  //   const pnrPassengers = {};
+
+  //   bookingDetails.itemInfos.AIR.travellerInfos.forEach((traveller) => {
+  //     Object.entries(traveller.pnrDetails).forEach(([segmentKey, pnr]) => {
+  //       bookingDetails.itemInfos.AIR.tripInfos.forEach((trip) => {
+  //         trip.sI.forEach((segment) => {
+  //           if (
+  //             segment.da.code === segmentKey.split("-")[0] &&
+  //             segment.aa.code === segmentKey.split("-")[1]
+  //           ) {
+  //             if (!pnrMap[pnr]) pnrMap[pnr] = [];
+  //             pnrMap[pnr].push(segment);
+
+  //             if (!pnrPassengers[pnr]) pnrPassengers[pnr] = [];
+  //             pnrPassengers[pnr].push({
+  //               firstName: traveller.fN,
+  //               lastName: traveller.lN,
+  //               title: traveller.ti,
+  //               passengerType: traveller.pt,
+  //             });
+  //           }
+  //         });
+  //       });
+  //     });
+  //   });
+
+  //   Object.entries(pnrMap).forEach(([pnr, segments]) => {
+  //     segments.forEach((segment) => {
+  //       const journeyKey = `${segment.da.code}-${segment.aa.code}`;
+  //       result.pnrs[journeyKey] = pnr;
+  //       result.pnrFlightDetails[journeyKey] = {
+  //         flightNumber: segment.fD.fN,
+  //         from: segment.da.city,
+  //         to: segment.aa.city,
+  //         departureTime: segment.dt,
+  //         arrivalTime: segment.at,
+  //       };
+
+  //       const uniquePassengers = [];
+  //       const seen = new Set();
+  //       pnrPassengers[pnr].forEach((p) => {
+  //         const key = `${p.firstName}-${p.lastName}-${p.title}`;
+  //         if (!seen.has(key)) {
+  //           uniquePassengers.push(p);
+  //           seen.add(key);
+  //         }
+  //       });
+  //       result.pnrPassengerDetails[journeyKey] = uniquePassengers;
+  //     });
+  //   });
+
+  //   console.log("result == ", result);
+
+  //   return result;
+  // };
+
   const createStructuredData = (bookingDetails) => {
-    console.log("bookingDetails -------- bookingDetails ", bookingDetails);
     const result = {
       pnrs: {},
       pnrFlightDetails: {},
       pnrPassengerDetails: {},
     };
 
-    const pnrMap = {};
-    const pnrPassengers = {};
+    bookingDetails.itemInfos.AIR.tripInfos.forEach((trip) => {
+      const segments = trip.sI;
+      if (!segments.length) return;
 
-    // Build segment-to-PNR and passenger map as before
-    bookingDetails.itemInfos.AIR.travellerInfos.forEach((traveller) => {
-      Object.entries(traveller.pnrDetails).forEach(([segmentKey, pnr]) => {
-        bookingDetails.itemInfos.AIR.tripInfos.forEach((trip) => {
-          trip.sI.forEach((segment) => {
-            if (
-              segment.da.code === segmentKey.split("-")[0] &&
-              segment.aa.code === segmentKey.split("-")[1]
-            ) {
-              if (!pnrMap[pnr]) pnrMap[pnr] = [];
-              pnrMap[pnr].push(segment);
+      // Journey key: from first departure to last arrival
+      const fromCode = segments[0].da.code;
+      const toCode = segments[segments.length - 1].aa.code;
+      const journeyKey = `${fromCode}-${toCode}`;
 
-              if (!pnrPassengers[pnr]) pnrPassengers[pnr] = [];
-              pnrPassengers[pnr].push({
-                firstName: traveller.fN,
-                lastName: traveller.lN,
-                title: traveller.ti,
-                passengerType: traveller.pt,
-              });
-            }
-          });
-        });
-      });
-    });
+      // Collect all involved segment keys
+      const involvedSegmentKeys = segments.map(
+        (seg) => `${seg.da.code}-${seg.aa.code}`
+      );
 
-    // Instead of grouping all segments for a PNR into one journeyKey,
-    // create a separate entry for each segment
-    Object.entries(pnrMap).forEach(([pnr, segments]) => {
-      segments.forEach((segment) => {
-        const journeyKey = `${segment.da.code}-${segment.aa.code}`;
-        result.pnrs[journeyKey] = pnr;
-        result.pnrFlightDetails[journeyKey] = {
-          flightNumber: segment.fD.fN,
-          from: segment.da.city,
-          to: segment.aa.city,
-          departureTime: segment.dt,
-          arrivalTime: segment.at,
-        };
-
-        const uniquePassengers = [];
-        const seen = new Set();
-        pnrPassengers[pnr].forEach((p) => {
-          const key = `${p.firstName}-${p.lastName}-${p.title}`;
-          if (!seen.has(key)) {
-            uniquePassengers.push(p);
-            seen.add(key);
+      // Collect all unique PNRs from travellerInfos' pnrDetails for these segment keys
+      const pnrSet = new Set();
+      if (bookingDetails.itemInfos.AIR.travellerInfos) {
+        bookingDetails.itemInfos.AIR.travellerInfos.forEach((traveller) => {
+          if (traveller.pnrDetails) {
+            Object.entries(traveller.pnrDetails).forEach(([segKey, pnr]) => {
+              if (involvedSegmentKeys.includes(segKey)) {
+                pnrSet.add(pnr);
+              }
+            });
           }
         });
-        result.pnrPassengerDetails[journeyKey] = uniquePassengers;
-      });
-    });
+      }
 
-    console.log("result == ", result);
+      // Join all unique PNRs with `/`
+      const pnr = [...pnrSet].join("/") || "UNKNOWN";
+
+      // Collect all passengers (from travellerInfos)
+      let passengers = [];
+      if (bookingDetails.itemInfos.AIR.travellerInfos) {
+        passengers = bookingDetails.itemInfos.AIR.travellerInfos.map(
+          (traveller) => ({
+            firstName: traveller.fN,
+            lastName: traveller.lN,
+            title: traveller.ti,
+            passengerType: traveller.pt,
+          })
+        );
+      }
+
+      // Combine flight numbers for all segments
+      result.pnrs[journeyKey] = pnr;
+      result.pnrFlightDetails[journeyKey] = {
+        flightNumber: segments.map((s) => s.fD.fN).join("/"),
+        from: segments[0].da.city,
+        to: segments[segments.length - 1].aa.city,
+        departureTime: segments[0].dt,
+        arrivalTime: segments[segments.length - 1].at,
+      };
+      result.pnrPassengerDetails[journeyKey] = passengers;
+    });
 
     return result;
   };
@@ -212,8 +278,20 @@ const Alldetails = ({ totalpricee }) => {
     ).length;
   };
 
+  const getTotalTravellerCategoryCount = (type) => {
+    if (selectedPNR && rescheduleData.pnrPassengerDetails[selectedPNR]) {
+      return rescheduleData.pnrPassengerDetails[selectedPNR].filter(
+        (traveller) => traveller.passengerType === type
+      ).length;
+    }
+  };
+
   const [rescheduleError, setRescheduleError] = useState("");
   const [rescheduleLoading, setRescheduleLoading] = useState(false);
+
+  const getAllTravellerIndexes = () => {
+    return selectedTravellers.map((traveller) => traveller.index + 1);
+  };
 
   const handleSubmitReIssue = async () => {
     console.log("handleSubmitReIssue ==> ");
@@ -234,9 +312,9 @@ const Alldetails = ({ totalpricee }) => {
 
     const parameter = {
       paxInfo: {
-        ADULT: getTravellerCategoryCount("ADULT"),
-        CHILD: getTravellerCategoryCount("CHILD"),
-        INFANT: getTravellerCategoryCount("INFANT"),
+        ADULT: getTotalTravellerCategoryCount("ADULT"),
+        CHILD: getTotalTravellerCategoryCount("CHILD"),
+        INFANT: getTotalTravellerCategoryCount("INFANT"),
       },
       routeInfos: [
         {
@@ -251,11 +329,13 @@ const Alldetails = ({ totalpricee }) => {
       ],
       oldBookingId: bookingId,
       pnr: pnr,
-      paxIds: [
-        getTravellerCategoryCount("ADULT") +
-          getTravellerCategoryCount("CHILD") +
-          getTravellerCategoryCount("INFANT"),
-      ],
+      paxIds: getAllTravellerIndexes(),
+
+      // paxIds: [
+      //   getTravellerCategoryCount("ADULT") +
+      //   getTravellerCategoryCount("CHILD") +
+      //   getTravellerCategoryCount("INFANT"),
+      // ],
     };
 
     console.log("parameterparameter ===> ", parameter);
@@ -569,12 +649,66 @@ const Alldetails = ({ totalpricee }) => {
       console.log("paramerter", parameter);
 
       let reqData = { action: "bookingDetails", requestData: parameter };
-      const data = await postData("travelogy/one-way/fetch-data", reqData);
+      // const data = await postData("travelogy/one-way/fetch-data", reqData);
+      const data = staticBookingData
+
 
       // const data = await postDataBookingDetails(parameter);
       console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
       setBookingdetails(data);
+
+      // save the bookingstatus
+      const saveBookingStatus = async () => {
+        const countryCodes = [
+          "+91",
+          "+1",
+          "+44",
+          "+61",
+          "+81",
+          "+49",
+          "+33",
+          "+55",
+          "+86",
+          "+7",
+          "+39",
+          "+34",
+          "+52",
+          "+27",
+          "+971",
+          "+63",
+          "+47",
+          "+92",
+          "+82",
+          "+54",
+          "+354",
+          "+90",
+          "+234",
+          "+66",
+          "+20",
+          "+31",
+        ];
+        const rawPhone = data?.order?.deliveryInfo?.contacts?.[0] || "";
+        const codePattern = new RegExp(
+          "^(" + countryCodes.map((code) => "\\" + code).join("|") + ")"
+        );
+        const phone = rawPhone.replace(codePattern, "");
+
+        const reqSaveBookingId = {
+          type: "update",
+          booking_id: bookingId,
+          status: data?.order?.status,
+          phone: phone,
+        };
+
+        const result = await postData(
+          "travelogy/flight/save-booking",
+          reqSaveBookingId
+        );
+
+        console.log("saveBookingStatus result ===>", result);
+      };
+      saveBookingStatus();
 
       setSegmentPrices(
         data?.AIR?.tripInfos?.map((trip) => trip.sI.map((seg) => seg.price)) ??
@@ -864,6 +998,7 @@ const Alldetails = ({ totalpricee }) => {
   const processTravellerInfo = (traveller, itemInfos) => {
     let flightNumber = null;
     let julianDate = null;
+    let flightCode = null;
 
     // Iterate through pnrDetails of the traveller to handle multiple segments
     if (traveller.pnrDetails && typeof traveller.pnrDetails === "object") {
@@ -885,6 +1020,7 @@ const Alldetails = ({ totalpricee }) => {
 
           if (matchedSegment) {
             flightNumber = matchedSegment.fD.fN;
+            flightCode = matchedSegment.fD.aI.code
 
             // Get the departure date (dt) and convert to Julian date
             const departureDate = matchedSegment.dt;
@@ -898,7 +1034,7 @@ const Alldetails = ({ totalpricee }) => {
     }
 
     // Return flightNumber and julianDate specific to the current segment
-    return { flightNumber, julianDate };
+    return { flightNumber, julianDate, flightCode };
   };
 
   return (
@@ -1196,7 +1332,7 @@ const Alldetails = ({ totalpricee }) => {
                       )}
 
                       {/* List of travellers with checkboxes */}
-                      {selectedPNR &&
+                      {/* {selectedPNR &&
                         rescheduleData.pnrPassengerDetails[selectedPNR] && (
                           <div className="mb-6">
                             <h6 className="font-bold text-gray-700">
@@ -1246,6 +1382,76 @@ const Alldetails = ({ totalpricee }) => {
                                       }
                                       console.log(
                                         "Updated selectedTravellers:",
+                                        updated
+                                      );
+                                      setSelectedTravellers(updated);
+                                    }}
+                                  />
+
+                                  <label htmlFor={`traveller-${index}`}>
+                                    {passenger.title} {passenger.firstName}{" "}
+                                    {passenger.lastName} (
+                                    {passenger.passengerType})
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )} */}
+                      {selectedPNR &&
+                        rescheduleData.pnrPassengerDetails[selectedPNR] && (
+                          <div className="mb-6">
+                            <h6 className="font-bold text-gray-700">
+                              Travellers:
+                            </h6>
+                            <div>
+                              {rescheduleData.pnrPassengerDetails[
+                                selectedPNR
+                              ].map((passenger, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center gap-2"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    style={{ width: "20px" }}
+                                    id={`traveller-${index}`}
+                                    className="form-checkbox"
+                                    checked={selectedTravellers.some(
+                                      (p) =>
+                                        p.firstName === passenger.firstName &&
+                                        p.lastName === passenger.lastName &&
+                                        p.title === passenger.title &&
+                                        p.passengerType ===
+                                          passenger.passengerType &&
+                                        p.index === index // compare index also!
+                                    )}
+                                    onChange={(e) => {
+                                      let updated;
+                                      if (e.target.checked) {
+                                        // Add index to the selected passenger object
+                                        updated = [
+                                          ...selectedTravellers,
+                                          { ...passenger, index },
+                                        ];
+                                      } else {
+                                        // Remove by comparing all fields including index
+                                        updated = selectedTravellers.filter(
+                                          (p) =>
+                                            !(
+                                              p.firstName ===
+                                                passenger.firstName &&
+                                              p.lastName ===
+                                                passenger.lastName &&
+                                              p.title === passenger.title &&
+                                              p.passengerType ===
+                                                passenger.passengerType &&
+                                              p.index === index
+                                            )
+                                        );
+                                      }
+                                      console.log(
+                                        "updatedupdated ======== ",
                                         updated
                                       );
                                       setSelectedTravellers(updated);
@@ -1697,7 +1903,7 @@ const Alldetails = ({ totalpricee }) => {
                               segmentKey.split("-");
 
                             // Get flightNumber and julianDate for each traveller's segment
-                            const { flightNumber, julianDate } =
+                            const { flightNumber, julianDate, flightCode } =
                               processTravellerInfo(
                                 traveller,
                                 bookingDetails?.itemInfos
@@ -1713,6 +1919,7 @@ const Alldetails = ({ totalpricee }) => {
                                 fromCityCode: fromCitySplit,
                                 toCityCode: toCitySplit,
                                 flightNumber: flightNumber,
+                                flightCode: flightCode,
                                 julianDate: julianDate,
                               },
                             ];

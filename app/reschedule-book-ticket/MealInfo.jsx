@@ -26,7 +26,7 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form }) => {
                     <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
                       ADULT {index + 1}
                     </span>
-                    <Form.Item name={`adultMeal-${flightIndex}-${index}`} style={{ marginBottom: 0,width:"500px"}}>
+                    <Form.Item name={`re-adultMeal-${flightIndex}-${index}`} style={{ marginBottom: 0,width:"500px"}}>
                       <Select className="h-10 " placeholder="Add Meal" disabled={mealOptions.every((meal) => !meal.amount)}>
                         {mealOptions.map((meal) => (
                           <Option key={meal.code}  value={`${segment.id}|${meal.code}`}>

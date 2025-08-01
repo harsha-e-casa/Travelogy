@@ -205,7 +205,6 @@ export default function Tickets() {
         } finally {
           setloading(false);
           setActiveFlight(false);
-          SetSearchFlight(false);
           hasFetchedRef.current = false;
         }
       };
@@ -234,7 +233,7 @@ export default function Tickets() {
     }
   }, [searchFlight]);
 
-  const loadReissueTicket = async (requestId) => {
+  const loadReissueTicket = async (requestId: any) => {
     setFlightData(null);
     setActiveFlight(true);
     setloading(true);
@@ -284,8 +283,7 @@ export default function Tickets() {
       }
     } finally {
       setloading(false);
-      setActiveFlight(false);
-      SetSearchFlight(false);
+      // setActiveFlight(false);
       hasFetchedRef.current = false;
     }
   };
@@ -406,7 +404,7 @@ export default function Tickets() {
                 ) : null}
               </div>
 
-              <button onClick={handlesearFlight} className="hdt_search-btn">
+              <button type="button" onClick={handlesearFlight} className="hdt_search-btn">
                 Search
               </button>
             </div>

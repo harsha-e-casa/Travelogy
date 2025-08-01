@@ -820,8 +820,21 @@ const Page = () => {
     try {
       console.log("final", parameter);
       // Call your API function with the properly constructed parameter
-      const result = await postDataTJBookingAir(parameter);
+
+      // const result = await postDataTJBookingAir(parameter);
+
+      let reqData = {
+        action: "autoReissue",
+        requestData: parameter,
+      };
+      const result = await postData("travelogy/one-way/fetch-data", reqData);
+
       console.log("loadDataBook =========== ", result);
+      console.log("loadDataBook =========== ", result?.status?.success);
+
+      if (result?.status?.success === true) {
+        saveBookingIdFn();
+      }
       // const saveBookingId = async () => {
       //   const reqSaveBookingId = {
       //     booking_id: bookingId,
@@ -866,17 +879,27 @@ const Page = () => {
     console.log("totalprice bookingId", totalprice, bookingId);
 
     const gstInfoCookies = getCookie("gst_info");
-    console.log("gstInfoCookies = ",gstInfoCookies);
+    console.log("gstInfoCookies = ", gstInfoCookies);
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
-    console.log("gstInfos = ",gstInfos);
+    console.log("gstInfos = ", gstInfos);
 
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
-    if (totalprice && bookingId) {
+    const rsData = getCookie("rs_data");
+    const rsJsonData = JSON.parse(rsData);
+    console.log("rsJSONDATA == ", rsJsonData);
+    console.log("rsJSONDATA == ", rsJsonData?.searchQuery?.oldBookingId);
+
+    if (
+      (totalprice || totalprice == 0) &&
+      bookingId &&
+      rsJsonData?.searchQuery?.oldBookingId
+    ) {
       const parameter = {
         bookingId,
-        paymentInfos: [{ amount: finalAmountToPay }],
+        oldBookingId: rsJsonData?.searchQuery?.oldBookingId,
+        paymentInfos: [{ bookingId, amount: finalAmountToPay }],
         travellerInfo: travellers,
         deliveryInfo: {
           emails: [email],
@@ -892,27 +915,27 @@ const Page = () => {
       console.log("travellerInfo (final):", parameter.travellerInfo);
       console.log("parameter for book:", parameter);
 
-      const saveBookingId = async () => {
-        const reqSaveBookingId = {
-          type: "save",
-          booking_id: bookingId,
-          phone: number.number,
-          amount: finalAmountToPay,
-          status: "",
-          time: new Date().toISOString()
-        };
-        const result = await postData(
-          "travelogy/flight/save-booking",
-          reqSaveBookingId
-        );
-        console.log("saveBookingId result ===>", result);
-      };
-      saveBookingId();
-
       loadDataBook(parameter);
     } else {
       console.error("Booking ID or total price is missing");
     }
+  };
+
+  const saveBookingIdFn = async () => {
+    const reqSaveBookingId = {
+      type: "save",
+      old_booking_id: rsJsonData?.searchQuery?.oldBookingId,
+      booking_id: bookingId,
+      phone: number.number,
+      amount: finalAmountToPay,
+      status: "",
+      time: new Date().toISOString(),
+    };
+    const result = await postData(
+      "travelogy/flight/re-save-booking",
+      reqSaveBookingId
+    );
+    console.log("saveReBookingId result ===>", result);
   };
 
   const handleHoldBooking = () => {
@@ -1979,14 +2002,14 @@ const Page = () => {
                                 >
                                   Back
                                 </Link>
-                                {flightData?.conditions?.isBA === true && (
+                                {/* {flightData?.conditions?.isBA === true && (
                                   <div
                                     onClick={handleHoldBooking}
                                     className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                   >
                                     Hold Booking
                                   </div>
-                                )}
+                                )} */}
                                 <div
                                   onClick={bookingReview}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
