@@ -50,6 +50,7 @@ import ExtraBaggage from "./ExtraBaggage.jsx";
 import MealInfo from "./MealInfo.jsx";
 import SessionTime from "./SessionTime.jsx";
 import SeatBooking from "./SeatBooking.jsx";
+import AppFormCompany from "./AppFormCompany.jsx";
 
 const url =
   "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
@@ -149,7 +150,7 @@ export default function BookTicket() {
   const closeFareAlertModal = () => {
     setIsFareAlertModalOpen(false);
     fareAlert.current = {};
-  }
+  };
 
   const fetchFlights = async (priceId: string) => {
     setLoading(true);
@@ -197,10 +198,10 @@ export default function BookTicket() {
 
       const segs = firstTrip?.sI;
       const id = segs?.[0]?.id.trim();
-      
+
       fareAlert.current = data?.alerts?.[0] || {};
       if (Object.keys(fareAlert.current).length > 0) {
-        setIsFareAlertModalOpen(true)
+        setIsFareAlertModalOpen(true);
       }
 
       if (!segs || !id) {
@@ -269,6 +270,7 @@ export default function BookTicket() {
     removeCookie("mealinfo");
     removeCookie("baggageinfo");
     removeCookie("seatSsr_amount");
+    removeCookie("gst_info");
 
     // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
     for (let i = 1; i <= 9; i++) {
@@ -540,6 +542,34 @@ export default function BookTicket() {
           formValues[`mNumber`],
           formValues[`mEmail`]
         );
+
+        console.log(
+          "GST Number for Business Travel (Optional): ",
+          formValues["registrationNumber"],
+          formValues["companyName"],
+          formValues["companyEmail"],
+          formValues["companyPhone"],
+          formValues["companyAddress"]
+        );
+
+        if (
+          formValues["registrationNumber"] &&
+          formValues["companyName"] &&
+          formValues["companyEmail"] &&
+          formValues["companyPhone"] &&
+          formValues["companyAddress"]
+        ) {
+          console.log("vantan daaaaaaaaa");
+          const gstInfo = {
+            registrationNumber: formValues["registrationNumber"],
+            companyName: formValues["companyName"],
+            companyEmail: formValues["companyEmail"],
+            companyPhone: formValues["companyPhone"],
+            companyAddress: formValues["companyAddress"],
+          };
+          setCookie("gst_info", JSON.stringify(gstInfo));
+        }
+
         updateemail(formValues["mEmail"]);
         updatephone({
           code: formValues["select_code"],
@@ -1730,6 +1760,25 @@ export default function BookTicket() {
                             </div>
                           )}
 
+                          {/* GST Number for  Business Travel (Optional) */}
+                          <div className="text-lg leading-6 font-bold text-gray-900 p-4">
+                            GST Number for Business Travel (Optional)
+                            <div>
+                              <div className="px-4 py-3 border_xcolor_1px">
+                                <h2
+                                  id="applicant-information-title"
+                                  className="text-sm leading-6 text-gray-500"
+                                >
+                                  To claim credit of GST charged by airlines,
+                                  Please enter your company's GST number
+                                </h2>
+                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                  <AppFormCompany form={form} />
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
                           <div className="bg-white shadow sm:rounded-lg relative">
                             <div className="px-4 py-3 border_xcolor_1px flex justify-between">
                               <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition">
@@ -1826,25 +1875,26 @@ export default function BookTicket() {
                 </>
               )}
 
-              {Object.keys(fareAlert.current).length > 0 && isFareAlertModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
-                    <p className="text-red-600 mb-4 font-semibold">
-                      Old Fare: {fareAlert.current.oldFare}
-                    </p>
-                    <p className="text-red-600 mb-4 font-semibold">
-                      New Fare: {fareAlert.current.newFare}
-                    </p>
+              {Object.keys(fareAlert.current).length > 0 &&
+                isFareAlertModalOpen && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+                      <p className="text-red-600 mb-4 font-semibold">
+                        Old Fare: {fareAlert.current.oldFare}
+                      </p>
+                      <p className="text-red-600 mb-4 font-semibold">
+                        New Fare: {fareAlert.current.newFare}
+                      </p>
 
-                    <button
-                      className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition"
-                      onClick={closeFareAlertModal}
-                    >
-                      Ok, Got It
-                    </button>
+                      <button
+                        className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition"
+                        onClick={closeFareAlertModal}
+                      >
+                        Ok, Got It
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {error && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
