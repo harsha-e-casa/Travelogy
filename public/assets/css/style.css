@@ -3729,12 +3729,15 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 45px;
+  margin-bottom: 15px;
+  min-height: 50px !important;
 }
 
 .card-journey-small .card-info .card-program .card-location .text-location {
-  background: url(../imgs/template/icons/location.svg) no-repeat left center;
+  background: url(../imgs/template/icons/location.svg) no-repeat;
   padding-left: 20px;
+  width: 200px !important;
+  background-position: left 0px top 2px;
 }
 
 .card-journey-small .card-info .card-program .card-location .text-star img {
@@ -14110,9 +14113,9 @@ a.link-black:hover svg {
   margin-bottom: 22px;
 }
 
-.tour-title-main {
+/* .tour-title-main {
   margin-bottom: 20px;
-}
+} */
 
 .tour-meta-right .btn-share {
   margin-right: 8px;
@@ -19325,7 +19328,10 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .bg-black-40 {
   background-color: #000000c4;
 }
-
+.book-now-btn {
+  background-color: #f58220;
+  color: white;
+}
 .book-now-btn {
   background-color: #f58220;
   color: white;
@@ -19367,10 +19373,12 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .border-r-1 {
   border-right: 1px solid #00000040;
 }
-.border-l-1{
-    border-left: 1px solid #00000040;
+
+.border-l-1 {
+  border-left: 1px solid #00000040;
 }
-.check-avail-modal .lg\:w-2\/6 {
+
+.check-avail-modal .w-1-6 {
   width: 83.333333%;
 }
 
@@ -19396,9 +19404,76 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   border-radius: 0%;
 }
 
-.form-error {
-  color: #ef4444;
-  /* Tailwind red-500 */
+.form-error-space {
+  min-height: 1.25rem;
+  margin-top: 0.25rem;
   font-size: 0.75rem;
-  margin-top: 4px;
+  color: #ef4444;
+}
+
+.text-4aa301 {
+  color: #4aa301;
+}
+
+.bg-4aa301 {
+  background-color: #4aa301;
+}
+
+.stepper_input {
+  width: 200px !important;
+  height: 40px !important;
+}
+
+.stepper_select {
+  width: 100px !important;
+  height: 40px !important;
+}
+
+/* styles.css or global.css */
+.stepper-guest-row {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  /* Default for mobile */
+  gap: 0.5rem !important;
+  /* Tailwind's gap-2 = 0.5rem */
+}
+
+@media (min-width: 768px) {
+  .stepper-guest-row {
+    grid-template-columns: 100px 200px 200px 100px !important;
+    /* Title | First | Last | Action */
+    align-items: center !important;
+  }
+}
+
+.stepper_input::placeholder {
+  font-size: 13px;
+}
+
+.room_options {
+  border-bottom: 2px solid #ccc !important;
+}
+
+.ant-message-notice-content {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+.tcs-radio {
+  display: block;
+  /* Ensures the radio button takes the full width */
+  margin-left: 0;
+  /* Removes any left margin that may be causing it to be centered */
+  text-align: left;
+  /* Aligns the text to the left */
+  padding-left: 10px;
+  /* Adds a little padding for better visual alignment */
+}
+
+.tcs-radio .ant-radio-inner {
+  margin-bottom: -4px;
+}
+
+.w-1-6 {
+  width: 29%;
 }

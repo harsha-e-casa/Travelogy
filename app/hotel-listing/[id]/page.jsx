@@ -6,9 +6,6 @@ import BookingCard from "../booking";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import HotelData from "./hotelData";
-import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
-import AppDateRage from "@/components/searchEngine/AppDateRage";
-import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 
 const Modal = ({
   images,
@@ -156,7 +153,7 @@ export default function ActivitiesDetail4() {
           {
             headers: {
               "Content-Type": "application/json",
-              apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
+              apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
             },
           }
         );
@@ -167,7 +164,6 @@ export default function ActivitiesDetail4() {
           setHotelData(hotel);
           setSearchQueryData(searchData);
 
-          // ✅ Set check-in and check-out dates from searchQuery
           setCheckinDate(searchData?.checkinDate || null);
           setCheckoutDate(searchData?.checkoutDate || null);
           console.log(response.data.hotel);
@@ -220,7 +216,9 @@ export default function ActivitiesDetail4() {
   const RoomType = hotelData?.ops?.[0]?.ris?.[0]?.mb;
   const RoomCategory = hotelData?.ops?.[0]?.ris?.[0]?.rc;
 
-  const totalfare = hotelData?.pops?.[0]?.tpc;
+  // const totalfare = hotelData?.pops?.[0]?.tpc;
+  const totalfare = hotelData?.ops?.[0]?.tp;
+
   const hotelId = hotelData?.id;
   const optionId = hotelData?.ops?.[0]?.id;
 
@@ -247,6 +245,13 @@ export default function ActivitiesDetail4() {
   );
   const roomCount = roomInfo.length;
   console.log("Rooms & Guest", searchQueryData?.roomInfo);
+  let hotelDescription = {};
+  try {
+    hotelDescription = hotelData?.des ? JSON.parse(hotelData.des) : {};
+  } catch (err) {
+    console.error("Invalid hotel description JSON", err);
+  }
+
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
@@ -365,12 +370,56 @@ export default function ActivitiesDetail4() {
                       id="collapseOverview"
                     >
                       <div className="cards card-body">
-                        {hotelData?.des && (
+                        {/* {hotelData?.des && (
                           <>
                             <p>{JSON.parse(hotelData.des).amenities}</p>
                             <p>{JSON.parse(hotelData.des).rooms}</p>
                           </>
-                        )}
+                        )} */}
+                        <div className="space-y-4">
+                          {Object.entries(hotelDescription).map(
+                            ([key, value]) => {
+                              if (!value?.trim()) return null; // skip empty or null values
+
+                              // Convert key like "onsite_payments" => "Onsite Payments"
+                              const label = key
+                                .split("_")
+                                .map(
+                                  (word) =>
+                                    word.charAt(0).toUpperCase() + word.slice(1)
+                                )
+                                .join(" ");
+
+                              const hasDoubleSpace = value.includes("  ");
+                              const listItems = hasDoubleSpace
+                                ? value
+                                    .split(/ {2,}/)
+                                    .map((item) => item.trim())
+                                    .filter(Boolean)
+                                : [];
+
+                              return (
+                                <div key={key} className="mb-6">
+                                  <h3 className="text-base font-semibold text-gray-800 mb-1">
+                                    {label}
+                                  </h3>
+
+                                  {hasDoubleSpace ? (
+                                    <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                                      {listItems.map((item, idx) => (
+                                        <li key={idx}>{item}</li>
+                                      ))}
+                                    </ul>
+                                  ) : (
+                                    <p className="text-sm text-gray-700 whitespace-pre-line">
+                                      {value}
+                                    </p>
+                                  )}
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -450,7 +499,9 @@ export default function ActivitiesDetail4() {
                     facilities={hotelData?.fl || []}
                     longitude={hotelData?.gl?.lt}
                     latitude={hotelData?.gl?.ln}
-                    fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
+                    fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}
+                    hotelId={hotelData?.id}
+                    // fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
                   />
                 </div>
               </div>
@@ -463,8 +514,7 @@ export default function ActivitiesDetail4() {
                       </h6>
                       <>
                         <p>
-                          {hotelData?.ad?.adr}, {hotelData?.ad?.city?.name},{" "}
-                          {hotelData?.ad?.postalCode}
+                          {hotelData?.ad?.adr} {hotelData?.ad?.postalCode}
                         </p>
                       </>
                     </div>
@@ -544,73 +594,6 @@ export default function ActivitiesDetail4() {
                       setRoomsData={setRoomsData}
                     />
                   </div>
-                  {/* <div className="booking-form">
-                    <div className="head-booking-form">
-                      <p className="text-xl-bold neutral-1000">
-                        Check Availability
-                      </p>
-                    </div>
-                    <div className="space-y-4">
-                      <div className="flex space-x-4">
-                        <div className="flex-1">
-                          <label>Check-in</label>
-                          <button className=" font-bold">
-                            {searchQueryData?.checkinDate || "No Check-in Date"}
-                          </button>
-                        </div>
-
-                        <div className="flex-1">
-                          <label>Check-out</label>
-                          <button className=" font-bold">
-                            {searchQueryData?.checkoutDate ||
-                              "No Check-out Date"}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-4">
-                        <div className="flex-1">
-                          <label>Clock-in</label>
-                          <button className=" font-bold">
-                            {hotelData?.checkInTime?.beginTime ||
-                              "No Clock-in Time"}
-                          </button>
-                        </div>
-                        <div className="flex-1">
-                          <label>Clock-out</label>
-                          <button className=" font-bold">
-                            {hotelData?.checkOutTime?.beginTime ||
-                              "No Clock-out Time"}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="flex space-x-4">
-                        <div className="flex-1 check-avail-modal">
-                          <label>Rooms & Guests</label>
-                          <button onClick={toggleTraveller}>
-                            <div className=" text-base font-bold">
-                              {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{" "}
-                              {totalChildren} Child
-                              {totalChildren > 1 ? "ren" : ""}, {roomCount} Room
-                              {roomCount > 1 ? "s" : ""}
-                            </div>
-                          </button>
-                          {showTraveller && (
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <AppTravellerHotel
-                                roomsData={roomsData}
-                                onClose={(updatedRooms) => {
-                                  setRoomsData(updatedRooms);
-                                  setShowTraveller(false);
-                                }}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
                 </div>
               </div>
             </div>

@@ -1,195 +1,169 @@
 import React, { useState } from "react";
-// import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const HotelData = ({ facilities, longitude, latitude, fetchHotelData }) => {
-  const [activeTab, setActiveTab] = useState("Rooms");
-
-  const [expandedGroup, setExpandedGroup] = useState({});
+const HotelData = ({ fetchHotelData = [], hotelId }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [currentFacilities, setCurrentFacilities] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState([]); // ← This tracks ops[].ris[]
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [currentPriceDetails, setCurrentPriceDetails] = useState([]);
 
-  const toggleGroup = (groupName) => {
-    setExpandedGroup((prev) => ({
-      ...prev,
-      [groupName]: !prev[groupName],
-    }));
-  };
-  const renderContent = () => {
-    if (activeTab === "Rooms") {
-      const groupedRooms = fetchHotelData?.reduce((acc, room) => {
-        const key = room.srn || "Other";
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(room);
-        return acc;
-      }, {});
-      return (
-        <div className="border rounded overflow-hidden">
-          <table className="w-full text-sm border border-gray-300">
-            <thead className="bg-dark text-white font-semibold">
-              <tr>
-                <th className="px-4 py-2 border-r text-left">Room Type</th>
-                <th className="px-4 py-2 border-r text-left">Room Options</th>
-                <th className="px-4 py-2 border-r text-left">Description</th>
-                <th className="px-4 py-2 border-r text-left">
-                  Cancellation Policy
-                </th>
-                <th className="px-4 py-2 text-right">Price</th>
-              </tr>
-            </thead>
+  const router = useRouter();
 
-            <tbody>
-              {Object.entries(groupedRooms).map(([roomName, rooms]) => {
-                const isExpanded = expandedGroup[roomName];
-                const firstRoom = rooms[0];
-                const remainingRooms = rooms.slice(1);
-                const allRooms = [
-                  firstRoom,
-                  ...(isExpanded ? remainingRooms : []),
-                ];
-
-                return (
-                  <React.Fragment key={roomName}>
-                    {allRooms.map((room, i) => {
-                      const price = room?.tfcs?.TF?.toFixed(2) || "0.00";
-                      const isRefundable = room?.cnp?.inra === false;
-
-                      return (
-                        <tr
-                          key={`${roomName}-${i}`}
-                          className="bg-[#fefaf4] border-b"
-                        >
-                          {i === 0 && (
-                            <td
-                              rowSpan={allRooms.length}
-                              className="font-semibold px-4 py-3 text-gray-800 border-r align-top"
-                            >
-                              {roomName}
-                            </td>
-                          )}
-                          <td className="px-4 py-3 border-r text-gray-800">
-                            Room Only
-                          </td>
-                          <td className="px-4 py-3 border-r">
-                            <div className="font-semibold">{room.rt}</div>
-                            <div
-                              className="room_fac text-xs underline cursor-pointer"
-                              onClick={() => {
-                                setCurrentFacilities(room.fcs || []);
-                                setShowFacilityModal(true);
-                              }}
-                            >
-                              Room Facilities
-                            </div>
-                          </td>
-                          <td className="px-4 py-3 border-r text-gray-800">
-                            {isRefundable
-                              ? "Free Cancellation"
-                              : "No Free Cancellation / Non-Refundable"}
-                          </td>
-                          <td className="px-4 py-3 text-right text-gray-900">
-                            <div className="text-lg font-bold">₹{price}</div>
-                            <div className="text-xs text-gray-500 mb-1">
-                              for {room.pis?.length || 1} Night(s) for{" "}
-                              {room.adt} adult(s)
-                              {room.chd ? ` & ${room.chd} child` : ""}
-                            </div>
-                            <button className="book-now-btn">BOOK NOW</button>
-                            {/* <Link
-                              href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
-                              className="btn btn-book"
-                            >Book Now</Link> */}
-                            {/* <div className="text-[#f58220] text-xs mt-1">
-                              Add to Quote
-                            </div> */}
-                          </td>
-                        </tr>
-                      );
-                    })}
-
-                    {remainingRooms.length > 0 && (
-                      <tr>
-                        <td
-                          colSpan={5}
-                          className="bg-white text-right px-4 py-2"
-                        >
-                          <button
-                            onClick={() => toggleGroup(roomName)}
-                            className="underline room_option"
-                          >
-                            {isExpanded ? "Less Options" : "More Options"}
-                          </button>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      );
-    }
-
-    if (activeTab === "Facilities") {
-      return (
-        <div className="mt-4 rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
-          <h5 className="text-lg font-semibold text-gray-800 mb-4">
-            Hotel Facilities
-          </h5>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-6 list-disc pl-6 text-gray-700 text-sm leading-relaxed">
-            {facilities?.length > 0 ? (
-              facilities.map((item, index) => (
-                <li key={index} className="relative pl-1">
-                  {item}
-                </li>
-              ))
-            ) : (
-              <li className="text-gray-500 italic">No facilities listed.</li>
-            )}
-          </ul>
-        </div>
-      );
-    }
-
-    if (activeTab === "Location") {
-      return (
-        <div className="group-collapse-expand">
-          <div className="cards card-body">
-            <iframe
-              src={`https://www.google.com/maps?q=${longitude},${latitude}&z=15&output=embed`}
-              width="100%"
-              height={290}
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
-        </div>
-      );
-    }
-
-    return null;
+  const handleBookNow = (optionId) => {
+    router.push(`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`);
   };
 
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [cancellationPolicyData, setCancellationPolicyData] = useState([]);
+  const handlePriceClick = (pis) => {
+    setCurrentPriceDetails(pis); // Set pis data when clicking on the price
+    setShowPriceModal(true); // Show the modal
+  };
+
+  const closePriceModal = () => {
+    setShowPriceModal(false); // Close the modal
+  };
   return (
     <>
-      <div className="flex border-b hotel_tab mt-20 mb-2">
-        {["Rooms"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`p-0 pr-10 mr-10 ${
-              activeTab === tab ? "border-b-2 room_fac" : "text-gray-700"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
+      <h6 className="mt-3">Rooms</h6>
+      <div className="border rounded-md mt-10">
+        {fetchHotelData.map((room, index) => {
+          const dataLen = room.ris?.length;
+          return (
+            <>
+              {room.ris.map((data, index2) => {
+                const price = data?.tfcs?.TF?.toFixed(2);
+                const nights = data?.pis?.length;
+                const isRefundable = room?.cnp?.inra;
+                const panRequired = room?.ipr;
+                let freeCancellationDate = null;
+                if (room?.cnp?.inra === false && Array.isArray(room?.cnp?.pd)) {
+                  const freeCancellation = room.cnp.pd.find((p) => p.am === 0);
+                  if (freeCancellation?.tdt) {
+                    const dateObj = new Date(freeCancellation.tdt);
+                    freeCancellationDate = dateObj.toLocaleDateString("en-GB");
+                  }
+                }
+                return (
+                  <div
+                    key={index2}
+                    className={`grid grid-cols-12 border-t p-3 items-center gap-4 ${
+                      dataLen == index2 + 1 ? "room_options" : ""
+                    }`}
+                  >
+                    <div className="col-span-6">
+                      <h4 className="font-semibold text-gray-800 text-sm mb-1">
+                        {data.rc}
+                        {/* {data.mb ? ` (${data.mb})` : ""} */}
+                      </h4>
+                      <br />
+                      <div>
+                        {panRequired === false && (
+                          <div className="text-green-600 text-xs mb-1">
+                            PAN not Required
+                          </div>
+                        )}
+                      </div>
+                      <br />
+                      <div className="flex flex-wrap justify-between items-center text-xs mb-1">
+                        {/* {isRefundable === false && freeCancellationDate ? (
+                          <div className="text-xs mb-1">
+                            Free Cancellation Till:{" "}
+                            <span className="text-green-600 font-semibold">
+                              {freeCancellationDate}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="text-red-600 text-xs mb-1">
+                            No Free Cancellation / Non-Refundable
+                          </div>
+                        )} */}
+                        {room?.cnp?.ifra === false &&
+                        room?.cnp?.inra === true ? (
+                          <div className="text-red-600 text-xs mb-1">
+                            No Free Cancellation / Non-Refundable
+                          </div>
+                        ) : room?.cnp?.ifra === false &&
+                          room?.cnp?.inra === false ? (
+                          <div className="text-red-600 text-xs mb-1">
+                            No Free Cancellation
+                          </div>
+                        ) : room?.cnp?.ifra === true &&
+                          room?.cnp?.inra === false &&
+                          room?.cnp?.pd?.[0]?.tdt ? (
+                          <div className="text-xs mb-1">
+                            Free Cancellation Till:{" "}
+                            <span className="text-green-600 font-semibold">
+                              {new Date(
+                                room?.cnp?.pd[0]?.tdt
+                              ).toLocaleDateString("en-GB")}
+                            </span>
+                          </div>
+                        ) : null}
+
+                        <div className="text-sm text-gray-700">{data.mb}</div>
+                      </div>
+                      {dataLen == index2 + 1 ? (
+                        <div className="mt-4 flex flex-wrap gap-4 text-xs text-orange-600">
+                          <span
+                            className="underline cursor-pointer"
+                            onClick={() => {
+                              setCancellationPolicyData(room?.cnp?.pd || []);
+                              setShowCancellationModal(true);
+                            }}
+                          >
+                            Cancellation Policy
+                          </span>
+
+                          <span
+                            className="underline cursor-pointer"
+                            onClick={() => {
+                              setCurrentFacilities(data?.fcs || []);
+                              setShowFacilityModal(true);
+                            }}
+                          >
+                            Room Facilities
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="col-span-6 text-right">
+                      <div className="font-bold text-lg text-gray-900">
+                        ₹{Number(price).toLocaleString("en-IN")}
+                      </div>
+                      <div className="text-xs text-gray-500 mb-1">
+                        for {nights} Night(s) For {data.adt} adult
+                        {data.adt > 1 ? "s" : ""}
+                        {room.chd ? ` ${data.chd} child` : ""}
+                      </div>
+                      <div
+                        className="text-xs text-blue-500 mb-2 underline cursor-pointer"
+                        onClick={() => handlePriceClick(data.pis)}
+                      >
+                        Per Night Price
+                      </div>
+                      {dataLen === index2 + 1 && (
+                        <button
+                          className="book-now-btn"
+                          onClick={() => handleBookNow(room.id)}
+                        >
+                          Book Now
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          );
+        })}
       </div>
 
-      <div className="p-4 bg-gray-50 border rounded-b">{renderContent()}</div>
+      {/* Facilities Modal */}
       {showFacilityModal && (
-        <div className="fixed inset-0 bg-black-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
             <button
               onClick={() => setShowFacilityModal(false)}
@@ -197,18 +171,110 @@ const HotelData = ({ facilities, longitude, latitude, fetchHotelData }) => {
             >
               ×
             </button>
-            <h3 className="text-lg font-bold mb-4 text-gray-800">
+            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
               Room Facilities
             </h3>
             {currentFacilities.length > 0 ? (
-              <ul className="list-disc list-inside space-y-1 text-gray-700 text-sm">
+              <div className="flex flex-wrap space-x-4">
                 {currentFacilities.map((item, index) => (
-                  <li key={index}>{item}</li>
+                  <div
+                    key={index}
+                    className="flex items-center space-x-2 text-gray-700 text-sm"
+                  >
+                    <span className="text-orange-500">•</span>
+                    <span>{item}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               <p className="text-gray-500 italic">No facilities available.</p>
             )}
+          </div>
+        </div>
+      )}
+
+      {showCancellationModal && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl shadow-lg relative overflow-auto max-h-[90vh]">
+            <button
+              onClick={() => setShowCancellationModal(false)}
+              className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-lg"
+            >
+              ×
+            </button>
+            <h3 className="text-center text-lg font-bold mb-4 text-gray-800">
+              Cancellation Policy
+            </h3>
+
+            <table className="w-full border border-gray-300 text-sm">
+              <thead className="bg-gray-100 text-left text-gray-700">
+                <tr>
+                  <th className="text-center p-2 border">
+                    Cancellation on or After
+                  </th>
+                  <th className="text-center p-2 border">
+                    Cancellation on or Before
+                  </th>
+                  <th className="text-center p-2 border">
+                    Cancellation Charges / Comments
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {cancellationPolicyData.map((item, index) => (
+                  <tr key={index}>
+                    <td className="text-center p-2 border">
+                      {new Date(item.fdt).toLocaleDateString("en-GB")}
+                    </td>
+                    <td className="text-center p-2 border">
+                      {new Date(item.tdt).toLocaleDateString("en-GB")}
+                    </td>
+                    <td className="text-center p-2 border">
+                      ₹{Number(item.am).toLocaleString("en-IN")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {showPriceModal && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+            <button
+              onClick={closePriceModal}
+              className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-lg"
+            >
+              ×
+            </button>
+            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
+              Per Night Pricing Details
+            </h3>
+            {currentPriceDetails.length > 0 ? (
+              <table className="w-full border border-gray-300 text-sm">
+                <thead className="bg-gray-100 text-left text-gray-700">
+                  <tr>
+                    <th className="text-center p-2 border">Day</th>
+                    <th className="text-center p-2 border">Price </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentPriceDetails.map((item, index) => (
+                    <tr key={index}>
+                      <td className="text-center p-2 border">{item.day}</td>
+                      <td className="text-center p-2 border">
+                        ₹{Number(item.fc.TF).toLocaleString("en-IN")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-gray-500 italic">
+                No pricing details available.
+              </p>
+            )}{" "}
           </div>
         </div>
       )}

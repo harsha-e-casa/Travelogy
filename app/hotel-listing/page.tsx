@@ -11,20 +11,21 @@ import ByRoom from "@/components/Filter/ByRoom";
 import SortHotelsFilter from "@/components/elements/SortHotelsFilter";
 import HotelCard1 from "@/components/elements/hotelcard/HotelCard1";
 import Layout from "@/components/layout/Layout";
-import rawHotelsData from "@/util/hotels.json";
+// import rawHotelsData from "@/util/hotels.json";
 import useHotelFilter from "@/util/useHotelFilter";
 import "../tickets/customeHeader_1.css";
 import { useSearchParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
-const hotelsData = rawHotelsData.map((hotel) => ({
-  ...hotel,
-  rating: parseFloat(hotel.rating as string),
-}));
+// const hotelsData = rawHotelsData.map((hotel) => ({
+//   ...hotel,
+//   rating: parseFloat(hotel.rating as string),
+// }));
 import AppDateRage from "@/components/searchEngine/AppDateRage";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
+import HotelListingSearch from "./searchHeader";
 type Nationality = {
   countryName: string;
   name: string;
@@ -42,12 +43,12 @@ export default function HotelListing() {
     nationalities: Nationality[];
     loading: boolean;
   };
+  const city = searchParams.get("city");
+  const currency = searchParams.get("currency");
+  const rooms = Number(searchParams.get("rooms"));
+  const adults = Number(searchParams.get("adults"));
+  const children = Number(searchParams.get("children"));
 
-  const city = searchParams.get("city") || "699261"; // Static default city if none
-  const currency = searchParams.get("currency") || "INR"; // Static default currency
-  const rooms = Number(searchParams.get("rooms")) || 1;
-  const adults = Number(searchParams.get("adults")) || 1;
-  const children = Number(searchParams.get("children")) || 0;
   const childAgesRaw = searchParams.get("childAges");
 
   let parsedChildAges: number[][] = [];
@@ -124,25 +125,19 @@ export default function HotelListing() {
   //     setNationalityId(matched ? matched.countryId : null);
   //   }
   // }, [selectFrom, nationalities]);
-  useEffect(() => {
-    // Auto-initialize selectFrom from query param and nationality list
-    if (!selectFrom && location && nationalities.length > 0) {
-      const locationLower = location.toLowerCase();
 
-      // Try to find a nationality whose countryName is contained in location
+  useEffect(() => {
+    if (!selectFrom && location && city && nationalities.length > 0) {
       const matchedNationality = nationalities.find((n) =>
-        locationLower.includes(n.countryName.toLowerCase())
+        location.toLowerCase().includes(n.countryName.toLowerCase())
       );
 
-      if (matchedNationality) {
-        setSelectFrom({
-          cityName: location,
-          countryName: matchedNationality.countryName,
-          id: city,
-        });
-
-        setNationalityId(matchedNationality?.countryId || nationalityId);
-      }
+      setSelectFrom({
+        cityName: location,
+        countryName: matchedNationality?.countryName || "India",
+        id: city || "699261", // fallback
+      });
+      setNationalityId(matchedNationality?.countryId || "94");
     }
   }, [location, city, nationalities]);
 
@@ -159,43 +154,35 @@ export default function HotelListing() {
     setShowSearchState(false);
     setOpenDateRage(false);
   };
-  // console.log(
-  //   checkinDate,
-  //   checkoutDate,
-  //   location,
-  //   city,
-  //   nationality,
-  //   currency,
-  //   rooms,
-  //   adults,
-  //   children,
-  //   childAges
-  // );
 
-  const {
-    filter,
-    sortCriteria,
-    // itemsPerPage,
-    currentPage,
-    uniqueRoomStyles,
-    uniqueAmenities,
-    uniqueLocations,
-    uniqueRatings,
-    uniqueHotelsType,
-    sortedHotels,
-    totalPages,
-    paginatedHotels,
-    handleCheckboxChange,
-    handleSortChange,
-    handlePriceRangeChange,
-    handleItemsPerPageChange,
-    handlePageChange,
-    handlePreviousPage,
-    handleNextPage,
-    handleClearFilters,
-    startItemIndex,
-    endItemIndex,
-  } = useHotelFilter(hotelsData);
+  // const {
+  //   filter,
+  //   sortCriteria,
+  //   currentPage,
+  //   uniqueRoomStyles,
+  //   uniqueAmenities,
+  //   uniqueLocations,
+  //   uniqueRatings,
+  //   uniqueHotelsType,
+  //   sortedHotels,
+  //   totalPages,
+  //   paginatedHotels,
+  //   handleCheckboxChange,
+  //   handleSortChange,
+  //   handlePriceRangeChange,
+  //   handleItemsPerPageChange,
+  //   handlePageChange,
+  //   handlePreviousPage,
+  //   handleNextPage,
+  //   handleClearFilters,
+  //   startItemIndex,
+  //   endItemIndex,
+  // } = useHotelFilter(hotelsData);
+  const [sortCriteria, setSortCriteria] = useState("default");
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortCriteria(e.target.value);
+  };
+
   const apiCall = async (payload: any) => {
     try {
       const response = await fetch(
@@ -204,18 +191,17 @@ export default function HotelListing() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
+            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
           },
           body: JSON.stringify(payload),
         }
       );
 
       const data = await response.json();
-      console.log("Search result:", data);
+      localStorage.clear();
       return data;
     } catch (error) {
       console.error("Search API error:", error);
-      // alert("An error occurred while searching for hotels. Please try again.");
       return null;
     }
   };
@@ -228,51 +214,46 @@ export default function HotelListing() {
     };
   });
   const handleSearch = async () => {
-    if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-      alert("Check-out date cannot be earlier than check-in date.");
-      return;
-    }
-    let matchedNationality = null;
+    setLoading(true);
+    const safeCityId = selectFrom?.id || city || "699261";
+    const safeCityName = selectFrom?.cityName || location || "Chennai";
+    const safeCountry = selectFrom?.countryName || "India";
 
-    if (selectFrom?.countryName) {
-      matchedNationality = nationalities.find(
-        (n) =>
-          n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
-      );
-    }
-
-    // Fallback using query param if above fails
-    if (!matchedNationality && nationalityId) {
-      matchedNationality = nationalities.find(
-        (n) => n.countryId === nationalityId
-      );
-    }
-
-    // if (!matchedNationality) {
-    //   alert("Could not determine nationality for selected city.");
-    //   return;
-    // }
+    const matchedNationality = nationalities.find(
+      (n) => n.countryName.toLowerCase() === safeCountry.toLowerCase()
+    );
 
     const nationalityIdToUse =
-      matchedNationality?.countryId || nationalityId || "";
-    console.log("selectFrom is:", selectFrom);
-    console.log("nationalities:", nationalities);
+      matchedNationality?.countryId || nationalityId || "94";
 
-    setLoading(true);
-    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-    const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+    if (!selectFrom) {
+      setSelectFrom({
+        cityName: safeCityName,
+        countryName: safeCountry,
+        id: safeCityId,
+      });
+    }
 
-    const roomInfo = roomsData.map((room) => ({
-      numberOfAdults: room.adults,
-      numberOfChild: room.children,
-      ...(room.children > 0 ? { childAge: room.childAges } : {}),
-    }));
+    const payload = {
+      searchQuery: {
+        checkinDate: checkinDate,
+        checkoutDate: checkoutDate,
+        roomInfo: cleanRoomInfo,
+        searchCriteria: {
+          city: safeCityId,
+          nationality: nationalityIdToUse,
+          currency: currency || "INR",
+        },
+        searchPreferences: { fsc: true },
+      },
+      sync: true,
+    };
 
     const queryParams = new URLSearchParams({
-      checkinDate: formattedCheckIn,
-      checkoutDate: formattedCheckOut,
-      location: selectFrom?.cityName || "",
-      city: selectFrom?.id || "",
+      checkinDate,
+      checkoutDate,
+      location: safeCityName,
+      city: safeCityId,
       nationality: nationalityIdToUse,
       currency: "INR",
       rooms: roomsData.length.toString(),
@@ -282,121 +263,71 @@ export default function HotelListing() {
       roomsData: JSON.stringify(roomsData),
     }).toString();
 
-    const payload = {
-      searchQuery: {
-        checkinDate: formattedCheckIn,
-        checkoutDate: formattedCheckOut,
-        roomInfo: cleanRoomInfo,
-        searchCriteria: { city, nationality: nationalityIdToUse, currency },
-        searchPreferences: { fsc: true },
-      },
-      sync: true,
-    };
-
-    const data = await apiCall(payload);
-    setLoading(false);
-    if (data) {
-      console.log("Search result in handleSearch:", data);
-      // setApiHotelData(data.searchResult?.his || []);
-      const hotelOnlyResults = data.searchResult?.his || [];
-      // .filter((item: any) => item.pt === "HOTEL");
-      setApiHotelData(hotelOnlyResults);
-
-      console.log("Search result in handleSearch:", data);
-      console.log("queryParams", queryParams);
-      router.push(`/hotel-listing?${queryParams}`);
+    // const data = await apiCall(payload);
+    // if (data) {
+    //   setApiHotelData(data.searchResult?.his || []);
+    //   router.push(`/hotel-listing?${queryParams}`);
+    //   return;
+    // }
+    try {
+      const data = await apiCall(payload);
+      if (data) {
+        setApiHotelData(data.searchResult?.his || []);
+        router.push(`/hotel-listing?${queryParams}`);
+      }
+    } catch (error) {
+      console.error("Search API error:", error);
+    } finally {
+      setLoading(false); // Set loading to false after the API call completes
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
+        alert("Check-out date cannot be earlier than check-in date.");
+        return;
+      }
 
-  // useEffect(() => {
-  //   if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-  //     alert("Check-out date cannot be earlier than check-in date.");
-  //     return;
-  //   }
-  //   setLoading(true);
+      const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+      const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+      setLoading(true);
 
-  //   const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-  //   const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
-
-  //   const roomInfo = roomsData.map((room) => ({
-  //     numberOfAdults: room.adults,
-  //     numberOfChild: room.children,
-  //     ...(room.children > 0 ? { childAge: room.childAges } : {}),
-  //   }));
-
-  //   const fetchData = async () => {
-  //     const payload = {
-  //       searchQuery: {
-  //         checkinDate: formattedCheckIn,
-  //         checkoutDate: formattedCheckOut,
-  //         roomInfo: cleanRoomInfo,
-  //         searchCriteria: { city, nationality: nationalityId, currency },
-  //         searchPreferences: { fsc: true },
-  //       },
-  //       sync: true,
-  //     };
-
-  //     const data = await apiCall(payload);
-  //     setLoading(false);
-  //     if (data) {
-  //       console.log("Search result in handleSearch:", data);
-  //       // setApiHotelData(data.searchResult?.his || []);
-  //       const hotelOnlyResults = data.searchResult?.his || [];
-  //       // .filter((item: any) => item.pt === "HOTEL");
-  //       setApiHotelData(hotelOnlyResults);
-
-  //       // console.log("HotelCard1 data", data.searchResult.his);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
-useEffect(() => {
-  const fetchData = async () => {
-    if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-      alert("Check-out date cannot be earlier than check-in date.");
-      return;
-    }
-
-    setLoading(true);
-    const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-    const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
-
-    const payload = {
-      searchQuery: {
-        checkinDate: formattedCheckIn,
-        checkoutDate: formattedCheckOut,
-        roomInfo: cleanRoomInfo,
-        searchCriteria: {
-          city,
-          nationality: nationalityId,
-          currency,
+      const payload = {
+        searchQuery: {
+          checkinDate: formattedCheckIn,
+          checkoutDate: formattedCheckOut,
+          roomInfo: cleanRoomInfo,
+          searchCriteria: {
+            city,
+            nationality: nationalityId,
+            currency,
+          },
+          searchPreferences: { fsc: true },
         },
-        searchPreferences: { fsc: true },
-      },
-      sync: true,
+        sync: true,
+      };
+
+      const data = await apiCall(payload);
+      setLoading(false);
+      if (data) {
+        const hotelOnlyResults = data.searchResult?.his || [];
+        setApiHotelData(hotelOnlyResults);
+      }
     };
 
-    const data = await apiCall(payload);
-    setLoading(false);
-    if (data) {
-      const hotelOnlyResults = data.searchResult?.his || [];
-      setApiHotelData(hotelOnlyResults);
-    }
-  };
-
-  fetchData();
-}, [
-  city,
-  checkinDate,
-  checkoutDate,
-  nationalityId,
-  currency,
-  roomsData,
-  location,
-]);
+    fetchData();
+  }, [
+    city,
+    // checkinDate,
+    // checkoutDate,
+    nationalityId,
+    currency,
+    // roomsData,
+    location,
+  ]);
 
   const openToDateRange = () => {
-    setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
+    setOpenDateRage((prevState) => !prevState);
     closeallform();
     setOpenDateRage(true);
   };
@@ -404,24 +335,24 @@ useEffect(() => {
     setOpenDateRage(false);
   };
   const closeAllDropdowns = () => {
-    setShowSearchState(false); // Location
-    setOpenCheckin(false); // Check-in calendar
-    setOpenCheckout(false); // Check-out calendar
-    setShowTraveller(false); // Rooms & Guest
+    setShowSearchState(false);
+    setOpenCheckin(false);
+    setOpenCheckout(false);
+    setShowTraveller(false);
   };
 
   const openfrom = () => {
     if (showSearchState) {
       setShowSearchState(false);
     } else {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setShowSearchState(true);
     }
   };
 
   const toggleCheckin = () => {
     if (!openCheckin) {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setOpenCheckin(true);
     } else {
       setOpenCheckin(false);
@@ -430,7 +361,7 @@ useEffect(() => {
 
   const toggleCheckout = () => {
     if (!openCheckout) {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setOpenCheckout(true);
     } else {
       setOpenCheckout(false);
@@ -439,7 +370,7 @@ useEffect(() => {
 
   const toggleTraveller = () => {
     if (!showTraveller) {
-      closeAllDropdowns(); // CLOSE others before opening
+      closeAllDropdowns();
       setShowTraveller(true);
     } else {
       setShowTraveller(false);
@@ -476,6 +407,7 @@ useEffect(() => {
         <main className="main">
           <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">
             {/* Location */}
+            {/* <HotelListingSearch /> */}
             <div className="hdt_header">
               <div
                 className="hdt_header-item"
@@ -495,7 +427,7 @@ useEffect(() => {
                     <CityListSearch
                       operEngLocation={openfrom}
                       setSelectFrom={setSelectFrom}
-                      categoryType={undefined}
+                      // categoryType={undefined}
                       // setSelectFromSub={setSelectFromSub}
                     />
                   </div>
@@ -585,11 +517,14 @@ useEffect(() => {
                       sortCriteria={sortCriteria}
                       handleSortChange={handleSortChange}
                       itemsPerPage={itemsPerPage}
-                      handleItemsPerPageChange={handleItemsPerPageChange}
-                      handleClearFilters={handleClearFilters}
-                      startItemIndex={startItemIndex}
-                      endItemIndex={endItemIndex}
-                      sortedHotels={sortedHotels}
+                      handleItemsPerPageChange={() => {}}
+                      handleClearFilters={() => {}}
+                      startItemIndex={(apiCurrentPage - 1) * itemsPerPage + 1}
+                      endItemIndex={Math.min(
+                        apiCurrentPage * itemsPerPage,
+                        apiHotelData.length
+                      )}
+                      totalResults={apiHotelData.length}
                     />
                   </div>
                   <div className="box-grid-tours wow fadeIn">
@@ -603,8 +538,8 @@ useEffect(() => {
                           </div>
                         ))}
                       </div> */}
-                    <div className="row">
-                      {loading ? (
+                    <div className="container">
+                      {/* {loading ? (
                         <div className="col-12 d-flex justify-center py-5">
                           <div className="loader"></div>
                         </div>
@@ -620,10 +555,32 @@ useEffect(() => {
                             <HotelCard1 hotel={hotel} />
                           </div>
                         ))
-                      )}
+                      )} */}
+                      <div className="row">
+                        {loading ? (
+                          <div className="col-12 d-flex justify-center py-5">
+                            <div className="loader"></div>
+                          </div>
+                        ) : paginatedApiHotels.length > 0 ? (
+                          paginatedApiHotels.map(
+                            (hotel: any, index: number) => (
+                              <div
+                                className="col-xl-4 col-lg-6 col-md-6"
+                                key={hotel.id || index}
+                              >
+                                <HotelCard1 hotel={hotel} />
+                              </div>
+                            )
+                          )
+                        ) : (
+                          <div className="col-12 text-center py-4 text-neutral-500">
+                            No hotels found for your criteria.
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <ByPagination
+                  {/* <ByPagination
                     handlePreviousPage={
                       apiHotelData.length > 0
                         ? handleApiPreviousPage
@@ -645,9 +602,16 @@ useEffect(() => {
                         ? handleApiPageChange
                         : handlePageChange
                     }
+                  /> */}
+                  <ByPagination
+                    handlePreviousPage={handleApiPreviousPage}
+                    totalPages={apiTotalPages}
+                    currentPage={apiCurrentPage}
+                    handleNextPage={handleApiNextPage}
+                    handlePageChange={handleApiPageChange}
                   />
                 </div>
-                <div className="content-left order-lg-first">
+                {/* <div className="content-left order-lg-first">
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
@@ -731,7 +695,7 @@ useEffect(() => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
