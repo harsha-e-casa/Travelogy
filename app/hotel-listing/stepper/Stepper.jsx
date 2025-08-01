@@ -1172,7 +1172,7 @@ export function Step3PersonalDocuments({
       }
     }
     if (selectedTCS === null) {
-      return false; // TCS declaration is mandatory
+      return false;
     }
 
     return true;
@@ -1217,23 +1217,22 @@ export function Step3PersonalDocuments({
     setFormData((prev) => ({ ...prev, panInfo: finalData }));
     onNext();
   };
-  // Block button (no payment)
   const handleBlock = async () => {
     try {
       const response = await hotelBooking({
         formData,
         hotelReviewData,
-        isBlock: true, // Indicate that this is a block request (no payment)
+        isBlock: true,
       });
 
-      // Handle response (success/failure)
       console.log("Booking (BLOCK) response:", response);
+      localStorage.removeItem("formData");
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${bookingId}`;
     } catch (error) {
       console.error("Error during block:", error.message);
     }
   };
 
-  // Proceed button (with payment)
   // const handleProceed = async () => {
   //   try {
   //     const response = await hotelBooking({
@@ -1251,11 +1250,13 @@ export function Step3PersonalDocuments({
 
   return (
     <div>
-      <h2 className="text-xl font-semibold">Personal Documents</h2>
-      <p className="text-red-500 mb-4">
-        Below documents are mandatory for completing this booking:
-      </p>
-
+      <h2 className="text-md font-bold">
+        Personal Documents{" "}
+        <span className="text-xs text-red-500 mb-4">
+          {" "}
+          Below documents are mandatory for completing this booking
+        </span>
+      </h2>
       <div className="flex items-center mb-6">
         <Checkbox
           checked={samePANForAll}

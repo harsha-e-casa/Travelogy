@@ -52,8 +52,8 @@ const BookingDetailsPage = () => {
   const deliveryInfo = order?.deliveryInfo || {};
   const { bookingId: orderBookingId, amount } = order || {};
   const rating = parseFloat(hotelInfo?.rt) || 0;
-  const totalStars = 5;
-  const filledStars = Math.round(rating);
+  const status = order?.status;
+  console.log("Formstatus Data:", status);
 
   console.log("Form Data:", formData);
   console.log("Hotel Review Data (bookingDetails):", bookingDetails);
@@ -68,6 +68,18 @@ const BookingDetailsPage = () => {
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
+        <div className="container w-full max-w-7xl">
+          {status === "ON_HOLD" ? (
+            <>
+              <div className="p-6 flex justify-between items-center w-full">
+                <h6>Hold</h6>
+                <button className="book-now-btn">Pay Now</button>
+              </div>
+            </>
+          ) : (
+            <h6 className="p-6">Booked</h6>
+          )}
+        </div>
         <div className="container w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
           <div className="md:col-span-8 border-r border-gray-200">
             <h2 className="text-base font-semibold ml-6">

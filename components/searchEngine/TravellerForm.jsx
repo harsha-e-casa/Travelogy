@@ -352,12 +352,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
         ))}
 
       <div className="flex justify-between pt-4 border-t mt-4">
-        <Button type="link" onClick={handleAddRoom}>
+        <button type="link" onClick={handleAddRoom}>
           + ADD ROOM
-        </Button>
-        <Button type="primary" onClick={handleSubmit}>
+        </button>
+        <button type="primary" onClick={handleSubmit}>
           DONE
-        </Button>
+        </button>
       </div>
     </div>
   );

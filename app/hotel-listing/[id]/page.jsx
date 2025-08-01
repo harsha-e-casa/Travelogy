@@ -170,7 +170,10 @@ export default function ActivitiesDetail4() {
           console.log(response.data.searchQuery);
         } else {
           setError(response.data.errors[0]?.message);
-          console.log(response.data.errors[0]?.message);
+          console.log(
+            "fgiusdhgsfgugsufguysgfygyfdygfugfudy",
+            response.data.errors[0]?.message
+          );
         }
       } catch (error) {
         console.error("Error fetching hotel data", error);
