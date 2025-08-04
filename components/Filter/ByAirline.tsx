@@ -1,16 +1,25 @@
 
-export default function ByAirline({ uniqueAirlines, filter, handleCheckboxChange }: any) {
+export default function ByAirline({ uniqueAirlines, selectedAirlines, setSelectedAirlines }: any) {
+  const currentSelectedAirlines = selectedAirlines || [];
+  const handleCheckboxChange = (airline: string) => {
+    if (currentSelectedAirlines.includes(airline)) {
+      setSelectedAirlines(currentSelectedAirlines.filter((item: string) => item !== airline));
+    } else {
+      setSelectedAirlines([...currentSelectedAirlines, airline]);
+    }
+  };
+
 	return (
 		<>
 			<div className="box-collapse scrollFilter">
 				<ul className="list-filter-checkbox">
-					{uniqueAirlines.map((airline: any,) => (
+					{uniqueAirlines.map((airline: any) => (
 						<li key={airline}>
 							<label className="cb-container">
 								<input
 									type="checkbox"
-									checked={filter.airlines.includes(airline)}
-									onChange={handleCheckboxChange("airlines", airline)}
+									checked={currentSelectedAirlines.includes(airline)}
+									onChange={() => handleCheckboxChange(airline)}
 								/>
 
 								<span className="text-sm-medium">{airline} </span>

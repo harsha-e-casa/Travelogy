@@ -6,6 +6,9 @@ import ByClass from "@/components/Filter/ByClass";
 import ByLocation from "@/components/Filter/ByLocation";
 import ByPagination from "@/components/Filter/ByPagination";
 import ByPrice from "@/components/Filter/ByPrice";
+import ByStops from "@/components/Filter/ByStops";
+import ByDepartureTime from "@/components/Filter/ByDepartureTime";
+import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByRating from "@/components/Filter/ByRating";
 import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
 import SortTicketsFilter from "@/components/elements/SortTicketsFilter";
@@ -76,6 +79,90 @@ export default function Tickets() {
 
   const { setCookie, getCookie } = useContext(AppContext);
   const [flightData, setFlightData] = useState<any>(null);
+  const [filteredFlightData, setFilteredFlightData] = useState<any>(null);
+
+  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [stops, setStops] = useState("all");
+  const [departureTime, setDepartureTime] = useState("all");
+  const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
+  const [arrivalTime, setArrivalTime] = useState("all");
+
+  const applyFilters = () => {
+    if (flightData && flightData.ONWARD) {
+      let filteredData = flightData.ONWARD;
+
+      // Price Range Filter
+      filteredData = filteredData.filter(
+        (ticket) => {
+          return ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF >= priceRange[0] &&
+            ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF <= priceRange[1]
+        }
+      );
+
+      // Stops Filter
+      if (stops !== "all") {
+        filteredData = filteredData.filter((ticket) => {
+          if (stops === "non-stop") {
+            return ticket.sI.length === 1;
+          } else if (stops === "1-stop") {
+            return ticket.sI.length === 2;
+          } else if (stops === "2-stops") {
+            return ticket.sI.length > 2;
+          }
+          return true;
+        });
+      }
+
+      // Departure Time Filter
+      if (departureTime !== "all") {
+        filteredData = filteredData.filter((ticket) => {
+          const departureHour = new Date(ticket.sI[0].dt).getHours();
+          if (departureTime === "early-morning") {
+            return departureHour >= 0 && departureHour < 6;
+          } else if (departureTime === "morning") {
+            return departureHour >= 6 && departureHour < 12;
+          } else if (departureTime === "afternoon") {
+            return departureHour >= 12 && departureHour < 18;
+          } else if (departureTime === "evening") {
+            return departureHour >= 18 && departureHour < 24;
+          }
+          return true;
+        });
+      }
+
+      // Airline Filter
+      if (selectedAirlines.length > 0) {
+        filteredData = filteredData.filter((ticket) =>
+          selectedAirlines.includes(ticket.sI[0].fD.aI.name)
+        );
+      }
+
+      // Arrival Time Filter
+      if (arrivalTime !== "all") {
+        filteredData = filteredData.filter((ticket) => {
+          const arrivalHour = new Date(
+            ticket.sI[ticket.sI.length - 1].at
+          ).getHours();
+          if (arrivalTime === "early-morning") {
+            return arrivalHour >= 0 && arrivalHour < 6;
+          } else if (arrivalTime === "morning") {
+            return arrivalHour >= 6 && arrivalHour < 12;
+          } else if (arrivalTime === "afternoon") {
+            return arrivalHour >= 12 && arrivalHour < 18;
+          } else if (arrivalTime === "evening") {
+            return arrivalHour >= 18 && arrivalHour < 24;
+          }
+          return true;
+        });
+      }
+
+      setFilteredFlightData(filteredData);
+    }
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [priceRange, stops, departureTime, selectedAirlines, flightData]);
   const [activeFlight, setActiveFlight] = useState<any>(true);
   const [loading, setloading] = useState<boolean>(false);
 
@@ -517,6 +604,7 @@ export default function Tickets() {
           requestData: parameter,
         };
         const result = await postData("travelogy/one-way/fetch-data", reqData);
+        console.log("API Result for multi-city:", result);
         console.log("resssssssssssssssssssss ", result);
         if (result && result.searchResult && result.searchResult.tripInfos) {
           // setFlightData(result.searchResult.tripInfos.ONWARD)
@@ -886,16 +974,6 @@ export default function Tickets() {
     }
   }, [datedepr]);
 
-  console.log("vvvvvvvvvvvvvvvvvvvvvv ", flightData);
-  console.log(
-    "srx_tripType typeof --------------------- ",
-    typeof srx_tripType
-  );
-  console.log(
-    "srx_tripType---------------------",
-    srx_tripType.trim().toLowerCase()
-  );
-
   const closePopUp = () => {
     setError("");
   };
@@ -976,71 +1054,71 @@ export default function Tickets() {
               {((srx_tripType.toLowerCase() === "multi-city" &&
                 modifySearchRef) ||
                 srx_tripType.toLowerCase() !== "multi-city") && (
-                <>
-                  <div className="hdt_header-item relative">
-                    <label>From</label>
-                    <div onClick={openfrom} className="hdt_value">
-                      {srx_departureFrom}
+                  <>
+                    <div className="hdt_header-item relative">
+                      <label>From</label>
+                      <div onClick={openfrom} className="hdt_value">
+                        {srx_departureFrom}
+                      </div>
+
+                      {showSearchState ? (
+                        <div className="searchFfromSelect searchFfromSelect_2">
+                          <AppListSearch
+                            operEngLocation={openfrom}
+                            setSelectFrom={setdepartureFrom}
+                            setSelectFromSub={setDepartureToCode}
+                          />
+                        </div>
+                      ) : null}
                     </div>
 
-                    {showSearchState ? (
-                      <div className="searchFfromSelect searchFfromSelect_2">
-                        <AppListSearch
-                          operEngLocation={openfrom}
-                          setSelectFrom={setdepartureFrom}
-                          setSelectFromSub={setDepartureToCode}
-                        />
+                    <div className="hdt_header-item relative">
+                      <label>To</label>
+                      <div onClick={openTo} className="hdt_value">
+                        {srx_arrivalTo}
                       </div>
-                    ) : null}
-                  </div>
 
-                  <div className="hdt_header-item relative">
-                    <label>To</label>
-                    <div onClick={openTo} className="hdt_value">
-                      {srx_arrivalTo}
+                      {showSearchStateTo ? (
+                        <div className="searchFfromSelect searchFfromSelect_2">
+                          <AppListSearch
+                            operEngLocation={openTo}
+                            setSelectFrom={setArrivalTo}
+                            setSelectFromSub={setArrivalToCode}
+                          />
+                        </div>
+                      ) : null}
                     </div>
-
-                    {showSearchStateTo ? (
-                      <div className="searchFfromSelect searchFfromSelect_2">
-                        <AppListSearch
-                          operEngLocation={openTo}
-                          setSelectFrom={setArrivalTo}
-                          setSelectFromSub={setArrivalToCode}
-                        />
-                      </div>
-                    ) : null}
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
               {((srx_tripType.toLowerCase() === "multi-city" &&
                 modifySearchRef) ||
                 srx_tripType.toLowerCase() !== "multi-city") && (
-                <div className="hdt_header-item">
-                  <label>Depart</label>
-                  <div
-                    onClick={() => {
-                      if (
-                        (srx_tripType.toLowerCase() === "multi-city" &&
-                          modifySearchRef) ||
-                        srx_tripType.toLowerCase() !== "multi-city"
-                      ) {
-                        openToDateRange();
-                      }
-                    }}
-                    className="hdt_value"
-                  >
-                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                  </div>
+                  <div className="hdt_header-item">
+                    <label>Depart</label>
+                    <div
+                      onClick={() => {
+                        if (
+                          (srx_tripType.toLowerCase() === "multi-city" &&
+                            modifySearchRef) ||
+                          srx_tripType.toLowerCase() !== "multi-city"
+                        ) {
+                          openToDateRange();
+                        }
+                      }}
+                      className="hdt_value"
+                    >
+                      {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
+                    </div>
 
-                  {openDateRage ? (
-                    <AppDateRage
-                      openToDateRange={openToDateRange}
-                      setDatedep={setDatedep}
-                    />
-                  ) : null}
-                </div>
-              )}
+                    {openDateRage ? (
+                      <AppDateRage
+                        openToDateRange={openToDateRange}
+                        setDatedep={setDatedep}
+                      />
+                    ) : null}
+                  </div>
+                )}
 
               {srx_tripType.toLowerCase() === "round-trip" ? (
                 <>
@@ -1083,7 +1161,7 @@ export default function Tickets() {
                 </div>
               </div>
               {srx_tripType.toLowerCase() === "multi-city" &&
-              !modifySearchRef ? (
+                !modifySearchRef ? (
                 <>
                   <button
                     onClick={handleModifySearch}
@@ -1182,8 +1260,8 @@ export default function Tickets() {
                         >
                           {segment.departureDate
                             ? dayjs(segment.departureDate).format(
-                                "ddd, MMM D YYYY"
-                              )
+                              "ddd, MMM D YYYY"
+                            )
                             : "Select Date"}
                         </div>
                         {openDepartMultiIndex === idx && (
@@ -1366,9 +1444,10 @@ export default function Tickets() {
                     (() => {
                       const tripInfo =
                         srx_tripType?.trim().toLowerCase() === "round-trip" ||
-                        srx_tripType?.trim().toLowerCase() === "multi-city"
+                          srx_tripType?.trim().toLowerCase() === "multi-city"
                           ? flightData.COMBO
-                          : flightData.ONWARD;
+                          : filteredFlightData;
+                      console.log("mameeeeeeeeee ", tripInfo)
 
                       return (
                         <>
@@ -1445,13 +1524,13 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                    srx_tripType.trim().toLowerCase() === "round-trip" ? (
                     <>
                       {flightData &&
-                      flightData.ONWARD &&
-                      flightData.ONWARD.length > 0 &&
-                      flightData.RETURN &&
-                      flightData.RETURN.length > 0 ? (
+                        flightData.ONWARD &&
+                        flightData.ONWARD.length > 0 &&
+                        flightData.RETURN &&
+                        flightData.RETURN.length > 0 ? (
                         <RoundTripSelectionView
                           flightData={flightData}
                           departureFrom={departureFrom}
@@ -1474,7 +1553,7 @@ export default function Tickets() {
                     </>
                   ) : null}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "multi-city" ? (
+                    srx_tripType.trim().toLowerCase() === "multi-city" ? (
                     <>
                       {flightData ? (
                         <MulticitySelectionView
@@ -1569,7 +1648,8 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                <div className="content-left order-lg-first">
+                {(srx_tripType.trim().toLowerCase() !== "round-trip" && srx_tripType.trim().toLowerCase() !== "multi-city") && (
+                  <div className="content-left order-lg-first">
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
@@ -1577,9 +1657,39 @@ export default function Tickets() {
                           Filter Price{" "}
                         </h6>
                         <ByPrice
-                          filter={filter}
-                          handlePriceRangeChange={handlePriceRangeChange}
+                          priceRange={priceRange}
+                          setPriceRange={setPriceRange}
                         />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Stops
+                        </h6>
+                        <ByStops stops={stops} setStops={setStops} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Departure Time
+                        </h6>
+                        <ByDepartureTime departureTime={departureTime} setDepartureTime={setDepartureTime} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Arrival Time
+                        </h6>
+                        <ByArrivalTime arrivalTime={arrivalTime} setArrivalTime={setArrivalTime} />
                       </div>
                     </div>
                   </div>
@@ -1591,9 +1701,15 @@ export default function Tickets() {
                         </h6>
                         <div className="box-collapse scrollFilter">
                           <ByAirline
-                            uniqueAirlines={uniqueAirlines}
-                            filter={filter}
-                            handleCheckboxChange={handleCheckboxChange}
+                            uniqueAirlines={[
+                              ...new Set(
+                                flightData?.ONWARD?.map(
+                                  (ticket) => ticket.sI[0].fD.aI.name
+                                ) || []
+                              ),
+                            ]}
+                            selectedAirlines={selectedAirlines}
+                            setSelectedAirlines={setSelectedAirlines}
                           />
                           <div className="box-see-more mt-20 mb-25">
                             <Link className="link-see-more" href="#">
@@ -1651,6 +1767,7 @@ export default function Tickets() {
                     </Link>
                   </div>
                 </div>
+              )}
               </div>
             </div>
           </section>

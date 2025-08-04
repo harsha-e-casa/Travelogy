@@ -1,22 +1,24 @@
 
-export default function ByPrice({ handlePriceRangeChange, filter, }: any) {
+export default function ByPrice({ priceRange, setPriceRange }: any) {
+    const currentPriceRange = priceRange || [0, 0];
 	return (
 		<>
 			<div className="box-collapse scrollFilter">
-				<input
-					type="range"
-					min="0"
-					max="500"
-					value={filter.priceRange[0]}
-					onChange={(e) => handlePriceRangeChange([parseInt(e.target.value), filter.priceRange[1]])}
-				/>
-				{/* <input
-					type="range"
-					min="0"
-					max="500"fare summaryangeChange([filter.priceRange[0], parseInt(e.target.value)])}
-				/> */}
-				<div>
-					<span>{filter.priceRange[0]}</span> - <span> {filter.priceRange[1]}</span>
+				<div className="d-flex">
+					<input
+						type="number"
+						className="form-control"
+						placeholder="Min"
+						value={currentPriceRange[0]}
+						onChange={(e) => setPriceRange([parseInt(e.target.value) || 0, currentPriceRange[1]])}
+					/>
+					<input
+						type="number"
+						className="form-control"
+						placeholder="Max"
+						value={currentPriceRange[1]}
+						onChange={(e) => setPriceRange([currentPriceRange[0], parseInt(e.target.value) || 0])}
+					/>
 				</div>
 			</div>
 		</>
