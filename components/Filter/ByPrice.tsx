@@ -1,24 +1,52 @@
+import { useEffect, useState, useRef } from "react";
+import { Slider } from "antd";
 
-export default function ByPrice({ handlePriceRangeChange, filter, }: any) {
-	return (
-		<>
-			<div className="box-collapse scrollFilter">
-				<input
-					type="range"
-					min="0"
-					max="500"
-					value={filter.priceRange[0]}
-					onChange={(e) => handlePriceRangeChange([parseInt(e.target.value), filter.priceRange[1]])}
-				/>
-				{/* <input
-					type="range"
-					min="0"
-					max="500"fare summaryangeChange([filter.priceRange[0], parseInt(e.target.value)])}
-				/> */}
-				<div>
-					<span>{filter.priceRange[0]}</span> - <span> {filter.priceRange[1]}</span>
-				</div>
-			</div>
-		</>
-	)
+export default function ByPrice({ filter, handlePriceRangeChange, range }: any) {
+
+	const timerRef = useRef<number | null>(null);
+
+
+  const [rangedata, setRangedata] = useState<[number, number]>([5000, 11000]);
+
+  // Sync initial value from props (if range prop is passed)
+  useEffect(() => {
+    if (range && Array.isArray(range)) {
+      setRangedata(range);
+    }
+  }, [range]);
+
+  const onSliderChange = (val: [number, number]) => {
+	
+    setRangedata(val);
+
+	  // clear any pending timeout
+	  if (timerRef.current !== null) {
+		clearTimeout(timerRef.current);
+	  }
+
+   timerRef.current = window.setTimeout(() => {
+    handlePriceRangeChange("onwardPrice", val);
+    timerRef.current = null; // reset
+  }, 2000);
+  };
+
+  return (
+    <div className="box-collapse scrollFilter">
+      <div className="mb-2 text-sm font-medium">Price Range</div>
+
+      <Slider
+        range
+        step={10}
+        min={range[0]}
+        max={range[1]}
+        value={rangedata}
+        onChange={onSliderChange}
+        tooltip={{ formatter: (val) => `₹${val}` }}
+      />
+
+      <div className="mt-1">
+        ₹{rangedata[0]} - ₹{rangedata[1]}
+      </div>
+    </div>
+  );
 }

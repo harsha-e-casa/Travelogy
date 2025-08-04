@@ -5,7 +5,9 @@ import Cookies from 'js-cookie';
 
 // You can store the API base URL in an environment variable
 // const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
-const API_BASE_URL = 'http://localhost:3030';
+// const API_BASE_URL = 'http://localhost:3030';
+
+const API_BASE_URL = 'https://com.digilogy.co';
 const API_TEST_JACK = 'https://apitest.tripjack.com/';
 const apiKey = '412605c3683c38-96bd-45b6-ae06-02e22a8be1b1';
 

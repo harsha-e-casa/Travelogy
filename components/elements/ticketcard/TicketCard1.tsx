@@ -67,6 +67,7 @@ export default function TicketCard1({
   flightData,
   reschedule = false,
 }: any) {
+  
   console.log("flightData from ticketcard", flightData);
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);

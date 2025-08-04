@@ -6,11 +6,10 @@ import "./Multicity.css";
 import { Input, Radio } from "antd";
 import Link from "next/link";
 
-export default function MulticitySelectionView({ flightData }) {
+export default function MulticitySelectionView({ flightData, setMulticityFilterData, activeTabKey = 0, setActiveTabKey }) {
   const { getCookie } = useContext(AppContext);
   const [activeBoxIndex, setActiveBoxIndex] = useState(0);
   const [selectedFlights, setSelectedFlights] = useState({});
-  const [activeTabKey, setActiveTabKey] = useState("1");
 
   const [departureFrom, setDepartureFrom] = useState("");
   const [arrivalTo, setArrivalTo] = useState("");
@@ -92,6 +91,45 @@ export default function MulticitySelectionView({ flightData }) {
 
   console.log("matched flight", matchedFlights);
 
+//  // This runs only once when `cities` changes
+// useEffect(() => {
+
+//   if(flightData){
+
+// flightData[activeTabKey-1];
+
+//       // — flatten flight data & derive global filter options —
+//   const allFlightsFlat = Object.values(flightData[activeTabKey-1]).flat();
+  
+//   const airlineOptions = Array.from(
+//     new Set(allFlightsFlat.flatMap(f => f.sI.map(seg => seg.fD.aI.name)))
+//   );
+//   const fareOptions = Array.from(
+//     new Set(allFlightsFlat.flatMap(f => f.totalPriceList.map(p => p.fareIdentifier)))
+//   );
+
+//   const filterData = {
+//     airlineOptions,
+//     fareOptions,
+//   };
+
+//   setMulticityFilterData(filterData);
+
+  
+//   }
+//   // if (cities?.length > 0) {
+//   //   const matchedFlights = cities.map(({ from, to }) => {
+//   //     const flights = []; // your logic here
+//   //     return { from, to, flights };
+//   //   });
+
+//   //   if (matchedFlights[0]?.flights?.length > 0) {
+//   //     setCurrectFilter(matchedFlights[0].flights[0]);
+//   //   }
+//   // }
+// }, [flightData, activeTabKey]);
+
+  
   const formatTime = (durationInMinutes) => {
     const hours = Math.floor(durationInMinutes / 60);
     const minutes = durationInMinutes % 60;
@@ -101,8 +139,11 @@ export default function MulticitySelectionView({ flightData }) {
 
     return `${hours}h ${minutes}m`;
   };
+
+
   const tabItems = matchedFlights.map((pair, tabIndex) => {
     const firstFlight = pair.flights[0];
+    
     let travelDate = "";
 
     if (firstFlight?.sI?.[0]?.dt) {
