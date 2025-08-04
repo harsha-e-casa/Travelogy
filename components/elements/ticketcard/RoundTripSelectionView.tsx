@@ -4,17 +4,29 @@ import dayjs from "dayjs";
 import DomesticRoundTripTicketCard from "./DomesticRoundTripTicketCard";
 // import TicketCard1 from "./TicketCard1";
 
-export default function RoundTripSelectionView({ flightData }: any) {
+export default function RoundTripSelectionView({ flightData, setTripPhaseFilter, resetFIlterSection, setReturnTicketCancel }: any) {
+
+
   const { getCookie } = useContext(AppContext);
   const departureFrom = getCookie("gy_da_str");
   const arrivalTo = getCookie("gy_aa_str");
   const [selectedOnwardTicket, setSelectedOnwardTicket] = useState(null);
-  const [currentTickets, setCurrentTickets] = useState(flightData.ONWARD);
+  // const [currentTickets, setCurrentTickets] = useState(flightDataONWARD); karthik
+  const [currentTickets, setCurrentTickets] = useState([]);  
   const [tripPhase, setTripPhase] = useState<"ONWARD" | "RETURN">("ONWARD");
 
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
+
+  useEffect(() => {
+    if(tripPhase != 'RETURN'){
+      setCurrentTickets(flightData.ONWARD)
+    }else{
+      setCurrentTickets(flightData.RETURN)
+    }
+  }, [flightData, tripPhase]);
+  
   useEffect(() => {
     if (
       getCookie("gy_adult") !== undefined &&
@@ -41,8 +53,12 @@ export default function RoundTripSelectionView({ flightData }: any) {
       console.log("ticketttttttttttttttt ", ticket);
       console.log("ticketttttttttttttttt ", selectedPriceIndex);
       setSelectedOnwardTicket({ ticket, selectedPriceIndex }); // save selected onward
-      setCurrentTickets(flightData.RETURN); // move to return flights
+
+      setCurrentTickets(flightData.Return); // move to return flights
+      // setCurrentTickets(flightData.RETURN); // move to return flights Harsha
+      resetFIlterSection()
       setTripPhase("RETURN");
+      setTripPhaseFilter("RETURN") // filter section
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // Final step — onward and return selected
@@ -429,8 +445,10 @@ export default function RoundTripSelectionView({ flightData }: any) {
             <div className="col-lg-1">
               <button
                 onClick={() => {
+                  setReturnTicketCancel(prev => !prev)
                   setSelectedOnwardTicket(null);
                   setTripPhase("ONWARD");
+                  setTripPhaseFilter("ONWARD") // filter section
                   setCurrentTickets(flightData.ONWARD);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}

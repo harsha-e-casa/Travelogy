@@ -38,8 +38,6 @@ import { TravellerForm } from "@/components/searchEngine/TravellerForm";
 import useTicketFilter2 from "@/util/useTicketFilter2";
 import {mapFlightDataToTickets} from '../../util/mapper'
 import FilterModelComponents from "@/components/Filter/FilterModelComponents";
-import { Slider } from "antd";
-
 
 // // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -87,13 +85,10 @@ export default function Tickets() {
   const [ticketsData1, setTicketsData1] = useState<Ticket[]>([]);
   const [activeFlight, setActiveFlight] = useState<any>(true);
   const [loading, setloading] = useState<boolean>(false);
-  const [loadingFilter, setLoadingFilter] = useState<boolean>(false);
-
 
   const [uniqueAirlines, setUniqueAirlines] = useState<any>(null);
   const [uniquefareIdentifier, setUniquefareIdentifier] = useState<any>(null);
   const [returnUniqueAirlines, setReturnUniqueAirlines] = useState<any>(null);
-  const [range, setRange] = useState<[number, number]>([0, 0]);
 
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -128,7 +123,7 @@ const [filter, setFilter] = useState({
   airlines: [], // Array of selected airlines
   returnAirlines: [], // Array of selected return airlines
   fareIdentifier: [], // Array of selected fare identifiers
-  priceRange: [], // Selected price range [min, max]
+  priceRange: [0, 10000], // Selected price range [min, max]
   locations: [], // Selected locations (departure/arrival cities)
   onwardFlightNumbers: [], // Selected onward flight numbers
   returnFlightNumbers: [], // Selected return flight numbers
@@ -139,7 +134,7 @@ const resetFIlterSection = () =>{
     airlines: [], // Array of selected airlines
     returnAirlines: [], // Array of selected return airlines
     fareIdentifier: [], // Array of selected fare identifiers
-    priceRange: [], // Selected price range [min, max]
+    priceRange: [0, 10000], // Selected price range [min, max]
     locations: [], // Selected locations (departure/arrival cities)
     onwardFlightNumbers: [], // Selected onward flight numbers
     returnFlightNumbers: [], // Selected return flight numbers
@@ -192,22 +187,6 @@ const handleCheckboxChange = (type: string, value: string) => {
     return updatedFilter; // Return the updated filter state
   });
 };
-
-const handlePriceRangeChange = (type: string, value: string) => {
-
-  setFilter((prevFilter: any) => {
-    
-    const updatedFilter = { ...prevFilter };
-    updatedFilter.priceRange = [];
-    // Check if the value exists in the filter
-    if (type === "onwardPrice") {
-      updatedFilter.priceRange.push(value);
-    }
-
-    return updatedFilter; // Return the updated filter state
-  });
-};
-
 
 // useEffect(() => {
 //   if (!filter) return;
@@ -335,27 +314,23 @@ const handlePriceRangeChange = (type: string, value: string) => {
 useEffect(() => {
 
   resetFIlterSection()
-  setLoadingFilter(true);
   
 if(activeTabKey && flightDataOriginal){
   
-    const infoFLights = flightDataOriginal;
+  const infoFLights = flightDataOriginal;
 
-    if (srx_tripType.toLowerCase() === "multi-city" && !infoFLights?.COMBO) {
+if (srx_tripType.toLowerCase() === "multi-city" && !infoFLights?.COMBO) {
 
-      
-    const infoFlightsFinal3 = {
-        [activeTabKey]: infoFLights[activeTabKey-1]
-      };
+    
+  const infoFlightsFinal3 = {
+      [activeTabKey]: infoFLights[activeTabKey-1]
+    };
 
-      const mapped = mapFlightDataToTickets(infoFlightsFinal3);
-        setUniqueAirlines(mapped.filters.onwardAirlines);
-        setUniquefareIdentifier(mapped.filters.onwardfareIdentifiers);
+    const mapped = mapFlightDataToTickets(infoFlightsFinal3);
+  setUniqueAirlines(mapped.filters.onwardAirlines);
+  setUniquefareIdentifier(mapped.filters.onwardfareIdentifiers);
 
-    }
-    setTimeout(() => {
-      setLoadingFilter(false);
-    }, 500);
+}
 }
 
 }, [activeTabKey]);
@@ -363,14 +338,14 @@ if(activeTabKey && flightDataOriginal){
 
 useEffect(() => {
 
-  // console.log('aftetr', filter.priceRange);
+
   // and check ones combo type
     if(srx_tripType?.toLowerCase() === "multi-city"){
 
         
         if(flightDataOriginal && !flightDataOriginal?.COMBO){
         
-        if (filter.airlines?.length > 0 || filter.fareIdentifier?.length > 0 ) {
+        if (filter.airlines?.length > 0 || filter.fareIdentifier?.length > 0) {
           async function runFilter() {
             const filtered = await filterTripInfosMulticity(
               flightDataOriginal,
@@ -395,17 +370,13 @@ useEffect(() => {
   
   if(tripPhaseFilter != 'RETURN' ){
     // If any filters are active
-
-    console.log('ssssqqq', filter.priceRange);
-
-    if (filter.airlines?.length > 0 || filter.fareIdentifier?.length > 0 || filter.priceRange.length > 0) {
+    if (filter.airlines?.length > 0 || filter.fareIdentifier?.length > 0) {
       
       async function runFilter() {
         const filtered = await filterTripInfosByAirlines(
           flightDataOriginal,
           filter.airlines,
-          filter.fareIdentifier,
-          filter.priceRange
+          filter.fareIdentifier
         );
         // console.log('final', filtered);
         setRefreshKey(prev => prev + 1);
@@ -498,13 +469,11 @@ async function filterTripInfosMulticity(
 }
 
 
-async function filterTripInfosByAirlines(tripInfos, airlines = [], fareIdentifiers = [], priceRange=[]) {
-
+async function filterTripInfosByAirlines(tripInfos, airlines = [], fareIdentifiers = []) {
   if (!tripInfos || typeof tripInfos !== "object") return {};
 
   const airlinesLower = airlines.map(a => a.toLowerCase());
   const fareIdsLower = fareIdentifiers.map(f => f.toLowerCase());
-  const [minPrice, maxPrice] = priceRange[0];
 
   const result = Object.entries(tripInfos).reduce((acc, [tripKey, flights]) => {
     const filteredFlights = (flights || []).filter(flight => {
@@ -524,13 +493,7 @@ async function filterTripInfosByAirlines(tripInfos, airlines = [], fareIdentifie
             price => price.fareIdentifier && fareIdsLower.includes(price.fareIdentifier.toLowerCase())
           ));
 
-           // 3) **Price‐range filter** using ADULT.TF
-      const price =
-      flight.totalPriceList?.[0]?.fd?.ADULT?.fC?.TF
-      ?? 0;
-      const matchesPrice = price >= minPrice && price <= maxPrice;
-
-      return matchesAirline && matchesFare && matchesPrice;
+      return matchesAirline && matchesFare;
     });
 
     if (filteredFlights.length > 0) {
@@ -1028,7 +991,6 @@ useEffect(() => {
       setFlightData(null);
       setActiveFlight(true);
       setloading(true);
-      setLoadingFilter(true);
 
       // console.log('set final', rawticketsData.searchResult.tripInfos)
       
@@ -1102,21 +1064,10 @@ useEffect(() => {
           }else{
             mapped = mapFlightDataToTickets(infoFLights);
           }
-
-          console.log('mapped.filters', mapped.filters);
-          console.log(mapped.filters.priceRanges)
-
           
           setUniqueAirlines(mapped.filters.onwardAirlines);
           setUniquefareIdentifier(mapped.filters.onwardfareIdentifiers);
           setReturnUniqueAirlines(mapped.filters.returnAirlines);
-
-          // price section
-          const sorted = mapped.filters.priceRanges?.slice().sort((a, b) => a - b);
-          const min = sorted[0];
-          const max = sorted[sorted.length - 1];
-          setRange([min, max]);
-          
 
           setFlightData(infoFLights);
           setTicketsData1(mapped.tickets);
@@ -1157,7 +1108,6 @@ useEffect(() => {
         }
       } finally {
         setloading(false);
-        setLoadingFilter(false)
         setActiveFlight(false);
         SetSearchFlight(false); // reset trigger
         hasFetchedRef.current = false; // allow next fetch
@@ -2192,11 +2142,10 @@ useEffect(() => {
                         <h6 className="text-lg-bold item-collapse neutral-1000">
                           Filter Price for{" "}
                         </h6>
-                        <ByPrice
-                          range={range}
+                        {/* <ByPrice
                           filter={filter}
                           handlePriceRangeChange={handlePriceRangeChange}
-                        />
+                        /> */}
                       </div>
                     </div>
                   </div>
@@ -2208,7 +2157,7 @@ useEffect(() => {
                           Airlines 
                         </h6>
                         <div className="box-collapse scrollFilter">
-                       {loadingFilter ? (
+                       {loading ? (
                           // if loading === true
                           <Skeleton active />
                         ) : uniqueAirlines && uniqueAirlines.length > 0 ? (
@@ -2246,7 +2195,7 @@ useEffect(() => {
                         </h6>
                         <div className="box-collapse scrollFilter">
 
-                        {loadingFilter ? (
+                        {loading ? (
                           // if loading === true
                           <Skeleton active />
                         ) : returnUniqueAirlines && returnUniqueAirlines.length > 0 ? (
@@ -2305,25 +2254,13 @@ useEffect(() => {
                         Fare Identifier
                         </h6>
                         <div className="box-collapse scrollFilter">
-
-                        {loadingFilter ? (
-                          // if loading === true
-                          <Skeleton active />
-                        ) : uniquefareIdentifier && uniquefareIdentifier.length > 0 ? (
-                          // else, if you have airlines
-                          <FareIdentifier
-                          fareIdentifier={uniquefareIdentifier}
-                          filter={filter}
-                          handleCheckboxChange={handleCheckboxChange}
-                          />
-                        ) : null}
-
-                        {/* {uniquefareIdentifier ? <FareIdentifier
+                          
+                        {uniquefareIdentifier ? <FareIdentifier
                             fareIdentifier={uniquefareIdentifier}
                             filter={filter}
                             handleCheckboxChange={handleCheckboxChange}
                           />
-                          : null } */}
+                          : null }
                           <div className="box-see-more mt-20 mb-25">
                             <Link className="link-see-more" href="#">
                               See more

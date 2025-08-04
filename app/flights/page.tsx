@@ -50,43 +50,43 @@ const AppDateRangeww = () => {
   );
 };
 
-const ticketsData = rawticketsData.map((ticket) => ({
-  ...ticket,
-  rating: parseFloat(ticket.rating as string),
-}));
+// const ticketsData = rawticketsData.map((ticket) => ({
+//   ...ticket,
+//   rating: parseFloat(ticket.rating as string),
+// }));
 
 export default function Tickets() {
-  const {
-    filter,
-    setFilter,
-    sortCriteria,
-    setSortCriteria,
-    itemsPerPage,
-    setItemsPerPage,
-    currentPage,
-    setCurrentPage,
-    uniqueNames,
-    uniqueClasses,
-    uniqueLocations,
-    uniqueRatings,
-    uniqueAirlines,
-    filteredTickets,
-    sortedTickets,
-    totalPages,
-    startIndex,
-    endIndex,
-    paginatedTickets,
-    handleCheckboxChange,
-    handleSortChange,
-    handlePriceRangeChange,
-    handleItemsPerPageChange,
-    handlePageChange,
-    handlePreviousPage,
-    handleNextPage,
-    handleClearFilters,
-    startItemIndex,
-    endItemIndex,
-  } = useTicketFilter(ticketsData);
+  // const {
+  //   filter,
+  //   setFilter,
+  //   sortCriteria,
+  //   setSortCriteria,
+  //   itemsPerPage,
+  //   setItemsPerPage,
+  //   currentPage,
+  //   setCurrentPage,
+  //   uniqueNames,
+  //   uniqueClasses,
+  //   uniqueLocations,
+  //   uniqueRatings,
+  //   uniqueAirlines,
+  //   filteredTickets,
+  //   sortedTickets,
+  //   totalPages,
+  //   startIndex,
+  //   endIndex,
+  //   paginatedTickets,
+  //   handleCheckboxChange,
+  //   handleSortChange,
+  //   handlePriceRangeChange,
+  //   handleItemsPerPageChange,
+  //   handlePageChange,
+  //   handlePreviousPage,
+  //   handleNextPage,
+  //   handleClearFilters,
+  //   startItemIndex,
+  //   endItemIndex,
+  // } = useTicketFilter(ticketsData);
 
   return (
     <>
