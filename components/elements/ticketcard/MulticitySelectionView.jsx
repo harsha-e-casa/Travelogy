@@ -133,11 +133,15 @@ export default function MulticitySelectionView({ flightData }) {
   const [infantCount, setInfantCount] = useState(0);
   const [selectedFares, setSelectedFares] = useState({});
   const [showAllFares, setShowAllFares] = useState(false);
-  useEffect(() => {
-    console.log("Selected Flights:", selectedFlights);
-  }, [selectedFlights]);
-  const setSelectedFare = (ticketIndex, fareIndex) => {
-    setSelectedFares((prev) => ({ ...prev, [ticketIndex]: fareIndex }));
+  
+  const setSelectedFare = (tabIndex, flightIndex, fareIndex) => {
+    setSelectedFares((prev) => ({
+      ...prev,
+      [tabIndex]: {
+        ...(prev[tabIndex] || {}),
+        [flightIndex]: fareIndex
+      }
+    }));
   };
 
   useEffect(() => {
@@ -222,6 +226,7 @@ export default function MulticitySelectionView({ flightData }) {
                     Filter Price{" "}
                   </h6>
                   <ByPrice
+                    key={`price-${tabIndex}`}
                     priceRange={filters[tabIndex]?.priceRange}
                     setPriceRange={(newRange) => {
                       setFilters(prevFilters => {
@@ -244,6 +249,7 @@ export default function MulticitySelectionView({ flightData }) {
                     Stops
                   </h6>
                   <ByStops
+                    key={`stops-${tabIndex}`}
                     stops={filters[tabIndex]?.stops}
                     setStops={(newStops) => {
                       setFilters(prevFilters => {
@@ -255,6 +261,7 @@ export default function MulticitySelectionView({ flightData }) {
                         return newFilters;
                       });
                     }}
+                    tabIndex={tabIndex}
                   />
                 </div>
               </div>
@@ -266,6 +273,7 @@ export default function MulticitySelectionView({ flightData }) {
                     Departure Time
                   </h6>
                   <ByDepartureTime
+                    key={`departureTime-${tabIndex}`}
                     departureTime={filters[tabIndex]?.departureTime}
                     setDepartureTime={(newDepartureTime) => {
                       setFilters(prevFilters => {
@@ -277,6 +285,7 @@ export default function MulticitySelectionView({ flightData }) {
                         return newFilters;
                       });
                     }}
+                    tabIndex={tabIndex}
                   />
                 </div>
               </div>
@@ -288,6 +297,7 @@ export default function MulticitySelectionView({ flightData }) {
                     Arrival Time
                   </h6>
                   <ByArrivalTime
+                    key={`arrivalTime-${tabIndex}`}
                     arrivalTime={filters[tabIndex]?.arrivalTime}
                     setArrivalTime={(newArrivalTime) => {
                       setFilters(prevFilters => {
@@ -299,6 +309,7 @@ export default function MulticitySelectionView({ flightData }) {
                         return newFilters;
                       });
                     }}
+                    tabIndex={tabIndex}
                   />
                 </div>
               </div>
@@ -311,6 +322,7 @@ export default function MulticitySelectionView({ flightData }) {
                   </h6>
                   <div className="box-collapse scrollFilter">
                     <ByAirline
+                      key={`airline-${tabIndex}`}
                       uniqueAirlines={[
                         ...new Set(
                           pair.flights.map(
@@ -407,8 +419,8 @@ export default function MulticitySelectionView({ flightData }) {
 
                           <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
                             <Radio.Group
-                              onChange={(e) => setSelectedFare(i, e.target.value)}
-                              value={selectedFares[i] || 0}
+                              onChange={(e) => setSelectedFare(tabIndex, i, e.target.value)}
+                              value={selectedFares[tabIndex]?.[i] ?? 0}
                               className="fare-options flex flex-col gap-2 w-full"
                             >
                               {(showAllFares
@@ -469,7 +481,7 @@ export default function MulticitySelectionView({ flightData }) {
                             <button
                               className="btn btn-gray mt-2 "
                               onClick={() => {
-                                const selectedFareIndex = selectedFares[i] || 0;
+                                const selectedFareIndex = selectedFares[tabIndex]?.[i] ?? 0;
                                 const selectedFare = ticket.totalPriceList[selectedFareIndex];
                                 const fareFD = selectedFare.fd;
 
@@ -545,6 +557,7 @@ export default function MulticitySelectionView({ flightData }) {
         activeKey={activeTabKey}
         items={tabItems}
         onChange={(key) => setActiveTabKey(key)}
+        destroyInactiveTabPane={false}
       />
     </>
   );

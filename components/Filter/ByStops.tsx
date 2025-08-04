@@ -1,12 +1,12 @@
-export default function ByStops({ stops, setStops }: any) {
+export default function ByStops({ stops, setStops, tabIndex }: any) {
   return (
     <div className="box-collapse scrollFilter">
       <ul className="list-filter-checkbox">
-        <li>
+        <li key="all">
           <label className="cb-container">
             <input
               type="radio"
-              name="stops"
+              name={`stops-${tabIndex}`}
               value="all"
               checked={stops === "all"}
               onChange={(e) => setStops(e.target.value)}
@@ -15,11 +15,11 @@ export default function ByStops({ stops, setStops }: any) {
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="non-stop">
           <label className="cb-container">
             <input
               type="radio"
-              name="stops"
+              name={`stops-${tabIndex}`}
               value="non-stop"
               checked={stops === "non-stop"}
               onChange={(e) => setStops(e.target.value)}
@@ -28,11 +28,11 @@ export default function ByStops({ stops, setStops }: any) {
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="1-stop">
           <label className="cb-container">
             <input
               type="radio"
-              name="stops"
+              name={`stops-${tabIndex}`}
               value="1-stop"
               checked={stops === "1-stop"}
               onChange={(e) => setStops(e.target.value)}
@@ -41,11 +41,11 @@ export default function ByStops({ stops, setStops }: any) {
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="2-stops">
           <label className="cb-container">
             <input
               type="radio"
-              name="stops"
+              name={`stops-${tabIndex}`}
               value="2-stops"
               checked={stops === "2-stops"}
               onChange={(e) => setStops(e.target.value)}

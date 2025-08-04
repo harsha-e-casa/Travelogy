@@ -1,12 +1,12 @@
-export default function ByDepartureTime({ departureTime, setDepartureTime }: any) {
+export default function ByDepartureTime({ departureTime, setDepartureTime, tabIndex }: any) {
   return (
     <div className="box-collapse scrollFilter">
       <ul className="list-filter-checkbox">
-        <li>
+        <li key="all">
           <label className="cb-container">
             <input
               type="radio"
-              name="departureTime"
+              name={`departureTime-${tabIndex}`}
               value="all"
               checked={departureTime === "all"}
               onChange={(e) => setDepartureTime(e.target.value)}
@@ -15,11 +15,11 @@ export default function ByDepartureTime({ departureTime, setDepartureTime }: any
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="early-morning">
           <label className="cb-container">
             <input
               type="radio"
-              name="departureTime"
+              name={`departureTime-${tabIndex}`}
               value="early-morning"
               checked={departureTime === "early-morning"}
               onChange={(e) => setDepartureTime(e.target.value)}
@@ -28,11 +28,11 @@ export default function ByDepartureTime({ departureTime, setDepartureTime }: any
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="morning">
           <label className="cb-container">
             <input
               type="radio"
-              name="departureTime"
+              name={`departureTime-${tabIndex}`}
               value="morning"
               checked={departureTime === "morning"}
               onChange={(e) => setDepartureTime(e.target.value)}
@@ -41,11 +41,11 @@ export default function ByDepartureTime({ departureTime, setDepartureTime }: any
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="afternoon">
           <label className="cb-container">
             <input
               type="radio"
-              name="departureTime"
+              name={`departureTime-${tabIndex}`}
               value="afternoon"
               checked={departureTime === "afternoon"}
               onChange={(e) => setDepartureTime(e.target.value)}
@@ -54,11 +54,11 @@ export default function ByDepartureTime({ departureTime, setDepartureTime }: any
             <span className="checkmark" />
           </label>
         </li>
-        <li>
+        <li key="evening">
           <label className="cb-container">
             <input
               type="radio"
-              name="departureTime"
+              name={`departureTime-${tabIndex}`}
               value="evening"
               checked={departureTime === "evening"}
               onChange={(e) => setDepartureTime(e.target.value)}
