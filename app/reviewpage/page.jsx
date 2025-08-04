@@ -865,6 +865,11 @@ const Page = () => {
     console.log("travellers (before update)", travellers);
     console.log("totalprice bookingId", totalprice, bookingId);
 
+    const gstInfoCookies = getCookie("gst_info");
+    console.log("gstInfoCookies = ",gstInfoCookies);
+    const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
+    console.log("gstInfos = ",gstInfos);
+
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
@@ -879,13 +884,22 @@ const Page = () => {
         },
       };
 
+      if (gstInfos && Object.keys(gstInfos).length > 0) {
+        console.log("gstInfo irukan");
+        parameter.gstInfo = { ...gstInfos };
+      }
+
       console.log("travellerInfo (final):", parameter.travellerInfo);
       console.log("parameter for book:", parameter);
 
       const saveBookingId = async () => {
         const reqSaveBookingId = {
+          type: "save",
           booking_id: bookingId,
           phone: number.number,
+          amount: finalAmountToPay,
+          status: "",
+          time: new Date().toISOString()
         };
         const result = await postData(
           "travelogy/flight/save-booking",

@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 
 const API_BASE_URL = 'https://com.digilogy.co';
 const API_TEST_JACK = 'https://apitest.tripjack.com/';
-const apiKey = '412605c3683c38-96bd-45b6-ae06-02e22a8be1b1';
+const apiKey = '412605943ad923-4ae7-49f6-9c8e-8b75be573422';
 
 // const parameter = {
 //   "searchQuery": {

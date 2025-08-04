@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API_KEY = "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1";
+const API_KEY = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
 
-// Fetch hotel review data
 export const fetchHotelReviewData = async (hotelId, optionId) => {
   const API_URL_REVIEW = "https://apitest.tripjack.com/hms/v1/hotel-review";
 
@@ -16,22 +15,11 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
       },
       {
         headers: {
-          "Content-Type": "application/json",
           apikey: `${API_KEY}`,
         },
       }
     );
 
-    //     if (response.status === 200) {
-    //       return response.data;
-    //     } else {
-    //       throw new Error("Failed to fetch hotel data");
-    //     }
-    //   } catch (err) {
-    //     console.error("Error fetching hotel data:", err);
-    //     throw new Error("Failed to fetch hotel data");
-    //   }
-    // };
     if (response.data?.status?.success) {
       return response.data;
     } else {
@@ -41,7 +29,6 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
       throw new Error(apiError);
     }
   } catch (err) {
-    // If Axios throws because of HTTP error (e.g. 400)
     const apiMessage =
       err?.response?.data?.errors?.[0]?.message ||
       err?.message ||
@@ -49,7 +36,6 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
     throw new Error(apiMessage);
   }
 };
-// Hook to fetch cities
 export const useCities = () => {
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -75,7 +61,6 @@ export const useCities = () => {
   return { cities, loading };
 };
 
-// Hook to fetch nationalities
 export const useNationalities = () => {
   const [nationalities, setNationalities] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,111 +87,243 @@ export const useNationalities = () => {
   return { nationalities, loading };
 };
 
-export async function hotelBooking({ formData, hotelReviewData }) {
-  const bookingId = hotelReviewData?.bookingId;
-  const roomInfo = hotelReviewData?.query?.roomInfo || [];
-  const panInfo = formData?.panInfo;
-  const email = formData?.email;
-  const mobile = formData?.mobile;
-  const countryCode = formData?.countryCode || "+91";
+// export async function hotelBooking({ formData, hotelReviewData }) {
+//   const bookingId = hotelReviewData?.bookingId;
+//   const roomInfo = hotelReviewData?.query?.roomInfo || [];
+//   const panInfo = formData?.panInfo;
+//   const email = formData?.email;
+//   const mobile = formData?.mobile;
+//   const countryCode = formData?.countryCode || "+91";
 
-  const baseFare = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF || 0;
-  const tax = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF || 0;
-  const totalAmount = Number(baseFare + tax);
+//   const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
+//   const roomTravellerInfo = roomInfo.map((room, roomIndex) => {
+//     const guests = [
+//       ...(formData.guests?.[roomIndex]
+//         ? [
+//             formData.guests[roomIndex],
+//             ...(formData.guests[roomIndex].extraGuests || []),
+//           ]
+//         : []),
+//     ];
 
-  const roomTravellerInfo = roomInfo.map((room, roomIndex) => {
-    const guests = [
-      ...(formData.guests?.[roomIndex]
-        ? [
-            formData.guests[roomIndex],
-            ...(formData.guests[roomIndex].extraGuests || []),
-          ]
-        : []),
-    ];
+//     const travellers = guests.map((guest, guestIndex) => {
+//       const isChild = guest?.type === "children";
+//       let pan = "";
+//       let pNum = guest?.passportNumber || "";
+//       if (!isChild) {
+//         if (panInfo?.mode === "same") {
+//           pan = panInfo.pan;
+//         } else if (panInfo?.mode === "custom") {
+//           pan = panInfo.rooms?.[roomIndex]?.useGuardian
+//             ? panInfo.rooms?.[roomIndex]?.guardian?.pan
+//             : panInfo.rooms?.[roomIndex]?.guests?.[guestIndex]?.pan;
+//         }
+//       }
 
-    const travellers = guests.map((guest, guestIndex) => {
-      const isChild = guest?.type === "children";
-      let pan = "";
+//       return {
+//         fN: guest?.firstName || "TBA",
+//         lN: guest?.lastName || "Guest",
+//         ti: guest?.title || "Mr",
+//         pt: isChild ? "CHILD" : "ADULT",
+//         pNum,
+//         ...(isChild ? {} : { pan }),
+//       };
+//     });
 
-      if (!isChild) {
-        if (panInfo?.mode === "same") {
-          pan = panInfo.pan;
-        } else if (panInfo?.mode === "custom") {
-          pan = panInfo.rooms?.[roomIndex]?.useGuardian
-            ? panInfo.rooms?.[roomIndex]?.guardian?.pan
-            : panInfo.rooms?.[roomIndex]?.guests?.[guestIndex]?.pan;
+//     return {
+//       travellerInfo: travellers,
+//     };
+//   });
+
+//   const payload = {
+//     bookingId,
+//     roomTravellerInfo,
+//     deliveryInfo: {
+//       emails: [email],
+//       contacts: [mobile],
+//       code: [countryCode],
+//     },
+//     ssr: roomInfo.map((room, roomIndex) => {
+//       const guests = [
+//         ...(formData.guests?.[roomIndex]
+//           ? [
+//               formData.guests[roomIndex],
+//               ...(formData.guests[roomIndex].extraGuests || []),
+//             ]
+//           : []),
+//       ];
+
+//       const specialRequests = guests
+//         .map((guest) => guest?.specialRequest)
+//         .filter(Boolean);
+
+//       const roomSpecialRequest =
+//         specialRequests.length > 0
+//           ? specialRequests.join(", ")
+//           : formData.specialRequest;
+
+//       return {
+//         rm: roomSpecialRequest,
+//       };
+//     }),
+//     type: "HOTEL",
+//     paymentInfos: [
+//       {
+//         amount: totalAmount,
+//       },
+//     ],
+//   };
+
+//   console.log("Final Payload to API:", JSON.stringify(payload, null, 2));
+
+//   const response = await axios.post(
+//     "https://apitest.tripjack.com/oms/v1/hotel/book",
+//     payload,
+//     {
+//       headers: {
+//         apikey: API_KEY,
+//       },
+//     }
+//   );
+
+//   return response.data;
+// }
+export async function hotelBooking({
+  formData,
+  hotelReviewData,
+  isBlock = false,
+}) {
+  try {
+    const bookingId = hotelReviewData?.bookingId;
+    const roomInfo = hotelReviewData?.query?.roomInfo || [];
+    const panInfo = formData?.panInfo;
+    const email = formData?.email;
+    const mobile = formData?.mobile;
+    const countryCode = formData?.countryCode || "+91";
+
+    const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
+
+    const roomTravellerInfo = roomInfo.map((room, roomIndex) => {
+      const guests = [
+        ...(formData.guests?.[roomIndex]
+          ? [
+              formData.guests[roomIndex],
+              ...(formData.guests[roomIndex].extraGuests || []),
+            ]
+          : []),
+      ];
+
+      const travellers = guests.map((guest, guestIndex) => {
+        const isChild = guest?.type === "children";
+        let pan = "";
+        let pNum = guest?.passportNumber || "";
+        if (!isChild) {
+          if (panInfo?.mode === "same") {
+            pan = panInfo.pan;
+          } else if (panInfo?.mode === "custom") {
+            pan = panInfo.rooms?.[roomIndex]?.useGuardian
+              ? panInfo.rooms?.[roomIndex]?.guardian?.pan
+              : panInfo.rooms?.[roomIndex]?.guests?.[guestIndex]?.pan;
+          }
         }
-      }
+
+        return {
+          fN: guest?.firstName || "TBA",
+          lN: guest?.lastName || "Guest",
+          ti: guest?.title || "Mr",
+          pt: isChild ? "CHILD" : "ADULT",
+          pNum,
+          ...(isChild ? {} : { pan }),
+        };
+      });
 
       return {
-        fN: guest?.firstName || "TBA",
-        lN: guest?.lastName || "Guest",
-        ti: guest?.title || "Mr",
-        pt: isChild ? "CHILD" : "ADULT",
-        ...(isChild ? {} : { pan }),
-        isTba: false,
-        isPaxOpen: false,
-        ed: "0.0",
-        errors: {
-          fN: true,
-          lN: true,
-          ats: true,
-          pNum: true,
-          peD: true,
-          ...(isChild ? {} : { pan: true }),
-        },
+        travellerInfo: travellers,
       };
     });
 
-    return {
-      id: room?.uniqueRoomId || `room-${roomIndex + 1}`,
-      travellerInfo: travellers,
+    const payload = {
+      bookingId,
+      roomTravellerInfo,
+      deliveryInfo: {
+        emails: [email],
+        contacts: [mobile],
+        code: [countryCode],
+      },
+      ssr: roomInfo.map((room, roomIndex) => {
+        const guests = [
+          ...(formData.guests?.[roomIndex]
+            ? [
+                formData.guests[roomIndex],
+                ...(formData.guests[roomIndex].extraGuests || []),
+              ]
+            : []),
+        ];
+
+        const specialRequests = guests
+          .map((guest) => guest?.specialRequest)
+          .filter(Boolean);
+
+        const roomSpecialRequest =
+          specialRequests.length > 0
+            ? specialRequests.join(", ")
+            : formData.specialRequest;
+
+        return {
+          rm: roomSpecialRequest,
+        };
+      }),
+      type: "HOTEL",
+      paymentInfos: isBlock
+        ? [] // No payment info for blocking
+        : [
+            {
+              amount: totalAmount, // Include amount for proceeding with booking
+            },
+          ],
     };
-  });
 
-  const payload = {
-    bookingId,
-    roomTravellerInfo,
-    deliveryInfo: {
-      emails: [email],
-      contacts: [mobile],
-      code: [countryCode],
-    },
-    isCorporateBooking: false,
-    isSamePanForAllRooms: panInfo?.mode === "same",
-    icpb: false,
-    ipaf: false,
-    ispfar: false,
-    isoc: false,
-    ics: false,
-    csi: {
-      ics: false,
-    },
-    itp: false,
-    type: "HOTEL",
-    paymentInfos: [
+    console.log("Final Payload to API:", JSON.stringify(payload, null, 2));
+
+    const response = await axios.post(
+      "https://apitest.tripjack.com/oms/v1/hotel/book",
+      payload,
       {
-        bookingId,
-        amount: totalAmount,
-        paymentMedium: "WALLET",
-        paymentFee: 0,
-        ruleId: 1,
-      },
-    ],
-  };
+        headers: {
+          apikey: API_KEY,
+        },
+      }
+    );
 
-  console.log("📦 Final Payload to API:", JSON.stringify(payload, null, 2));
+    return response.data;
+  } catch (error) {
+    console.error("Booking failed:", error.message);
+    throw error; // Handle any errors here
+  }
+}
+export async function getBookingDetails(bookingId) {
+  try {
+    const response = await fetch(
+      "https://apitest.tripjack.com/oms/v1/hotel/booking-details",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: API_KEY,
+        },
+        body: JSON.stringify({ bookingId }),
+      }
+    );
 
-  const response = await axios.post(
-    "https://apitest.tripjack.com/oms/v1/hotel/book",
-    payload,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        apikey: "412605c3683c38-96bd-45b6-ae06-02e22a8be1b1",
-      },
+    const data = await response.json();
+
+    if (data.status.success) {
+      return data;
+    } else {
+      throw new Error("Failed to fetch booking details");
     }
-  );
-
-  return response.data;
+  } catch (error) {
+    console.error("Error fetching booking details:", error);
+    throw error;
+  }
 }

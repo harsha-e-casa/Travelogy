@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { Flex, Radio, Button } from "antd";
 import { Divider, Select, Space } from "antd";
 import PropTypes from "prop-types";
+import { message } from "antd";
 
 import "./TravellerForm.css";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 
-const ageOptions = Array.from({ length: 18 }, (_, i) => ({
-  value: i,
-  label: i === 0 ? "<1 Yrs" : `${i} Yrs`,
+const ageOptions = Array.from({ length: 17 }, (_, i) => ({
+  value: i + 1,
+  label: `${i + 1} Yrs`,
 }));
 
 export const TravellerForm = ({
@@ -230,7 +231,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
     if (newChildCount >= 0 && newChildCount <= 6) {
       updated[roomIndex].children = newChildCount;
       if (delta > 0) {
-        updated[roomIndex].childAges.push(0);
+        updated[roomIndex].childAges.push(1);
       } else {
         updated[roomIndex].childAges.pop();
       }
@@ -244,7 +245,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   const handleRemoveRoom = (roomIndex) => {
-    if (rooms.length === 1) return; // Prevent deleting last room
+    if (rooms.length === 1) return;
     const updated = [...rooms];
     updated.splice(roomIndex, 1);
     setRooms(updated);
@@ -253,8 +254,11 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   const handleAddRoom = () => {
     if (rooms.length < 5) {
       setRooms([...rooms, { adults: 1, children: 0, childAges: [] }]);
+    } else {
+      message.warning("Maximum of 5 rooms allowed.");
     }
   };
+
   const handleSubmit = () => {
     if (typeof onClose === "function") {
       onClose(rooms);
@@ -264,7 +268,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   return (
-    <div className="p-2 lg:w-2/6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden">
+    <div className="p-2 w-1-6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden">
       {Array.isArray(rooms) &&
         rooms.map((room, roomIndex) => (
           <div key={roomIndex} className="border p-4 mb-4 rounded-lg relative">
@@ -348,12 +352,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
         ))}
 
       <div className="flex justify-between pt-4 border-t mt-4">
-        <Button type="link" onClick={handleAddRoom}>
+        <button type="link" onClick={handleAddRoom}>
           + ADD ROOM
-        </Button>
-        <Button type="primary" onClick={handleSubmit}>
+        </button>
+        <button type="primary" onClick={handleSubmit}>
           DONE
-        </Button>
+        </button>
       </div>
     </div>
   );

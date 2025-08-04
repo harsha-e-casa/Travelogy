@@ -1,9 +1,10 @@
 "use client";
 import dayjs from "dayjs";
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
-import { Input, Checkbox, Button, message } from "antd";
+import { Input, Checkbox, message, Radio } from "antd";
+import AppDateRange from "@/components/searchEngine/AppDateRage";
 
 export function HotelReviewComponent({
   setHotelReviewData,
@@ -29,7 +30,7 @@ export function HotelReviewComponent({
   //   return <div className="text-red-500 text-center">{error}</div>;
   // }
 
-  return null; // This component only handles fetching.
+  return null;
 }
 
 export function Step1TravellerDetails({
@@ -38,7 +39,16 @@ export function Step1TravellerDetails({
   setFormData,
   onNext,
 }) {
+  // console.log(
+  //   hotelReviewData?.hInfo?.ops?.ipm,
+  //   "hotelRsetFormDataeviewData9688248969"
+  // );
+  const ipmValue = hotelReviewData?.hInfo?.ops?.[0]?.ipm;
+  console.log(ipmValue, "hotelReviewDataipm value");
+
   const [errors, setErrors] = useState({});
+  const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
+  const filledStars = Math.round(rating);
   useEffect(() => {
     if (hotelReviewData?.query?.roomInfo?.length) {
       const guests = {};
@@ -103,7 +113,13 @@ export function Step1TravellerDetails({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
   const handleNext = () => {
     const isValid = validateFields();
     console.log("Is Valid:", isValid);
@@ -144,24 +160,102 @@ export function Step1TravellerDetails({
     updated.splice(index, 1);
     updateExtraGuests(roomIndex, updated);
   };
+  let freeCancellationDate = null;
+  const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
+
+  if (Array.isArray(policies)) {
+    const freeCancellation = policies.find((p) => p.am === 0);
+    if (freeCancellation?.tdt) {
+      const dateObj = new Date(freeCancellation.tdt);
+      freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // Formats as DD/MM/YYYY
+    }
+  }
+  const [passportNumber, setPassportNumber] = useState(
+    formData?.guests?.[0]?.passportNumber || ""
+  );
+  const [passportExpiryDate, setPassportExpiryDate] = useState(
+    formData?.guests?.[0]?.passportExpiryDate || ""
+  );
+
+  const [openDatePicker, setOpenDatePicker] = useState(false); // Control datepicker visibility
+
+  const handleDateChange = (date) => {
+    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : "";
+    setPassportExpiryDate(formattedDate);
+    setFormData((prev) => ({
+      ...prev,
+      guests: {
+        ...prev.guests,
+        [0]: {
+          ...prev.guests?.[0],
+          passportExpiryDate: formattedDate,
+        },
+      },
+    }));
+    setOpenDatePicker(false); // Close the date picker after selecting a date
+  };
+
+  const handlePassportNumberChange = (e) => {
+    const value = e.target.value;
+    setPassportNumber(value);
+    setFormData((prev) => ({
+      ...prev,
+      guests: {
+        ...prev.guests,
+        [0]: {
+          ...prev.guests?.[0],
+          passportNumber: value,
+        },
+      },
+    }));
+  };
 
   return (
     <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
       <div className="border-b pb-4">
         <h2 className="text-base font-semibold">
           {hotelReviewData?.hInfo?.name}
-          <span className="text-orange-500">★★★☆☆</span>
+          <span className="text-star ml-2">
+            {[...Array(filledStars)].map((_, index) => (
+              <svg
+                key={`filled-${index}`}
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="gold"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
+              </svg>
+            ))}
+          </span>
         </h2>
         <p className="text-xs text-gray-600">
-          {hotelReviewData?.hInfo?.ad?.adr}
+          {hotelReviewData?.hInfo?.ad?.adr && (
+            <>{hotelReviewData.hInfo.ad.adr} </>
+          )}
           <br />
-          {hotelReviewData?.hInfo?.ad?.ctn}, {hotelReviewData?.hInfo?.ad?.cn}.
-          Postal code: {hotelReviewData?.hInfo?.ad?.postalCode}
+          {hotelReviewData?.hInfo?.ad?.adr2 && (
+            <>{hotelReviewData.hInfo.ad.adr2}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.ctn && (
+            <>{hotelReviewData.hInfo.ad.ctn}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.cn && (
+            <>{hotelReviewData.hInfo.ad.cn} - </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.postalCode && (
+            <> Postal code: {hotelReviewData.hInfo.ad.postalCode}</>
+          )}
         </p>
         <p className="text-gray-500 text-sm">
-          Last Cancellation Date:
           <span className="text-blue-700 font-semibold">
-            <strong>Doubt</strong>
+            {freeCancellationDate && (
+              <div className="text-xs mb-1">
+                Last Cancellation Date:
+                {freeCancellationDate}
+              </div>
+            )}
           </span>
         </p>
       </div>
@@ -256,7 +350,6 @@ export function Step1TravellerDetails({
                   {room.numberOfChild === 1 ? "Child" : "Children"})
                 </span>
               </h4>
-              {/* Lead Guest */}
               <div className="stepper-guest-row">
                 <select
                   className="border p-2 rounded stepper_select"
@@ -309,6 +402,34 @@ export function Step1TravellerDetails({
                     </span>
                   )}
                 </div>
+                {ipmValue && (
+                  <>
+                    <div className="flex flex-col">
+                      <input
+                        className="border p-2 rounded stepper_input"
+                        placeholder="Passport Number"
+                        value={passportNumber}
+                        onChange={handlePassportNumberChange}
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <input
+                        className="border p-2 rounded stepper_input"
+                        placeholder="Passport Expiry Date"
+                        value={passportExpiryDate}
+                        readOnly
+                        onClick={() => setOpenDatePicker(true)} // Open the date picker on click
+                      />
+                      {openDatePicker && (
+                        <AppDateRange
+                          openToDateRange={() => setOpenDatePicker(false)} // Close on selection
+                          setDatedep={handleDateChange}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
               {(formData.guests?.[roomIndex]?.extraGuests || []).map(
                 (guest, i) => (
@@ -467,50 +588,135 @@ export function Step1TravellerDetails({
   );
 }
 
-export function Step2Review({ formData, onNext, hotelReviewData }) {
+export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
   const [accepted, setAccepted] = useState(false);
+  useEffect(() => {
+    const savedAccepted = localStorage.getItem("acceptTerms");
+    if (savedAccepted !== null) {
+      setAccepted(JSON.parse(savedAccepted));
+    }
+  }, []);
+  const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
+  console.log("Terms & Conditions before proceeding", PanRequired);
+  useEffect(() => {
+    localStorage.setItem("acceptTerms", JSON.stringify(accepted));
+  }, [accepted]);
+  const handleNext = () => {
+    if (!accepted) {
+      message.warning(
+        "Please accept the Terms & Conditions before proceeding."
+      );
+    } else {
+      onNext();
+    }
+  };
+  const handleBlock = async () => {
+    try {
+      const response = await hotelBooking({
+        formData,
+        hotelReviewData,
+        isBlock: true,
+      });
 
+      console.log("Booking (BLOCK) response:", response);
+    } catch (error) {
+      console.error("Error during block:", error.message);
+    }
+  };
+  let freeCancellationDate = null;
+  const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
+  const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
+  const blockRoom = hotelReviewData?.conditions?.isBA;
+  if (Array.isArray(policies)) {
+    const freeCancellation = policies.find((p) => p.am === 0);
+    if (freeCancellation?.tdt) {
+      const dateObj = new Date(freeCancellation.tdt);
+      freeCancellationDate = dateObj.toLocaleDateString("en-GB");
+    }
+  }
+  const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
+  const filledStars = Math.round(rating);
   return (
     <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
       <div className="border-b pb-4">
         <h2 className="text-base font-semibold">
           {hotelReviewData?.hInfo?.name}{" "}
-          {/* <span className="text-orange-700">★★★☆☆</span> */}
+          <span className="text-star ml-2">
+            {[...Array(filledStars)].map((_, index) => (
+              <svg
+                key={`filled-${index}`}
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="gold"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
+              </svg>
+            ))}
+          </span>
         </h2>
         <p className="text-xs text-gray-600">
-          {hotelReviewData?.hInfo?.ad?.adr}
+          {hotelReviewData?.hInfo?.ad?.adr && (
+            <>{hotelReviewData.hInfo.ad.adr} </>
+          )}
           <br />
-          {hotelReviewData?.hInfo?.ad?.ctn}, {hotelReviewData?.hInfo?.ad?.cn}.
-          Postal code: {hotelReviewData?.hInfo?.ad?.postalCode}
+          {hotelReviewData?.hInfo?.ad?.adr2 && (
+            <>{hotelReviewData.hInfo.ad.adr2}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.ctn && (
+            <>{hotelReviewData.hInfo.ad.ctn}, </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.cn && (
+            <>{hotelReviewData.hInfo.ad.cn} - </>
+          )}
+          {hotelReviewData?.hInfo?.ad?.postalCode && (
+            <> Postal code: {hotelReviewData.hInfo.ad.postalCode}</>
+          )}
         </p>
         <br />
         <p className="text-blue-700 text-sm">
-          Last Cancellation Date:
           <span className="text-blue-700 font-semibold">
-            <strong>Doubt</strong>
+            {freeCancellationDate && (
+              <div className="text-xs mb-1">
+                Last Cancellation Date:
+                {freeCancellationDate}
+              </div>
+            )}
           </span>
         </p>
       </div>
-
       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
         <div>
           <strong className="block text-gray-900">Check In</strong>
-          <p className="text-gray-700">
-            {hotelReviewData?.query?.checkinDate || "N/A"}
-            <br />
-            {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
-              "No Clock-in Time"}
-          </p>
+          {Category === "abook" ? (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkinDate || "N/A"}
+            </p>
+          ) : (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkinDate || "N/A"}
+              <br />
+              {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
+                "No Clock-in Time"}
+            </p>
+          )}
         </div>
 
         <div className="border-l-1 pl-4">
           <strong className="block text-gray-900">Check Out</strong>
-          <p className="text-gray-700">
-            {hotelReviewData?.query?.checkoutDate || "N/A"}
-            <br />
-            {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
-              "No Clock-out Time"}
-          </p>
+          {Category === "abook" ? (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkoutDate || "N/A"}
+            </p>
+          ) : (
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkoutDate || "N/A"}
+              <br />
+              {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
+                "No Clock-out Time"}
+            </p>
+          )}
         </div>
 
         <div className="border-l-1 pl-4">
@@ -555,24 +761,112 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
           </p>
         </div>
       </div>
+      <h3 className="font-semibold text-base">Guest Details:</h3>
+      {Category !== "abook"
+        ? Object.values(formData.guests || {}).map((guest, roomIndex) => (
+            <div key={roomIndex} className="border-b pb-4">
+              <h4 className="font-bold text-sm">
+                <div>
+                  <p>
+                    {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.rc} -{" "}
+                    {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.mb}
+                    <span className="text-gray-500">
+                      {" "}
+                      ({guest.extraGuests?.length + 1}{" "}
+                      {guest.extraGuests?.length + 1 === 1 ? "Guest" : "Guests"}
+                      )
+                    </span>
+                  </p>
+                </div>
+              </h4>
+              <div className="space-y-2">
+                <p className="text-gray-700">
+                  {guest.title} {guest.firstName} {guest.lastName}
+                </p>
+                {guest.extraGuests?.map((extraGuest, index) => (
+                  <div key={index}>
+                    <p className="text-gray-700 text-sm">
+                      {extraGuest.title} {extraGuest.firstName}{" "}
+                      {extraGuest.lastName}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        : hotelPassenger?.map((room, roomIndex) => (
+            <div key={roomIndex} className="border-b pb-4 space-y-2">
+              <p className="text-gray-800 font-bold">
+                {room?.rc} <span className="text-xs">( {room?.mb})</span>
+              </p>
 
-      <div className="border-t pt-4 space-y-1">
-        {formData.specialRequest?.trim() && (
+              <p className="text-gray-700 text-sm">
+                {room?.ti?.map((passenger, passengerIndex) => (
+                  <>
+                    {passenger?.ti}
+                    {"."}
+                    {passenger?.fN} {passenger?.lN}
+                    {passengerIndex < room?.ti?.length - 1 && ", "}
+                  </>
+                ))}
+              </p>
+            </div>
+          ))}
+      {/* {formData.specialRequest?.trim() && (
+        <div className="mt-4">
+          <h3 className="font-semibold text-base">Special request(s)</h3>
+          <p className="text-sm text-gray-700 mt-1">
+            {formData.specialRequest}
+          </p>
+        </div>
+      )} */}{" "}
+      {/* {Category !== "abook" ? (
+        formData.specialRequest?.trim() ? (
           <div className="mt-4">
             <h3 className="font-semibold text-base">Special request(s)</h3>
             <p className="text-sm text-gray-700 mt-1">
               {formData.specialRequest}
             </p>
           </div>
-        )}
-
-        <h3 className="font-semibold text-base">Contact Details</h3>
-        <p>Email: {formData.email}</p>
-        <p>
-          Mobile: {formData.countryCode} {formData.mobile}
-        </p>
-      </div>
-
+        ) : null
+      ) : Array.isArray(hotelPassenger) &&
+        hotelPassenger.length > 0 &&
+        hotelPassenger[0]?.ssr ? (
+        <div className="mt-4">
+          <h3 className="font-semibold text-base">Special request(s)</h3>
+          <p className="text-sm text-gray-700 mt-1">
+            {hotelPassenger[0]?.ssr?.[0]?.rm}
+          </p>
+        </div>
+      ) : null} */}
+      {Category !== "abook" ? (
+        formData.specialRequest?.trim() ? (
+          <div className="mt-4">
+            <h3 className="font-semibold text-base">Special request(s)</h3>
+            <p className="text-sm text-gray-700 mt-1">
+              {formData.specialRequest}
+            </p>
+          </div>
+        ) : null
+      ) : Array.isArray(hotelPassenger) &&
+        hotelPassenger.length > 0 &&
+        hotelPassenger[0]?.ssr?.[0]?.rm?.trim() ? ( // Check if rm is not empty
+        <div className="mt-4">
+          <h3 className="font-semibold text-base">Special request(s)</h3>
+          <p className="text-sm text-gray-700 mt-1">
+            {hotelPassenger[0]?.ssr?.[0]?.rm}
+          </p>
+        </div>
+      ) : null}
+      {formData.email?.trim() && (
+        <>
+          <h3 className="font-semibold text-base">Contact Details</h3>
+          <p>Email: {formData.email}</p>
+          <p>
+            Mobile: {formData.countryCode} {formData.mobile}
+          </p>
+        </>
+      )}
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
         <table className="w-full border text-center text-sm">
@@ -616,7 +910,6 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
           <li className="text-red-600">* Taxes & fees are non-refundable.</li>
         </ul>
       </div>
-
       <div>
         {/* <h3 className="font-semibold text-base mb-2">Booking Notes:</h3> */}
         {Array.isArray(hotelReviewData?.hInfo?.inst) &&
@@ -671,7 +964,6 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
             </div>
           )}
       </div>
-
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">
           General Terms & Conditions:
@@ -743,47 +1035,44 @@ export function Step2Review({ formData, onNext, hotelReviewData }) {
             the guest.
           </li>
         </ul>
+        {Category === "bbook" ? (
+          <div className="flex items-center space-x-2 mt-4">
+            <input
+              type="checkbox"
+              id="acceptTerms"
+              className="w-3 h-3 border border-gray-400 rounded"
+              checked={accepted}
+              onChange={(e) => setAccepted(e.target.checked)}
+            />
 
-        <div className="flex items-center space-x-2 mt-4">
-          <input
-            type="checkbox"
-            id="acceptTerms"
-            className="w-3 h-3 border border-gray-400 rounded"
-            checked={accepted}
-            onChange={(e) => setAccepted(e.target.checked)}
-          />
-
-          <label for="acceptTerms" className="mb-0 text-sm text-gray-700">
-            Accept Terms & Conditions
-          </label>
-        </div>
+            <label for="acceptTerms" className="mb-0 text-sm text-gray-700">
+              Accept Terms & Conditions
+            </label>
+          </div>
+        ) : null}
       </div>
-
-      <div className="flex justify-between items-center mt-6">
-        <div className="flex gap-4">
-          <button
-            disabled={!accepted}
-            className={`book-now-btn ${
-              accepted
-                ? "bg-orange-500 hover:bg-orange-600"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-            onClick={onNext}
-          >
-            Proceed to Pay
-          </button>
-          <button
-            disabled={!accepted}
-            className={`px-6 py-2 rounded text-white font-medium ${
-              accepted
-                ? "bg-blue-500 hover:bg-blue-600"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Block
-          </button>
+      {Category === "bbook" && (
+        <div className="flex justify-between items-center mt-6">
+          <div className="flex gap-4">
+            {blockRoom && PanRequired === false && (
+              <button className="book-now-btn" onClick={handleBlock}>
+                BLOCK
+              </button>
+            )}
+            <button
+              disabled={!accepted}
+              className={`book-now-btn ${
+                accepted
+                  ? "bg-orange-500 hover:bg-orange-600"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
+              onClick={handleNext}
+            >
+              PROCEED TO PAY
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -799,10 +1088,21 @@ export function Step3PersonalDocuments({
   const [individualPANs, setIndividualPANs] = useState({});
   const [samePANValue, setSamePANValue] = useState("");
   const [guardianMode, setGuardianMode] = useState({});
-
+  const [selectedTCS, setSelectedTCS] = useState(null);
+  const blockRoom = hotelReviewData?.conditions?.isBA;
+  console.log("blockRoom", blockRoom);
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
   useEffect(() => {
+    const savedData = JSON.parse(localStorage.getItem("personalDocumentsData"));
+    if (savedData) {
+      setSamePANForAll(savedData.samePANForAll || false);
+      setSamePANValue(savedData.samePANValue || "");
+      setGuardianPANs(savedData.guardianPANs || {});
+      setIndividualPANs(savedData.individualPANs || {});
+      setGuardianMode(savedData.guardianMode || {});
+      setSelectedTCS(savedData.selectedTCS || null);
+    }
     const initialGuardian = {};
     const initialPANs = {};
     hotelReviewData?.query?.roomInfo?.forEach((room, rIdx) => {
@@ -816,6 +1116,24 @@ export function Step3PersonalDocuments({
     setGuardianMode(initialGuardian);
     setIndividualPANs(initialPANs);
   }, [hotelReviewData]);
+  useEffect(() => {
+    const formState = {
+      samePANForAll,
+      samePANValue,
+      guardianPANs,
+      individualPANs,
+      guardianMode,
+      selectedTCS,
+    };
+    localStorage.setItem("personalDocumentsData", JSON.stringify(formState));
+  }, [
+    samePANForAll,
+    samePANValue,
+    guardianPANs,
+    individualPANs,
+    guardianMode,
+    selectedTCS,
+  ]);
 
   const handleGuardianToggle = (roomIndex, checked) => {
     setGuardianMode((prev) => ({ ...prev, [roomIndex]: checked }));
@@ -827,8 +1145,9 @@ export function Step3PersonalDocuments({
       [`${roomIdx}-${guestIdx}`]: value.toUpperCase(),
     }));
   };
-  // const leadGuest = formData?.guests?.[rIdx];
-  // const extraGuests = leadGuest?.extraGuests || [];
+  const handleTCSChange = (e) => {
+    setSelectedTCS(e.target.value);
+  };
 
   const isAllValid = () => {
     if (samePANForAll) return panRegex.test(samePANValue);
@@ -852,12 +1171,24 @@ export function Step3PersonalDocuments({
         }
       }
     }
+    if (selectedTCS === null) {
+      return false;
+    }
+
     return true;
   };
 
   const handleProceed = () => {
+    if (samePANForAll && selectedTCS === null) {
+      message.warning("Please select a TCS declaration before proceeding.");
+      return false;
+    }
     if (!isAllValid()) {
-      message.error("Please enter valid PAN details before proceeding.");
+      if (selectedTCS === null) {
+        message.warning("Please select a TCS declaration before proceeding.");
+      } else {
+        message.error("Please enter valid PAN details before proceeding.");
+      }
       return;
     }
     const finalData = {};
@@ -882,17 +1213,50 @@ export function Step3PersonalDocuments({
         }
       });
     }
+    finalData.tcsDeclaration = selectedTCS;
     setFormData((prev) => ({ ...prev, panInfo: finalData }));
     onNext();
   };
+  const handleBlock = async () => {
+    try {
+      const response = await hotelBooking({
+        formData,
+        hotelReviewData,
+        isBlock: true,
+      });
+
+      console.log("Booking (BLOCK) response:", response);
+      localStorage.removeItem("formData");
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${bookingId}`;
+    } catch (error) {
+      console.error("Error during block:", error.message);
+    }
+  };
+
+  // const handleProceed = async () => {
+  //   try {
+  //     const response = await hotelBooking({
+  //       formData,
+  //       hotelReviewData,
+  //       isBlock: false, // Indicate that this is a proceed request (with payment)
+  //     });
+
+  //     // Handle response (success/failure)
+  //     console.log("Booking (PROCEED) response:", response);
+  //   } catch (error) {
+  //     console.error("Error during proceed:", error.message);
+  //   }
+  // };
 
   return (
     <div>
-      <h2 className="text-xl font-semibold">Personal Documents</h2>
-      <p className="text-red-500 mb-4">
-        Below documents are mandatory for completing this booking:
-      </p>
-
+      <h2 className="text-md font-bold">
+        Personal Documents{" "}
+        <span className="text-xs text-red-500 mb-4">
+          {" "}
+          Below documents are mandatory for completing this booking
+        </span>
+      </h2>
       <div className="flex items-center mb-6">
         <Checkbox
           checked={samePANForAll}
@@ -920,6 +1284,7 @@ export function Step3PersonalDocuments({
               {guardianMode[rIdx] ? (
                 <div className="flex gap-2 mb-2">
                   <Input
+                    className="w-60 stepper_input"
                     placeholder="First Name"
                     value={guardianPANs[rIdx]?.first || ""}
                     onChange={(e) =>
@@ -933,6 +1298,7 @@ export function Step3PersonalDocuments({
                     }
                   />
                   <Input
+                    className="w-60 stepper_input"
                     placeholder="Last Name"
                     value={guardianPANs[rIdx]?.last || ""}
                     onChange={(e) =>
@@ -946,6 +1312,7 @@ export function Step3PersonalDocuments({
                     }
                   />
                   <Input
+                    className="w-60 stepper_input"
                     placeholder="PAN Number"
                     value={guardianPANs[rIdx]?.pan || ""}
                     onChange={(e) =>
@@ -969,7 +1336,7 @@ export function Step3PersonalDocuments({
                         }`.trim()}
                       </p>
                       <Input
-                        className="w-60"
+                        className="w-60 stepper_input"
                         placeholder="Enter PAN"
                         value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                         onChange={(e) =>
@@ -986,7 +1353,7 @@ export function Step3PersonalDocuments({
       ) : (
         <div className="flex gap-2 mb-4">
           <Input
-            className="w-60"
+            className="w-60 stepper_input"
             placeholder="Enter PAN"
             value={samePANValue}
             onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
@@ -994,111 +1361,59 @@ export function Step3PersonalDocuments({
         </div>
       )}
 
-      {/* 
-      {!samePANForAll ? (
-        hotelReviewData?.query?.roomInfo?.map((room, rIdx) => (
-          <div key={`room-${rIdx}`} className="mb-6 border-t pt-4">
-            <div className="flex items-center mb-2">
-              <Checkbox
-                checked={guardianMode[rIdx]}
-                onChange={(e) => handleGuardianToggle(rIdx, e.target.checked)}
-              >
-                Room {rIdx + 1} - Use Only Guardian PAN
-              </Checkbox>
-            </div>
-
-            {guardianMode[rIdx] ? (
-              <div className="flex gap-2 mb-2">
-                <Input
-                  placeholder="First Name"
-                  value={guardianPANs[rIdx]?.first || ""}
-                  onChange={(e) =>
-                    setGuardianPANs((prev) => ({
-                      ...prev,
-                      [rIdx]: {
-                        ...prev[rIdx],
-                        first: e.target.value,
-                      },
-                    }))
-                  }
-                />
-                <Input
-                  placeholder="Last Name"
-                  value={guardianPANs[rIdx]?.last || ""}
-                  onChange={(e) =>
-                    setGuardianPANs((prev) => ({
-                      ...prev,
-                      [rIdx]: {
-                        ...prev[rIdx],
-                        last: e.target.value,
-                      },
-                    }))
-                  }
-                />
-                <Input
-                  placeholder="PAN Number"
-                  value={guardianPANs[rIdx]?.pan || ""}
-                  onChange={(e) =>
-                    setGuardianPANs((prev) => ({
-                      ...prev,
-                      [rIdx]: {
-                        ...prev[rIdx],
-                        pan: e.target.value.toUpperCase(),
-                      },
-                    }))
-                  }
-                />
-              </div>
-            ) : Array.isArray(room?.guests) && room.guests.length > 0 ? (
-              [
-                { name: `${leadGuest?.firstName} ${leadGuest?.lastName}` },
-                ...extraGuests.map((g) => ({
-                  name: `${g?.firstName || ""} ${g?.lastName || ""}`,
-                })),
-              ].map((guest, gIdx) => (
-                <div key={`guest-${rIdx}-${gIdx}`} className="mb-2">
-                  <p>{guest.name || `Guest ${gIdx + 1}`}</p>
-                  <Input
-                    className="w-60"
-                    placeholder="Enter PAN"
-                    value={individualPANs[`${rIdx}-${gIdx}`] || ""}
-                    onChange={(e) =>
-                      handlePANChange(rIdx, gIdx, e.target.value)
-                    }
-                  />
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-400">
-                No guest data found for this room.
-              </p>
-            )}
-          </div>
-        ))
-      ) : (
-        <div className="flex gap-2 mb-4">
-          <Input
-            className="w-60"
-            placeholder="Enter PAN"
-            value={samePANValue}
-            onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
-          />
-        </div>
-      )} */}
-
       <p className="text-xs text-gray-500 mb-4">
         Note: Please enter valid PAN linked with Aadhar. If PAN not exists,
         click on “Parent/Guardian PAN” and provide details.
       </p>
-
-      <Button
-        type="primary"
-        disabled={!isAllValid()}
-        onClick={handleProceed}
-        className="bg-orange-500 hover:bg-orange-600"
-      >
-        PROCEED TO PAY
-      </Button>
+      <div className="mb-4">
+        <h3 className="text-lg font-semibold">TCS Declaration</h3>
+        <div>
+          {" "}
+          <Radio.Group onChange={handleTCSChange} value={selectedTCS}>
+            <Radio className="tcs-radio" value="travel-products">
+              We are purchasing these travel products from Tripjack to be sold
+              to end customers as part of “Overseas Tour Program Package” and
+              confirm that we will collect / have collected TCS at applicable
+              rates from each traveller in accordance with Section 206C(1G)(b)
+              of the Income Tax Act, 1961. I am accepting the attached
+              declaration (link to the declaration)
+            </Radio>
+            <Radio className="tcs-radio" value="standalone-products">
+              We are purchasing these travel products from Tripjack to be sold
+              to end customers as standalone products.I am accepting the
+              attached declaration (link to the declaration). The total foreign
+              remittances made by the end customers during the current financial
+              year under the Liberalised Remittance Scheme of Reserve Bank of
+              India (including value of remittance intended to be made for these
+              travel products) (“TOTAL LRS REMITTANCE VALUE”) is less than the
+              threshold of INR 7,00,000.
+            </Radio>
+          </Radio.Group>
+        </div>
+        <br />
+        We hereby confirm that the above information is correct and validated on
+        the basis of documents / declarations provided by the end customers. We
+        further confirm that we have read and understood the detailed terms and
+        conditions w.r.t the TCS regulations under Section 206C(1G) of the
+        Income Tax Act, 1961
+      </div>
+      {/* {Category === "bbook" && ( */}
+      <div className="flex justify-between items-center mt-6">
+        <div className="flex gap-4">
+          {blockRoom && (
+            <button className="book-now-btn" onClick={handleBlock}>
+              BLOCK
+            </button>
+          )}
+          <button
+            disabled={!isAllValid()}
+            onClick={handleProceed}
+            className="rounded-none book-now-btn"
+          >
+            PROCEED TO PAY
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1107,9 +1422,11 @@ export function Step4Payment({
   formData,
   hotelReviewData,
   amount,
+  bookingId,
   onConfirmPayment,
 }) {
   const [showModal, setShowModal] = useState(false);
+  const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
 
   const handlePayClick = () => {
     setShowModal(true);
@@ -1118,14 +1435,14 @@ export function Step4Payment({
   const handleCloseModal = () => {
     setShowModal(false);
   };
+  console.log("hotelReviewData", hotelReviewData.bookingId);
 
   const handleConfirm = async () => {
     setShowModal(false);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
       console.log("Booking Success:", result);
-      onConfirmPayment(result);
-      // Optionally redirect
+      onConfirmPayment(bookingId);
     } catch (error) {
       console.error("Booking failed:", error);
       alert("Booking failed. Please try again.");
@@ -1158,8 +1475,9 @@ export function Step4Payment({
                 className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white"
                 onClick={handlePayClick}
               >
-                PAY NOW ₹{amount.toFixed(2)}
+                PAY NOW ₹{(totalBaseFare + totalTax).toFixed(2)}
               </button>
+              {/* <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span> */}
             </div>
           </div>
         </div>
@@ -1176,7 +1494,7 @@ export function Step4Payment({
               proceed.
             </p>
             <p className="text-center text-xl font-semibold mb-6">
-              ₹{amount.toFixed(2)}
+              ₹{(totalBaseFare + totalTax).toFixed(2)}
             </p>
 
             <div className="flex justify-center gap-4">
@@ -1200,36 +1518,93 @@ export function Step4Payment({
   );
 }
 
-export function FareAmount({ hotelReviewData }) {
-  console.log(
-    "FareAmount Hotel Review Data:",
-    // hotelReviewData?.hInfo?.ops?.[0]?.tp?.toFixed(2)
-    //     // hotelReviewData?.hInfo?.ops?.[0],
-    // hotelReviewData?.hInfo?.ops?.[0]?.tfcs?.TAF
+export function useFareBreakdown(hotelReviewData) {
+  const searchParams = useSearchParams();
+  const oid = searchParams.get("oid");
 
-    hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF,
-    hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF
-  );
+  const { totalBaseFare, totalTax } = useMemo(() => {
+    if (!hotelReviewData || !oid) return { totalBaseFare: 0, totalTax: 0 };
+
+    const selectedOption = hotelReviewData?.hInfo?.ops?.find(
+      (op) => op.id === oid
+    );
+
+    if (!selectedOption) return { totalBaseFare: 0, totalTax: 0 };
+
+    const { BF, TAF } = selectedOption.ris.reduce(
+      (acc, item) => {
+        const tfcs = item.tfcs || {};
+        acc.BF += tfcs.BF || 0;
+        acc.TAF += tfcs.TAF || 0;
+        return acc;
+      },
+      { BF: 0, TAF: 0 }
+    );
+
+    return { totalBaseFare: BF, totalTax: TAF };
+  }, [hotelReviewData, oid]);
+
+  return { totalBaseFare, totalTax };
+}
+
+export function FareAmount({ hotelReviewData, Category }) {
   const tfcs = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs;
-
+  const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
+  const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
+  console.log(hotelPassenger, "hotelPassenger");
   const baseFare = tfcs?.BF || 0;
   const taxes = tfcs?.TAF || 0;
   const total = baseFare + taxes;
   return (
     <>
-      <h3 className="font-semibold text-base text-gray-600">FARE SUMMARY</h3>
-      <div className="flex justify-between border-b pb-2">
-        <span>Base Fare</span>
-        <span>₹{baseFare.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between border-b pb-2">
-        <span>Taxes and Fees</span>
-        <span>₹{taxes.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between font-semibold text-gray-800">
-        <span>Total Amount Payable</span>
-        <span>₹{total.toFixed(2)}</span>
-      </div>
+      {Category !== "abook" ? (
+        <>
+          <h3 className="font-semibold text-base text-gray-600">
+            FARE SUMMARY
+          </h3>
+          <div className="flex justify-between border-b pb-2">
+            <span>Base Fare</span>
+            <span>₹{totalBaseFare.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between border-b pb-2">
+            <span>Taxes and Fees</span>
+            <span>₹{totalTax.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-gray-800">
+            <span>Total Amount Payable</span>
+            <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span>
+          </div>
+        </>
+      ) : (
+        hotelPassenger?.map((room, roomIndex) => (
+          <div key={roomIndex} className="border-b pb-4 space-y-2">
+            <h3 className="font-semibold text-base text-gray-600">
+              FARE SUMMARY
+            </h3>
+
+            {room?.tfcs && (
+              <>
+                <div className="flex justify-between border-b pb-2">
+                  <span>Base Fare</span>
+                  <span> ₹{room.tfcs?.BF?.toFixed(2) || 0}</span>
+                </div>
+                <div className="flex justify-between border-b pb-2">
+                  <span>Taxes and Fees</span>
+                  <span className="text-xs">
+                    ₹{room.tfcs?.TAF?.toFixed(2) || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between font-semibold text-gray-800">
+                  <span>Total Amount Payable</span>
+                  <span className="text-gray-600">
+                    ₹{((room.tfcs?.BF || 0) + (room.tfcs?.TAF || 0)).toFixed(2)}
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        ))
+      )}
     </>
   );
 }

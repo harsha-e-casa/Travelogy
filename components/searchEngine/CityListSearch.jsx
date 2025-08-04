@@ -1,61 +1,42 @@
 import React, { useState, useEffect } from "react";
 import { Select } from "antd";
-// const apiListAirLineState = require("./apiListAirLineState");
-import { useCities } from "../../util/HotelApi"; // or same file
+import citiesData from "../../util/cities.json";
 
-const CityListSearch = ({
-  setSelectFrom,
-  operEngLocation,
-  // setSelectFromSub,
-  categoryType,
-}) => {
-  const { cities, loading } = useCities();
+const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
   const [filteredOptions, setFilteredOptions] = useState([]);
-  const handleChange = (value) => {
-    const getDtaa = value.split(",");
-    // alert(getDtaa);
-    const selectedCity = filteredOptions.find(
-      (item) => `${item.cityName},${item.id},${item.countryName}` === value
-    );
+  const [searchText, setSearchText] = useState("");
 
+  useEffect(() => {
+    setFilteredOptions(citiesData);
+  }, []);
+
+  const handleChange = (id) => {
+    const selectedCity = filteredOptions.find((item) => item.id === id);
     if (selectedCity) {
       setSelectFrom({
         cityName: selectedCity.cityName,
         countryName: selectedCity.countryName,
         id: selectedCity.id,
       });
+      operEngLocation();
     }
-
-    // setSelectFrom(getDtaa[0]);
-    // setSelectFromSub(getDtaa[1]);
-    operEngLocation();
   };
-  useEffect(() => {
-    if (cities.length > 0) {
-      setFilteredOptions(cities);
-      // setSelectFrom(cities[4]); // ✅ Immediately select the first city
-    }
-  }, [cities]);
 
   const handleSearch = (searchText) => {
+    setSearchText(searchText);
     if (!searchText) {
-      setFilteredOptions(cities);
+      setFilteredOptions(citiesData);
       return;
     }
 
-    const filtered = cities.filter(
+    const filtered = citiesData.filter(
       (item) =>
-        item?.cityName?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item?.fullRegionName?.toLowerCase().includes(searchText.toLowerCase())
+        item.cityName.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.fullRegionName.toLowerCase().includes(searchText.toLowerCase())
     );
 
     setFilteredOptions(filtered.slice(0, 10));
   };
-  {
-    !loading && cities.length === 0 && (
-      <div className="p-4 text-center text-gray-500">No cities available</div>
-    );
-  }
 
   const mappedOptions = filteredOptions.map((item) => ({
     label: (
@@ -64,8 +45,7 @@ const CityListSearch = ({
         <div className="text-xs text-gray-500">{item.fullRegionName}</div>
       </div>
     ),
-
-    value: `${item.cityName},${item.id},${item.countryName}`,
+    value: item.id,
   }));
 
   const options = [
@@ -77,20 +57,48 @@ const CityListSearch = ({
 
   return (
     <>
-      {loading ? (
-        <div className="p-4 text-center text-gray-500">Loading cities...</div>
-      ) : (
-        <Select
-          showSearch
-          onSearch={handleSearch}
-          onChange={handleChange}
-          options={options}
-          placeholder="Select a city..."
-          filterOption={false}
-          style={{ width: "100%" }}
-        />
+      <Select
+        showSearch
+        autoFocus
+        onSearch={handleSearch}
+        onChange={handleChange}
+        options={options}
+        placeholder="Select a city..."
+        filterOption={false}
+        style={{ width: "100%" }}
+        open={true}
+        value={searchText}
+        onDropdownVisibleChange={(open) => {
+          if (open) {
+            handleSearch(searchText);
+          }
+        }}
+        className="z-40"
+        dropdownStyle={{
+          zIndex: 10000, // High z-index to ensure it's on top
+          maxHeight: "300px", // Optional: for better control on dropdown height
+        }}
+        dropdownClassName="custom-select-dropdown" // custom class name for dropdown styling
+        // autoFocus
+        // showSearch
+        // open={true}
+        // style={{ width: "100%" }}
+        // onSearch={handleSearch}
+        // onChange={handleChange}
+        // options={options}
+        // placeholder="Select an airport..."
+        // filterOption={false} // disables built-in search
+        // className="z-40"
+        // dropdownStyle={{
+        //   zIndex: 10000, // High z-index to ensure it's on top
+        //   maxHeight: "300px", // Optional: for better control on dropdown height
+        // }}
+      />
+      {filteredOptions.length === 0 && (
+        <div className="p-4 text-center text-gray-500">No results found</div>
       )}
     </>
   );
 };
+
 export default CityListSearch;

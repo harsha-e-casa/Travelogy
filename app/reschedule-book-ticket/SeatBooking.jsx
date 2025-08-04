@@ -65,7 +65,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     let setData = {};
 
     for (let i = 1; i <= 9; i++) {
-      let cookieData = getCookie(`adult_seat_map-${i}`);
+      let cookieData = getCookie(`re-adult_seat_map-${i}`);
       if (!cookieData) continue; // skip if no cookie for this adult
 
       let adultSeatArray = JSON.parse(cookieData);
@@ -82,7 +82,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     }
 
     for (let i = 1; i <= 9; i++) {
-      let cookieData = getCookie(`child_seat_map-${i}`);
+      let cookieData = getCookie(`re-child_seat_map-${i}`);
       if (!cookieData) continue; // skip if no cookie for this child
 
       let childSeatArray = JSON.parse(cookieData);
