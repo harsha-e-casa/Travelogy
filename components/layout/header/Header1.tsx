@@ -17,13 +17,12 @@ export default function Header1({
   handleRegister,
   handleSidebar,
 }: any) {
-  
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <header
-      // className={`z_99999 fixed header sticky-bar ${scroll ? "stick" : ""}`}
+        // className={`z_99999 fixed header sticky-bar ${scroll ? "stick" : ""}`}
         className={`z_99999 header sticky-bar`}
       >
         <div className="container-fluid background_body_overlay">
@@ -31,12 +30,12 @@ export default function Header1({
             <div className="header-left">
               <div className="header-logo">
                 <Link className="d-flex" href="/">
-                  <img 
+                  <img
                     className="light-mode header_logo"
                     alt="Travelogy"
                     src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
                   />
-                  <img 
+                  <img
                     className="dark-mode"
                     alt="Travelogy"
                     src="/assets/imgs/template/logo-w.svg"
@@ -46,20 +45,22 @@ export default function Header1({
               <div className="header-nav">
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
-                   
                     <li className="">
                       <Link href="/flights">Flights</Link>
                     </li>
                     <li className="">
                       <Link href="/hotels">Hotel</Link>
                     </li>
-                    
+
                     <li className="">
                       <Link href="/holiday">Holiday</Link>
                     </li>
-                   {/* <li className="">
-                      <Link href="#">Themes</Link>
-                    </li>*/}
+                    <li className="">
+                      <Link href="/visa">Visa</Link>
+                    </li>
+                    <li className="">
+                      <Link href="/travelInsurance">Travel Insurance</Link>
+                    </li>
                     <li>
                       <Link href="/contact">Contact</Link>
                     </li>

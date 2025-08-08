@@ -19479,3 +19479,59 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .w-1-6 {
   width: 29%;
 }
+.visa_form {
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.visa_input_fields {
+  width: 200px !important;
+  height: 40px !important;
+}
+
+.visa_input_fields::placeholder {
+  font-size: 13px;
+}
+
+.text-location {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  /* Adjust the width as per your design */
+}
+
+.status_texts {
+  font-weight: 600;
+  color: #4aa301;
+}
+
+.primary-text-color {
+  color: #ff7b39;
+}
+
+.h-12 {
+  min-height: 3rem !important;
+}
+
+/* .h-calc-80-64 {
+  height: calc(61vh - 64px);
+  min-height: calc(31vh - 64px) !important;
+  max-height: calc(61vh - 64px);
+} */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+} */
+
+::-webkit-scrollbar-thumb {
+  background: #f79421;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ccc;
+}

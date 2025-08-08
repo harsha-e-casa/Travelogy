@@ -48,6 +48,9 @@ const EngineHeaderHotel = ({ active_border }) => {
   const [travellerClass, setTravellerClass] = useState("a"); // Default value is 'a'
 
   useEffect(() => {
+    if (selectFrom) {
+      setErrorMessage(null);
+    }
     if (selectFrom && nationalities.length > 0) {
       const matched = nationalities.find(
         (n) =>
@@ -249,7 +252,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                   {selectFrom?.cityName || "Select City"}
                 </h2>{" "}
                 {errorMessage && (
-                  <div className="text-red-500 text-sm mt-2">
+                  <div className="text-red-500 text-xs mt-2">
                     {errorMessage}
                   </div>
                 )}

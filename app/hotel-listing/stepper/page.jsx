@@ -201,13 +201,6 @@ export default function Stepper() {
   const handleStepClick = (stepId) => {
     if (stepId <= currentStep) setCurrentStep(stepId);
   };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  console.log("Current Step:", currentStep);
-  console.log("PanRequired:", PanRequired);
 
   const handlePayment = async (bookingId) => {
     try {
