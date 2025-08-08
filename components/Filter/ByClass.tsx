@@ -2,6 +2,7 @@
 export default function ByClass({ uniqueClasses, filter, handleCheckboxChange }: any) {
 	return (
 		<>
+		{/*test case*/}
 			<div className="box-collapse scrollFilter">
 				<ul className="list-filter-checkbox">
 					{uniqueClasses.map((item: any,) => (
