@@ -6,6 +6,7 @@ import BookingCard from "../booking";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import HotelData from "./hotelData";
+import { postData } from "@/services/NetworkAdapter";
 
 const Modal = ({
   images,
@@ -147,32 +148,40 @@ export default function ActivitiesDetail4() {
     async function fetchHotelDetails() {
       try {
         setLoading(true);
-        const response = await axios.post(
-          "https://apitest.tripjack.com/hms/v1/hotelDetail-search",
-          { id },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-            },
-          }
-        );
-        if (response.data.status.success) {
-          const hotel = response.data.hotel;
-          const searchData = response.data.searchQuery;
+        // const response = await axios.post(
+        //   "https://apitest.tripjack.com/hms/v1/hotelDetail-search",
+        //   { id },
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+        //     },
+        //   }
+        // );
+
+        let reqData = {
+          action: "hotelDetaiSearch",
+          requestData: { id },
+        };
+        const response = await postData("travelogy/hotel/fetch-data", reqData);
+        console.log("hotel listing response == ", response);
+
+        if (response.status.success) {
+          const hotel = response.hotel;
+          const searchData = response.searchQuery;
 
           setHotelData(hotel);
           setSearchQueryData(searchData);
 
           setCheckinDate(searchData?.checkinDate || null);
           setCheckoutDate(searchData?.checkoutDate || null);
-          console.log(response.data.hotel);
-          console.log(response.data.searchQuery);
+          console.log(response.hotel);
+          console.log(response.searchQuery);
         } else {
-          setError(response.data.errors[0]?.message);
+          setError(response.errors[0]?.message);
           console.log(
             "fgiusdhgsfgugsufguysgfygyfdygfugfudy",
-            response.data.errors[0]?.message
+            response.errors[0]?.message
           );
         }
       } catch (error) {

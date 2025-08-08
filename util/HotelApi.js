@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { postData } from "@/services/NetworkAdapter";
 
 const API_KEY = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
 
@@ -191,12 +192,16 @@ export const useNationalities = () => {
 export async function hotelBooking({
   formData,
   hotelReviewData,
+  updatedFormData,
   isBlock = false,
 }) {
   try {
     const bookingId = hotelReviewData?.bookingId;
     const roomInfo = hotelReviewData?.query?.roomInfo || [];
-    const panInfo = formData?.panInfo;
+    let panInfomain = updatedFormData;
+    if (panInfomain === undefined) {
+      panInfomain = formData;
+    }
     const email = formData?.email;
     const mobile = formData?.mobile;
     const countryCode = formData?.countryCode || "+91";
@@ -215,17 +220,8 @@ export async function hotelBooking({
 
       const travellers = guests.map((guest, guestIndex) => {
         const isChild = guest?.type === "children";
-        let pan = "";
         let pNum = guest?.passportNumber || "";
-        if (!isChild) {
-          if (panInfo?.mode === "same") {
-            pan = panInfo.pan;
-          } else if (panInfo?.mode === "custom") {
-            pan = panInfo.rooms?.[roomIndex]?.useGuardian
-              ? panInfo.rooms?.[roomIndex]?.guardian?.pan
-              : panInfo.rooms?.[roomIndex]?.guests?.[guestIndex]?.pan;
-          }
-        }
+        const pan = panInfomain?.panInfo?.pan;
 
         return {
           fN: guest?.firstName || "TBA",
@@ -241,6 +237,30 @@ export async function hotelBooking({
         travellerInfo: travellers,
       };
     });
+    const ssr = roomInfo.map((room, roomIndex) => {
+      const guests = [
+        ...(formData.guests?.[roomIndex]
+          ? [
+              formData.guests[roomIndex],
+              ...(formData.guests[roomIndex].extraGuests || []),
+            ]
+          : []),
+      ];
+
+      const specialRequests = guests
+        .map((guest) => guest?.specialRequest)
+        .filter(Boolean);
+
+      const roomSpecialRequest =
+        specialRequests.length > 0
+          ? specialRequests.join(", ")
+          : formData.specialRequest;
+
+      return {
+        rm: roomSpecialRequest,
+      };
+    });
+    const hasSSRData = ssr.some((item) => item.rm && item.rm.trim() !== "");
 
     const payload = {
       bookingId,
@@ -250,50 +270,84 @@ export async function hotelBooking({
         contacts: [mobile],
         code: [countryCode],
       },
-      ssr: roomInfo.map((room, roomIndex) => {
-        const guests = [
-          ...(formData.guests?.[roomIndex]
-            ? [
-                formData.guests[roomIndex],
-                ...(formData.guests[roomIndex].extraGuests || []),
-              ]
-            : []),
-        ];
+      ...(hasSSRData ? { ssr } : {}),
 
-        const specialRequests = guests
-          .map((guest) => guest?.specialRequest)
-          .filter(Boolean);
+      // ssr: roomInfo.map((room, roomIndex) => {
+      //   const guests = [
+      //     ...(formData.guests?.[roomIndex]
+      //       ? [
+      //           formData.guests[roomIndex],
+      //           ...(formData.guests[roomIndex].extraGuests || []),
+      //         ]
+      //       : []),
+      //   ];
 
-        const roomSpecialRequest =
-          specialRequests.length > 0
-            ? specialRequests.join(", ")
-            : formData.specialRequest;
+      //   const specialRequests = guests
+      //     .map((guest) => guest?.specialRequest)
+      //     .filter(Boolean);
 
-        return {
-          rm: roomSpecialRequest,
-        };
-      }),
+      //   const roomSpecialRequest =
+      //     specialRequests.length > 0
+      //       ? specialRequests.join(", ")
+      //       : formData.specialRequest;
+
+      //   return {
+      //     rm: roomSpecialRequest,
+      //   };
+      // }),
       type: "HOTEL",
-      paymentInfos: isBlock
-        ? [] // No payment info for blocking
-        : [
-            {
-              amount: totalAmount, // Include amount for proceeding with booking
-            },
-          ],
+      // paymentInfos: isBlock
+      //   ? []
+      //   : [
+      //       {
+      //         amount: totalAmount,
+      //       },
+      //     ],
+      ...(isBlock
+        ? {}
+        : {
+            paymentInfos: [
+              {
+                amount: totalAmount,
+              },
+            ],
+          }),
     };
 
     console.log("Final Payload to API:", JSON.stringify(payload, null, 2));
 
-    const response = await axios.post(
-      "https://apitest.tripjack.com/oms/v1/hotel/book",
-      payload,
-      {
-        headers: {
-          apikey: API_KEY,
-        },
-      }
-    );
+    // const response = await axios.post(
+    //   "https://apitest.tripjack.com/oms/v1/hotel/book",
+    //   payload,
+    //   {
+    //     headers: {
+    //       apikey: API_KEY,
+    //     },
+    //   }
+    // );
+
+    let reqData = {
+      action: "book",
+      requestData: payload,
+    };
+    const response = await postData("travelogy/hotel/fetch-data", reqData);
+    console.log("hotel booking response == ", response);
+
+    // save booking data
+    const saveHotelBookingData = async () => {
+      let saveReq = {
+        type: "save",
+        phone: "9677179866",
+        booking_id: bookingId,
+        amount: totalAmount,
+        status: "",
+        booking_time: new Date().toISOString(),
+      };
+
+      const res = await postData("travelogy/hotel/save-booking-data", saveReq);
+      console.log("res == ", res);
+    };
+    saveHotelBookingData();
 
     return response.data;
   } catch (error) {
@@ -303,19 +357,43 @@ export async function hotelBooking({
 }
 export async function getBookingDetails(bookingId) {
   try {
-    const response = await fetch(
-      "https://apitest.tripjack.com/oms/v1/hotel/booking-details",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: API_KEY,
-        },
-        body: JSON.stringify({ bookingId }),
-      }
-    );
+    // const response = await fetch(
+    //   "https://apitest.tripjack.com/oms/v1/hotel/booking-details",
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       apikey: API_KEY,
+    //     },
+    //     body: JSON.stringify({ bookingId }),
+    //   }
+    // );
 
-    const data = await response.json();
+    // const data = await response.json();
+
+    let reqData = {
+      action: "bookDetails",
+      requestData: { bookingId },
+    };
+    const response = await postData("travelogy/hotel/fetch-data", reqData);
+    console.log("hotel get booking details response == ", response);
+    const data = response;
+
+    // save booking data
+    const updateHotelBookingData = async () => {
+      let saveReq = {
+        type: "update",
+        phone: "9677179866",
+        booking_id: bookingId,
+        status: data?.order?.status,
+        booking_time: new Date().toISOString(),
+      };
+
+      const data = await response.json();
+      const res = await postData("travelogy/hotel/save-booking-data", saveReq);
+      console.log("res == ", res);
+    };
+    updateHotelBookingData();
 
     if (data.status.success) {
       return data;

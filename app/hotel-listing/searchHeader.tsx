@@ -8,6 +8,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 import AppDateRage from "@/components/searchEngine/AppDateRage";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
+import { postData } from "@/services/NetworkAdapter";
 type Nationality = {
   countryName: string;
   name: string;
@@ -93,21 +94,28 @@ export default function HotelListingSearch() {
 
   const apiCall = async (payload: any) => {
     try {
-      const response = await fetch(
-        "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const data = await response.json();
+      let reqData = {
+        action: "search",
+        requestData: payload,
+      };
+      const response = await postData("travelogy/hotel/fetch-data", reqData);
+      console.log("hotel listing response == ", response);
       localStorage.clear();
-      return data;
+      return response;
+      // const response = await fetch(
+      //   "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+      //     },
+      //     body: JSON.stringify(payload),
+      //   }
+      // );
+      // const data = await response.json();
+      // localStorage.clear();
+      // return data;
     } catch (error) {
       console.error("Search API error:", error);
       return null;
@@ -180,7 +188,7 @@ export default function HotelListingSearch() {
     } catch (error) {
       console.error("Search API error:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -278,7 +286,6 @@ export default function HotelListingSearch() {
     // setSelectFromSub: (val: string) => void;
     categoryType?: string;
   };
-
 
   useEffect(() => {
     const handleClickOutside = () => {

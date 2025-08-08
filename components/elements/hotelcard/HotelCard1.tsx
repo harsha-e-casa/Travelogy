@@ -15,6 +15,7 @@ export default function HotelCard1({ hotel }: any) {
   const totalPrice = hotel?.ops?.[0]?.tp ?? "N/A";
   const refund = hotel?.ops?.cnp?.ifra;
   const noRefund = hotel?.ops?.cnp?.inra;
+  const fullLocation = `${address} ${address1 ? `${address1}, ` : ""}${city}`;
 
   return (
     <div className="card-journey-small background-card setHeightSlider">
@@ -53,8 +54,15 @@ export default function HotelCard1({ hotel }: any) {
         </div>
         <div className="card-program">
           <div className="card-location">
-            <p className="text-location text-xs-medium neutral-500">
+            {/* <p className="text-location text-xs-medium neutral-500">
               {address} {address1}, {city}
+            </p> */}
+            <p
+              className="text-location text-xs-medium neutral-500"
+              title={fullLocation} // Tooltip with the full location
+            >
+              {`${address}, ${address1 ? `${address1}, ` : ""}${city}`}{" "}
+              {/* Truncated location */}
             </p>
             <p className="text-star">
               {[...Array(filledStars)].map((_, index) => (

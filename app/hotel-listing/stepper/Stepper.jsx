@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
 import { Input, Checkbox, message, Radio } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { postData } from "@/Services/NetworkAdapter";
 
 export function HotelReviewComponent({
   setHotelReviewData,
@@ -17,13 +19,34 @@ export function HotelReviewComponent({
   const oid = searchParams.get("oid");
 
   useEffect(() => {
-    if (hid && oid) {
-      setLoading(true);
-      fetchHotelReviewData(hid, oid)
-        .then((data) => setHotelReviewData(data))
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
-    }
+    // if (hid && oid) {
+    //   setLoading(true);
+    //   fetchHotelReviewData(hid, oid)
+    //     .then((data) => setHotelReviewData(data))
+    //     .catch((err) => setError(err.message))
+    //     .finally(() => setLoading(false));
+    // }
+    const apiCall = async (hid, oid) => {
+      try {
+        let reqData = {
+          action: "hotelReview",
+          requestData: {
+            hotelId: hid,
+            optionId: oid,
+          },
+        };
+        const response = await postData("travelogy/hotel/fetch-data", reqData);
+        console.log("hotel listing response == ", response);
+        setHotelReviewData(response);
+        setLoading(false);
+      } catch (error) {
+        console.error("Search API error:", error);
+        setError(error.message);
+        setLoading(false);
+        return null;
+      }
+    };
+    apiCall(hid, oid);
   }, [hid, oid]);
 
   // if (error) {
@@ -39,12 +62,7 @@ export function Step1TravellerDetails({
   setFormData,
   onNext,
 }) {
-  // console.log(
-  //   hotelReviewData?.hInfo?.ops?.ipm,
-  //   "hotelRsetFormDataeviewData9688248969"
-  // );
   const ipmValue = hotelReviewData?.hInfo?.ops?.[0]?.ipm;
-  console.log(ipmValue, "hotelReviewDataipm value");
 
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
@@ -81,7 +99,6 @@ export function Step1TravellerDetails({
     }));
   };
 
-  // console.log("Step1TravellerDetails Hotel Review Data:", hotelReviewData);
   useEffect(() => {
     localStorage.setItem("bookingFormData", JSON.stringify(formData));
   }, [formData]);
@@ -92,10 +109,14 @@ export function Step1TravellerDetails({
 
     if (!leadGuest.firstName?.trim()) {
       newErrors.firstName = "First name is required";
+    } else if (leadGuest.firstName.trim().length < 2) {
+      newErrors.firstName = "First name must be at least 2 characters";
     }
 
     if (!leadGuest.lastName?.trim()) {
       newErrors.lastName = "Last name is required";
+    } else if (leadGuest.lastName.trim().length < 2) {
+      newErrors.lastName = "Last name must be at least 2 characters";
     }
 
     if (!(formData?.mobile ?? "").trim()) {
@@ -122,7 +143,6 @@ export function Step1TravellerDetails({
   };
   const handleNext = () => {
     const isValid = validateFields();
-    console.log("Is Valid:", isValid);
     if (isValid) {
       onNext();
     }
@@ -167,7 +187,7 @@ export function Step1TravellerDetails({
     const freeCancellation = policies.find((p) => p.am === 0);
     if (freeCancellation?.tdt) {
       const dateObj = new Date(freeCancellation.tdt);
-      freeCancellationDate = dateObj.toLocaleDateString("en-GB"); // Formats as DD/MM/YYYY
+      freeCancellationDate = dateObj.toLocaleDateString("en-GB");
     }
   }
   const [passportNumber, setPassportNumber] = useState(
@@ -588,7 +608,13 @@ export function Step1TravellerDetails({
   );
 }
 
-export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
+export function Step2Review({
+  formData,
+  onNext,
+  hotelReviewData,
+  hotelReviewData1,
+  Category,
+}) {
   const [accepted, setAccepted] = useState(false);
   useEffect(() => {
     const savedAccepted = localStorage.getItem("acceptTerms");
@@ -597,7 +623,6 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
     }
   }, []);
   const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
-  console.log("Terms & Conditions before proceeding", PanRequired);
   useEffect(() => {
     localStorage.setItem("acceptTerms", JSON.stringify(accepted));
   }, [accepted]);
@@ -617,8 +642,6 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
         hotelReviewData,
         isBlock: true,
       });
-
-      console.log("Booking (BLOCK) response:", response);
     } catch (error) {
       console.error("Error during block:", error.message);
     }
@@ -626,6 +649,8 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
   let freeCancellationDate = null;
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
+  const passengerContact = hotelReviewData1;
+  console.log("passengerContact", passengerContact);
   const blockRoom = hotelReviewData?.conditions?.isBA;
   if (Array.isArray(policies)) {
     const freeCancellation = policies.find((p) => p.am === 0);
@@ -812,33 +837,7 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
               </p>
             </div>
           ))}
-      {/* {formData.specialRequest?.trim() && (
-        <div className="mt-4">
-          <h3 className="font-semibold text-base">Special request(s)</h3>
-          <p className="text-sm text-gray-700 mt-1">
-            {formData.specialRequest}
-          </p>
-        </div>
-      )} */}{" "}
-      {/* {Category !== "abook" ? (
-        formData.specialRequest?.trim() ? (
-          <div className="mt-4">
-            <h3 className="font-semibold text-base">Special request(s)</h3>
-            <p className="text-sm text-gray-700 mt-1">
-              {formData.specialRequest}
-            </p>
-          </div>
-        ) : null
-      ) : Array.isArray(hotelPassenger) &&
-        hotelPassenger.length > 0 &&
-        hotelPassenger[0]?.ssr ? (
-        <div className="mt-4">
-          <h3 className="font-semibold text-base">Special request(s)</h3>
-          <p className="text-sm text-gray-700 mt-1">
-            {hotelPassenger[0]?.ssr?.[0]?.rm}
-          </p>
-        </div>
-      ) : null} */}
+
       {Category !== "abook" ? (
         formData.specialRequest?.trim() ? (
           <div className="mt-4">
@@ -850,23 +849,42 @@ export function Step2Review({ formData, onNext, hotelReviewData, Category }) {
         ) : null
       ) : Array.isArray(hotelPassenger) &&
         hotelPassenger.length > 0 &&
-        hotelPassenger[0]?.ssr?.[0]?.rm?.trim() ? ( // Check if rm is not empty
+        hotelPassenger[0]?.ssr?.length > 0 ? (
         <div className="mt-4">
           <h3 className="font-semibold text-base">Special request(s)</h3>
-          <p className="text-sm text-gray-700 mt-1">
-            {hotelPassenger[0]?.ssr?.[0]?.rm}
-          </p>
+          {hotelPassenger[0]?.ssr.map((item, index) => (
+            <p key={index} className="text-sm text-gray-700 mt-1">
+              {item.rm?.trim() && item.rm}{" "}
+            </p>
+          ))}
         </div>
       ) : null}
-      {formData.email?.trim() && (
-        <>
-          <h3 className="font-semibold text-base">Contact Details</h3>
-          <p>Email: {formData.email}</p>
-          <p>
-            Mobile: {formData.countryCode} {formData.mobile}
-          </p>
-        </>
-      )}
+
+      {Category !== "abook" ? (
+        formData.email?.trim() ? (
+          <>
+            <h3 className="font-semibold text-base">Contact Details</h3>
+            <p>Email: {formData.email}</p>
+            <p>
+              Mobile: {formData.countryCode} {formData.mobile}
+            </p>
+          </>
+        ) : null
+      ) : passengerContact?.emails?.length > 0 ? (
+        <div className="mt-4">
+          <h3 className="font-semibold text-base pb-4">Contact Details</h3>
+          {passengerContact.emails.map((email, index) => (
+            <div key={index}>
+              <p className="pb-3">Email: {email}</p>
+              <p>
+                Mobile: {passengerContact.code[0]}{" "}
+                {passengerContact.contacts[index]}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       <div className="border-t pt-4">
         <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
         <table className="w-full border text-center text-sm">
@@ -1090,7 +1108,6 @@ export function Step3PersonalDocuments({
   const [guardianMode, setGuardianMode] = useState({});
   const [selectedTCS, setSelectedTCS] = useState(null);
   const blockRoom = hotelReviewData?.conditions?.isBA;
-  console.log("blockRoom", blockRoom);
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
 
   useEffect(() => {
@@ -1217,36 +1234,27 @@ export function Step3PersonalDocuments({
     setFormData((prev) => ({ ...prev, panInfo: finalData }));
     onNext();
   };
+
   const handleBlock = async () => {
+    const updatedFormData = {
+      panInfo: samePANForAll
+        ? { mode: "same", pan: samePANValue } // Add the samePANValue if samePANForAll is selected
+        : formData?.panInfo, // Else retain the custom PAN data from formData
+    };
+
     try {
       const response = await hotelBooking({
         formData,
+        updatedFormData, // Send updated formData with PAN details
         hotelReviewData,
-        isBlock: true,
+        isBlock: true, // Indicating it's a block request
       });
-
-      console.log("Booking (BLOCK) response:", response);
-      localStorage.removeItem("formData");
-      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${bookingId}`;
+      localStorage.removeItem("formData"); // Clean up localStorage
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`; // Redirect to the booking details page
     } catch (error) {
       console.error("Error during block:", error.message);
     }
   };
-
-  // const handleProceed = async () => {
-  //   try {
-  //     const response = await hotelBooking({
-  //       formData,
-  //       hotelReviewData,
-  //       isBlock: false, // Indicate that this is a proceed request (with payment)
-  //     });
-
-  //     // Handle response (success/failure)
-  //     console.log("Booking (PROCEED) response:", response);
-  //   } catch (error) {
-  //     console.error("Error during proceed:", error.message);
-  //   }
-  // };
 
   return (
     <div>
@@ -1435,13 +1443,11 @@ export function Step4Payment({
   const handleCloseModal = () => {
     setShowModal(false);
   };
-  console.log("hotelReviewData", hotelReviewData.bookingId);
 
   const handleConfirm = async () => {
     setShowModal(false);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
-      console.log("Booking Success:", result);
       onConfirmPayment(bookingId);
     } catch (error) {
       console.error("Booking failed:", error);
@@ -1548,13 +1554,23 @@ export function useFareBreakdown(hotelReviewData) {
 }
 
 export function FareAmount({ hotelReviewData, Category }) {
-  const tfcs = hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs;
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
+  const totalBaseFareSum = hotelPassenger.reduce((sum, room) => {
+    return sum + (room.tfcs?.BF || 0);
+  }, 0);
+
+  const totalTaxSum = hotelPassenger.reduce((sum, room) => {
+    return sum + (room.tfcs?.TAF || 0);
+  }, 0);
+  const [isDetailsVisible, setIsDetailsVisible] = useState(false);
+
+  const toggleDetails = () => {
+    setIsDetailsVisible((prevState) => !prevState);
+  };
+
   console.log(hotelPassenger, "hotelPassenger");
-  const baseFare = tfcs?.BF || 0;
-  const taxes = tfcs?.TAF || 0;
-  const total = baseFare + taxes;
+
   return (
     <>
       {Category !== "abook" ? (
@@ -1576,34 +1592,53 @@ export function FareAmount({ hotelReviewData, Category }) {
           </div>
         </>
       ) : (
-        hotelPassenger?.map((room, roomIndex) => (
-          <div key={roomIndex} className="border-b pb-4 space-y-2">
-            <h3 className="font-semibold text-base text-gray-600">
-              FARE SUMMARY
-            </h3>
-
-            {room?.tfcs && (
-              <>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Base Fare</span>
-                  <span> ₹{room.tfcs?.BF?.toFixed(2) || 0}</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Taxes and Fees</span>
-                  <span className="text-xs">
-                    ₹{room.tfcs?.TAF?.toFixed(2) || 0}
-                  </span>
-                </div>
-                <div className="flex justify-between font-semibold text-gray-800">
-                  <span>Total Amount Payable</span>
-                  <span className="text-gray-600">
-                    ₹{((room.tfcs?.BF || 0) + (room.tfcs?.TAF || 0)).toFixed(2)}
-                  </span>
-                </div>
-              </>
-            )}
+        <div className="pt-2">
+          <h3 className="font-semibold text-base text-black-600 pb-2">
+            TOTAL FARE SUMMARY
+          </h3>
+          <div className="flex justify-between items-center pb-3">
+            <div className="flex items-center space-x-2">
+              <span>Base Fare</span>
+              <button onClick={toggleDetails} className="text-black-500 pl-0">
+                {isDetailsVisible ? (
+                  <UpOutlined className="w-2 h-2 mt-2" />
+                ) : (
+                  <DownOutlined className="w-2 h-2 mt-2" />
+                )}
+              </button>
+            </div>
+            <span>₹{totalBaseFareSum.toFixed(2)}</span>
           </div>
-        ))
+
+          {isDetailsVisible &&
+            hotelPassenger?.map((room, roomIndex) => (
+              <div key={roomIndex} className="border-b pb-4 space-y-2">
+                {room?.tfcs && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-xs text-gray-400">{room?.rt}</span>
+
+                      <span className="text-xs text-gray-400">
+                        ₹
+                        {((room.tfcs?.BF || 0) + (room.tfcs?.TAF || 0)).toFixed(
+                          2
+                        )}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+
+          <div className="flex justify-between pb-4">
+            <span>Taxes and Fees</span>
+            <span>₹{totalTaxSum.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-gray-800">
+            <span>Total Amount Payable</span>
+            <span>₹{(totalBaseFareSum + totalTaxSum).toFixed(2)}</span>
+          </div>
+        </div>
       )}
     </>
   );
