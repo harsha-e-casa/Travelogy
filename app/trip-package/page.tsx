@@ -2,7 +2,7 @@
 import Layout from "@/components/layout/Layout";
 import TopCategory2 from "@/components/sections/TopCategory2";
 import Flights4 from "@/components/sections/Flights4";
-import rawticketsData from "@/util/tickets.json";
+// import rawticketsData from "@/util/tickets.json";
 import useTicketFilter from "@/util/useTicketFilter";
 import EngineTabs from "@/components/searchEngine/engineHeader";
 import React, { Suspense } from "react";
@@ -46,10 +46,10 @@ const AppDateRangeww = () => {
   );
 };
 
-const ticketsData = rawticketsData.map((ticket) => ({
-  ...ticket,
-  rating: parseFloat(ticket.rating as string),
-}));
+// const ticketsData = rawticketsData.map((ticket) => ({
+//   ...ticket,
+//   rating: parseFloat(ticket.rating as string),
+// }));
 const toursData = rawToursData.map((tour) => ({
   ...tour,
   duration: parseFloat(tour.duration as string),
@@ -86,7 +86,7 @@ export default function Tickets() {
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <div className="holiday-search-engine">
-          <EngineTabs active_border={'2'} />
+          <EngineTabs active_border={"2"} />
         </div>
         <main className="main">
           <section className="bg-gray-100 box-section block-content-tourlist">
@@ -199,7 +199,7 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img 
+                                <img
                                   src="/assets/imgs/page/tour/post.png"
                                   alt="Travalogy"
                                 />
@@ -225,7 +225,7 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img 
+                                <img
                                   src="/assets/imgs/page/tour/post2.png"
                                   alt="Travalogy"
                                 />
@@ -251,7 +251,7 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img 
+                                <img
                                   src="/assets/imgs/page/tour/post3.png"
                                   alt="Travalogy"
                                 />
@@ -277,7 +277,7 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img 
+                                <img
                                   src="/assets/imgs/page/tour/post4.png"
                                   alt="Travalogy"
                                 />
@@ -303,7 +303,7 @@ export default function Tickets() {
                               {" "}
                               <Link href="#">
                                 {" "}
-                                <img 
+                                <img
                                   src="/assets/imgs/page/tour/post5.png"
                                   alt="Travalogy"
                                 />
