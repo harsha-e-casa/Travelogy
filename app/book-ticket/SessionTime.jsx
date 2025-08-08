@@ -18,7 +18,7 @@ function SessionTimer({ timeLeftRef,searchTickets }) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timeLeftRef]);
+  }, [searchTickets, timeLeftRef]);
 
   return (
     <div className="sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center ">

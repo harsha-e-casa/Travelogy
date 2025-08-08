@@ -1,39 +1,175 @@
 import { AppContext } from "@/util/AppContext";
-import { useContext, useEffect } from "react";
-export default function BookingForm({
-  segmentsPrice,
+import { useContext, useEffect, useState } from "react";
+
+interface BookingFormProps {
+  totalpricee: any;
+  bookingData?: any;
+}
+
+const BookingForm: React.FC<BookingFormProps> = ({
+  // segmentsPrice,
   totalpricee,
+  bookingData = {},
   // baggageinfo,
-}) {
+}) => {
+  console.log(
+    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
+    totalpricee
+  );
+  if (totalpricee === undefined) {
+    totalpricee = bookingData?.totalPriceInfo?.totalFareDetail;
+  }
+  console.log(
+    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee11 ",
+    totalpricee
+  );
   const basefare = totalpricee?.fC?.BF;
   const taxAndFees = totalpricee?.fC?.TAF;
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;
   const netprice = totalpricee?.fC?.NF;
-  const { getCookie } = useContext(AppContext);
-  const savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
-  const savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
-  const ssrSeatAmount = getCookie("seatSsr_amount");
-  console.log("saved baggage", savedBaggage);
-  console.log("saved meal", savedMeal);
+  const { getCookie, removeCookie } = useContext(AppContext);
 
-  const computedAmount =
-    Number(totalfare) +
-    savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
-    savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +
-    (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+  let computedAmount = 0;
 
-  const displayAmount = computedAmount > Number(totalfare) ? computedAmount : Number(totalfare);
+  const [totalBaggageAmount, setTotalBaggageAmount] = useState(0);
+  const [totalSeatAmount, setTotalSeatAmount] = useState(0);
+  const [totalMealAmount, setTotalMealAmount] = useState(0);
+  const [displayAmount, setDisplayAmount] = useState(0);
 
-  console.log("Computed Amount:", computedAmount);
-  console.log("totalfare Amount:", Number(totalfare));
-  console.log("displayAmount:", displayAmount);
+  useEffect(() => {
+    // for booking details page
+    console.log("bookingDatabookingData =====> ", bookingData);
+
+    // if (bookingData !== undefined) {
+    //   let baggageTotal = 0;
+    //   let seatTotal = 0;
+    //   let mealTotal = 0;
+
+    //   let travellerInfo = bookingData?.travellerInfos;
+
+    //   if (travellerInfo && travellerInfo.length > 0) {
+    //     travellerInfo.forEach((traveller) => {
+    //       // Check if ssrBaggageInfos exists and has keys
+    //       if (
+    //         traveller?.ssrBaggageInfos &&
+    //         Object.keys(traveller.ssrBaggageInfos).length > 0
+    //       ) {
+    //         Object.keys(traveller.ssrBaggageInfos).forEach((key) => {
+    //           baggageTotal += traveller.ssrBaggageInfos[key].amount || 0;
+    //         });
+    //       }
+
+    //       // Check if ssrSeatInfos exists and has keys
+    //       if (
+    //         traveller?.ssrSeatInfos &&
+    //         Object.keys(traveller.ssrSeatInfos).length > 0
+    //       ) {
+    //         Object.keys(traveller.ssrSeatInfos).forEach((key) => {
+    //           seatTotal += traveller.ssrSeatInfos[key].amount || 0;
+    //         });
+    //       }
+
+    //       // Check if ssrMealInfos exists and has keys
+    //       if (
+    //         traveller?.ssrMealInfos &&
+    //         Object.keys(traveller.ssrMealInfos).length > 0
+    //       ) {
+    //         Object.keys(traveller.ssrMealInfos).forEach((key) => {
+    //           mealTotal += traveller.ssrMealInfos[key].amount || 0;
+    //         });
+    //       }
+    //     });
+    //   }
+
+    //   setTotalBaggageAmount(baggageTotal);
+    //   setTotalSeatAmount(seatTotal);
+    //   setTotalMealAmount(mealTotal);
+
+    //   console.log("Total Baggage Amount: ", baggageTotal);
+    //   console.log("Total Seat Amount: ", seatTotal);
+    //   console.log("Total Amount: ", Number(totalfare));
+    //   computedAmount = Number(totalfare);
+    // }
+
+    // except booking details page
+    if (Object.keys(bookingData).length === 0) {
+      let savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
+      setTotalBaggageAmount(
+        savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0)
+      );
+      let savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
+      setTotalMealAmount(savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0));
+      let ssrSeatAmount = getCookie("seatSsr_amount");
+      setTotalSeatAmount(Number(ssrSeatAmount));
+      console.log("saved baggage", savedBaggage);
+      console.log("saved meal", savedMeal);
+
+      computedAmount =
+        Number(totalfare) +
+        savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+        savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+        (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+    } else {
+      let baggageTotal = 0;
+      let seatTotal = 0;
+      let mealTotal = 0;
+
+      let travellerInfo = bookingData?.travellerInfos;
+
+      if (travellerInfo && travellerInfo.length > 0) {
+        travellerInfo.forEach((traveller: any) => {
+          // Check if ssrBaggageInfos exists and has keys
+          if (
+            traveller?.ssrBaggageInfos &&
+            Object.keys(traveller.ssrBaggageInfos).length > 0
+          ) {
+            Object.keys(traveller.ssrBaggageInfos).forEach((key) => {
+              baggageTotal += traveller.ssrBaggageInfos[key].amount || 0;
+            });
+          }
+
+          // Check if ssrSeatInfos exists and has keys
+          if (
+            traveller?.ssrSeatInfos &&
+            Object.keys(traveller.ssrSeatInfos).length > 0
+          ) {
+            Object.keys(traveller.ssrSeatInfos).forEach((key) => {
+              seatTotal += traveller.ssrSeatInfos[key].amount || 0;
+            });
+          }
+
+          // Check if ssrMealInfos exists and has keys
+          if (
+            traveller?.ssrMealInfos &&
+            Object.keys(traveller.ssrMealInfos).length > 0
+          ) {
+            Object.keys(traveller.ssrMealInfos).forEach((key) => {
+              mealTotal += traveller.ssrMealInfos[key].amount || 0;
+            });
+          }
+        });
+      }
+
+      setTotalBaggageAmount(baggageTotal);
+      setTotalSeatAmount(seatTotal);
+      setTotalMealAmount(mealTotal);
+
+      console.log("Total Baggage Amount: ", baggageTotal);
+      console.log("Total Seat Amount: ", seatTotal);
+      console.log("Total Amount: ", Number(totalfare));
+      computedAmount = Number(totalfare);
+    }
+    setDisplayAmount(computedAmount);
+  }, [totalpricee]);
+
+  // const displayAmount = computedAmount > Number(totalfare) ? computedAmount : Number(totalfare);
 
   return (
     <>
       <div className="content-booking-form">
-        <div 
+        <div
           // className="item-line-booking flex flex-row"
           className="flex flex-row"
         >
@@ -56,10 +192,10 @@ export default function BookingForm({
                 </strong>
               </div>
               <div className="text-md-bold neutral-1000">
-                ₹
-                {savedBaggage
+                ₹{totalBaggageAmount}
+                {/* {savedBaggage
                   .filter((item) => item.amount !== undefined) // Filter out items without the 'amount' property
-                  .reduce((acc, curr) => acc + (curr.amount || 0), 0)}
+                  .reduce((acc, curr) => acc + (curr.amount || 0), 0)} */}
               </div>
             </div>
             <div className="flex flex-row justify-between">
@@ -69,10 +205,10 @@ export default function BookingForm({
                 </strong>
               </div>
               <div className="text-md-bold neutral-1000">
-                ₹
-                {savedMeal
+                ₹{totalMealAmount}
+                {/* {savedMeal
                   .filter((item) => item.amount !== undefined) // Filter out items without the 'amount' property
-                  .reduce((acc, curr) => acc + (curr.amount || 0), 0)}
+                  .reduce((acc, curr) => acc + (curr.amount || 0), 0)} */}
               </div>
             </div>
             <div className="flex flex-row justify-between">
@@ -80,7 +216,7 @@ export default function BookingForm({
                 <strong className="text-md-bold neutral-1000">Seat Fees</strong>
               </div>
               <div className="text-md-bold neutral-1000">
-                ₹{ssrSeatAmount ? ssrSeatAmount : "0"}
+                ₹{totalSeatAmount ? totalSeatAmount : "0"}
               </div>
             </div>
             <div className="flex flex-row justify-between">
@@ -190,7 +326,7 @@ export default function BookingForm({
 					</div>
 				</div>
 			</div> */}
-        <div 
+        <div
           // className="item-line-booking last-item"
           className="flex flex-row justify-between"
         >
@@ -234,3 +370,5 @@ export default function BookingForm({
     </>
   );
 }
+
+export default BookingForm;

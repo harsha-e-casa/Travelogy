@@ -9,11 +9,16 @@ import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByAirline from "@/components/Filter/ByAirline";
 // import TicketCard1 from "./TicketCard1";
 
+interface SelectedTicket {
+  ticket: any;
+  selectedPriceIndex: any;
+}
+
 export default function RoundTripSelectionView({ flightData }: any) {
   const { getCookie } = useContext(AppContext);
   const departureFrom = getCookie("gy_da_str");
   const arrivalTo = getCookie("gy_aa_str");
-  const [selectedOnwardTicket, setSelectedOnwardTicket] = useState(null);
+  const [selectedOnwardTicket, setSelectedOnwardTicket] = useState<SelectedTicket | null>(null);
   const [currentTickets, setCurrentTickets] = useState(flightData.ONWARD);
   const [tripPhase, setTripPhase] = useState<"ONWARD" | "RETURN">("ONWARD");
 
@@ -63,7 +68,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
     // Price Range Filter
     filteredData = filteredData.filter(
-      (ticket) => {
+      (ticket: any) => {
         return ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF >= priceRange[0] &&
           ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF <= priceRange[1]
       }
@@ -71,7 +76,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
     // Stops Filter
     if (stops !== "all") {
-      filteredData = filteredData.filter((ticket) => {
+      filteredData = filteredData.filter((ticket: any) => {
         if (stops === "non-stop") {
           return ticket.sI.length === 1;
         } else if (stops === "1-stop") {
@@ -85,7 +90,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
     // Departure Time Filter
     if (departureTime !== "all") {
-      filteredData = filteredData.filter((ticket) => {
+      filteredData = filteredData.filter((ticket: any) => {
         const departureHour = new Date(ticket.sI[0].dt).getHours();
         if (departureTime === "early-morning") {
           return departureHour >= 0 && departureHour < 6;
@@ -102,7 +107,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
     // Arrival Time Filter
     if (arrivalTime !== "all") {
-      filteredData = filteredData.filter((ticket) => {
+      filteredData = filteredData.filter((ticket: any) => {
         const arrivalHour = new Date(
           ticket.sI[ticket.sI.length - 1].at
         ).getHours();
@@ -121,7 +126,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
     // Airline Filter
     if (selectedAirlines.length > 0) {
-      filteredData = filteredData.filter((ticket) =>
+      filteredData = filteredData.filter((ticket: any) =>
         selectedAirlines.includes(ticket.sI[0].fD.aI.name)
       );
     }
@@ -145,7 +150,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
     tripPhase,
   ]);
 
-  const handleTicketSelected = (ticket, selectedPriceIndex) => {
+  const handleTicketSelected = (ticket: any, selectedPriceIndex: number) => {
     if (tripPhase === "ONWARD") {
       console.log("ticketttttttttttttttt ", ticket);
       console.log("ticketttttttttttttttt ", selectedPriceIndex);
@@ -386,7 +391,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
                     uniqueAirlines={[
                       ...new Set(
                         (tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN)?.map(
-                          (ticket) => ticket.sI[0].fD.aI.name
+                          (ticket: any) => ticket.sI[0].fD.aI.name
                         ) || []
                       ),
                     ]}
@@ -411,12 +416,13 @@ export default function RoundTripSelectionView({ flightData }: any) {
                 )}
               </div>
               <div className="box-list-flights box-list-flights-2">
-                {currentTickets.map((ticket: any) => (
+                {currentTickets.map((ticket: any, index: number) => (
                   <DomesticRoundTripTicketCard
                     ticket={ticket}
                     handleTicketSelected={handleTicketSelected}
                     tripPhase={tripPhase}
                     selectedOnwardTicket={selectedOnwardTicket}
+                    key={index}
                   />
                 ))}
               </div>

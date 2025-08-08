@@ -5,7 +5,7 @@ import Flights4 from "@/components/sections/Flights4";
 import rawticketsData from "@/util/tickets.json";
 import useTicketFilter from "@/util/useTicketFilter";
 import EngineTabs from "@/components/searchEngine/engineHeader";
-import React from "react";
+import React, { Suspense } from "react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import ByActivities from "@/components/Filter/ByActivities";
@@ -83,7 +83,7 @@ export default function Tickets() {
   } = useTourFilter(toursData);
 
   return (
-    <>
+    <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <div className="holiday-search-engine">
           <EngineTabs active_border={'2'} />
@@ -346,6 +346,6 @@ export default function Tickets() {
           </section>
         </main>
       </Layout>
-    </>
+    </Suspense>
   );
 }

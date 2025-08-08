@@ -22,17 +22,28 @@ export default function ByPagination({
       }
     }
 
-    for (let i of range) {
-      if (l) {
-        if (i - (l ?? 0) === 2) {
+    // for (let i of range) {
+    //   if (l) {
+    //     if (i - (l ?? 0) === 2) {
+    //       rangeWithDots.push(l + 1);
+    //     } else if (i - (l ?? 0) > 2) {
+    //       rangeWithDots.push("...");
+    //     }
+    //   }
+    //   rangeWithDots.push(i);
+    //   l = i;
+    // }
+    range.forEach((i: any) => {
+      if (l !== undefined) {
+        if (i - l === 2) {
           rangeWithDots.push(l + 1);
-        } else if (i - (l ?? 0) > 2) {
+        } else if (i - l > 2) {
           rangeWithDots.push("...");
         }
       }
       rangeWithDots.push(i);
       l = i;
-    }
+    });
     return rangeWithDots;
   };
 

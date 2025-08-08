@@ -9,7 +9,7 @@ export default function SortHotelsFilter({
   handleClearFilters,
   startItemIndex,
   endItemIndex,
-  totalResults, // ✅ new prop instead of sortedHotels
+  // totalResults, // ✅ new prop instead of sortedHotels
 }: {
   sortCriteria: string;
   handleSortChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -18,7 +18,7 @@ export default function SortHotelsFilter({
   handleClearFilters: () => void;
   startItemIndex: number;
   endItemIndex: number;
-  totalResults: number; // ✅ instead of sortedHotels.length
+  // totalResults: number; // ✅ instead of sortedHotels.length
 }) {
   return (
     <>
@@ -51,7 +51,7 @@ export default function SortHotelsFilter({
               </svg>
             </Link>
             <span className="text-sm-bold neutral-500 number-found">
-              {startItemIndex} - {endItemIndex} of {totalResults} hotels found
+              {startItemIndex} - {endItemIndex} of {/* {totalResults} */} hotels found
             </span>
           </div>
         </div>
