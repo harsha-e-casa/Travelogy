@@ -9,12 +9,14 @@ import { postData } from "@/services/NetworkAdapter";
 import FlightBookingList from "./FlightBookingList.jsx";
 import AmendmentList from "./AmendmentList.jsx";
 import FlightReBookingList from "./FlightReBookingList.jsx";
+import HotelBookingList from "./HotelBookingList.jsx";
 
-const page = () => {
+const Page = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setloading] = useState(false);
   const [userData, setUserData] = useState();
   const [userBookingData, setUserBookingData] = useState();
+  const [userHotelBookingData, setUserHotelBookingData] = useState();
   const [userAmendmentData, setUseramendmentData] = useState();
   const [userReBookingData, setReUserBookingData] = useState();
 
@@ -40,7 +42,6 @@ const page = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      console.log("oooooooooooooooooooooooooooooo 1");
       try {
         setloading(true);
 
@@ -53,19 +54,15 @@ const page = () => {
           "/travelogy/flight/fetch-user",
           reqParams
         );
-        console.log("fetchUserDataresssssssssssss = ", result);
         setUserData(result);
         setloading(false);
       } catch (error) {
-        console.log("error ==> ", error);
         setloading(false);
       }
     };
-
     fetchUserData();
 
     const fetchflightBookings = async () => {
-      console.log("fetchflightBookings == ");
       try {
         setloading(true);
 
@@ -77,15 +74,12 @@ const page = () => {
           "/travelogy/flight/fetech-bookings",
           reqParams
         );
-        console.log("fetchflightBookingsresssssssssssss = ", result);
         setUserBookingData(result);
         setloading(false);
       } catch (error) {
-        console.log("error ==> ", error);
         setloading(false);
       }
     };
-
     fetchflightBookings();
 
     const fetchAmendmentId = async () => {
@@ -100,19 +94,15 @@ const page = () => {
           "/travelogy/flight/fetch-amendment",
           reqParams
         );
-        console.log("fetchflightamendmenttttttttt = ", result);
         setUseramendmentData(result);
         setloading(false);
       } catch (error) {
-        console.log("error ==> ", error);
         setloading(false);
       }
     };
-
     fetchAmendmentId();
 
     const fetchreflightBookings = async () => {
-      console.log("fetchflightBookings == ");
       try {
         setloading(true);
 
@@ -131,8 +121,27 @@ const page = () => {
         setloading(false);
       }
     };
-
     fetchreflightBookings();
+
+    const fetchHotelBookings = async () => {
+      try {
+        setloading(true);
+
+        const reqParams = {
+          phone: "9677179866",
+        };
+
+        const result = await postData(
+          "/travelogy/hotel/fetech-bookings",
+          reqParams
+        );
+        setUserHotelBookingData(result);
+        setloading(false);
+      } catch (error) {
+        setloading(false);
+      }
+    };
+    fetchHotelBookings();
   }, []);
 
   return (
@@ -540,20 +549,15 @@ const page = () => {
                           ),
                           key: "4",
                           children: (
-                            <div className="p-3">
-                              <p className="booking-tab">
-                                Find and book hotels easily. Choose location,
-                                check-in and check-out dates.
-                              </p>
-                            </div>
+                            <HotelBookingList
+                              bookings={userHotelBookingData?.bookings}
+                            />
                           ),
                         },
                       ]}
                     />
                   </div>
                 </div>
-
-                <div></div>
               </div>
             </div>
           </section>
@@ -562,4 +566,4 @@ const page = () => {
     </>
   );
 };
-export default page;
+export default Page;

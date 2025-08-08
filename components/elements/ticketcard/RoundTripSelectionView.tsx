@@ -2,31 +2,41 @@ import React, { useState, useContext, useEffect } from "react";
 import { AppContext } from "@/util/AppContext";
 import dayjs from "dayjs";
 import DomesticRoundTripTicketCard from "./DomesticRoundTripTicketCard";
+import ByPrice from "@/components/Filter/ByPrice";
+import ByStops from "@/components/Filter/ByStops";
+import ByDepartureTime from "@/components/Filter/ByDepartureTime";
+import ByArrivalTime from "@/components/Filter/ByArrivalTime";
+import ByAirline from "@/components/Filter/ByAirline";
 // import TicketCard1 from "./TicketCard1";
 
-export default function RoundTripSelectionView({ flightData, setTripPhaseFilter, resetFIlterSection, setReturnTicketCancel }: any) {
+interface SelectedTicket {
+  ticket: any;
+  selectedPriceIndex: any;
+}
 
-
+export default function RoundTripSelectionView({ flightData }: any) {
   const { getCookie } = useContext(AppContext);
   const departureFrom = getCookie("gy_da_str");
   const arrivalTo = getCookie("gy_aa_str");
-  const [selectedOnwardTicket, setSelectedOnwardTicket] = useState(null);
-  // const [currentTickets, setCurrentTickets] = useState(flightDataONWARD); karthik
-  const [currentTickets, setCurrentTickets] = useState([]);  
+  const [selectedOnwardTicket, setSelectedOnwardTicket] = useState<SelectedTicket | null>(null);
+  const [currentTickets, setCurrentTickets] = useState(flightData.ONWARD);
   const [tripPhase, setTripPhase] = useState<"ONWARD" | "RETURN">("ONWARD");
+
+  const [onwardPriceRange, setOnwardPriceRange] = useState([0, 100000]);
+  const [onwardStops, setOnwardStops] = useState("all");
+  const [onwardDepartureTime, setOnwardDepartureTime] = useState("all");
+  const [onwardArrivalTime, setOnwardArrivalTime] = useState("all");
+  const [onwardSelectedAirlines, setOnwardSelectedAirlines] = useState<string[]>([]);
+
+  const [returnPriceRange, setReturnPriceRange] = useState([0, 100000]);
+  const [returnStops, setReturnStops] = useState("all");
+  const [returnDepartureTime, setReturnDepartureTime] = useState("all");
+  const [returnArrivalTime, setReturnArrivalTime] = useState("all");
+  const [returnSelectedAirlines, setReturnSelectedAirlines] = useState<string[]>([]);
 
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
-
-  useEffect(() => {
-    if(tripPhase != 'RETURN'){
-      setCurrentTickets(flightData.ONWARD)
-    }else{
-      setCurrentTickets(flightData.RETURN)
-    }
-  }, [flightData, tripPhase]);
-  
   useEffect(() => {
     if (
       getCookie("gy_adult") !== undefined &&
@@ -48,17 +58,105 @@ export default function RoundTripSelectionView({ flightData, setTripPhaseFilter,
     }
   }, []);
 
-  const handleTicketSelected = (ticket, selectedPriceIndex) => {
+  const applyFilters = () => {
+    let filteredData = tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN;
+    const priceRange = tripPhase === "ONWARD" ? onwardPriceRange : returnPriceRange;
+    const stops = tripPhase === "ONWARD" ? onwardStops : returnStops;
+    const departureTime = tripPhase === "ONWARD" ? onwardDepartureTime : returnDepartureTime;
+    const arrivalTime = tripPhase === "ONWARD" ? onwardArrivalTime : returnArrivalTime;
+    const selectedAirlines = tripPhase === "ONWARD" ? onwardSelectedAirlines : returnSelectedAirlines;
+
+    // Price Range Filter
+    filteredData = filteredData.filter(
+      (ticket: any) => {
+        return ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF >= priceRange[0] &&
+          ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF <= priceRange[1]
+      }
+    );
+
+    // Stops Filter
+    if (stops !== "all") {
+      filteredData = filteredData.filter((ticket: any) => {
+        if (stops === "non-stop") {
+          return ticket.sI.length === 1;
+        } else if (stops === "1-stop") {
+          return ticket.sI.length === 2;
+        } else if (stops === "2-stops") {
+          return ticket.sI.length > 2;
+        }
+        return true;
+      });
+    }
+
+    // Departure Time Filter
+    if (departureTime !== "all") {
+      filteredData = filteredData.filter((ticket: any) => {
+        const departureHour = new Date(ticket.sI[0].dt).getHours();
+        if (departureTime === "early-morning") {
+          return departureHour >= 0 && departureHour < 6;
+        } else if (departureTime === "morning") {
+          return departureHour >= 6 && departureHour < 12;
+        } else if (departureTime === "afternoon") {
+          return departureHour >= 12 && departureHour < 18;
+        } else if (departureTime === "evening") {
+          return departureHour >= 18 && departureHour < 24;
+        }
+        return true;
+      });
+    }
+
+    // Arrival Time Filter
+    if (arrivalTime !== "all") {
+      filteredData = filteredData.filter((ticket: any) => {
+        const arrivalHour = new Date(
+          ticket.sI[ticket.sI.length - 1].at
+        ).getHours();
+        if (arrivalTime === "early-morning") {
+          return arrivalHour >= 0 && arrivalHour < 6;
+        } else if (arrivalTime === "morning") {
+          return arrivalHour >= 6 && arrivalHour < 12;
+        } else if (arrivalTime === "afternoon") {
+          return arrivalHour >= 12 && arrivalHour < 18;
+        } else if (arrivalTime === "evening") {
+          return arrivalHour >= 18 && arrivalHour < 24;
+        }
+        return true;
+      });
+    }
+
+    // Airline Filter
+    if (selectedAirlines.length > 0) {
+      filteredData = filteredData.filter((ticket: any) =>
+        selectedAirlines.includes(ticket.sI[0].fD.aI.name)
+      );
+    }
+
+    setCurrentTickets(filteredData);
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [
+    onwardPriceRange,
+    onwardStops,
+    onwardDepartureTime,
+    onwardArrivalTime,
+    onwardSelectedAirlines,
+    returnPriceRange,
+    returnStops,
+    returnDepartureTime,
+    returnArrivalTime,
+    returnSelectedAirlines,
+    tripPhase,
+  ]);
+
+  const handleTicketSelected = (ticket: any, selectedPriceIndex: number) => {
     if (tripPhase === "ONWARD") {
       console.log("ticketttttttttttttttt ", ticket);
       console.log("ticketttttttttttttttt ", selectedPriceIndex);
       setSelectedOnwardTicket({ ticket, selectedPriceIndex }); // save selected onward
-
-      setCurrentTickets(flightData.Return); // move to return flights
-      // setCurrentTickets(flightData.RETURN); // move to return flights Harsha
-      resetFIlterSection()
+      setCurrentTickets(flightData.RETURN); // move to return flights
       setTripPhase("RETURN");
-      setTripPhaseFilter("RETURN") // filter section
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // Final step — onward and return selected
@@ -228,36 +326,117 @@ export default function RoundTripSelectionView({ flightData, setTripPhaseFilter,
       )} */}
 
       {/* render onward and return ticket */}
-      {currentTickets && currentTickets.length > 0 ? (
-        <>
-          <div>
-            {tripPhase == "ONWARD" ? (
-              <>
-                <h6 className="pb-10">Departure to {departureFrom}</h6>
-              </>
-            ) : (
-              <h6 className="pb-10">Return from {arrivalTo}</h6>
-            )}
+      <div className="row">
+        <div className="col-lg-3">
+          <div className="sidebar-left border-1 background-body">
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <h6 className="text-lg-bold item-collapse neutral-1000">
+                  Filter Price{" "}
+                </h6>
+                <ByPrice
+                  priceRange={tripPhase === "ONWARD" ? onwardPriceRange : returnPriceRange}
+                  setPriceRange={tripPhase === "ONWARD" ? setOnwardPriceRange : setReturnPriceRange}
+                />
+              </div>
+            </div>
           </div>
-          <div className="box-list-flights box-list-flights-2">
-            {currentTickets.map((ticket: any) => (
-              <DomesticRoundTripTicketCard
-                ticket={ticket}
-                handleTicketSelected={handleTicketSelected}
-                tripPhase={tripPhase}
-                selectedOnwardTicket={selectedOnwardTicket}
-              />
-            ))}
+          <div className="sidebar-left border-1 background-body">
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <h6 className="text-lg-bold item-collapse neutral-1000">
+                  Stops
+                </h6>
+                <ByStops
+                  stops={tripPhase === "ONWARD" ? onwardStops : returnStops}
+                  setStops={tripPhase === "ONWARD" ? setOnwardStops : setReturnStops}
+                />
+              </div>
+            </div>
           </div>
-        </>
-      ) : (
-        <div className="text-center text-grey-500 py-12">
-          <p className="text-xl font-semibold">No results found</p>
-          <p className="text-sm mt-2 text-grey-400">
-            Try adjusting your filters or search criteria.
-          </p>
+          <div className="sidebar-left border-1 background-body">
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <h6 className="text-lg-bold item-collapse neutral-1000">
+                  Departure Time
+                </h6>
+                <ByDepartureTime
+                  departureTime={tripPhase === "ONWARD" ? onwardDepartureTime : returnDepartureTime}
+                  setDepartureTime={tripPhase === "ONWARD" ? setOnwardDepartureTime : setReturnDepartureTime}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="sidebar-left border-1 background-body">
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <h6 className="text-lg-bold item-collapse neutral-1000">
+                  Arrival Time
+                </h6>
+                <ByArrivalTime
+                  arrivalTime={tripPhase === "ONWARD" ? onwardArrivalTime : returnArrivalTime}
+                  setArrivalTime={tripPhase === "ONWARD" ? setOnwardArrivalTime : setReturnArrivalTime}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="sidebar-left border-1 background-body">
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <h6 className="text-lg-bold item-collapse neutral-1000">
+                  Airlines
+                </h6>
+                <div className="box-collapse scrollFilter">
+                  <ByAirline
+                    uniqueAirlines={[
+                      ...new Set(
+                        (tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN)?.map(
+                          (ticket: any) => ticket.sI[0].fD.aI.name
+                        ) || []
+                      ),
+                    ]}
+                    selectedAirlines={tripPhase === "ONWARD" ? onwardSelectedAirlines : returnSelectedAirlines}
+                    setSelectedAirlines={tripPhase === "ONWARD" ? setOnwardSelectedAirlines : setReturnSelectedAirlines}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+        <div className="col-lg-9">
+          {currentTickets && currentTickets.length > 0 ? (
+            <>
+              <div>
+                {tripPhase == "ONWARD" ? (
+                  <>
+                    <h6 className="pb-10">Departure to {departureFrom}</h6>
+                  </>
+                ) : (
+                  <h6 className="pb-10">Return from {arrivalTo}</h6>
+                )}
+              </div>
+              <div className="box-list-flights box-list-flights-2">
+                {currentTickets.map((ticket: any, index: number) => (
+                  <DomesticRoundTripTicketCard
+                    ticket={ticket}
+                    handleTicketSelected={handleTicketSelected}
+                    tripPhase={tripPhase}
+                    selectedOnwardTicket={selectedOnwardTicket}
+                    key={index}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-grey-500 py-12">
+              <p className="text-xl font-semibold">No results found</p>
+              <p className="text-sm mt-2 text-grey-400">
+                Try adjusting your filters or search criteria.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
       {selectedOnwardTicket && tripPhase === "RETURN" && (
         <div
           className="items-center p-3 border border-yellow-300 rounded-md mb-4 shadow-sm"
@@ -445,10 +624,8 @@ export default function RoundTripSelectionView({ flightData, setTripPhaseFilter,
             <div className="col-lg-1">
               <button
                 onClick={() => {
-                  setReturnTicketCancel(prev => !prev)
                   setSelectedOnwardTicket(null);
                   setTripPhase("ONWARD");
-                  setTripPhaseFilter("ONWARD") // filter section
                   setCurrentTickets(flightData.ONWARD);
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}

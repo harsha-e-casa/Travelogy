@@ -6,7 +6,7 @@ const AppListSearch = ({
   setSelectFrom,
   operEngLocation,
   setSelectFromSub,
-  categoryType,
+  categoryType=false,
 }) => {
   const [filteredOptions, setFilteredOptions] = useState(apiListAirLineState);
   // const apiListAirLineState = [

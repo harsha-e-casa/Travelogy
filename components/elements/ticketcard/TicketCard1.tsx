@@ -103,7 +103,7 @@ export default function TicketCard1({
     }
   }, [ticket]);
 
-  let flightLogo = { width: "unset" };
+  let flightLogo: { width: string; position?: string } = { width: "unset" };
   let paddingNone = {};
 
   if (getCookie("gy_triptype") === "multi-city") {
@@ -111,11 +111,11 @@ export default function TicketCard1({
     paddingNone = { padding: "unset" };
   }
 
-  const style: React.CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: 8,
-  };
+  // const style: React.CSSProperties = {
+  //   display: "flex",
+  //   flexDirection: "column",
+  //   gap: 8,
+  // };
 
   const [value, setValue] = useState(0);
 
@@ -136,7 +136,10 @@ export default function TicketCard1({
               <>
                 <div
                   className="air_detailes"
-                  style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
+                  // style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
+                  style={{ top: index === 0 ? "0" : "49%" }}
+
+                  key={segment.id || index}
                 >
                   <div className="flex items-center justify-center w-max">
                     <img

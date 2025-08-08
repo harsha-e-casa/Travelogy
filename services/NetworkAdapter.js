@@ -7,7 +7,8 @@ import Cookies from 'js-cookie';
 // const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
 // const API_BASE_URL = 'http://localhost:3030';
 
-const API_BASE_URL = 'https://com.digilogy.co';
+const API_BASE_URL = 'https://com.digilogy.co/';
+
 const API_TEST_JACK = 'https://apitest.tripjack.com/';
 const apiKey = '412605943ad923-4ae7-49f6-9c8e-8b75be573422';
 

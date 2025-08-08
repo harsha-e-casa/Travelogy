@@ -24,8 +24,6 @@ export interface Filter {
 type SortCriteria = "name" | "price" | "rating"
 
 const useTicketFilter = (ticketsData: Ticket[]) => {
-
-	console.log("filter -> ticket data --> ", ticketsData);
 	
 	const [filter, setFilter] = useState<Filter>({
 		names: [],

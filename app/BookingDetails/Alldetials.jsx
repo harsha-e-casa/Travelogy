@@ -20,7 +20,7 @@ import BarcodeGenerator from "./BarcodeGenerator.jsx";
 import { request } from "http";
 import { type } from "os";
 
-import staticBookingData from "./staticBookingData.json";
+// import staticBookingData from "./staticBookingData.json";
 
 const Alldetails = ({ totalpricee }) => {
   const searchParams = useSearchParams();
@@ -649,8 +649,7 @@ const Alldetails = ({ totalpricee }) => {
       console.log("paramerter", parameter);
 
       let reqData = { action: "bookingDetails", requestData: parameter };
-      // const data = await postData("travelogy/one-way/fetch-data", reqData);
-      const data = staticBookingData
+      const data = await postData("travelogy/one-way/fetch-data", reqData);
 
 
       // const data = await postDataBookingDetails(parameter);

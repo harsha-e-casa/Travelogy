@@ -6,7 +6,7 @@ import {
 import { Dayjs } from "dayjs";
 import { useState } from "react";
 
-import cancelAmendmentCharges1 from "./cancelAmendmentCharges1.json";
+// import cancelAmendmentCharges1 from "./cancelAmendmentCharges1.json";
 
 const TravellerDetailsModal = ({
   bookingId,
@@ -141,6 +141,7 @@ const TravellerDetailsModal = ({
                           src={`/assets/imgs/airlines/${segment[
                             "fD"
                           ].aI.code.toLowerCase()}.png`}
+                          alt=""
                         />
                         <div className="font-medium text-md  flex flex-col items-center">
                           <p>{segment?.fD?.aI?.name}</p>
@@ -328,8 +329,7 @@ const TravellerDetailsModal = ({
                   };
                   console.log("📤 Sending parameters to API:", reqData);
 
-                  // const req = postData("travelogy/one-way/fetch-data", reqData);
-                  const req = cancelAmendmentCharges1;
+                  const req = postData("travelogy/one-way/fetch-data", reqData);
                   console.log("rrrrrrrrrrr ", req);
                   setReqAmendmentCharges(req);
                   setReqAmendmentChargesPopUp(true);

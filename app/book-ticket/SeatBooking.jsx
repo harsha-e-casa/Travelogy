@@ -462,6 +462,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                       src={`/assets/imgs/airlines/${flightSeat?.seg[
                         "fD"
                       ].aI.code.toLowerCase()}.png`}
+                      alt=""
                     />
                     <div>
                       <p>{flightSeat?.seg["fD"].aI.name}</p>

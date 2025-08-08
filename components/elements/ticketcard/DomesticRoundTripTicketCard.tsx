@@ -66,7 +66,7 @@ export default function DomesticRoundTripTicketCard({
           {/* need to render dynamic city if layover */}
           <div style={{ width: "55%" }}>
             {ticket.sI.map((segment: any, index: number) => (
-              <div className="flex justify-evenly">
+              <div className="flex justify-evenly" key={segment.id || index}>
                 <div
                   className="air_detailes"
                   style={{ width: "unset", top: index === 0 ? "0" : "49%" }}
@@ -118,7 +118,7 @@ export default function DomesticRoundTripTicketCard({
                         width="16"
                         height="16"
                         fill="currentColor"
-                        class="bi bi-arrow-right"
+                        className="bi bi-arrow-right"
                         viewBox="0 0 16 16"
                       >
                         <path
