@@ -180,7 +180,7 @@ export default function HotelListingSearch() {
     }).toString();
 
     try {
-      const data = await apiCall(payload);
+      const data: any = await apiCall(payload);
       if (data) {
         setApiHotelData(data.searchResult?.his || []);
         router.push(`/hotel-listing?${queryParams}`);
@@ -217,7 +217,7 @@ export default function HotelListingSearch() {
         sync: true,
       };
 
-      const data = await apiCall(payload);
+      const data: any = await apiCall(payload);
       setLoading(false);
       if (data) {
         const hotelOnlyResults = data.searchResult?.his || [];

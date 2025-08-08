@@ -14,7 +14,7 @@ import TopCategory2 from "@/components/sections/TopCategory2";
 import SlideBanner1 from "@/components/sections/SlideBanner1";
 import Banner from "@/components/sections/Banner";
 import Flights4 from "@/components/sections/Flights4";
-import rawticketsData from "@/util/tickets.json";
+// import rawticketsData from "@/util/tickets.json";
 import useTicketFilter from "@/util/useTicketFilter";
 import EngineTabs from "@/components/searchEngine/engineHeader";
 import Link from "next/link";
@@ -50,10 +50,11 @@ const AppDateRangeww = () => {
   );
 };
 
-const ticketsData = rawticketsData.map((ticket) => ({
-  ...ticket,
-  rating: parseFloat(ticket.rating as string),
-}));
+// const ticketsData = rawticketsData.map((ticket) => ({
+//   ...ticket,
+//   rating: parseFloat(ticket.rating as string),
+// }));
+const ticketsData: any = [];
 
 export default function Tickets() {
   const {

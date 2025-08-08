@@ -6,7 +6,7 @@ import TravelForm from "./travelForm";
 import { useState, useEffect } from "react";
 import SearchEngHeader from "@/components/searchEngine/SearchEngHeader";
 
-const InsurancePage = ({ active_border }) => {
+const InsurancePage = () => {
   const [isAccordion, setIsAccordion] = useState(0);
 
   const handleAccordion = (key) => {
