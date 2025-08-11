@@ -19,35 +19,60 @@ export function HotelReviewComponent({
   const oid = searchParams.get("oid");
 
   useEffect(() => {
-    // if (hid && oid) {
-    //   setLoading(true);
-    //   fetchHotelReviewData(hid, oid)
-    //     .then((data) => setHotelReviewData(data))
-    //     .catch((err) => setError(err.message))
-    //     .finally(() => setLoading(false));
-    // }
-    const apiCall = async (hid, oid) => {
+    if (!hid || !oid) return;
+    let cancelled = false;
+
+    (async () => {
       try {
-        let reqData = {
+        setLoading(true);
+        const reqData = {
           action: "hotelReview",
-          requestData: {
-            hotelId: hid,
-            optionId: oid,
-          },
+          requestData: { hotelId: hid, optionId: oid },
         };
         const response = await postData("travelogy/hotel/fetch-data", reqData);
-        console.log("hotel listing response == ", response);
-        setHotelReviewData(response);
-        setLoading(false);
+        if (!cancelled) setHotelReviewData(response);
       } catch (error) {
-        console.error("Search API error:", error);
-        setError(error.message);
-        setLoading(false);
-        return null;
+        if (!cancelled) setError(error?.message || "Something went wrong");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
+    })();
+
+    return () => {
+      cancelled = true;
     };
-    apiCall(hid, oid);
-  }, [hid, oid]);
+  }, [hid, oid, setLoading, setError, setHotelReviewData]);
+
+  // useEffect(() => {
+  //   // if (hid && oid) {
+  //   //   setLoading(true);
+  //   //   fetchHotelReviewData(hid, oid)
+  //   //     .then((data) => setHotelReviewData(data))
+  //   //     .catch((err) => setError(err.message))
+  //   //     .finally(() => setLoading(false));
+  //   // }
+  //   const apiCall = async (hid, oid) => {
+  //     try {
+  //       let reqData = {
+  //         action: "hotelReview",
+  //         requestData: {
+  //           hotelId: hid,
+  //           optionId: oid,
+  //         },
+  //       };
+  //       const response = await postData("travelogy/hotel/fetch-data", reqData);
+  //       console.log("hotel listing response == ", response);
+  //       setHotelReviewData(response);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error("Search API error:", error);
+  //       setError(error.message);
+  //       setLoading(false);
+  //       return null;
+  //     }
+  //   };
+  //   apiCall(hid, oid);
+  // }, [hid, oid]);
 
   // if (error) {
   //   return <div className="text-red-500 text-center">{error}</div>;
@@ -107,14 +132,31 @@ export function Step1TravellerDetails({
   const validateFields = () => {
     const newErrors = {};
 
+    // if (!leadGuest.firstName?.trim()) {
+    //   newErrors.firstName = "First name is required";
+    // } else if (leadGuest.firstName.trim().length < 2) {
+    //   newErrors.firstName = "First name must be at least 2 characters";
+    // }
+
+    // if (!leadGuest.lastName?.trim()) {
+    //   newErrors.lastName = "Last name is required";
+    // } else if (leadGuest.lastName.trim().length < 2) {
+    //   newErrors.lastName = "Last name must be at least 2 characters";
+    // }
+    const hasDigit = (s = "") => /\d/.test(s);
+
     if (!leadGuest.firstName?.trim()) {
       newErrors.firstName = "First name is required";
+    } else if (hasDigit(leadGuest.firstName)) {
+      newErrors.firstName = "First name cannot contain numbers";
     } else if (leadGuest.firstName.trim().length < 2) {
       newErrors.firstName = "First name must be at least 2 characters";
-    }
+    } 
 
     if (!leadGuest.lastName?.trim()) {
       newErrors.lastName = "Last name is required";
+    } else if (hasDigit(leadGuest.lastName)) {
+      newErrors.lastName = "Last name cannot contain numbers";
     } else if (leadGuest.lastName.trim().length < 2) {
       newErrors.lastName = "Last name must be at least 2 characters";
     }
@@ -494,7 +536,10 @@ export function Step1TravellerDetails({
                           const updated = [
                             ...formData.guests[roomIndex].extraGuests,
                           ];
-                          updated[i].firstName = e.target.value;
+                          updated[i].firstName = e.target.value.replace(
+                            /\d/g,
+                            ""
+                          );
                           updateExtraGuests(roomIndex, updated);
                         }}
                       />
@@ -507,7 +552,10 @@ export function Step1TravellerDetails({
                           const updated = [
                             ...formData.guests[roomIndex].extraGuests,
                           ];
-                          updated[i].lastName = e.target.value;
+                          updated[i].lastName = e.target.value.replace(
+                            /\d/g,
+                            ""
+                          );
                           updateExtraGuests(roomIndex, updated);
                         }}
                       />
