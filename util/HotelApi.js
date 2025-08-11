@@ -347,7 +347,7 @@ export async function hotelBooking({
       const res = await postData("travelogy/hotel/save-booking-data", saveReq);
       console.log("res == ", res);
     };
-    saveHotelBookingData();
+    // saveHotelBookingData();
 
     return response.data;
   } catch (error) {
@@ -389,11 +389,10 @@ export async function getBookingDetails(bookingId) {
         booking_time: new Date().toISOString(),
       };
 
-      const data = await response.json();
       const res = await postData("travelogy/hotel/save-booking-data", saveReq);
       console.log("res == ", res);
     };
-    updateHotelBookingData();
+    // updateHotelBookingData();
 
     if (data.status.success) {
       return data;
