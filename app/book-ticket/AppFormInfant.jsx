@@ -1,23 +1,45 @@
-
-
-import React from 'react';
-import { Form, Input, Select, Row, Col, DatePicker } from 'antd';
-import dayjs from 'dayjs';
+import React, { useEffect } from "react";
+import { Form, Input, Select, Row, Col, DatePicker } from "antd";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
-const AppFormInfant = ({ form, index }) => {
+const AppFormInfant = ({ form, index, travellerParsedData }) => {
+  useEffect(() => {
+    if (travellerParsedData) {
+      const { ti, fN, lN, dob } = travellerParsedData;
+
+      form.setFieldsValue({
+        [`infantselect-${index}`]: ti,
+        [`infantName-${index}`]: fN,
+        [`infantLast-${index}`]: lN,
+        [`infantDOB-${index}`]: dob ? dayjs(dob) : null,
+      });
+    }
+  }, [travellerParsedData]);
+
   return (
-    <Form form={form} name={`infantForm-${index}`} layout="vertical" autoComplete="off">
+    <Form
+      form={form}
+      name={`infantForm-${index}`}
+      layout="vertical"
+      autoComplete="off"
+    >
       <Row gutter={16}>
         {/* Col for Select Title (Ms/Master) */}
-        <Col span={4}>  {/* Adjusted to fit 4 columns in 1 row */}
+        <Col span={4}>
+          {" "}
+          {/* Adjusted to fit 4 columns in 1 row */}
           <Form.Item
             name={`infantselect-${index}`}
             label="Select"
             hasFeedback
-            rules={[{ required: true, message: "" }]}>
-            <Select className="h-10 flex flex-row justify-between items-center" placeholder="Please select a title">
+            rules={[{ required: true, message: "" }]}
+          >
+            <Select
+              className="h-10 flex flex-row justify-between items-center"
+              placeholder="Please select a title"
+            >
               <Option value="Ms">Ms</Option>
               <Option value="Master">Master</Option>
             </Select>
@@ -30,8 +52,22 @@ const AppFormInfant = ({ form, index }) => {
             name={`infantName-${index}`}
             label="First Name"
             hasFeedback
-            rules={[{ required: true, message: "Please enter the name" }]}>
-            <Input className="h-10 flex flex-row justify-between items-center" placeholder="First Name" />
+            rules={[
+              { required: true, message: "Please enter the name" },
+              {
+                min: 2,
+                message: "Last name must be at least 2 characters",
+              },
+              {
+                pattern: /^[A-Za-z\s]+$/,
+                message: "Last name can only contain letters and spaces",
+              },
+            ]}
+          >
+            <Input
+              className="h-10 flex flex-row justify-between items-center"
+              placeholder="First Name"
+            />
           </Form.Item>
         </Col>
 
@@ -41,8 +77,22 @@ const AppFormInfant = ({ form, index }) => {
             name={`infantLast-${index}`}
             label="Last Name"
             hasFeedback
-            rules={[{ required: true, message: "Please enter the last name" }]}>
-            <Input className="h-10 flex flex-row justify-between items-center" placeholder="Last Name" />
+            rules={[
+              { required: true, message: "Please enter the last name" },
+              {
+                min: 2,
+                message: "Last name must be at least 2 characters",
+              },
+              {
+                pattern: /^[A-Za-z\s]+$/,
+                message: "Last name can only contain letters and spaces",
+              },
+            ]}
+          >
+            <Input
+              className="h-10 flex flex-row justify-between items-center"
+              placeholder="Last Name"
+            />
           </Form.Item>
         </Col>
 
@@ -52,12 +102,18 @@ const AppFormInfant = ({ form, index }) => {
             name={`infantDOB-${index}`}
             label="Date of Birth"
             hasFeedback
-            rules={[{ required: true, message: "Please choose the DOB" }]}>
-            <DatePicker 
-              className="h-10 flex flex-row justify-between items-center" 
-              format="YYYY-MM-DD" 
+            rules={[{ required: true, message: "Please choose the DOB" }]}
+          >
+            <DatePicker
+              className="h-10 flex flex-row justify-between items-center"
+              format="YYYY-MM-DD"
               placeholder="Select Date of Birth"
-              defaultValue={dayjs()} // Default to today's date
+              // defaultValue={dayjs()} // Default to today's date
+              value={
+                travellerParsedData && travellerParsedData.dob
+                  ? dayjs(travellerParsedData.dob)
+                  : null
+              } // Controlled value
             />
           </Form.Item>
         </Col>

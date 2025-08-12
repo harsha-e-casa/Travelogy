@@ -57,15 +57,15 @@ const url =
   "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
 
 type Traveller = {
-  ti: string;          // Ticket information
-  fN: string;          // First name
-  lN: string;          // Last name
-  pt: string;          // Passenger type (e.g., ADULT, CHILD, INFANT)
-  di?: string;         // Document ID (optional)
+  ti: string; // Ticket information
+  fN: string; // First name
+  lN: string; // Last name
+  pt: string; // Passenger type (e.g., ADULT, CHILD, INFANT)
+  di?: string; // Document ID (optional)
   ssrSeatInfos?: { key: string; code: string }[]; // Seat information (optional)
   ssrBaggageInfos?: { key: string; code: string }[]; // Baggage information (optional)
   ssrMealInfos?: { key: string; code: string }[]; // Meal information (optional)
-  dob?: string;        // Date of birth (for infants)
+  dob?: string; // Date of birth (for infants)
 };
 
 export default function BookTicket() {
@@ -281,19 +281,70 @@ export default function BookTicket() {
     [apiData]
   );
 
-  useEffect(() => {
-    removeCookie("travellerInfo");
-    removeCookie("mealinfo");
-    removeCookie("baggageinfo");
-    removeCookie("seatSsr_amount");
-    removeCookie("gst_info");
+  // moved to tickets/page.tsx
 
-    // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
-    for (let i = 1; i <= 9; i++) {
-      removeCookie(`adult_seat_map-${i}`);
-      removeCookie(`child_seat_map-${i}`);
+  // useEffect(() => {
+  //   removeCookie("travellerInfo");
+  //   removeCookie("mealinfo");
+  //   removeCookie("baggageinfo");
+  //   removeCookie("seatSsr_amount");
+  //   removeCookie("gst_info");
+
+  //   // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
+  //   for (let i = 1; i <= 9; i++) {
+  //     removeCookie(`adult_seat_map-${i}`);
+  //     removeCookie(`child_seat_map-${i}`);
+  //   }
+  // }, []);
+
+  const [travellerPrsedData, setTravellerPrsedData] = useState<
+    Record<string, any>
+  >({});
+  const travellerCookieData: any = getCookie("travellerInfo");
+
+  useEffect(() => {
+    try {
+      console.log("travellerCookieData == ", travellerCookieData);
+      if (travellerCookieData !== undefined) {
+        const parsedData: any = JSON.parse(travellerCookieData);
+        console.log("travellerCookieData ==parsedData ", parsedData);
+        const groupedData = parsedData.reduce((acc: any, item: any) => {
+          const category = item.pt;
+          if (!acc[category]) {
+            acc[category] = [];
+          }
+          acc[category].push(item);
+          return acc;
+        }, {});
+        setTravellerPrsedData(groupedData);
+      }
+    } catch (err) {
+      // console.error("Invalid JSON in cookie:", err);
     }
-  }, [removeCookie]);
+  }, []);
+
+  const [bookingDetailsData, setBookingDetailsData] = useState<
+    Record<string, any>
+  >({});
+
+  useEffect(() => {
+    let mobile = getCookie("number");
+    let email = getCookie("email");
+
+    if (mobile !== undefined) {
+      const parsedMobile: any = JSON.parse(mobile);
+      const parsedEmail: any = JSON.parse(email);
+      console.log("mobilemobile == ", mobile);
+      console.log("mobilemobile == ", parsedMobile.code);
+      console.log("mobilemobile == ", parsedMobile.number);
+      console.log("emailemail == ", parsedEmail);
+      setBookingDetailsData({
+        mobileCode: parsedMobile.code,
+        mobileNumber: parsedMobile.number,
+        email: parsedEmail,
+      });
+    }
+  }, []);
 
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
@@ -887,12 +938,11 @@ export default function BookTicket() {
           expires: 7,
         });
 
+        console.log("groupedAdultsgroupedAdults === ", groupedAdults);
 
-        console.log("groupedAdultsgroupedAdults === ",groupedAdults)
+        console.log("groupedChildrengroupedChildren === ", groupedChildren);
 
-        console.log("groupedChildrengroupedChildren === ",groupedChildren)
-
-        console.log("groupedInfantsgroupedInfants === ",groupedInfants)
+        console.log("groupedInfantsgroupedInfants === ", groupedInfants);
         // Combine all
         const travellerInfoV: Traveller[] = [
           ...groupedAdults,
@@ -1611,21 +1661,28 @@ export default function BookTicket() {
                                     {/* Dynamically render the AppFormAdult components based on numAdults */}
                                     {/* Render all AppFormAdult components dynamically based on numAdults */}
                                     {Array.from({ length: numAdults }).map(
-                                      (_, index) => (
-                                        <div className="p-3" key={index}>
-                                          <span className="text-sm leading-5 font-bold text-gray-900">
-                                            ADULT {index + 1}
-                                          </span>
-                                          <AppFormAdult
-                                            form={form}
-                                            index={index}
-                                            showDocumentField={
-                                              apiData?.conditions?.dc?.ida ===
-                                              true
-                                            }
-                                          />
-                                        </div>
-                                      )
+                                      (_, index) => {
+                                        return (
+                                          <div className="p-3" key={index}>
+                                            <span className="text-sm leading-5 font-bold text-gray-900">
+                                              ADULT {index + 1}
+                                            </span>
+                                            <AppFormAdult
+                                              form={form}
+                                              index={index}
+                                              showDocumentField={
+                                                apiData?.conditions?.dc?.ida ===
+                                                true
+                                              }
+                                              travellerParsedData={
+                                                travellerPrsedData?.ADULT?.[
+                                                  index
+                                                ]
+                                              }
+                                            />
+                                          </div>
+                                        );
+                                      }
                                     )}
 
                                     {/* <li className="pl-3 pr-4 py-3 flex items-center justify-between text-sm border_xcolor_1px">
@@ -1689,6 +1746,11 @@ export default function BookTicket() {
                                             <AppFormChild
                                               form={form}
                                               index={index}
+                                              travellerParsedData={
+                                                travellerPrsedData?.CHILD?.[
+                                                  index
+                                                ]
+                                              }
                                             />
                                           </div>
                                         )
@@ -1733,6 +1795,11 @@ export default function BookTicket() {
                                             <AppFormInfant
                                               form={form}
                                               index={index}
+                                              travellerParsedData={
+                                                travellerPrsedData?.INFANT?.[
+                                                  index
+                                                ]
+                                              }
                                             />
                                           </div>
                                         )
@@ -1778,7 +1845,10 @@ export default function BookTicket() {
                               </svg>
                             </a>
                           </div>
-                          <AppFormCustomer form={form} />
+                          <AppFormCustomer
+                            form={form}
+                            bookingDetailsData={bookingDetailsData}
+                          />
 
                           {/* Meal and Baggage Form */}
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
@@ -1853,7 +1923,9 @@ export default function BookTicket() {
                                   Please enter your company's GST number
                                 </h2>
                                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                  <AppFormCompany form={form} />
+                                  <AppFormCompany
+                                    form={form}
+                                  />
                                 </p>
                               </div>
                             </div>

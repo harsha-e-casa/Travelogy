@@ -86,7 +86,24 @@ export default function Tickets() {
     endItemIndex,
   } = useTicketFilter(ticketsData);
 
-  const { setCookie, getCookie } = useContext(AppContext);
+  const { setCookie, getCookie, removeCookie } = useContext(AppContext);
+
+  useEffect(() => {
+    removeCookie("travellerInfo");
+    removeCookie("mealinfo");
+    removeCookie("baggageinfo");
+    removeCookie("seatSsr_amount");
+    removeCookie("gst_info");
+    removeCookie("email")
+    removeCookie("number")
+
+    // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
+    for (let i = 1; i <= 9; i++) {
+      removeCookie(`adult_seat_map-${i}`);
+      removeCookie(`child_seat_map-${i}`);
+    }
+  }, []);
+
   const [flightData, setFlightData] = useState<any>(null);
   const [filteredFlightData, setFilteredFlightData] = useState<any>(null);
 
