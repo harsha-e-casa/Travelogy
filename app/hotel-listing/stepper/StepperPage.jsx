@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 // import { fetchHotelReviewData } from "../../../util/HotelApi";
 import Skeleton from "../Skeleton";
 import {
