@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef, useContext, useCallback } from "rea
 import SearchEngHeader from "./SearchEngHeader";
 import AppListSearch from "./AppListSearch";
 import AppDateRage from "./AppDateRage";
+import AppDateRangeFlight from "./AppDateRangeFlight";
 import { TripPlans } from "./TripPlans";
 import { PassengerType } from "./PassengerType";
 import dayjs from "dayjs";
@@ -18,6 +19,7 @@ import MultiCityContainer from "./MultiCityContainer.jsx";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
+import { min } from "date-fns";
 
 const EngineTabs = ({ active_border }) => {
   const searchParams = useSearchParams();
@@ -623,9 +625,10 @@ const EngineTabs = ({ active_border }) => {
                 </div>
 
                 {openDateRage ? (
-                  <AppDateRage
+                  <AppDateRangeFlight
                     openToDateRange={openToDateRange}
                     setDate={setDepartureDate}
+                    minDate={min}
                     value={departureDate}
                   />
                 ) : null}
@@ -656,7 +659,7 @@ const EngineTabs = ({ active_border }) => {
                   </div>
 
                   {openDateRageR ? (
-                    <AppDateRage
+                    <AppDateRangeFlight
                       openToDateRange={openToDateRangeR}
                       setDate={setReturnDate}
                       minDate={departureDate}

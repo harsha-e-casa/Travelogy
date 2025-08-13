@@ -33,6 +33,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Skeleton, Tooltip } from "antd";
 import AppListSearch from "@/components/searchEngine/AppListSearch";
 import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppDateRangeFlight from "@/components/searchEngine/AppDateRangeFlight";
 import "./customeHeader_1.css";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -236,7 +237,7 @@ export default function Tickets() {
     const cookieValue = getCookie("gy_multi_city");
     console.error("existing multi city value in cookie: ", cookieValue);
 
-    const addErrorFields = (segment) => ({
+    const addErrorFields = (segment: any) => ({
       ...segment,
       fromError: "",
       toError: "",
@@ -1236,9 +1237,10 @@ export default function Tickets() {
                   </div>
 
                   {openDateRage ? (
-                    <AppDateRage
+                    <AppDateRangeFlight
                       openToDateRange={openToDateRange}
                       setDate={setDatedep}
+                      minDate={null}
                       value={datedep}
                     />
                   ) : null}
@@ -1253,7 +1255,7 @@ export default function Tickets() {
                       {ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}
                     </div>
                     {openDateRageR ? (
-                      <AppDateRage
+                      <AppDateRangeFlight
                         openToDateRange={openToDateRangeR}
                         setDate={setDatedepr}
                         minDate={datedep}
@@ -1302,7 +1304,7 @@ export default function Tickets() {
                   <div
               onClick={
                 (fromError || toError || errorMsg || multicitySegments.some(s => s.fromError || s.toError))
-                  ? null
+                  ? () => {}
                   : handlesearFlight
               }
               className={`hdt_search-btn ${
@@ -1425,7 +1427,7 @@ export default function Tickets() {
                               : "Select Date"}
                           </div>
                           {openDepartMultiIndex === idx && (
-                            <AppDateRage
+                            <AppDateRangeFlight
                               openToDateRange={() => multiOpenToDateRange(idx)}
                               setDate={(val: any) => {
                                 const newSegs = [...multicitySegments];

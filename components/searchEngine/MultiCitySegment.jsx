@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import AppListSearch from "./AppListSearch";
 import AppDateRage from "./AppDateRage";
+import AppDateRangeFlight from "./AppDateRangeFlight";
 import dayjs from "dayjs";
 import { Tooltip } from "antd"; // Import Tooltip
 
@@ -257,7 +258,7 @@ const MultiCitySegment = ({
           </div>
         </div>
         {isOpen("date") && (
-          <AppDateRage
+          <AppDateRangeFlight
             openToDateRange={() => onToggleSection(null, null)}
             setDate={(date) =>
               updateSegment(index, {
