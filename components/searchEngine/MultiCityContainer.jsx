@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // Import useEffect, useCallback
 import MultiCitySegment from "./MultiCitySegment";
 
 const MultiCityContainer = ({
@@ -6,11 +6,30 @@ const MultiCityContainer = ({
   updateSegment,
   addSegment,
   removeSegment,
+  onMultiCityErrorChange,
+  initialDepartureDate, // New prop
 }) => {
   const [openSection, setOpenSection] = useState({
     segmentIndex: null,
     type: null,
   });
+
+  const [segmentErrors, setSegmentErrors] = useState({});
+
+  const handleSegmentErrorChange = useCallback((index, hasError) => {
+    setSegmentErrors((prevErrors) => ({
+      ...prevErrors,
+      [index]: hasError,
+    }));
+  }, []);
+
+  const hasMultiCityError = Object.values(segmentErrors).some((error) => error);
+
+  useEffect(() => {
+    if (onMultiCityErrorChange) {
+      onMultiCityErrorChange(hasMultiCityError);
+    }
+  }, [hasMultiCityError, onMultiCityErrorChange]);
 
   const handleToggleSection = (index, type) => {
     console.log("onToggleSection called with:", index, type);
@@ -23,21 +42,29 @@ const MultiCityContainer = ({
 
   return (
     <div className="w-full">
-      {segments.map((segment, idx) => (
-        <div key={idx} className="mb-4">
-          <MultiCitySegment
-            index={idx}
-            segment={segment}
-            updateSegment={updateSegment}
-            removeSegment={removeSegment}
-            addSegment={addSegment}
-            showAdd={idx === segments.length - 1}
-            showRemove={idx === segments.length - 1 && segments.length > 1}
-            openSection={openSection}
-            onToggleSection={handleToggleSection}
-          />
-        </div>
-      ))}
+      {segments.map((segment, idx) => {
+        const previousSegmentDepartureDate = idx > 0
+          ? segments[idx - 1].departureDate
+          : initialDepartureDate; // Use initialDepartureDate for the first segment
+
+        return (
+          <div key={idx} className="mb-4">
+            <MultiCitySegment
+              index={idx}
+              segment={segment}
+              updateSegment={updateSegment}
+              removeSegment={removeSegment}
+              addSegment={addSegment}
+              showAdd={idx === segments.length - 1}
+              showRemove={idx === segments.length - 1 && segments.length > 1}
+              openSection={openSection}
+              onToggleSection={handleToggleSection}
+              minDate={previousSegmentDepartureDate}
+              onSegmentErrorChange={handleSegmentErrorChange}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 };

@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 
-const AppDateRange = ({ openToDateRange, setDatedep }) => {
+const AppDateRange = ({ openToDateRange, setDate, minDate, value }) => {
   const [dates, setDates] = useState([]);
   const [open, setOpen] = useState(true);
 
   const handleChange = (dates, dateString) => {
     if (dateString) {
-      setDatedep(dateString);
+      setDate(dateString);
       openToDateRange();
       setOpen(false);
     } else {
-      setDatedep(null);
+      setDate(null);
       console.log("No dates selected");
     }
   };
@@ -20,6 +20,9 @@ const AppDateRange = ({ openToDateRange, setDatedep }) => {
   const dateFormat = "DD-MM-YYYY";
 
   const disabledDate = (current) => {
+    if (minDate) {
+      return current && current < dayjs(minDate).startOf("day");
+    }
     return current && current < dayjs().startOf("day");
   };
 
@@ -28,9 +31,11 @@ const AppDateRange = ({ openToDateRange, setDatedep }) => {
       {open ? (
         <div className="custome-date-rage">
           <DatePicker
+            className="custom-date-picker"
             open={open}
             disabledDate={disabledDate}
             onChange={handleChange}
+            value={value ? dayjs(value) : null}
           />
         </div>
       ) : null}
