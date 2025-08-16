@@ -169,24 +169,12 @@ const InsurancePage = () => {
               <div className="col-lg-6">
                 <div className="box-image-how">
                   <div className="image-top-how">
-                    {" "}
-                    <img
-                      src="/assets/imgs/page/homepage4/img-how.png"
-                      alt="Insurance"
-                    />
+                    <img src="/assets/imgs/travel-1.png" alt="Insurance1" />
                   </div>
                   <div className="image-bottom-how">
-                    {" "}
-                    <img
-                      src="/assets/imgs/page/homepage4/img-how2.png"
-                      alt="Insurance"
-                    />
-                    <img
-                      src="/assets/imgs/page/homepage4/img-how3.png"
-                      alt="Insurance"
-                    />
+                    <img src="/assets/imgs/travel-2.png" alt="Insurance2" />
+                    <img src="/assets/imgs/travel-3.png" alt="Insurance3" />
                     <div className="shape">
-                      {" "}
                       <img
                         className="light-mode"
                         src="/assets/imgs/page/homepage4/wave.png"

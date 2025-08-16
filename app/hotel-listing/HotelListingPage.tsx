@@ -402,7 +402,15 @@ export default function HotelListing() {
   }, []);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <Layout headerStyle={1} footerStyle={1}>
+          <div className="col-12 d-flex justify-center py-5">
+            <div className="loader"></div>
+          </div>
+        </Layout>
+      }
+    >
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">

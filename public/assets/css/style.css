@@ -19479,6 +19479,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 .w-1-6 {
   width: 29%;
 }
+
 .visa_form {
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
@@ -19534,4 +19535,9 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ccc;
+}
+
+.session {
+  background-color: #f79421;
+  color: white;
 }

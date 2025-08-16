@@ -1,6 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+
 import dynamic from "next/dynamic";
+import SessionTimer from "./SessionTimer";
 // import { fetchHotelReviewData } from "../../../util/HotelApi";
 import Skeleton from "../Skeleton";
 import {
@@ -25,8 +28,7 @@ const Step3PersonalDocuments = dynamic(
 );
 
 import Layout from "@/components/layout/Layout";
-import { getBookingDetails } from "../../../util/HotelApi"; // Assuming this is where your getBookingDetails function is
-// import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const CheckIcon = () => (
   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -106,41 +108,39 @@ export default function Stepper() {
   const [hotelReviewData, setHotelReviewData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  // const [currentStep, setCurrentStep] = useState(1);
+  const searchParams = useSearchParams();
+  const hid = searchParams.get("hid");
+  const oid = searchParams.get("oid");
+  const stepKey = React.useMemo(
+    () => `currentStep:${hid || "nohid"}:${oid || "nooid"}`,
+    [hid, oid]
+  );
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(() => {
     const savedFormData = localStorage.getItem("formData");
     return savedFormData ? JSON.parse(savedFormData) : {};
   });
+  useEffect(() => {
+    const saved = localStorage.getItem(stepKey);
+    if (saved) {
+      const num = Number(saved);
+      if (!Number.isNaN(num) && num >= 1 && num <= 4) {
+        setCurrentStep(num);
+      }
+    }
+  }, [stepKey]);
+
+  useEffect(() => {
+    localStorage.setItem(stepKey, String(currentStep));
+  }, [currentStep, stepKey]);
   const [Category1, setCategory1] = useState(null);
   useEffect(() => {
     if (formData) {
       localStorage.setItem("formData", JSON.stringify(formData));
     }
   }, [formData]);
-  if (error) {
-    return (
-      <Layout headerStyle={1} footerStyle={1}>
-        <main className="main">
-          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
-            {/* <div className="p-6 rounded-lg  border-red-200 text-center"> */}
-            <h2 className="text-xl font-semibold mb-2">
-              Oops! Something went wrong.
-            </h2>
-            <p className="text-sm">{error}</p>
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-              >
-                Retry Hotel Load
-              </button>
-            </div>
-            {/* </div> */}
-          </div>
-        </main>
-      </Layout>
-    );
-  }
+
   const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
   const steps = [
     {
@@ -167,8 +167,14 @@ export default function Stepper() {
       icon: <CreditCardIcon />,
     },
   ];
+  useEffect(() => {
+    if (PanRequired === false && currentStep === 3) {
+      setCurrentStep(4);
+    }
+    if (currentStep < 1) setCurrentStep(1);
+    if (currentStep > 4) setCurrentStep(4);
+  }, [PanRequired]);
 
-  // Handle Next Step
   const goNext = () => {
     if (
       currentStep === 2 &&
@@ -198,20 +204,19 @@ export default function Stepper() {
       }));
     }
 
-    // Skip Step 3 (Upload Document) and go directly to Step 4 (Payment) if PanRequired is true
     if (currentStep === 2 && PanRequired === false) {
-      setCurrentStep(4); // Directly go to Step 4 (Payment)
-    } else if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1); // Proceed to the next step
+      setCurrentStep(4);
+      return;
+    }
+    if (currentStep < 4) {
+      setCurrentStep(currentStep + 1);
     }
   };
 
-  // Handle Previous Step
   const goPrev = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  // Handle Click on Step (for direct navigation)
   const handleStepClick = (stepId) => {
     if (stepId <= currentStep) setCurrentStep(stepId);
   };
@@ -230,41 +235,54 @@ export default function Stepper() {
       console.error("Error during payment handling:", error.message);
     }
   };
-  // useEffect(() => {
-  //   // Example: Dynamically set Category1 based on some condition
-  //   if (hotelReviewData) {
-  //     setCategory1(hotelReviewData?.someCondition ? "someCategory" : null);
-  //   }
-  // }, [hotelReviewData]);
   return (
     <Layout headerStyle={1} footerStyle={1}>
-      <div className="bg-gray-50 flex flex-col items-center justify-center py-4">
-        <div className="w-full max-w-6xl relative flex justify-between mb-10">
-          <div className="w-full flex justify-between items-center relative mb-10">
-            {steps.map((step, index) => {
-              const status =
-                currentStep > step.id
-                  ? "completed"
-                  : currentStep === step.id
-                  ? "current"
-                  : "upcoming";
+      {" "}
+      {error && (
+        <main className="main">
+          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+            <h2 className="text-xl font-semibold mb-2">
+              Oops! Something went wrong.
+            </h2>
+            <p className="text-sm">{error}</p>
+            <div className="flex justify-center mt-4">
+              <Link href="/hotels" passHref>
+                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                  Retry Hotel Load
+                </button>
+              </Link>
+            </div>
+          </div>{" "}
+        </main>
+      )}
+      {!error && (
+        <div className="bg-gray-50 flex flex-col items-center justify-center py-4">
+          <div className="w-full max-w-6xl relative flex justify-between mb-10">
+            <div className="w-full flex justify-between items-center relative mb-10">
+              {steps.map((step, index) => {
+                const status =
+                  currentStep > step.id
+                    ? "completed"
+                    : currentStep === step.id
+                    ? "current"
+                    : "upcoming";
 
-              const stepLabelMap = [
-                "FIRST STEP",
-                "SECOND STEP",
-                ...(PanRequired === false ? [] : ["THIRD STEP"]),
-                "FINISH",
-              ];
+                const stepLabelMap = [
+                  "FIRST STEP",
+                  "SECOND STEP",
+                  ...(PanRequired === false ? [] : ["THIRD STEP"]),
+                  "FINISH",
+                ];
 
-              return (
-                <div
-                  key={step.id}
-                  onClick={() => handleStepClick(step.id)}
-                  className="flex items-center gap-2 w-full group cursor-pointer"
-                >
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <div
-                      className={`w-10 h-10 flex items-center justify-center rounded-full
+                return (
+                  <div
+                    key={step.id}
+                    onClick={() => handleStepClick(step.id)}
+                    className="flex items-center gap-2 w-full group cursor-pointer"
+                  >
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div
+                        className={`w-10 h-10 flex items-center justify-center rounded-full
                         ${
                           status === "completed"
                             ? "bg-4aa301 text-white"
@@ -272,101 +290,109 @@ export default function Stepper() {
                             ? "bg-black text-white ring-2 ring-gray-400"
                             : "bg-gray-200 text-gray-400"
                         }`}
-                    >
-                      {status === "completed" ? <CheckIcon /> : step.icon}
+                      >
+                        {status === "completed" ? <CheckIcon /> : step.icon}
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col leading-tight">
-                    <span className="text-[10px] tracking-wide text-gray-500 uppercase">
-                      {stepLabelMap[index]}
-                    </span>
-                    <span
-                      className={`text-sm font-medium ${
-                        status === "completed" ? "text-4aa301" : "text-gray-700"
-                      }`}
-                    >
-                      {step.title}
-                    </span>
-                  </div>
+                    <div className="flex flex-col leading-tight">
+                      <span className="text-[10px] tracking-wide text-gray-500 uppercase">
+                        {stepLabelMap[index]}
+                      </span>
+                      <span
+                        className={`text-sm font-medium ${
+                          status === "completed"
+                            ? "text-4aa301"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {step.title}
+                      </span>
+                    </div>
 
-                  {index !== steps.length - 1 && (
-                    <div
-                      className={`flex-1 h-px mx-4 ${
-                        currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
-                      }`}
-                    ></div>
+                    {index !== steps.length - 1 && (
+                      <div
+                        className={`flex-1 h-px mx-4 ${
+                          currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
+                        }`}
+                      ></div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
+            <HotelReviewComponent
+              setHotelReviewData={setHotelReviewData}
+              setLoading={setLoading}
+              setError={setError}
+            />
+
+            {loading ? (
+              <Skeleton />
+            ) : (
+              <>
+                <div className="md:col-span-8 border-r-1">
+                  {currentStep === 1 && (
+                    <Step1TravellerDetails
+                      formData={formData}
+                      setFormData={setFormData}
+                      onNext={goNext}
+                      hotelReviewData={hotelReviewData}
+                    />
+                  )}
+                  {currentStep === 2 && (
+                    <Step2Review
+                      formData={formData}
+                      onPrev={goPrev}
+                      onNext={goNext}
+                      Category1={Category1}
+                      Category={"bbook"}
+                      hotelReviewData={hotelReviewData}
+                    />
+                  )}
+                  {currentStep === 3 && PanRequired !== false && (
+                    <Step3PersonalDocuments
+                      formData={formData}
+                      setFormData={setFormData}
+                      hotelReviewData={hotelReviewData}
+                      onNext={goNext}
+                    />
+                  )}
+
+                  {currentStep === 4 && (
+                    <Step4Payment
+                      formData={formData}
+                      hotelReviewData={hotelReviewData}
+                      amount={
+                        hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF +
+                        hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF
+                      }
+                      bookingId={hotelReviewData?.bookingId}
+                      onConfirmPayment={handlePayment}
+                    />
                   )}
                 </div>
-              );
-            })}
+                <div className="md:col-span-4">
+                  <div className="p-6 rounded-md text-sm space-y-4">
+                    <FareAmount
+                      hotelReviewData={hotelReviewData}
+                      Category={"bbook"}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
-        <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
-          <HotelReviewComponent
-            setHotelReviewData={setHotelReviewData}
-            setLoading={setLoading}
-            setError={setError}
-          />
-
-          {loading ? (
-            <Skeleton />
-          ) : (
-            <>
-              <div className="md:col-span-8 border-r-1">
-                {currentStep === 1 && (
-                  <Step1TravellerDetails
-                    formData={formData}
-                    setFormData={setFormData}
-                    onNext={goNext}
-                    hotelReviewData={hotelReviewData}
-                  />
-                )}
-                {currentStep === 2 && (
-                  <Step2Review
-                    formData={formData}
-                    onPrev={goPrev}
-                    onNext={goNext}
-                    Category1={Category1}
-                    Category={"bbook"}
-                    hotelReviewData={hotelReviewData}
-                  />
-                )}
-                {currentStep === 3 && PanRequired !== false && (
-                  <Step3PersonalDocuments
-                    formData={formData}
-                    setFormData={setFormData}
-                    hotelReviewData={hotelReviewData}
-                    onNext={goNext}
-                  />
-                )}
-
-                {currentStep === 4 && (
-                  <Step4Payment
-                    formData={formData}
-                    hotelReviewData={hotelReviewData}
-                    amount={
-                      hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.BF +
-                      hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.tfcs?.TAF
-                    }
-                    bookingId={hotelReviewData?.bookingId}
-                    onConfirmPayment={handlePayment}
-                  />
-                )}
-              </div>
-
-              <div className="md:col-span-4">
-                <div className="p-6 rounded-md text-sm space-y-4">
-                  <FareAmount
-                    hotelReviewData={hotelReviewData}
-                    Category={"bbook"}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      )}
+      <>
+        {!loading && (
+          <SessionTimer startTime={hotelReviewData?.conditions?.st} />
+        )}
+      </>
     </Layout>
   );
 }

@@ -6,7 +6,7 @@ import { Step2Review, FareAmount } from "../../stepper/Stepper";
 import Layout from "@/components/layout/Layout";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
-import { DownOutlined } from "@ant-design/icons"; // Import the Ant Design Down icon
+import { DownOutlined } from "@ant-design/icons";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -19,27 +19,22 @@ const BookingDetailsPage = () => {
   const [Category2, setCategory2] = useState(null);
   const dropdownRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
-  const handlePayClick = () => {
-    setShowModal(true);
-  };
+  const [confirming, setConfirming] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
+  const handlePayClick = () => setShowModal(true);
+  const handleCloseModal = () => !confirming && setShowModal(false);
 
   const handleConfirm = async () => {
     setShowModal(false);
+    setConfirming(true);
     try {
-      // Fetch the total amount from the booking details
       const amount = totalAmount;
-
-      // Prepare the payment info to send to the API
       const paymentData = {
-        bookingId: bookingId,
-        paymentInfos: [{ amount: amount }],
+        bookingId,
+        paymentInfos: [{ amount }],
       };
 
-      // Make the API call to confirm the booking
       const response = await fetch(
         "https://apitest.tripjack.com/oms/v1/hotel/confirm-book",
         {
@@ -54,24 +49,51 @@ const BookingDetailsPage = () => {
 
       const data = await response.json();
 
-      if (response.ok) {
-        // Handle the successful booking confirmation
-        console.log("Booking Success:", data);
-        alert("Booking confirmed successfully!");
-        onConfirmPayment(bookingId);
-      } else {
-        // Handle the API error response
+      if (!response.ok) {
         console.error("Error confirming booking:", data);
-        alert("Booking confirmation failed. Please try again.");
+        alert(
+          data?.message || "Booking confirmation failed. Please try again."
+        );
+        return;
+      }
+
+      console.log("Booking Success:", data);
+      // alert("Booking confirmed successfully!");
+
+      setLoading(true);
+      try {
+        const fresh = await getBookingDetails(bookingId);
+        setBookingDetails(fresh);
+      } catch (e) {
+        console.error("Refresh failed:", e);
+        alert(
+          "Payment succeeded, but refreshing details failed. Please reload."
+        );
+      } finally {
+        setLoading(false);
+      }
+
+      if (typeof onConfirmPayment === "function") {
+        onConfirmPayment(bookingId);
       }
     } catch (error) {
-      // Handle any errors during the fetch or confirmation process
       console.error("Booking failed:", error);
-      // alert("Booking failed. Please try again.");
+      alert("Booking failed. Please try again.");
+    } finally {
+      setConfirming(false);
     }
   };
 
-  console.log("Booking ID from URL:", bookingId);
+  // close “More Options” on outside click
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowOptions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (bookingId) {
@@ -92,38 +114,29 @@ const BookingDetailsPage = () => {
     }
   }, [bookingId]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!bookingDetails || !bookingDetails.order || !bookingDetails.itemInfos) {
+  if (loading)
+    return (
+      <Layout headerStyle={1} footerStyle={1}>
+        <div className="col-12 d-flex justify-center py-5">
+          <div className="loader"></div>
+        </div>
+      </Layout>
+    );
+  if (error) return <div>{error}</div>;
+  if (!bookingDetails || !bookingDetails.order || !bookingDetails.itemInfos)
     return <div>Invalid booking details</div>;
-  }
 
   const { order, itemInfos } = bookingDetails || {};
   const hotelInfo = itemInfos?.HOTEL?.hInfo || {};
   const deliveryInfo = order?.deliveryInfo || {};
-  const { bookingId: orderBookingId, amount } = order || {};
-  const rating = parseFloat(hotelInfo?.rt) || 0;
+  const { bookingId: orderBookingId } = order || {};
   const status = order?.status;
-  // console.log("statusstatusstatusstatusstatusstatusstatusstatus", status);
   const totalAmount = order.amount;
 
-  console.log("Formstatus Data:", order.amount);
-
-  console.log("Form Data:", formData);
-  console.log("Hotel Review Data (bookingDetails):", bookingDetails);
   const email = deliveryInfo.emails?.[0];
   const contact = deliveryInfo.contacts?.[0];
   const countryCode = deliveryInfo.code?.[0];
 
-  console.log(`Email: ${email}`);
-  console.log(`Contact: ${contact}`);
-  console.log(`Country Code: ${countryCode}`);
   const handleOptionClick = (action) => {
     setShowOptions(false);
     switch (action) {
@@ -140,8 +153,10 @@ const BookingDetailsPage = () => {
         break;
     }
   };
+
   const cancelBooking = async (bookingId) => {
     try {
+      setCancelling(true);
       const response = await fetch(
         `https://apitest.tripjack.com/oms/v1/hotel/cancel-booking/${bookingId}`,
         {
@@ -157,7 +172,18 @@ const BookingDetailsPage = () => {
 
       if (response.ok) {
         console.log("Booking cancelled successfully:", data);
-        alert("Booking has been cancelled successfully.");
+        // alert("Booking has been cancelled successfully.");
+        setLoading(true);
+        try {
+          const fresh = await getBookingDetails(bookingId);
+          setBookingDetails(fresh);
+        } catch (e) {
+          console.error("Refresh after cancel failed:", e);
+          alert("Cancelled, but refreshing details failed. Please reload.");
+        } finally {
+          setLoading(false);
+        }
+        // alert("Booking has been cancelled successfully.");
       } else {
         console.error("Error cancelling booking:", data);
         alert("Failed to cancel booking. Please try again.");
@@ -165,6 +191,8 @@ const BookingDetailsPage = () => {
     } catch (error) {
       console.error("Error in API call:", error);
       alert("An error occurred while cancelling the booking.");
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -178,32 +206,36 @@ const BookingDetailsPage = () => {
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-
     const content = document.querySelector(".print_pdf");
+    if (!content) return console.error("No content found to generate PDF.");
 
-    if (content) {
-      doc.html(content, {
-        callback: function (doc) {
-          doc.save("booking_details.pdf");
-        },
-        x: 15,
-        y: 15,
-        width: 180,
-        html2canvas: {
-          scale: 0.3,
-          logging: true,
-          letterRendering: true,
-          useCORS: true,
-        },
-        autoPaging: true,
-      });
-    } else {
-      console.error("No content found to generate PDF.");
-    }
+    doc.html(content, {
+      callback: function (doc) {
+        doc.save("booking_details.pdf");
+      },
+      x: 15,
+      y: 15,
+      width: 180,
+      html2canvas: {
+        scale: 0.3,
+        logging: true,
+        letterRendering: true,
+        useCORS: true,
+      },
+      autoPaging: true,
+    });
   };
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <Layout headerStyle={1} footerStyle={1}>
+          <div className="col-12 d-flex justify-center py-5">
+            <div className="loader"></div>
+          </div>
+        </Layout>
+      }
+    >
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <div className="container w-full max-w-7xl">
@@ -214,12 +246,18 @@ const BookingDetailsPage = () => {
                   src="/assets/imgs/tick.png"
                   alt="tick"
                 />
-                <h6 className="status_texts">{status}</h6>
+                <h6 className="status_texts">
+                  {status
+                    .replace(/_/g, " ")
+                    .toLowerCase()
+                    .replace(/\b\w/g, (c) => c.toUpperCase())}
+                </h6>
                 <button
-                  className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white ml-auto" // Added ml-auto to push the button to the right
+                  className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
                   onClick={handlePayClick}
+                  disabled={confirming}
                 >
-                  Pay Now
+                  {confirming ? "Processing…" : "Pay Now"}
                 </button>
               </div>
             ) : status === "CANCELLED" ? (
@@ -229,7 +267,12 @@ const BookingDetailsPage = () => {
                   src="/assets/imgs/tick.png"
                   alt="tick"
                 />
-                <h6 className="status_texts">{status}</h6>
+                <h6 className="status_texts">
+                  {status
+                    .replace(/_/g, " ")
+                    .toLowerCase()
+                    .replace(/\b\w/g, (c) => c.toUpperCase())}
+                </h6>
               </div>
             ) : (
               <div className="p-6 flex justify-between items-center w-full">
@@ -251,10 +294,13 @@ const BookingDetailsPage = () => {
                   ref={dropdownRef}
                 >
                   <button
-                    className="book-now-btn ml-auto" // Added ml-auto to push the button to the right
-                    onClick={() => setShowOptions((prev) => !prev)}
-                    aria-haspopup="true" // Add ARIA attributes for accessibility
+                    className="book-now-btn ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={() =>
+                      !confirming && setShowOptions((prev) => !prev)
+                    }
+                    aria-haspopup="true"
                     aria-expanded={showOptions ? "true" : "false"}
+                    disabled={confirming}
                   >
                     More Options
                     <DownOutlined className="ml-2 mt-1" />
@@ -288,6 +334,7 @@ const BookingDetailsPage = () => {
               Booking ID: {orderBookingId}
             </h2>
           </div>
+
           <div className="print_pdf container w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-8 border-r border-gray-200">
               <div className="text-base font-semibold">
@@ -310,7 +357,8 @@ const BookingDetailsPage = () => {
                 />
               </div>
             </div>
-          </div>{" "}
+          </div>
+
           {showModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
@@ -329,16 +377,33 @@ const BookingDetailsPage = () => {
                   <button
                     className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
                     onClick={handleCloseModal}
+                    disabled={confirming}
                   >
                     BACK
                   </button>
                   <button
-                    className="book-now-btn px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
+                    className="book-now-btn px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handleConfirm}
+                    disabled={confirming}
                   >
-                    CONTINUE
+                    {confirming ? "Processing…" : "CONTINUE"}
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+          {cancelling && (
+            <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
+                Cancelling your booking…
+              </div>
+            </div>
+          )}
+
+          {confirming && (
+            <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+                Processing your payment…
               </div>
             </div>
           )}
