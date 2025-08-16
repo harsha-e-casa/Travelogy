@@ -651,7 +651,6 @@ const Alldetails = ({ totalpricee }) => {
       let reqData = { action: "bookingDetails", requestData: parameter };
       const data = await postData("travelogy/one-way/fetch-data", reqData);
 
-
       // const data = await postDataBookingDetails(parameter);
       console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
@@ -1019,7 +1018,7 @@ const Alldetails = ({ totalpricee }) => {
 
           if (matchedSegment) {
             flightNumber = matchedSegment.fD.fN;
-            flightCode = matchedSegment.fD.aI.code
+            flightCode = matchedSegment.fD.aI.code;
 
             // Get the departure date (dt) and convert to Julian date
             const departureDate = matchedSegment.dt;
@@ -1602,9 +1601,39 @@ const Alldetails = ({ totalpricee }) => {
                       >
                         Pay Now
                       </button>
-                      <button className="border border-grey rounded">
+                      {/* <button className="border border-grey rounded">
                         More
-                      </button>
+                      </button> */}
+                      <div className="relative inline-block">
+                        <button
+                          onClick={() => setShowDropdown(!showDropdown)}
+                          className="border border-grey rounded px-4 py-2"
+                        >
+                          More
+                        </button>
+                        {showDropdown && (
+                          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                            <button
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                handlePrint(printRef);
+                                setShowDropdown(false);
+                              }}
+                            >
+                              Print Ticket
+                            </button>
+                            <button
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                              onClick={() => {
+                                handleDownload(printRef);
+                                setShowDropdown(false);
+                              }}
+                            >
+                              Download Ticket
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -2006,7 +2035,7 @@ const Alldetails = ({ totalpricee }) => {
 
             <button
               className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition"
-              // onClick={searchTickets}
+              onClick={() => setError("")}
             >
               Ok, Got It
             </button>

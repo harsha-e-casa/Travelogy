@@ -94,7 +94,7 @@ const ReissueReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, [getCookie]);
+  }, []);
 
   useEffect(() => {
     const data = getCookie("email");

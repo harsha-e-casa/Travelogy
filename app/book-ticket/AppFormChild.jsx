@@ -1,11 +1,30 @@
-import React from 'react';
-import { Form, Input, Select, Row, Col } from 'antd';
+import React, { useEffect } from "react";
+import { Form, Input, Select, Row, Col } from "antd";
 
 const { Option } = Select;
 
-const AppFormChild = ({ form, index }) => {
+const AppFormChild = ({ form, index, travellerParsedData }) => {
+  useEffect(() => {
+    // Check if travellerParsedData has the necessary fields to prefill
+    if (travellerParsedData) {
+      const { ti, fN, lN } = travellerParsedData;
+
+      // Prefill form fields using form.setFieldsValue
+      form.setFieldsValue({
+        [`childselect-${index}`]: ti,
+        [`childName-${index}`]: fN,
+        [`childlast-${index}`]: lN,
+      });
+    }
+  }, [travellerParsedData]);
+
   return (
-    <Form form={form} name={`childForm-${index}`} layout="vertical" autoComplete="off">
+    <Form
+      form={form}
+      name={`childForm-${index}`}
+      layout="vertical"
+      autoComplete="off"
+    >
       <Row gutter={16}>
         {/* Col for Child's Name */}
 
@@ -14,7 +33,8 @@ const AppFormChild = ({ form, index }) => {
             name={`childselect-${index}`}
             label="Select"
             hasFeedback
-            rules={[{ required: true, message: "This field is required" }]}>
+            rules={[{ required: true, message: "This field is required" }]}
+          >
             <Select className="h-10" placeholder="Please select a title">
               <Option value="Ms">Ms</Option>
               <Option value="Master">Master</Option>
@@ -27,8 +47,22 @@ const AppFormChild = ({ form, index }) => {
             name={`childName-${index}`}
             label="First Name"
             hasFeedback
-            rules={[{ required: true, message: "Please enter the name" }]}>
-            <Input className="h-10 flex flex-row justify-between items-center" placeholder="First Name" />
+            rules={[
+              { required: true, message: "Please enter the name" },
+              {
+                min: 2,
+                message: "Last name must be at least 2 characters",
+              },
+              {
+                pattern: /^[A-Za-z\s]+$/,
+                message: "Last name can only contain letters and spaces",
+              },
+            ]}
+          >
+            <Input
+              className="h-10 flex flex-row justify-between items-center"
+              placeholder="First Name"
+            />
           </Form.Item>
         </Col>
 
@@ -38,8 +72,22 @@ const AppFormChild = ({ form, index }) => {
             name={`childlast-${index}`}
             label="Last Name"
             hasFeedback
-            rules={[{ required: true, message: "Please enter the Last name" }]}>
-            <Input className="h-10 flex flex-row justify-between items-center" placeholder="Last Name" />
+            rules={[
+              { required: true, message: "Please enter the Last name" },
+              {
+                min: 2,
+                message: "Last name must be at least 2 characters",
+              },
+              {
+                pattern: /^[A-Za-z\s]+$/,
+                message: "Last name can only contain letters and spaces",
+              },
+            ]}
+          >
+            <Input
+              className="h-10 flex flex-row justify-between items-center"
+              placeholder="Last Name"
+            />
           </Form.Item>
         </Col>
       </Row>

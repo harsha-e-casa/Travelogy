@@ -67,9 +67,8 @@ const EngineTabs = ({ active_border }) => {
   const [fromError, setFromError] = useState("");
   const [toError, setToError] = useState("");
 
-
   const handleReturnDateChange = (newDate) => {
-    setDatedepr(newDate);  // This will trigger the effect above to check the dates
+    setDatedepr(newDate); // This will trigger the effect above to check the dates
   };
   // reset
   useEffect(() => {
@@ -356,6 +355,8 @@ const EngineTabs = ({ active_border }) => {
   };
 
   const handleSelectFrom = (city, subCity) => {
+    setFromError("");
+    console.log("handleSelectFrom == ")
     setSelectFrom(city);
     setSelectFromSub(subCity);
 
@@ -367,6 +368,8 @@ const EngineTabs = ({ active_border }) => {
   };
 
   const handleSelectTo = (city, subCity) => {
+    setFromError("");
+    console.log("handleSelectTo == ")
     setSelectFromTo(city);
     setSelectFromSubTo(subCity);
 
@@ -376,7 +379,6 @@ const EngineTabs = ({ active_border }) => {
       setToError("");
     }
   };
-
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -475,7 +477,7 @@ const EngineTabs = ({ active_border }) => {
             className="custom-grid justify-center"
             style={{ flexDirection: "column" }}
           >
-            <div className="flex" >
+            <div className="flex">
               <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
                 <div className="" onClick={openfrom}>
                   <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
@@ -484,25 +486,25 @@ const EngineTabs = ({ active_border }) => {
                   <div className="pl-6 relative">
                     <h2 className="text_4xl font_bold text-black tracking-wide ">
                       {selectFrom}
-
                     </h2>
                     <p className="text-xl_small truncate-text">
                       {selectFromSub}
                     </p>
                   </div>
-
-
-
                 </div>
 
                 {showSearchState ? (
-                  <div className="searchFfromSelect searchFfromSelect_1 " style={{ position: 'relative', zIndex: 10000 }}>
+                  <div
+                    className="searchFfromSelect searchFfromSelect_1 "
+                    style={{ position: "relative", zIndex: 10000 }}
+                  >
                     <AppListSearch
                       operEngLocation={openfrom}
-                      setSelectFrom={(city, subCity) => handleSelectFrom(city, subCity)}
+                      setSelectFrom={(city, subCity) =>
+                        handleSelectFrom(city, subCity)
+                      }
                       setSelectFromSub={setSelectFromSub}
                     />
-
                   </div>
                 ) : null}
                 <Tooltip
@@ -512,14 +514,11 @@ const EngineTabs = ({ active_border }) => {
                   open={!!fromError}
                   arrow={{ pointAtCenter: true }}
                   overlayInnerStyle={{
-                    backgroundColor: '#ffeaea',
-                    color: '#ff4d4f',
-                    fontWeight: 500
+                    backgroundColor: "#ffeaea",
+                    color: "#ff4d4f",
+                    fontWeight: 500,
                   }}
-                >
-
-
-                </Tooltip>
+                ></Tooltip>
               </div>
 
               <div className="searchReplaceLocation">
@@ -556,10 +555,11 @@ const EngineTabs = ({ active_border }) => {
                   <div className="searchFfromSelect searchFfromSelect_1">
                     <AppListSearch
                       operEngLocation={openTo}
-                      setSelectFrom={(city, subCity) => handleSelectTo(city, subCity)}
+                      setSelectFrom={(city, subCity) =>
+                        handleSelectTo(city, subCity)
+                      }
                       setSelectFromSub={setSelectFromSubTo}
                     />
-
                   </div>
                 ) : null}
                 <Tooltip
@@ -569,14 +569,11 @@ const EngineTabs = ({ active_border }) => {
                   open={!!toError}
                   arrow={{ pointAtCenter: true }}
                   overlayInnerStyle={{
-                    backgroundColor: '#ffeaea',
-                    color: '#ff4d4f',
-                    fontWeight: 500
+                    backgroundColor: "#ffeaea",
+                    color: "#ff4d4f",
+                    fontWeight: 500,
                   }}
-                >
-
-
-                </Tooltip>
+                ></Tooltip>
               </div>
 
               <div className="text_start b_right_2px g_w_3 css_pointer">
@@ -722,12 +719,26 @@ const EngineTabs = ({ active_border }) => {
             className="search_btn bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto"
             style={{ position: "relative" }}
           >
-            <div
+            {/*<div
               onClick={searchTickets}
               className="search_btn_font text-white uppercase tracking-wide cursor-pointer"
-              disabled={fromError || toError || !selectFrom || !selectFromTo}
+              disabled={!!fromError || !!toError || !selectFrom || !selectFromTo}
             >
               {" "}
+              Search
+            </div>*/}
+            <div
+              onClick={
+                !fromError && !toError && selectFrom && selectFromTo
+                  ? searchTickets
+                  : null
+              }
+              className={`search_btn_font text-white uppercase tracking-wide cursor-pointer ${
+                !!fromError || !!toError || !selectFrom || !selectFromTo
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+            >
               Search
             </div>
           </div>
