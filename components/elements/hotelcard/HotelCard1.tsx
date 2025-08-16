@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+// import { Tooltip } from "antd";
+
 export default function HotelCard1({ hotel }: any) {
   const name = hotel?.name || "Unnamed Hotel";
   const address = hotel?.ad?.adr;
@@ -54,16 +56,18 @@ export default function HotelCard1({ hotel }: any) {
         </div>
         <div className="card-program">
           <div className="card-location">
-            {/* <p className="text-location text-xs-medium neutral-500">
-              {address} {address1}, {city}
-            </p> */}
             <p
-              className="text-location text-xs-medium neutral-500"
-              title={fullLocation} // Tooltip with the full location
+              className="cursor-pointer text-location text-xs-medium neutral-500"
+              title={fullLocation}
             >
               {`${address}, ${address1 ? `${address1}, ` : ""}${city}`}{" "}
-              {/* Truncated location */}
             </p>
+
+            {/* <Tooltip title={fullLocation}>
+              <p className="cursor-pointer text-location text-xs-medium neutral-500">
+                {`${address}, ${address1 ? `${address1}, ` : ""}${city}`}
+              </p>
+            </Tooltip> */}
             <p className="text-star">
               {[...Array(filledStars)].map((_, index) => (
                 <svg

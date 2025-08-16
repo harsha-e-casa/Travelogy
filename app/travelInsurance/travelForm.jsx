@@ -21,7 +21,7 @@ const TravelForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const formData = new FormData(event.target); // Create a new FormData instance
+    const formData = new FormData(event.target); 
     let newErrors = {};
     if (!event.target.name.value) {
       newErrors.fullName = "Full name is required.";
@@ -179,7 +179,6 @@ const TravelForm = () => {
           </div>
         </div>
 
-        {/* Insurance Coverage Section */}
         <div className="form-item pt-8">
           <label
             className="font-semibold flex items-center gap-2 text-foreground"

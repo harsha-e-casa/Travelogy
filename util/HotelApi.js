@@ -225,7 +225,7 @@ export async function hotelBooking({
 
         return {
           fN: guest?.firstName || "TBA",
-          lN: guest?.lastName || "Guest",
+          lN: guest?.lastName || "TBA",
           ti: guest?.title || "Mr",
           pt: isChild ? "CHILD" : "ADULT",
           pNum,
@@ -396,9 +396,10 @@ export async function getBookingDetails(bookingId) {
 
     if (data.status.success) {
       return data;
-    } else {
-      throw new Error("Failed to fetch booking details");
     }
+    //  else {
+    //   throw new Error("Failed to fetch booking details");
+    // }
   } catch (error) {
     console.error("Error fetching booking details:", error);
     throw error;

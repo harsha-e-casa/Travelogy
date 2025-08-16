@@ -448,6 +448,9 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   const [rooms, setRooms] = useState(
     roomsData || [{ adults: 1, children: 0, childAges: [] }]
   );
+  const getHotelTotal = (list = rooms) =>
+    list.reduce((sum, r) => sum + r.adults + r.children, 0);
+
   const updateAdult = (roomIndex, delta) => {
     setRooms((prev) => {
       const updated = [...prev];
@@ -455,6 +458,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
       const newAdultCount = room.adults + delta;
 
       if (newAdultCount < 1 || newAdultCount > 9) return updated;
+      const hypothetical = [...updated];
+      hypothetical[roomIndex] = { ...room, adults: newAdultCount };
+      if (getHotelTotal(hypothetical) > 25) {
+        message.warning("Maximum 25 passengers allowed per hotel.");
+        return updated;
+      }
 
       const totalPassengers = newAdultCount + room.children;
       if (totalPassengers > 10) {
@@ -478,7 +487,18 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
       const newChildCount = room.children + delta;
 
       if (newChildCount < 0 || newChildCount > 3) return updated;
-
+      const hypothetical = [...updated];
+      const newChildAges =
+        delta > 0 ? [...room.childAges, "1"] : room.childAges.slice(0, -1);
+      hypothetical[roomIndex] = {
+        ...room,
+        children: newChildCount,
+        childAges: newChildAges,
+      };
+      if (getHotelTotal(hypothetical) > 25) {
+        message.warning("Maximum 25 passengers allowed per hotel.");
+        return updated;
+      }
       const totalPassengers = room.adults + newChildCount;
       if (totalPassengers > 10) {
         message.warning("Maximum 10 passengers allowed per room.");
@@ -486,8 +506,8 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
         return updated;
       }
 
-      const newChildAges =
-        delta > 0 ? [...room.childAges, "1"] : room.childAges.slice(0, -1);
+      // const newChildAges =
+      //   delta > 0 ? [...room.childAges, "1"] : room.childAges.slice(0, -1);
 
       updated[roomIndex] = {
         ...room,
@@ -539,6 +559,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
 
   const handleAddRoom = () => {
     if (rooms.length < 5) {
+      if (getHotelTotal(rooms) + 1 > 25) {
+        message.warning(
+          "Adding another room would exceed 25 passengers per hotel."
+        );
+        return;
+      }
       setRooms([...rooms, { adults: 1, children: 0, childAges: [] }]);
     } else {
       message.warning("Maximum of 5 rooms allowed.");
@@ -546,6 +572,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   const handleSubmit = () => {
+    // NEW: final validation for hotel-wide total
+    if (getHotelTotal(rooms) > 25) {
+      message.error("Please reduce the total passengers to 25 or fewer.");
+      return;
+    }
+
     if (typeof onClose === "function") {
       onClose(rooms);
     } else {

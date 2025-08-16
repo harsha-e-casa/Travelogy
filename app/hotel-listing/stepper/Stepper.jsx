@@ -13,7 +13,6 @@ export function HotelReviewComponent({
   setLoading,
   setError,
 }) {
-  // const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const hid = searchParams.get("hid");
   const oid = searchParams.get("oid");
@@ -30,6 +29,9 @@ export function HotelReviewComponent({
           requestData: { hotelId: hid, optionId: oid },
         };
         const response = await postData("travelogy/hotel/fetch-data", reqData);
+        if (response.error) {
+          throw new Error(response.error);
+        }
         if (!cancelled) setHotelReviewData(response);
       } catch (error) {
         if (!cancelled) setError(error?.message || "Something went wrong");
@@ -43,41 +45,6 @@ export function HotelReviewComponent({
     };
   }, [hid, oid, setLoading, setError, setHotelReviewData]);
 
-  // useEffect(() => {
-  //   // if (hid && oid) {
-  //   //   setLoading(true);
-  //   //   fetchHotelReviewData(hid, oid)
-  //   //     .then((data) => setHotelReviewData(data))
-  //   //     .catch((err) => setError(err.message))
-  //   //     .finally(() => setLoading(false));
-  //   // }
-  //   const apiCall = async (hid, oid) => {
-  //     try {
-  //       let reqData = {
-  //         action: "hotelReview",
-  //         requestData: {
-  //           hotelId: hid,
-  //           optionId: oid,
-  //         },
-  //       };
-  //       const response = await postData("travelogy/hotel/fetch-data", reqData);
-  //       console.log("hotel listing response == ", response);
-  //       setHotelReviewData(response);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       console.error("Search API error:", error);
-  //       setError(error.message);
-  //       setLoading(false);
-  //       return null;
-  //     }
-  //   };
-  //   apiCall(hid, oid);
-  // }, [hid, oid]);
-
-  // if (error) {
-  //   return <div className="text-red-500 text-center">{error}</div>;
-  // }
-
   return null;
 }
 
@@ -87,7 +54,25 @@ export function Step1TravellerDetails({
   setFormData,
   onNext,
 }) {
+  const hasDigit = (s = "") => /\d/.test(s);
+  const isValidFirstName = (v = "") =>
+    v.trim() && v.trim().length >= 2 && !hasDigit(v);
+  const isValidLastName = (v = "") =>
+    v.trim() && v.trim().length >= 2 && !hasDigit(v);
+  const isValidMobile = (v = "") => /^\d{10}$/.test(v);
+  const isValidEmail = (v = "") => {
+    if (!v) return false;
+    const email = v.trim().toLowerCase();
+    const regex = /^(?!\.)(?!.*\.\.)[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+    return regex.test(email);
+  };
   const ipmValue = hotelReviewData?.hInfo?.ops?.[0]?.ipm;
+  const isValidPassport = (v = "") => {
+    if (!v) return false;
+    const passport = v.trim().toUpperCase();
+
+    return /^[A-HJ-NP-Z][0-9]{7}$/.test(passport);
+  };
 
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
@@ -128,6 +113,12 @@ export function Step1TravellerDetails({
     localStorage.setItem("bookingFormData", JSON.stringify(formData));
   }, [formData]);
   const leadGuest = formData.guests?.[0] || {};
+  const [passportNumber, setPassportNumber] = useState(
+    formData?.guests?.[0]?.passportNumber || ""
+  );
+  const [passportExpiryDate, setPassportExpiryDate] = useState(
+    formData?.guests?.[0]?.passportExpiryDate || ""
+  );
 
   const validateFields = () => {
     const newErrors = {};
@@ -151,7 +142,7 @@ export function Step1TravellerDetails({
       newErrors.firstName = "First name cannot contain numbers";
     } else if (leadGuest.firstName.trim().length < 2) {
       newErrors.firstName = "First name must be at least 2 characters";
-    } 
+    }
 
     if (!leadGuest.lastName?.trim()) {
       newErrors.lastName = "Last name is required";
@@ -163,32 +154,62 @@ export function Step1TravellerDetails({
 
     if (!(formData?.mobile ?? "").trim()) {
       newErrors.mobile = "Mobile number is required";
-    } else if (!/^\d{10}$/.test(formData.mobile)) {
+    } else if (!isValidMobile(formData.mobile)) {
       newErrors.mobile = "Mobile must be 10 digits";
     }
 
     if (!(formData?.email ?? "").trim()) {
       newErrors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!isValidEmail(formData.email)) {
       newErrors.email = "Invalid email format";
+    }
+    if (ipmValue) {
+      if (!passportNumber?.trim()) {
+        newErrors.passportNumber = "Passport number is required";
+      } else if (!isValidPassport(passportNumber)) {
+        newErrors.passportNumber = "Invalid passport number format";
+      }
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }));
+  // };
   const handleNext = () => {
     const isValid = validateFields();
     if (isValid) {
       onNext();
     }
   };
+  // auto-clear errors when fields become valid
+  useEffect(() => {
+    const lead = formData?.guests?.[0] || {};
+    setErrors((prev) => {
+      const next = { ...prev };
+      // only REMOVE keys here; validateFields() will ADD them on submit
+      if (isValidFirstName(lead.firstName)) delete next.firstName;
+      if (isValidLastName(lead.lastName)) delete next.lastName;
+      if (isValidMobile((formData?.mobile ?? "").trim())) delete next.mobile;
+      if (isValidEmail((formData?.email ?? "").trim())) delete next.email;
+      if (!ipmValue || isValidPassport(passportNumber /*, "IN" */)) {
+        delete next.passportNumber;
+      }
+      return next;
+    });
+  }, [
+    formData?.guests?.[0]?.firstName,
+    formData?.guests?.[0]?.lastName,
+    formData?.mobile,
+    formData?.email,
+    passportNumber,
+    ipmValue,
+  ]);
 
   // const [roomGuestState, setRoomGuestState] = useState({}); // { [roomIndex]: { adults: [], children: [] } }
 
@@ -232,12 +253,6 @@ export function Step1TravellerDetails({
       freeCancellationDate = dateObj.toLocaleDateString("en-GB");
     }
   }
-  const [passportNumber, setPassportNumber] = useState(
-    formData?.guests?.[0]?.passportNumber || ""
-  );
-  const [passportExpiryDate, setPassportExpiryDate] = useState(
-    formData?.guests?.[0]?.passportExpiryDate || ""
-  );
 
   const [openDatePicker, setOpenDatePicker] = useState(false); // Control datepicker visibility
 
@@ -258,7 +273,13 @@ export function Step1TravellerDetails({
   };
 
   const handlePassportNumberChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value || "";
+    // sanitize: remove all non A-Z/0-9, force UPPER, cap at 9 chars
+    value = value
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, "")
+      .slice(0, 9);
+
     setPassportNumber(value);
     setFormData((prev) => ({
       ...prev,
@@ -477,6 +498,11 @@ export function Step1TravellerDetails({
                           value={passportNumber}
                           onChange={handlePassportNumberChange}
                         />
+                        {errors.passportNumber && (
+                          <span className="text-red-500 text-xs mt-1">
+                            {errors.passportNumber}
+                          </span>
+                        )}
                       </div>
 
                       <div className="flex flex-col">
@@ -697,6 +723,7 @@ export function Step2Review({
         hotelReviewData,
         isBlock: true,
       });
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
       console.error("Error during block:", error.message);
     }
@@ -705,8 +732,8 @@ export function Step2Review({
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
   const passengerContact = hotelReviewData1;
-  console.log("passengerContact", passengerContact);
   const blockRoom = hotelReviewData?.conditions?.isBA;
+
   if (Array.isArray(policies)) {
     const freeCancellation = policies.find((p) => p.am === 0);
     if (freeCancellation?.tdt) {
@@ -1125,7 +1152,10 @@ export function Step2Review({
                 onChange={(e) => setAccepted(e.target.checked)}
               />
 
-              <label for="acceptTerms" className="mb-0 text-sm text-gray-700">
+              <label
+                htmlFor="acceptTerms"
+                className="mb-0 text-sm text-gray-700"
+              >
                 Accept Terms & Conditions
               </label>
             </div>
@@ -1140,7 +1170,8 @@ export function Step2Review({
                 </button>
               )}
               <button
-                disabled={!accepted}
+                type="button"
+                // disabled={!accepted}
                 className={`book-now-btn ${
                   accepted
                     ? "bg-orange-500 hover:bg-orange-600"
@@ -1515,7 +1546,10 @@ export function Step4Payment({
     setShowModal(false);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
-      onConfirmPayment(bookingId);
+      // onConfirmPayment(bookingId);
+      setTimeout(() => {
+        onConfirmPayment(bookingId);
+      }, 10000);
     } catch (error) {
       console.error("Booking failed:", error);
       alert("Booking failed. Please try again.");
@@ -1635,8 +1669,6 @@ export function FareAmount({ hotelReviewData, Category }) {
   const toggleDetails = () => {
     setIsDetailsVisible((prevState) => !prevState);
   };
-
-  console.log(hotelPassenger, "hotelPassenger");
 
   return (
     <>
