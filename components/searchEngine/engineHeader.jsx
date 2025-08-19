@@ -628,7 +628,8 @@ const EngineTabs = ({ active_border }) => {
                   <AppDateRangeFlight
                     openToDateRange={openToDateRange}
                     setDate={setDepartureDate}
-                    minDate={min}
+                    // minDate={min}
+                    minDate={null}
                     value={departureDate}
                   />
                 ) : null}

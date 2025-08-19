@@ -647,7 +647,7 @@ export default function Tickets() {
         routeInfos: tripBasedRouteInfo,
         searchModifiers: {
           // pfts: [mapPassengerType[passengerType]],
-          sourceId: "22",
+          // sourceId: "22",
           pft: mapPassengerType[passengerType],
           isDirectFlight: isDirectFlight, // always true if isDirectFlight is false
           isConnectingFlight: false,
@@ -924,6 +924,19 @@ export default function Tickets() {
     const cookieDate = Cookies.get("gy_return");
     return cookieDate ? dayjs(cookieDate) : dayjs();
   });
+
+  // useEffect(() => {
+
+  //   const formattedDatedep = dayjs(datedep);
+  //   const fDepartureDate =  formattedDatedep.format("YYYY-MM-DD");
+
+  //   const formattedDatedepr = dayjs(datedepr);
+  //   const fReturnDate =  formattedDatedepr.format("YYYY-MM-DD");
+    
+  //   if (((srx_tripType?.toLowerCase() || "") === "round-trip") && (fDepartureDate == fReturnDate)) {
+  //     console.log("should throw validation !!!!!!!!!!!!!!!")
+  //   }
+  // }, [datedep, datedepr]);
 
   const openfrom = () => {
     if (showSearchState) {
