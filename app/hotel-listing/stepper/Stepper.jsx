@@ -278,7 +278,7 @@ export function Step1TravellerDetails({
     value = value
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 9);
+      .slice(0, 8);
 
     setPassportNumber(value);
     setFormData((prev) => ({
@@ -717,6 +717,11 @@ export function Step2Review({
     }
   };
   const handleBlock = async () => {
+    if (!accepted) {
+      message.warning(
+        "Please accept the Terms & Conditions before proceeding."
+      );
+    }
     try {
       const response = await hotelBooking({
         formData,
@@ -1528,6 +1533,7 @@ export function Step4Payment({
   formData,
   hotelReviewData,
   amount,
+  setError,
   bookingId,
   onConfirmPayment,
 }) {
@@ -1546,10 +1552,12 @@ export function Step4Payment({
     setShowModal(false);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
+      console.log("Result=============================", result.error);
+      setError(result?.error);
       // onConfirmPayment(bookingId);
       setTimeout(() => {
         onConfirmPayment(bookingId);
-      }, 10000);
+      }, 100000);
     } catch (error) {
       console.error("Booking failed:", error);
       alert("Booking failed. Please try again.");
@@ -1719,9 +1727,9 @@ export function FareAmount({ hotelReviewData, Category }) {
 
                       <span className="text-xs text-gray-400">
                         ₹
-                        {((room.tfcs?.BF || 0) + (room.tfcs?.TAF || 0)).toFixed(
-                          2
-                        )}
+                        {(room.tfcs?.BF || 0)
+                          //  + (room.tfcs?.TAF || 0)
+                          .toFixed(2)}
                       </span>
                     </div>
                   </>

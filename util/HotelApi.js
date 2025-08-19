@@ -349,7 +349,7 @@ export async function hotelBooking({
     };
     // saveHotelBookingData();
 
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Booking failed:", error.message);
     throw error; // Handle any errors here
@@ -394,12 +394,12 @@ export async function getBookingDetails(bookingId) {
     };
     // updateHotelBookingData();
 
-    if (data.status.success) {
+    if (data?.status?.success) {
+      return data;
+    } else {
+      // throw new Error(data?.error);
       return data;
     }
-    //  else {
-    //   throw new Error("Failed to fetch booking details");
-    // }
   } catch (error) {
     console.error("Error fetching booking details:", error);
     throw error;

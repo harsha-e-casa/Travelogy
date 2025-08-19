@@ -4,14 +4,18 @@ import { getBookingDetails } from "../../../../util/HotelApi";
 import { useSearchParams } from "next/navigation";
 import { Step2Review, FareAmount } from "../../stepper/Stepper";
 import Layout from "@/components/layout/Layout";
+import Link from "next/link";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { DownOutlined } from "@ant-design/icons";
+import { Spin } from "antd";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // const [errorStatus, setErrorStatus] = useState(null);
+
   const [formData, setFormData] = useState({});
   const [showOptions, setShowOptions] = useState(false);
   const searchParams = useSearchParams();
@@ -74,7 +78,9 @@ const BookingDetailsPage = () => {
       }
 
       if (typeof onConfirmPayment === "function") {
-        onConfirmPayment(bookingId);
+        setTimeout(() => {
+          onConfirmPayment(bookingId);
+        }, 10000);
       }
     } catch (error) {
       console.error("Booking failed:", error);
@@ -84,7 +90,6 @@ const BookingDetailsPage = () => {
     }
   };
 
-  // close “More Options” on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -100,20 +105,30 @@ const BookingDetailsPage = () => {
       getBookingDetails(bookingId)
         .then((data) => {
           console.log("API Response:", data);
+          console.log("API Response Errors:", data.error);
           setBookingDetails(data);
+          if (data?.error) {
+            setError(data.error);
+            // setErrorStatus(data.status || null);
+
+            setLoading(false);
+            return;
+          }
           setLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching booking details:", error);
-          setError("Failed to load booking details.");
+          setError(error.message);
+
           setLoading(false);
         });
     } else {
       setError("Booking ID is missing.");
+      // setErrorStatus(data.status || null);
+
       setLoading(false);
     }
   }, [bookingId]);
-
   if (loading)
     return (
       <Layout headerStyle={1} footerStyle={1}>
@@ -122,16 +137,43 @@ const BookingDetailsPage = () => {
         </div>
       </Layout>
     );
-  if (error) return <div>{error}</div>;
-  if (!bookingDetails || !bookingDetails.order || !bookingDetails.itemInfos)
-    return <div>Invalid booking details</div>;
+  if (error)
+    return (
+      <Layout headerStyle={1} footerStyle={1}>
+        <main className="main">
+          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+            <h2 className="text-xl font-semibold mb-2">
+              Oops! Something went wrong.
+            </h2>
+            <p className="text-sm">{error}</p>
+            <div className="flex justify-center mt-4">
+              {error === "Request failed with status code 504" && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition mr-4"
+                >
+                  Try Again
+                </button>
+              )}
+              <Link href="/hotels" passHref>
+                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                  Retry Hotel Load
+                </button>
+              </Link>
+            </div>
+          </div>{" "}
+        </main>
+      </Layout>
+    );
+  // if (!bookingDetails || !bookingDetails.order || !bookingDetails.itemInfos)
+  //   return <div>Invalid booking details</div>;
 
   const { order, itemInfos } = bookingDetails || {};
   const hotelInfo = itemInfos?.HOTEL?.hInfo || {};
   const deliveryInfo = order?.deliveryInfo || {};
   const { bookingId: orderBookingId } = order || {};
   const status = order?.status;
-  const totalAmount = order.amount;
+  const totalAmount = order?.amount;
 
   const email = deliveryInfo.emails?.[0];
   const contact = deliveryInfo.contacts?.[0];
@@ -172,18 +214,22 @@ const BookingDetailsPage = () => {
 
       if (response.ok) {
         console.log("Booking cancelled successfully:", data);
-        // alert("Booking has been cancelled successfully.");
         setLoading(true);
+        console.log("freshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh == 11 ");
         try {
           const fresh = await getBookingDetails(bookingId);
-          setBookingDetails(fresh);
+          console.log("freshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh == ", fresh);
+          if (fresh?.error) {
+            console.log("dddddddddddddddddddddddddddddddddddd ", fresh.error);
+            setError(fresh.error);
+          } else {
+            setBookingDetails(fresh);
+          }
         } catch (e) {
           console.error("Refresh after cancel failed:", e);
-          alert("Cancelled, but refreshing details failed. Please reload.");
         } finally {
           setLoading(false);
         }
-        // alert("Booking has been cancelled successfully.");
       } else {
         console.error("Error cancelling booking:", data);
         alert("Failed to cancel booking. Please try again.");
@@ -284,7 +330,7 @@ const BookingDetailsPage = () => {
                   />
                   <h6 className="status_texts">
                     {status
-                      .replace(/_/g, " ")
+                      ?.replace(/_/g, " ")
                       .toLowerCase()
                       .replace(/\b\w/g, (c) => c.toUpperCase())}
                   </h6>
@@ -343,7 +389,7 @@ const BookingDetailsPage = () => {
                     formData={formData}
                     Category2={Category2}
                     Category={"abook"}
-                    hotelReviewData={bookingDetails.itemInfos.HOTEL}
+                    hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                     hotelReviewData1={bookingDetails?.order?.deliveryInfo}
                   />
                 ) : null}
@@ -352,7 +398,7 @@ const BookingDetailsPage = () => {
             <div className="md:col-span-4">
               <div className="p-6 rounded-md text-sm space-y-4">
                 <FareAmount
-                  hotelReviewData={bookingDetails.itemInfos.HOTEL}
+                  hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                   Category={"abook"}
                 />
               </div>
@@ -395,15 +441,21 @@ const BookingDetailsPage = () => {
           {cancelling && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
-                Cancelling your booking…
+                <div className="flex items-center justify-center gap-2">
+                  <Spin size="medium" />
+                  <span>Cancelling your booking…</span>
+                </div>
               </div>
             </div>
           )}
 
           {confirming && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
-                Processing your payment…
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <Spin size="medium" />
+                  <span>Processing your payment…</span>
+                </div>
               </div>
             </div>
           )}
