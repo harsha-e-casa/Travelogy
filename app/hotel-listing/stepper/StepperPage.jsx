@@ -372,6 +372,7 @@ export default function Stepper() {
                       }
                       bookingId={hotelReviewData?.bookingId}
                       onConfirmPayment={handlePayment}
+                      setError={setError}
                     />
                   )}
                 </div>

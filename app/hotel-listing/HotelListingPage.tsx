@@ -147,6 +147,8 @@ export default function HotelListing() {
       setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
   }, []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
   const [datedep, setDatedep] = useState(dayjs());
 
@@ -197,12 +199,33 @@ export default function HotelListing() {
         }
       );
 
+      if (!response.ok) {
+        let msg = `Request failed with ${response.status} ${response.statusText}`;
+        try {
+          const maybeJson = await response.json();
+          if (maybeJson?.message) msg = maybeJson.message;
+        } catch {}
+        const err = new Error(msg) as Error & { status?: number };
+        err.status = response.status;
+        throw err; // <-- important
+      }
+
       const data = await response.json();
       localStorage.clear();
       return data;
-    } catch (error) {
-      console.error("Search API error:", error);
-      return null;
+    } catch (e: any) {
+      const err = new Error(e?.message || "Network error") as Error & {
+        status?: number;
+      };
+      const maybeStatus =
+        typeof e?.status === "number"
+          ? e.status
+          : /(^|[^0-9])504([^0-9]|$)/.test(String(e?.message))
+          ? 504
+          : undefined;
+
+      err.status = maybeStatus ?? undefined;
+      throw err;
     }
   };
   const cleanRoomInfo = roomsData.map((room) => {
@@ -215,6 +238,9 @@ export default function HotelListing() {
   });
   const handleSearch = async () => {
     setLoading(true);
+    setError(null);
+    setErrorStatus(null);
+
     const safeCityId = selectFrom?.id || city || "699261";
     const safeCityName = selectFrom?.cityName || location || "Chennai";
     const safeCountry = selectFrom?.countryName || "India";
@@ -271,14 +297,23 @@ export default function HotelListing() {
     // }
     try {
       const data = await apiCall(payload);
+      console.log("bbbbbbbbbbbbbbbbbbbb111111111111111111", data);
+
+      if (!data?.searchResult?.his) {
+        throw Object.assign(new Error(data?.message || "No data received"), {
+          status: 200,
+        });
+      }
       if (data) {
         setApiHotelData(data.searchResult?.his || []);
         router.push(`/hotel-listing?${queryParams}`);
       }
-    } catch (error) {
-      console.error("Search API error:", error);
+    } catch (e: any) {
+      const s = typeof e?.status === "number" ? e.status : undefined;
+      setError(e?.message || "Something went wrong.");
+      setErrorStatus(s);
     } finally {
-      setLoading(false); // Set loading to false after the API call completes
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -291,6 +326,8 @@ export default function HotelListing() {
       const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
       const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
       setLoading(true);
+      setError(null);
+      setErrorStatus(null);
 
       const payload = {
         searchQuery: {
@@ -307,11 +344,28 @@ export default function HotelListing() {
         sync: true,
       };
 
-      const data = await apiCall(payload);
-      setLoading(false);
-      if (data) {
-        const hotelOnlyResults = data.searchResult?.his || [];
-        setApiHotelData(hotelOnlyResults);
+      // const data = await apiCall(payload);
+      // setLoading(false);
+      // if (data) {
+      //   const hotelOnlyResults = data.searchResult?.his || [];
+      //   setApiHotelData(hotelOnlyResults);
+      // }
+      try {
+        const data = await apiCall(payload);
+
+        if (!data?.searchResult?.his) {
+          throw Object.assign(new Error(data?.message || "No data received"), {
+            status: 200,
+          });
+        }
+
+        setApiHotelData(data.searchResult.his || []);
+      } catch (e: any) {
+        const s = typeof e?.status === "number" ? e.status : undefined;
+        setError(e?.message || "Something went wrong.");
+        setErrorStatus(s);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -400,6 +454,39 @@ export default function HotelListing() {
       window.removeEventListener("click", handleClickOutside);
     };
   }, []);
+  if (error) {
+    const isRetryable =
+      !errorStatus || [408, 429, 500, 502, 503, 504].includes(errorStatus);
+    return (
+      <Layout headerStyle={1} footerStyle={1}>
+        <main className="main">
+          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+            <h2 className="text-xl font-semibold mb-2">
+              Oops! Something went wrong.
+            </h2>
+            {!isRetryable && <p className="text-sm">{error}</p>}
+            {isRetryable && <p className="text-sm">504 - Gateway Timeout</p>}
+
+            <div className="flex justify-center mt-4">
+              {isRetryable && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition mr-4"
+                >
+                  Try Again
+                </button>
+              )}
+              <Link href="/hotels" passHref>
+                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                  Retry Hotel
+                </button>
+              </Link>
+            </div>
+          </div>
+        </main>
+      </Layout>
+    );
+  }
 
   return (
     <Suspense
