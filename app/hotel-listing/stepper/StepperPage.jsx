@@ -235,6 +235,10 @@ export default function Stepper() {
       console.error("Error during payment handling:", error.message);
     }
   };
+  const isPanError =
+    typeof error === "string" &&
+    error.includes("Please, enter valid PAN number");
+
   return (
     <Layout headerStyle={1} footerStyle={1}>
       {" "}
@@ -250,7 +254,23 @@ export default function Stepper() {
                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
                   Retry Hotel Load
                 </button>
-              </Link>
+              </Link>{" "}
+              {isPanError && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setCurrentStep(
+                      hotelReviewData?.hInfo?.ops?.[0]?.ipr === false ? 4 : 3
+                    );
+                  }}
+                  className="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-900 transition"
+                  aria-label="Go to PAN step"
+                  title="Fix PAN"
+                >
+                  PAN
+                </button>
+              )}
             </div>
           </div>{" "}
         </main>
@@ -373,6 +393,7 @@ export default function Stepper() {
                       bookingId={hotelReviewData?.bookingId}
                       onConfirmPayment={handlePayment}
                       setError={setError}
+                      setCurrentStep={setCurrentStep}
                     />
                   )}
                 </div>

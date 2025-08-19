@@ -1535,11 +1535,13 @@ export function Step4Payment({
   amount,
   setError,
   bookingId,
+  setCurrentStep,
   onConfirmPayment,
 }) {
   const [showModal, setShowModal] = useState(false);
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
-
+  const [globalToast, setGlobalToast] = useState(null); // for a top toast/banner
+  const [panError, setPanError] = useState(null);
   const handlePayClick = () => {
     setShowModal(true);
   };
@@ -1548,21 +1550,48 @@ export function Step4Payment({
     setShowModal(false);
   };
 
+  // const handleConfirm = async () => {
+  //   setShowModal(false);
+  //   try {
+  //     const result = await hotelBooking({ formData, hotelReviewData });
+  //     if (result?.error) {
+  //       console.error("Booking error:", result.error);
+  //       setError(result.error);
+  //       return;
+  //     }
+  //     console.log("Booking success:", result);
+  //     onConfirmPayment(bookingId);
+  //     // setTimeout(() => {
+  //     //   onConfirmPayment(bookingId);
+  //     // }, 100000);
+  //   } catch (error) {
+  //     console.error("Booking failed:", error);
+  //     setError(error.message || "Something went wrong");
+  //   }
+  // };
   const handleConfirm = async () => {
     setShowModal(false);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
-      console.log("Result=============================", result.error);
-      setError(result?.error);
-      // onConfirmPayment(bookingId);
-      setTimeout(() => {
-        onConfirmPayment(bookingId);
-      }, 100000);
+      if (result?.error) {
+        console.error("Booking error:", result.error);
+
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error);
+
+        setError(errorMessage);
+        return;
+      }
+      console.log("Booking success:", result);
+      onConfirmPayment(bookingId);
     } catch (error) {
       console.error("Booking failed:", error);
-      alert("Booking failed. Please try again.");
+      setError(error?.message || "Something went wrong");
     }
   };
+
   return (
     <div className="max-w-5xl mx-auto gap-6 p-6 text-sm relative">
       <div className="p-4">
