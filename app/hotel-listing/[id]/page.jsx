@@ -7,6 +7,7 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import HotelData from "./hotelData";
 import { postData } from "@/services/NetworkAdapter";
+// import { useRouter } from "next/router";
 
 const Modal = ({
   images,
@@ -105,7 +106,11 @@ export default function ActivitiesDetail4() {
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [openDateRange, setOpenDateRange] = useState(false);
+  // const router = useRouter();
 
+  // const handleRetry = () => {
+  //   router.push("/hotels");
+  // };
   const handleSearch = () => {
     console.log("Searching with the following data:");
     console.log("Check-in:", checkinDate);
@@ -166,7 +171,26 @@ export default function ActivitiesDetail4() {
         const response = await postData("travelogy/hotel/fetch-data", reqData);
         console.log("hotel listing response == ", response);
 
-        if (response.status.success) {
+        // if (response.status.success) {
+        //   const hotel = response.hotel;
+        //   const searchData = response.searchQuery;
+
+        //   setHotelData(hotel);
+        //   setSearchQueryData(searchData);
+
+        //   setCheckinDate(searchData?.checkinDate || null);
+        //   setCheckoutDate(searchData?.checkoutDate || null);
+        //   console.log(response.hotel);
+        //   console.log(response.searchQuery);
+        // } else {
+        //   setError(response.error);
+        //   console.log("Error message===============", response.error);
+        // }
+        if (response?.error) {
+          setError(response.error); // Set error from the response
+          console.log("Error message===============", response.error);
+        } else if (response?.status?.success) {
+          // If no error and success status, process the data
           const hotel = response.hotel;
           const searchData = response.searchQuery;
 
@@ -175,16 +199,16 @@ export default function ActivitiesDetail4() {
 
           setCheckinDate(searchData?.checkinDate || null);
           setCheckoutDate(searchData?.checkoutDate || null);
+
           console.log(response.hotel);
           console.log(response.searchQuery);
-        } else {
-          setError(response.errors[0]?.message);
-          console.log(
-            "fgiusdhgsfgugsufguysgfygyfdygfugfudy",
-            response.errors[0]?.message
-          );
         }
+        // else {
+        //   setError("An unknown error occurred.");
+        //   console.log("Error: An unknown error occurred.");
+        // }
       } catch (error) {
+        setError("Error fetching hotel data: " + error.message);
         console.error("Error fetching hotel data", error);
       } finally {
         setLoading(false);
@@ -217,9 +241,24 @@ export default function ActivitiesDetail4() {
   if (error) {
     return (
       <Layout headerStyle={1} footerStyle={1}>
-        <div className="col-12 d-flex justify-center py-5">
-          <div className="text">{error}</div>
-        </div>
+        <main className="main">
+          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+            <h2 className="text-xl font-semibold mb-2">
+              Oops! Something went wrong.
+            </h2>
+            <p className="text-sm">{error}</p>
+            <div className="flex justify-center mt-4">
+              <Link href="/hotels" passHref>
+                <button
+                  // onClick={handleRetry}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                >
+                  Retry Hotel Load
+                </button>
+              </Link>
+            </div>
+          </div>
+        </main>
       </Layout>
     );
   }
