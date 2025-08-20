@@ -1,18 +1,26 @@
-import { Form, Select } from 'antd';
-import { useEffect } from 'react';
+import { Form, Select } from "antd";
+import { useEffect } from "react";
 const { Option } = Select;
 
-const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravellerInfos }) => {
-  if (!apiData || !apiData.tripInfos) {
-    return <div className="p-3 text-sm text-gray-500">Loading meal options...</div>;
-  }
-
-  const segmentinfo = apiData.tripInfos.flatMap((trip) => trip.sI || []);
-  const hasMeal = segmentinfo.some(seg => seg?.ssrInfo?.MEAL?.length > 0);
-
+const MealInfo = ({
+  numAdults,
+  numChild,
+  numInfants,
+  apiData,
+  form,
+  storedTravellerInfos,
+}) => {
   useEffect(() => {
-    if (!storedTravellerInfos || !Array.isArray(storedTravellerInfos) || !apiData) return;
-    console.log("storedTravellerInfosstoredTravellerInfos ==== ", storedTravellerInfos)
+    if (
+      !storedTravellerInfos ||
+      !Array.isArray(storedTravellerInfos) ||
+      !apiData
+    )
+      return;
+    console.log(
+      "storedTravellerInfosstoredTravellerInfos ==== ",
+      storedTravellerInfos
+    );
 
     const values = {};
     let segmentIndex = 0;
@@ -21,14 +29,16 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravel
 
       segmentinfo.forEach((segment) => {
         const segmentIdStr = segment?.ssrInfo?.MEAL;
-        console.log("segmentIdStr == ", segmentIdStr)
+        console.log("segmentIdStr == ", segmentIdStr);
 
         // Adults
         for (let index = 0; index < numAdults; index++) {
           const traveller = storedTravellerInfos[index];
 
           if (traveller?.ssrMealInfos?.[segmentIndex]?.code) {
-            values[`adultMeal-${segmentIndex}-${index}`] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
+            values[
+              `adultMeal-${segmentIndex}-${index}`
+            ] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
           }
         }
 
@@ -37,7 +47,9 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravel
           const traveller = storedTravellerInfos[numAdults + index];
 
           if (traveller?.ssrMealInfos?.[segmentIndex]?.code) {
-            values[`childMeal-${segmentIndex}-${index}`] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
+            values[
+              `childMeal-${segmentIndex}-${index}`
+            ] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
           }
         }
         segmentIndex++;
@@ -47,6 +59,15 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravel
     // Pre-fill the form
     form.setFieldsValue(values);
   }, [storedTravellerInfos, apiData, numAdults, numChild, form]);
+
+  if (!apiData || !apiData.tripInfos) {
+    return (
+      <div className="p-3 text-sm text-gray-500">Loading meal options...</div>
+    );
+  }
+
+  const segmentinfo = apiData.tripInfos.flatMap((trip) => trip.sI || []);
+  const hasMeal = segmentinfo.some((seg) => seg?.ssrInfo?.MEAL?.length > 0);
 
   return (
     <>
@@ -61,14 +82,30 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravel
 
                 {/* Adult Meals */}
                 {Array.from({ length: numAdults }).map((_, index) => (
-                  <div className="p-2 flex gap-4 items-center" key={`adult-${flightIndex}-${index}`}>
-                    <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
+                  <div
+                    className="p-2 flex gap-4 items-center"
+                    key={`adult-${flightIndex}-${index}`}
+                  >
+                    <span
+                      className="text-sm font-bold text-gray-900"
+                      style={{ width: "100px" }}
+                    >
                       ADULT {index + 1}
                     </span>
-                    <Form.Item name={`adultMeal-${flightIndex}-${index}`} style={{ marginBottom: 0, width: "500px" }}>
-                      <Select className="h-10 " placeholder="Add Meal" disabled={mealOptions.every((meal) => !meal.amount)}>
+                    <Form.Item
+                      name={`adultMeal-${flightIndex}-${index}`}
+                      style={{ marginBottom: 0, width: "500px" }}
+                    >
+                      <Select
+                        className="h-10 "
+                        placeholder="Add Meal"
+                        disabled={mealOptions.every((meal) => !meal.amount)}
+                      >
                         {mealOptions.map((meal) => (
-                          <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
+                          <Option
+                            key={meal.code}
+                            value={`${segment.id}|${meal.code}`}
+                          >
                             {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
@@ -79,14 +116,26 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravel
 
                 {/* Child Meals */}
                 {Array.from({ length: numChild }).map((_, index) => (
-                  <div className="p-2 flex gap-4 items-center" key={`child-${flightIndex}-${index}`}>
-                    <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
+                  <div
+                    className="p-2 flex gap-4 items-center"
+                    key={`child-${flightIndex}-${index}`}
+                  >
+                    <span
+                      className="text-sm font-bold text-gray-900"
+                      style={{ width: "100px" }}
+                    >
                       CHILD {index + 1}
                     </span>
-                    <Form.Item name={`childMeal-${flightIndex}-${index}`} style={{ marginBottom: 0, width: "500px" }}>
+                    <Form.Item
+                      name={`childMeal-${flightIndex}-${index}`}
+                      style={{ marginBottom: 0, width: "500px" }}
+                    >
                       <Select className="h-10 w-100" placeholder="Add Meal">
                         {mealOptions.map((meal) => (
-                          <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
+                          <Option
+                            key={meal.code}
+                            value={`${segment.id}|${meal.code}`}
+                          >
                             {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
@@ -117,7 +166,9 @@ const MealInfo = ({ numAdults, numChild, numInfants, apiData, form, storedTravel
           })}
         </Form>
       ) : (
-        <div className="p-3 text-sm text-gray-500">No meal options available for this flight.</div>
+        <div className="p-3 text-sm text-gray-500">
+          No meal options available for this flight.
+        </div>
       )}
     </>
   );
