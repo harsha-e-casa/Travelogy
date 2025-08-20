@@ -377,6 +377,15 @@ export default function BookTicket() {
     }
   }, [apiData]);
 
+  const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({})
+  useEffect(() => {
+    const storedTravellerInfo: any = getCookie('travellerInfo')
+    if (storedTravellerInfo !== undefined) {
+      console.log("iruku storedTravellerInfo == ",storedTravellerInfo)
+      setStoredTravellerInfos(JSON.parse(storedTravellerInfo))
+    }
+  }, [])
+
   const searchTickets = () => {
     let departureFrom = getCookie("gy_da");
     let arrivalTo = getCookie("gy_aa");
@@ -1868,6 +1877,7 @@ export default function BookTicket() {
                                     numChild={numChild}
                                     numInfants={numInfants}
                                     apiData={apiData}
+                                    storedTravellerInfos={storedTravellerInfos}
                                   />
                                 </p>
                               </div>
@@ -1886,6 +1896,7 @@ export default function BookTicket() {
                                     numChild={numChild}
                                     numInfants={numInfants}
                                     apiData={apiData}
+                                    storedTravellerInfos={storedTravellerInfos}
                                   />
                                 </p>
                               </div>
@@ -1903,6 +1914,7 @@ export default function BookTicket() {
                                       numAdults={numAdults}
                                       numChild={numChild}
                                       apiData={apiData}
+                                      storedTravellerInfos={storedTravellerInfos}
                                     />
                                   </p>
                                 </div>

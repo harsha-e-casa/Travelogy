@@ -3,7 +3,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { postData } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
 
-const SeatBooking = ({ numAdults, numChild, apiData }) => {
+const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => {
   const { getCookie, setCookie } = useContext(AppContext);
   const [flightSeat, setFlightSeat] = useState(null);
   const [selectedPassengerIndex, setSelectedPassengerIndex] = useState(0); // default: Adult - 1
@@ -25,6 +25,36 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
       document.body.style.overflow = "auto";
     };
   }, [flightSeat]);
+
+  const [prefilledSeatNo, setPrefilledSeatNo] = useState({});
+
+  useEffect(() => {
+    console.log("mame seat data ====", storedTravellerInfos)
+    if (!storedTravellerInfos || !Array.isArray(storedTravellerInfos)) return;
+
+    const seatMap = {};
+
+    // Counters for numbering
+    const counters = { ADULT: 0, CHILD: 0, INFANT: 0 };
+
+    storedTravellerInfos.forEach((traveller) => {
+      const type = traveller.pt.toLowerCase(); // adult, child, infant
+      counters[traveller.pt]++;
+
+      const label = `${type}-${counters[traveller.pt]}`;
+
+      if (traveller.ssrSeatInfos) {
+        traveller.ssrSeatInfos.forEach(({ key, code }) => {
+          if (!seatMap[key]) seatMap[key] = [];
+          seatMap[key].push({ [label]: code });
+        });
+      }
+    });
+
+    console.log("seatMapseatMap == ", seatMap);
+
+    setPrefilledSeatNo(seatMap);
+  }, [storedTravellerInfos, numAdults, numChild]);
 
   const handleViewSeat = async ({ id, seg }) => {
     // prevIdRef.current = id;
@@ -193,87 +223,6 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     console.log("Cookie updated:", passengerKey, updatedData);
   };
 
-  // const renderSeatMap = (sInfo) => {
-  //   console.log("renderSeatMaprenderSeatMaprenderSeatMap == ",sInfo);
-  //   const maxRow = Math.max(...sInfo.map((seat) => seat.seatPosition.row));
-  //   const maxCol = Math.max(...sInfo.map((seat) => seat.seatPosition.column));
-  //   // const currentSelectedSeat = seatSelections[selectedPassengerIndex]?.seatNo;
-  //   const currentSelectedSeat = seatSelections[flightSeat?.seg?.id]?.[selectedPassengerIndex]?.seatNo || null;
-
-  //   // Get seats already selected by other passengers
-  //   const alreadySelectedSeats = (seatSelections[flightSeat?.seg?.id] || [])
-  //     .filter((sel, idx) => idx !== selectedPassengerIndex)
-  //     .map((sel) => sel?.seatNo)
-  //     .filter(Boolean); // filter out undefined/null
-
-  //   const seatGrid = Array.from({ length: maxRow }, (_, rowIndex) => {
-  //     return (
-  //       <div key={rowIndex} className="flex gap-2 mb-2">
-  //         {Array.from({ length: maxCol }, (_, colIndex) => {
-  //           const seat = sInfo.find(
-  //             (s) =>
-  //               s.seatPosition.row === rowIndex + 1 &&
-  //               s.seatPosition.column === colIndex + 1
-  //           );
-
-  //           if (!seat) {
-  //             return <div key={colIndex} className="w-10 h-10" />;
-  //           }
-
-  //           const booked = seat.isBooked;
-  //           const aisle = seat.isAisle;
-  //           const legroom = seat.isLegroom;
-  //           const isSelected = seat.code === currentSelectedSeat;
-  //           const matchesFilter =
-  //             selectedAmounts.length === 0 ||
-  //             selectedAmounts.includes(seat.amount);
-  //           const isSeatTakenByOthers = alreadySelectedSeats.includes(
-  //             seat.code
-  //           );
-
-  //           const isSelectable =
-  //             !booked && matchesFilter && !isSeatTakenByOthers;
-
-  //           return (
-  //             <div
-  //               key={colIndex}
-  //               title={seat.code}
-  //               onClick={() => {
-  //                 if (isSelectable) {
-  //                   handleSeatSelect(seat.code, seat.amount || 0);
-  //                 }
-  //               }}
-  //               className={`w-10 h-10 flex items-center justify-center text-sm font-medium border transition-all
-  //               ${booked ? "bg-gray-400 text-white cursor-not-allowed" : ""}
-  //               ${isSelectable && isSelected ? "bg-green-500" : ""}
-  //               ${
-  //                 isSelectable && !isSelected
-  //                   ? "bg-green-200 hover:bg-green-300 cursor-pointer"
-  //                   : ""
-  //               }
-  //               ${
-  //                 !matchesFilter || isSeatTakenByOthers
-  //                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-  //                   : ""
-  //               }
-  //               ${aisle ? "border-blue-500" : ""}
-  //               ${legroom ? "rounded-full" : "rounded"}`}
-  //             >
-  //               {isSelected ? (
-  //                 <span className="text-white font-bold text-lg">✓</span>
-  //               ) : (
-  //                 seat.code
-  //               )}
-  //             </div>
-  //           );
-  //         })}
-  //       </div>
-  //     );
-  //   });
-
-  //   return <div className="p-4">{seatGrid}</div>;
-  // };
-
   // Function to dynamically generate color based on the amount value
   const getSeatColorClass = (amount, isSelected) => {
     const hue = amount % 360; // Ensure a value within 0-360 range
@@ -332,10 +281,10 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
             const seatStyle = booked
               ? "bg-gray-400 text-gray-300 cursor-not-allowed"
               : isSelectable && isSelected
-              ? "bg-green-500"
-              : isSelectable
-              ? `cursor-pointer text-white` // Apply dynamic color for selectable
-              : "bg-gray-300 text-gray-500 cursor-not-allowed";
+                ? "bg-green-500"
+                : isSelectable
+                  ? `cursor-pointer text-white` // Apply dynamic color for selectable
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed";
 
             return (
               <div
@@ -376,8 +325,10 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
         return (
           <div key={idx} className="row mt-20">
             <div className="box-content-tickets-detail">
-              {segments.map((seg) => {
+              {segments.map((seg, segIndex) => {
                 const dep = dayjs(seg.dt);
+                console.log("mame seg id ", seg.id)
+                console.log("mame seg id ", typeof seg.id)
                 return (
                   <React.Fragment key={seg.id}>
                     <div className="flex justify-between items-center p-4 border-b">
@@ -390,8 +341,9 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                       </div>
 
                       {/* change data based on seatNo use seg.id */}
-                      <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
+                      {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
                         {(seatNo?.[seg.id] || []).map((item, index) => {
+
                           const key = Object.keys(item)[0]; // like 'adult-1' or 'child-1'
                           const seatNo = item[key];
 
@@ -401,7 +353,60 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                             </div>
                           );
                         })}
+                      </div> */}
+
+                      <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
+                        {seatNo?.[seg.id] && seatNo[seg.id].length > 0 ? (
+                          seatNo[seg.id].map((item, index) => {
+                            const key = Object.keys(item)[0];
+                            const seatValue = item[key];
+                            return (
+                              <div key={index}>
+                                {key}: {seatValue}
+                              </div>
+                            );
+                          })
+                        ) : (() => {
+
+                          if (!prefilledSeatNo || typeof prefilledSeatNo !== "object") return null;
+
+                          const keysArray = Object.keys(prefilledSeatNo);
+
+                          if (!Array.isArray(prefilledSeatNo[keysArray[segIndex]])) return null;
+
+                          return prefilledSeatNo[keysArray[segIndex]].map((item, i) => {
+                            const key = Object.keys(item)[0];
+                            const seatNo = item[key];
+                            return (
+                              <div key={i}>
+                                {key}: {seatNo}
+                              </div>
+                            );
+                          });
+                        })()}
                       </div>
+
+                      {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
+                        {(() => {
+
+                          if (!prefilledSeatNo || typeof prefilledSeatNo !== "object") return null;
+
+                          const keysArray = Object.keys(prefilledSeatNo);
+
+                          if (!Array.isArray(prefilledSeatNo[keysArray[segIndex]])) return null;
+
+                          return prefilledSeatNo[keysArray[segIndex]].map((item, i) => {
+                            const key = Object.keys(item)[0];
+                            const seatNo = item[key];
+                            return (
+                              <div key={i}>
+                                {key}: {seatNo}
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div> */}
+
 
                       <button
                         onClick={() => handleViewSeat({ id: seg.id, seg })}
@@ -515,12 +520,11 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                           <td className="px-2 py-2 text-gray-700">
                             {seatSelections[flightSeat?.seg?.id]?.[index]
                               ?.cost ||
-                            seatSelections[flightSeat?.seg?.id]?.[index]
-                              ?.cost == "0"
-                              ? `₹ ${
-                                  seatSelections[flightSeat?.seg?.id]?.[index]
-                                    ?.cost
-                                }`
+                              seatSelections[flightSeat?.seg?.id]?.[index]
+                                ?.cost == "0"
+                              ? `₹ ${seatSelections[flightSeat?.seg?.id]?.[index]
+                                ?.cost
+                              }`
                               : "—"}
                           </td>
                         </tr>
@@ -552,14 +556,13 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                                 {seatSelections[flightSeat?.seg?.id]?.[
                                   passengerIndex
                                 ]?.cost ||
-                                seatSelections[flightSeat?.seg?.id]?.[
-                                  passengerIndex
-                                ]?.cost == "0"
-                                  ? `₹${
-                                      seatSelections[flightSeat?.seg?.id]?.[
-                                        passengerIndex
-                                      ].cost
-                                    }`
+                                  seatSelections[flightSeat?.seg?.id]?.[
+                                    passengerIndex
+                                  ]?.cost == "0"
+                                  ? `₹${seatSelections[flightSeat?.seg?.id]?.[
+                                    passengerIndex
+                                  ].cost
+                                  }`
                                   : "—"}
                               </td>
                             </tr>
