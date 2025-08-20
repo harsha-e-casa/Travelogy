@@ -1208,6 +1208,61 @@ export function Step3PersonalDocuments({
   const [selectedTCS, setSelectedTCS] = useState(null);
   const blockRoom = hotelReviewData?.conditions?.isBA;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  const [errors, setErrors] = useState({
+    samePAN: "",
+    tcs: "",
+    individual: {}, // {"r-g": "Invalid PAN"}
+    guardian: {}, // { [rIdx]: { first:"", last:"", pan:"" } }
+  });
+
+  const isValidPAN = (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test((v || "").trim());
+  const validateAll = () => {
+    const nextErrors = { samePAN: "", tcs: "", individual: {}, guardian: {} };
+    let hasError = false;
+
+    if (selectedTCS === null) {
+      nextErrors.tcs = "Please select a TCS declaration.";
+      hasError = true;
+    }
+
+    if (samePANForAll) {
+      if (!isValidPAN(samePANValue)) {
+        nextErrors.samePAN = "Enter a valid PAN (e.g., ABCDE1234F).";
+        hasError = true;
+      }
+    } else {
+      (hotelReviewData?.query?.roomInfo || []).forEach((room, rIdx) => {
+        if (guardianMode[rIdx]) {
+          const g = guardianPANs[rIdx] || {};
+          const gErr = { first: "", last: "", pan: "" };
+          if (!g.first?.trim()) {
+            gErr.first = "First name is required.";
+            hasError = true;
+          }
+          if (!g.last?.trim()) {
+            gErr.last = "Last name is required.";
+            hasError = true;
+          }
+          if (!isValidPAN(g.pan)) {
+            gErr.pan = "Enter a valid PAN.";
+            hasError = true;
+          }
+          nextErrors.guardian[rIdx] = gErr;
+        } else {
+          (room?.guests || []).forEach((_, gIdx) => {
+            const key = `${rIdx}-${gIdx}`;
+            if (!isValidPAN(individualPANs[key])) {
+              nextErrors.individual[key] = "Enter a valid PAN.";
+              hasError = true;
+            }
+          });
+        }
+      });
+    }
+
+    setErrors(nextErrors);
+    return !hasError;
+  };
 
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("personalDocumentsData"));
@@ -1293,66 +1348,82 @@ export function Step3PersonalDocuments({
 
     return true;
   };
-
+  // ✅ Proceed
   const handleProceed = () => {
-    if (samePANForAll && selectedTCS === null) {
-      message.warning("Please select a TCS declaration before proceeding.");
-      return false;
-    }
-    if (!isAllValid()) {
-      if (selectedTCS === null) {
-        message.warning("Please select a TCS declaration before proceeding.");
-      } else {
-        message.error("Please enter valid PAN details before proceeding.");
-      }
+    if (!validateAll()) {
+      message.error("Please fix the highlighted errors.");
       return;
     }
-    const finalData = {};
-    if (samePANForAll) {
-      finalData.mode = "same";
-      finalData.pan = samePANValue;
-    } else {
-      finalData.mode = "custom";
-      finalData.rooms = hotelReviewData.query.roomInfo.map((room, rIdx) => {
-        if (guardianMode[rIdx]) {
-          return {
-            useGuardian: true,
-            guardian: guardianPANs[rIdx],
-          };
-        } else {
-          return {
-            useGuardian: false,
-            guests: (room?.guests || []).map((_, gIdx) => ({
-              pan: individualPANs[`${rIdx}-${gIdx}`],
-            })),
-          };
-        }
-      });
-    }
-    finalData.tcsDeclaration = selectedTCS;
-    setFormData((prev) => ({ ...prev, panInfo: finalData }));
+
+    const finalPanInfo = samePANForAll
+      ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
+      : {
+          mode: "custom",
+          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                  useGuardian: true,
+                  guardian: {
+                    first: (guardianPANs[rIdx]?.first || "").trim(),
+                    last: (guardianPANs[rIdx]?.last || "").trim(),
+                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                  },
+                }
+              : {
+                  useGuardian: false,
+                  guests: (room?.guests || []).map((_, gIdx) => ({
+                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                  })),
+                }
+          ),
+        };
+
+    const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
+
+    setFormData({ ...formData, panInfo }); // single source of truth
     onNext();
   };
 
+  // ✅ Block (same panInfo, always wrapped)
   const handleBlock = async () => {
-    const updatedFormData = {
-      panInfo: samePANForAll
-        ? { mode: "same", pan: samePANValue } // Add the samePANValue if samePANForAll is selected
-        : formData?.panInfo, // Else retain the custom PAN data from formData
-    };
-
-    try {
-      const response = await hotelBooking({
-        formData,
-        updatedFormData, // Send updated formData with PAN details
-        hotelReviewData,
-        isBlock: true, // Indicating it's a block request
-      });
-      localStorage.removeItem("formData"); // Clean up localStorage
-      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`; // Redirect to the booking details page
-    } catch (error) {
-      console.error("Error during block:", error.message);
+    if (!validateAll()) {
+      message.error("Please fix the highlighted errors.");
+      return;
     }
+    const finalPanInfo = samePANForAll
+      ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
+      : {
+          mode: "custom",
+          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                  useGuardian: true,
+                  guardian: {
+                    first: (guardianPANs[rIdx]?.first || "").trim(),
+                    last: (guardianPANs[rIdx]?.last || "").trim(),
+                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                  },
+                }
+              : {
+                  useGuardian: false,
+                  guests: (room?.guests || []).map((_, gIdx) => ({
+                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                  })),
+                }
+          ),
+        };
+
+    const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
+
+    await hotelBooking({
+      formData: { ...formData, panInfo }, // ✅ ALWAYS { panInfo: ... }
+      hotelReviewData,
+      isBlock: true,
+    });
   };
 
   return (
@@ -1393,48 +1464,68 @@ export function Step3PersonalDocuments({
 
                 {guardianMode[rIdx] ? (
                   <div className="flex gap-2 mb-2">
+                    {/* First */}
                     <Input
-                      className="w-60 stepper_input"
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
+                      }`}
                       placeholder="First Name"
                       value={guardianPANs[rIdx]?.first || ""}
                       onChange={(e) =>
-                        setGuardianPANs((prev) => ({
-                          ...prev,
-                          [rIdx]: {
-                            ...prev[rIdx],
-                            first: e.target.value,
-                          },
+                        setGuardianPANs((p) => ({
+                          ...p,
+                          [rIdx]: { ...p[rIdx], first: e.target.value },
                         }))
                       }
                     />
+                    {errors.guardian?.[rIdx]?.first && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.guardian[rIdx].first}
+                      </p>
+                    )}
+
+                    {/* Last */}
                     <Input
-                      className="w-60 stepper_input"
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
+                      }`}
                       placeholder="Last Name"
                       value={guardianPANs[rIdx]?.last || ""}
                       onChange={(e) =>
-                        setGuardianPANs((prev) => ({
-                          ...prev,
-                          [rIdx]: {
-                            ...prev[rIdx],
-                            last: e.target.value,
-                          },
+                        setGuardianPANs((p) => ({
+                          ...p,
+                          [rIdx]: { ...p[rIdx], last: e.target.value },
                         }))
                       }
                     />
+                    {errors.guardian?.[rIdx]?.last && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.guardian[rIdx].last}
+                      </p>
+                    )}
+
+                    {/* PAN */}
                     <Input
-                      className="w-60 stepper_input"
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
+                      }`}
                       placeholder="PAN Number"
                       value={guardianPANs[rIdx]?.pan || ""}
                       onChange={(e) =>
-                        setGuardianPANs((prev) => ({
-                          ...prev,
+                        setGuardianPANs((p) => ({
+                          ...p,
                           [rIdx]: {
-                            ...prev[rIdx],
+                            ...p[rIdx],
                             pan: e.target.value.toUpperCase(),
                           },
                         }))
                       }
                     />
+                    {errors.guardian?.[rIdx]?.pan && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.guardian[rIdx].pan}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -1446,13 +1537,22 @@ export function Step3PersonalDocuments({
                           }`.trim()}
                         </p>
                         <Input
-                          className="w-60 stepper_input"
-                          placeholder="Enter PAN"
+                          className={`w-60 stepper_input ${
+                            errors.individual?.[`${rIdx}-${gIdx}`]
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          placeholder="Enter PAN1"
                           value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                           onChange={(e) =>
                             handlePANChange(rIdx, gIdx, e.target.value)
                           }
                         />
+                        {errors.individual?.[`${rIdx}-${gIdx}`] && (
+                          <p className="text-xs text-red-500 mt-1">
+                            {errors.individual[`${rIdx}-${gIdx}`]}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </>
@@ -1463,11 +1563,16 @@ export function Step3PersonalDocuments({
         ) : (
           <div className="flex gap-2 mb-4">
             <Input
-              className="w-60 stepper_input"
+              className={`w-60 stepper_input ${
+                errors.samePAN ? "border-red-500" : ""
+              }`}
               placeholder="Enter PAN"
               value={samePANValue}
               onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
             />
+            {errors.samePAN && (
+              <p className="text-xs text-red-500 mt-1">{errors.samePAN}</p>
+            )}
           </div>
         )}
 
@@ -1499,6 +1604,9 @@ export function Step3PersonalDocuments({
                 VALUE”) is less than the threshold of INR 7,00,000.
               </Radio>
             </Radio.Group>
+            {errors.tcs && (
+              <p className="text-xs text-red-500 mt-2">{errors.tcs}</p>
+            )}
           </div>
           <br />
           We hereby confirm that the above information is correct and validated
@@ -1516,7 +1624,7 @@ export function Step3PersonalDocuments({
               </button>
             )}
             <button
-              disabled={!isAllValid()}
+              // disabled={!isAllValid()}
               onClick={handleProceed}
               className="rounded-none book-now-btn"
             >
@@ -1585,7 +1693,9 @@ export function Step4Payment({
         return;
       }
       console.log("Booking success:", result);
-      onConfirmPayment(bookingId);
+      setTimeout(() => {
+        onConfirmPayment(bookingId);
+      }, 100000);
     } catch (error) {
       console.error("Booking failed:", error);
       setError(error?.message || "Something went wrong");

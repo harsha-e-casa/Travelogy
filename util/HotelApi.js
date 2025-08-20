@@ -189,6 +189,41 @@ export const useNationalities = () => {
 
 //   return response.data;
 // }
+function buildRoomTravellerInfo({ formData, roomInfo, panInfo }) {
+  const isSame = panInfo?.mode === "same";
+  const samePAN = (panInfo?.pan || "").toUpperCase().trim();
+
+  return (roomInfo || []).map((room, roomIndex) => {
+    const lead = formData?.guests?.[roomIndex] || null;
+    const extras = lead?.extraGuests || [];
+    const guests = lead ? [lead, ...extras] : [];
+
+    const roomEntry = (panInfo?.rooms || [])[roomIndex];
+    const useGuardian = roomEntry?.useGuardian;
+    const guardianPAN = (roomEntry?.guardian?.pan || "").toUpperCase().trim();
+
+    return {
+      travellerInfo: guests.map((guest, gIdx) => {
+        const isChild = (guest?.type || "").toLowerCase() === "children";
+        const base = {
+          fN: guest?.firstName || "TBA",
+          lN: guest?.lastName || "TBA",
+          ti: guest?.title || "Mr",
+          pt: isChild ? "CHILD" : "ADULT",
+          pNum: guest?.passportNumber || "",
+        };
+        if (isChild) return base;
+
+        let pan = "";
+        if (isSame) pan = samePAN;
+        else if (useGuardian) pan = guardianPAN;
+        else pan = (roomEntry?.guests?.[gIdx]?.pan || "").toUpperCase().trim();
+
+        return pan ? { ...base, pan } : base;
+      }),
+    };
+  });
+}
 export async function hotelBooking({
   formData,
   hotelReviewData,
@@ -196,163 +231,46 @@ export async function hotelBooking({
   isBlock = false,
 }) {
   try {
-    const bookingId = hotelReviewData?.bookingId;
     const roomInfo = hotelReviewData?.query?.roomInfo || [];
-    let panInfomain = updatedFormData;
-    if (panInfomain === undefined) {
-      panInfomain = formData;
-    }
-    const email = formData?.email;
-    const mobile = formData?.mobile;
-    const countryCode = formData?.countryCode || "+91";
-
     const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
 
-    const roomTravellerInfo = roomInfo.map((room, roomIndex) => {
-      const guests = [
-        ...(formData.guests?.[roomIndex]
-          ? [
-              formData.guests[roomIndex],
-              ...(formData.guests[roomIndex].extraGuests || []),
-            ]
-          : []),
-      ];
+    // ✅ Resolve panInfo from either place
+    const panInfo = (updatedFormData?.panInfo ?? formData?.panInfo) || {};
 
-      const travellers = guests.map((guest, guestIndex) => {
-        const isChild = guest?.type === "children";
-        let pNum = guest?.passportNumber || "";
-        const pan = panInfomain?.panInfo?.pan;
-
-        return {
-          fN: guest?.firstName || "TBA",
-          lN: guest?.lastName || "TBA",
-          ti: guest?.title || "Mr",
-          pt: isChild ? "CHILD" : "ADULT",
-          pNum,
-          ...(isChild ? {} : { pan }),
-        };
-      });
-
-      return {
-        travellerInfo: travellers,
-      };
+    const roomTravellerInfo = buildRoomTravellerInfo({
+      formData,
+      roomInfo,
+      panInfo,
     });
-    const ssr = roomInfo.map((room, roomIndex) => {
-      const guests = [
-        ...(formData.guests?.[roomIndex]
-          ? [
-              formData.guests[roomIndex],
-              ...(formData.guests[roomIndex].extraGuests || []),
-            ]
-          : []),
-      ];
-
-      const specialRequests = guests
-        .map((guest) => guest?.specialRequest)
-        .filter(Boolean);
-
-      const roomSpecialRequest =
-        specialRequests.length > 0
-          ? specialRequests.join(", ")
-          : formData.specialRequest;
-
-      return {
-        rm: roomSpecialRequest,
-      };
-    });
-    const hasSSRData = ssr.some((item) => item.rm && item.rm.trim() !== "");
 
     const payload = {
-      bookingId,
+      bookingId: hotelReviewData?.bookingId,
+      type: "HOTEL",
       roomTravellerInfo,
       deliveryInfo: {
-        emails: [email],
-        contacts: [mobile],
-        code: [countryCode],
+        emails: formData?.email ? [formData.email] : [],
+        contacts: formData?.mobile ? [formData.mobile] : [],
+        code: [formData?.countryCode || "+91"],
       },
-      ...(hasSSRData ? { ssr } : {}),
-
-      // ssr: roomInfo.map((room, roomIndex) => {
-      //   const guests = [
-      //     ...(formData.guests?.[roomIndex]
-      //       ? [
-      //           formData.guests[roomIndex],
-      //           ...(formData.guests[roomIndex].extraGuests || []),
-      //         ]
-      //       : []),
-      //   ];
-
-      //   const specialRequests = guests
-      //     .map((guest) => guest?.specialRequest)
-      //     .filter(Boolean);
-
-      //   const roomSpecialRequest =
-      //     specialRequests.length > 0
-      //       ? specialRequests.join(", ")
-      //       : formData.specialRequest;
-
-      //   return {
-      //     rm: roomSpecialRequest,
-      //   };
-      // }),
-      type: "HOTEL",
-      // paymentInfos: isBlock
-      //   ? []
-      //   : [
-      //       {
-      //         amount: totalAmount,
-      //       },
-      //     ],
+      ...(panInfo?.tcsDeclaration
+        ? { metadata: { tcsDeclaration: panInfo.tcsDeclaration } }
+        : {}),
       ...(isBlock
         ? {}
-        : {
-            paymentInfos: [
-              {
-                amount: totalAmount,
-              },
-            ],
-          }),
+        : { paymentInfos: totalAmount ? [{ amount: totalAmount }] : [] }),
     };
 
-    console.log("Final Payload to API:", JSON.stringify(payload, null, 2));
+    console.log("PAN MODE:", panInfo.mode);
+    console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
 
-    // const response = await axios.post(
-    //   "https://apitest.tripjack.com/oms/v1/hotel/book",
-    //   payload,
-    //   {
-    //     headers: {
-    //       apikey: API_KEY,
-    //     },
-    //   }
-    // );
-
-    let reqData = {
+    const res = await postData("travelogy/hotel/fetch-data", {
       action: "book",
       requestData: payload,
-    };
-    const response = await postData("travelogy/hotel/fetch-data", reqData);
-    console.log("hotel booking response == ", response);
-
-    // save booking data
-    const saveHotelBookingData = async () => {
-      let saveReq = {
-        type: "save",
-        phone: "9677179866",
-        booking_id: bookingId,
-        amount: totalAmount,
-        status: "",
-        booking_time: new Date().toISOString(),
-      };
-
-      const res = await postData("travelogy/hotel/save-booking-data", saveReq);
-      console.log("res == ", res);
-    };
-    // saveHotelBookingData();
-
-    return response;
-  } catch (error) {
-    console.error("Booking failed:", error.message);
-    throw error; // Handle any errors here
+    });
+    return res;
+  } catch (e) {
+    console.error(e);
+    throw e;
   }
 }
 export async function getBookingDetails(bookingId) {

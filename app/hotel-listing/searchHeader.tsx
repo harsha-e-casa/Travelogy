@@ -360,7 +360,7 @@ export default function HotelListingSearch() {
             className="hdt_header-item hotel_room"
             onClick={(e) => e.stopPropagation()}
           >
-            <label>Rooms & Guest</label>
+            <label>Rooms & Guest2</label>
             <button onClick={toggleTraveller}>
               <div className="input-field text-base font-bold">
                 {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{totalChildren}{" "}
