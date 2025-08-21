@@ -130,6 +130,11 @@ const EngineHeaderHotel = ({ active_border }) => {
       setDd_year(formattedDate.format("YYYY")); // Format as string
     }
   }, [datedep]);
+  useEffect(() => {
+    if (datedepr.isBefore(datedep, "day")) {
+      setDatedepr(datedep.add(2, "day"));
+    }
+  }, [datedep, datedepr]);
 
   useEffect(() => {
     if (datedepr && selectedPlan === "round-trip") {
@@ -308,6 +313,7 @@ const EngineHeaderHotel = ({ active_border }) => {
               <AppDateRage
                 openToDateRange={openToDateRange}
                 setDatedep={setDatedep}
+                valueDate={datedep}
               />
             ) : null}
           </div>
@@ -345,8 +351,11 @@ const EngineHeaderHotel = ({ active_border }) => {
 
               {openDateRageR ? (
                 <AppDateRage
+                  key={datedep.format("YYYY-MM-DD")}
                   openToDateRange={openToDateRangeR}
                   setDatedep={setDatedepr}
+                  minDate={datedep.add(0, "day")}
+                  valueDate={datedepr}
                 />
               ) : null}
             </div>

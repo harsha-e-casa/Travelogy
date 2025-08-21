@@ -721,6 +721,7 @@ export function Step2Review({
       message.warning(
         "Please accept the Terms & Conditions before proceeding."
       );
+      return;
     }
     try {
       const response = await hotelBooking({
