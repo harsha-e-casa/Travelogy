@@ -78,6 +78,15 @@ export default function HotelListing() {
   } catch (e) {
     console.warn("Invalid roomsData JSON", e);
   }
+  const onPickCheckin = (date: any) => {
+    const ci = dayjs(date).format("YYYY-MM-DD");
+    setCheckinDate(ci);
+
+    // If current checkout is not after new check-in, bump it to +1 day
+    if (!checkoutDate || !dayjs(checkoutDate).isAfter(dayjs(ci))) {
+      setCheckoutDate(dayjs(ci).add(1, "day").format("YYYY-MM-DD"));
+    }
+  };
   const [roomsData, setRoomsData] = useState(initialRoomsData);
   const [apiHotelData, setApiHotelData] = useState([]);
   const [apiCurrentPage, setApiCurrentPage] = useState(1);
@@ -545,8 +554,10 @@ export default function HotelListing() {
                 {openCheckin && (
                   <div onClick={(e) => e.stopPropagation()}>
                     <AppDateRage
+                      minDate={dayjs()} // today or later
                       openToDateRange={() => setOpenCheckin(false)}
-                      setDatedep={(date: any) => setCheckinDate(date)}
+                      setDatedep={onPickCheckin} // ✅ use helper
+                      valueDate={dayjs(checkinDate)}
                     />
                   </div>
                 )}
@@ -565,8 +576,16 @@ export default function HotelListing() {
                 {openCheckout && (
                   <div onClick={(e) => e.stopPropagation()}>
                     <AppDateRage
+                      minDate={
+                        checkinDate
+                          ? dayjs(checkinDate).add(0, "day")
+                          : dayjs().add(1, "day")
+                      }
                       openToDateRange={() => setOpenCheckout(false)}
-                      setDatedep={(date: any) => setCheckoutDate(date)}
+                      setDatedep={(date: any) =>
+                        setCheckoutDate(dayjs(date).format("YYYY-MM-DD"))
+                      }
+                      valueDate={dayjs(checkoutDate)}
                     />
                   </div>
                 )}
