@@ -22,7 +22,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 //   ...hotel,
 //   rating: parseFloat(hotel.rating as string),
 // }));
-import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppDateRange from "@/components/searchEngine/AppDateRange";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
 import HotelListingSearch from "./searchHeader";
@@ -34,7 +34,9 @@ type Nationality = {
   code: string;
   isoCode: string;
 };
-
+type AppDateRageProps = {
+  minDate?: dayjs.Dayjs | null | undefined;
+};
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -553,10 +555,10 @@ export default function HotelListing() {
 
                 {openCheckin && (
                   <div onClick={(e) => e.stopPropagation()}>
-                    <AppDateRage
-                      minDate={dayjs()} // today or later
+                    <AppDateRange
+                      minDate={dayjs() || null}
                       openToDateRange={() => setOpenCheckin(false)}
-                      setDatedep={onPickCheckin} // ✅ use helper
+                      setDatedep={onPickCheckin}
                       valueDate={dayjs(checkinDate)}
                     />
                   </div>
@@ -575,7 +577,7 @@ export default function HotelListing() {
                 </button>
                 {openCheckout && (
                   <div onClick={(e) => e.stopPropagation()}>
-                    <AppDateRage
+                    <AppDateRange
                       minDate={
                         checkinDate
                           ? dayjs(checkinDate).add(1, "day")
