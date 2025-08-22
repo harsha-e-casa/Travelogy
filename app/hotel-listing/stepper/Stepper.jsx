@@ -1,6 +1,6 @@
 "use client";
 import dayjs from "dayjs";
-import React, { useState, useMemo, useEffect, Suspense } from "react";
+import React, { useState, useRef, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
 import { Input, Checkbox, message, Radio } from "antd";
@@ -72,7 +72,7 @@ export function Step1TravellerDetails({
 
     return /^[A-HJ-NP-Z][0-9]{7}$/.test(passport);
   };
-
+  const errorRefs = useRef({});
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
   const filledStars = Math.round(rating);
@@ -171,6 +171,15 @@ export function Step1TravellerDetails({
     }
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      if (errorRefs.current[firstErrorField]) {
+        errorRefs.current[firstErrorField].scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
     return Object.keys(newErrors).length === 0;
   };
   // const handleInputChange = (e) => {
@@ -451,6 +460,7 @@ export function Step1TravellerDetails({
 
                   <div className="flex flex-col">
                     <input
+                      ref={(el) => (errorRefs.current.firstName = el)}
                       className="border p-2 rounded stepper_input"
                       placeholder="Lead Pax First Name"
                       value={formData.guests?.[roomIndex]?.firstName || ""}
@@ -471,6 +481,7 @@ export function Step1TravellerDetails({
 
                   <div className="flex flex-col">
                     <input
+                      ref={(el) => (errorRefs.current.lastName = el)}
                       className="border p-2 rounded stepper_input"
                       placeholder="Last Name"
                       value={formData.guests?.[roomIndex]?.lastName || ""}
@@ -492,6 +503,7 @@ export function Step1TravellerDetails({
                     <>
                       <div className="flex flex-col">
                         <input
+                          ref={(el) => (errorRefs.current.passportNumber = el)}
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Number"
                           value={passportNumber}
@@ -635,6 +647,7 @@ export function Step1TravellerDetails({
             <div className="flex flex-col">
               {" "}
               <input
+                ref={(el) => (errorRefs.current.mobile = el)}
                 type="text"
                 placeholder="Mobile No."
                 className="border p-2 rounded form-field stepper_input"
@@ -650,6 +663,7 @@ export function Step1TravellerDetails({
             <div className="flex flex-col">
               {" "}
               <input
+                ref={(el) => (errorRefs.current.email = el)}
                 type="email"
                 placeholder="Email ID"
                 className="border p-2 rounded form-field stepper_input"
@@ -1231,7 +1245,12 @@ export function Step3PersonalDocuments({
     guardian: {},
   });
 
-  const isValidPAN = (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test((v || "").trim());
+  const isValidPAN = (v) => panRegex.test((v || "").trim());
+
+  const samePANRef = useRef(null);
+  const guardianRefs = useRef({});
+  const individualRefs = useRef({});
+  const tcsErrorRef = useRef(null);
   const validateAll = () => {
     const nextErrors = { samePAN: "", tcs: "", individual: {}, guardian: {} };
     let hasError = false;
@@ -1279,7 +1298,35 @@ export function Step3PersonalDocuments({
     setErrors(nextErrors);
     return !hasError;
   };
+  useEffect(() => {
+    if (Object.values(errors).some((err) => err)) {
+      const firstErrorField = Object.entries(errors).find(
+        ([key, value]) => value
+      );
+      if (firstErrorField) {
+        const [field, errorMessage] = firstErrorField;
 
+        if (field === "samePAN" && samePANRef.current) {
+          samePANRef.current.focus();
+        } else if (
+          field.startsWith("guardian") &&
+          guardianRefs.current[field]
+        ) {
+          guardianRefs.current[field].focus();
+        } else if (
+          field.startsWith("individual") &&
+          individualRefs.current[field]
+        ) {
+          individualRefs.current[field].focus();
+        } else if (field === "tcs" && tcsErrorRef.current) {
+          tcsErrorRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }
+    }
+  }, [errors]);
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("personalDocumentsData"));
     if (savedData) {
@@ -1506,6 +1553,7 @@ export function Step3PersonalDocuments({
                           [rIdx]: { ...p[rIdx], first: e.target.value },
                         }))
                       }
+                      ref={(el) => (guardianRefs.current[`first-${rIdx}`] = el)}
                     />
                     {errors.guardian?.[rIdx]?.first && (
                       <p className="text-xs text-red-500 mt-1">
@@ -1526,6 +1574,7 @@ export function Step3PersonalDocuments({
                           [rIdx]: { ...p[rIdx], last: e.target.value },
                         }))
                       }
+                      ref={(el) => (guardianRefs.current[`last-${rIdx}`] = el)}
                     />
                     {errors.guardian?.[rIdx]?.last && (
                       <p className="text-xs text-red-500 mt-1">
@@ -1549,6 +1598,7 @@ export function Step3PersonalDocuments({
                           },
                         }))
                       }
+                      ref={(el) => (guardianRefs.current[`pan-${rIdx}`] = el)}
                     />
                     {errors.guardian?.[rIdx]?.pan && (
                       <p className="text-xs text-red-500 mt-1">
@@ -1576,6 +1626,9 @@ export function Step3PersonalDocuments({
                           onChange={(e) =>
                             handlePANChange(rIdx, gIdx, e.target.value)
                           }
+                          ref={(el) =>
+                            (individualRefs.current[`${rIdx}-${gIdx}`] = el)
+                          }
                         />
                         {errors.individual?.[`${rIdx}-${gIdx}`] && (
                           <p className="text-xs text-red-500 mt-1">
@@ -1598,6 +1651,7 @@ export function Step3PersonalDocuments({
               placeholder="Enter PAN"
               value={samePANValue}
               onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
+              ref={samePANRef}
             />
             {errors.samePAN && (
               <p className="text-xs text-red-500 mt-1">{errors.samePAN}</p>
@@ -1634,7 +1688,9 @@ export function Step3PersonalDocuments({
               </Radio>
             </Radio.Group>
             {errors.tcs && (
-              <p className="text-xs text-red-500 mt-2">{errors.tcs}</p>
+              <p className="text-xs text-red-500 mt-2" ref={tcsErrorRef}>
+                {errors.tcs}
+              </p>
             )}
           </div>
           <br />
