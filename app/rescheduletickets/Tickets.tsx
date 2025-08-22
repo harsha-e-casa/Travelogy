@@ -29,7 +29,7 @@ import { postDataTJ, postData } from "../../services/NetworkAdapter";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Skeleton } from "antd";
 import AppListSearch from "@/components/searchEngine/AppListSearch";
-import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppDateRangeFlight from "@/components/searchEngine/AppDateRangeFlight";
 import "./customeHeader_1.css";
 // import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -409,9 +409,11 @@ export default function Tickets() {
                 </div>
 
                 {openDateRage ? (
-                  <AppDateRage
+                  <AppDateRangeFlight
                     openToDateRange={openToDateRange}
-                    setDatedep={setDatedep}
+                    setDate={setDatedep}
+                    minDate={null}
+                    value={datedep}
                   />
                 ) : null}
               </div>
