@@ -337,6 +337,7 @@ export default function HotelListingSearch() {
                 <AppDateRage
                   openToDateRange={() => setOpenCheckin(false)}
                   setDatedep={(date: any) => setCheckinDate(date)}
+                  valueDate={checkinDate}
                 />
               </div>
             )}
@@ -351,6 +352,7 @@ export default function HotelListingSearch() {
                 <AppDateRage
                   openToDateRange={() => setOpenCheckout(false)}
                   setDatedep={(date: any) => setCheckoutDate(date)}
+                  valueDate={checkoutDate}
                 />
               </div>
             )}
