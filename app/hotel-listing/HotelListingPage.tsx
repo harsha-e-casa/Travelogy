@@ -22,7 +22,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 //   ...hotel,
 //   rating: parseFloat(hotel.rating as string),
 // }));
-import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppDateRange from "@/components/searchEngine/AppDateRange";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
 import HotelListingSearch from "./searchHeader";
@@ -34,7 +34,9 @@ type Nationality = {
   code: string;
   isoCode: string;
 };
-
+type AppDateRageProps = {
+  minDate?: dayjs.Dayjs | null | undefined;
+};
 export default function HotelListing() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -78,6 +80,15 @@ export default function HotelListing() {
   } catch (e) {
     console.warn("Invalid roomsData JSON", e);
   }
+  const onPickCheckin = (date: any) => {
+    const ci = dayjs(date).format("YYYY-MM-DD");
+    setCheckinDate(ci);
+
+    // If current checkout is not after new check-in, bump it to +1 day
+    if (!checkoutDate || !dayjs(checkoutDate).isAfter(dayjs(ci))) {
+      setCheckoutDate(dayjs(ci).add(1, "day").format("YYYY-MM-DD"));
+    }
+  };
   const [roomsData, setRoomsData] = useState(initialRoomsData);
   const [apiHotelData, setApiHotelData] = useState([]);
   const [apiCurrentPage, setApiCurrentPage] = useState(1);
@@ -544,9 +555,11 @@ export default function HotelListing() {
 
                 {openCheckin && (
                   <div onClick={(e) => e.stopPropagation()}>
-                    <AppDateRage
+                    <AppDateRange
+                      minDate={dayjs() || null}
                       openToDateRange={() => setOpenCheckin(false)}
-                      setDatedep={(date: any) => setCheckinDate(date)}
+                      setDatedep={onPickCheckin}
+                      valueDate={dayjs(checkinDate)}
                     />
                   </div>
                 )}
@@ -564,9 +577,17 @@ export default function HotelListing() {
                 </button>
                 {openCheckout && (
                   <div onClick={(e) => e.stopPropagation()}>
-                    <AppDateRage
+                    <AppDateRange
+                      minDate={
+                        checkinDate
+                          ? dayjs(checkinDate).add(1, "day")
+                          : dayjs().add(1, "day")
+                      }
                       openToDateRange={() => setOpenCheckout(false)}
-                      setDatedep={(date: any) => setCheckoutDate(date)}
+                      setDatedep={(date: any) =>
+                        setCheckoutDate(dayjs(date).format("YYYY-MM-DD"))
+                      }
+                      valueDate={dayjs(checkoutDate)}
                     />
                   </div>
                 )}

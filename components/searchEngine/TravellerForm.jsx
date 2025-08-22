@@ -465,12 +465,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
         return updated;
       }
 
-      const totalPassengers = newAdultCount + room.children;
-      if (totalPassengers > 10) {
-        message.warning("Maximum 10 passengers allowed per room.");
-        updated[roomIndex].warningShown = true;
-        return updated;
-      }
+      // const totalPassengers = newAdultCount + room.children;
+      // if (totalPassengers > 10) {
+      //   message.warning("Maximum 10 passengers allowed per room.");
+      //   updated[roomIndex].warningShown = true;
+      //   return updated;
+      // }
 
       updated[roomIndex] = {
         ...room,
@@ -499,12 +499,12 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
         message.warning("Maximum 25 passengers allowed per hotel.");
         return updated;
       }
-      const totalPassengers = room.adults + newChildCount;
-      if (totalPassengers > 10) {
-        message.warning("Maximum 10 passengers allowed per room.");
-        updated[roomIndex].warningShown = true;
-        return updated;
-      }
+      // const totalPassengers = room.adults + newChildCount;
+      // if (totalPassengers > 10) {
+      //   message.warning("Maximum 10 passengers allowed per room.");
+      //   updated[roomIndex].warningShown = true;
+      //   return updated;
+      // }
 
       // const newChildAges =
       //   delta > 0 ? [...room.childAges, "1"] : room.childAges.slice(0, -1);

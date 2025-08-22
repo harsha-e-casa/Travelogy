@@ -1,13 +1,12 @@
 "use client";
 import dayjs from "dayjs";
-import React, { useState, useMemo, useEffect, Suspense } from "react";
+import React, { useState, useRef, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
 import { Input, Checkbox, message, Radio } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { postData } from "@/services/NetworkAdapter";
-
 export function HotelReviewComponent({
   setHotelReviewData,
   setLoading,
@@ -73,7 +72,7 @@ export function Step1TravellerDetails({
 
     return /^[A-HJ-NP-Z][0-9]{7}$/.test(passport);
   };
-
+  const errorRefs = useRef({});
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
   const filledStars = Math.round(rating);
@@ -172,6 +171,15 @@ export function Step1TravellerDetails({
     }
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      if (errorRefs.current[firstErrorField]) {
+        errorRefs.current[firstErrorField].scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
     return Object.keys(newErrors).length === 0;
   };
   // const handleInputChange = (e) => {
@@ -452,6 +460,7 @@ export function Step1TravellerDetails({
 
                   <div className="flex flex-col">
                     <input
+                      ref={(el) => (errorRefs.current.firstName = el)}
                       className="border p-2 rounded stepper_input"
                       placeholder="Lead Pax First Name"
                       value={formData.guests?.[roomIndex]?.firstName || ""}
@@ -472,6 +481,7 @@ export function Step1TravellerDetails({
 
                   <div className="flex flex-col">
                     <input
+                      ref={(el) => (errorRefs.current.lastName = el)}
                       className="border p-2 rounded stepper_input"
                       placeholder="Last Name"
                       value={formData.guests?.[roomIndex]?.lastName || ""}
@@ -493,6 +503,7 @@ export function Step1TravellerDetails({
                     <>
                       <div className="flex flex-col">
                         <input
+                          ref={(el) => (errorRefs.current.passportNumber = el)}
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Number"
                           value={passportNumber}
@@ -636,6 +647,7 @@ export function Step1TravellerDetails({
             <div className="flex flex-col">
               {" "}
               <input
+                ref={(el) => (errorRefs.current.mobile = el)}
                 type="text"
                 placeholder="Mobile No."
                 className="border p-2 rounded form-field stepper_input"
@@ -651,6 +663,7 @@ export function Step1TravellerDetails({
             <div className="flex flex-col">
               {" "}
               <input
+                ref={(el) => (errorRefs.current.email = el)}
                 type="email"
                 placeholder="Email ID"
                 className="border p-2 rounded form-field stepper_input"
@@ -716,23 +729,40 @@ export function Step2Review({
       onNext();
     }
   };
+  const [loading, setLoading] = useState(false);
   const handleBlock = async () => {
     if (!accepted) {
       message.warning(
         "Please accept the Terms & Conditions before proceeding."
       );
+      return;
     }
+
     try {
+      setLoading(true);
       const response = await hotelBooking({
         formData,
         hotelReviewData,
         isBlock: true,
       });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
       window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
       console.error("Error during block:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
+  if (loading)
+    return (
+      <div className="col-12 d-flex justify-center py-5">
+        <div className="loader"></div>
+      </div>
+    );
   let freeCancellationDate = null;
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
@@ -1208,7 +1238,95 @@ export function Step3PersonalDocuments({
   const [selectedTCS, setSelectedTCS] = useState(null);
   const blockRoom = hotelReviewData?.conditions?.isBA;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  const [errors, setErrors] = useState({
+    samePAN: "",
+    tcs: "",
+    individual: {},
+    guardian: {},
+  });
 
+  const isValidPAN = (v) => panRegex.test((v || "").trim());
+
+  const samePANRef = useRef(null);
+  const guardianRefs = useRef({});
+  const individualRefs = useRef({});
+  const tcsErrorRef = useRef(null);
+  const validateAll = () => {
+    const nextErrors = { samePAN: "", tcs: "", individual: {}, guardian: {} };
+    let hasError = false;
+
+    if (selectedTCS === null) {
+      nextErrors.tcs = "Please select a TCS declaration.";
+      hasError = true;
+    }
+
+    if (samePANForAll) {
+      if (!isValidPAN(samePANValue)) {
+        nextErrors.samePAN = "Enter a valid PAN (e.g., ABCDE1234F).";
+        hasError = true;
+      }
+    } else {
+      (hotelReviewData?.query?.roomInfo || []).forEach((room, rIdx) => {
+        if (guardianMode[rIdx]) {
+          const g = guardianPANs[rIdx] || {};
+          const gErr = { first: "", last: "", pan: "" };
+          if (!g.first?.trim()) {
+            gErr.first = "First name is required.";
+            hasError = true;
+          }
+          if (!g.last?.trim()) {
+            gErr.last = "Last name is required.";
+            hasError = true;
+          }
+          if (!isValidPAN(g.pan)) {
+            gErr.pan = "Enter a valid PAN.";
+            hasError = true;
+          }
+          nextErrors.guardian[rIdx] = gErr;
+        } else {
+          (room?.guests || []).forEach((_, gIdx) => {
+            const key = `${rIdx}-${gIdx}`;
+            if (!isValidPAN(individualPANs[key])) {
+              nextErrors.individual[key] = "Enter a valid PAN.";
+              hasError = true;
+            }
+          });
+        }
+      });
+    }
+
+    setErrors(nextErrors);
+    return !hasError;
+  };
+  useEffect(() => {
+    if (Object.values(errors).some((err) => err)) {
+      const firstErrorField = Object.entries(errors).find(
+        ([key, value]) => value
+      );
+      if (firstErrorField) {
+        const [field, errorMessage] = firstErrorField;
+
+        if (field === "samePAN" && samePANRef.current) {
+          samePANRef.current.focus();
+        } else if (
+          field.startsWith("guardian") &&
+          guardianRefs.current[field]
+        ) {
+          guardianRefs.current[field].focus();
+        } else if (
+          field.startsWith("individual") &&
+          individualRefs.current[field]
+        ) {
+          individualRefs.current[field].focus();
+        } else if (field === "tcs" && tcsErrorRef.current) {
+          tcsErrorRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }
+    }
+  }, [errors]);
   useEffect(() => {
     const savedData = JSON.parse(localStorage.getItem("personalDocumentsData"));
     if (savedData) {
@@ -1293,68 +1411,97 @@ export function Step3PersonalDocuments({
 
     return true;
   };
-
   const handleProceed = () => {
-    if (samePANForAll && selectedTCS === null) {
-      message.warning("Please select a TCS declaration before proceeding.");
-      return false;
-    }
-    if (!isAllValid()) {
-      if (selectedTCS === null) {
-        message.warning("Please select a TCS declaration before proceeding.");
-      } else {
-        message.error("Please enter valid PAN details before proceeding.");
-      }
+    if (!validateAll()) {
+      message.error("Please fix the highlighted errors.");
       return;
     }
-    const finalData = {};
-    if (samePANForAll) {
-      finalData.mode = "same";
-      finalData.pan = samePANValue;
-    } else {
-      finalData.mode = "custom";
-      finalData.rooms = hotelReviewData.query.roomInfo.map((room, rIdx) => {
-        if (guardianMode[rIdx]) {
-          return {
-            useGuardian: true,
-            guardian: guardianPANs[rIdx],
-          };
-        } else {
-          return {
-            useGuardian: false,
-            guests: (room?.guests || []).map((_, gIdx) => ({
-              pan: individualPANs[`${rIdx}-${gIdx}`],
-            })),
-          };
-        }
-      });
-    }
-    finalData.tcsDeclaration = selectedTCS;
-    setFormData((prev) => ({ ...prev, panInfo: finalData }));
+
+    const finalPanInfo = samePANForAll
+      ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
+      : {
+          mode: "custom",
+          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                  useGuardian: true,
+                  guardian: {
+                    first: (guardianPANs[rIdx]?.first || "").trim(),
+                    last: (guardianPANs[rIdx]?.last || "").trim(),
+                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                  },
+                }
+              : {
+                  useGuardian: false,
+                  guests: (room?.guests || []).map((_, gIdx) => ({
+                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                  })),
+                }
+          ),
+        };
+
+    const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
+
+    setFormData({ ...formData, panInfo });
     onNext();
   };
 
+  const [loading, setLoading] = useState(false);
   const handleBlock = async () => {
-    const updatedFormData = {
-      panInfo: samePANForAll
-        ? { mode: "same", pan: samePANValue } // Add the samePANValue if samePANForAll is selected
-        : formData?.panInfo, // Else retain the custom PAN data from formData
-    };
+    if (!validateAll()) {
+      message.error("Please fix the highlighted errors.");
+      return;
+    }
+    setLoading(true);
+    const finalPanInfo = samePANForAll
+      ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
+      : {
+          mode: "custom",
+          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                  useGuardian: true,
+                  guardian: {
+                    first: (guardianPANs[rIdx]?.first || "").trim(),
+                    last: (guardianPANs[rIdx]?.last || "").trim(),
+                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                  },
+                }
+              : {
+                  useGuardian: false,
+                  guests: (room?.guests || []).map((_, gIdx) => ({
+                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                  })),
+                }
+          ),
+        };
+
+    const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
     try {
-      const response = await hotelBooking({
-        formData,
-        updatedFormData, // Send updated formData with PAN details
+      await hotelBooking({
+        formData: { ...formData, panInfo },
         hotelReviewData,
-        isBlock: true, // Indicating it's a block request
+        isBlock: true,
       });
-      localStorage.removeItem("formData"); // Clean up localStorage
-      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`; // Redirect to the booking details page
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
-      console.error("Error during block:", error.message);
+      message.error("There was an error with the booking process.");
+    } finally {
+      setLoading(false);
     }
   };
-
+  if (loading) {
+    return (
+      <div className="col-12 d-flex justify-center py-5">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div>
@@ -1393,48 +1540,71 @@ export function Step3PersonalDocuments({
 
                 {guardianMode[rIdx] ? (
                   <div className="flex gap-2 mb-2">
+                    {/* First */}
                     <Input
-                      className="w-60 stepper_input"
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
+                      }`}
                       placeholder="First Name"
                       value={guardianPANs[rIdx]?.first || ""}
                       onChange={(e) =>
-                        setGuardianPANs((prev) => ({
-                          ...prev,
-                          [rIdx]: {
-                            ...prev[rIdx],
-                            first: e.target.value,
-                          },
+                        setGuardianPANs((p) => ({
+                          ...p,
+                          [rIdx]: { ...p[rIdx], first: e.target.value },
                         }))
                       }
+                      ref={(el) => (guardianRefs.current[`first-${rIdx}`] = el)}
                     />
+                    {errors.guardian?.[rIdx]?.first && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.guardian[rIdx].first}
+                      </p>
+                    )}
+
+                    {/* Last */}
                     <Input
-                      className="w-60 stepper_input"
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
+                      }`}
                       placeholder="Last Name"
                       value={guardianPANs[rIdx]?.last || ""}
                       onChange={(e) =>
-                        setGuardianPANs((prev) => ({
-                          ...prev,
-                          [rIdx]: {
-                            ...prev[rIdx],
-                            last: e.target.value,
-                          },
+                        setGuardianPANs((p) => ({
+                          ...p,
+                          [rIdx]: { ...p[rIdx], last: e.target.value },
                         }))
                       }
+                      ref={(el) => (guardianRefs.current[`last-${rIdx}`] = el)}
                     />
+                    {errors.guardian?.[rIdx]?.last && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.guardian[rIdx].last}
+                      </p>
+                    )}
+
+                    {/* PAN */}
                     <Input
-                      className="w-60 stepper_input"
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
+                      }`}
                       placeholder="PAN Number"
                       value={guardianPANs[rIdx]?.pan || ""}
                       onChange={(e) =>
-                        setGuardianPANs((prev) => ({
-                          ...prev,
+                        setGuardianPANs((p) => ({
+                          ...p,
                           [rIdx]: {
-                            ...prev[rIdx],
+                            ...p[rIdx],
                             pan: e.target.value.toUpperCase(),
                           },
                         }))
                       }
+                      ref={(el) => (guardianRefs.current[`pan-${rIdx}`] = el)}
                     />
+                    {errors.guardian?.[rIdx]?.pan && (
+                      <p className="text-xs text-red-500 mt-1">
+                        {errors.guardian[rIdx].pan}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <>
@@ -1446,13 +1616,25 @@ export function Step3PersonalDocuments({
                           }`.trim()}
                         </p>
                         <Input
-                          className="w-60 stepper_input"
-                          placeholder="Enter PAN"
+                          className={`w-60 stepper_input ${
+                            errors.individual?.[`${rIdx}-${gIdx}`]
+                              ? "border-red-500"
+                              : ""
+                          }`}
+                          placeholder="Enter PAN1"
                           value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                           onChange={(e) =>
                             handlePANChange(rIdx, gIdx, e.target.value)
                           }
+                          ref={(el) =>
+                            (individualRefs.current[`${rIdx}-${gIdx}`] = el)
+                          }
                         />
+                        {errors.individual?.[`${rIdx}-${gIdx}`] && (
+                          <p className="text-xs text-red-500 mt-1">
+                            {errors.individual[`${rIdx}-${gIdx}`]}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </>
@@ -1463,11 +1645,17 @@ export function Step3PersonalDocuments({
         ) : (
           <div className="flex gap-2 mb-4">
             <Input
-              className="w-60 stepper_input"
+              className={`w-60 stepper_input ${
+                errors.samePAN ? "border-red-500" : ""
+              }`}
               placeholder="Enter PAN"
               value={samePANValue}
               onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
+              ref={samePANRef}
             />
+            {errors.samePAN && (
+              <p className="text-xs text-red-500 mt-1">{errors.samePAN}</p>
+            )}
           </div>
         )}
 
@@ -1499,6 +1687,11 @@ export function Step3PersonalDocuments({
                 VALUE”) is less than the threshold of INR 7,00,000.
               </Radio>
             </Radio.Group>
+            {errors.tcs && (
+              <p className="text-xs text-red-500 mt-2" ref={tcsErrorRef}>
+                {errors.tcs}
+              </p>
+            )}
           </div>
           <br />
           We hereby confirm that the above information is correct and validated
@@ -1516,7 +1709,7 @@ export function Step3PersonalDocuments({
               </button>
             )}
             <button
-              disabled={!isAllValid()}
+              // disabled={!isAllValid()}
               onClick={handleProceed}
               className="rounded-none book-now-btn"
             >
@@ -1535,11 +1728,13 @@ export function Step4Payment({
   amount,
   setError,
   bookingId,
+  setCurrentStep,
   onConfirmPayment,
 }) {
   const [showModal, setShowModal] = useState(false);
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
-
+  const [globalToast, setGlobalToast] = useState(null); // for a top toast/banner
+  const [panError, setPanError] = useState(null);
   const handlePayClick = () => {
     setShowModal(true);
   };
@@ -1548,21 +1743,60 @@ export function Step4Payment({
     setShowModal(false);
   };
 
+  // const handleConfirm = async () => {
+  //   setShowModal(false);
+  //   try {
+  //     const result = await hotelBooking({ formData, hotelReviewData });
+  //     if (result?.error) {
+  //       console.error("Booking error:", result.error);
+  //       setError(result.error);
+  //       return;
+  //     }
+  //     console.log("Booking success:", result);
+  //     onConfirmPayment(bookingId);
+  //     // setTimeout(() => {
+  //     //   onConfirmPayment(bookingId);
+  //     // }, 100000);
+  //   } catch (error) {
+  //     console.error("Booking failed:", error);
+  //     setError(error.message || "Something went wrong");
+  //   }
+  // };
+
+  const [loading, setLoading] = useState(false);
+
   const handleConfirm = async () => {
     setShowModal(false);
+    setLoading(true);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
-      console.log("Result=============================", result.error);
-      setError(result?.error);
-      // onConfirmPayment(bookingId);
-      setTimeout(() => {
-        onConfirmPayment(bookingId);
-      }, 100000);
+      setLoading(false);
+      if (result?.error) {
+        console.error("Booking error:", result.error);
+
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error);
+
+        setError(errorMessage);
+        return;
+      }
+      console.log("Booking success:", result);
+      onConfirmPayment(bookingId);
     } catch (error) {
+      setLoading(false);
       console.error("Booking failed:", error);
-      alert("Booking failed. Please try again.");
+      setError(error?.message || "Something went wrong");
     }
   };
+  if (loading) {
+    return (
+      <div className="col-12 d-flex justify-center py-5">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-5xl mx-auto gap-6 p-6 text-sm relative">
       <div className="p-4">

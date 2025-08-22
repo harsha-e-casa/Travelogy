@@ -337,6 +337,7 @@ export default function HotelListingSearch() {
                 <AppDateRage
                   openToDateRange={() => setOpenCheckin(false)}
                   setDatedep={(date: any) => setCheckinDate(date)}
+                  valueDate={checkinDate}
                 />
               </div>
             )}
@@ -351,6 +352,7 @@ export default function HotelListingSearch() {
                 <AppDateRage
                   openToDateRange={() => setOpenCheckout(false)}
                   setDatedep={(date: any) => setCheckoutDate(date)}
+                  valueDate={checkoutDate}
                 />
               </div>
             )}
@@ -360,7 +362,7 @@ export default function HotelListingSearch() {
             className="hdt_header-item hotel_room"
             onClick={(e) => e.stopPropagation()}
           >
-            <label>Rooms & Guest</label>
+            <label>Rooms & Guest2</label>
             <button onClick={toggleTraveller}>
               <div className="input-field text-base font-bold">
                 {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{totalChildren}{" "}
