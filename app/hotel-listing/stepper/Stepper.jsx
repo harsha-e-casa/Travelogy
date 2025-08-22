@@ -7,7 +7,6 @@ import { Input, Checkbox, message, Radio } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { postData } from "@/services/NetworkAdapter";
-
 export function HotelReviewComponent({
   setHotelReviewData,
   setLoading,
@@ -716,6 +715,7 @@ export function Step2Review({
       onNext();
     }
   };
+  const [loading, setLoading] = useState(false);
   const handleBlock = async () => {
     if (!accepted) {
       message.warning(
@@ -723,17 +723,32 @@ export function Step2Review({
       );
       return;
     }
+
     try {
+      setLoading(true);
       const response = await hotelBooking({
         formData,
         hotelReviewData,
         isBlock: true,
       });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
       window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
       console.error("Error during block:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
+  if (loading)
+    return (
+      <div className="col-12 d-flex justify-center py-5">
+        <div className="loader"></div>
+      </div>
+    );
   let freeCancellationDate = null;
   const policies = hotelReviewData?.hInfo?.ops?.[0]?.cnp?.pd;
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
@@ -1212,8 +1227,8 @@ export function Step3PersonalDocuments({
   const [errors, setErrors] = useState({
     samePAN: "",
     tcs: "",
-    individual: {}, // {"r-g": "Invalid PAN"}
-    guardian: {}, // { [rIdx]: { first:"", last:"", pan:"" } }
+    individual: {},
+    guardian: {},
   });
 
   const isValidPAN = (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test((v || "").trim());
@@ -1349,7 +1364,6 @@ export function Step3PersonalDocuments({
 
     return true;
   };
-  // ✅ Proceed
   const handleProceed = () => {
     if (!validateAll()) {
       message.error("Please fix the highlighted errors.");
@@ -1383,16 +1397,17 @@ export function Step3PersonalDocuments({
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
-    setFormData({ ...formData, panInfo }); // single source of truth
+    setFormData({ ...formData, panInfo });
     onNext();
   };
 
-  // ✅ Block (same panInfo, always wrapped)
+  const [loading, setLoading] = useState(false);
   const handleBlock = async () => {
     if (!validateAll()) {
       message.error("Please fix the highlighted errors.");
       return;
     }
+    setLoading(true);
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
@@ -1420,13 +1435,26 @@ export function Step3PersonalDocuments({
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
-    await hotelBooking({
-      formData: { ...formData, panInfo }, // ✅ ALWAYS { panInfo: ... }
-      hotelReviewData,
-      isBlock: true,
-    });
+    try {
+      await hotelBooking({
+        formData: { ...formData, panInfo },
+        hotelReviewData,
+        isBlock: true,
+      });
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+    } catch (error) {
+      message.error("There was an error with the booking process.");
+    } finally {
+      setLoading(false);
+    }
   };
-
+  if (loading) {
+    return (
+      <div className="col-12 d-flex justify-center py-5">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div>
@@ -1678,10 +1706,15 @@ export function Step4Payment({
   //     setError(error.message || "Something went wrong");
   //   }
   // };
+
+  const [loading, setLoading] = useState(false);
+
   const handleConfirm = async () => {
     setShowModal(false);
+    setLoading(true);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
+      setLoading(false);
       if (result?.error) {
         console.error("Booking error:", result.error);
 
@@ -1694,15 +1727,20 @@ export function Step4Payment({
         return;
       }
       console.log("Booking success:", result);
-      setTimeout(() => {
-        onConfirmPayment(bookingId);
-      }, 100000);
+      onConfirmPayment(bookingId);
     } catch (error) {
+      setLoading(false);
       console.error("Booking failed:", error);
       setError(error?.message || "Something went wrong");
     }
   };
-
+  if (loading) {
+    return (
+      <div className="col-12 d-flex justify-center py-5">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-5xl mx-auto gap-6 p-6 text-sm relative">
       <div className="p-4">

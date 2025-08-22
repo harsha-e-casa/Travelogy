@@ -578,7 +578,7 @@ export default function HotelListing() {
                     <AppDateRage
                       minDate={
                         checkinDate
-                          ? dayjs(checkinDate).add(0, "day")
+                          ? dayjs(checkinDate).add(1, "day")
                           : dayjs().add(1, "day")
                       }
                       openToDateRange={() => setOpenCheckout(false)}
