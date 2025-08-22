@@ -354,7 +354,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                   key={datedep.format("YYYY-MM-DD")}
                   openToDateRange={openToDateRangeR}
                   setDatedep={setDatedepr}
-                  minDate={datedep.add(0, "day")}
+                  minDate={datedep.add(1, "day")}
                   valueDate={datedepr}
                 />
               ) : null}
