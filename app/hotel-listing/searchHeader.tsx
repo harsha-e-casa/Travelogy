@@ -1,14 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import ByAmenities from "@/components/Filter/ByAmenities";
+import ByHotelType from "@/components/Filter/ByHotelType";
+import ByLocation from "@/components/Filter/ByLocation";
+import ByPagination from "@/components/Filter/ByPagination";
+import ByPrice from "@/components/Filter/ByPrice";
+import ByRating from "@/components/Filter/ByRating";
+import ByRoom from "@/components/Filter/ByRoom";
+import SortHotelsFilter from "@/components/elements/SortHotelsFilter";
+import HotelCard1 from "@/components/elements/hotelcard/HotelCard1";
+import Layout from "@/components/layout/Layout";
+// import rawHotelsData from "@/util/hotels.json";
+import useHotelFilter from "@/util/useHotelFilter";
 import "../tickets/customeHeader_1.css";
 import { useSearchParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
+import Link from "next/link";
 import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
-import AppDateRage from "@/components/searchEngine/AppDateRage";
+// const hotelsData = rawHotelsData.map((hotel) => ({
+//   ...hotel,
+//   rating: parseFloat(hotel.rating as string),
+// }));
+import AppDateRange from "@/components/searchEngine/AppDateRange";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
-import { postData } from "@/services/NetworkAdapter";
+
 type Nationality = {
   countryName: string;
   name: string;
@@ -17,7 +34,9 @@ type Nationality = {
   code: string;
   isoCode: string;
 };
-
+type AppDateRageProps = {
+  minDate?: dayjs.Dayjs | null | undefined;
+};
 export default function HotelListingSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,14 +47,21 @@ export default function HotelListingSearch() {
   };
   const city = searchParams.get("city");
   const currency = searchParams.get("currency");
+  const rooms = Number(searchParams.get("rooms"));
+  const adults = Number(searchParams.get("adults"));
+  const children = Number(searchParams.get("children"));
+
   const childAgesRaw = searchParams.get("childAges");
+
   let parsedChildAges: number[][] = [];
+
   try {
     parsedChildAges = childAgesRaw ? JSON.parse(childAgesRaw) : [];
   } catch (e) {
     console.warn("Invalid childAges in query params", e);
   }
 
+  const [openDateRage, setOpenDateRage] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
   const [checkinDate, setCheckinDate] = useState<string>(
@@ -54,8 +80,40 @@ export default function HotelListingSearch() {
   } catch (e) {
     console.warn("Invalid roomsData JSON", e);
   }
+  const onPickCheckin = (date: any) => {
+    const ci = dayjs(date).format("YYYY-MM-DD");
+    setCheckinDate(ci);
+
+    // If current checkout is not after new check-in, bump it to +1 day
+    if (!checkoutDate || !dayjs(checkoutDate).isAfter(dayjs(ci))) {
+      setCheckoutDate(dayjs(ci).add(1, "day").format("YYYY-MM-DD"));
+    }
+  };
   const [roomsData, setRoomsData] = useState(initialRoomsData);
   const [apiHotelData, setApiHotelData] = useState([]);
+  const [apiCurrentPage, setApiCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+  const apiTotalPages = Math.ceil(apiHotelData.length / itemsPerPage);
+  const paginatedApiHotels = apiHotelData.slice(
+    (apiCurrentPage - 1) * itemsPerPage,
+    apiCurrentPage * itemsPerPage
+  );
+  const handleApiPageChange = (pageNumber: any) => {
+    setApiCurrentPage(pageNumber);
+  };
+
+  const handleApiPreviousPage = () => {
+    if (apiCurrentPage > 1) {
+      setApiCurrentPage(apiCurrentPage - 1);
+    }
+  };
+
+  const handleApiNextPage = () => {
+    if (apiCurrentPage < apiTotalPages) {
+      setApiCurrentPage(apiCurrentPage + 1);
+    }
+  };
+
   const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
   const childAges = roomsData.flatMap((r) => r.childAges);
@@ -69,6 +127,15 @@ export default function HotelListingSearch() {
   const [nationalityId, setNationalityId] = useState<string | null>(
     searchParams.get("nationality") || null
   );
+  // useEffect(() => {
+  //   if (selectFrom && selectFrom.countryName && nationalities.length > 0) {
+  //     const matched = nationalities.find(
+  //       (n) =>
+  //         n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
+  //     );
+  //     setNationalityId(matched ? matched.countryId : null);
+  //   }
+  // }, [selectFrom, nationalities]);
 
   useEffect(() => {
     if (!selectFrom && location && city && nationalities.length > 0) {
@@ -79,7 +146,7 @@ export default function HotelListingSearch() {
       setSelectFrom({
         cityName: location,
         countryName: matchedNationality?.countryName || "India",
-        id: city || "699261",
+        id: city || "699261", // fallback
       });
       setNationalityId(matchedNationality?.countryId || "94");
     }
@@ -91,34 +158,85 @@ export default function HotelListingSearch() {
       setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
   }, []);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [errorStatus, setErrorStatus] = useState<number | null>(null);
+
+  const [datedep, setDatedep] = useState(dayjs());
+
+  const closeAllFields = () => {
+    setShowSearchState(false);
+    setOpenDateRage(false);
+  };
+
+  // const {
+  //   filter,
+  //   sortCriteria,
+  //   currentPage,
+  //   uniqueRoomStyles,
+  //   uniqueAmenities,
+  //   uniqueLocations,
+  //   uniqueRatings,
+  //   uniqueHotelsType,
+  //   sortedHotels,
+  //   totalPages,
+  //   paginatedHotels,
+  //   handleCheckboxChange,
+  //   handleSortChange,
+  //   handlePriceRangeChange,
+  //   handleItemsPerPageChange,
+  //   handlePageChange,
+  //   handlePreviousPage,
+  //   handleNextPage,
+  //   handleClearFilters,
+  //   startItemIndex,
+  //   endItemIndex,
+  // } = useHotelFilter(hotelsData);
+  const [sortCriteria, setSortCriteria] = useState("default");
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortCriteria(e.target.value);
+  };
 
   const apiCall = async (payload: any) => {
     try {
-      let reqData = {
-        action: "search",
-        requestData: payload,
-      };
-      const response = await postData("travelogy/hotel/fetch-data", reqData);
-      console.log("hotel listing response == ", response);
+      const response = await fetch(
+        "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        let msg = `Request failed with ${response.status} ${response.statusText}`;
+        try {
+          const maybeJson = await response.json();
+          if (maybeJson?.message) msg = maybeJson.message;
+        } catch {}
+        const err = new Error(msg) as Error & { status?: number };
+        err.status = response.status;
+        throw err; // <-- important
+      }
+
+      const data = await response.json();
       localStorage.clear();
-      return response;
-      // const response = await fetch(
-      //   "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-      //     },
-      //     body: JSON.stringify(payload),
-      //   }
-      // );
-      // const data = await response.json();
-      // localStorage.clear();
-      // return data;
-    } catch (error) {
-      console.error("Search API error:", error);
-      return null;
+      return data;
+    } catch (e: any) {
+      const err = new Error(e?.message || "Network error") as Error & {
+        status?: number;
+      };
+      const maybeStatus =
+        typeof e?.status === "number"
+          ? e.status
+          : /(^|[^0-9])504([^0-9]|$)/.test(String(e?.message))
+          ? 504
+          : undefined;
+
+      err.status = maybeStatus ?? undefined;
+      throw err;
     }
   };
   const cleanRoomInfo = roomsData.map((room) => {
@@ -131,6 +249,9 @@ export default function HotelListingSearch() {
   });
   const handleSearch = async () => {
     setLoading(true);
+    setError(null);
+    setErrorStatus(null);
+
     const safeCityId = selectFrom?.id || city || "699261";
     const safeCityName = selectFrom?.cityName || location || "Chennai";
     const safeCountry = selectFrom?.countryName || "India";
@@ -179,14 +300,29 @@ export default function HotelListingSearch() {
       roomsData: JSON.stringify(roomsData),
     }).toString();
 
+    // const data = await apiCall(payload);
+    // if (data) {
+    //   setApiHotelData(data.searchResult?.his || []);
+    //   router.push(`/hotel-listing?${queryParams}`);
+    //   return;
+    // }
     try {
-      const data: any = await apiCall(payload);
+      const data = await apiCall(payload);
+      console.log("bbbbbbbbbbbbbbbbbbbb111111111111111111", data);
+
+      if (!data?.searchResult?.his) {
+        throw Object.assign(new Error(data?.message || "No data received"), {
+          status: 200,
+        });
+      }
       if (data) {
         setApiHotelData(data.searchResult?.his || []);
         router.push(`/hotel-listing?${queryParams}`);
       }
-    } catch (error) {
-      console.error("Search API error:", error);
+    } catch (e: any) {
+      const s = typeof e?.status === "number" ? e.status : undefined;
+      setError(e?.message || "Something went wrong.");
+      setErrorStatus(s);
     } finally {
       setLoading(false);
     }
@@ -198,9 +334,11 @@ export default function HotelListingSearch() {
         return;
       }
 
-      setLoading(true);
       const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
       const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+      setLoading(true);
+      setError(null);
+      setErrorStatus(null);
 
       const payload = {
         searchQuery: {
@@ -217,25 +355,50 @@ export default function HotelListingSearch() {
         sync: true,
       };
 
-      const data: any = await apiCall(payload);
-      setLoading(false);
-      if (data) {
-        const hotelOnlyResults = data.searchResult?.his || [];
-        setApiHotelData(hotelOnlyResults);
+      // const data = await apiCall(payload);
+      // setLoading(false);
+      // if (data) {
+      //   const hotelOnlyResults = data.searchResult?.his || [];
+      //   setApiHotelData(hotelOnlyResults);
+      // }
+      try {
+        const data = await apiCall(payload);
+
+        if (!data?.searchResult?.his) {
+          throw Object.assign(new Error(data?.message || "No data received"), {
+            status: 200,
+          });
+        }
+
+        setApiHotelData(data.searchResult.his || []);
+      } catch (e: any) {
+        const s = typeof e?.status === "number" ? e.status : undefined;
+        setError(e?.message || "Something went wrong.");
+        setErrorStatus(s);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [
     city,
-    checkinDate,
-    checkoutDate,
+    // checkinDate,
+    // checkoutDate,
     nationalityId,
     currency,
-    roomsData,
+    // roomsData,
     location,
   ]);
 
+  const openToDateRange = () => {
+    setOpenDateRage((prevState) => !prevState);
+    closeallform();
+    setOpenDateRage(true);
+  };
+  const closeallform = () => {
+    setOpenDateRage(false);
+  };
   const closeAllDropdowns = () => {
     setShowSearchState(false);
     setOpenCheckin(false);
@@ -287,6 +450,8 @@ export default function HotelListingSearch() {
     categoryType?: string;
   };
 
+  const SafeAppListSearch = CityListSearch as React.FC<AppListSearchProps>;
+
   useEffect(() => {
     const handleClickOutside = () => {
       setShowSearchState(false);
@@ -300,6 +465,39 @@ export default function HotelListingSearch() {
       window.removeEventListener("click", handleClickOutside);
     };
   }, []);
+  if (error) {
+    const isRetryable =
+      !errorStatus || [408, 429, 500, 502, 503, 504].includes(errorStatus);
+    return (
+      <Layout headerStyle={1} footerStyle={1}>
+        <main className="main">
+          <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+            <h2 className="text-xl font-semibold mb-2">
+              Oops! Something went wrong.
+            </h2>
+            {!isRetryable && <p className="text-sm">{error}</p>}
+            {isRetryable && <p className="text-sm">504 - Gateway Timeout</p>}
+
+            <div className="flex justify-center mt-4">
+              {isRetryable && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition mr-4"
+                >
+                  Try Again
+                </button>
+              )}
+              <Link href="/hotels" passHref>
+                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                  Retry Hotel
+                </button>
+              </Link>
+            </div>
+          </div>
+        </main>
+      </Layout>
+    );
+  }
 
   return (
     <>
@@ -334,10 +532,11 @@ export default function HotelListingSearch() {
 
             {openCheckin && (
               <div onClick={(e) => e.stopPropagation()}>
-                <AppDateRage
+                <AppDateRange
+                  minDate={dayjs() || null}
                   openToDateRange={() => setOpenCheckin(false)}
-                  setDatedep={(date: any) => setCheckinDate(date)}
-                  valueDate={checkinDate}
+                  setDatedep={onPickCheckin}
+                  valueDate={dayjs(checkinDate)}
                 />
               </div>
             )}
@@ -349,10 +548,17 @@ export default function HotelListingSearch() {
             </button>
             {openCheckout && (
               <div onClick={(e) => e.stopPropagation()}>
-                <AppDateRage
+                <AppDateRange
+                  minDate={
+                    checkinDate
+                      ? dayjs(checkinDate).add(1, "day")
+                      : dayjs().add(1, "day")
+                  }
                   openToDateRange={() => setOpenCheckout(false)}
-                  setDatedep={(date: any) => setCheckoutDate(date)}
-                  valueDate={checkoutDate}
+                  setDatedep={(date: any) =>
+                    setCheckoutDate(dayjs(date).format("YYYY-MM-DD"))
+                  }
+                  valueDate={dayjs(checkoutDate)}
                 />
               </div>
             )}
