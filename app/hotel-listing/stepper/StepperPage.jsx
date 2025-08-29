@@ -174,6 +174,9 @@ export default function Stepper() {
     if (currentStep < 1) setCurrentStep(1);
     if (currentStep > 4) setCurrentStep(4);
   }, [PanRequired]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentStep]);
 
   const goNext = () => {
     if (

@@ -10,12 +10,13 @@ import Link from "next/link";
 import { AppTravellerHotel } from "./TravellerForm";
 import { useRouter } from "next/navigation";
 import { useNationalities } from "../../util/HotelApi";
+import Layout from "@/components/layout/Layout";
 
 const EngineHeaderHotel = ({ active_border }) => {
   const [showSearchState, setShowSearchState] = useState(false);
   const [showSearchStateTo, setShowSearchStateTo] = useState(false);
   const [selectFrom, setSelectFrom] = useState(null);
-  const [nationalityId, setNationalityId] = useState(null); // fallback to India
+  const [nationalityId, setNationalityId] = useState(null);
 
   const { nationalities } = useNationalities();
 
@@ -25,7 +26,7 @@ const EngineHeaderHotel = ({ active_border }) => {
   const [showTraveller, setShowYTraveller] = useState(false);
   const [datedep, setDatedep] = useState(dayjs());
   const [datedepr, setDatedepr] = useState(dayjs().add(2, "day"));
-  const dateRangeRef = useRef(null); // Ref for date range container
+  const dateRangeRef = useRef(null);
 
   const [dd_monthStr, setDd_monthStr] = useState(null);
 
@@ -173,6 +174,7 @@ const EngineHeaderHotel = ({ active_border }) => {
     };
   }, []);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [error, setError] = useState(null);
 
   const handleSearch = () => {
     if (!selectFrom) {
@@ -187,9 +189,38 @@ const EngineHeaderHotel = ({ active_border }) => {
         n.countryName.toLowerCase() === selectFrom.countryName.toLowerCase()
     );
 
+    // if (!matchedNationality) {
+    //   alert("Could not determine nationality for selected city.");
+    //   return;
+    // }
     if (!matchedNationality) {
-      alert("Could not determine nationality for selected city.");
+      setError("Could not determine nationality for selected city.");
       return;
+    }
+    if (error) {
+      return (
+        <Layout headerStyle={1} footerStyle={1}>
+          <main className="main">
+            <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
+              <h2 className="text-xl font-semibold mb-2">
+                Oops! Something went wrong.
+              </h2>
+              <p className="text-sm">{error}</p>
+              <div className="flex justify-center mt-4">
+                <Link href="/hotels" passHref>
+                  <button
+                    // If you prefer staying on the same page, replace Link with:
+                    // onClick={() => setError(null)}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                  >
+                    Retry Hotel Load
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </main>
+        </Layout>
+      );
     }
 
     const nationalityIdToUse = matchedNationality.countryId;

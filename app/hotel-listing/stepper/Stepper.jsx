@@ -95,7 +95,23 @@ export function Step1TravellerDetails({
       }));
     }
   }, [hotelReviewData]);
-  const handleGuestInputChange = (roomIndex, field, value) => {
+  // A. drop-in helper
+  const clearFieldError = (key) =>
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+
+  // B. update handleGuestInputChange to also clear errors
+  const handleGuestInputChange = (roomIndex, field, rawValue) => {
+    // normalize inputs
+    let value = rawValue;
+    if (field === "firstName" || field === "lastName") {
+      value = rawValue.replace(/\d/g, "").toUpperCase(); // no digits, uppercase
+    }
+
     setFormData((prev) => ({
       ...prev,
       guests: {
@@ -106,51 +122,60 @@ export function Step1TravellerDetails({
         },
       },
     }));
+
+    // clear specific errors when valid
+    if (field === "firstName") {
+      if (isValidFirstName(value)) clearFieldError(`firstName_r${roomIndex}`);
+    }
+    if (field === "lastName") {
+      if (isValidLastName(value)) clearFieldError(`lastName_r${roomIndex}`);
+    }
   };
 
   useEffect(() => {
     localStorage.setItem("bookingFormData", JSON.stringify(formData));
   }, [formData]);
   const leadGuest = formData.guests?.[0] || {};
-  const [passportNumber, setPassportNumber] = useState(
-    formData?.guests?.[0]?.passportNumber || ""
-  );
+  // const [passportNumber, setPassportNumber] = useState(
+  //   formData?.guests?.[0]?.passportNumber || ""
+  // );
   const [passportExpiryDate, setPassportExpiryDate] = useState(
     formData?.guests?.[0]?.passportExpiryDate || ""
   );
 
   const validateFields = () => {
     const newErrors = {};
-
-    // if (!leadGuest.firstName?.trim()) {
-    //   newErrors.firstName = "First name is required";
-    // } else if (leadGuest.firstName.trim().length < 2) {
-    //   newErrors.firstName = "First name must be at least 2 characters";
-    // }
-
-    // if (!leadGuest.lastName?.trim()) {
-    //   newErrors.lastName = "Last name is required";
-    // } else if (leadGuest.lastName.trim().length < 2) {
-    //   newErrors.lastName = "Last name must be at least 2 characters";
-    // }
+    const rooms = hotelReviewData?.query?.roomInfo || [];
     const hasDigit = (s = "") => /\d/.test(s);
 
-    if (!leadGuest.firstName?.trim()) {
-      newErrors.firstName = "First name is required";
-    } else if (hasDigit(leadGuest.firstName)) {
-      newErrors.firstName = "First name cannot contain numbers";
-    } else if (leadGuest.firstName.trim().length < 2) {
-      newErrors.firstName = "First name must be at least 2 characters";
-    }
+    // --- per-room: first & last name ---
+    rooms.forEach((_, roomIndex) => {
+      const g = formData?.guests?.[roomIndex] || {};
+      const fn = (g.firstName || "").trim();
+      const ln = (g.lastName || "").trim();
 
-    if (!leadGuest.lastName?.trim()) {
-      newErrors.lastName = "Last name is required";
-    } else if (hasDigit(leadGuest.lastName)) {
-      newErrors.lastName = "Last name cannot contain numbers";
-    } else if (leadGuest.lastName.trim().length < 2) {
-      newErrors.lastName = "Last name must be at least 2 characters";
-    }
+      if (!fn) {
+        newErrors[`firstName_r${roomIndex}`] = "First name is required";
+      } else if (hasDigit(fn)) {
+        newErrors[`firstName_r${roomIndex}`] =
+          "First name cannot contain numbers";
+      } else if (fn.length < 2) {
+        newErrors[`firstName_r${roomIndex}`] =
+          "First name must be at least 2 characters";
+      }
 
+      if (!ln) {
+        newErrors[`lastName_r${roomIndex}`] = "Last name is required";
+      } else if (hasDigit(ln)) {
+        newErrors[`lastName_r${roomIndex}`] =
+          "Last name cannot contain numbers";
+      } else if (ln.length < 2) {
+        newErrors[`lastName_r${roomIndex}`] =
+          "Last name must be at least 2 characters";
+      }
+    });
+
+    // --- contact: mobile & email (global) ---
     if (!(formData?.mobile ?? "").trim()) {
       newErrors.mobile = "Mobile number is required";
     } else if (!isValidMobile(formData.mobile)) {
@@ -162,26 +187,36 @@ export function Step1TravellerDetails({
     } else if (!isValidEmail(formData.email)) {
       newErrors.email = "Invalid email format";
     }
+
+    // --- per-room: passport (only if ipmValue truthy) ---
     if (ipmValue) {
-      if (!passportNumber?.trim()) {
-        newErrors.passportNumber = "Passport number is required";
-      } else if (!isValidPassport(passportNumber)) {
-        newErrors.passportNumber = "Invalid passport number format";
-      }
+      rooms.forEach((_, roomIndex) => {
+        const pn = (formData?.guests?.[roomIndex]?.passportNumber || "").trim();
+        if (!pn) {
+          newErrors[`passportNumber_r${roomIndex}`] =
+            "Passport number is required";
+        } else if (!isValidPassport(pn)) {
+          newErrors[`passportNumber_r${roomIndex}`] =
+            "Invalid passport number format";
+        }
+      });
     }
 
     setErrors(newErrors);
+
+    // scroll to first error (expects refs like firstName_r0, lastName_r1, passportNumber_r2, mobile, email)
     if (Object.keys(newErrors).length > 0) {
-      const firstErrorField = Object.keys(newErrors)[0];
-      if (errorRefs.current[firstErrorField]) {
-        errorRefs.current[firstErrorField].scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
+      const firstKey = Object.keys(newErrors)[0];
+      const el = errorRefs.current[firstKey];
+      if (el?.scrollIntoView) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.focus?.();
       }
     }
+
     return Object.keys(newErrors).length === 0;
   };
+
   // const handleInputChange = (e) => {
   //   const { name, value } = e.target;
   //   setFormData((prevData) => ({
@@ -200,12 +235,12 @@ export function Step1TravellerDetails({
     const lead = formData?.guests?.[0] || {};
     setErrors((prev) => {
       const next = { ...prev };
-      // only REMOVE keys here; validateFields() will ADD them on submit
       if (isValidFirstName(lead.firstName)) delete next.firstName;
       if (isValidLastName(lead.lastName)) delete next.lastName;
       if (isValidMobile((formData?.mobile ?? "").trim())) delete next.mobile;
       if (isValidEmail((formData?.email ?? "").trim())) delete next.email;
-      if (!ipmValue || isValidPassport(passportNumber /*, "IN" */)) {
+      const leadPassport = lead.passportNumber || "";
+      if (!ipmValue || isValidPassport(leadPassport)) {
         delete next.passportNumber;
       }
       return next;
@@ -215,7 +250,7 @@ export function Step1TravellerDetails({
     formData?.guests?.[0]?.lastName,
     formData?.mobile,
     formData?.email,
-    passportNumber,
+    formData?.guests?.[0]?.passportNumber,
     ipmValue,
   ]);
 
@@ -263,43 +298,62 @@ export function Step1TravellerDetails({
   }
 
   const [openDatePicker, setOpenDatePicker] = useState(false); // Control datepicker visibility
+  const [openPicker, setOpenPicker] = useState(null);
+  const handleDateChange = (val, roomIndex) => {
+    // supports Date | dayjs | { startDate, endDate }
+    let picked = val?.startDate ?? val?.endDate ?? val ?? null; // choose what your UX wants
+    const formatted = picked ? dayjs(picked).format("YYYY-MM-DD") : "";
 
-  const handleDateChange = (date) => {
-    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : "";
-    setPassportExpiryDate(formattedDate);
     setFormData((prev) => ({
       ...prev,
       guests: {
         ...prev.guests,
-        [0]: {
-          ...prev.guests?.[0],
-          passportExpiryDate: formattedDate,
+        [roomIndex]: {
+          ...(prev.guests?.[roomIndex] || {}),
+          passportExpiryDate: formatted,
         },
       },
     }));
-    setOpenDatePicker(false); // Close the date picker after selecting a date
+
+    setOpenPicker(null);
   };
 
-  const handlePassportNumberChange = (e) => {
-    let value = e.target.value || "";
-    // sanitize: remove all non A-Z/0-9, force UPPER, cap at 9 chars
-    value = value
+  const handlePassportNumberChange = (e, roomIndex) => {
+    let value = (e.target.value || "")
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, "")
-      .slice(0, 8);
+      .slice(0, 8); // 1 letter + 7 digits
 
-    setPassportNumber(value);
     setFormData((prev) => ({
       ...prev,
       guests: {
         ...prev.guests,
-        [0]: {
-          ...prev.guests?.[0],
+        [roomIndex]: {
+          ...(prev.guests?.[roomIndex] || {}),
           passportNumber: value,
         },
       },
     }));
+
+    if (!ipmValue || isValidPassport(value)) {
+      clearFieldError(`passportNumber_r${roomIndex}`);
+    }
   };
+  useEffect(() => {
+    const rooms = hotelReviewData?.query?.roomInfo || [];
+    setErrors((prev) => {
+      const next = { ...prev };
+      rooms.forEach((_, i) => {
+        const g = formData?.guests?.[i] || {};
+        if (isValidFirstName(g.firstName)) delete next[`firstName_r${i}`];
+        if (isValidLastName(g.lastName)) delete next[`lastName_r${i}`];
+        if (!ipmValue || isValidPassport(g.passportNumber || "")) {
+          delete next[`passportNumber_r${i}`];
+        }
+      });
+      return next;
+    });
+  }, [formData?.guests, ipmValue, hotelReviewData?.query?.roomInfo]);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -460,7 +514,9 @@ export function Step1TravellerDetails({
 
                   <div className="flex flex-col">
                     <input
-                      ref={(el) => (errorRefs.current.firstName = el)}
+                      ref={(el) =>
+                        (errorRefs.current[`firstName_r${roomIndex}`] = el)
+                      }
                       className="border p-2 rounded stepper_input"
                       placeholder="Lead Pax First Name"
                       value={formData.guests?.[roomIndex]?.firstName || ""}
@@ -468,20 +524,22 @@ export function Step1TravellerDetails({
                         handleGuestInputChange(
                           roomIndex,
                           "firstName",
-                          e.target.value
+                          e.target.value.toUpperCase()
                         )
                       }
                     />
-                    {errors.firstName && (
+                    {errors[`firstName_r${roomIndex}`] && (
                       <span className="form-error-space text-red-500 text-xs mt-1">
-                        {errors.firstName}
+                        {errors[`firstName_r${roomIndex}`]}
                       </span>
                     )}
                   </div>
 
                   <div className="flex flex-col">
                     <input
-                      ref={(el) => (errorRefs.current.lastName = el)}
+                      ref={(el) =>
+                        (errorRefs.current[`lastName_r${roomIndex}`] = el)
+                      }
                       className="border p-2 rounded stepper_input"
                       placeholder="Last Name"
                       value={formData.guests?.[roomIndex]?.lastName || ""}
@@ -489,13 +547,13 @@ export function Step1TravellerDetails({
                         handleGuestInputChange(
                           roomIndex,
                           "lastName",
-                          e.target.value
+                          e.target.value.toUpperCase()
                         )
                       }
                     />
-                    {errors.lastName && (
+                    {errors[`lastName_r${roomIndex}`] && (
                       <span className="form-error-space text-red-500 text-xs mt-1">
-                        {errors.lastName}
+                        {errors[`lastName_r${roomIndex}`]}
                       </span>
                     )}
                   </div>
@@ -503,15 +561,23 @@ export function Step1TravellerDetails({
                     <>
                       <div className="flex flex-col">
                         <input
-                          ref={(el) => (errorRefs.current.passportNumber = el)}
+                          ref={(el) =>
+                            (errorRefs.current[`passportNumber_r${roomIndex}`] =
+                              el)
+                          }
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Number"
-                          value={passportNumber}
-                          onChange={handlePassportNumberChange}
+                          value={
+                            formData?.guests?.[roomIndex]?.passportNumber || ""
+                          }
+                          onChange={(e) =>
+                            handlePassportNumberChange(e, roomIndex)
+                          }
                         />
-                        {errors.passportNumber && (
-                          <span className="text-red-500 text-xs mt-1">
-                            {errors.passportNumber}
+
+                        {errors[`passportNumber_r${roomIndex}`] && (
+                          <span className="text-red-500 text-xs">
+                            {errors[`passportNumber_r${roomIndex}`]}
                           </span>
                         )}
                       </div>
@@ -520,16 +586,34 @@ export function Step1TravellerDetails({
                         <input
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Expiry Date"
-                          value={passportExpiryDate}
+                          value={
+                            formData?.guests?.[roomIndex]?.passportExpiryDate ||
+                            ""
+                          }
                           readOnly
-                          onClick={() => setOpenDatePicker(true)} // Open the date picker on click
+                          onClick={() =>
+                            setOpenPicker({
+                              roomIndex,
+                              field: "passportExpiry",
+                            })
+                          }
                         />
-                        {openDatePicker && (
-                          <AppDateRange
-                            openToDateRange={() => setOpenDatePicker(false)} // Close on selection
-                            setDatedep={handleDateChange}
-                          />
-                        )}
+
+                        {openPicker?.field === "passportExpiry" &&
+                          openPicker.roomIndex === roomIndex && (
+                            <div className="relative">
+                              <div className="absolute z-50">
+                                <AppDateRange
+                                  // close picker when done
+                                  openToDateRange={() => setOpenPicker(null)}
+                                  // unified handler (see C)
+                                  setDatedep={(val) =>
+                                    handleDateChange(val, roomIndex)
+                                  }
+                                />
+                              </div>
+                            </div>
+                          )}
                       </div>
                     </>
                   )}
@@ -573,10 +657,9 @@ export function Step1TravellerDetails({
                           const updated = [
                             ...formData.guests[roomIndex].extraGuests,
                           ];
-                          updated[i].firstName = e.target.value.replace(
-                            /\d/g,
-                            ""
-                          );
+                          updated[i].firstName = e.target.value
+                            .replace(/\d/g, "")
+                            .toUpperCase();
                           updateExtraGuests(roomIndex, updated);
                         }}
                       />
@@ -589,10 +672,9 @@ export function Step1TravellerDetails({
                           const updated = [
                             ...formData.guests[roomIndex].extraGuests,
                           ];
-                          updated[i].lastName = e.target.value.replace(
-                            /\d/g,
-                            ""
-                          );
+                          updated[i].lastName = e.target.value
+                            .replace(/\d/g, "")
+                            .toUpperCase();
                           updateExtraGuests(roomIndex, updated);
                         }}
                       />
@@ -1177,6 +1259,29 @@ export function Step2Review({
               by the guest.
             </li>
           </ul>
+          <div className="mt-2">
+            <span className="text-sm">
+              <a
+                href={hotelReviewData?.hInfo?.tac?.sc?.[0]?.info}
+                className="text-red-600"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {hotelReviewData?.hInfo?.tac?.sc?.[0]?.label}
+              </a>
+            </span>
+            <br />
+            <span className="text-sm">
+              <a
+                href={hotelReviewData?.hInfo?.tac?.sc?.[1]?.info}
+                className="text-red-600"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {hotelReviewData?.hInfo?.tac?.sc?.[1]?.label}
+              </a>
+            </span>
+          </div>
           {Category === "bbook" ? (
             <div className="flex items-center space-x-2 mt-4">
               <input
@@ -1246,6 +1351,11 @@ export function Step3PersonalDocuments({
   });
 
   const isValidPAN = (v) => panRegex.test((v || "").trim());
+  const getUiGuests = (roomIdx) => {
+    const leadGuest = formData?.guests?.[roomIdx];
+    const extraGuests = leadGuest?.extraGuests || [];
+    return [leadGuest, ...extraGuests].filter(Boolean);
+  };
 
   const samePANRef = useRef(null);
   const guardianRefs = useRef({});
@@ -1284,7 +1394,8 @@ export function Step3PersonalDocuments({
           }
           nextErrors.guardian[rIdx] = gErr;
         } else {
-          (room?.guests || []).forEach((_, gIdx) => {
+          const guests = getUiGuests(rIdx);
+          guests.forEach((_, gIdx) => {
             const key = `${rIdx}-${gIdx}`;
             if (!isValidPAN(individualPANs[key])) {
               nextErrors.individual[key] = "Enter a valid PAN.";
@@ -1374,11 +1485,21 @@ export function Step3PersonalDocuments({
   };
 
   const handlePANChange = (roomIdx, guestIdx, value) => {
-    setIndividualPANs((prev) => ({
-      ...prev,
-      [`${roomIdx}-${guestIdx}`]: value.toUpperCase(),
-    }));
+    const newValue = value.toUpperCase();
+    const key = `${roomIdx}-${guestIdx}`;
+    setIndividualPANs((prev) => ({ ...prev, [key]: newValue }));
+
+    setErrors((prev) => {
+      const updated = { ...prev, individual: { ...prev.individual } };
+      if (isValidPAN(newValue)) {
+        delete updated.individual[key]; // remove error
+      } else {
+        updated.individual[key] = "Enter a valid PAN.";
+      }
+      return updated;
+    });
   };
+
   const handleTCSChange = (e) => {
     setSelectedTCS(e.target.value);
   };
@@ -1397,11 +1518,10 @@ export function Step3PersonalDocuments({
         )
           return false;
       } else {
-        const guests =
-          hotelReviewData?.query?.roomInfo?.[roomIdx]?.guests || [];
+        const guests = getUiGuests(roomIdx);
         for (let g = 0; g < guests.length; g++) {
           const val = individualPANs[`${roomIdx}-${g}`];
-          if (!panRegex.test(val)) return false;
+          if (!panRegex.test((val || "").trim())) return false;
         }
       }
     }
@@ -1547,12 +1667,26 @@ export function Step3PersonalDocuments({
                       }`}
                       placeholder="First Name"
                       value={guardianPANs[rIdx]?.first || ""}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = e.target.value;
                         setGuardianPANs((p) => ({
                           ...p,
-                          [rIdx]: { ...p[rIdx], first: e.target.value },
-                        }))
-                      }
+                          [rIdx]: { ...p[rIdx], first: val },
+                        }));
+
+                        setErrors((prev) => {
+                          const next = {
+                            ...prev,
+                            guardian: { ...prev.guardian },
+                          };
+                          const gErr = { ...(next.guardian[rIdx] || {}) };
+                          gErr.first = val.trim()
+                            ? ""
+                            : "First name is required.";
+                          next.guardian[rIdx] = gErr;
+                          return next;
+                        });
+                      }}
                       ref={(el) => (guardianRefs.current[`first-${rIdx}`] = el)}
                     />
                     {errors.guardian?.[rIdx]?.first && (
@@ -1561,19 +1695,32 @@ export function Step3PersonalDocuments({
                       </p>
                     )}
 
-                    {/* Last */}
                     <Input
                       className={`w-60 stepper_input ${
                         errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
                       }`}
                       placeholder="Last Name"
                       value={guardianPANs[rIdx]?.last || ""}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = e.target.value;
                         setGuardianPANs((p) => ({
                           ...p,
-                          [rIdx]: { ...p[rIdx], last: e.target.value },
-                        }))
-                      }
+                          [rIdx]: { ...p[rIdx], last: val },
+                        }));
+
+                        setErrors((prev) => {
+                          const next = {
+                            ...prev,
+                            guardian: { ...prev.guardian },
+                          };
+                          const gErr = { ...(next.guardian[rIdx] || {}) };
+                          gErr.last = val.trim()
+                            ? ""
+                            : "Last name is required.";
+                          next.guardian[rIdx] = gErr;
+                          return next;
+                        });
+                      }}
                       ref={(el) => (guardianRefs.current[`last-${rIdx}`] = el)}
                     />
                     {errors.guardian?.[rIdx]?.last && (
@@ -1589,15 +1736,34 @@ export function Step3PersonalDocuments({
                       }`}
                       placeholder="PAN Number"
                       value={guardianPANs[rIdx]?.pan || ""}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = e.target.value.toUpperCase();
+
                         setGuardianPANs((p) => ({
                           ...p,
                           [rIdx]: {
                             ...p[rIdx],
-                            pan: e.target.value.toUpperCase(),
+                            pan: val,
                           },
-                        }))
-                      }
+                        }));
+
+                        setErrors((prev) => {
+                          const next = {
+                            ...prev,
+                            guardian: { ...prev.guardian },
+                          };
+                          const gErr = { ...(next.guardian[rIdx] || {}) };
+                          if (
+                            /^[A-Z]{5}[0-9]{4}[A-Z]$/.test((val || "").trim())
+                          ) {
+                            gErr.pan = "";
+                          } else {
+                            gErr.pan = "Enter a valid PAN.";
+                          }
+                          next.guardian[rIdx] = gErr;
+                          return next;
+                        });
+                      }}
                       ref={(el) => (guardianRefs.current[`pan-${rIdx}`] = el)}
                     />
                     {errors.guardian?.[rIdx]?.pan && (
@@ -1621,7 +1787,7 @@ export function Step3PersonalDocuments({
                               ? "border-red-500"
                               : ""
                           }`}
-                          placeholder="Enter PAN1"
+                          placeholder="Enter PAN Individual"
                           value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                           onChange={(e) =>
                             handlePANChange(rIdx, gIdx, e.target.value)
@@ -1650,8 +1816,22 @@ export function Step3PersonalDocuments({
               }`}
               placeholder="Enter PAN"
               value={samePANValue}
-              onChange={(e) => setSamePANValue(e.target.value.toUpperCase())}
+              onChange={(e) => {
+                const val = e.target.value.toUpperCase();
+                setSamePANValue(val);
+
+                setErrors((prev) => {
+                  const next = { ...prev };
+                  if (/^[A-Z]{5}[0-9]{4}[A-Z]$/.test((val || "").trim())) {
+                    next.samePAN = ""; // clear error immediately
+                  } else {
+                    next.samePAN = "Enter a valid PAN (e.g., ABCDE1234F).";
+                  }
+                  return next;
+                });
+              }}
               ref={samePANRef}
+              maxLength={10}
             />
             {errors.samePAN && (
               <p className="text-xs text-red-500 mt-1">{errors.samePAN}</p>
@@ -1783,7 +1963,9 @@ export function Step4Payment({
         return;
       }
       console.log("Booking success:", result);
+      // setTimeout(() => {
       onConfirmPayment(bookingId);
+      // }, 100000);
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);

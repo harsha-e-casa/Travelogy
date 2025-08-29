@@ -294,7 +294,7 @@ export async function getBookingDetails(bookingId) {
       requestData: { bookingId },
     };
     const response = await postData("travelogy/hotel/fetch-data", reqData);
-    console.log("hotel get booking details response == ", response);
+    console.log("Error Message ", response.errors?.[0].message);
     const data = response;
 
     // save booking data
@@ -316,7 +316,8 @@ export async function getBookingDetails(bookingId) {
       return data;
     } else {
       // throw new Error(data?.error);
-      return data;
+      // return data;
+      throw new Error(response.errors?.[0]?.message);
     }
   } catch (error) {
     console.error("Error fetching booking details:", error);
