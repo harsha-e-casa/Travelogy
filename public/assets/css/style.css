@@ -19541,3 +19541,51 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   background-color: #f79421;
   color: white;
 }
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-container {
+    width: 210mm;
+    /* A4 width */
+    min-height: 297mm;
+    /* A4 height */
+    margin: auto;
+    padding: 20mm;
+    box-sizing: border-box;
+    page-break-after: always;
+  }
+}
+
+/* .no-print {
+  display: none !important;
+} */
+/* Default: show on screen, hide in print */
+.screen-only {
+  display: block;
+}
+
+.print-only {
+  display: none;
+}
+
+.print-only .max-w-5xl {
+  max-width: 77rem !important;
+}
+
+@media print {
+  .screen-only {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-only .max-w-5xl {
+    max-width: 77rem !important;
+  }
+}

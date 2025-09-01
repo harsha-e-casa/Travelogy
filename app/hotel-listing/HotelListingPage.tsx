@@ -618,9 +618,20 @@ export default function HotelListing() {
                   </div>
                 )}
               </div>
-              <button className="hdt_search-btn" onClick={handleSearch}>
-                Search
-              </button>
+              {!loading && (
+                <button className="hdt_search-btn" onClick={handleSearch}>
+                  Search
+                </button>
+              )}
+
+              {loading && (
+                <button
+                  className="hdt_search-btn opacity-70 cursor-not-allowed"
+                  disabled
+                >
+                  Searching...
+                </button>
+              )}
             </div>
           </div>
 

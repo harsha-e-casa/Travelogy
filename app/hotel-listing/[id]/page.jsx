@@ -8,6 +8,7 @@ import Link from "next/link";
 import HotelData from "./hotelData";
 import { postData } from "@/services/NetworkAdapter";
 // import { useRouter } from "next/router";
+import HotelListingSearch from "@/app/hotel-listing/searchHeader";
 
 const Modal = ({
   images,
@@ -187,8 +188,14 @@ export default function ActivitiesDetail4() {
         //   console.log("Error message===============", response.error);
         // }
         if (response?.error) {
-          setError(response.error); // Set error from the response
+          setError(response.error);
           console.log("Error message===============", response.error);
+        } else if (response?.errors?.[0]?.message) {
+          setError(response.errors?.[0].message);
+          console.log(
+            "Error message..................",
+            response.errors?.[0].message
+          );
         } else if (response?.status?.success) {
           // If no error and success status, process the data
           const hotel = response.hotel;
@@ -306,6 +313,8 @@ export default function ActivitiesDetail4() {
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
+        {/* <HotelListingSearch /> */}
+
         <section className="box-section box-content-tour-detail background-body">
           <div className="container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
