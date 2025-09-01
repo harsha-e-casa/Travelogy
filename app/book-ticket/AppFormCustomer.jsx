@@ -160,7 +160,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
               { required: true, message: "Country Code should not be empty!" },
             ]}
           >
-            <Select className="h-10" placeholder="Please select Country Code">
+            <Select className="h-10" placeholder="Please select Country Code" data-name="select_code">
               <Option value="+91">India (+91)</Option>
               <Option value="+1">United States (+1)</Option>
               <Option value="+44">United Kingdom (+44)</Option>
@@ -205,6 +205,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
                 message: "Mobile Number must be 10 digits long",
               },
             ]}
+            data-name="mNumber"
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -229,6 +230,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
                 message: "Please enter a valid Email address",
               },
             ]}
+            data-name="mEmail"
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"

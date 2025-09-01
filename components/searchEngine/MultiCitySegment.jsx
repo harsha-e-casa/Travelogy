@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import AppListSearch from "./AppListSearch";
 import AppDateRage from "./AppDateRage";
+import AppDateRangeFlight from "./AppDateRangeFlight";
 import dayjs from "dayjs";
+import { Tooltip } from "antd"; // Import Tooltip
 
 const MultiCitySegment = ({
   index,
@@ -13,9 +15,28 @@ const MultiCitySegment = ({
   showRemove,
   openSection,
   onToggleSection,
+  minDate,
+  onSegmentErrorChange, // New prop
 }) => {
   const fromRef = useRef({ from: segment.from, fromCode: segment.fromCode });
   const toRef = useRef({ to: segment.to, toCode: segment.toCode });
+
+  const [fromError, setFromError] = useState(""); // New state
+  const [toError, setToError] = useState(""); // New state
+
+  useEffect(() => {
+    // Initial validation when component mounts or segment changes
+    if (segment.from && segment.to && segment.from === segment.to) {
+      setFromError("From and To cities cannot be the same.");
+      setToError("From and To cities cannot be the same.");
+      onSegmentErrorChange(index, true); // Report error to parent
+    } else {
+      setFromError("");
+      setToError("");
+      onSegmentErrorChange(index, false); // Report no error to parent
+    }
+  }, [segment.from, segment.to, index, onSegmentErrorChange]);
+
 
   const handleFromChange = (field, value) => {
     fromRef.current = {
@@ -23,12 +44,24 @@ const MultiCitySegment = ({
       [field]: value,
     };
 
+    const newSegment = {
+      ...segment,
+      from: field === "from" ? value : fromRef.current.from,
+      fromCode: field === "fromCode" ? value : fromRef.current.fromCode,
+    };
+
+    if (newSegment.from && newSegment.to && newSegment.from === newSegment.to) {
+      setFromError("From and To cities cannot be the same.");
+      setToError("From and To cities cannot be the same.");
+      onSegmentErrorChange(index, true);
+    } else {
+      setFromError("");
+      setToError("");
+      onSegmentErrorChange(index, false);
+    }
+
     if (fromRef.current.from && fromRef.current.fromCode) {
-      updateSegment(index, {
-        ...segment,
-        from: fromRef.current.from,
-        fromCode: fromRef.current.fromCode,
-      });
+      updateSegment(index, newSegment);
     }
   };
 
@@ -38,12 +71,24 @@ const MultiCitySegment = ({
       [field]: value,
     };
 
+    const newSegment = {
+      ...segment,
+      to: field === "to" ? value : toRef.current.to,
+      toCode: field === "toCode" ? value : toRef.current.toCode,
+    };
+
+    if (newSegment.from && newSegment.to && newSegment.from === newSegment.to) {
+      setFromError("From and To cities cannot be the same.");
+      setToError("From and To cities cannot be the same.");
+      onSegmentErrorChange(index, true);
+    } else {
+      setFromError("");
+      setToError("");
+      onSegmentErrorChange(index, false);
+    }
+
     if (toRef.current.to && toRef.current.toCode) {
-      updateSegment(index, {
-        ...segment,
-        to: toRef.current.to,
-        toCode: toRef.current.toCode,
-      });
+      updateSegment(index, newSegment);
     }
   };
 
@@ -93,6 +138,18 @@ const MultiCitySegment = ({
             />
           </div>
         )}
+        <Tooltip
+          className="flex shadow-md z-10"
+          placement="bottom"
+          title={fromError}
+          open={!!fromError}
+          arrow={{ pointAtCenter: true }}
+          overlayInnerStyle={{
+            backgroundColor: "#ffeaea",
+            color: "#ff4d4f",
+            fontWeight: 500,
+          }}
+        ></Tooltip>
       </div>
 
       {/* Swap Icon */}
@@ -103,13 +160,27 @@ const MultiCitySegment = ({
             const newFromCode = segment.toCode;
             const newTo = segment.from;
             const newToCode = segment.fromCode;
-            updateSegment(index, {
+
+            const updatedSegment = {
               ...segment,
               from: newFrom,
               fromCode: newFromCode,
               to: newTo,
               toCode: newToCode,
-            });
+            };
+
+            updateSegment(index, updatedSegment);
+
+            // Re-validate after swap
+            if (updatedSegment.from && updatedSegment.to && updatedSegment.from === updatedSegment.to) {
+              setFromError("From and To cities cannot be the same.");
+              setToError("From and To cities cannot be the same.");
+              onSegmentErrorChange(index, true);
+            } else {
+              setFromError("");
+              setToError("");
+              onSegmentErrorChange(index, false);
+            }
           }}
           xmlns="http://www.w3.org/2000/svg"
           width="40"
@@ -127,7 +198,7 @@ const MultiCitySegment = ({
       <div className="text_start b_right_2px g_w_2 css_pointer relative">
         <div onClick={() => onToggleSection(index, "to")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
-          <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
+          <div className="pl-6 pb-4 relative"> {/* Added pb-4 for consistency */}
             <h6 className="font_bold text-black tracking-wide">
               {segment.to || "Select City"}
             </h6>
@@ -143,11 +214,21 @@ const MultiCitySegment = ({
               setSelectFrom={(val) => handleToChange("to", val)}
               setSelectFromSub={(val) => handleToChange("toCode", val)}
             />
+            <Tooltip
+              className="flex shadow-md z-50"
+              placement="bottom"
+              title={toError}
+              open={!!toError}
+              arrow={{ pointAtCenter: true }}
+              overlayInnerStyle={{
+                backgroundColor: "#ffeaea",
+                color: "#ff4d4f",
+                fontWeight: 500,
+              }}
+            ></Tooltip>
           </div>
         )}
       </div>
-
-      {/* Departure Date */}
       <div
         className="text_start b_right_2px g_w_3 css_pointer"
         style={{ paddingBottom: "13px" }}
@@ -177,14 +258,16 @@ const MultiCitySegment = ({
           </div>
         </div>
         {isOpen("date") && (
-          <AppDateRage
+          <AppDateRangeFlight
             openToDateRange={() => onToggleSection(null, null)}
-            setDatedep={(date) =>
+            setDate={(date) =>
               updateSegment(index, {
                 ...segment,
                 departureDate: dayjs(date),
               })
             }
+            minDate={minDate ? dayjs(minDate) : null} // Ensure dayjs object or null
+            value={segment.departureDate ? dayjs(segment.departureDate) : null} // Ensure dayjs object or null
           />
         )}
       </div>

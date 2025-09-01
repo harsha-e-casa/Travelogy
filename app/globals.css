@@ -105,3 +105,9 @@ a {
     color-scheme: dark;
   }
 }
+/* Attempt to remove background/border for today's date when not selected */
+.custom-date-picker .ant-picker-cell-today:not(.ant-picker-cell-selected) .ant-picker-cell-inner {
+  background: transparent !important; /* Try to remove any background */
+  border: none !important; /* Keep this just in case */
+  box-shadow: none !important; /* Keep this just in case */
+}
