@@ -24,6 +24,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
       name={`infantForm-${index}`}
       layout="vertical"
       autoComplete="off"
+      data-name={`infantForm-${index}`}
     >
       <Row gutter={16}>
         {/* Col for Select Title (Ms/Master) */}
@@ -63,6 +64,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
                 message: "Last name can only contain letters and spaces",
               },
             ]}
+            data-name={`infantName-${index}`}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -88,6 +90,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
                 message: "Last name can only contain letters and spaces",
               },
             ]}
+            data-name={`infantLast-${index}`}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -103,6 +106,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             label="Date of Birth"
             hasFeedback
             rules={[{ required: true, message: "Please choose the DOB" }]}
+            data-name={`infantDOB-${index}`}
           >
             <DatePicker
               className="h-10 flex flex-row justify-between items-center"

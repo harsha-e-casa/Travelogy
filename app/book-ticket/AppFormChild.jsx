@@ -34,6 +34,7 @@ const AppFormChild = ({ form, index, travellerParsedData }) => {
             label="Select"
             hasFeedback
             rules={[{ required: true, message: "This field is required" }]}
+            data-name={`childselect-${index}`}
           >
             <Select className="h-10" placeholder="Please select a title">
               <Option value="Ms">Ms</Option>
@@ -58,6 +59,7 @@ const AppFormChild = ({ form, index, travellerParsedData }) => {
                 message: "Last name can only contain letters and spaces",
               },
             ]}
+            data-name={`childName-${index}`}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -83,6 +85,7 @@ const AppFormChild = ({ form, index, travellerParsedData }) => {
                 message: "Last name can only contain letters and spaces",
               },
             ]}
+            data-name={`childlast-${index}`}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"

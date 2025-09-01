@@ -36,6 +36,7 @@ const AppFormAdult = ({
             label="Select"
             hasFeedback
             rules={[{ required: true, message: "This field is required" }]}
+            data-name={`select-${index}`}
           >
             <Select className="h-10" placeholder="Please select a title">
               <Option value="Mr">Mr</Option>
@@ -62,6 +63,7 @@ const AppFormAdult = ({
                 message: "First name can only contain letters and spaces",
               },
             ]}
+            data-name={`fname-${index}`}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -88,6 +90,7 @@ const AppFormAdult = ({
                 message: "Last name can only contain letters and spaces",
               },
             ]}
+            data-name={`lname-${index}`}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -103,6 +106,7 @@ const AppFormAdult = ({
               label="Document ID"
               hasFeedback
               rules={[{ required: true, message: "Please enter Document ID" }]}
+              data-name={`documentId-${index}`}
             >
               <Input
                 className="h-10 flex flex-row justify-between items-center"

@@ -105,12 +105,14 @@ const BookingForm: React.FC<BookingFormProps> = ({
       setTotalSeatAmount(Number(ssrSeatAmount));
       console.log("saved baggage", savedBaggage);
       console.log("saved meal", savedMeal);
+      console.log("totalfare ====> ", totalfare);
 
-      computedAmount =
-        Number(totalfare) +
-        savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-        savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-        (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+      // computedAmount =
+      //   Number(totalfare) +
+      //   savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+      //   savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+      //   (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+      computedAmount = Number(totalfare)
     } else {
       let baggageTotal = 0;
       let seatTotal = 0;
@@ -161,6 +163,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
       console.log("Total Amount: ", Number(totalfare));
       computedAmount = Number(totalfare);
     }
+    console.log("computedAmount ====== ",computedAmount)
     setDisplayAmount(computedAmount);
   }, [totalpricee]);
 
@@ -228,7 +231,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
             </div>
 
-            <div className="line-booking-tickets">
+            {/* <div className="line-booking-tickets">
               <div className="item-ticket">
                 <p className="text-small neutral-500 mr-30">Airline GST</p>
               </div>
@@ -244,7 +247,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               <div className="dropdown-quantity">
                 <p>₹{othertaxes}</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

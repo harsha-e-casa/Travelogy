@@ -137,6 +137,10 @@ export default function BookTicket() {
     };
   }
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [apiData, setApiData] = useState<any>(null);
   const [segments, setSegments] = useState<FlightSegment[]>([]);
   const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([]);
@@ -377,14 +381,14 @@ export default function BookTicket() {
     }
   }, [apiData]);
 
-  const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({})
+  const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({});
   useEffect(() => {
-    const storedTravellerInfo: any = getCookie('travellerInfo')
+    const storedTravellerInfo: any = getCookie("travellerInfo");
     if (storedTravellerInfo !== undefined) {
-      console.log("iruku storedTravellerInfo == ",storedTravellerInfo)
-      setStoredTravellerInfos(JSON.parse(storedTravellerInfo))
+      console.log("iruku storedTravellerInfo == ", storedTravellerInfo);
+      setStoredTravellerInfos(JSON.parse(storedTravellerInfo));
     }
-  }, [])
+  }, []);
 
   const searchTickets = () => {
     let departureFrom = getCookie("gy_da");
@@ -663,6 +667,7 @@ export default function BookTicket() {
           key: string;
           code: string;
           amount?: number;
+          desc: string;
         }[] = []; // Type baggage info array
         let mealinfosPaylode: {
           key: string;
@@ -739,12 +744,14 @@ export default function BookTicket() {
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
+                console.log("baggageOptionbaggageOption == > ",baggageOption)
 
                 if (baggageOption) {
                   baggageInfosPayload.push({
                     key: segmentId,
                     code: baggageCode,
                     amount: baggageOption.amount,
+                    desc: baggageOption.desc
                   });
                 }
               }
@@ -867,6 +874,7 @@ export default function BookTicket() {
                     key: segmentId,
                     code: baggageCode,
                     amount: baggageOption.amount,
+                    desc: baggageOption.desc
                   });
                 }
               }
@@ -995,7 +1003,22 @@ export default function BookTicket() {
       })
       .catch((errorInfo) => {
         console.log("Validation failed:", errorInfo);
-        // alert('Validation failed! Please check the form fields.');
+        if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+          const firstErrorField = errorInfo.errorFields[0].name[0];
+          console.log("firstErrorField = ", firstErrorField);
+
+          const fieldElement = document.querySelector(
+            `[data-name="${firstErrorField}"]`
+          );
+          console.log("fieldElement = ", fieldElement);
+
+          if (fieldElement) {
+            fieldElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }
       });
   };
 
@@ -1914,7 +1937,9 @@ export default function BookTicket() {
                                       numAdults={numAdults}
                                       numChild={numChild}
                                       apiData={apiData}
-                                      storedTravellerInfos={storedTravellerInfos}
+                                      storedTravellerInfos={
+                                        storedTravellerInfos
+                                      }
                                     />
                                   </p>
                                 </div>
@@ -1935,9 +1960,7 @@ export default function BookTicket() {
                                   Please enter your company's GST number
                                 </h2>
                                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                  <AppFormCompany
-                                    form={form}
-                                  />
+                                  <AppFormCompany form={form} />
                                 </p>
                               </div>
                             </div>

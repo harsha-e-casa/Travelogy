@@ -1554,7 +1554,8 @@ const Alldetails = ({ totalpricee }) => {
                         </div>
                       )}
                     </div>
-                  ) : bookingDetails?.order?.status === "PENDING" ? (
+                  ) : bookingDetails?.order?.status === "PENDING" ||
+                    bookingDetails?.order?.status === "UNCONFIRMED" ? (
                     <>
                       <div className="relative inline-block">
                         <button
@@ -1964,8 +1965,11 @@ const Alldetails = ({ totalpricee }) => {
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
                                   {travellerIndex + 1}
                                 </td>
-                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                <td className="px-4 py-3 border-b border-gray-200 text-black flex flex-col">
                                   {`${traveller.ti}. ${traveller.fN} ${traveller.lN}`}
+                                  {traveller && traveller.di && traveller.di !== "undefined" && (
+                                    <span>{`ID: ${traveller.di}`}</span>
+                                  )}
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
                                   {traveller.pt}
