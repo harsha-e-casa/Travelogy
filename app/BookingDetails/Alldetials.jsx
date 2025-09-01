@@ -450,71 +450,156 @@ const Alldetails = ({ totalpricee }) => {
     }
   };
 
-  const handleDownload = (ref) => {
-    const content = ref.current.innerHTML;
-    const fullHtml = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Ticket</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <style>
-                 .flightsDetail{
-              display:flex;
-              flex-direction:row;
-              justify-content:flex-between;
-              align-items:center;
-              margin-bottom:20px
-              }
+  // const handleDownload = (ref) => {
+  //   const content = ref.current.innerHTML;
+  //   const fullHtml = `
+  //   <!DOCTYPE html>
+  //   <html lang="en">
+  //     <head>
+  //       <meta charset="UTF-8" />
+  //       <title>Ticket</title>
+  //       <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  //       <style>
+  //                .flightsDetail{
+  //             display:flex;
+  //             flex-direction:row;
+  //             justify-content:flex-between;
+  //             align-items:center;
+  //             margin-bottom:20px
+  //             }
 
-              .logo-flight{
-              margin-bottom:0px}
+  //             .logo-flight{
+  //             margin-bottom:0px}
 
-              .citydetails{
-              
-                margin-bottom:20px
-              }
-                .citynames{
-                font-weight:bolder;
-                }
-                .timeduration{
-                margin-bottom:0px;
-                }
-                .timediv{
-                display:flex;
-                flex-direction:row;
-                gap: 40px;
-                list-style-type: disc; 
-               
-                }
-                .passengerinfo, .contactinfo{
-                font-weight:bold;}
-                .ticketdiv{
-                padding:20px}
-          @media print {
-            body {
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-          }
-            
-        </style>
-      </head>
-      <body class="p-6 bg-white text-black">
-        ${content}
-    
-      </body>
-    </html>
-  `;
+  //             .citydetails{
 
-    const blob = new Blob([fullHtml], { type: "text/html" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "ticket.html";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  //               margin-bottom:20px
+  //             }
+  //               .citynames{
+  //               font-weight:bolder;
+  //               }
+  //               .timeduration{
+  //               margin-bottom:0px;
+  //               }
+  //               .timediv{
+  //               display:flex;
+  //               flex-direction:row;
+  //               gap: 40px;
+  //               list-style-type: disc;
+
+  //               }
+  //               .passengerinfo, .contactinfo{
+  //               font-weight:bold;}
+  //               .ticketdiv{
+  //               padding:20px}
+  //         @media print {
+  //           body {
+  //             -webkit-print-color-adjust: exact;
+  //             print-color-adjust: exact;
+  //           }
+  //         }
+
+  //       </style>
+  //     </head>
+  //     <body class="p-6 bg-white text-black">
+  //       ${content}
+
+  //     </body>
+  //   </html>
+  // `;
+
+  //   const blob = new Blob([fullHtml], { type: "text/html" });
+  //   const link = document.createElement("a");
+  //   link.href = URL.createObjectURL(blob);
+  //   link.download = "ticket.html";
+  //   document.body.appendChild(link);
+  //   link.click();
+  //   document.body.removeChild(link);
+  // };
+
+  const swapBarcodesForImages = () => {
+    const swaps = [];
+
+    // 1) Canvas -> PNG <img>
+    document.querySelectorAll("canvas[data-barcode]").forEach((cnv) => {
+      try {
+        const dataURL = cnv.toDataURL("image/png");
+        const img = document.createElement("img");
+        img.src = dataURL;
+        img.style.maxWidth = "100%";
+        cnv.parentNode.insertBefore(img, cnv);
+        cnv.style.display = "none";
+        swaps.push(() => {
+          cnv.style.display = "";
+          img.remove();
+        });
+      } catch {}
+    });
+
+    // 2) SVG -> PNG <img>
+    document.querySelectorAll("svg[data-barcode]").forEach((svg) => {
+      try {
+        const svgString = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([svgString], {
+          type: "image/svg+xml;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+
+        const img = new Image();
+        img.onload = () => URL.revokeObjectURL(url);
+        img.src = url;
+        img.style.maxWidth = "100%";
+        svg.parentNode.insertBefore(img, svg);
+        svg.style.display = "none";
+        swaps.push(() => {
+          svg.style.display = "";
+          img.remove();
+        });
+      } catch {}
+    });
+
+    return () => swaps.forEach((undo) => undo());
+  };
+
+  const handleDownload = async (printRef) => {
+    const { jsPDF } = await import("jspdf");
+    const html2canvas = (await import("html2canvas")).default;
+
+    // wait for barcode fonts/paint
+    if (document.fonts?.ready) await document.fonts.ready;
+    await new Promise((r) =>
+      requestAnimationFrame(() => requestAnimationFrame(r))
+    );
+
+    // swap barcodes to images to guarantee capture
+    const undo = swapBarcodesForImages();
+
+    try {
+      const canvas = await html2canvas(printRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        svgRendering: true,
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        0,
+        pageWidth,
+        pdfHeight,
+        undefined,
+        "FAST"
+      );
+      pdf.save("ticket.pdf");
+    } finally {
+      undo(); // restore original barcode nodes
+    }
   };
 
   const handlePrint = (ref) => {
@@ -1967,9 +2052,11 @@ const Alldetails = ({ totalpricee }) => {
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black flex flex-col">
                                   {`${traveller.ti}. ${traveller.fN} ${traveller.lN}`}
-                                  {traveller && traveller.di && traveller.di !== "undefined" && (
-                                    <span>{`ID: ${traveller.di}`}</span>
-                                  )}
+                                  {traveller &&
+                                    traveller.di &&
+                                    traveller.di !== "undefined" && (
+                                      <span>{`ID: ${traveller.di}`}</span>
+                                    )}
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
                                   {traveller.pt}
