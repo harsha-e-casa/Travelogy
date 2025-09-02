@@ -19329,9 +19329,17 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   background-color: #000000c4;
 }
 
-.book-now-btn {
-  background-color: #f58220;
-  color: white;
+.back-to-btn {
+  background-color: #ccc;
+  color: #000;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 4px 12px;
+  /* py-1 = 4px top/bottom, px-3 = 12px left/right */
+  border: none;
+  border-radius: 4px;
+  /* matches Tailwind's `rounded` */
+  cursor: pointer;
 }
 
 .book-now-btn {

@@ -108,7 +108,7 @@ const BookingDetailsPage = () => {
 
   useEffect(() => {
     if (bookingId) {
-      getBookingDetails(bookingId)
+      getBookingDetails(bookingId, setError)
         .then((data) => {
           setBookingDetails(data);
           if (data?.error) {
@@ -164,20 +164,20 @@ const BookingDetailsPage = () => {
               </p>
             )}
             <div className="flex justify-center mt-4">
-              {isForbiddenError ? (
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition mr-4"
-                >
-                  Try Again
+              {/* {isForbiddenError ? ( */}
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition mr-4"
+              >
+                Try Again
+              </button>
+              {/* ) : ( */}
+              <Link href="/hotels" passHref>
+                <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+                  Retry Hotel
                 </button>
-              ) : (
-                <Link href="/hotels" passHref>
-                  <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-                    Retry Hotel
-                  </button>
-                </Link>
-              )}
+              </Link>
+              {/* )} */}
             </div>
           </div>
         </main>

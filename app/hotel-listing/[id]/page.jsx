@@ -258,9 +258,10 @@ export default function ActivitiesDetail4() {
               <Link href="/hotels" passHref>
                 <button
                   // onClick={handleRetry}
+                  onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
                 >
-                  Retry Hotel Load
+                  Retry Hotel
                 </button>
               </Link>
             </div>

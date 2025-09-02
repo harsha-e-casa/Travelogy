@@ -273,7 +273,7 @@ export async function hotelBooking({
     throw e;
   }
 }
-export async function getBookingDetails(bookingId) {
+export async function getBookingDetails(bookingId, setError) {
   try {
     // const response = await fetch(
     //   "https://apitest.tripjack.com/oms/v1/hotel/booking-details",
@@ -294,7 +294,18 @@ export async function getBookingDetails(bookingId) {
       requestData: { bookingId },
     };
     const response = await postData("travelogy/hotel/fetch-data", reqData);
-    console.log("Error Message ", response.errors?.[0].message);
+    if (response.errors && response.errors.length > 0) {
+      console.log("Error Message ", response.errors[0].message);
+      setError(response.errors[0].message); // Set error from response.errors
+    } else if (response.error) {
+      console.log("Error Message new", response.error);
+      setError(response.error); // Set error from response.error field
+    } else {
+      setError("Unknown error occurred."); // In case no error field exists
+    }
+    //  console.log("Error Message ", response.errors?.[0].message);
+    // console.log("Error Message new", response.error);
+
     const data = response;
 
     // save booking data
@@ -317,7 +328,12 @@ export async function getBookingDetails(bookingId) {
     } else {
       // throw new Error(data?.error);
       // return data;
-      throw new Error(response.errors?.[0]?.message);
+      // throw new Error(response.errors?.[0]?.message);
+      throw new Error(
+        response.errors?.[0]?.message ||
+          response.error ||
+          "Unknown error occurred."
+      );
     }
   } catch (error) {
     console.error("Error fetching booking details:", error);

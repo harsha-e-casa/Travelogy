@@ -10,7 +10,7 @@ import Link from "next/link";
 import { AppTravellerHotel } from "./TravellerForm";
 import { useRouter } from "next/navigation";
 import { useNationalities } from "../../util/HotelApi";
-import Layout from "@/components/layout/Layout";
+import { message } from "antd";
 
 const EngineHeaderHotel = ({ active_border }) => {
   const [showSearchState, setShowSearchState] = useState(false);
@@ -18,7 +18,7 @@ const EngineHeaderHotel = ({ active_border }) => {
   const [selectFrom, setSelectFrom] = useState(null);
   const [nationalityId, setNationalityId] = useState(null);
 
-  const { nationalities } = useNationalities();
+  const { nationalities, isLoading: natLoading } = useNationalities();
 
   const router = useRouter();
   const [openDateRage, setOpenDateRage] = useState(false);
@@ -74,35 +74,12 @@ const EngineHeaderHotel = ({ active_border }) => {
     d: "First Class",
   };
 
-  // Handler to capture the selected radio button value
-  const handleChangeClass = (e) => {
-    setTravellerClass(e.target.value); // Update the selected value in state
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [selectedPlan, setSelectedPlan] = useState("round-trip");
   const [roomsData, setRoomsData] = useState([
     { adults: 1, children: 0, childAges: [] },
   ]);
-
-  const clickMinus = () => {
-    setAdult(adult - 1); // Correct way to toggle the state
-  };
-  const clickPlus = () => {
-    setAdult(adult + 1); // Correct way to toggle the state
-  };
-  const clickMinusChildren = () => {
-    setcountChildren(countchildren - 1); // Correct way to toggle the state
-  };
-  const clickPlusChildren = () => {
-    setcountChildren(countchildren + 1); // Correct way to toggle the state
-  };
-
-  const clickRoomAdd = () => {
-    setRooms(rooms + 1); // Correct way to toggle the state
-  };
-  const clickRoomMinus = () => {
-    setRooms(rooms - 1); // Correct way to toggle the state
-  };
 
   const openTraveller = () => {
     setShowYTraveller((prevState) => !prevState); // Correct way to toggle the state
@@ -175,14 +152,31 @@ const EngineHeaderHotel = ({ active_border }) => {
   }, []);
   const [errorMessage, setErrorMessage] = useState(null);
   const [error, setError] = useState(null);
+  useEffect(() => {
+    if (error) {
+      message.warning({
+        content: error,
+        duration: 5,
+        style: {
+          marginTop: 50,
+        },
+        onClose: () => setError(null), // Optional: reset the error state on close
+      });
+    }
+  }, [error]);
 
   const handleSearch = () => {
     if (!selectFrom) {
-      setErrorMessage("Please select a city before proceeding.");
+      setError("Please select a city before proceeding.");
       return;
     }
-
+    if (!nationalityId) {
+      setError("Could not determine nationality for selected city.");
+      return;
+    }
+    setError(null);
     setErrorMessage(null);
+    setIsSubmitting(true);
     const matchedNationality = nationalities.find(
       (n) =>
         selectFrom &&
@@ -193,72 +187,63 @@ const EngineHeaderHotel = ({ active_border }) => {
     //   alert("Could not determine nationality for selected city.");
     //   return;
     // }
-    if (!matchedNationality) {
-      setError("Could not determine nationality for selected city.");
-      return;
-    }
-    if (error) {
-      return (
-        <Layout headerStyle={1} footerStyle={1}>
-          <main className="main">
-            <div className="flex flex-col items-center justify-center text-red-700 py-10 px-4">
-              <h2 className="text-xl font-semibold mb-2">
-                Oops! Something went wrong.
-              </h2>
-              <p className="text-sm">{error}</p>
-              <div className="flex justify-center mt-4">
-                <Link href="/hotels" passHref>
-                  <button
-                    // If you prefer staying on the same page, replace Link with:
-                    // onClick={() => setError(null)}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-                  >
-                    Retry Hotel Load
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </main>
-        </Layout>
-      );
-    }
+    // if (!matchedNationality) {
+    //   setError("Could not determine nationality for selected city.");
+    //   return;
+    // }
 
     const nationalityIdToUse = matchedNationality.countryId;
     console.log("nationalityId", nationalityId, nationalityIdToUse);
+    try {
+      const totalAdults = roomsData.reduce((sum, room) => sum + room.adults, 0);
+      const totalChildren = roomsData.reduce(
+        (sum, room) => sum + room.children,
+        0
+      );
+      const childAges = roomsData.flatMap((room) => room.childAges || []);
 
-    const totalAdults = roomsData.reduce((sum, room) => sum + room.adults, 0);
-    const totalChildren = roomsData.reduce(
-      (sum, room) => sum + room.children,
-      0
-    );
-    const childAges = roomsData.flatMap((room) => room.childAges || []);
+      const formattedCheckIn = dayjs(datedep).format("YYYY-MM-DD");
+      const formattedCheckOut = dayjs(datedepr).format("YYYY-MM-DD");
 
-    const formattedCheckIn = dayjs(datedep).format("YYYY-MM-DD");
-    const formattedCheckOut = dayjs(datedepr).format("YYYY-MM-DD");
+      const queryParams = new URLSearchParams({
+        checkinDate: formattedCheckIn,
+        checkoutDate: formattedCheckOut,
+        location: selectFrom?.cityName || "",
+        city: selectFrom?.id?.toString() || "",
 
-    const queryParams = new URLSearchParams({
-      checkinDate: formattedCheckIn,
-      checkoutDate: formattedCheckOut,
-      location: selectFrom?.cityName || "",
-      city: selectFrom?.id?.toString() || "",
+        // location: selectFrom,
+        // city: "699261",
+        nationality: nationalityIdToUse,
 
-      // location: selectFrom,
-      // city: "699261",
-      nationality: nationalityIdToUse,
+        currency: "INR",
+        rooms: roomsData.length.toString(),
+        adults: totalAdults.toString(),
+        children: totalChildren.toString(),
+        childAges: JSON.stringify(childAges),
+        roomsData: JSON.stringify(roomsData),
+      }).toString();
 
-      currency: "INR",
-      rooms: roomsData.length.toString(),
-      adults: totalAdults.toString(),
-      children: totalChildren.toString(),
-      childAges: JSON.stringify(childAges),
-      roomsData: JSON.stringify(roomsData),
-    }).toString();
-
-    router.push(`/hotel-listing?${queryParams}`);
+      router.push(`/hotel-listing?${queryParams}`);
+    } catch {
+      setError(
+        "Oops! Something went wrong while preparing your search. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+  const canSearch = !!selectFrom && !natLoading;
 
   return (
     <section className="section_main_book_dash_01 relative_MainBanner">
+      {/* {error && (
+        <div className="w_90 mx-auto mb-3 rounded-md bg-red-50 text-red-700 border border-red-200 px-4 py-2">
+          {error}{" "}
+          <button className="ml-2 underline" onClick={() => setError(null)}>
+            Dismiss
+          </button>
+        </div>
+      )} */}
       <div
         className="grid_main_section_2 w_90 rounded-md h_80 absolute b_40"
         onClick={(e) => e.stopPropagation()}
@@ -268,9 +253,12 @@ const EngineHeaderHotel = ({ active_border }) => {
         <div className="search_btn absolute bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto">
           <button
             onClick={handleSearch}
-            className="search_btn_font text-white uppercase tracking-wide"
+            disabled={!canSearch || isSubmitting}
+            className={`search_btn_font text-white uppercase tracking-wide ${
+              !canSearch || isSubmitting ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
-            Search
+            {isSubmitting ? "Searching…" : "Search"}
           </button>
         </div>
         <br />
