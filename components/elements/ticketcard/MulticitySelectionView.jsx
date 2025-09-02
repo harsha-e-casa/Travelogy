@@ -10,6 +10,7 @@ import ByStops from "@/components/Filter/ByStops";
 import ByDepartureTime from "@/components/Filter/ByDepartureTime";
 import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByAirline from "@/components/Filter/ByAirline";
+import SelectedFlightSummary from "./SelectedFlightSummary";
 
 export default function MulticitySelectionView({ flightData }) {
   const { getCookie } = useContext(AppContext);
@@ -496,6 +497,7 @@ export default function MulticitySelectionView({ flightData }) {
                                 const lastSegment =
                                   ticket.sI[ticket.sI.length - 1];
 
+                                console.log("ticket", ticket);
                                 const updatedFlight = {
                                   priceId: selectedFare.id,
                                   flightName: firstSegment.fD.aI.name,
@@ -513,6 +515,7 @@ export default function MulticitySelectionView({ flightData }) {
                                     fareFD.ADULT?.fC?.NF || 0
                                   ),
                                 };
+                                console.log("updatedFlight", updatedFlight);
 
                                 setSelectedFlights((prev) => {
                                   const newFlights = {
@@ -551,6 +554,9 @@ export default function MulticitySelectionView({ flightData }) {
     };
   });
 
+  const isLastFlightSelected = Object.keys(selectedFlights).length === cities.length;
+  console.log("isLastFlightSelected", isLastFlightSelected);
+
   return (
     <>
       <Tabs
@@ -559,6 +565,13 @@ export default function MulticitySelectionView({ flightData }) {
         onChange={(key) => setActiveTabKey(key)}
         destroyInactiveTabPane={false}
       />
+      {Object.keys(selectedFlights).length > 0 && (
+        <SelectedFlightSummary
+          selectedFlights={selectedFlights}
+          cities={cities}
+          isLastFlightSelected={isLastFlightSelected}
+        />
+      )}
     </>
   );
 }

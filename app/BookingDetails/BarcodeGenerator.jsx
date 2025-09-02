@@ -106,7 +106,8 @@ const BarcodeGenerator = ({ passengerDetails }) => {
           <div key={index} style={{ width: "100%", textAlign: "center" }}>
             {/* <p>Your Airlines Reference: {barcodeData}</p> */}
             <img
-              src={apiUrl}
+              // src={apiUrl}
+              src={`/api/image-proxy?url=${encodeURIComponent(apiUrl)}`}
               alt="PDF417 Barcode"
               style={{ background: "#fff", padding: 8, maxWidth: 400 }}
             />

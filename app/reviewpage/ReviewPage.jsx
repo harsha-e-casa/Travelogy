@@ -342,6 +342,19 @@ const ReviewPage = () => {
   const toCity = routeinfo.map((e) => e.toCityOrAirport.city);
   const traveldata = routeinfo.map((e) => e.travelDate);
 
+  const [cookieMealData, setCookieMealData] = useState({});
+  const [cookieBaggageData, setCookieBaggageData] = useState({});
+
+  useEffect(() => {
+    const getCookieMealData = getCookie("mealinfo");
+    const mealData = JSON.parse(getCookieMealData);
+    setCookieMealData(mealData);
+
+    const getCookiebaggageData = getCookie("baggageinfo");
+    const baggageData = JSON.parse(getCookiebaggageData);
+    setCookieBaggageData(baggageData);
+  }, []);
+
   //bookingid
   const bookingId = flightData ? flightData.bookingId : null;
   console.log("bookingId", bookingId);
@@ -916,57 +929,110 @@ const ReviewPage = () => {
   };
 
   const handleHoldBooking = () => {
-    console.log("handleHoldBooking =========== ");
+    console.log("travellers (before update)", travellers);
+    console.log(
+      "totalprice, finalAmountToPay,  bookingId",
+      totalprice,
+      finalAmountToPay,
+      bookingId
+    );
 
-    console.log("traveelers", travellers);
-    console.log("finalAmountToPay bookingid", finalAmountToPay, bookingId);
-    if (Array.isArray(travellers) && travellers.length > 0) {
-      if (bookingId) {
-        // handlePayment();
-        // openNotificationWithIcon('success');
-        // Build the parameter object without extra curly braces
-        const trimmedTravellerInfo = travellers.map((traveller) => ({
-          ti: traveller.ti,
-          fN: traveller.fN,
-          lN: traveller.lN,
-          pt: traveller.pt,
-        }));
+    const gstInfoCookies = getCookie("gst_info");
+    console.log("gstInfoCookies = ", gstInfoCookies);
+    const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
+    console.log("gstInfos = ", gstInfos);
 
-        const parameter = {
-          bookingId: bookingId,
-          travellerInfo: trimmedTravellerInfo,
-          deliveryInfo: {
-            emails: [email],
-            contacts: [`${number.code}${number.number}`],
-          },
-        };
+    if (totalprice && bookingId) {
+      const parameter = {
+        bookingId,
+        travellerInfo: travellers,
+        deliveryInfo: {
+          emails: [email],
+          contacts: [`${number.code}${number.number}`],
+        },
+      };
 
-        console.log("parameter for hold", parameter);
-
-        const saveBookingId = async () => {
-          const reqSaveBookingId = {
-            booking_id: bookingId,
-            phone: number.number,
-            amount: finalAmountToPay,
-          };
-          console.log("reqSaveBookingId === > ", reqSaveBookingId);
-          const result = await postData(
-            "travelogy/flight/save-booking",
-            reqSaveBookingId
-          );
-          console.log("saveBookingId result === > ", result);
-        };
-        saveBookingId();
-
-        loadDataBook(parameter);
-      } else {
-        console.error("bookingId Is empty");
+      if (gstInfos && Object.keys(gstInfos).length > 0) {
+        console.log("gstInfo irukan");
+        parameter.gstInfo = { ...gstInfos };
       }
+
+      console.log("travellerInfo (final):", parameter.travellerInfo);
+      console.log("parameter for book:", parameter);
+
+      const saveBookingId = async () => {
+        const reqSaveBookingId = {
+          booking_id: bookingId,
+          phone: number.number,
+          amount: finalAmountToPay,
+        };
+        console.log("reqSaveBookingId === > ", reqSaveBookingId);
+        const result = await postData(
+          "travelogy/flight/save-booking",
+          reqSaveBookingId
+        );
+        console.log("saveBookingId result === > ", result);
+      };
+      saveBookingId();
+
+      loadDataBook(parameter);
     } else {
-      // Handle case when totalpricee is not set
-      console.error("Total price is not set");
+      console.error("Booking ID or total price is missing");
     }
   };
+
+  // const handleHoldBooking = () => {
+  //   console.log("handleHoldBooking =========== ");
+
+  //   console.log("traveelers", travellers);
+  //   console.log("finalAmountToPay bookingid", finalAmountToPay, bookingId);
+  //   if (Array.isArray(travellers) && travellers.length > 0) {
+  //     if (bookingId) {
+  //       // handlePayment();
+  //       // openNotificationWithIcon('success');
+  //       // Build the parameter object without extra curly braces
+  //       const trimmedTravellerInfo = travellers.map((traveller) => ({
+  //         ti: traveller.ti,
+  //         fN: traveller.fN,
+  //         lN: traveller.lN,
+  //         pt: traveller.pt,
+  //       }));
+
+  //       const parameter = {
+  //         bookingId: bookingId,
+  //         travellerInfo: trimmedTravellerInfo,
+  //         deliveryInfo: {
+  //           emails: [email],
+  //           contacts: [`${number.code}${number.number}`],
+  //         },
+  //       };
+
+  //       console.log("parameter for hold", parameter);
+
+  //       const saveBookingId = async () => {
+  //         const reqSaveBookingId = {
+  //           booking_id: bookingId,
+  //           phone: number.number,
+  //           amount: finalAmountToPay,
+  //         };
+  //         console.log("reqSaveBookingId === > ", reqSaveBookingId);
+  //         const result = await postData(
+  //           "travelogy/flight/save-booking",
+  //           reqSaveBookingId
+  //         );
+  //         console.log("saveBookingId result === > ", result);
+  //       };
+  //       saveBookingId();
+
+  //       loadDataBook(parameter);
+  //     } else {
+  //       console.error("bookingId Is empty");
+  //     }
+  //   } else {
+  //     // Handle case when totalpricee is not set
+  //     console.error("Total price is not set");
+  //   }
+  // };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -1864,7 +1930,7 @@ const ReviewPage = () => {
                                   <p className="text-xl-bold neutral-1000 mb-10 ">
                                     Passenger information
                                   </p>
-                                  <table className="w-full border-collapse mb-20 ">
+                                  <table className="w-full border-collapse mb-20">
                                     <thead
                                       style={{ borderBottom: "grey 1px solid" }}
                                     >
@@ -1873,27 +1939,119 @@ const ReviewPage = () => {
                                           S.No
                                         </th>
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          Mr/Mrs
+                                          Full Name
                                         </th>
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          First Name
+                                          Add-ons
                                         </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          Last Name
-                                        </th>
-                                        {/* <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          Seat No
-                                        </th> */}
                                       </tr>
                                     </thead>
                                     <tbody>
                                       {travellers.length > 0 ? (
                                         travellers.map((traveller, index) => {
-                                          // Log for debugging, check the content of traveller
-                                          console.log(
-                                            `Traveller ${index + 1} Title:`,
-                                            traveller?.ti
-                                          );
+                                          const fullName = `${
+                                            traveller?.ti || ""
+                                          } ${traveller?.fN || ""} ${
+                                            traveller?.lN || ""
+                                          }`.trim();
+
+                                          const addOns = [];
+
+                                          // if (
+                                          //   traveller.ssrBaggageInfos &&
+                                          //   traveller.ssrBaggageInfos.length > 0
+                                          // ) {
+                                          //   const baggageDetails =
+                                          //     traveller.ssrBaggageInfos
+                                          //       .map((b) => b.desc || b.code)
+                                          //       .filter(Boolean)
+                                          //       .join(", ");
+                                          //   if (baggageDetails) {
+                                          //     addOns.push(
+                                          //       `Baggage: ${baggageDetails}`
+                                          //     );
+                                          //   }
+                                          // }
+
+                                          if (
+                                            traveller.ssrBaggageInfos &&
+                                            traveller.ssrBaggageInfos.length > 0
+                                          ) {
+                                            const baggageDetails =
+                                              traveller.ssrBaggageInfos
+                                                .map((b) => {
+                                                  const baggageFromCookie =
+                                                    cookieBaggageData.find(
+                                                      (c) => c.code === b.code
+                                                    );
+                                                  console.log("baggageFromCookiebaggageFromCookie =",baggageFromCookie)
+                                                  return baggageFromCookie
+                                                    ? baggageFromCookie.desc
+                                                    : b.code;
+                                                })
+                                                .filter(Boolean)
+                                                .join(", ");
+                                            if (baggageDetails) {
+                                              addOns.push(
+                                                `Baggage: ${baggageDetails}`
+                                              );
+                                            }
+                                          }
+
+                                          // if (
+                                          //   traveller.ssrMealInfos &&
+                                          //   traveller.ssrMealInfos.length > 0
+                                          // ) {
+                                          //   const mealDetails =
+                                          //     traveller.ssrMealInfos
+                                          //       .map((m) => m.desc || m.code)
+                                          //       .filter(Boolean)
+                                          //       .join(", ");
+                                          //   if (mealDetails) {
+                                          //     addOns.push(
+                                          //       `Meals: ${mealDetails}`
+                                          //     );
+                                          //   }
+                                          // }
+
+                                          if (
+                                            traveller.ssrMealInfos &&
+                                            traveller.ssrMealInfos.length > 0
+                                          ) {
+                                            const mealDetails =
+                                              traveller.ssrMealInfos
+                                                .map((m) => {
+                                                  const mealFromCookie =
+                                                    cookieMealData.find(
+                                                      (c) => c.code === m.code
+                                                    );
+                                                  return mealFromCookie
+                                                    ? mealFromCookie.desc
+                                                    : m.code;
+                                                })
+                                                .filter(Boolean)
+                                                .join(", ");
+                                            if (mealDetails)
+                                              addOns.push(
+                                                `Meals: ${mealDetails}`
+                                              );
+                                          }
+
+                                          if (
+                                            traveller.ssrSeatInfos &&
+                                            traveller.ssrSeatInfos.length > 0
+                                          ) {
+                                            const seatDetails =
+                                              traveller.ssrSeatInfos
+                                                .map((s) => s.code)
+                                                .filter(Boolean)
+                                                .join(", ");
+                                            if (seatDetails) {
+                                              addOns.push(
+                                                `Seat: ${seatDetails}`
+                                              );
+                                            }
+                                          }
 
                                           return (
                                             <tr key={index}>
@@ -1901,37 +2059,24 @@ const ReviewPage = () => {
                                                 {index + 1}
                                               </td>
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {traveller?.ti?.trim() || "N/A"}
+                                                {fullName || "N/A"}
                                               </td>
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {traveller?.fN?.trim() || "N/A"}
+                                                {addOns.length > 0
+                                                  ? addOns.join(" | ")
+                                                  : "None"}
                                               </td>
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {traveller?.lN?.trim() || "N/A"}
-                                              </td>
-                                              {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {traveller?.ssrBaggageInfos?.trim() || "N/A"}
-                                              </td> */}
                                             </tr>
                                           );
                                         })
                                       ) : (
                                         <tr>
-                                          <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                            1
+                                          <td
+                                            colSpan="3"
+                                            className="px-4 py-3 text-center border-b border-gray-200 text-black"
+                                          >
+                                            No passenger information available.
                                           </td>
-                                          <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                            N/A
-                                          </td>
-                                          <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                            N/A
-                                          </td>
-                                          <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                            N/A
-                                          </td>
-                                          {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                            N/A
-                                          </td> */}
                                         </tr>
                                       )}
                                     </tbody>

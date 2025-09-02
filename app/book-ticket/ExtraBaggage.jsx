@@ -1,9 +1,11 @@
 import { Form, Input, Select, Row, Col } from "antd";
+import { useEffect } from "react";
 
 const { Option } = Select;
 
-const ExtraBaggage = ({ numAdults, numChild, numInfants, apiData, form }) => {
+const ExtraBaggage = ({ numAdults, numChild, numInfants, apiData, form, storedTravellerInfos }) => {
   console.log("apiData from extra baggage", apiData);
+  console.log("storedTravellerInfos == ", storedTravellerInfos);
 
   const tripInfos = apiData?.tripInfos || [];
   const segmentinfo = tripInfos.flatMap((trip) => trip.sI || []);
@@ -17,6 +19,44 @@ const ExtraBaggage = ({ numAdults, numChild, numInfants, apiData, form }) => {
   const hasBaggage = ssrInfo.some(
     (e) => Array.isArray(e.BAGGAGE) && e.BAGGAGE.length > 0
   );
+
+  useEffect(() => {
+    if (!storedTravellerInfos || !Array.isArray(storedTravellerInfos) || !apiData) return;
+
+    const values = {};
+    let segmentIndex = 0;
+    apiData.tripInfos?.forEach((trip) => {
+      const segmentinfo = trip.sI || [];
+      console.log("segmentinfoooo ", segmentinfo)
+
+      segmentinfo.forEach((segment) => {
+        const segmentIdStr = segment?.ssrInfo?.BAGGAGE;
+        console.log("segmentIdStr == ", segmentIdStr)
+        // Adults
+        for (let index = 0; index < numAdults; index++) {
+          const traveller = storedTravellerInfos[index];
+
+          if (traveller?.ssrBaggageInfos?.[segmentIndex]?.code) {
+            values[`adultBaggage-${segmentIndex}-${index}`] = `${segment.id}|${traveller.ssrBaggageInfos[segmentIndex].code}`;
+          }
+        }
+
+        // Children
+        for (let index = 0; index < numChild; index++) {
+          const traveller = storedTravellerInfos[numAdults + index];
+
+          if (traveller?.ssrBaggageInfos?.[segmentIndex]?.code) {
+            values[`childBaggage-${segmentIndex}-${index}`] = `${segment.id}|${traveller.ssrBaggageInfos[segmentIndex].code}`;
+          }
+        }
+        segmentIndex++;
+      });
+    });
+
+    form.setFieldsValue(values);
+  }, [storedTravellerInfos, apiData, numAdults, numChild, form]);
+
+
   return (
     <>
       {hasBaggage ? (
@@ -29,6 +69,7 @@ const ExtraBaggage = ({ numAdults, numChild, numInfants, apiData, form }) => {
           >
             {segmentinfo.map((segment, flightIndex) => {
               const baggageOptions = segment?.ssrInfo?.BAGGAGE || [];
+              console.log("baggagesementid = ",segment.id)
 
               return (
                 <div
@@ -108,7 +149,7 @@ const ExtraBaggage = ({ numAdults, numChild, numInfants, apiData, form }) => {
                   ))}
 
                   {/* Infant Baggage */}
-                  {Array.from({ length: numInfants }).map((_, index) => (
+                  {/* {Array.from({ length: numInfants }).map((_, index) => (
                     <div
                       className="p-2 flex gap-4 items-center"
                       key={`infant-${flightIndex}-${index}`}
@@ -140,7 +181,7 @@ const ExtraBaggage = ({ numAdults, numChild, numInfants, apiData, form }) => {
                         </Select>
                       </Form.Item>
                     </div>
-                  ))}
+                  ))} */}
                 </div>
               );
             })}

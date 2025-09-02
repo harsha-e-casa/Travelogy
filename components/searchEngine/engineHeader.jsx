@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useContext, use } from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
 
 import SearchEngHeader from "./SearchEngHeader";
 import AppListSearch from "./AppListSearch";
 import AppDateRage from "./AppDateRage";
+import AppDateRangeFlight from "./AppDateRangeFlight";
 import { TripPlans } from "./TripPlans";
 import { PassengerType } from "./PassengerType";
 import dayjs from "dayjs";
@@ -18,6 +19,7 @@ import MultiCityContainer from "./MultiCityContainer.jsx";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
+import { min } from "date-fns";
 
 const EngineTabs = ({ active_border }) => {
   const searchParams = useSearchParams();
@@ -43,9 +45,9 @@ const EngineTabs = ({ active_border }) => {
   const [openDateRageR, setOpenDateRageR] = useState(false);
   const [showTraveller, setShowYTraveller] = useState(false);
   // const [datedep, setDatedep] = useState(dayjs());
-  const [datedep, setDatedep] = useState(dayjs(dayjs().format("YYYY-MM-DD")));
+  const [departureDate, setDepartureDate] = useState(dayjs(dayjs().format("YYYY-MM-DD")));
 
-  const [datedepr, setDatedepr] = useState(dayjs().add(2, "day"));
+  const [returnDate, setReturnDate] = useState(dayjs().add(2, "day"));
   const dateRangeRef = useRef(null); // Ref for date range container
 
   const [dd_monthStr, setDd_monthStr] = useState(null);
@@ -66,10 +68,16 @@ const EngineTabs = ({ active_border }) => {
   );
   const [fromError, setFromError] = useState("");
   const [toError, setToError] = useState("");
+  const [hasMultiCityError, setHasMultiCityError] = useState(false); // New state for multi-city error
 
   const handleReturnDateChange = (newDate) => {
-    setDatedepr(newDate); // This will trigger the effect above to check the dates
+    setReturnDate(newDate); // This will trigger the effect above to check the dates
   };
+
+  // Callback for MultiCityContainer to report its error status
+  const handleMultiCityErrorChange = useCallback((hasError) => {
+    setHasMultiCityError(hasError);
+  }, []);
   // reset
   useEffect(() => {
     // Reset all traveller cookies when arriving at this page
@@ -290,9 +298,9 @@ const EngineTabs = ({ active_border }) => {
     setCookie("gy_direct_flight", isDirectFlight ? "true" : "false");
   }, [isDirectFlight]);
   useEffect(() => {
-    if (datedep) {
-      const formattedDate = dayjs(datedep);
-      // setCookie('gy_trd', datedep);
+    if (departureDate) {
+      const formattedDate = dayjs(departureDate);
+      // setCookie('gy_trd', departureDate);
       setCookie("gy_trd", formattedDate.format("YYYY-MM-DD"));
 
       setDd_monthStr(formattedDate.format("MMM")); // Format as string
@@ -300,18 +308,34 @@ const EngineTabs = ({ active_border }) => {
       setDd_date(formattedDate.format("DD")); // Format as string
       setDd_year(formattedDate.format("YY")); // Format as string
     }
-  }, [datedep]);
+  }, [departureDate]);
+
+  useEffect(() => {
+    if (dayjs(departureDate).isAfter(dayjs(returnDate))) {
+      setReturnDate(dayjs(departureDate).add(2, "day"));
+    }
+  }, [departureDate, returnDate]);
+
+  useEffect(() => {
+    setMulticitySegments((prevSegments) => {
+      const firstSegment = { ...prevSegments[0] };
+      if (firstSegment.departureDate.isBefore(departureDate)) {
+        firstSegment.departureDate = departureDate;
+      }
+      return [firstSegment, ...prevSegments.slice(1)];
+    });
+  }, [departureDate]);
 
   useEffect(() => {
     setCookie("gy_triptype", selectedPlan);
 
     if (
-      datedep &&
-      datedepr &&
+      departureDate &&
+      returnDate &&
       (selectedPlan === "round-trip" || selectedPlan === "multi-city")
     ) {
-      const formattedDate = dayjs(datedep);
-      const formattedDateR = dayjs(datedepr);
+      const formattedDate = dayjs(departureDate);
+      const formattedDateR = dayjs(returnDate);
       setCookie("gy_trd", formattedDate.format("YYYY-MM-DD"));
       setCookie("gy_return", formattedDateR.format("YYYY-MM-DD"));
       setDdr_monthStr(formattedDateR.format("MMM")); // Format as string
@@ -319,7 +343,7 @@ const EngineTabs = ({ active_border }) => {
       setDdr_date(formattedDateR.format("DD")); // Format as string
       setDdr_year(formattedDateR.format("YY")); // Format as string
     }
-  }, [datedepr, selectedPlan, datedep]);
+  }, [returnDate, selectedPlan, departureDate]);
 
   const openTo = () => {
     if (showSearchStateTo) {
@@ -399,7 +423,7 @@ const EngineTabs = ({ active_border }) => {
       fromCode: selectFromSubTo,
       to: "",
       toCode: "",
-      departureDate: displayDate,
+      departureDate: departureDate, // Use departureDate from engineHeader.jsx
     },
   ]);
 
@@ -435,7 +459,7 @@ const EngineTabs = ({ active_border }) => {
           fromCode: prevSegment.toCode,
           to: "",
           toCode: "",
-          departureDate: displayDate,
+          departureDate: prevSegment.departureDate,
         },
       ]);
     }
@@ -601,9 +625,12 @@ const EngineTabs = ({ active_border }) => {
                 </div>
 
                 {openDateRage ? (
-                  <AppDateRage
+                  <AppDateRangeFlight
                     openToDateRange={openToDateRange}
-                    setDatedep={setDatedep}
+                    setDate={setDepartureDate}
+                    // minDate={min}
+                    minDate={null}
+                    value={departureDate}
                   />
                 ) : null}
               </div>
@@ -633,9 +660,11 @@ const EngineTabs = ({ active_border }) => {
                   </div>
 
                   {openDateRageR ? (
-                    <AppDateRage
+                    <AppDateRangeFlight
                       openToDateRange={openToDateRangeR}
-                      setDatedep={setDatedepr}
+                      setDate={setReturnDate}
+                      minDate={departureDate}
+                      value={returnDate}
                     />
                   ) : null}
                 </div>
@@ -675,6 +704,8 @@ const EngineTabs = ({ active_border }) => {
                   updateSegment={multicityUpdateSegment}
                   addSegment={multicityAddSegment}
                   removeSegment={multicityRemoveSegment}
+                  onMultiCityErrorChange={handleMultiCityErrorChange}
+                  initialDepartureDate={departureDate}
                 />
                 {segmentError && (
                   <div className="text-red-500 text-sm font-medium my-2">
@@ -719,22 +750,14 @@ const EngineTabs = ({ active_border }) => {
             className="search_btn bg_t_2 p_4 rounded-full -bottom-7 right-0 left-0 m-auto"
             style={{ position: "relative" }}
           >
-            {/*<div
-              onClick={searchTickets}
-              className="search_btn_font text-white uppercase tracking-wide cursor-pointer"
-              disabled={!!fromError || !!toError || !selectFrom || !selectFromTo}
-            >
-              {" "}
-              Search
-            </div>*/}
             <div
               onClick={
-                !fromError && !toError && selectFrom && selectFromTo
+                !fromError && !toError && selectFrom && selectFromTo && !hasMultiCityError
                   ? searchTickets
                   : null
               }
               className={`search_btn_font text-white uppercase tracking-wide cursor-pointer ${
-                !!fromError || !!toError || !selectFrom || !selectFromTo
+                !!fromError || !!toError || !selectFrom || !selectFromTo || hasMultiCityError
                   ? "cursor-not-allowed opacity-50"
                   : ""
               }`}

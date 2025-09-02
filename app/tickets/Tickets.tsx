@@ -30,9 +30,10 @@ import EngineTabs from "@/components/searchEngine/engineHeader";
 import Link from "next/link";
 import { postDataTJ, postData } from "../../services/NetworkAdapter";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Skeleton } from "antd";
+import { Skeleton, Tooltip } from "antd";
 import AppListSearch from "@/components/searchEngine/AppListSearch";
 import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppDateRangeFlight from "@/components/searchEngine/AppDateRangeFlight";
 import "./customeHeader_1.css";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
@@ -236,34 +237,39 @@ export default function Tickets() {
     const cookieValue = getCookie("gy_multi_city");
     console.error("existing multi city value in cookie: ", cookieValue);
 
+    const addErrorFields = (segment: any) => ({
+      ...segment,
+      fromError: "",
+      toError: "",
+      lastEditedField: null,
+    });
+
     try {
       const parsed = cookieValue ? JSON.parse(cookieValue) : null;
 
-      // If parsed is a non-empty array, use it. Otherwise, return default.
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed.map(addErrorFields);
       }
 
-      // Default value when cookie is empty or invalid
       return [
-        {
+        addErrorFields({
           from: "Select City",
           fromCode: "NIL",
           to: "Select City",
           toCode: "NIL",
           departureDate: "",
-        },
+        }),
       ];
     } catch (e) {
       console.error("Failed to parse multi-city cookie:", e);
       return [
-        {
+        addErrorFields({
           from: "Delhi",
           fromCode: "DEL",
           to: "Bengaluru",
           toCode: "BLR",
           departureDate: "",
-        },
+        }),
       ];
     }
   });
@@ -300,6 +306,9 @@ export default function Tickets() {
         to: "Select City",
         toCode: "",
         departureDate: displayDate,
+        fromError: "",
+        toError: "",
+        lastEditedField: null,
       },
     ]);
   };
@@ -310,6 +319,38 @@ export default function Tickets() {
       return () => clearTimeout(timer);
     }
   }, [errorMsg]);
+
+  useEffect(() => {
+    let needsUpdate = false;
+    const updatedSegments = multicitySegments.map(segment => {
+      const newSegment = { ...segment };
+      let fromError = "";
+      let toError = "";
+
+      if (segment.fromCode && segment.toCode && segment.fromCode === segment.toCode) {
+        if (segment.lastEditedField === 'from') {
+          fromError = "From and To cities cannot be the same.";
+        } else if (segment.lastEditedField === 'to') {
+          toError = "From and To cities cannot be the same.";
+        }
+      }
+
+      if (newSegment.fromError !== fromError) {
+        newSegment.fromError = fromError;
+        needsUpdate = true;
+      }
+      if (newSegment.toError !== toError) {
+        newSegment.toError = toError;
+        needsUpdate = true;
+      }
+
+      return newSegment;
+    });
+
+    if (needsUpdate) {
+      setMulticitySegments(updatedSegments);
+    }
+  }, [multicitySegments]);
 
   const removeSegment = (index: number) => {
     setMulticitySegments((prev) => prev.filter((_, i) => i !== index));
@@ -370,20 +411,19 @@ export default function Tickets() {
   };
 
   const handlesearFlight = () => {
+    if (fromError || toError) {
+      return; // Do not proceed if there are city selection errors
+    }
+
     if ((srx_tripType || "").toLowerCase() === "multi-city") {
       let hasError = false;
-
-      for (let i = 0; i < multicitySegments.length; i++) {
-        const segment = multicitySegments[i];
-
-        if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
-          setErrorMsg(`Please fill all fields in segment ${i + 2}.`);
+      for (const segment of multicitySegments) {
+        if (segment.fromError || segment.toError) {
           hasError = true;
           break;
         }
-
-        if (segment.fromCode === segment.toCode) {
-          setErrorMsg(`From and To cannot be the same in segment ${i + 2}.`);
+        if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
+          setErrorMsg(`Please fill all fields in segment.`);
           hasError = true;
           break;
         }
@@ -607,7 +647,7 @@ export default function Tickets() {
         routeInfos: tripBasedRouteInfo,
         searchModifiers: {
           // pfts: [mapPassengerType[passengerType]],
-          sourceId: "22",
+          // sourceId: "22",
           pft: mapPassengerType[passengerType],
           isDirectFlight: isDirectFlight, // always true if isDirectFlight is false
           isConnectingFlight: false,
@@ -763,8 +803,21 @@ export default function Tickets() {
   }, []);
 
   const [error, setError] = useState<string>("");
+  const [fromError, setFromError] = useState<string>("");
+  const [toError, setToError] = useState<string>("");
   const [srx_arrivalTo, setArrivalTo] = useState<string>("");
   const [srx_arrivalCode, setArrivalToCode] = useState<string>("");
+  const [lastEditedField, setLastEditedField] = useState<string | null>(null);
+
+  const handleFromCityChange = (city: string) => {
+    setdepartureFrom(city);
+    setLastEditedField('from');
+  };
+
+  const handleToCityChange = (city: string) => {
+    setArrivalTo(city);
+    setLastEditedField('to');
+  };
 
   // useEffect(() => {
   // 	if (!getCookie('gy_aa_str')) {
@@ -774,6 +827,21 @@ export default function Tickets() {
   // 		setDepartureToCode('BLR');
   // 	}
   // });
+
+  useEffect(() => {
+    if (srx_departureFrom && srx_arrivalTo && srx_departureFrom === srx_arrivalTo) {
+      if (lastEditedField === 'from') {
+        setFromError("From and To cities cannot be the same.");
+        setToError("");
+      } else if (lastEditedField === 'to') {
+        setToError("From and To cities cannot be the same.");
+        setFromError("");
+      }
+    } else {
+      setFromError("");
+      setToError("");
+    }
+  }, [srx_departureFrom, srx_arrivalTo, lastEditedField]);
 
   useEffect(() => {
     const dfa = Cookies.get("gy_aa_str") || "";
@@ -856,6 +924,19 @@ export default function Tickets() {
     const cookieDate = Cookies.get("gy_return");
     return cookieDate ? dayjs(cookieDate) : dayjs();
   });
+
+  // useEffect(() => {
+
+  //   const formattedDatedep = dayjs(datedep);
+  //   const fDepartureDate =  formattedDatedep.format("YYYY-MM-DD");
+
+  //   const formattedDatedepr = dayjs(datedepr);
+  //   const fReturnDate =  formattedDatedepr.format("YYYY-MM-DD");
+    
+  //   if (((srx_tripType?.toLowerCase() || "") === "round-trip") && (fDepartureDate == fReturnDate)) {
+  //     console.log("should throw validation !!!!!!!!!!!!!!!")
+  //   }
+  // }, [datedep, datedepr]);
 
   const openfrom = () => {
     if (showSearchState) {
@@ -1098,11 +1179,23 @@ export default function Tickets() {
                       <div className="searchFfromSelect searchFfromSelect_2">
                         <AppListSearch
                           operEngLocation={openfrom}
-                          setSelectFrom={setdepartureFrom}
+                          setSelectFrom={handleFromCityChange}
                           setSelectFromSub={setDepartureToCode}
                         />
                       </div>
                     ) : null}
+                    <Tooltip
+                      className="flex shadow-md z-10"
+                      placement="bottom"
+                      title={fromError}
+                      open={!!fromError}
+                      arrow={{ pointAtCenter: true }}
+                      overlayInnerStyle={{
+                        backgroundColor: "#ffeaea",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                      }}
+                    ></Tooltip>
                   </div>
 
                   <div className="hdt_header-item relative">
@@ -1115,11 +1208,23 @@ export default function Tickets() {
                       <div className="searchFfromSelect searchFfromSelect_2">
                         <AppListSearch
                           operEngLocation={openTo}
-                          setSelectFrom={setArrivalTo}
+                          setSelectFrom={handleToCityChange}
                           setSelectFromSub={setArrivalToCode}
                         />
                       </div>
                     ) : null}
+                    <Tooltip
+                      className="flex shadow-md z-50"
+                      placement="bottom"
+                      title={toError}
+                      open={!!toError}
+                      arrow={{ pointAtCenter: true }}
+                      overlayInnerStyle={{
+                        backgroundColor: "#ffeaea",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                      }}
+                    ></Tooltip>
                   </div>
                 </>
               )}
@@ -1145,9 +1250,11 @@ export default function Tickets() {
                   </div>
 
                   {openDateRage ? (
-                    <AppDateRage
+                    <AppDateRangeFlight
                       openToDateRange={openToDateRange}
-                      setDatedep={setDatedep}
+                      setDate={setDatedep}
+                      minDate={null}
+                      value={datedep}
                     />
                   ) : null}
                 </div>
@@ -1161,9 +1268,11 @@ export default function Tickets() {
                       {ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}
                     </div>
                     {openDateRageR ? (
-                      <AppDateRage
+                      <AppDateRangeFlight
                         openToDateRange={openToDateRangeR}
-                        setDatedep={setDatedepr}
+                        setDate={setDatedepr}
+                        minDate={datedep}
+                        value={datedepr}
                       />
                     ) : null}
                   </div>
@@ -1205,14 +1314,20 @@ export default function Tickets() {
                 </>
               ) : (
                 <>
-                  <button
-                    // onClick={() => SetSearchFlight((prev) => !prev)}
-                    // onClick={() => SetSearchFlight(true)}
-                    onClick={handlesearFlight}
-                    className="hdt_search-btn"
-                  >
-                    Search
-                  </button>
+                  <div
+              onClick={
+                (fromError || toError || errorMsg || multicitySegments.some(s => s.fromError || s.toError))
+                  ? () => {}
+                  : handlesearFlight
+              }
+              className={`hdt_search-btn ${
+                (fromError || toError || errorMsg || multicitySegments.some(s => s.fromError || s.toError))
+                  ? "cursor-not-allowed opacity-50"
+                  : ""
+              }`}
+            >
+              Search
+            </div>
                 </>
               )}
             </div>
@@ -1242,6 +1357,7 @@ export default function Tickets() {
                                 setSelectFrom={(val: any) => {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].from = val;
+                                  newSegs[idx].lastEditedField = 'from';
                                   setMulticitySegments(newSegs);
                                 }}
                                 setSelectFromSub={(val: any) => {
@@ -1252,6 +1368,18 @@ export default function Tickets() {
                               />
                             </div>
                           )}
+                          <Tooltip
+                            className="flex shadow-md z-10"
+                            placement="bottom"
+                            title={segment.fromError}
+                            open={!!segment.fromError}
+                            arrow={{ pointAtCenter: true }}
+                            overlayInnerStyle={{
+                              backgroundColor: "#ffeaea",
+                              color: "#ff4d4f",
+                              fontWeight: 500,
+                            }}
+                          ></Tooltip>
                         </div>
 
                         <div
@@ -1274,6 +1402,7 @@ export default function Tickets() {
                                 setSelectFrom={(val: any) => {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].to = val;
+                                  newSegs[idx].lastEditedField = 'to';
                                   setMulticitySegments(newSegs);
                                 }}
                                 setSelectFromSub={(val: any) => {
@@ -1284,6 +1413,18 @@ export default function Tickets() {
                               />
                             </div>
                           )}
+                          <Tooltip
+                            className="flex shadow-md z-50"
+                            placement="bottom"
+                            title={segment.toError}
+                            open={!!segment.toError}
+                            arrow={{ pointAtCenter: true }}
+                            overlayInnerStyle={{
+                              backgroundColor: "#ffeaea",
+                              color: "#ff4d4f",
+                              fontWeight: 500,
+                            }}
+                          ></Tooltip>
                         </div>
 
                         <div className="hdt_header-item">
@@ -1299,13 +1440,15 @@ export default function Tickets() {
                               : "Select Date"}
                           </div>
                           {openDepartMultiIndex === idx && (
-                            <AppDateRage
+                            <AppDateRangeFlight
                               openToDateRange={() => multiOpenToDateRange(idx)}
-                              setDatedep={(val: any) => {
+                              setDate={(val: any) => {
                                 const newSegs = [...multicitySegments];
                                 newSegs[idx].departureDate = val;
                                 setMulticitySegments(newSegs);
                               }}
+                              minDate={idx > 0 ? multicitySegments[idx - 1].departureDate : datedep} // Use datedep for the first segment
+                              value={multicitySegments[idx].departureDate}
                             />
                           )}
                         </div>
