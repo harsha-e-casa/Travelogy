@@ -10,7 +10,7 @@ import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 
 const ageOptions = Array.from({ length: 11 }, (_, i) => ({
   value: i + 1,
-  label: `${i + 1} Yrs`,
+  label: `${i + 1}`,
 }));
 
 export const TravellerForm = ({
@@ -657,7 +657,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
                     onChange={(value) =>
                       updateChildAge(roomIndex, childIndex, value)
                     }
-                    style={{ width: 120, marginBottom: 8, padding: 3 }}
+                    style={{ width: 60, marginBottom: 8, padding: 3 }}
                     options={ageOptions}
                     placeholder="Select Age"
                   />
