@@ -24,16 +24,12 @@ export const fetchHotelReviewData = async (hotelId, optionId) => {
     if (response.data?.status?.success) {
       return response.data;
     } else {
-      const apiError =
-        response.data?.errors?.[0]?.message ||
-        "Unknown error occurred from server";
+      const apiError = response.data?.errors?.[0]?.message;
       throw new Error(apiError);
     }
   } catch (err) {
     const apiMessage =
-      err?.response?.data?.errors?.[0]?.message ||
-      err?.message ||
-      "Unknown error occurred";
+      err?.response?.data?.errors?.[0]?.message || err?.message;
     throw new Error(apiMessage);
   }
 };
@@ -300,8 +296,6 @@ export async function getBookingDetails(bookingId, setError) {
     } else if (response.error) {
       console.log("Error Message new", response.error);
       setError(response.error); // Set error from response.error field
-    } else {
-      setError("Unknown error occurred."); // In case no error field exists
     }
     //  console.log("Error Message ", response.errors?.[0].message);
     // console.log("Error Message new", response.error);
@@ -329,11 +323,7 @@ export async function getBookingDetails(bookingId, setError) {
       // throw new Error(data?.error);
       // return data;
       // throw new Error(response.errors?.[0]?.message);
-      throw new Error(
-        response.errors?.[0]?.message ||
-          response.error ||
-          "Unknown error occurred."
-      );
+      throw new Error(response.errors?.[0]?.message || response.error);
     }
   } catch (error) {
     console.error("Error fetching booking details:", error);

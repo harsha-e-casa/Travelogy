@@ -3,12 +3,15 @@ import { AppContext } from "@/util/AppContext";
 import { useContext } from "react";
 import Link from "next/link";
 import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
-import AppDateRage from "@/components/searchEngine/AppDateRage";
+// import AppDateRage from "@/components/searchEngine/AppDateRage";
+import AppDateRange from "@/components/searchEngine/AppDateRange";
+
 import dayjs from "dayjs";
 
 export default function BookingCard({
   segmentsPrice,
   totalpricee,
+  isFetching,
   onSelectOtherRoom,
   searchData,
   hotelData,
@@ -35,10 +38,6 @@ export default function BookingCard({
   const [openDateRange, setOpenDateRange] = useState(null);
 
   const roomCount = searchData?.roomInfo?.length;
-  console.log("totalfare", totalfare);
-  console.log("optionId", optionId);
-  console.log("hotelId", hotelId);
-
   const netprice = totalpricee?.fC?.NF;
   const { getCookie } = useContext(AppContext);
   const totalAdults = roomsData.reduce(
@@ -48,10 +47,23 @@ export default function BookingCard({
   const totalChildren = roomsData.reduce(
     (sum, room) => sum + room.numberOfChild,
     0
-  );
-  console.log("roomsData", roomsData);
+  ); // Helpers placed at the top of the component
+  const normalizeRoomsForModal = (rooms) =>
+    (rooms || []).map((r) => ({
+      adults: r?.adults ?? r?.numberOfAdults ?? 1,
+      children: r?.children ?? r?.numberOfChild ?? 0,
+      childAges: Array.isArray(r?.childAges) ? r.childAges : r?.childAge ?? [],
+    }));
+
+  const denormalizeRoomsFromModal = (rooms) =>
+    (rooms || []).map((r) => ({
+      numberOfAdults: r?.adults ?? 1,
+      numberOfChild: r?.children ?? 0,
+      childAge: Array.isArray(r?.childAges) ? r.childAges : [],
+    }));
+
   return (
-    <div className="p-4 bg-white space-y-4">
+    <div className="p-0 bg-white space-y-4">
       <div className="item-line-booking">
         <div className="">
           <p className="text-2xl font-bold text-neutral-900">
@@ -91,15 +103,15 @@ export default function BookingCard({
       <div className="space-y-3">
         <h5 className="text-md font-bold text-neutral-800">
           {/* Check availability */}
-          Search Details
+          Check Avaiability
         </h5>
         <div className="grid grid-cols-3 gap-1">
           <div className="relative">
             <button
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   setOpenDateRange("checkin");
-              // }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDateRange("checkin");
+              }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
               {" "}
@@ -114,13 +126,12 @@ export default function BookingCard({
                 onClick={(e) => e.stopPropagation()}
                 className="absolute z-50 bg-white shadow-xl mt-2"
               >
-                <AppDateRage
-                  value={checkinDate ? new Date(checkinDate) : new Date()}
+                <AppDateRange
+                  minDate={dayjs()}
+                  valueDate={checkinDate ? dayjs(checkinDate) : null}
                   openToDateRange={() => setOpenDateRange(null)}
                   setDatedep={(date) => {
-                    if (date) {
-                      setCheckinDate(dayjs(date).format("YYYY-MM-DD"));
-                    }
+                    setCheckinDate(date ? date.format("YYYY-MM-DD") : null);
                     setOpenDateRange(null);
                   }}
                 />
@@ -130,10 +141,10 @@ export default function BookingCard({
 
           <div className="relative">
             <button
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   setOpenDateRange("checkout");
-              // }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenDateRange("checkout");
+              }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
             >
               <label className="text-xs text-gray-500 mb-1 block">
@@ -147,13 +158,14 @@ export default function BookingCard({
                 onClick={(e) => e.stopPropagation()}
                 className="absolute z-50 bg-white shadow-xl mt-2"
               >
-                <AppDateRage
-                  value={checkoutDate ? new Date(checkoutDate) : new Date()}
+                <AppDateRange
+                  minDate={
+                    checkinDate ? dayjs(checkinDate).add(1, "day") : dayjs()
+                  }
+                  valueDate={checkoutDate ? dayjs(checkoutDate) : null}
                   openToDateRange={() => setOpenDateRange(null)}
                   setDatedep={(date) => {
-                    if (date) {
-                      setCheckoutDate(dayjs(date).format("YYYY-MM-DD"));
-                    }
+                    setCheckoutDate(date ? date.format("YYYY-MM-DD") : null);
                     setOpenDateRange(null);
                   }}
                 />
@@ -197,18 +209,13 @@ export default function BookingCard({
           <div className="text-sm text-neutral-700">
             <label className="text-xs text-gray-500">Persons and Room</label>
             <button
-              // onClick={toggleTraveller}
+              onClick={toggleTraveller}
               className="w-full text-left text-xs font-semibold"
             >
               {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}
-              {roomsData?.reduce((sum, room) => sum + room.adults, 0)} Adult
-              {roomsData?.reduce((sum, room) => sum + room.adults, 0) > 1
-                ? "s"
-                : ""}
-              , {roomsData?.reduce((sum, room) => sum + room.children, 0)} Child
-              {roomsData?.reduce((sum, room) => sum + room.children, 0) > 1
-                ? "ren"
-                : ""}
+              {totalAdults} Adult
+              {totalAdults > 1 ? "s" : ""}, {totalChildren} Child
+              {totalChildren > 1 ? "ren" : ""}
             </button>
 
             {showTraveller && (
@@ -217,9 +224,9 @@ export default function BookingCard({
                 onClick={(e) => e.stopPropagation()}
               >
                 <AppTravellerHotel
-                  roomsData={roomsData}
+                  roomsData={normalizeRoomsForModal(roomsData)}
                   onClose={(updatedRooms) => {
-                    setRoomsData(updatedRooms);
+                    setRoomsData(denormalizeRoomsFromModal(updatedRooms));
                     toggleTraveller();
                   }}
                 />
@@ -231,24 +238,32 @@ export default function BookingCard({
       <div className="box-button-book">
         <Link
           href={`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`}
-          className="btn btn-book"
+          className="btn btn-book mb-2"
+          aria-disabled={isFetching}
+          aria-busy={isFetching}
+          onClick={(e) => {
+            if (isFetching) e.preventDefault();
+          }}
         >
-          Book This Room
-          <svg
-            width={16}
-            height={16}
-            viewBox="0 0 16 16"
-            fill="#fff"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8 15L15 8L8 1M15 8L1 8"
-              stroke="#fff"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          {isFetching ? "Fetching..." : "Book This Room"}
+          {!isFetching && (
+            <svg
+              width={16}
+              height={16}
+              viewBox="0 0 16 16"
+              fill="#fff"
+              xmlns="http://www.w3.org/2000/svg"
+              className="ml-1 inline-block"
+            >
+              <path
+                d="M8 15L15 8L8 1M15 8L1 8"
+                stroke="#fff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
         </Link>
       </div>
     </div>

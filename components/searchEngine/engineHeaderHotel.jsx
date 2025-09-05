@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import SearchEngHeader from "./SearchEngHeader";
 import CityListSearch from "./CityListSearch";
 import AppDateRage from "./AppDateRage";
@@ -233,7 +233,10 @@ const EngineHeaderHotel = ({ active_border }) => {
     }
   };
   const canSearch = !!selectFrom && !natLoading;
-
+  const totalNights = useMemo(() => {
+    if (!datedep || !datedepr) return 0;
+    return datedepr.diff(datedep, "day"); // dayjs diff in days
+  }, [datedep, datedepr]);
   return (
     <section className="section_main_book_dash_01 relative_MainBanner">
       {/* {error && (
@@ -379,9 +382,30 @@ const EngineHeaderHotel = ({ active_border }) => {
               ) : null}
             </div>
           ) : null}
+          <div className="text_start b_right_2px grid_w_4 css_pointer">
+            <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
+              <div className="ml__txt">
+                <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small">
+                  Total Nights
+                </div>
+                <div className="flex">
+                  <div>
+                    <span className="cus-text-5xl text-5xl font-bold text-gray-900">
+                      {totalNights}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
+                    <div className="w-full font-bold cust_text_res">
+                      {totalNights === 1 ? "Night" : "Nights"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div
-            className="b_right_2px grid_w_4 css_pointer relative box_left_ddr2"
+            className="b_right_2px grid_w_5 css_pointer relative box_left_ddr2"
             onClick={openTraveller}
           >
             <div className="text_start flex xs:pl-2 sm:pl-3 md:pl-4 lg:pl-6 slider-labels">

@@ -18213,6 +18213,29 @@ h2 span {
 }
 
 .custom-grid {
+  display: flex;
+  margin: 20px;
+}
+
+.grid_w_1,
+.grid_w_2,
+.grid_w_3 {
+  flex: 2;
+}
+
+
+.grid_w_4 {
+  flex: 1;
+}
+
+.grid_w_5 {
+  flex: 2;
+}
+
+/* Travellers */
+
+/* neutralize old widths */
+#custom-grid {
   /*  display: grid;*/
   /*  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
   display: flex;
@@ -18834,7 +18857,7 @@ h2 span {
   line-height: 18px;
 }
 
-.grid_w_1 {
+/* .grid_w_1 {
   width: 30%;
 }
 
@@ -18845,7 +18868,7 @@ h2 span {
 
 .grid_w_4 {
   width: 30%;
-}
+} */
 
 .lh_18 {
   line-height: 18px;

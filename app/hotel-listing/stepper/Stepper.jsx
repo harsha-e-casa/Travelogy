@@ -814,7 +814,7 @@ export function Step1TravellerDetails({
         </div>
 
         <button className="rounded-none book-now-btn" onClick={handleNext}>
-          PROCEED TO REVIEW
+          CONTINUE
         </button>
       </div>
     </Suspense>
@@ -1356,7 +1356,7 @@ export function Step2Review({
                 }`}
                 onClick={handleNext}
               >
-                PROCEED TO PAY
+                CONTINUE
               </button>
             </div>
           </div>
@@ -1897,19 +1897,33 @@ export function Step3PersonalDocuments({
                 of the Income Tax Act, 1961. I am accepting the attached
                 declaration{" "}
                 <span>
-                  <a href="/assets/imgs/Standard_declaration_TCS.pdf"></a>
+                  <a
+                    href="/assets/imgs/Standard_declaration_TCS.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    (link to the declaration)
+                  </a>
                 </span>
-                (link to the declaration)
               </Radio>
               <Radio className="tcs-radio" value="standalone-products">
                 We are purchasing these travel products from Tripjack to be sold
                 to end customers as standalone products.I am accepting the
-                attached declaration (link to the declaration). The total
-                foreign remittances made by the end customers during the current
-                financial year under the Liberalised Remittance Scheme of
-                Reserve Bank of India (including value of remittance intended to
-                be made for these travel products) (“TOTAL LRS REMITTANCE
-                VALUE”) is less than the threshold of INR 7,00,000.
+                attached declaration{" "}
+                <span>
+                  <a
+                    href="/assets/imgs/Standard_declaration_TCS.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    (link to the declaration)
+                  </a>
+                </span>
+                . The total foreign remittances made by the end customers during
+                the current financial year under the Liberalised Remittance
+                Scheme of Reserve Bank of India (including value of remittance
+                intended to be made for these travel products) (“TOTAL LRS
+                REMITTANCE VALUE”) is less than the threshold of INR 7,00,000.
               </Radio>
             </Radio.Group>
             {errors.tcs && (
