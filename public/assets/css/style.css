@@ -18213,6 +18213,29 @@ h2 span {
 }
 
 .custom-grid {
+  display: flex;
+  margin: 20px;
+}
+
+.grid_w_1,
+.grid_w_2,
+.grid_w_3 {
+  flex: 2;
+}
+
+
+.grid_w_4 {
+  flex: 1;
+}
+
+.grid_w_5 {
+  flex: 2;
+}
+
+/* Travellers */
+
+/* neutralize old widths */
+#custom-grid {
   /*  display: grid;*/
   /*  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
   display: flex;
@@ -18834,7 +18857,7 @@ h2 span {
   line-height: 18px;
 }
 
-.grid_w_1 {
+/* .grid_w_1 {
   width: 30%;
 }
 
@@ -18845,7 +18868,7 @@ h2 span {
 
 .grid_w_4 {
   width: 30%;
-}
+} */
 
 .lh_18 {
   line-height: 18px;
@@ -19329,9 +19352,17 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   background-color: #000000c4;
 }
 
-.book-now-btn {
-  background-color: #f58220;
-  color: white;
+.back-to-btn {
+  background-color: #ccc;
+  color: #000;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 4px 12px;
+  /* py-1 = 4px top/bottom, px-3 = 12px left/right */
+  border: none;
+  border-radius: 4px;
+  /* matches Tailwind's `rounded` */
+  cursor: pointer;
 }
 
 .book-now-btn {

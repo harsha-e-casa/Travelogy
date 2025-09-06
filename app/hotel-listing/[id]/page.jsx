@@ -1,14 +1,11 @@
 "use client";
 import { useState, useEffect, useMemo, useRef } from "react";
-import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import BookingCard from "../booking";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import HotelData from "./hotelData";
 import { postData } from "@/services/NetworkAdapter";
-// import { useRouter } from "next/router";
-import HotelListingSearch from "@/app/hotel-listing/searchHeader";
 
 const Modal = ({
   images,
@@ -17,11 +14,6 @@ const Modal = ({
   selectedImage,
   setSelectedImage,
 }) => {
-  // const standardImages = useMemo(
-  //   () => images.filter((image) => image.sz === "Standard"),
-  //   [images]
-  // );
-
   const standardImages = useMemo(() => {
     const filteredImages = images.filter((image) => image.sz === "Standard");
 
@@ -86,7 +78,10 @@ const Modal = ({
   );
 };
 export default function ActivitiesDetail4() {
+  const router = useRouter();
   const hotelDataRef = useRef(null);
+  const [adults, setAdults] = useState(0);
+  const [children, setChildren] = useState(0);
   const [hotelData, setHotelData] = useState(null);
   const [searchQueryData, setSearchQueryData] = useState(null);
   const { id } = useParams();
@@ -96,133 +91,184 @@ export default function ActivitiesDetail4() {
   const [error, setError] = useState(null);
   const [checkinDate, setCheckinDate] = useState(null);
   const [checkoutDate, setCheckoutDate] = useState(null);
-  const [selectFrom, setSelectFrom] = useState("Goa");
   const [roomsData, setRoomsData] = useState([
-    { adults: 1, children: 0, childAges: [] },
+    { numberOfAdults: 1, numberOfChild: 0, childAge: [] },
   ]);
-  // const [totalAdults, setTotalAdults] = useState(1);
-  // const [totalChildren, setTotalChildren] = useState(0);
-  const [showSearchState, setShowSearchState] = useState(false);
   const [showTraveller, setShowTraveller] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
-  const [openDateRange, setOpenDateRange] = useState(false);
-  // const router = useRouter();
 
-  // const handleRetry = () => {
-  //   router.push("/hotels");
-  // };
-  const handleSearch = () => {
-    console.log("Searching with the following data:");
-    console.log("Check-in:", checkinDate);
-    console.log("Check-out:", checkoutDate);
-    console.log("Location:", selectFrom);
-    console.log("Rooms Data:", roomsData);
-  };
+  // useEffect(() => {
+  //   if (searchQueryData?.roomInfo) {
+  //     const convertedRooms = searchQueryData.roomInfo.map((room) => ({
+  //       numberOfAdults: room.numberOfAdults,
+  //       numberOfChild: room.numberOfChild,
+  //       childAges: room.childAge || [],
+  //     }));
+  //     setRoomsData(convertedRooms);
+  //   }
+  // }, [searchQueryData?.roomInfo]);
+
   useEffect(() => {
     if (searchQueryData?.roomInfo) {
       const convertedRooms = searchQueryData.roomInfo.map((room) => ({
-        adults: room.numberOfAdults,
-        children: room.numberOfChild,
-        childAges: room.childAge || [],
+        numberOfAdults: room.numberOfAdults ?? 1,
+        numberOfChild: room.numberOfChild ?? 0,
+        childAge: Array.isArray(room.childAge) ? room.childAge : [],
       }));
       setRoomsData(convertedRooms);
     }
   }, [searchQueryData?.roomInfo]);
-
-  const toggleCheckin = () => {
-    setOpenCheckin((prevState) => !prevState);
-  };
-
-  const toggleCheckout = () => {
-    setOpenCheckout((prevState) => !prevState);
-  };
-
+  const normalizeRooms = (rs = []) =>
+    rs.map(({ numberOfAdults, numberOfChild, childAge, childAges }) => ({
+      numberOfAdults,
+      numberOfChild,
+      childAge: Array.isArray(childAge)
+        ? childAge
+        : Array.isArray(childAges)
+        ? childAges
+        : [],
+    }));
   const toggleTraveller = () => {
     setShowTraveller((prevState) => !prevState);
-  };
-
-  const openfrom = () => {
-    setShowSearchState((prevState) => !prevState);
   };
 
   const scrollToHotelData = () => {
     hotelDataRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+  const roomInfo = searchQueryData?.roomInfo || [];
+
+  const prevCheckinDate = useRef(checkinDate);
+  const prevCheckoutDate = useRef(checkoutDate);
+  const prevRoomsData = useRef(JSON.stringify(normalizeRooms(roomsData)));
+  const [searchCriteria, setSearchCriteria] = useState({});
+  const [searchPreferences, setSearchPreferences] = useState({});
+  const [dynamicId, setDynamicId] = useState(id); // Store dynamic id
+  const [isFetchingButton, setIsFetchingButton] = useState(false);
+  useEffect(() => {
+    if (dynamicId !== id) {
+      router.push(`/hotel-listing/${dynamicId}`, undefined, { shallow: true });
+    }
+  }, [dynamicId, id, router]);
+
+  const fetchHotelDetails = async (
+    updatedData,
+    { showButtonLoading = false } = {}
+  ) => {
+    try {
+      if (showButtonLoading) {
+        setIsFetchingButton(true);
+      } else {
+        setLoading(true);
+      }
+      const reqData = {
+        action: "hotelDetaiSearch",
+        requestData: {
+          id: dynamicId,
+          searchQuery: {
+            ...updatedData,
+            searchCriteria: searchCriteria,
+            searchPreferences: searchPreferences,
+          },
+        },
+      };
+      const response = await postData("travelogy/hotel/fetch-data", reqData);
+      if (response?.status?.success) {
+        setHotelData(response.hotel);
+        setSearchQueryData(response.searchQuery);
+        setCheckinDate(response.searchQuery?.checkinDate);
+        setCheckoutDate(response.searchQuery?.checkoutDate);
+        setDynamicId(response.hotel.id);
+        setRoomsData(response.searchQuery?.roomInfo);
+        console.log("roomInfo", response.searchQuery?.roomInfo);
+      } else {
+        console.error(response?.error || "Error fetching hotel details");
+      }
+    } catch (error) {
+      console.error("Error fetching hotel details:", error.message);
+    } finally {
+      if (showButtonLoading) {
+        setIsFetchingButton(false);
+      } else {
+        setLoading(false);
+      }
+    }
+  };
 
   useEffect(() => {
-    async function fetchHotelDetails() {
-      try {
-        setLoading(true);
-        // const response = await axios.post(
-        //   "https://apitest.tripjack.com/hms/v1/hotelDetail-search",
-        //   { id },
-        //   {
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-        //     },
-        //   }
-        // );
+    const isCheckinChanged = checkinDate !== prevCheckinDate.current;
+    const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
+    // const isRoomsChanged =
+    //   JSON.stringify(roomInfo) !== JSON.stringify(prevRoomsData.current);
+    const normalizedRooms = normalizeRooms(roomsData);
+    const roomsChanged =
+      JSON.stringify(normalizedRooms) !== prevRoomsData.current;
 
+    if (isCheckinChanged || isCheckoutChanged || roomsChanged) {
+      fetchHotelDetails(
+        {
+          checkinDate,
+          checkoutDate,
+          roomInfo: normalizedRooms,
+        },
+        { showButtonLoading: true }
+      );
+
+      prevCheckinDate.current = checkinDate;
+      prevCheckoutDate.current = checkoutDate;
+      prevRoomsData.current = JSON.stringify(normalizedRooms);
+    }
+  }, [checkinDate, checkoutDate, roomsData]); // Only trigger when these values change
+
+  useEffect(() => {
+    async function fetchInitialHotelDetails({
+      showButtonLoading = false,
+    } = {}) {
+      try {
+        if (showButtonLoading) setIsFetchingButton(true);
+        else setLoading(true);
         let reqData = {
           action: "hotelDetaiSearch",
-          requestData: { id },
+          requestData: { id: dynamicId },
         };
         const response = await postData("travelogy/hotel/fetch-data", reqData);
-        console.log("hotel listing response == ", response);
 
-        // if (response.status.success) {
-        //   const hotel = response.hotel;
-        //   const searchData = response.searchQuery;
-
-        //   setHotelData(hotel);
-        //   setSearchQueryData(searchData);
-
-        //   setCheckinDate(searchData?.checkinDate || null);
-        //   setCheckoutDate(searchData?.checkoutDate || null);
-        //   console.log(response.hotel);
-        //   console.log(response.searchQuery);
-        // } else {
-        //   setError(response.error);
-        //   console.log("Error message===============", response.error);
-        // }
         if (response?.error) {
           setError(response.error);
-          console.log("Error message===============", response.error);
         } else if (response?.errors?.[0]?.message) {
           setError(response.errors?.[0].message);
-          console.log(
-            "Error message..................",
-            response.errors?.[0].message
-          );
         } else if (response?.status?.success) {
-          // If no error and success status, process the data
           const hotel = response.hotel;
           const searchData = response.searchQuery;
+          if (searchData) {
+            // Dynamically fetch and set adults and children from API response
+            setAdults(searchData.adults); // Set adults from API response
+            setChildren(searchData.children); // Set children from API response
+          }
+          setSearchCriteria(searchData?.searchCriteria || {});
+          setSearchPreferences(searchData?.searchPreferences || {});
 
           setHotelData(hotel);
           setSearchQueryData(searchData);
-
           setCheckinDate(searchData?.checkinDate || null);
           setCheckoutDate(searchData?.checkoutDate || null);
-
-          console.log(response.hotel);
-          console.log(response.searchQuery);
+          setDynamicId(hotel.id);
+          setRoomsData(response.searchQuery?.roomInfo);
+          console.log(
+            "12312312312312312312312312312312321",
+            response.searchQuery?.roomInfo
+          );
         }
-        // else {
-        //   setError("An unknown error occurred.");
-        //   console.log("Error: An unknown error occurred.");
-        // }
       } catch (error) {
         setError("Error fetching hotel data: " + error.message);
         console.error("Error fetching hotel data", error);
       } finally {
-        setLoading(false);
+        if (showButtonLoading) setIsFetchingButton(false);
+        else setLoading(false);
       }
     }
 
-    fetchHotelDetails();
+    fetchInitialHotelDetails();
   }, [id]);
   const [openSections, setOpenSections] = useState({
     overview: true,
@@ -258,9 +304,10 @@ export default function ActivitiesDetail4() {
               <Link href="/hotels" passHref>
                 <button
                   // onClick={handleRetry}
+                  onClick={() => window.location.reload()}
                   className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
                 >
-                  Retry Hotel Load
+                  Retry Hotel
                 </button>
               </Link>
             </div>
@@ -273,36 +320,16 @@ export default function ActivitiesDetail4() {
 
   const RoomType = hotelData?.ops?.[0]?.ris?.[0]?.mb;
   const RoomCategory = hotelData?.ops?.[0]?.ris?.[0]?.rc;
-
-  // const totalfare = hotelData?.pops?.[0]?.tpc;
   const totalfare = hotelData?.ops?.[0]?.tp;
-
-  const hotelId = hotelData?.id;
-  const optionId = hotelData?.ops?.[0]?.id;
-
   const netprice = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.NF;
-
   const baggageinfo = [];
   const mealinfo = [];
   const rating = hotelData?.rt || 0;
-  const totalStars = 5;
   const filledStars = Math.round(rating);
-  const emptyStars = totalStars - filledStars;
   const { ln, lt } = hotelData?.gl || {};
   const googleMapsUrl = `https://www.google.com/maps?q=${lt},${ln}`;
   const images = hotelData?.img || [];
-  // Calculate total adults, children, and rooms
-  const roomInfo = searchQueryData?.roomInfo || [];
-  const totalAdults = roomInfo.reduce(
-    (sum, room) => sum + (room.numberOfAdults || 0),
-    0
-  );
-  const totalChildren = roomInfo.reduce(
-    (sum, room) => sum + (room.numberOfChild || 0),
-    0
-  );
-  const roomCount = roomInfo.length;
-  console.log("Rooms & Guest", searchQueryData?.roomInfo);
+
   let hotelDescription = {};
   try {
     hotelDescription = hotelData?.des ? JSON.parse(hotelData.des) : {};
@@ -313,8 +340,6 @@ export default function ActivitiesDetail4() {
   return (
     <Layout headerStyle={1} footerStyle={1}>
       <main className="main">
-        {/* <HotelListingSearch /> */}
-
         <section className="box-section box-content-tour-detail background-body">
           <div className="container">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -430,18 +455,11 @@ export default function ActivitiesDetail4() {
                       id="collapseOverview"
                     >
                       <div className="cards card-body">
-                        {/* {hotelData?.des && (
-                          <>
-                            <p>{JSON.parse(hotelData.des).amenities}</p>
-                            <p>{JSON.parse(hotelData.des).rooms}</p>
-                          </>
-                        )} */}
                         <div className="space-y-4">
                           {Object.entries(hotelDescription).map(
                             ([key, value]) => {
-                              if (!value?.trim()) return null; // skip empty or null values
+                              if (!value?.trim()) return null;
 
-                              // Convert key like "onsite_payments" => "Onsite Payments"
                               const label = key
                                 .split("_")
                                 .map(
@@ -561,7 +579,6 @@ export default function ActivitiesDetail4() {
                     latitude={hotelData?.gl?.ln}
                     fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}
                     hotelId={hotelData?.id}
-                    // fetchHotelData={hotelData?.ops?.flatMap((o) => o.ris) || []}
                   />
                 </div>
               </div>
@@ -578,7 +595,7 @@ export default function ActivitiesDetail4() {
                         </p>
                       </>
                     </div>
-                    <div className="tour-rate">
+                    <div className="tour-rate mb-1">
                       <div className="rates-element">
                         <span className="rating">
                           {[...Array(filledStars)].map((_, index) => (
@@ -598,7 +615,7 @@ export default function ActivitiesDetail4() {
                     </div>
                     <div className="tour-metas">
                       <div className="tour-meta-left">
-                        <p className="text-md-medium neutral-500 mr-20 tour-location">
+                        <p className="text-sm neutral-500 mr-20 tour-location">
                           <svg
                             width={12}
                             height={16}
@@ -611,7 +628,7 @@ export default function ActivitiesDetail4() {
                           {hotelData?.ad?.country?.name}
                         </p>
                         <Link
-                          className="text-md-medium neutral-1000 mr-30"
+                          className="text-sm neutral-1000 mr-30"
                           href={googleMapsUrl}
                           target="_blank"
                         >
@@ -621,10 +638,8 @@ export default function ActivitiesDetail4() {
                     </div>
                   </div>
                   <div className="booking-form">
-                    {/* <div className="head-booking-form">
-                      <p className="text-xl-bold neutral-1000">Booking Form</p>
-                    </div> */}
                     <BookingCard
+                      isFetching={isFetchingButton}
                       segmentsPrice={hotelData?.ops}
                       totalpricee={{
                         fC: {
@@ -659,7 +674,6 @@ export default function ActivitiesDetail4() {
             </div>
           </div>
         </section>
-        {/* <section></section> */}
       </main>
     </Layout>
   );

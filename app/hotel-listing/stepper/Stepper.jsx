@@ -53,6 +53,7 @@ export function Step1TravellerDetails({
   setFormData,
   onNext,
 }) {
+  console.log("CheckinDate", hotelReviewData?.query?.checkinDate);
   const hasDigit = (s = "") => /\d/.test(s);
   const isValidFirstName = (v = "") =>
     v.trim() && v.trim().length >= 2 && !hasDigit(v);
@@ -76,6 +77,7 @@ export function Step1TravellerDetails({
   const [errors, setErrors] = useState({});
   const rating = parseFloat(hotelReviewData?.hInfo?.rt) || 0;
   const filledStars = Math.round(rating);
+  const [showConsentModal, setShowConsentModal] = useState(false);
   useEffect(() => {
     if (hotelReviewData?.query?.roomInfo?.length) {
       const guests = {};
@@ -95,6 +97,23 @@ export function Step1TravellerDetails({
       }));
     }
   }, [hotelReviewData]);
+
+  useEffect(() => {
+    if (hotelReviewData?.query?.checkinDate) {
+      const checkin = dayjs(hotelReviewData.query.checkinDate).format(
+        "YYYY-MM-DD"
+      );
+      const today = dayjs().format("YYYY-MM-DD");
+      if (checkin === today) {
+        setShowConsentModal(true);
+      }
+    }
+  }, [hotelReviewData?.query?.checkinDate]);
+
+  const handleConsent = () => {
+    setShowConsentModal(false);
+    // handleNext();
+  };
   // A. drop-in helper
   const clearFieldError = (key) =>
     setErrors((prev) => {
@@ -104,9 +123,7 @@ export function Step1TravellerDetails({
       return next;
     });
 
-  // B. update handleGuestInputChange to also clear errors
   const handleGuestInputChange = (roomIndex, field, rawValue) => {
-    // normalize inputs
     let value = rawValue;
     if (field === "firstName" || field === "lastName") {
       value = rawValue.replace(/\d/g, "").toUpperCase(); // no digits, uppercase
@@ -358,6 +375,26 @@ export function Step1TravellerDetails({
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
+        {showConsentModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded shadow-lg max-w-md w-full text-center">
+              <h2 className="text-orange-600 font-bold text-lg mb-4">
+                FOR YOUR CONSENT
+              </h2>
+              <p className="text-gray-700 mb-6 text-sm">
+                Kindly note that this booking is selected for Same day Check-in
+                and might take 3-4 hrs to get reflected in the hotel reservation
+                system. Kindly approve the same to proceed with the reservation.
+              </p>
+              <button
+                onClick={handleConsent}
+                className="rounded-none book-now-btn"
+              >
+                CONTINUE
+              </button>
+            </div>
+          </div>
+        )}
         <div className="border-b pb-4">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}
@@ -777,7 +814,7 @@ export function Step1TravellerDetails({
         </div>
 
         <button className="rounded-none book-now-btn" onClick={handleNext}>
-          PROCEED TO REVIEW
+          CONTINUE
         </button>
       </div>
     </Suspense>
@@ -1319,7 +1356,7 @@ export function Step2Review({
                 }`}
                 onClick={handleNext}
               >
-                PROCEED TO PAY
+                CONTINUE
               </button>
             </div>
           </div>
@@ -1349,6 +1386,10 @@ export function Step3PersonalDocuments({
     individual: {},
     guardian: {},
   });
+  const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
+  const PassportRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipm;
+  console.log("PanRequired", PanRequired);
+  console.log("PassportRequired", PassportRequired);
 
   const isValidPAN = (v) => panRegex.test((v || "").trim());
   const getUiGuests = (roomIdx) => {
@@ -1854,17 +1895,35 @@ export function Step3PersonalDocuments({
                 confirm that we will collect / have collected TCS at applicable
                 rates from each traveller in accordance with Section 206C(1G)(b)
                 of the Income Tax Act, 1961. I am accepting the attached
-                declaration (link to the declaration)
+                declaration{" "}
+                <span>
+                  <a
+                    href="/assets/imgs/Standard_declaration_TCS.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    (link to the declaration)
+                  </a>
+                </span>
               </Radio>
               <Radio className="tcs-radio" value="standalone-products">
                 We are purchasing these travel products from Tripjack to be sold
                 to end customers as standalone products.I am accepting the
-                attached declaration (link to the declaration). The total
-                foreign remittances made by the end customers during the current
-                financial year under the Liberalised Remittance Scheme of
-                Reserve Bank of India (including value of remittance intended to
-                be made for these travel products) (“TOTAL LRS REMITTANCE
-                VALUE”) is less than the threshold of INR 7,00,000.
+                attached declaration{" "}
+                <span>
+                  <a
+                    href="/assets/imgs/Standard_declaration_TCS.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    (link to the declaration)
+                  </a>
+                </span>
+                . The total foreign remittances made by the end customers during
+                the current financial year under the Liberalised Remittance
+                Scheme of Reserve Bank of India (including value of remittance
+                intended to be made for these travel products) (“TOTAL LRS
+                REMITTANCE VALUE”) is less than the threshold of INR 7,00,000.
               </Radio>
             </Radio.Group>
             {errors.tcs && (

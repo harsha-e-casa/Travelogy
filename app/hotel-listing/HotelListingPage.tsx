@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import ByAmenities from "@/components/Filter/ByAmenities";
 import ByHotelType from "@/components/Filter/ByHotelType";
 import ByLocation from "@/components/Filter/ByLocation";
@@ -465,6 +465,10 @@ export default function HotelListing() {
       window.removeEventListener("click", handleClickOutside);
     };
   }, []);
+  const nights = useMemo(() => {
+    if (!checkinDate || !checkoutDate) return 0;
+    return Math.max(dayjs(checkoutDate).diff(dayjs(checkinDate), "day"), 0);
+  }, [checkinDate, checkoutDate]);
   if (error) {
     const isRetryable =
       !errorStatus || [408, 429, 500, 502, 503, 504].includes(errorStatus);
@@ -591,6 +595,24 @@ export default function HotelListing() {
                     />
                   </div>
                 )}
+              </div>
+              <div
+                className="hdt_header-item"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <label>Total Nights</label>
+                <div className="input-field font-bold">
+                  {checkinDate && checkoutDate ? (
+                    <>
+                      <div className="text-base font-bold">
+                        {" "}
+                        {nights} {nights === 1 ? "Night" : "Nights"}
+                      </div>
+                    </>
+                  ) : (
+                    "--"
+                  )}
+                </div>
               </div>
 
               <div

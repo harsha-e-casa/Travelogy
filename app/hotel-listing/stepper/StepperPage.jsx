@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import SessionTimer from "./SessionTimer";
+import SessionTimerWithModal from "./SessionTimer";
 // import { fetchHotelReviewData } from "../../../util/HotelApi";
 import Skeleton from "../Skeleton";
 import {
@@ -121,6 +121,9 @@ export default function Stepper() {
     const savedFormData = localStorage.getItem("formData");
     return savedFormData ? JSON.parse(savedFormData) : {};
   });
+  const router = useRouter();
+  const apiOk = !loading && !error && Boolean(hotelReviewData);
+
   useEffect(() => {
     const saved = localStorage.getItem(stepKey);
     if (saved) {
@@ -271,7 +274,7 @@ export default function Stepper() {
               )}{" "}
               <Link href="/hotels" passHref>
                 <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
-                  Retry Hotel Load
+                  Retry Hotel
                 </button>
               </Link>{" "}
             </div>
@@ -414,8 +417,13 @@ export default function Stepper() {
         </div>
       )}
       <>
-        {!loading && (
-          <SessionTimer startTime={hotelReviewData?.conditions?.st} />
+        {apiOk && (
+          <SessionTimerWithModal
+            active={!loading && !error && !!hotelReviewData}
+            startTime={Number(hotelReviewData?.conditions?.st ?? 0)}
+            // onBack omitted → defaults to router.back()
+            // onContinue={() => setOpen(false)}
+          />
         )}
       </>
     </Layout>
