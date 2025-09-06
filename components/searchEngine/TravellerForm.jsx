@@ -29,7 +29,9 @@ export const TravellerForm = ({
   opentrvForm,
   totalPassenderCount,
   specificStyle,
+  selectedPassengerType
 }) => {
+  console.log("mame ule maruda ah da ? ",selectedPassengerType);
   return (
     <>
       {showTraveller ? (
@@ -79,7 +81,7 @@ export const TravellerForm = ({
               </div>
             </div>
             <div
-              className="form_dr1 flex justify-between items-center pb-[5px]"
+              className={selectedPassengerType !== "REGULAR" ? "greyed-out form_dr1 flex justify-between items-center pb-[5px]" : "form_dr1 flex justify-between items-center pb-[5px]"}
               style={{ marginBottom: "5px" }}
             >
               <div className="text-base font-bold">Children</div>
@@ -122,7 +124,7 @@ export const TravellerForm = ({
             </div>
             {/* infants */}
             <div
-              className="form_dr1 flex justify-between items-center pb-[5px]"
+              className={selectedPassengerType !== "REGULAR" ? "greyed-out form_dr1 flex justify-between items-center pb-[5px]" : "form_dr1 flex justify-between items-center pb-[5px]"}
               style={{ marginBottom: "5px" }}
             >
               <div className="text-base font-bold">Infant</div>

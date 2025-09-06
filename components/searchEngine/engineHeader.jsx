@@ -733,6 +733,7 @@ const EngineTabs = ({ active_border }) => {
             totalPassenderCount={totalPassenderCount}
             specificStyle={{ right: "0", top: "" }}
             setTravellerClass={setTravellerClass}
+            selectedPassengerType={selectedPassengerType}
           />
 
           <div className="">

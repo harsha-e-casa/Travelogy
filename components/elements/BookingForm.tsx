@@ -4,12 +4,14 @@ import { useContext, useEffect, useState } from "react";
 interface BookingFormProps {
   totalpricee: any;
   bookingData?: any;
+  finalStage?: any;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
   // segmentsPrice,
   totalpricee,
   bookingData = {},
+  finalStage = false,
   // baggageinfo,
 }) => {
   console.log(
@@ -41,6 +43,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   useEffect(() => {
     // for booking details page
     console.log("bookingDatabookingData =====> ", bookingData);
+    console.log("bookingDatabookingData =====> ", Object.keys(bookingData).length);
 
     // if (bookingData !== undefined) {
     //   let baggageTotal = 0;
@@ -95,24 +98,31 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
     // except booking details page
     if (Object.keys(bookingData).length === 0) {
+      console.log("mame inge dan da 000")
       let savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
       setTotalBaggageAmount(
         savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0)
       );
       let savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
-      setTotalMealAmount(savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0));
+      setTotalMealAmount(
+        savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0)
+      );
       let ssrSeatAmount = getCookie("seatSsr_amount");
       setTotalSeatAmount(Number(ssrSeatAmount));
       console.log("saved baggage", savedBaggage);
       console.log("saved meal", savedMeal);
       console.log("totalfare ====> ", totalfare);
+      console.log("finalStage ===> ",finalStage)
 
-      // computedAmount =
-      //   Number(totalfare) +
-      //   savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-      //   savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-      //   (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
-      computedAmount = Number(totalfare)
+      if (finalStage === false) {
+        computedAmount =
+          Number(totalfare) +
+          savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+          savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+          (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+      } else {
+        computedAmount = Number(totalfare);
+      }
     } else {
       let baggageTotal = 0;
       let seatTotal = 0;
@@ -163,7 +173,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
       console.log("Total Amount: ", Number(totalfare));
       computedAmount = Number(totalfare);
     }
-    console.log("computedAmount ====== ",computedAmount)
+    console.log("computedAmount ====== ", computedAmount);
     setDisplayAmount(computedAmount);
   }, [totalpricee]);
 
@@ -372,6 +382,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
       </div>
     </>
   );
-}
+};
 
 export default BookingForm;
