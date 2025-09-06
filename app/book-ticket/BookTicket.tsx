@@ -681,6 +681,11 @@ export default function BookTicket() {
           lN: string;
           pt: string;
           di?: string;
+          pNat?: string;
+          pNum?: string;
+          eD?: string;
+          pid?: string;
+          dob?: string;
           ssrSeatInfos?: { key: string; code: string }[];
           ssrBaggageInfos?: { key: string; code: string }[];
           ssrMealInfos?: {
@@ -693,6 +698,13 @@ export default function BookTicket() {
           const ti = formValues[`select-${i}`];
           const fN = formValues[`fname-${i}`];
           const lN = formValues[`lname-${i}`];
+
+          const pNat = formValues[`adultnationality-${i}`];
+          const pNum = formValues[`adultpassportno-${i}`];
+          const eD = formValues[`adultpassportIssueDate-${i}`];
+          const pid = formValues[`adultpassportExpiryDate-${i}`];
+          const dob = formValues[`adultdob-${i}`];
+
           const documentId = formValues[`documentId-${i}`];
 
           const seatCookie = getCookie(`adult_seat_map-${i + 1}`);
@@ -715,14 +727,31 @@ export default function BookTicket() {
               lN: string;
               pt: string;
               di?: string;
+              pNat?: string;
+              pNum?: string;
+              eD?: string;
+              pid?: string;
+              dob?: string;
               ssrSeatInfos?: { key: string; code: string }[];
               ssrBaggageInfos?: { key: string; code: string }[];
               ssrMealInfos?: { key: string; code: string }[];
             } = { ti, fN, lN, pt: "ADULT" };
 
-            if (documentId) {
-              traveller.di = documentId;
-            }
+            if (documentId) traveller.di = documentId;
+            if (pNat) traveller.pNat = pNat;
+            if (pNum) traveller.pNum = pNum;
+            if (eD)
+              traveller.eD = (
+                typeof eD === "string" ? eD : new Date(eD).toISOString()
+              ).split("T")[0];
+            if (pid)
+              traveller.pid = (
+                typeof pid === "string" ? pid : new Date(pid).toISOString()
+              ).split("T")[0];
+            if (dob)
+              traveller.dob = (
+                typeof dob === "string" ? dob : new Date(dob).toISOString()
+              ).split("T")[0];
 
             const baggageInfos: { key: string; code: string }[] = [];
             const mealInfos: { key: string; code: string }[] = [];
@@ -744,14 +773,14 @@ export default function BookTicket() {
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
-                console.log("baggageOptionbaggageOption == > ",baggageOption)
+                console.log("baggageOptionbaggageOption == > ", baggageOption);
 
                 if (baggageOption) {
                   baggageInfosPayload.push({
                     key: segmentId,
                     code: baggageCode,
                     amount: baggageOption.amount,
-                    desc: baggageOption.desc
+                    desc: baggageOption.desc,
                   });
                 }
               }
@@ -799,6 +828,7 @@ export default function BookTicket() {
             if (mealInfos.length > 0) {
               traveller.ssrMealInfos = mealInfos;
             }
+            console.log("travellertravellertraveller =====> ", traveller);
             groupedAdults.push(traveller);
           }
         }
@@ -811,6 +841,11 @@ export default function BookTicket() {
           lN: string;
           pt: string;
           di?: string;
+          pNat?: string;
+          pNum?: string;
+          eD?: string;
+          pid?: string;
+          dob?: string;
           ssrSeatInfos?: { key: string; code: string }[];
           ssrBaggageInfos?: { key: string; code: string }[];
           ssrMealInfos?: {
@@ -823,6 +858,12 @@ export default function BookTicket() {
           const ti = formValues[`childselect-${i}`];
           const fN = formValues[`childName-${i}`];
           const lN = formValues[`childlast-${i}`];
+
+          const pNat = formValues[`childnationality-${i}`];
+          const pNum = formValues[`childpassportno-${i}`];
+          const eD = formValues[`childpassportIssueDate-${i}`];
+          const pid = formValues[`childpassportExpiryDate-${i}`];
+          const dob = formValues[`childdob-${i}`];
 
           const seatCookie = getCookie(`child_seat_map-${i + 1}`);
           let seatInfo = [];
@@ -849,10 +890,30 @@ export default function BookTicket() {
               lN: string;
               pt: string;
               di?: string;
+              pNat?: string;
+              pNum?: string;
+              eD?: string;
+              pid?: string;
+              dob?: string;
               ssrSeatInfos?: { key: string; code: string }[];
               ssrBaggageInfos?: { key: string; code: string }[];
               ssrMealInfos?: { key: string; code: string }[];
             } = { ti, fN, lN, pt: "CHILD" };
+
+            if (pNat) traveller.pNat = pNat;
+            if (pNum) traveller.pNum = pNum;
+            if (eD)
+              traveller.eD = (
+                typeof eD === "string" ? eD : new Date(eD).toISOString()
+              ).split("T")[0];
+            if (pid)
+              traveller.pid = (
+                typeof pid === "string" ? pid : new Date(pid).toISOString()
+              ).split("T")[0];
+            if (dob)
+              traveller.dob = (
+                typeof dob === "string" ? dob : new Date(dob).toISOString()
+              ).split("T")[0];
 
             segmentinfo.forEach((segment: any, flightIndex: any) => {
               const baggageValue =
@@ -874,7 +935,7 @@ export default function BookTicket() {
                     key: segmentId,
                     code: baggageCode,
                     amount: baggageOption.amount,
-                    desc: baggageOption.desc
+                    desc: baggageOption.desc,
                   });
                 }
               }
@@ -1706,10 +1767,16 @@ export default function BookTicket() {
                                                 apiData?.conditions?.dc?.ida ===
                                                 true
                                               }
+                                              showPassportField={Object.values(
+                                                apiData?.conditions?.pcs
+                                              ).includes(true)}
                                               travellerParsedData={
                                                 travellerPrsedData?.ADULT?.[
                                                   index
                                                 ]
+                                              }
+                                              showPassport={
+                                                apiData?.conditions?.pcs
                                               }
                                             />
                                           </div>
@@ -1782,6 +1849,9 @@ export default function BookTicket() {
                                                 travellerPrsedData?.CHILD?.[
                                                   index
                                                 ]
+                                              }
+                                              showPassport={
+                                                apiData?.conditions?.pcs
                                               }
                                             />
                                           </div>

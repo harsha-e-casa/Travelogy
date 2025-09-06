@@ -95,8 +95,8 @@ export default function Tickets() {
     removeCookie("baggageinfo");
     removeCookie("seatSsr_amount");
     removeCookie("gst_info");
-    removeCookie("email")
-    removeCookie("number")
+    removeCookie("email");
+    removeCookie("number");
 
     // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
     for (let i = 1; i <= 9; i++) {
@@ -228,6 +228,7 @@ export default function Tickets() {
   const departureFromSr = getCookie("gy_da_str");
   const arrivalToSr = getCookie("gy_aa_str");
   const tripType = getCookie("gy_triptype");
+  const fareType = getCookie("gy_passender_type");
   const passengerType = getCookie("gy_passender_type");
   const isDirectFlight =
     String(getCookie("gy_direct_flight") || "false").toLowerCase() === "true";
@@ -322,15 +323,19 @@ export default function Tickets() {
 
   useEffect(() => {
     let needsUpdate = false;
-    const updatedSegments = multicitySegments.map(segment => {
+    const updatedSegments = multicitySegments.map((segment) => {
       const newSegment = { ...segment };
       let fromError = "";
       let toError = "";
 
-      if (segment.fromCode && segment.toCode && segment.fromCode === segment.toCode) {
-        if (segment.lastEditedField === 'from') {
+      if (
+        segment.fromCode &&
+        segment.toCode &&
+        segment.fromCode === segment.toCode
+      ) {
+        if (segment.lastEditedField === "from") {
           fromError = "From and To cities cannot be the same.";
-        } else if (segment.lastEditedField === 'to') {
+        } else if (segment.lastEditedField === "to") {
           toError = "From and To cities cannot be the same.";
         }
       }
@@ -682,6 +687,14 @@ export default function Tickets() {
         if (result && result.searchResult && result.searchResult.tripInfos) {
           // setFlightData(result.searchResult.tripInfos.ONWARD)
           setFlightData(result.searchResult.tripInfos);
+        } else if (result?.error) {
+          if (typeof result.error === "string") {
+            if (result?.error?.toLowerCase()?.includes("invalid airport")) {
+              setError("Invalid route. Please choose a different route.");
+            } else {
+              setError(result.error);
+            }
+          }
         } else {
           console.log("no dataaaaaaaa");
           setError("");
@@ -738,6 +751,21 @@ export default function Tickets() {
     searchFlight,
   ]);
 
+  const fareItems: MenuProps["items"] = [
+    {
+      label: "Regular",
+      key: "REGULAR",
+    },
+    {
+      label: "Student",
+      key: "STUDENT",
+    },
+    {
+      label: "Senior Citizen",
+      key: "SENIOR CITIZEN",
+    },
+  ];
+
   const items: MenuProps["items"] = [
     {
       label: "One-Way",
@@ -755,12 +783,16 @@ export default function Tickets() {
 
   // controls visibility
   const [open, setOpen] = useState(false);
+  const [fareOpen, setFareOpen] = useState(false);
   // stores the selected label
   const [srx_tripType, setTripType] = useState(tripType);
+  const [srx_fareType, setfareType] = useState(fareType);
 
   useEffect(() => {
     const t = Cookies.get("gy_triptype") || "";
     setTripType(t);
+    const f = Cookies.get("gy_passender_type") || "";
+    setfareType(f);
   }, []);
 
   const [srx_departureFrom, setdepartureFrom] = useState<string>("");
@@ -811,12 +843,12 @@ export default function Tickets() {
 
   const handleFromCityChange = (city: string) => {
     setdepartureFrom(city);
-    setLastEditedField('from');
+    setLastEditedField("from");
   };
 
   const handleToCityChange = (city: string) => {
     setArrivalTo(city);
-    setLastEditedField('to');
+    setLastEditedField("to");
   };
 
   // useEffect(() => {
@@ -829,11 +861,15 @@ export default function Tickets() {
   // });
 
   useEffect(() => {
-    if (srx_departureFrom && srx_arrivalTo && srx_departureFrom === srx_arrivalTo) {
-      if (lastEditedField === 'from') {
+    if (
+      srx_departureFrom &&
+      srx_arrivalTo &&
+      srx_departureFrom === srx_arrivalTo
+    ) {
+      if (lastEditedField === "from") {
         setFromError("From and To cities cannot be the same.");
         setToError("");
-      } else if (lastEditedField === 'to') {
+      } else if (lastEditedField === "to") {
         setToError("From and To cities cannot be the same.");
         setFromError("");
       }
@@ -889,6 +925,12 @@ export default function Tickets() {
     setOpen((prev) => !prev);
   };
 
+  const handleFareMenuClick: MenuProps["onClick"] = ({ key }) => {
+    setfareType(key);
+    setCookie("gy_passender_type", key);
+    setFareOpen((prev) => !prev);
+  };
+
   const [showSearchState, setShowSearchState] = useState<boolean>(false);
   const [openFromMultiIndex, setOpenFromMultiIndex] = useState<number | null>(
     null
@@ -932,7 +974,7 @@ export default function Tickets() {
 
   //   const formattedDatedepr = dayjs(datedepr);
   //   const fReturnDate =  formattedDatedepr.format("YYYY-MM-DD");
-    
+
   //   if (((srx_tripType?.toLowerCase() || "") === "round-trip") && (fDepartureDate == fReturnDate)) {
   //     console.log("should throw validation !!!!!!!!!!!!!!!")
   //   }
@@ -974,6 +1016,15 @@ export default function Tickets() {
     }
   };
 
+  const handleFareOpen = () => {
+    if (fareOpen) {
+      closeAllFields();
+    } else {
+      closeAllFields();
+      setFareOpen(true);
+    }
+  };
+
   const handleOpen = () => {
     if (open) {
       closeAllFields();
@@ -999,6 +1050,7 @@ export default function Tickets() {
     setOpenDateRageR(false);
     setShowYTraveller(false);
     setOpen(false);
+    setFareOpen(false);
   };
 
   useEffect(() => {
@@ -1103,6 +1155,12 @@ export default function Tickets() {
     };
   }
 
+  if ((srx_tripType?.toLowerCase() || "") === "round-trip") {
+    searchEnginewidth = {
+      width: "85%",
+    };
+  }
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
@@ -1113,6 +1171,31 @@ export default function Tickets() {
             {/* Header Section */}
 
             <div className="hdt_header" style={{ ...searchEnginewidth }}>
+              <div className="hdt_header-item">
+                <label>Fare Types</label>
+                <Dropdown
+                  menu={{ items: fareItems, onClick: handleFareMenuClick }}
+                  open={fareOpen}
+                  trigger={[]}
+                  placement="bottomLeft"
+                >
+                  <div
+                    className="hdt_value"
+                    onClick={() => {
+                      if (
+                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                          modifySearchRef) ||
+                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                      ) {
+                        handleFareOpen();
+                      }
+                    }}
+                    style={{ cursor: "pointer", display: "inline-block" }}
+                  >
+                    {srx_fareType}
+                  </div>
+                </Dropdown>
+              </div>
               <div className="hdt_header-item">
                 <label>Trip Type</label>
                 <Dropdown
@@ -1315,19 +1398,25 @@ export default function Tickets() {
               ) : (
                 <>
                   <div
-              onClick={
-                (fromError || toError || errorMsg || multicitySegments.some(s => s.fromError || s.toError))
-                  ? () => {}
-                  : handlesearFlight
-              }
-              className={`hdt_search-btn ${
-                (fromError || toError || errorMsg || multicitySegments.some(s => s.fromError || s.toError))
-                  ? "cursor-not-allowed opacity-50"
-                  : ""
-              }`}
-            >
-              Search
-            </div>
+                    onClick={
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      multicitySegments.some((s) => s.fromError || s.toError)
+                        ? () => {}
+                        : handlesearFlight
+                    }
+                    className={`hdt_search-btn ${
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      multicitySegments.some((s) => s.fromError || s.toError)
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
+                  >
+                    Search
+                  </div>
                 </>
               )}
             </div>
@@ -1357,7 +1446,7 @@ export default function Tickets() {
                                 setSelectFrom={(val: any) => {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].from = val;
-                                  newSegs[idx].lastEditedField = 'from';
+                                  newSegs[idx].lastEditedField = "from";
                                   setMulticitySegments(newSegs);
                                 }}
                                 setSelectFromSub={(val: any) => {
@@ -1402,7 +1491,7 @@ export default function Tickets() {
                                 setSelectFrom={(val: any) => {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].to = val;
-                                  newSegs[idx].lastEditedField = 'to';
+                                  newSegs[idx].lastEditedField = "to";
                                   setMulticitySegments(newSegs);
                                 }}
                                 setSelectFromSub={(val: any) => {
@@ -1447,7 +1536,11 @@ export default function Tickets() {
                                 newSegs[idx].departureDate = val;
                                 setMulticitySegments(newSegs);
                               }}
-                              minDate={idx > 0 ? multicitySegments[idx - 1].departureDate : datedep} // Use datedep for the first segment
+                              minDate={
+                                idx > 0
+                                  ? multicitySegments[idx - 1].departureDate
+                                  : datedep
+                              } // Use datedep for the first segment
                               value={multicitySegments[idx].departureDate}
                             />
                           )}
@@ -1522,6 +1615,7 @@ export default function Tickets() {
             clickPlusinfant={clickPlusinfant}
             totalPassenderCount={totalPassenderCount}
             specificStyle={{ top: "23%", right: "9%" }}
+            selectedPassengerType={srx_fareType}
           />
 
           {/* Block Banner Tickets */}
@@ -1625,6 +1719,7 @@ export default function Tickets() {
                           ? flightData.COMBO
                           : filteredFlightData;
                       console.log("mameeeeeeeeee ", tripInfo);
+                      console.log("mameeeeeeeeee ", tripInfo?.length);
 
                       return (
                         <>
@@ -1663,6 +1758,24 @@ export default function Tickets() {
                                 </p>
                               </div>
                             )
+                          )}
+                        </>
+                      );
+                    })()}
+
+                  {flightData === null &&
+                    (() => {
+                      return (
+                        <>
+                          {!loading && (
+                            <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                              <p className="text-xl font-semibold">
+                                No result found
+                              </p>
+                              <p className="text-sm mt-2 text-gray-400">
+                                Try adjusting your filters or search criteria.
+                              </p>
+                            </div>
                           )}
                         </>
                       );
