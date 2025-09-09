@@ -1710,23 +1710,25 @@ export function Step3PersonalDocuments({
                       value={guardianPANs[rIdx]?.first || ""}
                       onChange={(e) => {
                         const val = e.target.value;
-                        setGuardianPANs((p) => ({
-                          ...p,
-                          [rIdx]: { ...p[rIdx], first: val },
-                        }));
+                        if (/^[A-Za-z\s]*$/.test(val)) {
+                          setGuardianPANs((p) => ({
+                            ...p,
+                            [rIdx]: { ...p[rIdx], first: val },
+                          }));
 
-                        setErrors((prev) => {
-                          const next = {
-                            ...prev,
-                            guardian: { ...prev.guardian },
-                          };
-                          const gErr = { ...(next.guardian[rIdx] || {}) };
-                          gErr.first = val.trim()
-                            ? ""
-                            : "First name is required.";
-                          next.guardian[rIdx] = gErr;
-                          return next;
-                        });
+                          setErrors((prev) => {
+                            const next = {
+                              ...prev,
+                              guardian: { ...prev.guardian },
+                            };
+                            const gErr = { ...(next.guardian[rIdx] || {}) };
+                            gErr.first = val.trim()
+                              ? ""
+                              : "First name is required.";
+                            next.guardian[rIdx] = gErr;
+                            return next;
+                          });
+                        }
                       }}
                       ref={(el) => (guardianRefs.current[`first-${rIdx}`] = el)}
                     />
@@ -1744,23 +1746,25 @@ export function Step3PersonalDocuments({
                       value={guardianPANs[rIdx]?.last || ""}
                       onChange={(e) => {
                         const val = e.target.value;
-                        setGuardianPANs((p) => ({
-                          ...p,
-                          [rIdx]: { ...p[rIdx], last: val },
-                        }));
+                        if (/^[A-Za-z\s]*$/.test(val)) {
+                          setGuardianPANs((p) => ({
+                            ...p,
+                            [rIdx]: { ...p[rIdx], last: val },
+                          }));
 
-                        setErrors((prev) => {
-                          const next = {
-                            ...prev,
-                            guardian: { ...prev.guardian },
-                          };
-                          const gErr = { ...(next.guardian[rIdx] || {}) };
-                          gErr.last = val.trim()
-                            ? ""
-                            : "Last name is required.";
-                          next.guardian[rIdx] = gErr;
-                          return next;
-                        });
+                          setErrors((prev) => {
+                            const next = {
+                              ...prev,
+                              guardian: { ...prev.guardian },
+                            };
+                            const gErr = { ...(next.guardian[rIdx] || {}) };
+                            gErr.last = val.trim()
+                              ? ""
+                              : "Last name is required.";
+                            next.guardian[rIdx] = gErr;
+                            return next;
+                          });
+                        }
                       }}
                       ref={(el) => (guardianRefs.current[`last-${rIdx}`] = el)}
                     />
