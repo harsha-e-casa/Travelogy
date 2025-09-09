@@ -35,8 +35,10 @@ const Alldetails = ({ totalpricee }) => {
   const [segmentPrices, setSegmentPrices] = useState([]); // State for storing segment prices
   const [showAllPassengers, setShowAllPassengers] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [isNoPrintVisible, setNoPrintVisible] = useState(true);
   const printRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [fareType, setFareType] = useState("");
 
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
@@ -450,73 +452,6 @@ const Alldetails = ({ totalpricee }) => {
     }
   };
 
-  // const handleDownload = (ref) => {
-  //   const content = ref.current.innerHTML;
-  //   const fullHtml = `
-  //   <!DOCTYPE html>
-  //   <html lang="en">
-  //     <head>
-  //       <meta charset="UTF-8" />
-  //       <title>Ticket</title>
-  //       <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  //       <style>
-  //                .flightsDetail{
-  //             display:flex;
-  //             flex-direction:row;
-  //             justify-content:flex-between;
-  //             align-items:center;
-  //             margin-bottom:20px
-  //             }
-
-  //             .logo-flight{
-  //             margin-bottom:0px}
-
-  //             .citydetails{
-
-  //               margin-bottom:20px
-  //             }
-  //               .citynames{
-  //               font-weight:bolder;
-  //               }
-  //               .timeduration{
-  //               margin-bottom:0px;
-  //               }
-  //               .timediv{
-  //               display:flex;
-  //               flex-direction:row;
-  //               gap: 40px;
-  //               list-style-type: disc;
-
-  //               }
-  //               .passengerinfo, .contactinfo{
-  //               font-weight:bold;}
-  //               .ticketdiv{
-  //               padding:20px}
-  //         @media print {
-  //           body {
-  //             -webkit-print-color-adjust: exact;
-  //             print-color-adjust: exact;
-  //           }
-  //         }
-
-  //       </style>
-  //     </head>
-  //     <body class="p-6 bg-white text-black">
-  //       ${content}
-
-  //     </body>
-  //   </html>
-  // `;
-
-  //   const blob = new Blob([fullHtml], { type: "text/html" });
-  //   const link = document.createElement("a");
-  //   link.href = URL.createObjectURL(blob);
-  //   link.download = "ticket.html";
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
-
   const swapBarcodesForImages = () => {
     const swaps = [];
 
@@ -561,27 +496,34 @@ const Alldetails = ({ totalpricee }) => {
     return () => swaps.forEach((undo) => undo());
   };
 
-  const handleDownload = async (printRef) => {
+  const handleDownload = async () => {
     const { jsPDF } = await import("jspdf");
     const html2canvas = (await import("html2canvas")).default;
 
-    // wait for barcode fonts/paint
+    // Temporarily hide the 'no-print' elements
+    setNoPrintVisible(false);
+
+    // Wait for barcode fonts/paint
     if (document.fonts?.ready) await document.fonts.ready;
     await new Promise((r) =>
       requestAnimationFrame(() => requestAnimationFrame(r))
     );
 
-    // swap barcodes to images to guarantee capture
+    // Swap barcodes to images to guarantee capture (if needed)
     const undo = swapBarcodesForImages();
 
     try {
+      // Create a canvas from the printRef (after hiding .no-print elements)
       const canvas = await html2canvas(printRef.current, {
         scale: 2,
         useCORS: true,
         allowTaint: false,
         svgRendering: true,
       });
+
       const imgData = canvas.toDataURL("image/png");
+
+      // Generate PDF using jsPDF
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = pdf.internal.pageSize.getWidth();
       const imgProps = pdf.getImageProperties(imgData);
@@ -598,12 +540,61 @@ const Alldetails = ({ totalpricee }) => {
       );
       pdf.save("ticket.pdf");
     } finally {
-      undo(); // restore original barcode nodes
+      undo(); // Restore original barcode nodes
+      setNoPrintVisible(true); // Restore visibility of 'no-print' elements
     }
   };
 
+  // const handleDownload = async (printRef) => {
+  //   const { jsPDF } = await import("jspdf");
+  //   const html2canvas = (await import("html2canvas")).default;
+
+  //   // wait for barcode fonts/paint
+  //   if (document.fonts?.ready) await document.fonts.ready;
+  //   await new Promise((r) =>
+  //     requestAnimationFrame(() => requestAnimationFrame(r))
+  //   );
+
+  //   // swap barcodes to images to guarantee capture
+  //   const undo = swapBarcodesForImages();
+
+  //   try {
+  //     const canvas = await html2canvas(printRef.current, {
+  //       scale: 2,
+  //       useCORS: true,
+  //       allowTaint: false,
+  //       svgRendering: true,
+  //     });
+  //     const imgData = canvas.toDataURL("image/png");
+  //     const pdf = new jsPDF("p", "mm", "a4");
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+  //     const imgProps = pdf.getImageProperties(imgData);
+  //     const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+  //     pdf.addImage(
+  //       imgData,
+  //       "PNG",
+  //       0,
+  //       0,
+  //       pageWidth,
+  //       pdfHeight,
+  //       undefined,
+  //       "FAST"
+  //     );
+  //     pdf.save("ticket.pdf");
+  //   } finally {
+  //     undo(); // restore original barcode nodes
+  //   }
+  // };
+
   const handlePrint = (ref) => {
-    const content = ref.current.innerHTML;
+    // const content = ref.current.innerHTML;
+    const contentClone = ref.current.cloneNode(true);
+
+    // Remove all elements with class 'no-print'
+    const noPrintElements = contentClone.querySelectorAll(".no-print");
+    console.log("mame print paru da ", noPrintElements);
+    noPrintElements.forEach((el) => el.remove());
+    console.log("mame print aparom paru da ", noPrintElements);
 
     const fullHtml = `
     <!DOCTYPE html>
@@ -613,50 +604,51 @@ const Alldetails = ({ totalpricee }) => {
         <title>Ticket</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <style>
-                 .flightsDetail{
-              display:flex;
-              flex-direction:row;
-              justify-content:flex-between;
-              align-items:center;
-              margin-bottom:20px
-              }
+          .flightsDetail{
+            display:flex;
+            flex-direction:row;
+            justify-content:flex-between;
+            align-items:center;
+            margin-bottom:20px
+          }
 
-              .logo-flight{
-              margin-bottom:0px}
+          .logo-flight{
+            margin-bottom:0px
+          }
 
-              .citydetails{
-              
-                margin-bottom:20px
-              }
-                .citynames{
-                font-weight:bolder;
-                }
-                .timeduration{
-                margin-bottom:0px;
-                }
-                .timediv{
-                display:flex;
-                flex-direction:row;
-                gap: 40px;
-                list-style-type: disc; 
-               
-                }
-                .passengerinfo, .contactinfo{
-                font-weight:bold;}
-                .ticketdiv{
-                padding:20px}
+          .citydetails{
+            margin-bottom:20px
+          }
+          .citynames{
+            font-weight:bolder;
+          }
+          .timeduration{
+            margin-bottom:0px;
+          }
+          .timediv{
+            display:flex;
+            flex-direction:row;
+            gap: 40px;
+            list-style-type: disc; 
+          }
+          .passengerinfo, .contactinfo{
+            font-weight:bold;}
+          .ticketdiv{
+            padding:20px
+          }
           @media print {
             body {
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
-          }
-            
+            .no-print {
+              display: none !important;
+            }
+          } 
         </style>
       </head>
       <body class="p-6 bg-white text-black">
-        ${content}
-    
+        ${contentClone.outerHTML}
       </body>
     </html>
   `;
@@ -716,6 +708,19 @@ const Alldetails = ({ totalpricee }) => {
     const date = new Date(isoString);
     return date.toLocaleString("en-IN", options); // Change locale as needed
   }
+
+  const fetchFareType = async (bookingId) => {
+    if (!bookingId) return;
+
+    try {
+      let reqData = { bookingId };
+      const data = await postData("/travelogy/flight/fetch-fare-type", reqData);
+      if (data?.bookingData?.fare_type)
+        setFareType(data?.bookingData?.fare_type);
+    } catch (e) {
+      console.log("error in fetchFareType ", e);
+    }
+  };
 
   const bookingDetailsapi = async (bookingId) => {
     setLoading(true);
@@ -1021,6 +1026,7 @@ const Alldetails = ({ totalpricee }) => {
     console.log("Extracted Booking Id:", bookingId); // Debug log to check if bookingId is correct
     if (bookingId) {
       bookingDetailsapi(bookingId);
+      fetchFareType(bookingId);
     } else {
       setError("No valid booking id found in the URL.");
     }
@@ -1127,7 +1133,10 @@ const Alldetails = ({ totalpricee }) => {
         <BookingSkeleton />
       ) : (
         <>
-          <div className="mt-20 bg-white shadow rounded-lg p-6 mb-20 print-area">
+          <div
+            className="mt-20 bg-white shadow rounded-lg p-6 mb-20 print-area"
+            ref={printRef}
+          >
             <div className="mb-10 shadow-md p-3 rounded">
               <div className="flex flex-row justify-between gap-2">
                 <div className="flex flex-col justify-start">
@@ -1148,43 +1157,52 @@ const Alldetails = ({ totalpricee }) => {
                   </p>
                 </div>
 
-                <div>
-                  {bookingDetails?.order?.status === "SUCCESS" && (
-                    <div className="flex flex-row gap-3">
-                      <button onClick={handleCancellation}>
-                        <AmendmentPopup
-                          bookingId={bookingId}
-                          bookingDetails={bookingDetails}
-                          onSubmit={(
-                            bookingId,
-                            amendmentType,
-                            remarks,
-                            callback
-                          ) =>
-                            sumbitAmendmentapi(
+                {isNoPrintVisible && (
+                  <div className={isNoPrintVisible ? "" : "no-print"}>
+                    {bookingDetails?.order?.status === "SUCCESS" && (
+                      <div className="flex flex-row gap-3">
+                        <button
+                          className={isNoPrintVisible ? "" : "no-print"}
+                          onClick={handleCancellation}
+                        >
+                          <AmendmentPopup
+                            bookingId={bookingId}
+                            bookingDetails={bookingDetails}
+                            onSubmit={(
                               bookingId,
                               amendmentType,
                               remarks,
-                              (data) => {
-                                callback?.(data);
-                                setShowTravellerModal(true);
-                              }
-                            )
-                          }
-                        />
-                      </button>
-                    </div>
-                  )}
-                </div>
+                              callback
+                            ) =>
+                              sumbitAmendmentapi(
+                                bookingId,
+                                amendmentType,
+                                remarks,
+                                (data) => {
+                                  callback?.(data);
+                                  setShowTravellerModal(true);
+                                }
+                              )
+                            }
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-                {bookingDetails?.order?.status === "SUCCESS" && (
-                  <div>
-                    <button
-                      className="border border-grey rounded px-4 py-2"
-                      onClick={openReIssueModal}
-                    >
-                      Reschedule
-                    </button>
+                {isNoPrintVisible && (
+                  <div className={isNoPrintVisible ? "" : "no-print"}>
+                    {bookingDetails?.order?.status === "SUCCESS" && (
+                      <div>
+                        <button
+                          className="border border-grey rounded px-4 py-2"
+                          onClick={openReIssueModal}
+                        >
+                          Reschedule
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1607,41 +1625,9 @@ const Alldetails = ({ totalpricee }) => {
                   </div>
                 )}
 
-                <div>
-                  {bookingDetails?.order?.status === "SUCCESS" ? (
-                    <div className="relative inline-block">
-                      <button
-                        onClick={() => setShowDropdown(!showDropdown)}
-                        className="border border-grey rounded px-4 py-2"
-                      >
-                        More
-                      </button>
-                      {showDropdown && (
-                        <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
-                          <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              handlePrint(printRef);
-                              setShowDropdown(false);
-                            }}
-                          >
-                            Print Ticket
-                          </button>
-                          <button
-                            className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                            onClick={() => {
-                              handleDownload(printRef);
-                              setShowDropdown(false);
-                            }}
-                          >
-                            Download Ticket
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ) : bookingDetails?.order?.status === "PENDING" ||
-                    bookingDetails?.order?.status === "UNCONFIRMED" ? (
-                    <>
+                {isNoPrintVisible && (
+                  <div className={isNoPrintVisible ? "" : "no-print"}>
+                    {bookingDetails?.order?.status === "SUCCESS" ? (
                       <div className="relative inline-block">
                         <button
                           onClick={() => setShowDropdown(!showDropdown)}
@@ -1672,60 +1658,94 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
                         )}
                       </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-row gap-3">
-                      <button
-                        className="border border-grey rounded"
-                        onClick={handleUnHold}
-                      >
-                        Unhold
-                      </button>
-                      <button
-                        className="border border-grey rounded"
-                        onClick={handlePayNow}
-                      >
-                        Pay Now
-                      </button>
-                      {/* <button className="border border-grey rounded">
+                    ) : bookingDetails?.order?.status === "PENDING" ||
+                      bookingDetails?.order?.status === "UNCONFIRMED" ? (
+                      <>
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className="border border-grey rounded px-4 py-2"
+                          >
+                            More
+                          </button>
+                          {showDropdown && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  handlePrint(printRef);
+                                  setShowDropdown(false);
+                                }}
+                              >
+                                Print Ticket
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  handleDownload(printRef);
+                                  setShowDropdown(false);
+                                }}
+                              >
+                                Download Ticket
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-row gap-3">
+                        <button
+                          className="border border-grey rounded"
+                          onClick={handleUnHold}
+                        >
+                          Unhold
+                        </button>
+                        <button
+                          className="border border-grey rounded"
+                          onClick={handlePayNow}
+                        >
+                          Pay Now
+                        </button>
+                        {/* <button className="border border-grey rounded">
                         More
                       </button> */}
-                      <div className="relative inline-block">
-                        <button
-                          onClick={() => setShowDropdown(!showDropdown)}
-                          className="border border-grey rounded px-4 py-2"
-                        >
-                          More
-                        </button>
-                        {showDropdown && (
-                          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                handlePrint(printRef);
-                                setShowDropdown(false);
-                              }}
-                            >
-                              Print Ticket
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                handleDownload(printRef);
-                                setShowDropdown(false);
-                              }}
-                            >
-                              Download Ticket
-                            </button>
-                          </div>
-                        )}
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className="border border-grey rounded px-4 py-2"
+                          >
+                            More
+                          </button>
+                          {showDropdown && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  handlePrint(printRef);
+                                  setShowDropdown(false);
+                                }}
+                              >
+                                Print Ticket
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  handleDownload(printRef);
+                                  setShowDropdown(false);
+                                }}
+                              >
+                                Download Ticket
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="mt-20" ref={printRef}>
+            <div className="mt-20">
               {bookingDetails?.itemInfos?.AIR?.tripInfos.map(
                 (trip, tripIndex) => {
                   console.log("alldetails trip == ", trip);
@@ -1831,7 +1851,20 @@ const Alldetails = ({ totalpricee }) => {
                                   </div>
                                 </div>
                                 <div className="flex flex-row items-center gap-3">
-                                  {/* <p className="text-sm-medium neutral-500 ">{cabinclass}</p> */}
+                                  <p
+                                    className="text-sm-medium"
+                                    style={{
+                                      background: "#9090f3",
+                                      padding: "1px 10px",
+                                      color: "white",
+                                      borderRadius: "10px",
+                                      fontSize: "12px",
+                                      lineHeight: "18px",
+                                      fontWeight: 700
+                                    }}
+                                  >
+                                    {fareType}
+                                  </p>
                                   <span
                                     className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
                                     style={{

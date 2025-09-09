@@ -149,10 +149,10 @@ const AppFormAdult = ({
         eD - expiry date
         pid - issue date
         dob */}
-        {(showPassport.pped === true ||
-          showPassport.pid === true ||
-          showPassport.pm === true ||
-          showPassport.dobe === true) && (
+        {(showPassport?.pped === true ||
+          showPassport?.pid === true ||
+          showPassport?.pm === true ||
+          showPassport?.dobe === true) && (
           <>
             <p
               className="text-sm leading-5 font-bold text-gray-900"
