@@ -913,6 +913,7 @@ const ReviewPage = () => {
           amount: finalAmountToPay,
           status: "",
           time: new Date().toISOString(),
+          fareType: getCookie("gy_passender_type")
         };
         const result = await postData(
           "travelogy/flight/save-booking",
@@ -1949,6 +1950,10 @@ const ReviewPage = () => {
                                     <tbody>
                                       {travellers.length > 0 ? (
                                         travellers.map((traveller, index) => {
+                                          console.log(
+                                            "cccccccfffffff ",
+                                            traveller
+                                          );
                                           const fullName = `${
                                             traveller?.ti || ""
                                           } ${traveller?.fN || ""} ${
@@ -1984,7 +1989,10 @@ const ReviewPage = () => {
                                                     cookieBaggageData.find(
                                                       (c) => c.code === b.code
                                                     );
-                                                  console.log("baggageFromCookiebaggageFromCookie =",baggageFromCookie)
+                                                  console.log(
+                                                    "baggageFromCookiebaggageFromCookie =",
+                                                    baggageFromCookie
+                                                  );
                                                   return baggageFromCookie
                                                     ? baggageFromCookie.desc
                                                     : b.code;
@@ -2058,8 +2066,57 @@ const ReviewPage = () => {
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
                                                 {index + 1}
                                               </td>
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                              <td
+                                                className="px-4 py-3 border-b border-gray-200 text-black"
+                                                style={{
+                                                  display: "flex",
+                                                  flexDirection: "column",
+                                                }}
+                                              >
                                                 {fullName || "N/A"}
+                                                {traveller?.di && (
+                                                  <span>
+                                                    ID: {traveller.di}
+                                                  </span>
+                                                )}
+                                                {(traveller?.pNat ||
+                                                  traveller?.pNum ||
+                                                  traveller?.eD ||
+                                                  traveller?.pid ||
+                                                  traveller?.dob) && (
+                                                  <>
+                                                    {traveller?.pNat && (
+                                                      <span>
+                                                        Nationality:{" "}
+                                                        {traveller.pNat}
+                                                      </span>
+                                                    )}
+                                                    {traveller?.pNum && (
+                                                      <span>
+                                                        Passport Number:{" "}
+                                                        {traveller.pNum}
+                                                      </span>
+                                                    )}
+                                                    {traveller?.eD && (
+                                                      <span>
+                                                        Expiry Date:{" "}
+                                                        {traveller.eD}
+                                                      </span>
+                                                    )}
+                                                    {traveller?.pid && (
+                                                      <span>
+                                                        Issue Date:{" "}
+                                                        {traveller.pid}
+                                                      </span>
+                                                    )}
+                                                    {traveller?.dob && (
+                                                      <span>
+                                                        Date Of Birth:{" "}
+                                                        {traveller.dob}
+                                                      </span>
+                                                    )}
+                                                  </>
+                                                )}
                                               </td>
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
                                                 {addOns.length > 0

@@ -1768,7 +1768,7 @@ export default function BookTicket() {
                                                 true
                                               }
                                               showPassportField={Object.values(
-                                                apiData?.conditions?.pcs
+                                                apiData?.conditions?.pcs || {}
                                               ).includes(true)}
                                               travellerParsedData={
                                                 travellerPrsedData?.ADULT?.[
