@@ -303,7 +303,7 @@ const BookingDetailsPage = () => {
                       <div class="head-booking-form">
                         <p class="text-xl-bold neutral-1000">Fare Summary</p>
                       </div>
-                      <BookingForm totalpricee={totalPriceinfo} />
+                      <BookingForm totalpricee={totalPriceinfo} finalStage={true} />
                     </div>
                   </div>
                 </div>
