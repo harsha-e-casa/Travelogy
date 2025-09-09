@@ -165,13 +165,15 @@ const HotelBookingList = ({ bookings }) => {
 
       {/* Pagination Row */}
       <div className="flex justify-between">
-        <div className="flex items-center" style={{ width: "30%"}}>
-          <label className="mr-2 font-medium" style={{ width: "40%"}}>Rows per page:</label>
+        <div className="flex items-center" style={{ width: "30%" }}>
+          <label className="mr-2 font-medium" style={{ width: "40%" }}>
+            Rows per page:
+          </label>
           <select
             className="border px-2 py-1 rounded"
             value={pageSize}
             onChange={handlePageSizeChange}
-            style={{ width: "30%"}}
+            style={{ width: "30%" }}
           >
             {PAGE_SIZE_OPTIONS.map((size) => (
               <option key={size} value={size}>
@@ -204,16 +206,20 @@ const HotelBookingList = ({ bookings }) => {
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr>
-            <th className="px-3 py-2 border cursor-pointer select-none"
-                onClick={() => handleSort("idIndex")}>
+            <th
+              className="px-3 py-2 border cursor-pointer select-none"
+              onClick={() => handleSort("idIndex")}
+            >
               ID
               {sortBy === "idIndex" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
             <th className="px-3 py-2 border">Booking ID</th>
-            <th className="px-3 py-2 border cursor-pointer select-none"
-                onClick={() => handleSort("amount")}>
+            <th
+              className="px-3 py-2 border cursor-pointer select-none"
+              onClick={() => handleSort("amount")}
+            >
               Amount
               {sortBy === "amount" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
@@ -227,17 +233,19 @@ const HotelBookingList = ({ bookings }) => {
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
+                <td className="px-3 py-2 border">{startIdx + idx + 1}</td>
                 <td className="px-3 py-2 border">
-                  {startIdx + idx + 1}
-                </td>
-                <td className="px-3 py-2 border">
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
+                  <Link
+                    href={`/hotel-listing/stepper/booking-details?bookingId=${b.booking_id}`}
+                  >
                     {b.booking_id}
                   </Link>
                 </td>
                 <td className="px-3 py-2 border">{b.amount || "--"}</td>
                 <td className="px-3 py-2 border">{b.status || "--"}</td>
-                <td className="px-3 py-2 border">{formatDateTime(b.booking_time)}</td>
+                <td className="px-3 py-2 border">
+                  {formatDateTime(b.booking_time)}
+                </td>
               </tr>
             ))
           ) : (
@@ -250,7 +258,8 @@ const HotelBookingList = ({ bookings }) => {
         </tbody>
       </table>
       <div className="flex justify-end items-center mt-2 text-sm text-gray-600">
-        Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings
+        Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of{" "}
+        {total} bookings
       </div>
     </div>
   );
