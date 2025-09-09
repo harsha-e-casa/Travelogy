@@ -230,7 +230,6 @@ export async function hotelBooking({
     const roomInfo = hotelReviewData?.query?.roomInfo || [];
     const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
 
-    // ✅ Resolve panInfo from either place
     const panInfo = (updatedFormData?.panInfo ?? formData?.panInfo) || {};
 
     const roomTravellerInfo = buildRoomTravellerInfo({
@@ -258,6 +257,24 @@ export async function hotelBooking({
 
     console.log("PAN MODE:", panInfo.mode);
     console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
+
+    // save hotel data
+    const saveBookingId = async () => {
+      const reqSaveBookingId = {
+        type: "save",
+        booking_id: hotelReviewData?.bookingId,
+        phone: "9677179866",
+        amount: totalAmount,
+        status: "",
+        time: new Date().toISOString().slice(0, 19).replace("T", " "),
+      };
+      const result = await postData(
+        "travelogy/hotel/save-booking-data",
+        reqSaveBookingId
+      );
+      console.log("saveBookingId result ===>", result);
+    };
+    saveBookingId();
 
     const res = await postData("travelogy/hotel/fetch-data", {
       action: "book",
@@ -309,13 +326,13 @@ export async function getBookingDetails(bookingId, setError) {
         phone: "9677179866",
         booking_id: bookingId,
         status: data?.order?.status,
-        booking_time: new Date().toISOString(),
+        // booking_time: new Date().toISOString(),
       };
 
       const res = await postData("travelogy/hotel/save-booking-data", saveReq);
       console.log("res == ", res);
     };
-    // updateHotelBookingData();
+    updateHotelBookingData();
 
     if (data?.status?.success) {
       return data;
