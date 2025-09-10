@@ -135,6 +135,9 @@ export default function BookTicket() {
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
+  const [bookingDetailsData, setBookingDetailsData] = useState<
+    Record<string, any>
+  >({});
 
   const [groupedAdultsV, setGroupedAdults] = useState(null);
   const [groupedChildrenV, setGroupedChildren] = useState(null);
@@ -344,6 +347,25 @@ export default function BookTicket() {
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
     if (tcs_id) fetchFlights(tcs_id);
+  }, []);
+
+  useEffect(() => {
+    let mobile = getCookie("number");
+    let email = getCookie("email");
+
+    if (mobile !== undefined) {
+      const parsedMobile: any = JSON.parse(mobile);
+      const parsedEmail: any = JSON.parse(email);
+      console.log("mobilemobile == ", mobile);
+      console.log("mobilemobile == ", parsedMobile.code);
+      console.log("mobilemobile == ", parsedMobile.number);
+      console.log("emailemail == ", parsedEmail);
+      setBookingDetailsData({
+        mobileCode: parsedMobile.code,
+        mobileNumber: parsedMobile.number,
+        email: parsedEmail,
+      });
+    }
   }, []);
 
   const { Option } = Select;
@@ -1406,7 +1428,7 @@ export default function BookTicket() {
                               </svg>
                             </a>
                           </div>
-                          <AppFormCustomer form={form} />
+                          <AppFormCustomer form={form} bookingDetailsData={bookingDetailsData} />
 
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
                             Add Meal and Baggage

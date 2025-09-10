@@ -115,26 +115,25 @@ export default function Tickets() {
   const [arrivalTime, setArrivalTime] = useState("all");
 
   const applyFilters = () => {
-    if (flightData && flightData.ONWARD) {
-      let filteredData = flightData.ONWARD;
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
+      let dataToFilter = flightData.ONWARD || flightData.COMBO;
 
       // Price Range Filter
-      filteredData = filteredData.filter((ticket: any) => {
-        return (
-          ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF >= priceRange[0] &&
-          ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF <= priceRange[1]
-        );
+      let filteredData = dataToFilter.filter((ticket: any) => {
+        const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+        return price >= priceRange[0] && price <= priceRange[1];
       });
 
       // Stops Filter
       if (stops !== "all") {
         filteredData = filteredData.filter((ticket: any) => {
+          const stopCount = ticket.sI.length;
           if (stops === "non-stop") {
-            return ticket.sI.length === 1;
+            return stopCount === 1;
           } else if (stops === "1-stop") {
-            return ticket.sI.length === 2;
+            return stopCount === 2;
           } else if (stops === "2-stops") {
-            return ticket.sI.length > 2;
+            return stopCount > 2;
           }
           return true;
         });
@@ -280,6 +279,32 @@ export default function Tickets() {
   }, [multicitySegments]);
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [dateError, setDateError] = useState("");
+  const [srx_tripType, setTripType] = useState(tripType);
+
+  useEffect(() => {
+    if (srx_tripType === "multi-city") {
+      // Check for empty fields
+      for (const segment of multicitySegments) {
+        if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
+          setErrorMsg("Please fill all fields in each segment.");
+          return;
+        }
+      }
+
+      // Check for ascending dates
+      for (let i = 0; i < multicitySegments.length - 1; i++) {
+        const currentSegment = multicitySegments[i];
+        const nextSegment = multicitySegments[i + 1];
+        if (currentSegment.departureDate && nextSegment.departureDate && dayjs(currentSegment.departureDate).isAfter(dayjs(nextSegment.departureDate))) {
+          setDateError("Departure dates must be in ascending order.");
+          return;
+        }
+      }
+    }
+    setErrorMsg("");
+    setDateError("");
+  }, [multicitySegments, srx_tripType]);
 
   const addSegment = () => {
     const lastSegment = multicitySegments[multicitySegments.length - 1];
@@ -421,23 +446,7 @@ export default function Tickets() {
     }
 
     if ((srx_tripType || "").toLowerCase() === "multi-city") {
-      let hasError = false;
-      for (const segment of multicitySegments) {
-        if (segment.fromError || segment.toError) {
-          hasError = true;
-          break;
-        }
-        if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
-          setErrorMsg(`Please fill all fields in segment.`);
-          hasError = true;
-          break;
-        }
-      }
-
-      if (!hasError) {
-        setErrorMsg(""); // Clear error
-        SetSearchFlight(true);
-      }
+      SetSearchFlight(true);
     } else {
       // single and round trip
       SetSearchFlight(true);
@@ -784,8 +793,6 @@ export default function Tickets() {
   // controls visibility
   const [open, setOpen] = useState(false);
   const [fareOpen, setFareOpen] = useState(false);
-  // stores the selected label
-  const [srx_tripType, setTripType] = useState(tripType);
   const [srx_fareType, setfareType] = useState(fareType);
 
   useEffect(() => {
@@ -1251,97 +1258,97 @@ export default function Tickets() {
               {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
                 modifySearchRef) ||
                 (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                <>
-                  <div className="hdt_header-item relative">
-                    <label>From</label>
-                    <div onClick={openfrom} className="hdt_value">
-                      {srx_departureFrom}
+                  <>
+                    <div className="hdt_header-item relative">
+                      <label>From</label>
+                      <div onClick={openfrom} className="hdt_value">
+                        {srx_departureFrom}
+                      </div>
+
+                      {showSearchState ? (
+                        <div className="searchFfromSelect searchFfromSelect_2">
+                          <AppListSearch
+                            operEngLocation={openfrom}
+                            setSelectFrom={handleFromCityChange}
+                            setSelectFromSub={setDepartureToCode}
+                          />
+                        </div>
+                      ) : null}
+                      <Tooltip
+                        className="flex shadow-md z-10"
+                        placement="bottom"
+                        title={fromError}
+                        open={!!fromError}
+                        arrow={{ pointAtCenter: true }}
+                        overlayInnerStyle={{
+                          backgroundColor: "#ffeaea",
+                          color: "#ff4d4f",
+                          fontWeight: 500,
+                        }}
+                      ></Tooltip>
                     </div>
 
-                    {showSearchState ? (
-                      <div className="searchFfromSelect searchFfromSelect_2">
-                        <AppListSearch
-                          operEngLocation={openfrom}
-                          setSelectFrom={handleFromCityChange}
-                          setSelectFromSub={setDepartureToCode}
-                        />
+                    <div className="hdt_header-item relative">
+                      <label>To</label>
+                      <div onClick={openTo} className="hdt_value">
+                        {srx_arrivalTo}
                       </div>
-                    ) : null}
-                    <Tooltip
-                      className="flex shadow-md z-10"
-                      placement="bottom"
-                      title={fromError}
-                      open={!!fromError}
-                      arrow={{ pointAtCenter: true }}
-                      overlayInnerStyle={{
-                        backgroundColor: "#ffeaea",
-                        color: "#ff4d4f",
-                        fontWeight: 500,
-                      }}
-                    ></Tooltip>
-                  </div>
 
-                  <div className="hdt_header-item relative">
-                    <label>To</label>
-                    <div onClick={openTo} className="hdt_value">
-                      {srx_arrivalTo}
+                      {showSearchStateTo ? (
+                        <div className="searchFfromSelect searchFfromSelect_2">
+                          <AppListSearch
+                            operEngLocation={openTo}
+                            setSelectFrom={handleToCityChange}
+                            setSelectFromSub={setArrivalToCode}
+                          />
+                        </div>
+                      ) : null}
+                      <Tooltip
+                        className="flex shadow-md z-50"
+                        placement="bottom"
+                        title={toError}
+                        open={!!toError}
+                        arrow={{ pointAtCenter: true }}
+                        overlayInnerStyle={{
+                          backgroundColor: "#ffeaea",
+                          color: "#ff4d4f",
+                          fontWeight: 500,
+                        }}
+                      ></Tooltip>
                     </div>
-
-                    {showSearchStateTo ? (
-                      <div className="searchFfromSelect searchFfromSelect_2">
-                        <AppListSearch
-                          operEngLocation={openTo}
-                          setSelectFrom={handleToCityChange}
-                          setSelectFromSub={setArrivalToCode}
-                        />
-                      </div>
-                    ) : null}
-                    <Tooltip
-                      className="flex shadow-md z-50"
-                      placement="bottom"
-                      title={toError}
-                      open={!!toError}
-                      arrow={{ pointAtCenter: true }}
-                      overlayInnerStyle={{
-                        backgroundColor: "#ffeaea",
-                        color: "#ff4d4f",
-                        fontWeight: 500,
-                      }}
-                    ></Tooltip>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
 
               {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
                 modifySearchRef) ||
                 (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                <div className="hdt_header-item">
-                  <label>Depart</label>
-                  <div
-                    onClick={() => {
-                      if (
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          modifySearchRef) ||
-                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                      ) {
-                        openToDateRange();
-                      }
-                    }}
-                    className="hdt_value"
-                  >
-                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                  </div>
+                  <div className="hdt_header-item">
+                    <label>Depart</label>
+                    <div
+                      onClick={() => {
+                        if (
+                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                            modifySearchRef) ||
+                          (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                        ) {
+                          openToDateRange();
+                        }
+                      }}
+                      className="hdt_value"
+                    >
+                      {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
+                    </div>
 
-                  {openDateRage ? (
-                    <AppDateRangeFlight
-                      openToDateRange={openToDateRange}
-                      setDate={setDatedep}
-                      minDate={null}
-                      value={datedep}
-                    />
-                  ) : null}
-                </div>
-              )}
+                    {openDateRage ? (
+                      <AppDateRangeFlight
+                        openToDateRange={openToDateRange}
+                        setDate={setDatedep}
+                        minDate={null}
+                        value={datedep}
+                      />
+                    ) : null}
+                  </div>
+                )}
 
               {(srx_tripType?.toLowerCase() || "") === "round-trip" ? (
                 <>
@@ -1386,7 +1393,7 @@ export default function Tickets() {
                 </div>
               </div>
               {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
-              !modifySearchRef ? (
+                !modifySearchRef ? (
                 <>
                   <button
                     onClick={handleModifySearch}
@@ -1399,21 +1406,14 @@ export default function Tickets() {
                 <>
                   <div
                     onClick={
-                      fromError ||
-                      toError ||
-                      errorMsg ||
-                      multicitySegments.some((s) => s.fromError || s.toError)
-                        ? () => {}
+                      (fromError || toError || errorMsg || dateError || multicitySegments.some(s => s.fromError || s.toError))
+                        ? () => { }
                         : handlesearFlight
                     }
-                    className={`hdt_search-btn ${
-                      fromError ||
-                      toError ||
-                      errorMsg ||
-                      multicitySegments.some((s) => s.fromError || s.toError)
+                    className={`hdt_search-btn ${(fromError || toError || errorMsg || dateError || multicitySegments.some(s => s.fromError || s.toError))
                         ? "cursor-not-allowed opacity-50"
                         : ""
-                    }`}
+                      }`}
                   >
                     Search
                   </div>
@@ -1524,8 +1524,8 @@ export default function Tickets() {
                           >
                             {segment.departureDate
                               ? dayjs(segment.departureDate).format(
-                                  "ddd, MMM D YYYY"
-                                )
+                                "ddd, MMM D YYYY"
+                              )
                               : "Select Date"}
                           </div>
                           {openDepartMultiIndex === idx && (
@@ -1592,6 +1592,14 @@ export default function Tickets() {
                       style={{ textAlign: "center", padding: "10px" }}
                     >
                       {errorMsg}
+                    </div>
+                  )}
+                  {dateError && (
+                    <div
+                      className="text-red-500 mt-2 text-sm font-medium"
+                      style={{ textAlign: "center", padding: "10px" }}
+                    >
+                      {dateError}
                     </div>
                   )}
                 </>
@@ -1713,11 +1721,7 @@ export default function Tickets() {
                     (srx_tripType?.trim().toLowerCase() === "multi-city" &&
                       flightData?.COMBO?.length > 0)) &&
                     (() => {
-                      const tripInfo =
-                        srx_tripType?.trim().toLowerCase() === "round-trip" ||
-                        srx_tripType?.trim().toLowerCase() === "multi-city"
-                          ? flightData.COMBO
-                          : filteredFlightData;
+                      const tripInfo = filteredFlightData;
                       console.log("mameeeeeeeeee ", tripInfo);
                       console.log("mameeeeeeeeee ", tripInfo?.length);
 
@@ -1814,13 +1818,13 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                    srx_tripType.trim().toLowerCase() === "round-trip" ? (
                     <>
                       {flightData &&
-                      flightData.ONWARD &&
-                      flightData.ONWARD.length > 0 &&
-                      flightData.RETURN &&
-                      flightData.RETURN.length > 0 ? (
+                        flightData.ONWARD &&
+                        flightData.ONWARD.length > 0 &&
+                        flightData.RETURN &&
+                        flightData.RETURN.length > 0 ? (
                         <RoundTripSelectionView
                           flightData={flightData}
                           departureFrom={departureFrom}
@@ -1843,13 +1847,13 @@ export default function Tickets() {
                     </>
                   ) : null}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "multi-city" ? (
+                    srx_tripType.trim().toLowerCase() === "multi-city" ? (
                     <>
                       {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
-                          // departureFrom={departureFrom}
-                          // arrivalTo={arrivalTo}
+                        // departureFrom={departureFrom}
+                        // arrivalTo={arrivalTo}
                         />
                       ) : (
                         <>
@@ -1938,108 +1942,110 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                {srx_tripType?.trim().toLowerCase() !== "round-trip" &&
-                  srx_tripType?.trim().toLowerCase() !== "multi-city" && (
-                    <div className="content-left order-lg-first">
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Filter Price{" "}
-                            </h6>
-                            <ByPrice
-                              priceRange={priceRange}
-                              setPriceRange={setPriceRange}
-                            />
+                <div className="content-left order-lg-first">
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Filter Price{" "}
+                        </h6>
+                        <ByPrice
+                          priceRange={priceRange}
+                          setPriceRange={setPriceRange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Stops
+                        </h6>
+                        <ByStops stops={stops} setStops={setStops} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Departure Time
+                        </h6>
+                        <ByDepartureTime
+                          departureTime={departureTime}
+                          setDepartureTime={setDepartureTime}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Arrival Time
+                        </h6>
+                        <ByArrivalTime
+                          arrivalTime={arrivalTime}
+                          setArrivalTime={setArrivalTime}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Airlines
+                        </h6>
+                        <div className="box-collapse scrollFilter">
+                          <ByAirline
+                            uniqueAirlines={[
+                              ...new Set(
+                                (
+                                  flightData?.ONWARD ||
+                                  flightData?.COMBO ||
+                                  []
+                                ).map(
+                                  (ticket: any) => ticket.sI[0].fD.aI.name
+                                )
+                              ),
+                            ]}
+                            selectedAirlines={selectedAirlines}
+                            setSelectedAirlines={setSelectedAirlines}
+                          />
+                          <div className="box-see-more mt-20 mb-25">
+                            <Link className="link-see-more" href="#">
+                              See more
+                              <svg
+                                width={8}
+                                height={6}
+                                viewBox="0 0 8 6"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path d="M7.89553 1.02367C7.75114 0.870518 7.50961 0.864815 7.35723 1.00881L3.9998 4.18946L0.642774 1.00883C0.490387 0.86444 0.249236 0.870534 0.104474 1.02369C-0.0402885 1.17645 -0.0338199 1.4176 0.118958 1.56236L3.73809 4.99102C3.81123 5.06036 3.90571 5.0954 3.9998 5.0954C4.0939 5.0954 4.18875 5.06036 4.26191 4.99102L7.88104 1.56236C8.03382 1.41758 8.04029 1.17645 7.89553 1.02367Z" />
+                              </svg>
+                            </Link>
                           </div>
                         </div>
                       </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Stops
-                            </h6>
-                            <ByStops stops={stops} setStops={setStops} />
-                          </div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                          Class / Cabin
+                        </h6>
+                        <ByClass
+                          uniqueClasses={uniqueClasses}
+                          filter={filter}
+                          handleCheckboxChange={handleCheckboxChange}
+                        />
                       </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Departure Time
-                            </h6>
-                            <ByDepartureTime
-                              departureTime={departureTime}
-                              setDepartureTime={setDepartureTime}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Arrival Time
-                            </h6>
-                            <ByArrivalTime
-                              arrivalTime={arrivalTime}
-                              setArrivalTime={setArrivalTime}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Airlines
-                            </h6>
-                            <div className="box-collapse scrollFilter">
-                              <ByAirline
-                                uniqueAirlines={[
-                                  ...new Set(
-                                    flightData?.ONWARD?.map(
-                                      (ticket: any) => ticket.sI[0].fD.aI.name
-                                    ) || []
-                                  ),
-                                ]}
-                                selectedAirlines={selectedAirlines}
-                                setSelectedAirlines={setSelectedAirlines}
-                              />
-                              <div className="box-see-more mt-20 mb-25">
-                                <Link className="link-see-more" href="#">
-                                  See more
-                                  <svg
-                                    width={8}
-                                    height={6}
-                                    viewBox="0 0 8 6"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path d="M7.89553 1.02367C7.75114 0.870518 7.50961 0.864815 7.35723 1.00881L3.9998 4.18946L0.642774 1.00883C0.490387 0.86444 0.249236 0.870534 0.104474 1.02369C-0.0402885 1.17645 -0.0338199 1.4176 0.118958 1.56236L3.73809 4.99102C3.81123 5.06036 3.90571 5.0954 3.9998 5.0954C4.0939 5.0954 4.18875 5.06036 4.26191 4.99102L7.88104 1.56236C8.03382 1.41758 8.04029 1.17645 7.89553 1.02367Z" />
-                                  </svg>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Class / Cabin
-                            </h6>
-                            <ByClass
-                              uniqueClasses={uniqueClasses}
-                              filter={filter}
-                              handleCheckboxChange={handleCheckboxChange}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      {/* <div className="sidebar-left border-1 background-body">
+                    </div>
+                  </div>
+                  {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
                         <h6 className="text-lg-bold item-collapse neutral-1000">Review Score </h6>
@@ -2047,7 +2053,7 @@ export default function Tickets() {
                       </div>
                     </div>
                   </div> */}
-                      {/* <div className="sidebar-left border-1 background-body">
+                  {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
                         <h6 className="text-lg-bold item-collapse neutral-1000">Booking Location</h6>
@@ -2055,16 +2061,15 @@ export default function Tickets() {
                       </div>
                     </div>
                   </div> */}
-                      <div className="sidebar-banner">
-                        <Link href="#">
-                          <img
-                            src="/assets/imgs/page/tickets/banner-ads.png"
-                            alt="Travalogy"
-                          />
-                        </Link>
-                      </div>
-                    </div>
-                  )}
+                  <div className="sidebar-banner">
+                    <Link href="#">
+                      <img
+                        src="/assets/imgs/page/tickets/banner-ads.png"
+                        alt="Travalogy"
+                      />
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </section>

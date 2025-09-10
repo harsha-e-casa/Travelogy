@@ -198,7 +198,7 @@ const MultiCitySegment = ({
       <div className="text_start b_right_2px g_w_2 css_pointer relative">
         <div onClick={() => onToggleSection(index, "to")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
-          <div className="pl-6 pb-4 relative"> {/* Added pb-4 for consistency */}
+          <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
             <h6 className="font_bold text-black tracking-wide">
               {segment.to || "Select City"}
             </h6>

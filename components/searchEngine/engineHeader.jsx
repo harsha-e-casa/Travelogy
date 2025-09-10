@@ -69,6 +69,7 @@ const EngineTabs = ({ active_border }) => {
   const [fromError, setFromError] = useState("");
   const [toError, setToError] = useState("");
   const [hasMultiCityError, setHasMultiCityError] = useState(false); // New state for multi-city error
+  const [dateError, setDateError] = useState("");
 
   const handleReturnDateChange = (newDate) => {
     setReturnDate(newDate); // This will trigger the effect above to check the dates
@@ -318,11 +319,25 @@ const EngineTabs = ({ active_border }) => {
 
   useEffect(() => {
     setMulticitySegments((prevSegments) => {
-      const firstSegment = { ...prevSegments[0] };
-      if (firstSegment.departureDate.isBefore(departureDate)) {
-        firstSegment.departureDate = departureDate;
+      const updatedSegments = [...prevSegments];
+      if (updatedSegments.length > 0) {
+        updatedSegments[0] = {
+          ...updatedSegments[0],
+          departureDate: departureDate,
+        };
+
+        for (let i = 1; i < updatedSegments.length; i++) {
+          const prevDate = dayjs(updatedSegments[i - 1].departureDate);
+          const currDate = dayjs(updatedSegments[i].departureDate);
+          if (currDate.isBefore(prevDate) || currDate.isSame(prevDate)) {
+            updatedSegments[i] = {
+              ...updatedSegments[i],
+              departureDate: prevDate.add(1, "day"),
+            };
+          }
+        }
       }
-      return [firstSegment, ...prevSegments.slice(1)];
+      return updatedSegments;
     });
   }, [departureDate]);
 
@@ -419,13 +434,27 @@ const EngineTabs = ({ active_border }) => {
   const displayDate = dayjs().add(2, "day");
   const [multicitySegments, setMulticitySegments] = useState([
     {
-      from: selectFromTo,
-      fromCode: selectFromSubTo,
+      from: selectFrom,
+      fromCode: selectFromSub,
       to: "",
       toCode: "",
       departureDate: departureDate, // Use departureDate from engineHeader.jsx
     },
   ]);
+
+  useEffect(() => {
+    if (selectedPlan === "multi-city") {
+      for (let i = 0; i < multicitySegments.length - 1; i++) {
+        const currentSegment = multicitySegments[i];
+        const nextSegment = multicitySegments[i + 1];
+        if (currentSegment.departureDate && nextSegment.departureDate && dayjs(currentSegment.departureDate).isAfter(dayjs(nextSegment.departureDate))) {
+          setDateError("Departure dates must be in ascending order.");
+          return;
+        }
+      }
+    }
+    setDateError("");
+  }, [multicitySegments, selectedPlan]);
 
   const multicityUpdateSegment = (index, newData) => {
     const newSegments = [...multicitySegments];
@@ -452,6 +481,8 @@ const EngineTabs = ({ active_border }) => {
         return;
       }
 
+      const newDepartureDate = dayjs(prevSegment.departureDate).add(1, "day");
+
       setMulticitySegments([
         ...multicitySegments,
         {
@@ -459,7 +490,7 @@ const EngineTabs = ({ active_border }) => {
           fromCode: prevSegment.toCode,
           to: "",
           toCode: "",
-          departureDate: prevSegment.departureDate,
+          departureDate: newDepartureDate,
         },
       ]);
     }
@@ -712,6 +743,11 @@ const EngineTabs = ({ active_border }) => {
                     {segmentError}
                   </div>
                 )}
+                {dateError && (
+                  <div className="text-red-500 text-sm font-medium my-2">
+                    {dateError}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -753,12 +789,12 @@ const EngineTabs = ({ active_border }) => {
           >
             <div
               onClick={
-                !fromError && !toError && selectFrom && selectFromTo && !hasMultiCityError
+                !fromError && !toError && selectFrom && selectFromTo && !hasMultiCityError && !dateError
                   ? searchTickets
                   : null
               }
               className={`search_btn_font text-white uppercase tracking-wide cursor-pointer ${
-                !!fromError || !!toError || !selectFrom || !selectFromTo || hasMultiCityError
+                !!fromError || !!toError || !selectFrom || !selectFromTo || hasMultiCityError || !!dateError
                   ? "cursor-not-allowed opacity-50"
                   : ""
               }`}
