@@ -207,6 +207,8 @@ function buildRoomTravellerInfo({ formData, roomInfo, panInfo }) {
           ti: guest?.title || "Mr",
           pt: isChild ? "CHILD" : "ADULT",
           pNum: guest?.passportNumber || "",
+          peD: guest?.passportExpiryDate || "",
+          // pa: guest?.passportAttachment || null,
         };
         if (isChild) return base;
 

@@ -84,9 +84,9 @@ const BookingDetailsPage = () => {
       }
 
       if (typeof onConfirmPayment === "function") {
-        setTimeout(() => {
-          onConfirmPayment(bookingId);
-        }, 10000);
+        // setTimeout(() => {
+        onConfirmPayment(bookingId);
+        // }, 10000);
       }
     } catch (error) {
       console.error("Booking failed:", error);
@@ -312,36 +312,59 @@ const BookingDetailsPage = () => {
       setCancelling(false);
     }
   };
-  const handlePrint = () => {
-    const content = document.querySelector(".print-container").innerHTML;
-    const printWindow = window.open("", "_blank", "width=800,height=600");
-    printWindow.document.write(`
-    <html>
-      <head>
-        <title>Booking Details</title>
-        <style>
-          @page { size: A4; margin: 20mm; }
-          body { font-family: Arial, sans-serif; }
 
-          /* default screen behavior in print window */
-          .screen-only { display: none; }      /* hide right column by default here */
-          .print-only { display: block; }      /* show the bottom summary */
-          .no-print { display: none !important; }
+  const handlePrint = async () => {
+    const container = document.querySelector(".print-container");
+    if (!container) return;
 
-          /* (optional) if the browser re-evaluates for print media */
-          @media print {
-            .screen-only { display: none !important; }
-            .print-only { display: block !important; }
-            .no-print { display: none !important; }
-          }
-        </style>
-      </head>
-      <body>${content}</body>
-    </html>
-  `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+    try {
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        windowWidth: container.scrollWidth,
+        ignoreElements: (el) => el.id === "more-options",
+        onclone: (clonedDoc) => {
+          clonedDoc.querySelectorAll(".print-only").forEach((el) => {
+            el.style.display = "block";
+          });
+          clonedDoc
+            .querySelectorAll(".screen-only, .no-print")
+            .forEach((el) => {
+              el.style.display = "none";
+            });
+        },
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const printWindow = window.open("", "_blank", "width=800,height=600");
+
+      printWindow.document.write(`
+      <html>
+        <head>
+          <title>Booking Details</title>
+          <style>
+            body { margin: 0; text-align: center; }
+            img { max-width: 100%; }
+          </style>
+        </head>
+        <body>
+          <img src="${imgData}" />
+        </body>
+      </html>
+    `);
+
+      printWindow.document.close();
+      printWindow.focus();
+
+      // Wait until image is loaded before printing
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
+    } catch (e) {
+      console.error("Failed to print:", e);
+    }
   };
 
   const statusLabel =
@@ -371,7 +394,7 @@ const BookingDetailsPage = () => {
                     src="/assets/imgs/tick.png"
                     alt="tick"
                   />
-                  <h6 className="status_texts print_pdf1">{statusLabel}</h6>
+                  <h6 className="status_text1 print_pdf1">{statusLabel}</h6>
                   <button
                     className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handlePayClick}
@@ -387,7 +410,7 @@ const BookingDetailsPage = () => {
                     src="/assets/imgs/tick.png"
                     alt="tick"
                   />
-                  <h6 className="status_texts print_pdf1">{statusLabel}</h6>
+                  <h6 className="status_text2 print_pdf1">{statusLabel}</h6>
                 </div>
               ) : (
                 <div className="p-6 flex justify-between items-center w-full">
@@ -397,7 +420,7 @@ const BookingDetailsPage = () => {
                       src="/assets/imgs/tick.png"
                       alt="tick"
                     />
-                    <h6 className="status_texts print_pdf1">{statusLabel}</h6>
+                    <h6 className="status_text3 print_pdf1">{statusLabel}</h6>
                   </div>
                   <div
                     id="more-options"
