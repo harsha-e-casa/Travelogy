@@ -19532,7 +19532,17 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   /* Adjust the width as per your design */
 }
 
-.status_texts {
+.status_text1 {
+  font-weight: 600;
+  color: red;
+}
+
+.status_text2 {
+  font-weight: 600;
+  color: orange;
+}
+
+.status_text3 {
   font-weight: 600;
   color: #4aa301;
 }
