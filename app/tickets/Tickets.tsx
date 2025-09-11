@@ -89,6 +89,96 @@ export default function Tickets() {
 
   const { setCookie, getCookie, removeCookie } = useContext(AppContext);
 
+  type MultiSeg = {
+    from: string;
+    fromCode: string;
+    to: string;
+    toCode: string;
+    departureDate: Date | null;
+    lastEditedField?: "from" | "to";
+    // errors
+    fromError?: string;
+    toError?: string;
+    dateError?: string;
+  };
+
+  const validateMultiCity = (opts?: { focusFirstError?: boolean }) => {
+    let ok = true;
+    let firstBadIndex: number | null = null;
+
+    const next = multicitySegments.map((seg, idx, arr) => {
+      const e: any = { ...seg };
+      e.fromError = "";
+      e.toError = "";
+      e.dateError = "";
+      e.forceOpen = false; // NEW: track if dropdown should stay open
+
+      // --- Empty / Placeholder checks ---
+      if (!e.from || !e.fromCode || e.from === "Select City") {
+        e.fromError = "Select a valid departure city";
+        e.forceOpen = true;
+      }
+      if (!e.to || !e.toCode || e.to === "Select City") {
+        e.toError = "Select a valid arrival city";
+        e.forceOpen = true;
+      }
+      if (!e.departureDate) {
+        e.dateError = "Select a date";
+        e.forceOpen = true;
+      }
+
+      // --- Same city check ---
+      if (
+        !e.fromError &&
+        !e.toError &&
+        e.fromCode &&
+        e.toCode &&
+        e.fromCode === e.toCode
+      ) {
+        e.toError = "From and To cannot be the same";
+        e.forceOpen = true;
+      }
+
+      // --- Date order check (ascending) ---
+      if (!e.dateError && idx > 0) {
+        const prevDate = arr[idx - 1]?.departureDate;
+        if (prevDate && e.departureDate) {
+          if (dayjs(e.departureDate).isBefore(dayjs(prevDate), "day")) {
+            e.dateError = `Date must be on or after previous segment (${dayjs(
+              prevDate
+            ).format("ddd, MMM D YYYY")})`;
+            e.forceOpen = true;
+          }
+        }
+      }
+
+      // --- Track first error for scrolling/focus ---
+      if (ok && (e.fromError || e.toError || e.dateError)) {
+        ok = false;
+        firstBadIndex = idx;
+      }
+
+      return e;
+    });
+
+    setMulticitySegments(next);
+
+    // --- Set global error message ---
+    if (!ok) {
+      setErrorMsg(
+        "Please fix the highlighted fields in your multi-city itinerary."
+      );
+      if (opts?.focusFirstError && firstBadIndex !== null) {
+        const el = document.querySelector(`[data-seg-row="${firstBadIndex}"]`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    } else {
+      setErrorMsg(""); // clear error if everything is okay
+    }
+
+    return ok;
+  };
+
   useEffect(() => {
     removeCookie("travellerInfo");
     removeCookie("mealinfo");
@@ -296,7 +386,13 @@ export default function Tickets() {
       for (let i = 0; i < multicitySegments.length - 1; i++) {
         const currentSegment = multicitySegments[i];
         const nextSegment = multicitySegments[i + 1];
-        if (currentSegment.departureDate && nextSegment.departureDate && dayjs(currentSegment.departureDate).isAfter(dayjs(nextSegment.departureDate))) {
+        if (
+          currentSegment.departureDate &&
+          nextSegment.departureDate &&
+          dayjs(currentSegment.departureDate).isAfter(
+            dayjs(nextSegment.departureDate)
+          )
+        ) {
           setDateError("Departure dates must be in ascending order.");
           return;
         }
@@ -349,6 +445,7 @@ export default function Tickets() {
   useEffect(() => {
     let needsUpdate = false;
     const updatedSegments = multicitySegments.map((segment) => {
+      console.log("segmentsegmentsegment ==> ",segment);
       const newSegment = { ...segment };
       let fromError = "";
       let toError = "";
@@ -359,10 +456,18 @@ export default function Tickets() {
         segment.fromCode === segment.toCode
       ) {
         if (segment.lastEditedField === "from") {
-          fromError = "From and To cities cannot be the same.";
+          fromError = "1 From and To cities cannot be the same.";
         } else if (segment.lastEditedField === "to") {
-          toError = "From and To cities cannot be the same.";
+          toError = "1 From and To cities cannot be the same.";
         }
+      }
+
+      if (segment.from === 'Select City') {
+        fromError = "Select a City"
+      }
+      
+      if (segment.to === 'Select City') {
+        toError = "Select a City"
       }
 
       if (newSegment.fromError !== fromError) {
@@ -435,12 +540,27 @@ export default function Tickets() {
   // const modifySearchRef = useRef(false);
   const [modifySearchRef, setModifySearchRef] = useState(false);
 
+  useEffect(() => {
+    if (
+      (srx_tripType?.toLowerCase() || "") === "multi-city" &&
+      modifySearchRef
+    ) {
+      // live validate but don't auto-scroll
+      validateMultiCity({ focusFirstError: false });
+    }
+  }, [srx_tripType, modifySearchRef]);
+
   const handleModifySearch = () => {
     // alert(" search modified ");
     setModifySearchRef(true);
   };
 
   const handlesearFlight = () => {
+    if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
+      const pass = validateMultiCity({ focusFirstError: true });
+      if (!pass) return; // stop if invalid
+    }
+
     if (fromError || toError) {
       return; // Do not proceed if there are city selection errors
     }
@@ -451,6 +571,15 @@ export default function Tickets() {
       // single and round trip
       SetSearchFlight(true);
     }
+  };
+
+  const onClickSearch = () => {
+    if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
+      const pass = validateMultiCity({ focusFirstError: true });
+      if (!pass) return; // stop if invalid
+    }
+    // single/round-trip can use your existing checks...
+    handlesearFlight();
   };
 
   const [true_Tripconst, setTripconst] = useState<boolean>(false);
@@ -627,9 +756,12 @@ export default function Tickets() {
         toCityOrAirport: {
           code: item.toCode,
         },
-        travelDate: item?.departureDate?.includes("T")
-          ? item.departureDate.split("T")[0]
-          : item?.departureDate,
+        travelDate:
+          item?.departureDate &&
+          typeof item.departureDate === "string" &&
+          item.departureDate.includes("T")
+            ? item.departureDate.split("T")[0]
+            : item?.departureDate,
       }));
       console.log("tripBasedRouteInfoSub ==> ", tripBasedRouteInfoSub);
 
@@ -873,6 +1005,7 @@ export default function Tickets() {
       srx_arrivalTo &&
       srx_departureFrom === srx_arrivalTo
     ) {
+      console.log("srx_departureFromsrx_departureFrom ==> ",srx_departureFrom)
       if (lastEditedField === "from") {
         setFromError("From and To cities cannot be the same.");
         setToError("");
@@ -1258,97 +1391,97 @@ export default function Tickets() {
               {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
                 modifySearchRef) ||
                 (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                  <>
-                    <div className="hdt_header-item relative">
-                      <label>From</label>
-                      <div onClick={openfrom} className="hdt_value">
-                        {srx_departureFrom}
-                      </div>
-
-                      {showSearchState ? (
-                        <div className="searchFfromSelect searchFfromSelect_2">
-                          <AppListSearch
-                            operEngLocation={openfrom}
-                            setSelectFrom={handleFromCityChange}
-                            setSelectFromSub={setDepartureToCode}
-                          />
-                        </div>
-                      ) : null}
-                      <Tooltip
-                        className="flex shadow-md z-10"
-                        placement="bottom"
-                        title={fromError}
-                        open={!!fromError}
-                        arrow={{ pointAtCenter: true }}
-                        overlayInnerStyle={{
-                          backgroundColor: "#ffeaea",
-                          color: "#ff4d4f",
-                          fontWeight: 500,
-                        }}
-                      ></Tooltip>
+                <>
+                  <div className="hdt_header-item relative">
+                    <label>From</label>
+                    <div onClick={openfrom} className="hdt_value">
+                      {srx_departureFrom}
                     </div>
 
-                    <div className="hdt_header-item relative">
-                      <label>To</label>
-                      <div onClick={openTo} className="hdt_value">
-                        {srx_arrivalTo}
+                    {showSearchState ? (
+                      <div className="searchFfromSelect searchFfromSelect_2">
+                        <AppListSearch
+                          operEngLocation={openfrom}
+                          setSelectFrom={handleFromCityChange}
+                          setSelectFromSub={setDepartureToCode}
+                        />
                       </div>
+                    ) : null}
+                    <Tooltip
+                      className="flex shadow-md z-10"
+                      placement="bottom"
+                      title={fromError}
+                      open={!!fromError}
+                      arrow={{ pointAtCenter: true }}
+                      overlayInnerStyle={{
+                        backgroundColor: "#ffeaea",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                      }}
+                    ></Tooltip>
+                  </div>
 
-                      {showSearchStateTo ? (
-                        <div className="searchFfromSelect searchFfromSelect_2">
-                          <AppListSearch
-                            operEngLocation={openTo}
-                            setSelectFrom={handleToCityChange}
-                            setSelectFromSub={setArrivalToCode}
-                          />
-                        </div>
-                      ) : null}
-                      <Tooltip
-                        className="flex shadow-md z-50"
-                        placement="bottom"
-                        title={toError}
-                        open={!!toError}
-                        arrow={{ pointAtCenter: true }}
-                        overlayInnerStyle={{
-                          backgroundColor: "#ffeaea",
-                          color: "#ff4d4f",
-                          fontWeight: 500,
-                        }}
-                      ></Tooltip>
+                  <div className="hdt_header-item relative">
+                    <label>To</label>
+                    <div onClick={openTo} className="hdt_value">
+                      {srx_arrivalTo}
                     </div>
-                  </>
-                )}
+
+                    {showSearchStateTo ? (
+                      <div className="searchFfromSelect searchFfromSelect_2">
+                        <AppListSearch
+                          operEngLocation={openTo}
+                          setSelectFrom={handleToCityChange}
+                          setSelectFromSub={setArrivalToCode}
+                        />
+                      </div>
+                    ) : null}
+                    <Tooltip
+                      className="flex shadow-md z-50"
+                      placement="bottom"
+                      title={toError}
+                      open={!!toError}
+                      arrow={{ pointAtCenter: true }}
+                      overlayInnerStyle={{
+                        backgroundColor: "#ffeaea",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                      }}
+                    ></Tooltip>
+                  </div>
+                </>
+              )}
 
               {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
                 modifySearchRef) ||
                 (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                  <div className="hdt_header-item">
-                    <label>Depart</label>
-                    <div
-                      onClick={() => {
-                        if (
-                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                            modifySearchRef) ||
-                          (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                        ) {
-                          openToDateRange();
-                        }
-                      }}
-                      className="hdt_value"
-                    >
-                      {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                    </div>
-
-                    {openDateRage ? (
-                      <AppDateRangeFlight
-                        openToDateRange={openToDateRange}
-                        setDate={setDatedep}
-                        minDate={null}
-                        value={datedep}
-                      />
-                    ) : null}
+                <div className="hdt_header-item">
+                  <label>Depart</label>
+                  <div
+                    onClick={() => {
+                      if (
+                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                          modifySearchRef) ||
+                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                      ) {
+                        openToDateRange();
+                      }
+                    }}
+                    className="hdt_value"
+                  >
+                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
                   </div>
-                )}
+
+                  {openDateRage ? (
+                    <AppDateRangeFlight
+                      openToDateRange={openToDateRange}
+                      setDate={setDatedep}
+                      minDate={null}
+                      value={datedep}
+                    />
+                  ) : null}
+                </div>
+              )}
 
               {(srx_tripType?.toLowerCase() || "") === "round-trip" ? (
                 <>
@@ -1393,7 +1526,7 @@ export default function Tickets() {
                 </div>
               </div>
               {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                !modifySearchRef ? (
+              !modifySearchRef ? (
                 <>
                   <button
                     onClick={handleModifySearch}
@@ -1406,14 +1539,28 @@ export default function Tickets() {
                 <>
                   <div
                     onClick={
-                      (fromError || toError || errorMsg || dateError || multicitySegments.some(s => s.fromError || s.toError))
-                        ? () => { }
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      dateError ||
+                      multicitySegments.some(
+                        (s) => s.fromError || s.toError || s.dateError
+                      )
+                        ? () => {}
                         : handlesearFlight
+                      // onClickSearch
                     }
-                    className={`hdt_search-btn ${(fromError || toError || errorMsg || dateError || multicitySegments.some(s => s.fromError || s.toError))
+                    className={`hdt_search-btn ${
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      dateError ||
+                      multicitySegments.some(
+                        (s) => s.fromError || s.toError || s.dateError
+                      )
                         ? "cursor-not-allowed opacity-50"
                         : ""
-                      }`}
+                    }`}
                   >
                     Search
                   </div>
@@ -1438,6 +1585,7 @@ export default function Tickets() {
                             >
                               {segment.from}
                             </div>
+                            {/* {segment.fromError && <span className="error">{segment.fromError}</span>} */}
                           </div>
                           {openFromMultiIndex === idx && (
                             <div className="searchFfromSelect searchFfromSelect_2">
@@ -1483,6 +1631,7 @@ export default function Tickets() {
                             >
                               {segment.to}
                             </div>
+                            {/* {segment.toError && <span className="error">{segment.toError}</span>} */}
                           </div>
                           {openToMultiIndex === idx && (
                             <div className="searchFfromSelect searchFfromSelect_2">
@@ -1517,17 +1666,20 @@ export default function Tickets() {
                         </div>
 
                         <div className="hdt_header-item">
-                          <label>Depart</label>
-                          <div
-                            onClick={() => multiOpenToDateRange(idx)}
-                            className="hdt_value"
-                          >
-                            {segment.departureDate
-                              ? dayjs(segment.departureDate).format(
-                                "ddd, MMM D YYYY"
-                              )
-                              : "Select Date"}
+                          <div>
+                            <label>Depart</label>
+                            <div
+                              onClick={() => multiOpenToDateRange(idx)}
+                              className="hdt_value"
+                            >
+                              {segment.departureDate
+                                ? dayjs(segment.departureDate).format(
+                                    "ddd, MMM D YYYY"
+                                  )
+                                : "Select Date"}
+                            </div>
                           </div>
+                          {/* {segment.dateError && <span className="error">{segment.dateError}</span>} */}
                           {openDepartMultiIndex === idx && (
                             <AppDateRangeFlight
                               openToDateRange={() => multiOpenToDateRange(idx)}
@@ -1544,6 +1696,18 @@ export default function Tickets() {
                               value={multicitySegments[idx].departureDate}
                             />
                           )}
+                          <Tooltip
+                            className="flex shadow-md z-50"
+                            placement="bottom"
+                            title={segment.dateError}
+                            open={!!segment.dateError}
+                            arrow={{ pointAtCenter: true }}
+                            overlayInnerStyle={{
+                              backgroundColor: "#ffeaea",
+                              color: "#ff4d4f",
+                              fontWeight: 500,
+                            }}
+                          ></Tooltip>
                         </div>
 
                         {/* Add/Remove buttons */}
@@ -1818,13 +1982,13 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                  srx_tripType.trim().toLowerCase() === "round-trip" ? (
                     <>
                       {flightData &&
-                        flightData.ONWARD &&
-                        flightData.ONWARD.length > 0 &&
-                        flightData.RETURN &&
-                        flightData.RETURN.length > 0 ? (
+                      flightData.ONWARD &&
+                      flightData.ONWARD.length > 0 &&
+                      flightData.RETURN &&
+                      flightData.RETURN.length > 0 ? (
                         <RoundTripSelectionView
                           flightData={flightData}
                           departureFrom={departureFrom}
@@ -1847,13 +2011,14 @@ export default function Tickets() {
                     </>
                   ) : null}
                   {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "multi-city" ? (
+                  srx_tripType.trim().toLowerCase() === "multi-city" &&
+                  !flightData?.COMBO ? (
                     <>
                       {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
-                        // departureFrom={departureFrom}
-                        // arrivalTo={arrivalTo}
+                          // departureFrom={departureFrom}
+                          // arrivalTo={arrivalTo}
                         />
                       ) : (
                         <>
@@ -1942,110 +2107,116 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                <div className="content-left order-lg-first">
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Filter Price{" "}
-                        </h6>
-                        <ByPrice
-                          priceRange={priceRange}
-                          setPriceRange={setPriceRange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Stops
-                        </h6>
-                        <ByStops stops={stops} setStops={setStops} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Departure Time
-                        </h6>
-                        <ByDepartureTime
-                          departureTime={departureTime}
-                          setDepartureTime={setDepartureTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Arrival Time
-                        </h6>
-                        <ByArrivalTime
-                          arrivalTime={arrivalTime}
-                          setArrivalTime={setArrivalTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Airlines
-                        </h6>
-                        <div className="box-collapse scrollFilter">
-                          <ByAirline
-                            uniqueAirlines={[
-                              ...new Set(
-                                (
-                                  flightData?.ONWARD ||
-                                  flightData?.COMBO ||
-                                  []
-                                ).map(
-                                  (ticket: any) => ticket.sI[0].fD.aI.name
-                                )
-                              ),
-                            ]}
-                            selectedAirlines={selectedAirlines}
-                            setSelectedAirlines={setSelectedAirlines}
+                {((srx_tripType?.trim().toLowerCase() === "one-way" &&
+                  flightData?.ONWARD?.length > 0) ||
+                  (srx_tripType?.trim().toLowerCase() === "round-trip" &&
+                    flightData?.COMBO?.length > 0) ||
+                  (srx_tripType?.trim().toLowerCase() === "multi-city" &&
+                    flightData?.COMBO?.length > 0)) && (
+                  <div className="content-left order-lg-first">
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Filter Price{" "}
+                          </h6>
+                          <ByPrice
+                            priceRange={priceRange}
+                            setPriceRange={setPriceRange}
                           />
-                          <div className="box-see-more mt-20 mb-25">
-                            <Link className="link-see-more" href="#">
-                              See more
-                              <svg
-                                width={8}
-                                height={6}
-                                viewBox="0 0 8 6"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path d="M7.89553 1.02367C7.75114 0.870518 7.50961 0.864815 7.35723 1.00881L3.9998 4.18946L0.642774 1.00883C0.490387 0.86444 0.249236 0.870534 0.104474 1.02369C-0.0402885 1.17645 -0.0338199 1.4176 0.118958 1.56236L3.73809 4.99102C3.81123 5.06036 3.90571 5.0954 3.9998 5.0954C4.0939 5.0954 4.18875 5.06036 4.26191 4.99102L7.88104 1.56236C8.03382 1.41758 8.04029 1.17645 7.89553 1.02367Z" />
-                              </svg>
-                            </Link>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Stops
+                          </h6>
+                          <ByStops stops={stops} setStops={setStops} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Departure Time
+                          </h6>
+                          <ByDepartureTime
+                            departureTime={departureTime}
+                            setDepartureTime={setDepartureTime}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Arrival Time
+                          </h6>
+                          <ByArrivalTime
+                            arrivalTime={arrivalTime}
+                            setArrivalTime={setArrivalTime}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Airlines
+                          </h6>
+                          <div className="box-collapse scrollFilter">
+                            <ByAirline
+                              uniqueAirlines={[
+                                ...new Set(
+                                  (
+                                    flightData?.ONWARD ||
+                                    flightData?.COMBO ||
+                                    []
+                                  ).map(
+                                    (ticket: any) => ticket.sI[0].fD.aI.name
+                                  )
+                                ),
+                              ]}
+                              selectedAirlines={selectedAirlines}
+                              setSelectedAirlines={setSelectedAirlines}
+                            />
+                            <div className="box-see-more mt-20 mb-25">
+                              <Link className="link-see-more" href="#">
+                                See more
+                                <svg
+                                  width={8}
+                                  height={6}
+                                  viewBox="0 0 8 6"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M7.89553 1.02367C7.75114 0.870518 7.50961 0.864815 7.35723 1.00881L3.9998 4.18946L0.642774 1.00883C0.490387 0.86444 0.249236 0.870534 0.104474 1.02369C-0.0402885 1.17645 -0.0338199 1.4176 0.118958 1.56236L3.73809 4.99102C3.81123 5.06036 3.90571 5.0954 3.9998 5.0954C4.0939 5.0954 4.18875 5.06036 4.26191 4.99102L7.88104 1.56236C8.03382 1.41758 8.04029 1.17645 7.89553 1.02367Z" />
+                                </svg>
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Class / Cabin
-                        </h6>
-                        <ByClass
-                          uniqueClasses={uniqueClasses}
-                          filter={filter}
-                          handleCheckboxChange={handleCheckboxChange}
-                        />
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Class / Cabin
+                          </h6>
+                          <ByClass
+                            uniqueClasses={uniqueClasses}
+                            filter={filter}
+                            handleCheckboxChange={handleCheckboxChange}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* <div className="sidebar-left border-1 background-body">
+                    {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
                         <h6 className="text-lg-bold item-collapse neutral-1000">Review Score </h6>
@@ -2053,7 +2224,7 @@ export default function Tickets() {
                       </div>
                     </div>
                   </div> */}
-                  {/* <div className="sidebar-left border-1 background-body">
+                    {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
                         <h6 className="text-lg-bold item-collapse neutral-1000">Booking Location</h6>
@@ -2061,15 +2232,16 @@ export default function Tickets() {
                       </div>
                     </div>
                   </div> */}
-                  <div className="sidebar-banner">
-                    <Link href="#">
-                      <img
-                        src="/assets/imgs/page/tickets/banner-ads.png"
-                        alt="Travalogy"
-                      />
-                    </Link>
+                    <div className="sidebar-banner">
+                      <Link href="#">
+                        <img
+                          src="/assets/imgs/page/tickets/banner-ads.png"
+                          alt="Travalogy"
+                        />
+                      </Link>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </section>

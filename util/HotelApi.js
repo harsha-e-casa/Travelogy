@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { postData } from "@/services/NetworkAdapter";
+import { getData, postData } from "@/services/NetworkAdapter";
 
 const API_KEY = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
 
@@ -61,28 +61,64 @@ export const useCities = () => {
 export const useNationalities = () => {
   const [nationalities, setNationalities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const NATIONALITY_API =
-    "https://apitest.tripjack.com/hms/v1/nationality-info";
 
   useEffect(() => {
-    axios
-      .get(NATIONALITY_API, {
-        headers: {
-          apikey: API_KEY,
-        },
-      })
-      .then((res) => {
-        const data = res.data.nationalityInfos || [];
+    const fetchNationalities = async () => {
+      try {
+        setLoading(true);
+
+        const res = await getData("travelogy/hotel/get-data", {
+          action: "nationality",
+        });
+
+        const data = res?.nationalityInfos || [];
         setNationalities(data);
-      })
-      .catch((err) => {
+
+        console.log("Fetched nationalities:", data);
+      } catch (err) {
         console.error("Error fetching nationalities:", err);
-      })
-      .finally(() => setLoading(false));
+        setNationalities([]); // fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNationalities();
   }, []);
 
   return { nationalities, loading };
 };
+
+// export const useNationalities = () => {
+//   const [nationalities, setNationalities] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const NATIONALITY_API =
+//     "https://apitest.tripjack.com/hms/v1/nationality-info";
+
+//   useEffect(() => {
+//     // const res = await getData("travelogy/hotel/get-data", {
+//     //   action: "nationality"
+//     // });
+//     // console.log("ffffffgggggggggggg ",res)
+
+//     axios
+//       .get(NATIONALITY_API, {
+//         headers: {
+//           apikey: API_KEY,
+//         },
+//       })
+//       .then((res) => {
+//         const data = res.data.nationalityInfos || [];
+//         setNationalities(data);
+//       })
+//       .catch((err) => {
+//         console.error("Error fetching nationalities:", err);
+//       })
+//       .finally(() => setLoading(false));
+//   }, []);
+
+//   return { nationalities, loading };
+// };
 
 // export async function hotelBooking({ formData, hotelReviewData }) {
 //   const bookingId = hotelReviewData?.bookingId;
@@ -207,8 +243,6 @@ function buildRoomTravellerInfo({ formData, roomInfo, panInfo }) {
           ti: guest?.title || "Mr",
           pt: isChild ? "CHILD" : "ADULT",
           pNum: guest?.passportNumber || "",
-          peD: guest?.passportExpiryDate || "",
-          // pa: guest?.passportAttachment || null,
         };
         if (isChild) return base;
 
@@ -232,6 +266,7 @@ export async function hotelBooking({
     const roomInfo = hotelReviewData?.query?.roomInfo || [];
     const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
 
+    // ✅ Resolve panInfo from either place
     const panInfo = (updatedFormData?.panInfo ?? formData?.panInfo) || {};
 
     const roomTravellerInfo = buildRoomTravellerInfo({
@@ -259,24 +294,6 @@ export async function hotelBooking({
 
     console.log("PAN MODE:", panInfo.mode);
     console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
-
-    // save hotel data
-    const saveBookingId = async () => {
-      const reqSaveBookingId = {
-        type: "save",
-        booking_id: hotelReviewData?.bookingId,
-        phone: "9677179866",
-        amount: totalAmount,
-        status: "",
-        time: new Date().toISOString().slice(0, 19).replace("T", " "),
-      };
-      const result = await postData(
-        "travelogy/hotel/save-booking-data",
-        reqSaveBookingId
-      );
-      console.log("saveBookingId result ===>", result);
-    };
-    saveBookingId();
 
     const res = await postData("travelogy/hotel/fetch-data", {
       action: "book",
@@ -328,13 +345,13 @@ export async function getBookingDetails(bookingId, setError) {
         phone: "9677179866",
         booking_id: bookingId,
         status: data?.order?.status,
-        // booking_time: new Date().toISOString(),
+        booking_time: new Date().toISOString(),
       };
 
       const res = await postData("travelogy/hotel/save-booking-data", saveReq);
       console.log("res == ", res);
     };
-    updateHotelBookingData();
+    // updateHotelBookingData();
 
     if (data?.status?.success) {
       return data;

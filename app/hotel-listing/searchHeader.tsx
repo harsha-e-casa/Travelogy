@@ -25,6 +25,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 import AppDateRange from "@/components/searchEngine/AppDateRange";
 import CityListSearch from "@/components/searchEngine/CityListSearch.jsx";
 import { useNationalities } from "@/util/HotelApi";
+import { postData } from "@/services/NetworkAdapter";
 
 type Nationality = {
   countryName: string;
@@ -198,17 +199,25 @@ export default function HotelListingSearch() {
 
   const apiCall = async (payload: any) => {
     try {
-      const response = await fetch(
-        "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      // const response = await fetch(
+      //   "https://apitest.tripjack.com/hms/v1/hotel-searchquery-list",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+      //     },
+      //     body: JSON.stringify(payload),
+      //   }
+      // );
+
+      const reqBody = {
+        action: "hotelSearchQueryList",
+        requestData: payload,
+      };
+
+      const response: any = await postData("travelogy/hotel/fetch-data", reqBody);
+      console.log("response1 ===> 2 ", response);
 
       if (!response.ok) {
         let msg = `Request failed with ${response.status} ${response.statusText}`;
