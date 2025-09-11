@@ -79,20 +79,15 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 	const endIndex = startIndex + itemsPerPage
 	const paginatedHotels = sortedHotels.slice(startIndex, endIndex)
 
-	const handleCheckboxChange = (field: keyof Filter, value: string | number) => (e: ChangeEvent<HTMLInputElement>) => {
-		const checked = e.target.checked
+	const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>, category: keyof Filter) => {
+		const { value, checked } = e.target as HTMLInputElement;
 		setFilter((prevFilter) => {
-			const values = prevFilter[field] as (string | number)[]
-			if (checked) {
-				return { ...prevFilter, [field]: [...values, value] }
-			} else {
-				return {
-					...prevFilter,
-					[field]: values.filter((item) => item !== value),
-				}
-			}
-		})
-	}
+			const newValues = checked
+				? [...(prevFilter[category] as (string | number)[]), value]
+				: (prevFilter[category] as (string | number)[]).filter((item) => item !== value);
+			return { ...prevFilter, [category]: newValues };
+		});
+	};
 
 	const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		setSortCriteria(e.target.value as SortCriteria)
