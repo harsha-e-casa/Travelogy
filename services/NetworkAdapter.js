@@ -1,16 +1,16 @@
 // src/api/apiAdapter.js
-import axios from 'axios';
-import { useContext } from 'react'
-import Cookies from 'js-cookie';
+import axios from "axios";
+import { useContext } from "react";
+import Cookies from "js-cookie";
 
 // You can store the API base URL in an environment variable
 // const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
-// const API_BASE_URL = 'http://localhost:3030';
+const API_BASE_URL = "http://localhost:3030";
 
-const API_BASE_URL = 'https://com.digilogy.co/';
+// const API_BASE_URL = 'https://com.digilogy.co/';
 
-const API_TEST_JACK = 'https://apitest.tripjack.com/';
-const apiKey = '412605943ad923-4ae7-49f6-9c8e-8b75be573422';
+const API_TEST_JACK = "https://apitest.tripjack.com/";
+const apiKey = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
 
 // const parameter = {
 //   "searchQuery": {
@@ -39,9 +39,9 @@ const apiKey = '412605943ad923-4ae7-49f6-9c8e-8b75be573422';
 const apiInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
-  // timeout: 5000, // adjust timeout as necessary
+  timeout: 120000, // adjust timeout as necessary
 });
 
 // TripJack APi
@@ -49,12 +49,11 @@ const apiInstance = axios.create({
 const apiInstanceTripJack = axios.create({
   baseURL: API_TEST_JACK,
   headers: {
-    'Content-Type': 'application/json',
-    'apikey': apiKey,
+    "Content-Type": "application/json",
+    apikey: apiKey,
   },
   // timeout: 5000, // adjust timeout as necessary
 });
-
 
 // Optional: Add interceptors to handle logging, errors globally, etc.
 apiInstance.interceptors.request.use(
@@ -70,7 +69,7 @@ apiInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     // Handle errors uniformly, optionally log them
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     return Promise.reject(error);
   }
 );
@@ -104,9 +103,20 @@ export const fetchData = async (endpoint, params = {}) => {
 export const postData = async (endpoint, payload) => {
   try {
     const response = await apiInstance.post(endpoint, payload);
-    console.log("ressssssssss 1111111 ",response)
+    console.log("ressssssssss 1111111 ", response);
     return response.data;
   } catch (error) {
+    throw error;
+  }
+};
+
+export const getData = async (endpoint, params = {}) => {
+  try {
+    const { data } = await apiInstance.get(endpoint, { params }); // use 'params'
+    console.log("[getData] Response data:", data);
+    return data;
+  } catch (error) {
+    console.error(`[getData] Error fetching ${endpoint}:`, error);
     throw error;
   }
 };
@@ -123,17 +133,12 @@ export const postData = async (endpoint, payload) => {
 
 // TripJack API Sections Start
 
-
 export const postDataTJ = async (parameter) => {
-
   try {
-
-
     // let adults = getCookie('gy_adult')
     // let children = getCookie('gy_child')
     // let cabinType = getCookie('gy_class')
     // let departDate = getCookie('gy_trd')
-
 
     //     const parameter = {
     //       "searchQuery": {
@@ -170,39 +175,43 @@ export const postDataTJ = async (parameter) => {
     //     }
     // console.log(parameter);
 
-    const response = await apiInstanceTripJack.post('fms/v1/air-search-all', parameter);
+    const response = await apiInstanceTripJack.post(
+      "fms/v1/air-search-all",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
 
 export const postDataTJBookingAir = async (parameter) => {
   try {
-    const response = await apiInstanceTripJack.post('oms/v1/air/book', parameter);
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/air/book",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-
 
 export const postDataTJBookingDetails = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('oms/v1/booking-details', parameter);
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/booking-details",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 
-
 export const postDataFlightDetails = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('fms/v1/review', parameter);
+    const response = await apiInstanceTripJack.post("fms/v1/review", parameter);
     return response.data;
   } catch (error) {
     throw error;
@@ -210,18 +219,22 @@ export const postDataFlightDetails = async (parameter) => {
 };
 
 export const postDataFareDetails = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('fms/v2/farerule', parameter);
+    const response = await apiInstanceTripJack.post(
+      "fms/v2/farerule",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
 export const postDataBookingDetails = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('oms/v1/booking-details', parameter);
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/booking-details",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -229,9 +242,11 @@ export const postDataBookingDetails = async (parameter) => {
 };
 
 export const postAirDataBookingDetails = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('oms/v1/confirm-book', parameter);
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/confirm-book",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -240,9 +255,11 @@ export const postAirDataBookingDetails = async (parameter) => {
 
 //  fare-validate
 export const postFareValidate = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('oms/v1/air/fare-validate', parameter);
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/air/fare-validate",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
@@ -250,23 +267,27 @@ export const postFareValidate = async (parameter) => {
 };
 
 export const postUnHold = async (parameter) => {
-
   try {
-    const response = await apiInstanceTripJack.post('oms/v1/air/unhold', parameter);
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/air/unhold",
+      parameter
+    );
     return response.data;
   } catch (error) {
     throw error;
   }
 };
-export const postSumbitAmendment=async(parameter)=>{
-
+export const postSumbitAmendment = async (parameter) => {
   try {
-    const response= await apiInstanceTripJack.post("oms/v1/air/amendment/submit-amendment",parameter)
-     return response.data;
+    const response = await apiInstanceTripJack.post(
+      "oms/v1/air/amendment/submit-amendment",
+      parameter
+    );
+    return response.data;
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const postAmendmentDetails = async (parameter) => {
   try {
@@ -282,7 +303,6 @@ export const postAmendmentDetails = async (parameter) => {
     throw error;
   }
 };
-
 
 // Add additional functions as needed (PUT, DELETE, etc.)
 
