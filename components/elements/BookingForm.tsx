@@ -5,6 +5,9 @@ interface BookingFormProps {
   totalpricee: any;
   bookingData?: any;
   finalStage?: any;
+  mealinfo?: any;
+  baggageinfo?: any;
+  seatinfo?: any;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -12,8 +15,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
   totalpricee,
   bookingData = {},
   finalStage = false,
-  // baggageinfo,
+  mealinfo = {},
+  baggageinfo = {},
+  seatinfo = 0,
 }) => {
+  console.log("mealinfo 111111111111111111111==========> ", mealinfo);
+  console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
+  console.log("seatinfo 111111111111111111111==========> ", seatinfo);
   console.log(
     "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
     totalpricee
@@ -43,62 +51,14 @@ const BookingForm: React.FC<BookingFormProps> = ({
   useEffect(() => {
     // for booking details page
     console.log("bookingDatabookingData =====> ", bookingData);
-    console.log("bookingDatabookingData =====> ", Object.keys(bookingData).length);
-
-    // if (bookingData !== undefined) {
-    //   let baggageTotal = 0;
-    //   let seatTotal = 0;
-    //   let mealTotal = 0;
-
-    //   let travellerInfo = bookingData?.travellerInfos;
-
-    //   if (travellerInfo && travellerInfo.length > 0) {
-    //     travellerInfo.forEach((traveller) => {
-    //       // Check if ssrBaggageInfos exists and has keys
-    //       if (
-    //         traveller?.ssrBaggageInfos &&
-    //         Object.keys(traveller.ssrBaggageInfos).length > 0
-    //       ) {
-    //         Object.keys(traveller.ssrBaggageInfos).forEach((key) => {
-    //           baggageTotal += traveller.ssrBaggageInfos[key].amount || 0;
-    //         });
-    //       }
-
-    //       // Check if ssrSeatInfos exists and has keys
-    //       if (
-    //         traveller?.ssrSeatInfos &&
-    //         Object.keys(traveller.ssrSeatInfos).length > 0
-    //       ) {
-    //         Object.keys(traveller.ssrSeatInfos).forEach((key) => {
-    //           seatTotal += traveller.ssrSeatInfos[key].amount || 0;
-    //         });
-    //       }
-
-    //       // Check if ssrMealInfos exists and has keys
-    //       if (
-    //         traveller?.ssrMealInfos &&
-    //         Object.keys(traveller.ssrMealInfos).length > 0
-    //       ) {
-    //         Object.keys(traveller.ssrMealInfos).forEach((key) => {
-    //           mealTotal += traveller.ssrMealInfos[key].amount || 0;
-    //         });
-    //       }
-    //     });
-    //   }
-
-    //   setTotalBaggageAmount(baggageTotal);
-    //   setTotalSeatAmount(seatTotal);
-    //   setTotalMealAmount(mealTotal);
-
-    //   console.log("Total Baggage Amount: ", baggageTotal);
-    //   console.log("Total Seat Amount: ", seatTotal);
-    //   console.log("Total Amount: ", Number(totalfare));
-    //   computedAmount = Number(totalfare);
-    // }
+    console.log(
+      "bookingDatabookingData =====> ",
+      Object.keys(bookingData).length
+    );
 
     // except booking details page
     if (Object.keys(bookingData).length === 0) {
-      console.log("mame inge dan da 000")
+      console.log("mame inge dan da 000");
       let savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
       setTotalBaggageAmount(
         savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0)
@@ -112,7 +72,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
       console.log("saved baggage", savedBaggage);
       console.log("saved meal", savedMeal);
       console.log("totalfare ====> ", totalfare);
-      console.log("finalStage ===> ",finalStage)
+      console.log("finalStage ===> ", finalStage);
 
       if (finalStage === false) {
         computedAmount =
@@ -176,6 +136,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
     console.log("computedAmount ====== ", computedAmount);
     setDisplayAmount(computedAmount);
   }, [totalpricee]);
+
+  useEffect(() => {
+    if (seatinfo != 0) {
+      setTotalSeatAmount(seatinfo);
+      setDisplayAmount(totalfare + seatinfo);
+    }
+  }, [seatinfo]);
 
   // const displayAmount = computedAmount > Number(totalfare) ? computedAmount : Number(totalfare);
 

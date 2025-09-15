@@ -19,6 +19,7 @@ import TravellerDetailsModal from "./TravellerDetailsModal.jsx";
 import BarcodeGenerator from "./BarcodeGenerator.jsx";
 import { request } from "http";
 import { type } from "os";
+import BookingForm from "@/components/elements/BookingForm";
 
 // import staticBookingData from "./staticBookingData.json";
 
@@ -500,20 +501,17 @@ const Alldetails = ({ totalpricee }) => {
     const { jsPDF } = await import("jspdf");
     const html2canvas = (await import("html2canvas")).default;
 
-    // Temporarily hide the 'no-print' elements
     setNoPrintVisible(false);
 
-    // Wait for barcode fonts/paint
     if (document.fonts?.ready) await document.fonts.ready;
     await new Promise((r) =>
       requestAnimationFrame(() => requestAnimationFrame(r))
     );
 
-    // Swap barcodes to images to guarantee capture (if needed)
     const undo = swapBarcodesForImages();
 
     try {
-      // Create a canvas from the printRef (after hiding .no-print elements)
+      // Render the element as canvas
       const canvas = await html2canvas(printRef.current, {
         scale: 2,
         useCORS: true,
@@ -523,39 +521,63 @@ const Alldetails = ({ totalpricee }) => {
 
       const imgData = canvas.toDataURL("image/png");
 
-      // Generate PDF using jsPDF
       const pdf = new jsPDF("p", "mm", "a4");
       const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const margin = 10; // 10 mm margin
       const imgProps = pdf.getImageProperties(imgData);
-      const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-      pdf.addImage(
-        imgData,
-        "PNG",
-        0,
-        0,
-        pageWidth,
-        pdfHeight,
-        undefined,
-        "FAST"
-      );
+
+      // Calculate scaled dimensions with margins
+      const pdfWidth = pageWidth - margin * 2;
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      // Check if image height exceeds page height
+      let position = margin;
+      if (pdfHeight > pageHeight - margin * 2) {
+        // scale height to fit page
+        const scaleFactor = (pageHeight - margin * 2) / pdfHeight;
+        pdf.addImage(
+          imgData,
+          "PNG",
+          margin,
+          position,
+          pdfWidth * scaleFactor,
+          pdfHeight * scaleFactor,
+          undefined,
+          "FAST"
+        );
+      } else {
+        pdf.addImage(
+          imgData,
+          "PNG",
+          margin,
+          position,
+          pdfWidth,
+          pdfHeight,
+          undefined,
+          "FAST"
+        );
+      }
+
       pdf.save("ticket.pdf");
     } finally {
-      undo(); // Restore original barcode nodes
-      setNoPrintVisible(true); // Restore visibility of 'no-print' elements
+      undo();
+      setNoPrintVisible(true);
     }
   };
 
-  // const handleDownload = async (printRef) => {
+  // const handleDownload = async () => {
   //   const { jsPDF } = await import("jspdf");
   //   const html2canvas = (await import("html2canvas")).default;
 
-  //   // wait for barcode fonts/paint
+  //   setNoPrintVisible(false);
+
   //   if (document.fonts?.ready) await document.fonts.ready;
   //   await new Promise((r) =>
   //     requestAnimationFrame(() => requestAnimationFrame(r))
   //   );
 
-  //   // swap barcodes to images to guarantee capture
   //   const undo = swapBarcodesForImages();
 
   //   try {
@@ -565,7 +587,9 @@ const Alldetails = ({ totalpricee }) => {
   //       allowTaint: false,
   //       svgRendering: true,
   //     });
+
   //     const imgData = canvas.toDataURL("image/png");
+
   //     const pdf = new jsPDF("p", "mm", "a4");
   //     const pageWidth = pdf.internal.pageSize.getWidth();
   //     const imgProps = pdf.getImageProperties(imgData);
@@ -582,86 +606,66 @@ const Alldetails = ({ totalpricee }) => {
   //     );
   //     pdf.save("ticket.pdf");
   //   } finally {
-  //     undo(); // restore original barcode nodes
+  //     undo();
+  //     setNoPrintVisible(true);
   //   }
   // };
 
-  const handlePrint = (ref) => {
-    // const content = ref.current.innerHTML;
-    const contentClone = ref.current.cloneNode(true);
+  const handlePrint = async (ref) => {
+    const html2canvas = (await import("html2canvas")).default;
 
-    // Remove all elements with class 'no-print'
-    const noPrintElements = contentClone.querySelectorAll(".no-print");
-    console.log("mame print paru da ", noPrintElements);
-    noPrintElements.forEach((el) => el.remove());
-    console.log("mame print aparom paru da ", noPrintElements);
+    setNoPrintVisible(false);
 
-    const fullHtml = `
-    <!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <title>Ticket</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <style>
-          .flightsDetail{
-            display:flex;
-            flex-direction:row;
-            justify-content:flex-between;
-            align-items:center;
-            margin-bottom:20px
-          }
+    if (document.fonts?.ready) await document.fonts.ready;
+    await new Promise((r) =>
+      requestAnimationFrame(() => requestAnimationFrame(r))
+    );
 
-          .logo-flight{
-            margin-bottom:0px
-          }
+    const undo = swapBarcodesForImages(); // make sure barcodes show up
 
-          .citydetails{
-            margin-bottom:20px
-          }
-          .citynames{
-            font-weight:bolder;
-          }
-          .timeduration{
-            margin-bottom:0px;
-          }
-          .timediv{
-            display:flex;
-            flex-direction:row;
-            gap: 40px;
-            list-style-type: disc; 
-          }
-          .passengerinfo, .contactinfo{
-            font-weight:bold;}
-          .ticketdiv{
-            padding:20px
-          }
-          @media print {
-            body {
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-            .no-print {
-              display: none !important;
-            }
-          } 
-        </style>
-      </head>
-      <body class="p-6 bg-white text-black">
-        ${contentClone.outerHTML}
-      </body>
-    </html>
-  `;
+    try {
+      // Render the element as canvas
+      const canvas = await html2canvas(ref.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: false,
+        svgRendering: true,
+      });
 
-    const printWindow = window.open("", "_blank");
-    printWindow.document.write(fullHtml);
-    printWindow.document.close();
-    printWindow.focus();
+      // Convert canvas to image
+      const imgData = canvas.toDataURL("image/png");
 
-    setTimeout(() => {
-      printWindow.print();
-      printWindow.close();
-    }, 500);
+      // Open a new window for printing
+      const printWindow = window.open("", "_blank");
+
+      printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+        <head>
+          <meta charset="UTF-8" />
+          <title>Ticket</title>
+          <style>
+            body { margin: 0; padding: 0; text-align: center; }
+            img { max-width: 100%; height: auto; }
+          </style>
+        </head>
+        <body>
+          <img src="${imgData}" />
+        </body>
+      </html>
+    `);
+
+      printWindow.document.close();
+      printWindow.focus();
+
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    } finally {
+      undo();
+      setNoPrintVisible(true);
+    }
   };
 
   const handlePayNow = async () => {
@@ -1860,7 +1864,7 @@ const Alldetails = ({ totalpricee }) => {
                                       borderRadius: "10px",
                                       fontSize: "12px",
                                       lineHeight: "18px",
-                                      fontWeight: 700
+                                      fontWeight: 700,
                                     }}
                                   >
                                     {fareType}
@@ -2146,6 +2150,14 @@ const Alldetails = ({ totalpricee }) => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+            <div className=" mt-20">
+              <div className="booking-form add_sticky">
+                <div class="head-booking-form">
+                  <p class="text-xl-bold neutral-1000">Fare Summary</p>
+                </div>
+                <BookingForm totalpricee={totalpricee} finalStage={true} />
               </div>
             </div>
           </div>

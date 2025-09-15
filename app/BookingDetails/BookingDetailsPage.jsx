@@ -298,14 +298,14 @@ const BookingDetailsPage = () => {
                     <Alldetails totalpricee={totalPriceinfo} />
                   </div>
 
-                  <div className=" mt-20">
+                  {/* <div className=" mt-20">
                     <div className="booking-form add_sticky">
                       <div class="head-booking-form">
                         <p class="text-xl-bold neutral-1000">Fare Summary</p>
                       </div>
                       <BookingForm totalpricee={totalPriceinfo} finalStage={true} />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </section>

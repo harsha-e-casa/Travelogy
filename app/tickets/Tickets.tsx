@@ -445,7 +445,7 @@ export default function Tickets() {
   useEffect(() => {
     let needsUpdate = false;
     const updatedSegments = multicitySegments.map((segment) => {
-      console.log("segmentsegmentsegment ==> ",segment);
+      console.log("segmentsegmentsegment ==> ", segment);
       const newSegment = { ...segment };
       let fromError = "";
       let toError = "";
@@ -462,12 +462,12 @@ export default function Tickets() {
         }
       }
 
-      if (segment.from === 'Select City') {
-        fromError = "Select a City"
+      if (segment.from === "Select City") {
+        fromError = "Select a City";
       }
-      
-      if (segment.to === 'Select City') {
-        toError = "Select a City"
+
+      if (segment.to === "Select City") {
+        toError = "Select a City";
       }
 
       if (newSegment.fromError !== fromError) {
@@ -1005,7 +1005,7 @@ export default function Tickets() {
       srx_arrivalTo &&
       srx_departureFrom === srx_arrivalTo
     ) {
-      console.log("srx_departureFromsrx_departureFrom ==> ",srx_departureFrom)
+      console.log("srx_departureFromsrx_departureFrom ==> ", srx_departureFrom);
       if (lastEditedField === "from") {
         setFromError("From and To cities cannot be the same.");
         setToError("");
@@ -1555,9 +1555,10 @@ export default function Tickets() {
                       toError ||
                       errorMsg ||
                       dateError ||
-                      multicitySegments.some(
-                        (s) => s.fromError || s.toError || s.dateError
-                      )
+                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                        multicitySegments.some(
+                          (s) => s.fromError || s.toError || s.dateError
+                        ))
                         ? "cursor-not-allowed opacity-50"
                         : ""
                     }`}

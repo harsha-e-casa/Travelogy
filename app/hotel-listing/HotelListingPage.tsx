@@ -92,28 +92,8 @@ export default function HotelListing() {
   };
   const [roomsData, setRoomsData] = useState(initialRoomsData);
   const [apiHotelData, setApiHotelData] = useState([]);
-  const [apiCurrentPage, setApiCurrentPage] = useState(1);
-  const itemsPerPage = 12;
-  const apiTotalPages = Math.ceil(apiHotelData.length / itemsPerPage);
-  const paginatedApiHotels = apiHotelData.slice(
-    (apiCurrentPage - 1) * itemsPerPage,
-    apiCurrentPage * itemsPerPage
-  );
-  const handleApiPageChange = (pageNumber: any) => {
-    setApiCurrentPage(pageNumber);
-  };
-
-  const handleApiPreviousPage = () => {
-    if (apiCurrentPage > 1) {
-      setApiCurrentPage(apiCurrentPage - 1);
-    }
-  };
-
-  const handleApiNextPage = () => {
-    if (apiCurrentPage < apiTotalPages) {
-      setApiCurrentPage(apiCurrentPage + 1);
-    }
-  };
+  
+  
 
   const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
@@ -169,33 +149,34 @@ export default function HotelListing() {
     setOpenDateRage(false);
   };
 
-  // const {
-  //   filter,
-  //   sortCriteria,
-  //   currentPage,
-  //   uniqueRoomStyles,
-  //   uniqueAmenities,
-  //   uniqueLocations,
-  //   uniqueRatings,
-  //   uniqueHotelsType,
-  //   sortedHotels,
-  //   totalPages,
-  //   paginatedHotels,
-  //   handleCheckboxChange,
-  //   handleSortChange,
-  //   handlePriceRangeChange,
-  //   handleItemsPerPageChange,
-  //   handlePageChange,
-  //   handlePreviousPage,
-  //   handleNextPage,
-  //   handleClearFilters,
-  //   startItemIndex,
-  //   endItemIndex,
-  // } = useHotelFilter(hotelsData);
-  const [sortCriteria, setSortCriteria] = useState("default");
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortCriteria(e.target.value);
-  };
+  const {
+    filter,
+    sortCriteria,
+    currentPage,
+    uniqueRoomStyles,
+    uniqueAmenities,
+    uniqueLocations,
+    uniqueRatings,
+    uniqueHotelsType,
+    sortedHotels,
+    totalPages,
+    paginatedHotels,
+    handleCheckboxChange,
+    handleSortChange,
+    handlePriceRangeChange,
+    handleItemsPerPageChange,
+    handlePageChange,
+    handlePreviousPage,
+    handleNextPage,
+    handleClearFilters,
+    startItemIndex,
+    endItemIndex,
+    itemsPerPage,
+  } = useHotelFilter(apiHotelData);
+  // const [sortCriteria, setSortCriteria] = useState("default");
+  // const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   setSortCriteria(e.target.value);
+  // };
 
   const apiCall = async (payload: any) => {
     try {
@@ -670,19 +651,16 @@ export default function HotelListing() {
               <div className="box-content-main">
                 <div className="content-right">
                   <div className="box-filters mb-25 pb-5 border-bottom border-1">
-                    {/* <SortHotelsFilter
+                    <SortHotelsFilter
                       sortCriteria={sortCriteria}
                       handleSortChange={handleSortChange}
                       itemsPerPage={itemsPerPage}
-                      handleItemsPerPageChange={() => {}}
-                      handleClearFilters={() => {}}
-                      startItemIndex={(apiCurrentPage - 1) * itemsPerPage + 1}
-                      endItemIndex={Math.min(
-                        apiCurrentPage * itemsPerPage,
-                        apiHotelData.length
-                      )}
-                      totalResults={apiHotelData.length}
-                    /> */}
+                      handleItemsPerPageChange={handleItemsPerPageChange}
+                      handleClearFilters={handleClearFilters}
+                      startItemIndex={startItemIndex}
+                      endItemIndex={endItemIndex}
+                      totalResults={sortedHotels.length}
+                    />
                   </div>
                   <div className="box-grid-tours wow fadeIn">
                     {/* <div className="row">
@@ -718,8 +696,8 @@ export default function HotelListing() {
                           <div className="col-12 d-flex justify-center py-5">
                             <div className="loader"></div>
                           </div>
-                        ) : paginatedApiHotels.length > 0 ? (
-                          paginatedApiHotels.map(
+                        ) : paginatedHotels.length > 0 ? (
+                          paginatedHotels.map(
                             (hotel: any, index: number) => (
                               <div
                                 className="col-xl-4 col-lg-6 col-md-6"
@@ -761,14 +739,14 @@ export default function HotelListing() {
                     }
                   /> */}
                   <ByPagination
-                    handlePreviousPage={handleApiPreviousPage}
-                    totalPages={apiTotalPages}
-                    currentPage={apiCurrentPage}
-                    handleNextPage={handleApiNextPage}
-                    handlePageChange={handleApiPageChange}
+                    handlePreviousPage={handlePreviousPage}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    handleNextPage={handleNextPage}
+                    handlePageChange={handlePageChange}
                   />
                 </div>
-                {/* <div className="content-left order-lg-first">
+                <div className="content-left order-lg-first">
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
@@ -852,7 +830,7 @@ export default function HotelListing() {
                       </div>
                     </div>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
           </section>

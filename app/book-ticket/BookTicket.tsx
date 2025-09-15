@@ -161,13 +161,20 @@ export default function BookTicket() {
 
   const [travellerInfoV, setTravellerInfoV] = useState<Traveller[]>([]);
 
-  const [baggageinfo, setBaggageinfo] = useState([]);
+  const [baggageinfo, setBaggageinfo] = useState<any>([]);
+  const [mealinfo, setMealinfo] = useState<any>([]);
+  const [seatinfo, setSeatinfo] = useState<any>([]);
   const fareAlert = useRef<{ oldFare?: number; newFare?: number }>({});
   const [isFareAlertModalOpen, setIsFareAlertModalOpen] = useState(false);
   const closeFareAlertModal = () => {
     setIsFareAlertModalOpen(false);
     fareAlert.current = {};
   };
+
+  const handleSeatinfo = (v: number) => {
+    console.log("Value from child:", v);
+    setSeatinfo(v);
+  }
 
   const fetchFlights = useCallback(
     async (priceId: string) => {
@@ -1012,9 +1019,11 @@ export default function BookTicket() {
         setCookie("baggageinfo", JSON.stringify(baggageInfosPayload), {
           expires: 7,
         });
+        // setBaggageinfo(baggageInfosPayload);
         setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
           expires: 7,
         });
+        // setMealinfo(mealinfosPaylode)
 
         console.log("groupedAdultsgroupedAdults === ", groupedAdults);
 
@@ -1493,6 +1502,9 @@ export default function BookTicket() {
                       </div>
                       <BookingForm
                         totalpricee={totalpricee}
+                        mealinfo={mealinfo}
+                        baggageinfo={baggageinfo}
+                        seatinfo={seatinfo}
                         // segmentsPrice={segmentsPrice}
                         // baggageinfo={baggageinfo}
                       />
@@ -2010,6 +2022,7 @@ export default function BookTicket() {
                                       storedTravellerInfos={
                                         storedTravellerInfos
                                       }
+                                      onValueChange={handleSeatinfo}
                                     />
                                   </p>
                                 </div>
