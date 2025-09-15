@@ -37,7 +37,6 @@ const MultiCitySegment = ({
     }
   }, [segment.from, segment.to, index, onSegmentErrorChange]);
 
-
   const handleFromChange = (field, value) => {
     fromRef.current = {
       ...fromRef.current,
@@ -111,6 +110,19 @@ const MultiCitySegment = ({
     };
   }, [onToggleSection]);
 
+  useEffect(() => {
+    // Check if From or To is empty or default placeholder
+    const hasInvalidCity =
+      !segment.from ||
+      segment.from === "Select City" ||
+      !segment.to ||
+      segment.to === "Select City";
+
+    // Send validity to parent
+    console.log("hasInvalidCityhasInvalidCity ==> ",hasInvalidCity)
+    onSegmentErrorChange(index, hasInvalidCity);
+  }, [segment.from, segment.to, index, onSegmentErrorChange]);
+
   return (
     <div
       className="flex items-start flex-wrap"
@@ -172,7 +184,11 @@ const MultiCitySegment = ({
             updateSegment(index, updatedSegment);
 
             // Re-validate after swap
-            if (updatedSegment.from && updatedSegment.to && updatedSegment.from === updatedSegment.to) {
+            if (
+              updatedSegment.from &&
+              updatedSegment.to &&
+              updatedSegment.from === updatedSegment.to
+            ) {
               setFromError("From and To cities cannot be the same.");
               setToError("From and To cities cannot be the same.");
               onSegmentErrorChange(index, true);
