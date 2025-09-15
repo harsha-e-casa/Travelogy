@@ -442,9 +442,14 @@ export default function Tickets() {
     }
   }, [errorMsg]);
 
+  const [openFromMultiIndex, setOpenFromMultiIndex] = useState<number | null>(
+    null
+  );
+  const [openToMultiIndex, setOpenToMultiIndex] = useState<number | null>(null);
+
   useEffect(() => {
     let needsUpdate = false;
-    const updatedSegments = multicitySegments.map((segment) => {
+    const updatedSegments = multicitySegments.map((segment, idx) => {
       console.log("segmentsegmentsegment ==> ", segment);
       const newSegment = { ...segment };
       let fromError = "";
@@ -462,11 +467,11 @@ export default function Tickets() {
         }
       }
 
-      if (segment.from === "Select City") {
+      if (segment.from === "Select City" && openFromMultiIndex !== idx) {
         fromError = "Select a City";
       }
 
-      if (segment.to === "Select City") {
+      if (segment.to === "Select City" && openToMultiIndex !== idx) {
         toError = "Select a City";
       }
 
@@ -485,7 +490,7 @@ export default function Tickets() {
     if (needsUpdate) {
       setMulticitySegments(updatedSegments);
     }
-  }, [multicitySegments]);
+  }, [multicitySegments, openFromMultiIndex, openToMultiIndex]);
 
   const removeSegment = (index: number) => {
     setMulticitySegments((prev) => prev.filter((_, i) => i !== index));
@@ -1072,24 +1077,35 @@ export default function Tickets() {
   };
 
   const [showSearchState, setShowSearchState] = useState<boolean>(false);
-  const [openFromMultiIndex, setOpenFromMultiIndex] = useState<number | null>(
-    null
-  );
-  const [openToMultiIndex, setOpenToMultiIndex] = useState<number | null>(null);
   const [openDepartMultiIndex, setOpenDepartMultiIndex] = useState<
     number | null
   >(null);
 
   const multiOpenfrom = (idx: number) => {
     setOpenFromMultiIndex((prev) => (prev === idx ? null : idx));
+    const newSegs = [...multicitySegments];
+    if (newSegs[idx]) {
+        newSegs[idx].fromError = "";
+        setMulticitySegments(newSegs);
+    }
   };
 
   const multiOpenToSecond = (idx: number) => {
     setOpenToMultiIndex((prev) => (prev === idx ? null : idx));
+    const newSegs = [...multicitySegments];
+    if (newSegs[idx]) {
+        newSegs[idx].toError = "";
+        setMulticitySegments(newSegs);
+    }
   };
 
   const multiOpenToDateRange = (idx: number) => {
     setOpenDepartMultiIndex((prev) => (prev === idx ? null : idx));
+    const newSegs = [...multicitySegments];
+    if (newSegs[idx]) {
+        newSegs[idx].dateError = "";
+        setMulticitySegments(newSegs);
+    }
   };
 
   const [showTraveller, setShowYTraveller] = useState<boolean>(false);
@@ -1127,6 +1143,7 @@ export default function Tickets() {
       closeAllFields();
       setShowSearchState(true);
     }
+    setFromError("");
   };
 
   const openTo = () => {
@@ -1136,6 +1153,7 @@ export default function Tickets() {
       closeAllFields();
       setShowSearchStateTo(true);
     }
+    setToError("");
   };
 
   const openToDateRange = () => {
