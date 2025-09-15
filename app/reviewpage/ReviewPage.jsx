@@ -912,7 +912,7 @@ const ReviewPage = () => {
           phone: number.number,
           amount: finalAmountToPay,
           status: "",
-          time: new Date().toISOString(),
+          time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
           fareType: getCookie("gy_passender_type")
         };
         const result = await postData(
@@ -966,6 +966,7 @@ const ReviewPage = () => {
           booking_id: bookingId,
           phone: number.number,
           amount: finalAmountToPay,
+          fareType: getCookie("gy_passender_type")
         };
         console.log("reqSaveBookingId === > ", reqSaveBookingId);
         const result = await postData(

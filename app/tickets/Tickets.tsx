@@ -165,6 +165,9 @@ export default function Tickets() {
 
     // --- Set global error message ---
     if (!ok) {
+      setErrorMsg(
+        "Please fix the highlighted fields in your multi-city itinerary."
+      );
       if (opts?.focusFirstError && firstBadIndex !== null) {
         const el = document.querySelector(`[data-seg-row="${firstBadIndex}"]`);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -366,13 +369,53 @@ export default function Tickets() {
   }, [multicitySegments]);
 
   const [errorMsg, setErrorMsg] = useState("");
+  const [dateError, setDateError] = useState("");
   const [srx_tripType, setTripType] = useState(tripType);
 
-  
+  useEffect(() => {
+    if (srx_tripType === "multi-city") {
+      // Check for empty fields
+      for (const segment of multicitySegments) {
+        if (!segment.fromCode || !segment.toCode || !segment.departureDate) {
+          setErrorMsg("Please fill all fields in each segment.");
+          return;
+        }
+      }
+
+      // Check for ascending dates
+      for (let i = 0; i < multicitySegments.length - 1; i++) {
+        const currentSegment = multicitySegments[i];
+        const nextSegment = multicitySegments[i + 1];
+        if (
+          currentSegment.departureDate &&
+          nextSegment.departureDate &&
+          dayjs(currentSegment.departureDate).isAfter(
+            dayjs(nextSegment.departureDate)
+          )
+        ) {
+          setDateError("Departure dates must be in ascending order.");
+          return;
+        }
+      }
+    }
+    setErrorMsg("");
+    setDateError("");
+  }, [multicitySegments, srx_tripType]);
 
   const addSegment = () => {
-    const pass = validateMultiCity({ focusFirstError: true });
-    if (!pass) return; // stop if invalid
+    const lastSegment = multicitySegments[multicitySegments.length - 1];
+
+    if (
+      !lastSegment ||
+      !lastSegment.fromCode ||
+      !lastSegment.toCode ||
+      !lastSegment.departureDate
+    ) {
+      setErrorMsg(
+        "Please fill in the previous segment before adding a new one."
+      );
+      return;
+    }
 
     setErrorMsg(""); // Clear error if validation passed
 
@@ -392,17 +435,57 @@ export default function Tickets() {
     ]);
   };
 
-  const [modifySearchRef, setModifySearchRef] = useState(false);  
+  useEffect(() => {
+    if (errorMsg) {
+      const timer = setTimeout(() => setErrorMsg(""), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [errorMsg]);
 
   useEffect(() => {
-    if (
-      (srx_tripType?.toLowerCase() || "") === "multi-city" &&
-      modifySearchRef
-    ) {
-      // live validate but don't auto-scroll
-      validateMultiCity({ focusFirstError: false });
+    let needsUpdate = false;
+    const updatedSegments = multicitySegments.map((segment) => {
+      console.log("segmentsegmentsegment ==> ", segment);
+      const newSegment = { ...segment };
+      let fromError = "";
+      let toError = "";
+
+      if (
+        segment.fromCode &&
+        segment.toCode &&
+        segment.fromCode === segment.toCode
+      ) {
+        if (segment.lastEditedField === "from") {
+          fromError = "1 From and To cities cannot be the same.";
+        } else if (segment.lastEditedField === "to") {
+          toError = "1 From and To cities cannot be the same.";
+        }
+      }
+
+      if (segment.from === "Select City") {
+        fromError = "Select a City";
+      }
+
+      if (segment.to === "Select City") {
+        toError = "Select a City";
+      }
+
+      if (newSegment.fromError !== fromError) {
+        newSegment.fromError = fromError;
+        needsUpdate = true;
+      }
+      if (newSegment.toError !== toError) {
+        newSegment.toError = toError;
+        needsUpdate = true;
+      }
+
+      return newSegment;
+    });
+
+    if (needsUpdate) {
+      setMulticitySegments(updatedSegments);
     }
-  }, [srx_tripType, modifySearchRef]);
+  }, [multicitySegments]);
 
   const removeSegment = (index: number) => {
     setMulticitySegments((prev) => prev.filter((_, i) => i !== index));
@@ -422,6 +505,10 @@ export default function Tickets() {
 
   console.log("firstSegment == ", firstSegment);
   console.log("multicitySegments == ", multicitySegments);
+
+  useEffect(() => {
+    setCookie("gy_multi_city", JSON.stringify(multicitySegments));
+  }, [multicitySegments]);
 
   let combinedMulticitySegment = [...firstSegment, ...multicitySegments];
 
@@ -451,6 +538,17 @@ export default function Tickets() {
   // router.push(`/tickets?${queryString}`);
 
   // const modifySearchRef = useRef(false);
+  const [modifySearchRef, setModifySearchRef] = useState(false);
+
+  useEffect(() => {
+    if (
+      (srx_tripType?.toLowerCase() || "") === "multi-city" &&
+      modifySearchRef
+    ) {
+      // live validate but don't auto-scroll
+      validateMultiCity({ focusFirstError: false });
+    }
+  }, [srx_tripType, modifySearchRef]);
 
   const handleModifySearch = () => {
     // alert(" search modified ");
@@ -658,7 +756,12 @@ export default function Tickets() {
         toCityOrAirport: {
           code: item.toCode,
         },
-        travelDate: dayjs(item.departureDate).format("YYYY-MM-DD"),
+        travelDate:
+          item?.departureDate &&
+          typeof item.departureDate === "string" &&
+          item.departureDate.includes("T")
+            ? item.departureDate.split("T")[0]
+            : item?.departureDate,
       }));
       console.log("tripBasedRouteInfoSub ==> ", tripBasedRouteInfoSub);
 
@@ -787,7 +890,6 @@ export default function Tickets() {
     // adults,
     // children,
     searchFlight,
-    JSON.stringify(multicitySegments),
   ]);
 
   const fareItems: MenuProps["items"] = [
@@ -903,7 +1005,7 @@ export default function Tickets() {
       srx_arrivalTo &&
       srx_departureFrom === srx_arrivalTo
     ) {
-      console.log("srx_departureFromsrx_departureFrom ==> ",srx_departureFrom)
+      console.log("srx_departureFromsrx_departureFrom ==> ", srx_departureFrom);
       if (lastEditedField === "from") {
         setFromError("From and To cities cannot be the same.");
         setToError("");
@@ -1436,8 +1538,30 @@ export default function Tickets() {
               ) : (
                 <>
                   <div
-                    onClick={handlesearFlight}
-                    className={`hdt_search-btn`}
+                    onClick={
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      dateError ||
+                      multicitySegments.some(
+                        (s) => s.fromError || s.toError || s.dateError
+                      )
+                        ? () => {}
+                        : handlesearFlight
+                      // onClickSearch
+                    }
+                    className={`hdt_search-btn ${
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      dateError ||
+                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                        multicitySegments.some(
+                          (s) => s.fromError || s.toError || s.dateError
+                        ))
+                        ? "cursor-not-allowed opacity-50"
+                        : ""
+                    }`}
                   >
                     Search
                   </div>
@@ -1457,14 +1581,7 @@ export default function Tickets() {
                           <div>
                             <label>From</label>
                             <div
-                              onClick={() => {
-                                multiOpenfrom(idx);
-                                const newSegs = [...multicitySegments];
-                                if (newSegs[idx].fromError) {
-                                  newSegs[idx].fromError = "";
-                                  setMulticitySegments(newSegs);
-                                }
-                              }}
+                              onClick={() => multiOpenfrom(idx)}
                               className="hdt_value"
                             >
                               {segment.from}
@@ -1479,13 +1596,11 @@ export default function Tickets() {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].from = val;
                                   newSegs[idx].lastEditedField = "from";
-                                  newSegs[idx].fromError = "";
                                   setMulticitySegments(newSegs);
                                 }}
                                 setSelectFromSub={(val: any) => {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].fromCode = val;
-                                  newSegs[idx].fromError = "";
                                   setMulticitySegments(newSegs);
                                 }}
                               />
@@ -1512,14 +1627,7 @@ export default function Tickets() {
                           <div>
                             <label>To</label>
                             <div
-                              onClick={() => {
-                                multiOpenToSecond(idx);
-                                const newSegs = [...multicitySegments];
-                                if (newSegs[idx].toError) {
-                                  newSegs[idx].toError = "";
-                                  setMulticitySegments(newSegs);
-                                }
-                              }}
+                              onClick={() => multiOpenToSecond(idx)}
                               className="hdt_value"
                             >
                               {segment.to}
@@ -1534,13 +1642,11 @@ export default function Tickets() {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].to = val;
                                   newSegs[idx].lastEditedField = "to";
-                                  newSegs[idx].toError = "";
                                   setMulticitySegments(newSegs);
                                 }}
                                 setSelectFromSub={(val: any) => {
                                   const newSegs = [...multicitySegments];
                                   newSegs[idx].toCode = val;
-                                  newSegs[idx].toError = "";
                                   setMulticitySegments(newSegs);
                                 }}
                               />
@@ -1564,14 +1670,7 @@ export default function Tickets() {
                           <div>
                             <label>Depart</label>
                             <div
-                              onClick={() => {
-                                multiOpenToDateRange(idx);
-                                const newSegs = [...multicitySegments];
-                                if (newSegs[idx].dateError) {
-                                  newSegs[idx].dateError = "";
-                                  setMulticitySegments(newSegs);
-                                }
-                              }}
+                              onClick={() => multiOpenToDateRange(idx)}
                               className="hdt_value"
                             >
                               {segment.departureDate
@@ -1588,7 +1687,6 @@ export default function Tickets() {
                               setDate={(val: any) => {
                                 const newSegs = [...multicitySegments];
                                 newSegs[idx].departureDate = val;
-                                newSegs[idx].dateError = "";
                                 setMulticitySegments(newSegs);
                               }}
                               minDate={
@@ -1659,6 +1757,14 @@ export default function Tickets() {
                       style={{ textAlign: "center", padding: "10px" }}
                     >
                       {errorMsg}
+                    </div>
+                  )}
+                  {dateError && (
+                    <div
+                      className="text-red-500 mt-2 text-sm font-medium"
+                      style={{ textAlign: "center", padding: "10px" }}
+                    >
+                      {dateError}
                     </div>
                   )}
                 </>

@@ -3,11 +3,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { postData } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
 
-const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => {
+const SeatBooking = ({
+  numAdults,
+  numChild,
+  apiData,
+  storedTravellerInfos,
+  onValueChange
+}) => {
+  console.log("child typeof onValueChange:", typeof onValueChange);
   const { getCookie, setCookie } = useContext(AppContext);
   const [flightSeat, setFlightSeat] = useState(null);
-  const [selectedPassengerIndex, setSelectedPassengerIndex] = useState(0); // default: Adult - 1
-  // const [seatSelections, setSeatSelections] = useState([]); // Array of objects like { seatNo: "1A", cost: 500 }
+  const [selectedPassengerIndex, setSelectedPassengerIndex] = useState(0);
   const [seatSelections, setSeatSelections] = useState({});
   const [selectedAmounts, setSelectedAmounts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,7 +35,7 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
   const [prefilledSeatNo, setPrefilledSeatNo] = useState({});
 
   useEffect(() => {
-    console.log("mame seat data ====", storedTravellerInfos)
+    console.log("mame seat data ====", storedTravellerInfos);
     if (!storedTravellerInfos || !Array.isArray(storedTravellerInfos)) return;
 
     const seatMap = {};
@@ -158,6 +164,11 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
 
     // Set final total into seatSsr_amount
     setCookie("seatSsr_amount", parseInt(totalAmount, 10).toString());
+    console.log("onValueChangeonValueChange ==> ",onValueChange)
+    if (typeof onValueChange === "function") {
+      console.log("onValueChangeonValueChange ==> 111")
+      onValueChange(totalAmount);
+    }
     console.log("Total amount calculated and stored:", totalAmount);
   };
 
@@ -281,10 +292,10 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
             const seatStyle = booked
               ? "bg-gray-400 text-gray-300 cursor-not-allowed"
               : isSelectable && isSelected
-                ? "bg-green-500"
-                : isSelectable
-                  ? `cursor-pointer text-white` // Apply dynamic color for selectable
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed";
+              ? "bg-green-500"
+              : isSelectable
+              ? `cursor-pointer text-white` // Apply dynamic color for selectable
+              : "bg-gray-300 text-gray-500 cursor-not-allowed";
 
             return (
               <div
@@ -327,8 +338,8 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
             <div className="box-content-tickets-detail">
               {segments.map((seg, segIndex) => {
                 const dep = dayjs(seg.dt);
-                console.log("mame seg id ", seg.id)
-                console.log("mame seg id ", typeof seg.id)
+                console.log("mame seg id ", seg.id);
+                console.log("mame seg id ", typeof seg.id);
                 return (
                   <React.Fragment key={seg.id}>
                     <div className="flex justify-between items-center p-4 border-b">
@@ -356,34 +367,44 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
                       </div> */}
 
                       <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
-                        {seatNo?.[seg.id] && seatNo[seg.id].length > 0 ? (
-                          seatNo[seg.id].map((item, index) => {
-                            const key = Object.keys(item)[0];
-                            const seatValue = item[key];
-                            return (
-                              <div key={index}>
-                                {key}: {seatValue}
-                              </div>
-                            );
-                          })
-                        ) : (() => {
+                        {seatNo?.[seg.id] && seatNo[seg.id].length > 0
+                          ? seatNo[seg.id].map((item, index) => {
+                              const key = Object.keys(item)[0];
+                              const seatValue = item[key];
+                              return (
+                                <div key={index}>
+                                  {key}: {seatValue}
+                                </div>
+                              );
+                            })
+                          : (() => {
+                              if (
+                                !prefilledSeatNo ||
+                                typeof prefilledSeatNo !== "object"
+                              )
+                                return null;
 
-                          if (!prefilledSeatNo || typeof prefilledSeatNo !== "object") return null;
+                              const keysArray = Object.keys(prefilledSeatNo);
 
-                          const keysArray = Object.keys(prefilledSeatNo);
+                              if (
+                                !Array.isArray(
+                                  prefilledSeatNo[keysArray[segIndex]]
+                                )
+                              )
+                                return null;
 
-                          if (!Array.isArray(prefilledSeatNo[keysArray[segIndex]])) return null;
-
-                          return prefilledSeatNo[keysArray[segIndex]].map((item, i) => {
-                            const key = Object.keys(item)[0];
-                            const seatNo = item[key];
-                            return (
-                              <div key={i}>
-                                {key}: {seatNo}
-                              </div>
-                            );
-                          });
-                        })()}
+                              return prefilledSeatNo[keysArray[segIndex]].map(
+                                (item, i) => {
+                                  const key = Object.keys(item)[0];
+                                  const seatNo = item[key];
+                                  return (
+                                    <div key={i}>
+                                      {key}: {seatNo}
+                                    </div>
+                                  );
+                                }
+                              );
+                            })()}
                       </div>
 
                       {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
@@ -406,7 +427,6 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
                           });
                         })()}
                       </div> */}
-
 
                       <button
                         onClick={() => handleViewSeat({ id: seg.id, seg })}
@@ -520,11 +540,12 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
                           <td className="px-2 py-2 text-gray-700">
                             {seatSelections[flightSeat?.seg?.id]?.[index]
                               ?.cost ||
-                              seatSelections[flightSeat?.seg?.id]?.[index]
-                                ?.cost == "0"
-                              ? `₹ ${seatSelections[flightSeat?.seg?.id]?.[index]
-                                ?.cost
-                              }`
+                            seatSelections[flightSeat?.seg?.id]?.[index]
+                              ?.cost == "0"
+                              ? `₹ ${
+                                  seatSelections[flightSeat?.seg?.id]?.[index]
+                                    ?.cost
+                                }`
                               : "—"}
                           </td>
                         </tr>
@@ -556,13 +577,14 @@ const SeatBooking = ({ numAdults, numChild, apiData, storedTravellerInfos }) => 
                                 {seatSelections[flightSeat?.seg?.id]?.[
                                   passengerIndex
                                 ]?.cost ||
-                                  seatSelections[flightSeat?.seg?.id]?.[
-                                    passengerIndex
-                                  ]?.cost == "0"
-                                  ? `₹${seatSelections[flightSeat?.seg?.id]?.[
-                                    passengerIndex
-                                  ].cost
-                                  }`
+                                seatSelections[flightSeat?.seg?.id]?.[
+                                  passengerIndex
+                                ]?.cost == "0"
+                                  ? `₹${
+                                      seatSelections[flightSeat?.seg?.id]?.[
+                                        passengerIndex
+                                      ].cost
+                                    }`
                                   : "—"}
                               </td>
                             </tr>
