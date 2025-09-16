@@ -1,3 +1,211 @@
+// import { Form, Select } from "antd";
+// import { useEffect } from "react";
+// const { Option } = Select;
+
+// const MealInfo = ({
+//   numAdults,
+//   numChild,
+//   numInfants,
+//   apiData,
+//   form,
+//   storedTravellerInfos,
+//   onMealChange,
+// }) => {
+//   useEffect(() => {
+//     if (
+//       !storedTravellerInfos ||
+//       !Array.isArray(storedTravellerInfos) ||
+//       !apiData
+//     )
+//       return;
+//     console.log(
+//       "storedTravellerInfosstoredTravellerInfos ==== ",
+//       storedTravellerInfos
+//     );
+
+//     const values = {};
+//     let segmentIndex = 0;
+//     apiData.tripInfos?.forEach((trip) => {
+//       const segmentinfo = trip.sI || [];
+
+//       segmentinfo.forEach((segment) => {
+//         const segmentIdStr = segment?.ssrInfo?.MEAL;
+//         console.log("segmentIdStr == ", segmentIdStr);
+
+//         // Adults
+//         for (let index = 0; index < numAdults; index++) {
+//           const traveller = storedTravellerInfos[index];
+
+//           if (traveller?.ssrMealInfos?.[segmentIndex]?.code) {
+//             values[
+//               `adultMeal-${segmentIndex}-${index}`
+//             ] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
+//           }
+//         }
+
+//         // Children
+//         for (let index = 0; index < numChild; index++) {
+//           const traveller = storedTravellerInfos[numAdults + index];
+
+//           if (traveller?.ssrMealInfos?.[segmentIndex]?.code) {
+//             values[
+//               `childMeal-${segmentIndex}-${index}`
+//             ] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
+//           }
+//         }
+//         segmentIndex++;
+//       });
+//     });
+
+//     // Pre-fill the form
+//     form.setFieldsValue(values);
+//   }, [storedTravellerInfos, apiData, numAdults, numChild, form]);
+
+//   if (!apiData || !apiData.tripInfos) {
+//     return (
+//       <div className="p-3 text-sm text-gray-500">Loading meal options...</div>
+//     );
+//   }
+
+//   const segmentinfo = apiData.tripInfos.flatMap((trip) => trip.sI || []);
+//   const hasMeal = segmentinfo.some((seg) => seg?.ssrInfo?.MEAL?.length > 0);
+
+//   const handleValuesChange = (changedValues, allValues) => {
+//     console.log("handleValuesChange allValues ==> ",allValues)
+//     let totalMealAmount = 0;
+//     const allMeals = Object.keys(allValues)
+//         .filter(key => key.startsWith('adultMeal') || key.startsWith('childMeal'))
+//         .map(key => allValues[key])
+//         .filter(value => value);
+
+//     allMeals.forEach(value => {
+//         const [segmentId, mealCode] = value.split('|');
+//         const segment = segmentinfo.find(s => String(s.id) === String(segmentId));
+//         if (segment) {
+//             const mealOption = segment.ssrInfo.MEAL.find(m => m.code === mealCode);
+//             if (mealOption) {
+//                 totalMealAmount += mealOption.amount;
+//             }
+//         }
+//     });
+
+//     onMealChange(totalMealAmount);
+//   };
+
+//   return (
+//     <>
+//       {hasMeal ? (
+//         <Form form={form} name="mealForm" layout="vertical" autoComplete="off" onValuesChange={handleValuesChange}>
+//           {segmentinfo.map((segment, flightIndex) => {
+//             const mealOptions = segment?.ssrInfo?.MEAL || [];
+
+//             return (
+//               <div key={`flight-${flightIndex}`} className="border-b pb-4 mb-4">
+//                 <h3 className="text-lg">{`${segment?.fD?.aI?.name}-${segment?.fD?.fN}`}</h3>
+
+//                 {/* Adult Meals */}
+//                 {Array.from({ length: numAdults }).map((_, index) => (
+//                   <div
+//                     className="p-2 flex gap-4 items-center"
+//                     key={`adult-${flightIndex}-${index}`}
+//                   >
+//                     <span
+//                       className="text-sm font-bold text-gray-900"
+//                       style={{ width: "100px" }}
+//                     >
+//                       ADULT {index + 1}
+//                     </span>
+//                     <Form.Item
+//                       name={`adultMeal-${flightIndex}-${index}`}
+//                       style={{ marginBottom: 0, width: "500px" }}
+//                     >
+//                       <Select
+//                         className="h-10 "
+//                         placeholder="Add Meal"
+//                         disabled={mealOptions.every((meal) => !meal.amount)}
+//                       >
+//                         {mealOptions.map((meal) => (
+//                           <Option
+//                             key={meal.code}
+//                             value={`${segment.id}|${meal.code}`}
+//                           >
+//                             {meal.desc} - ₹{meal.amount}
+//                           </Option>
+//                         ))}
+//                       </Select>
+//                     </Form.Item>
+//                   </div>
+//                 ))}
+
+//                 {/* Child Meals */}
+//                 {Array.from({ length: numChild }).map((_, index) => (
+//                   <div
+//                     className="p-2 flex gap-4 items-center"
+//                     key={`child-${flightIndex}-${index}`}
+//                   >
+//                     <span
+//                       className="text-sm font-bold text-gray-900"
+//                       style={{ width: "100px" }}
+//                     >
+//                       CHILD {index + 1}
+//                     </span>
+//                     <Form.Item
+//                       name={`childMeal-${flightIndex}-${index}`}
+//                       style={{ marginBottom: 0, width: "500px" }}
+//                     >
+//                       <Select className="h-10 w-100" placeholder="Add Meal">
+//                         {mealOptions.map((meal) => (
+//                           <Option
+//                             key={meal.code}
+//                             value={`${segment.id}|${meal.code}`}
+//                           >
+//                             {meal.desc} - ₹{meal.amount}
+//                           </Option>
+//                         ))}
+//                       </Select>
+//                     </Form.Item>
+//                   </div>
+//                 ))}
+
+//                 {/* Infant Meals */}
+//                 {/* {Array.from({ length: numInfants }).map((_, index) => (
+//                   <div className="p-2 flex gap-4 items-center" key={`infant-${flightIndex}-${index}`}>
+//                     <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
+//                       INFANT {index + 1}
+//                     </span>
+//                     <Form.Item name={`infantMeal-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
+//                       <Select className="h-10 w-100" placeholder="Add Meal">
+//                         {mealOptions.map((meal) => (
+//                           <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
+//                            {meal.desc} - ₹{meal.amount}
+//                           </Option>
+//                         ))}
+//                       </Select>
+//                     </Form.Item>
+//                   </div>
+//                 ))} */}
+//               </div>
+//             );
+//           })}
+//         </Form>
+//       ) : (
+//         <div className="p-3 text-sm text-gray-500">
+//           No meal options available for this flight.
+//         </div>
+//       )}
+//     </>
+//   );
+// };
+
+// export default MealInfo;
+
+
+
+
+
+
+
+
 import { Form, Select } from "antd";
 import { useEffect } from "react";
 const { Option } = Select;
@@ -9,6 +217,7 @@ const MealInfo = ({
   apiData,
   form,
   storedTravellerInfos,
+  onMealChange,
 }) => {
   useEffect(() => {
     if (
@@ -17,42 +226,27 @@ const MealInfo = ({
       !apiData
     )
       return;
-    console.log(
-      "storedTravellerInfosstoredTravellerInfos ==== ",
-      storedTravellerInfos
-    );
 
     const values = {};
-    let segmentIndex = 0;
     apiData.tripInfos?.forEach((trip) => {
       const segmentinfo = trip.sI || [];
 
-      segmentinfo.forEach((segment) => {
-        const segmentIdStr = segment?.ssrInfo?.MEAL;
-        console.log("segmentIdStr == ", segmentIdStr);
-
+      segmentinfo.forEach((segment, flightIndex) => {
         // Adults
         for (let index = 0; index < numAdults; index++) {
           const traveller = storedTravellerInfos[index];
-
-          if (traveller?.ssrMealInfos?.[segmentIndex]?.code) {
-            values[
-              `adultMeal-${segmentIndex}-${index}`
-            ] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
+          if (traveller?.ssrMealInfos?.[flightIndex]?.code) {
+            values[`adultMeal-${flightIndex}-${index}`] = `${segment.id}|${traveller.ssrMealInfos[flightIndex].code}`;
           }
         }
 
         // Children
         for (let index = 0; index < numChild; index++) {
           const traveller = storedTravellerInfos[numAdults + index];
-
-          if (traveller?.ssrMealInfos?.[segmentIndex]?.code) {
-            values[
-              `childMeal-${segmentIndex}-${index}`
-            ] = `${segment.id}|${traveller.ssrMealInfos[segmentIndex].code}`;
+          if (traveller?.ssrMealInfos?.[flightIndex]?.code) {
+            values[`childMeal-${flightIndex}-${index}`] = `${segment.id}|${traveller.ssrMealInfos[flightIndex].code}`;
           }
         }
-        segmentIndex++;
       });
     });
 
@@ -69,15 +263,51 @@ const MealInfo = ({
   const segmentinfo = apiData.tripInfos.flatMap((trip) => trip.sI || []);
   const hasMeal = segmentinfo.some((seg) => seg?.ssrInfo?.MEAL?.length > 0);
 
+  const handleValuesChange = (changedValues, allValues) => {
+    console.log("changedValues ==>", changedValues);
+    console.log("allValues ==>", allValues);
+
+    let totalMealAmount = 0;
+    const allMeals = Object.keys(allValues)
+      .filter(
+        (key) => key.startsWith("adultMeal") || key.startsWith("childMeal")
+      )
+      .map((key) => allValues[key])
+      .filter(Boolean);
+
+    allMeals.forEach((value) => {
+      const [segmentId, mealCode] = value.split("|");
+      const segment = segmentinfo.find((s) => String(s.id) === String(segmentId));
+      if (segment) {
+        const mealOption = segment.ssrInfo.MEAL.find((m) => m.code === mealCode);
+        if (mealOption) {
+          totalMealAmount += mealOption.amount;
+        }
+      }
+    });
+
+    console.log("totalMealAmount ==>", totalMealAmount);
+    onMealChange(totalMealAmount);
+  };
+
   return (
     <>
       {hasMeal ? (
-        <Form form={form} name="mealForm" layout="vertical" autoComplete="off">
+        <Form
+          form={form}
+          name="mealForm"
+          layout="vertical"
+          autoComplete="off"
+          onValuesChange={handleValuesChange}
+        >
           {segmentinfo.map((segment, flightIndex) => {
             const mealOptions = segment?.ssrInfo?.MEAL || [];
 
             return (
-              <div key={`flight-${flightIndex}`} className="border-b pb-4 mb-4">
+              <div
+                key={`flight-${flightIndex}`}
+                className="border-b pb-4 mb-4"
+              >
                 <h3 className="text-lg">{`${segment?.fD?.aI?.name}-${segment?.fD?.fN}`}</h3>
 
                 {/* Adult Meals */}
@@ -97,9 +327,10 @@ const MealInfo = ({
                       style={{ marginBottom: 0, width: "500px" }}
                     >
                       <Select
-                        className="h-10 "
+                        className="h-10"
                         placeholder="Add Meal"
                         disabled={mealOptions.every((meal) => !meal.amount)}
+                        onChange={(val) => (console.log("meal changed value ", val))}
                       >
                         {mealOptions.map((meal) => (
                           <Option
@@ -130,7 +361,12 @@ const MealInfo = ({
                       name={`childMeal-${flightIndex}-${index}`}
                       style={{ marginBottom: 0, width: "500px" }}
                     >
-                      <Select className="h-10 w-100" placeholder="Add Meal">
+                      <Select
+                        className="h-10 w-100"
+                        placeholder="Add Meal"
+                        disabled={mealOptions.every((meal) => !meal.amount)}
+                        onChange={(val) => (console.log("meal changed value ", val))}
+                      >
                         {mealOptions.map((meal) => (
                           <Option
                             key={meal.code}
@@ -144,17 +380,29 @@ const MealInfo = ({
                   </div>
                 ))}
 
-                {/* Infant Meals */}
+                {/* Infant Meals (optional, same pattern) */}
                 {/* {Array.from({ length: numInfants }).map((_, index) => (
-                  <div className="p-2 flex gap-4 items-center" key={`infant-${flightIndex}-${index}`}>
-                    <span className="text-sm font-bold text-gray-900" style={{ width: "100px" }}>
+                  <div
+                    className="p-2 flex gap-4 items-center"
+                    key={`infant-${flightIndex}-${index}`}
+                  >
+                    <span
+                      className="text-sm font-bold text-gray-900"
+                      style={{ width: "100px" }}
+                    >
                       INFANT {index + 1}
                     </span>
-                    <Form.Item name={`infantMeal-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
+                    <Form.Item
+                      name={`infantMeal-${flightIndex}-${index}`}
+                      style={{ marginBottom: 0, width: "500px" }}
+                    >
                       <Select className="h-10 w-100" placeholder="Add Meal">
                         {mealOptions.map((meal) => (
-                          <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
-                           {meal.desc} - ₹{meal.amount}
+                          <Option
+                            key={meal.code}
+                            value={`${segment.id}|${meal.code}`}
+                          >
+                            {meal.desc} - ₹{meal.amount}
                           </Option>
                         ))}
                       </Select>
@@ -175,3 +423,4 @@ const MealInfo = ({
 };
 
 export default MealInfo;
+

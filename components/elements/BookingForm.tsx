@@ -7,7 +7,9 @@ interface BookingFormProps {
   finalStage?: any;
   mealinfo?: any;
   baggageinfo?: any;
-  seatinfo?: any;
+  seatinfo?: number;
+  baggageAmount?: number;
+  mealAmount?: number;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -18,9 +20,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
   mealinfo = {},
   baggageinfo = {},
   seatinfo = 0,
+  baggageAmount = 0,
+  mealAmount = 0,
 }) => {
   console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
+  console.log("baggageAmount 111111111111111111111==========> ", baggageAmount);
   console.log("seatinfo 111111111111111111111==========> ", seatinfo);
   console.log(
     "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
@@ -137,12 +142,26 @@ const BookingForm: React.FC<BookingFormProps> = ({
     setDisplayAmount(computedAmount);
   }, [totalpricee]);
 
+  // useEffect(() => {
+  //   if (seatinfo != 0) {
+  //     setTotalSeatAmount(seatinfo);
+  //     setDisplayAmount(totalfare + seatinfo);
+  //   }
+  // }, [seatinfo]);
+
   useEffect(() => {
-    if (seatinfo != 0) {
-      setTotalSeatAmount(seatinfo);
-      setDisplayAmount(totalfare + seatinfo);
+    setTotalMealAmount(mealAmount);
+    setTotalSeatAmount(seatinfo);
+    setTotalBaggageAmount(baggageAmount);
+
+    setDisplayAmount(Number(totalfare) + Number(seatinfo) + Number(baggageAmount) + Number(mealAmount));
+  }, [totalpricee, seatinfo, baggageAmount, mealAmount]);
+
+  useEffect(() => {
+    if (Object.keys(seatinfo).length === 0) {
+      setTotalSeatAmount(0);
     }
-  }, [seatinfo]);
+  },[])
 
   // const displayAmount = computedAmount > Number(totalfare) ? computedAmount : Number(totalfare);
 
