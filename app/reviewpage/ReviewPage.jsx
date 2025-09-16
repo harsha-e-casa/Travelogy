@@ -833,7 +833,12 @@ const ReviewPage = () => {
     try {
       console.log("final", parameter);
       // Call your API function with the properly constructed parameter
-      const result = await postDataTJBookingAir(parameter);
+      // const result = await postDataTJBookingAir(parameter);
+      const reqData = {
+        action: "book",
+        requestData: parameter,
+      };
+      const result = await postData("travelogy/one-way/fetch-data", reqData);
       console.log("loadDataBook =========== ", result);
       // const saveBookingId = async () => {
       //   const reqSaveBookingId = {
@@ -913,7 +918,7 @@ const ReviewPage = () => {
           amount: finalAmountToPay,
           status: "",
           time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-          fareType: getCookie("gy_passender_type")
+          fareType: getCookie("gy_passender_type"),
         };
         const result = await postData(
           "travelogy/flight/save-booking",
@@ -966,7 +971,7 @@ const ReviewPage = () => {
           booking_id: bookingId,
           phone: number.number,
           amount: finalAmountToPay,
-          fareType: getCookie("gy_passender_type")
+          fareType: getCookie("gy_passender_type"),
         };
         console.log("reqSaveBookingId === > ", reqSaveBookingId);
         const result = await postData(

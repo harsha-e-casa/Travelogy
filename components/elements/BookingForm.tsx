@@ -149,13 +149,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
   //   }
   // }, [seatinfo]);
 
-  useEffect(() => {
-    setTotalMealAmount(mealAmount);
-    setTotalSeatAmount(seatinfo);
-    setTotalBaggageAmount(baggageAmount);
+  // useEffect(() => {
+  //   setTotalMealAmount(mealAmount);
+  //   setTotalSeatAmount(seatinfo);
+  //   setTotalBaggageAmount(baggageAmount);
 
-    setDisplayAmount(Number(totalfare) + Number(seatinfo) + Number(baggageAmount) + Number(mealAmount));
-  }, [totalpricee, seatinfo, baggageAmount, mealAmount]);
+  //   setDisplayAmount(Number(totalfare) + Number(seatinfo) + Number(baggageAmount) + Number(mealAmount));
+  // }, [totalpricee, seatinfo, baggageAmount, mealAmount]);
 
   useEffect(() => {
     if (Object.keys(seatinfo).length === 0) {

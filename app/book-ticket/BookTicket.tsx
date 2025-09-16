@@ -1992,7 +1992,7 @@ export default function BookTicket() {
                                     form={form}
                                     numAdults={numAdults}
                                     numChild={numChild}
-                                    numInfants={numInfants}
+                                    // numInfants={numInfants}
                                     apiData={apiData}
                                     storedTravellerInfos={storedTravellerInfos}
                                     onBaggageChange={handleBaggageChange}
