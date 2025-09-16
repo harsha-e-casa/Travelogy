@@ -189,6 +189,12 @@ const EngineTabs = ({ active_border }) => {
   const [selectedPassengerType, setSelectedPassengerType] = useState("REGULAR");
   const [isDirectFlight, setIsDirectFlight] = useState(false);
 
+  useEffect(() => {
+    if (selectedPlan !=="multi-city") {
+      setHasMultiCityError(false)
+    }
+  }, [selectedPlan])
+
   const openfrom = () => {
     if (showSearchState) {
       closeAllFields();

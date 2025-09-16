@@ -2018,6 +2018,9 @@ const Alldetails = ({ totalpricee }) => {
                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
                           Ticket Number
                         </th>
+                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                          SSR
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2029,10 +2032,9 @@ const Alldetails = ({ totalpricee }) => {
                         return segmentKeys.map((segmentKey, segmentIndex) => {
                           const pnr =
                             traveller.pnrDetails?.[segmentKey] ?? "N/A";
-                          console.log(
-                            "pnrrrrrrrrrrrrrrrr varudha daaaaaaaaaaa ",
-                            pnr
-                          );
+                          const baggage = traveller?.ssrBaggageInfos?.[segmentKey]?.desc ?? "N/A"
+                          const meal = traveller?.ssrMealInfos?.[segmentKey]?.desc ?? "N/A"
+                          const seat = traveller?.ssrSeatInfos?.[segmentKey].code ?? "N/A"
                           const ticket =
                             traveller.ticketNumberDetails?.[segmentKey] ??
                             "N/A";
@@ -2106,6 +2108,11 @@ const Alldetails = ({ totalpricee }) => {
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
                                   {ticket}
+                                </td>
+                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                  Baggage: {baggage} | 
+                                  Meal: {meal} |
+                                  Seat: {seat}
                                 </td>
                               </tr>
 

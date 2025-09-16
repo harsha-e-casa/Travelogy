@@ -166,6 +166,16 @@ export default function BookTicket() {
   const [seatinfo, setSeatinfo] = useState<any>([]);
   const fareAlert = useRef<{ oldFare?: number; newFare?: number }>({});
   const [isFareAlertModalOpen, setIsFareAlertModalOpen] = useState(false);
+  const [baggageAmount, setBaggageAmount] = useState(0);
+  const [mealAmount, setMealAmount] = useState(0);
+
+  const handleBaggageChange = (amount: number) => {
+    setBaggageAmount(amount);
+  };
+
+  const handleMealChange = (amount: number) => {
+    setMealAmount(amount);
+  };
   const closeFareAlertModal = () => {
     setIsFareAlertModalOpen(false);
     fareAlert.current = {};
@@ -1505,6 +1515,8 @@ export default function BookTicket() {
                         mealinfo={mealinfo}
                         baggageinfo={baggageinfo}
                         seatinfo={seatinfo}
+                        baggageAmount={baggageAmount}
+                        mealAmount={mealAmount}
                         // segmentsPrice={segmentsPrice}
                         // baggageinfo={baggageinfo}
                       />
@@ -1980,9 +1992,10 @@ export default function BookTicket() {
                                     form={form}
                                     numAdults={numAdults}
                                     numChild={numChild}
-                                    numInfants={numInfants}
+                                    // numInfants={numInfants}
                                     apiData={apiData}
                                     storedTravellerInfos={storedTravellerInfos}
+                                    onBaggageChange={handleBaggageChange}
                                   />
                                 </p>
                               </div>
@@ -2002,6 +2015,7 @@ export default function BookTicket() {
                                     numInfants={numInfants}
                                     apiData={apiData}
                                     storedTravellerInfos={storedTravellerInfos}
+                                    onMealChange={handleMealChange}
                                   />
                                 </p>
                               </div>
