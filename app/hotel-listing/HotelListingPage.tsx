@@ -659,7 +659,7 @@ export default function HotelListing() {
                       handleClearFilters={handleClearFilters}
                       startItemIndex={startItemIndex}
                       endItemIndex={endItemIndex}
-                      totalResults={sortedHotels.length}
+                      // totalResults={sortedHotels.length}
                     />
                   </div>
                   <div className="box-grid-tours wow fadeIn">
@@ -746,7 +746,7 @@ export default function HotelListing() {
                     handlePageChange={handlePageChange}
                   />
                 </div>
-                <div className="content-left order-lg-first">
+                {/* <div className="content-left order-lg-first">
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
@@ -830,7 +830,7 @@ export default function HotelListing() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
