@@ -45,16 +45,26 @@ const BookingDetailsPage = () => {
         paymentInfos: [{ amount }],
       };
 
-      const response = await fetch(
-        "https://apitest.tripjack.com/oms/v1/hotel/confirm-book",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-          },
-          body: JSON.stringify(paymentData),
-        }
+      // const response = await fetch(
+      //   "https://apitest.tripjack.com/oms/v1/hotel/confirm-book",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+      //     },
+      //     body: JSON.stringify(paymentData),
+      //   }
+      // );
+
+      const reqBody = {
+        action: "conformBook",
+        requestData: paymentData,
+      };
+
+      const response = await postData(
+        "travelogy/hotel/fetch-data",
+        reqBody
       );
 
       const data = await response.json();

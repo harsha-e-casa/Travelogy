@@ -854,7 +854,11 @@ const ReviewPage = () => {
       //   console.log("saveBookingId result === > ", result);
       // };
       // saveBookingId();
-      router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
+      if (result?.error) {
+        setError(result?.error)
+      } else {
+        router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
+      }
     } catch (err) {
       console.error("Error while fetching flight data 1 :", err);
 

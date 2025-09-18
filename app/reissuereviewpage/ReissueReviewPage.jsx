@@ -826,25 +826,14 @@ const ReissueReviewPage = () => {
       const result = await postData("travelogy/one-way/fetch-data", reqData);
 
       console.log("loadDataBook =========== ", result);
+      if (result?.error) {
+        setError(result?.error);
+      }
       console.log("loadDataBook =========== ", result?.status?.success);
 
       if (result?.status?.success === true) {
         saveBookingIdFn();
       }
-      // const saveBookingId = async () => {
-      //   const reqSaveBookingId = {
-      //     booking_id: bookingId,
-      //     phone: number.number,
-      //     amount: finalAmountToPay,
-      //   };
-      //   console.log("reqSaveBookingId === > ", reqSaveBookingId);
-      //   const result = await postData(
-      //     "travelogy/flight/save-booking",
-      //     reqSaveBookingId
-      //   );
-      //   console.log("saveBookingId result === > ", result);
-      // };
-      // saveBookingId();
       router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
     } catch (err) {
       console.error("Error while fetching flight data 1 :", err);
@@ -868,6 +857,7 @@ const ReissueReviewPage = () => {
       // Optionally, you can show an error message to the user here
     }
   };
+  let oldBookingId = null
 
   // Function to handle booking review and trigger loadDataBook
   const bookingReview = () => {
@@ -886,6 +876,7 @@ const ReissueReviewPage = () => {
     const rsJsonData = JSON.parse(rsData);
     console.log("rsJSONDATA == ", rsJsonData);
     console.log("rsJSONDATA == ", rsJsonData?.searchQuery?.oldBookingId);
+    oldBookingId = rsJsonData?.searchQuery?.oldBookingId
 
     if (
       (totalprice || totalprice == 0) &&
@@ -920,7 +911,7 @@ const ReissueReviewPage = () => {
   const saveBookingIdFn = async () => {
     const reqSaveBookingId = {
       type: "save",
-      old_booking_id: rsJsonData?.searchQuery?.oldBookingId,
+      old_booking_id: oldBookingId,
       booking_id: bookingId,
       phone: number.number,
       amount: finalAmountToPay,

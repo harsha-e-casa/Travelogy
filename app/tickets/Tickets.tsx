@@ -561,6 +561,7 @@ export default function Tickets() {
   };
 
   const handlesearFlight = () => {
+    console.log("handlesearFlight ==> clicked ");
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       const pass = validateMultiCity({ focusFirstError: true });
       if (!pass) return; // stop if invalid
@@ -578,14 +579,14 @@ export default function Tickets() {
     }
   };
 
-  const onClickSearch = () => {
-    if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
-      const pass = validateMultiCity({ focusFirstError: true });
-      if (!pass) return; // stop if invalid
-    }
-    // single/round-trip can use your existing checks...
-    handlesearFlight();
-  };
+  // const onClickSearch = () => {
+  //   if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
+  //     const pass = validateMultiCity({ focusFirstError: true });
+  //     if (!pass) return; // stop if invalid
+  //   }
+  //   // single/round-trip can use your existing checks...
+  //   handlesearFlight();
+  // };
 
   const [true_Tripconst, setTripconst] = useState<boolean>(false);
   const [searchFlight, SetSearchFlight] = useState<boolean>(true);
@@ -1085,8 +1086,8 @@ export default function Tickets() {
     setOpenFromMultiIndex((prev) => (prev === idx ? null : idx));
     const newSegs = [...multicitySegments];
     if (newSegs[idx]) {
-        newSegs[idx].fromError = "";
-        setMulticitySegments(newSegs);
+      newSegs[idx].fromError = "";
+      setMulticitySegments(newSegs);
     }
   };
 
@@ -1094,8 +1095,8 @@ export default function Tickets() {
     setOpenToMultiIndex((prev) => (prev === idx ? null : idx));
     const newSegs = [...multicitySegments];
     if (newSegs[idx]) {
-        newSegs[idx].toError = "";
-        setMulticitySegments(newSegs);
+      newSegs[idx].toError = "";
+      setMulticitySegments(newSegs);
     }
   };
 
@@ -1103,8 +1104,8 @@ export default function Tickets() {
     setOpenDepartMultiIndex((prev) => (prev === idx ? null : idx));
     const newSegs = [...multicitySegments];
     if (newSegs[idx]) {
-        newSegs[idx].dateError = "";
-        setMulticitySegments(newSegs);
+      newSegs[idx].dateError = "";
+      setMulticitySegments(newSegs);
     }
   };
 
@@ -1561,9 +1562,10 @@ export default function Tickets() {
                       toError ||
                       errorMsg ||
                       dateError ||
-                      multicitySegments.some(
-                        (s) => s.fromError || s.toError || s.dateError
-                      )
+                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                        multicitySegments.some(
+                          (s) => s.fromError || s.toError || s.dateError
+                        ))
                         ? () => {}
                         : handlesearFlight
                       // onClickSearch

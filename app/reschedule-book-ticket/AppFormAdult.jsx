@@ -113,12 +113,13 @@ const AppFormAdult = ({
 }) => {
   // Prefill values when fieldData changes
   useEffect(() => {
+    console.log("fieldData.documentIdfieldData.documentId ==> ",fieldData)
     if (fieldData && (fieldData.ti || fieldData.fN || fieldData.lN)) {
       form.setFieldsValue({
         [`select-${index}`]: fieldData.ti,
         [`fname-${index}`]: fieldData.fN,
         [`lname-${index}`]: fieldData.lN,
-        [`documentId-${index}`]: fieldData.documentId
+        [`documentId-${index}`]: fieldData.di
       });
     }
   }, [form, index, fieldData]);
