@@ -1,58 +1,3 @@
-// import Link from 'next/link'
-
-// export default function TicketCard1({ ticket }: any) {
-// 	return (
-// 		<>
-// 			<div className="item-flight background-card border-1">
-// 				<div className="flight-route flight-route-type-2">
-// 					<div className="flight-route-1">
-// 						<div className="flight-name"> <img  src="/assets/imgs/page/homepage10/logo1.png" alt="Travalogy" />
-// 							<div className="flight-info">
-// 								<p className="text-md-bold neutral-1000">New York (JFK)</p>
-// 								<p className="text-sm-medium time-flight"> <span className="neutral-1000">20:00 </span>- 05 Jan 2024</p>
-// 							</div>
-// 						</div>
-// 						<div className="flight-route-icon" />
-// 						<div className="flight-name">
-// 							<div className="flight-info">
-// 								<p className="text-md-bold neutral-1000">New York (JFK)</p>
-// 								<p className="text-sm-medium time-flight"><span className="neutral-1000">20:00 </span>- 05 Jan 2024</p>
-// 							</div>
-// 						</div>
-// 					</div>
-// 					<div className="flight-route-2">
-// 						<div className="flight-name"> <img  src="/assets/imgs/page/tickets/logo2.png" alt="Travalogy" />
-// 							<div className="flight-info">
-// 								<p className="text-md-bold neutral-1000">New York (JFK)</p>
-// 								<p className="text-sm-medium time-flight"> <span className="neutral-1000">20:00 </span>- 05 Jan 2024</p>
-// 							</div>
-// 						</div>
-// 						<div className="flight-route-icon" />
-// 						<div className="flight-name">
-// 							<div className="flight-info">
-// 								<p className="text-md-bold neutral-1000">New York (JFK)</p>
-// 								<p className="text-sm-medium time-flight"><span className="neutral-1000">20:00 </span>- 05 Jan 2024</p>
-// 							</div>
-// 						</div>
-// 					</div>
-// 				</div>
-// 				<div className="flight-price">
-// 					<div className="flight-price-1 border-1">
-// 						<p className="text-sm-medium neutral-500">Business</p>
-// 						<p className="heading-5 neutral-1000">$189.56</p>
-// 						<p className="text-sm-medium neutral-500 mb-15">8 Seat(s) left</p><Link className="btn btn-gray" href="#">Book Now</Link>
-// 					</div>
-// 					<div className="flight-price-2 border-1">
-// 						<p className="text-sm-medium neutral-500">Economy</p>
-// 						<p className="heading-5 neutral-1000">$189.56</p>
-// 						<p className="text-sm-medium neutral-500 mb-15">4 Seat(s) left</p><Link className="btn btn-gray" href="#">Book Now</Link>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</>
-// 	)
-// }
-
 import Link from "next/link";
 import dayjs from "dayjs";
 import React, { useContext, useEffect, useState } from "react";
@@ -67,7 +12,9 @@ export default function TicketCard1({
   flightData,
   reschedule = false,
 }: any) {
-  
+  const isUat = process.env.UAT_ENV === "true";
+  console.log("isUatisUat ==> ", isUat);
+
   console.log("flightData from ticketcard", flightData);
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
@@ -138,28 +85,37 @@ export default function TicketCard1({
                   className="air_detailes"
                   // style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
                   style={{ top: index === 0 ? "0" : "49%" }}
-
                   key={segment.id || index}
                 >
                   <div className="flex items-center justify-center w-max">
-                    <img
-                      style={{ width: "35px", height: "35px", padding: "5px" }}
-                      src={`/assets/imgs/airlines/${segment[
-                        "fD"
-                      ].aI.code.toLowerCase()}.png`}
-                    />
+                    {isUat && (
+                      <img
+                        style={{
+                          width: "35px",
+                          height: "35px",
+                          padding: "5px",
+                        }}
+                        src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                      />
+                    )}
+                    {!isUat && (
+                      <img
+                        style={{
+                          width: "35px",
+                          height: "35px",
+                          padding: "5px",
+                        }}
+                        src={`/assets/imgs/airlines/${segment[
+                          "fD"
+                        ].aI.code.toLowerCase()}.png`}
+                      />
+                    )}
                     <div className="text-[10px]" style={{ fontSize: "10px" }}>
                       {segment["fD"].aI.name}
                     </div>
                   </div>
                 </div>
                 <div className="flex justify-evenly items-center  pl-20 pr-5">
-                  {/* <div className="air_detailes">{segment["fD"].aI.name}</div> */}
-                  {/* <img
-                  src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
-                  alt={segment["fD"].aI.name}
-                /> */}
-
                   <div className="flight-route flight-route-type-2 city1">
                     <div className="flight-route-1">
                       <div className="flight-name">
@@ -170,7 +126,6 @@ export default function TicketCard1({
                               ({segment["da"].code})
                             </span>{" "}
                           </p>
-
                           <p className="text-sm-medium time-flight timelogo">
                             <span className="neutral-1000 time ">
                               {dayjs(segment["dt"]).format("HH:mm")}
@@ -258,12 +213,6 @@ export default function TicketCard1({
 												   ${"border-gray-300 hover:border-gray-500"}`}
                       >
                         <div className="flex flex-row gap-2 items-center">
-                          {/* <div className="text-lg font-bold text-gray-800 price">
-                          ₹
-                          {new Intl.NumberFormat("en-IN").format(
-                            e.fd.ADULT.fC.BF
-                          )}
-                        </div> */}
                           <div className="text-lg font-bold text-gray-800 price">
                             ₹
                             {(() => {
@@ -359,13 +308,6 @@ export default function TicketCard1({
                 Book Now
               </Link>
             )}
-            {/* <Link
-              href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
-              // href={`reschedule-book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
-              className="btn btn-gray booknow btn"
-            >
-              Book Now
-            </Link> */}
           </div>
         </div>
       </div>

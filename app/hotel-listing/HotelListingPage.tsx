@@ -129,7 +129,7 @@ export default function HotelListing() {
         countryName: matchedNationality?.countryName || "India",
         id: city || "699261", // fallback
       });
-      setNationalityId(matchedNationality?.countryId || "94");
+      // setNationalityId(matchedNationality?.countryId || "94");
     }
   }, [location, city, nationalities]);
 
@@ -197,22 +197,23 @@ export default function HotelListing() {
       };
 
       const response: any = await postData("travelogy/hotel/fetch-data", reqBody);
-      console.log("response1 ===> 1 ", response);
 
-      if (!response.ok) {
-        let msg = `Request failed with ${response.status} ${response.statusText}`;
-        try {
-          const maybeJson = await response.json();
-          if (maybeJson?.message) msg = maybeJson.message;
-        } catch {}
-        const err = new Error(msg) as Error & { status?: number };
-        err.status = response.status;
-        throw err; // <-- important
-      }
+      // if (!response.ok) {
+      //   console.log("11111111 111111")
+      //   let msg = `Request failed with ${response.status} ${response.statusText}`;
+      //   try {
+      //     const maybeJson = await response.json();
+      //     if (maybeJson?.message) msg = maybeJson.message;
+      //   } catch {}
+      //   const err = new Error(msg) as Error & { status?: number };
+      //   err.status = response.status;
+      //   throw err; // <-- important
+      // }
 
-      const data = await response.json();
+      // const data = await response.json();
       localStorage.clear();
-      return data;
+      // return data;
+      return response;
     } catch (e: any) {
       const err = new Error(e?.message || "Network error") as Error & {
         status?: number;
@@ -249,8 +250,8 @@ export default function HotelListing() {
       (n) => n.countryName.toLowerCase() === safeCountry.toLowerCase()
     );
 
-    const nationalityIdToUse =
-      matchedNationality?.countryId || nationalityId || "94";
+    const nationalityIdToUse = matchedNationality?.countryId || nationalityId || "94";
+    setNationalityId(nationalityIdToUse)
 
     if (!selectFrom) {
       setSelectFrom({
@@ -297,7 +298,6 @@ export default function HotelListing() {
     // }
     try {
       const data = await apiCall(payload);
-      console.log("bbbbbbbbbbbbbbbbbbbb111111111111111111", data);
 
       if (!data?.searchResult?.his) {
         throw Object.assign(new Error(data?.message || "No data received"), {
@@ -696,8 +696,8 @@ export default function HotelListing() {
                           <div className="col-12 d-flex justify-center py-5">
                             <div className="loader"></div>
                           </div>
-                        ) : paginatedHotels.length > 0 ? (
-                          paginatedHotels.map(
+                        ) : apiHotelData.length > 0 ? (
+                          apiHotelData.map(
                             (hotel: any, index: number) => (
                               <div
                                 className="col-xl-4 col-lg-6 col-md-6"

@@ -19,6 +19,14 @@ export default function Header1({
 }: any) {
   const [open, setOpen] = useState(false);
 
+  const handleLogout = () => {
+    // Clear the token from localStorage
+    localStorage.removeItem("authToken");
+
+    // Redirect the user to the login page
+    window.location.href = "/login"; // Redirect to login page or public page
+  };
+
   return (
     <>
       <header
@@ -96,7 +104,7 @@ export default function Header1({
                           User Login
                         </button>
                         <button
-                          onClick={handleLogin}
+                          onClick={handleLogout}
                           className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
                         >
                           Logout

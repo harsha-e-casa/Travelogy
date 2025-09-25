@@ -3,7 +3,13 @@
 import BookingForm from "@/components/elements/BookingForm";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
-import React, { useState, useEffect, useContext, useCallback, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  Suspense,
+} from "react";
 import {
   postDataFlightDetails,
   postDataTJBookingAir,
@@ -35,13 +41,28 @@ import {
   Row,
   Select,
 } from "antd";
+import { checkTokenExpiry } from "@/services/Utils";
 
 const url =
   "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
 
 export default function BookTicket() {
+  const isUat = process.env.UAT_ENV === "true";
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
 
   const { getCookie } = useContext(AppContext);
 
@@ -813,10 +834,18 @@ export default function BookTicket() {
                                 </div>
                                 <div className="item-info-flight">
                                   <div className="logo-flight">
-                                    <img
-                                      src={`/assets/imgs/airlines/${seg.fD.aI.code.toLowerCase()}.png`}
-                                      alt={seg.fD.aI.name}
-                                    />
+                                    {isUat && (
+                                      <img
+                                        src={`/assets/imgs/airlines/${seg.fD.aI.code}.png`}
+                                        alt={seg.fD.aI.name}
+                                      />
+                                    )}
+                                    {!isUat && (
+                                      <img
+                                        src={`/assets/imgs/airlines/${seg.fD.aI.code.toLowerCase()}.png`}
+                                        alt={seg.fD.aI.name}
+                                      />
+                                    )}
                                   </div>
                                   <div className="flight-code">
                                     <p className="text-sm-medium neutral-500">

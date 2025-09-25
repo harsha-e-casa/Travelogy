@@ -18,12 +18,28 @@ import { Tabs } from "antd";
 // import "./style.css"
 import { format } from "date-fns";
 import * as React from "react";
+import { checkTokenExpiry } from "@/services/Utils";
 
 const BookDetailReview = () => {
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookId");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  const router = useRouter();
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
+
   // const [bookData,setBookData]=useState(null)
   //   const { getCookie } = useContext(AppContext);
 

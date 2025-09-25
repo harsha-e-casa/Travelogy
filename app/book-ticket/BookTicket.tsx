@@ -52,6 +52,7 @@ import MealInfo from "./MealInfo.jsx";
 import SessionTime from "./SessionTime.jsx";
 import SeatBooking from "./SeatBooking.jsx";
 import AppFormCompany from "./AppFormCompany.jsx";
+import { checkTokenExpiry } from "@/services/Utils";
 
 const url =
   "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
@@ -71,6 +72,21 @@ type Traveller = {
 export default function BookTicket() {
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
 
   const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
     useContext(AppContext);
@@ -145,7 +161,7 @@ export default function BookTicket() {
   const [segments, setSegments] = useState<FlightSegment[]>([]);
   const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalpricee, setTotalpricee] = useState<string | null>(null);
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
@@ -184,7 +200,7 @@ export default function BookTicket() {
   const handleSeatinfo = (v: number) => {
     console.log("Value from child:", v);
     setSeatinfo(v);
-  }
+  };
 
   const fetchFlights = useCallback(
     async (priceId: string) => {
@@ -213,7 +229,7 @@ export default function BookTicket() {
 
         if (!data.status?.success) {
           const apiErrorMessage =
-            data.errors?.[0]?.message || "Unknown API error";
+            data.errors?.[0]?.message || data.errors || "Unknown API error";
           const apiErrorDetails = data.errors?.[0]?.details || "";
           const fullErrorMessage = `${apiErrorMessage}${
             apiErrorDetails ? ` - ${apiErrorDetails}` : ""
@@ -642,27 +658,27 @@ export default function BookTicket() {
 
         console.log(
           "GST Number for Business Travel (Optional): ",
-          formValues["registrationNumber"],
-          formValues["companyName"],
+          formValues["gstNumber"],
+          formValues["registeredName"],
           formValues["companyEmail"],
           formValues["companyPhone"],
           formValues["companyAddress"]
         );
 
         if (
-          formValues["registrationNumber"] &&
-          formValues["companyName"] &&
+          formValues["gstNumber"] &&
+          formValues["registeredName"] &&
           formValues["companyEmail"] &&
           formValues["companyPhone"] &&
           formValues["companyAddress"]
         ) {
           console.log("vantan daaaaaaaaa");
           const gstInfo = {
-            registrationNumber: formValues["registrationNumber"],
-            companyName: formValues["companyName"],
-            companyEmail: formValues["companyEmail"],
-            companyPhone: formValues["companyPhone"],
-            companyAddress: formValues["companyAddress"],
+            gstNumber: formValues["gstNumber"],
+            registeredName: formValues["registeredName"],
+            email: formValues["companyEmail"],
+            mobile: formValues["companyPhone"],
+            address: formValues["companyAddress"],
           };
           setCookie("gst_info", JSON.stringify(gstInfo));
         }
@@ -1992,7 +2008,7 @@ export default function BookTicket() {
                                     form={form}
                                     numAdults={numAdults}
                                     numChild={numChild}
-                                    numInfants={numInfants}
+                                    // numInfants={numInfants}
                                     apiData={apiData}
                                     storedTravellerInfos={storedTravellerInfos}
                                     onBaggageChange={handleBaggageChange}
@@ -2046,7 +2062,10 @@ export default function BookTicket() {
 
                           {/* GST Number for  Business Travel (Optional) */}
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
-                            GST Number for Business Travel (Optional)
+                            GST Number for Business Travel
+                            {!apiData?.conditions?.gst?.igm && (
+                              <span>(Optional)</span>
+                            )}
                             <div>
                               <div className="px-4 py-3 border_xcolor_1px">
                                 <h2
@@ -2057,7 +2076,10 @@ export default function BookTicket() {
                                   Please enter your company's GST number
                                 </h2>
                                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                  <AppFormCompany form={form} />
+                                  <AppFormCompany
+                                    form={form}
+                                    manditory={apiData?.conditions?.gst?.igm}
+                                  />
                                 </p>
                               </div>
                             </div>

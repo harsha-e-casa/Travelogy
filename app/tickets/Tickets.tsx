@@ -44,6 +44,7 @@ import { Dropdown, Space } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
 import { AppContext } from "../../util/AppContext";
 import { TravellerForm } from "@/components/searchEngine/TravellerForm";
+import { checkTokenExpiry } from "@/services/Utils";
 
 // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -195,10 +196,26 @@ export default function Tickets() {
     }
   }, []);
 
+  const router = useRouter();
+  const [loading, setloading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setloading(false);
+    }
+  }, [router]);
+
   const [flightData, setFlightData] = useState<any>(null);
   const [filteredFlightData, setFilteredFlightData] = useState<any>(null);
 
-  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [stops, setStops] = useState("all");
   const [departureTime, setDepartureTime] = useState("all");
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
@@ -208,11 +225,18 @@ export default function Tickets() {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToFilter = flightData.ONWARD || flightData.COMBO;
 
+      console.log("cccccccccccc 1",dataToFilter)
+
+      console.log("cccccccccccc 1.1.2 ",priceRange)
+
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
+        console.log("cccccccccccc 1.2 ",ticket)
         const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
         return price >= priceRange[0] && price <= priceRange[1];
       });
+
+      console.log("cccccccccccc 2",filteredData)
 
       // Stops Filter
       if (stops !== "all") {
@@ -280,7 +304,6 @@ export default function Tickets() {
     applyFilters();
   }, [priceRange, stops, departureTime, selectedAirlines, flightData]);
   const [activeFlight, setActiveFlight] = useState<any>(true);
-  const [loading, setloading] = useState<boolean>(false);
 
   // const router = useRouter();
   // const searchParams = useSearchParams();
@@ -1842,7 +1865,10 @@ export default function Tickets() {
                   </div> */}
 
                   {loading && (
-                    <div className="box-list-flights box-list-flights-2">
+                    <div
+                      className="box-list-flights box-list-flights-2"
+                      style={{ padding: "10px" }}
+                    >
                       <div>
                         <div />
 
@@ -1916,7 +1942,10 @@ export default function Tickets() {
                             <>
                               <div className="box-grid-tours">
                                 <div className="row">
-                                  <div className="box-list-flights box-list-flights-2">
+                                  <div
+                                    className="box-list-flights box-list-flights-2"
+                                    style={{ padding: "10px" }}
+                                  >
                                     {tripInfo.map((ticket: any) => (
                                       <React.Fragment key={ticket.id}>
                                         <TicketCard1

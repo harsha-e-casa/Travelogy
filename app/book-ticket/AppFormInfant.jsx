@@ -117,7 +117,13 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
                 travellerParsedData && travellerParsedData.dob
                   ? dayjs(travellerParsedData.dob)
                   : null
-              } // Controlled value
+              }
+              disabledDate={(current) => {
+                const today = dayjs();
+                const minDate = today.subtract(2, "year"); // 2 years ago
+                const maxDate = today.subtract(15, "day"); // 15 days ago
+                return current && (current < minDate || current > maxDate);
+              }}
             />
           </Form.Item>
         </Col>

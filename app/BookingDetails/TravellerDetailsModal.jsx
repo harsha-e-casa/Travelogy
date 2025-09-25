@@ -15,6 +15,7 @@ const TravellerDetailsModal = ({
   bookingDetails,
   tripKey,
 }) => {
+  const isUat = process.env.UAT_ENV === "true";
   console.log("ddddddddddddddddddddddd ", bookingId);
   console.log("ddddddddddddddddddddddd ", amendmentType);
   console.log("ddddddddddddddddddddddd ", bookingDetails);
@@ -132,17 +133,30 @@ const TravellerDetailsModal = ({
                       className="flex items-center gap-4 mb-4 justify-center"
                     >
                       <div className="flex flex-row items-center">
-                        <img
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            padding: "5px",
-                          }}
-                          src={`/assets/imgs/airlines/${segment[
-                            "fD"
-                          ].aI.code.toLowerCase()}.png`}
-                          alt=""
-                        />
+                        {isUat && (
+                          <img
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              padding: "5px",
+                            }}
+                            src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                            alt=""
+                          />
+                        )}
+                        {!isUat && (
+                          <img
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              padding: "5px",
+                            }}
+                            src={`/assets/imgs/airlines/${segment[
+                              "fD"
+                            ].aI.code.toLowerCase()}.png`}
+                            alt=""
+                          />
+                        )}
                         <div className="font-medium text-md  flex flex-col items-center">
                           <p>{segment?.fD?.aI?.name}</p>
                           <p>{segment?.fD?.fN}</p>
@@ -352,7 +366,15 @@ const TravellerDetailsModal = ({
 
                   console.log("📤 Sending parameters to API:", parameter);
 
-                  const response = await postSumbitAmendment(parameter);
+                  // const response = await postSumbitAmendment(parameter);
+                  let reqData = {
+                    action: "submitAmendment",
+                    requestData: parameter,
+                  };
+                  const response = await postData(
+                    "travelogy/one-way/fetch-data",
+                    reqData
+                  );
                   const data = response;
 
                   console.log("📌 amendmentId received:", data?.amendmentId);
@@ -367,9 +389,17 @@ const TravellerDetailsModal = ({
                         amendmentId: data.amendmentId,
                       });
 
-                      const amendmentDetails = await postAmendmentDetails({
-                        amendmentId: data.amendmentId,
-                      });
+                      // const amendmentDetails = await postAmendmentDetails({
+                      //   amendmentId: data.amendmentId,
+                      // });
+                      let reqData = {
+                        action: "pollAmendment",
+                        requestData: { amendmentId: data.amendmentId },
+                      };
+                      const amendmentDetails = await postData(
+                        "travelogy/one-way/fetch-data",
+                        reqData
+                      );
 
                       // save the ammendment details
                       const saveAmendmentID = async () => {

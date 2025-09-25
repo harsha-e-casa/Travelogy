@@ -331,7 +331,7 @@ const ExtraBaggage = ({
       form={form}
       layout="vertical"
       autoComplete="off"
-      onValuesChange={handleValuesChange}  // Use Form to handle value changes
+      // onValuesChange={handleValuesChange}  // Use Form to handle value changes
     >
       {segmentinfo.map((segment, flightIndex) => {
         const baggageOptions = segment?.ssrInfo?.BAGGAGE || [];

@@ -52,13 +52,30 @@ import MealInfo from "./MealInfo.jsx";
 import SessionTime from "./SessionTime.jsx";
 import SeatBooking from "./SeatBooking.jsx";
 import AppFormCompany from "../book-ticket/AppFormCompany";
+import { checkTokenExpiry } from "@/services/Utils";
 
 const url =
   "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
 
 export default function BookTicket() {
+  const isUat = process.env.UAT_ENV === "true";
   const searchParams = useSearchParams();
   const router = useRouter();
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
 
   const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
     useContext(AppContext);
@@ -129,7 +146,6 @@ export default function BookTicket() {
   const [segments, setSegments] = useState<FlightSegment[]>([]);
   const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalpricee, setTotalpricee] = useState<string | null>(null);
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
@@ -163,13 +179,15 @@ export default function BookTicket() {
   const [numAdults, setNumAdults] = useState<number>(0);
   const [numChild, setNumChild] = useState<number>(0);
   const [numInfants, setNumInfants] = useState<number>(0);
-  const [segregateTravellerResultState, setSegregateTravellerResult] = useState({
-    segrigatedTravellerInfo: {
-      ADULT: [],
-      CHILD: [],
-      INFANT: [],
-    },
-  });
+  const [segregateTravellerResultState, setSegregateTravellerResult] = useState(
+    {
+      segrigatedTravellerInfo: {
+        ADULT: [],
+        CHILD: [],
+        INFANT: [],
+      },
+    }
+  );
 
   useEffect(() => {
     // imselecting 2 TravellerDetailsModal, but only one traveller is getting returned
@@ -225,10 +243,7 @@ export default function BookTicket() {
         action: "reissueReview",
         requestData: parameter,
       };
-      const data: any = await postData(
-        "travelogy/one-way/fetch-data",
-        reqData
-      );
+      const data: any = await postData("travelogy/one-way/fetch-data", reqData);
 
       if (!data.status?.success) {
         const apiErrorMessage =
@@ -562,8 +577,12 @@ export default function BookTicket() {
           setCookie("gst_info", JSON.stringify(gstInfo));
         }
 
-        const segmentinfo = apiData.tripInfos.flatMap((trip: any) => trip.sI || []);
-        const segmentId = segmentinfo.map((segment: any) => segment.id).join(",");
+        const segmentinfo = apiData.tripInfos.flatMap(
+          (trip: any) => trip.sI || []
+        );
+        const segmentId = segmentinfo
+          .map((segment: any) => segment.id)
+          .join(",");
 
         let baggageInfosPayload: {
           key: string;
@@ -1100,10 +1119,18 @@ export default function BookTicket() {
                                             </div>
                                             <div className="item-info-flight">
                                               <div className="logo-flight">
-                                                <img
-                                                  src={`/assets/imgs/airlines/${seg.fD.aI.code.toLowerCase()}.png`}
-                                                  alt={seg.fD.aI.name}
-                                                />
+                                                {isUat && (
+                                                  <img
+                                                    src={`/assets/imgs/airlines/${seg.fD.aI.code}.png`}
+                                                    alt={seg.fD.aI.name}
+                                                  />
+                                                )}
+                                                {!isUat && (
+                                                  <img
+                                                    src={`/assets/imgs/airlines/${seg.fD.aI.code.toLowerCase()}.png`}
+                                                    alt={seg.fD.aI.name}
+                                                  />
+                                                )}
                                               </div>
                                               <div className="flight-code">
                                                 <p className="text-sm-medium neutral-500">
@@ -1428,7 +1455,10 @@ export default function BookTicket() {
                               </svg>
                             </a>
                           </div>
-                          <AppFormCustomer form={form} bookingDetailsData={bookingDetailsData} />
+                          <AppFormCustomer
+                            form={form}
+                            bookingDetailsData={bookingDetailsData}
+                          />
 
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
                             Add Meal and Baggage

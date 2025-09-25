@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Tabs } from "antd";
+import { checkTokenExpiry } from "@/services/Utils";
 
 // import "./style.css"
 
@@ -31,7 +32,22 @@ const ReissueReviewPage = () => {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
 
-  //
+  const router = useRouter();
+  const [loading, setloading] = useState < boolean > false;
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setloading(false);
+    }
+  }, [router]);
+
   let ids = [];
   if (priceId.includes(",")) {
     ids = priceId.split(","); // all split values
@@ -42,7 +58,6 @@ const ReissueReviewPage = () => {
   console.log(parameter);
 
   const [flightData, setFlightData] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { getCookie } = useContext(AppContext);
 
@@ -81,7 +96,6 @@ const ReissueReviewPage = () => {
       }
     }
   }, []);
-  const router = useRouter();
   useEffect(() => {
     const data = getCookie("travellerInfo");
     if (data) {
@@ -857,7 +871,7 @@ const ReissueReviewPage = () => {
       // Optionally, you can show an error message to the user here
     }
   };
-  let oldBookingId = null
+  let oldBookingId = null;
 
   // Function to handle booking review and trigger loadDataBook
   const bookingReview = () => {
@@ -876,7 +890,7 @@ const ReissueReviewPage = () => {
     const rsJsonData = JSON.parse(rsData);
     console.log("rsJSONDATA == ", rsJsonData);
     console.log("rsJSONDATA == ", rsJsonData?.searchQuery?.oldBookingId);
-    oldBookingId = rsJsonData?.searchQuery?.oldBookingId
+    oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
 
     if (
       (totalprice || totalprice == 0) &&

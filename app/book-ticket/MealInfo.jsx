@@ -71,22 +71,28 @@ const MealInfo = ({
   const hasMeal = segmentinfo.some((seg) => seg?.ssrInfo?.MEAL?.length > 0);
 
   const handleValuesChange = (changedValues, allValues) => {
-    console.log("handleValuesChange allValues ==> ",allValues)
+    console.log("handleValuesChange allValues ==> ", allValues);
     let totalMealAmount = 0;
     const allMeals = Object.keys(allValues)
-        .filter(key => key.startsWith('adultMeal') || key.startsWith('childMeal'))
-        .map(key => allValues[key])
-        .filter(value => value);
+      .filter(
+        (key) => key.startsWith("adultMeal") || key.startsWith("childMeal")
+      )
+      .map((key) => allValues[key])
+      .filter((value) => value);
 
-    allMeals.forEach(value => {
-        const [segmentId, mealCode] = value.split('|');
-        const segment = segmentinfo.find(s => String(s.id) === String(segmentId));
-        if (segment) {
-            const mealOption = segment.ssrInfo.MEAL.find(m => m.code === mealCode);
-            if (mealOption) {
-                totalMealAmount += mealOption.amount;
-            }
+    allMeals.forEach((value) => {
+      const [segmentId, mealCode] = value.split("|");
+      const segment = segmentinfo.find(
+        (s) => String(s.id) === String(segmentId)
+      );
+      if (segment) {
+        const mealOption = segment.ssrInfo.MEAL.find(
+          (m) => m.code === mealCode
+        );
+        if (mealOption) {
+          totalMealAmount += mealOption.amount;
         }
+      }
     });
 
     onMealChange(totalMealAmount);
@@ -95,7 +101,13 @@ const MealInfo = ({
   return (
     <>
       {hasMeal ? (
-        <Form form={form} name="mealForm" layout="vertical" autoComplete="off" onValuesChange={handleValuesChange}>
+        <Form
+          form={form}
+          name="mealForm"
+          layout="vertical"
+          autoComplete="off"
+          // onValuesChange={handleValuesChange}
+        >
           {segmentinfo.map((segment, flightIndex) => {
             const mealOptions = segment?.ssrInfo?.MEAL || [];
 
@@ -373,4 +385,3 @@ export default MealInfo;
 // };
 
 // export default MealInfo;
-

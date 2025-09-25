@@ -226,6 +226,14 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div>
               <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
             </div>
+            <div className="line-booking-tickets">
+              <div className="item-ticket">
+                <p className="text-small neutral-500 mr-30">Net Price</p>
+              </div>
+              <div className="dropdown-quantity">
+                <p>₹{netprice}</p>
+              </div>
+            </div>
 
             {/* <div className="line-booking-tickets">
               <div className="item-ticket">
@@ -247,7 +255,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           </div>
         </div>
 
-        <div className="item-line-booking">
+        {/* <div className="item-line-booking">
           <div className="box-tickets">
             <div className="flex flex-row justify-between">
               <div>
@@ -257,16 +265,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div>
               <div className="text-xl-bold neutral-1000">
                 ₹{displayAmount}
-                {/* {Number(totalfare) +
-                  savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
-                  savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +
-                  (ssrSeatAmount ? Number(ssrSeatAmount) : 0)} */}
               </div>
             </div>
 
             <div className="line-booking-tickets">
               <div className="item-ticket">
-                <p className="text-small neutral-500 mr-30">Commisiion</p>
+                <p className="text-small neutral-500 mr-30">Net Commission</p>
               </div>
               <div className="dropdown-quantity">
                 <p>₹0.0</p>
@@ -280,6 +284,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                 <p>₹0.0</p>
               </div>
             </div>
+
             <div className="line-booking-tickets">
               <div className="item-ticket">
                 <p className="text-small neutral-500 mr-30">Net Price</p>
@@ -289,7 +294,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* <div className="item-line-booking">
 				<div className="box-tickets"><strong className="text-md-bold neutral-1000">Add Extra:</strong>

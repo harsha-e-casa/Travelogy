@@ -13,6 +13,7 @@ import ByAirline from "@/components/Filter/ByAirline";
 import SelectedFlightSummary from "./SelectedFlightSummary";
 
 export default function MulticitySelectionView({ flightData }) {
+  const isUat = process.env.UAT_ENV === "true";
   const { getCookie } = useContext(AppContext);
   const [activeBoxIndex, setActiveBoxIndex] = useState(0);
   const [selectedFlights, setSelectedFlights] = useState({});
@@ -24,16 +25,14 @@ export default function MulticitySelectionView({ flightData }) {
     let filteredData = flights;
 
     // Price Range Filter
-    filteredData = filteredData.filter(
-      (ticket) => {
-        const ticketPrice = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
-        return (
-          ticketPrice !== undefined &&
-          ticketPrice >= filter.priceRange[0] &&
-          ticketPrice <= filter.priceRange[1]
-        );
-      }
-    );
+    filteredData = filteredData.filter((ticket) => {
+      const ticketPrice = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+      return (
+        ticketPrice !== undefined &&
+        ticketPrice >= filter.priceRange[0] &&
+        ticketPrice <= filter.priceRange[1]
+      );
+    });
 
     // Stops Filter
     if (filter.stops !== "all") {
@@ -134,14 +133,14 @@ export default function MulticitySelectionView({ flightData }) {
   const [infantCount, setInfantCount] = useState(0);
   const [selectedFares, setSelectedFares] = useState({});
   const [showAllFares, setShowAllFares] = useState(false);
-  
+
   const setSelectedFare = (tabIndex, flightIndex, fareIndex) => {
     setSelectedFares((prev) => ({
       ...prev,
       [tabIndex]: {
         ...(prev[tabIndex] || {}),
-        [flightIndex]: fareIndex
-      }
+        [flightIndex]: fareIndex,
+      },
     }));
   };
 
@@ -230,11 +229,11 @@ export default function MulticitySelectionView({ flightData }) {
                     key={`price-${tabIndex}`}
                     priceRange={filters[tabIndex]?.priceRange}
                     setPriceRange={(newRange) => {
-                      setFilters(prevFilters => {
+                      setFilters((prevFilters) => {
                         const newFilters = [...prevFilters];
                         newFilters[tabIndex] = {
                           ...newFilters[tabIndex],
-                          priceRange: newRange
+                          priceRange: newRange,
                         };
                         return newFilters;
                       });
@@ -253,11 +252,11 @@ export default function MulticitySelectionView({ flightData }) {
                     key={`stops-${tabIndex}`}
                     stops={filters[tabIndex]?.stops}
                     setStops={(newStops) => {
-                      setFilters(prevFilters => {
+                      setFilters((prevFilters) => {
                         const newFilters = [...prevFilters];
                         newFilters[tabIndex] = {
                           ...newFilters[tabIndex],
-                          stops: newStops
+                          stops: newStops,
                         };
                         return newFilters;
                       });
@@ -277,11 +276,11 @@ export default function MulticitySelectionView({ flightData }) {
                     key={`departureTime-${tabIndex}`}
                     departureTime={filters[tabIndex]?.departureTime}
                     setDepartureTime={(newDepartureTime) => {
-                      setFilters(prevFilters => {
+                      setFilters((prevFilters) => {
                         const newFilters = [...prevFilters];
                         newFilters[tabIndex] = {
                           ...newFilters[tabIndex],
-                          departureTime: newDepartureTime
+                          departureTime: newDepartureTime,
                         };
                         return newFilters;
                       });
@@ -301,11 +300,11 @@ export default function MulticitySelectionView({ flightData }) {
                     key={`arrivalTime-${tabIndex}`}
                     arrivalTime={filters[tabIndex]?.arrivalTime}
                     setArrivalTime={(newArrivalTime) => {
-                      setFilters(prevFilters => {
+                      setFilters((prevFilters) => {
                         const newFilters = [...prevFilters];
                         newFilters[tabIndex] = {
                           ...newFilters[tabIndex],
-                          arrivalTime: newArrivalTime
+                          arrivalTime: newArrivalTime,
                         };
                         return newFilters;
                       });
@@ -333,11 +332,11 @@ export default function MulticitySelectionView({ flightData }) {
                       ]}
                       selectedAirlines={filters[tabIndex]?.selectedAirlines}
                       setSelectedAirlines={(newAirlines) => {
-                        setFilters(prevFilters => {
+                        setFilters((prevFilters) => {
                           const newFilters = [...prevFilters];
                           newFilters[tabIndex] = {
                             ...newFilters[tabIndex],
-                            selectedAirlines: newAirlines
+                            selectedAirlines: newAirlines,
                           };
                           return newFilters;
                         });
@@ -353,13 +352,15 @@ export default function MulticitySelectionView({ flightData }) {
               applyFilters(pair.flights, filters[tabIndex]).map((ticket, i) => (
                 <div key={i}>
                   <div className="" style={{ paddingBottom: "10px" }}>
-
                     {ticket.sI.length >= 1 ? (
                       <div className="combined-connecting-flight  ">
                         <div className="flex gap-4 border rounded-md justify-between items-center pr-20 ">
                           <div className="flex flex-col">
                             {ticket.sI.map((segment, index) => (
-                              <div key={index} className="relative flex flex-col rounded-md p-5">
+                              <div
+                                key={index}
+                                className="relative flex flex-col rounded-md p-5"
+                              >
                                 <div
                                   className="air_detailes  "
                                   style={{
@@ -370,28 +371,53 @@ export default function MulticitySelectionView({ flightData }) {
                                   }}
                                 >
                                   <div className="flex items-center justify-center  ">
-                                    <img
-                                      style={{
-                                        width: "35px",
-                                        height: "35px",
-                                        padding: "5px",
-                                      }}
-                                      src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
-                                    />
+                                    {isUat && (
+                                      <img
+                                        style={{
+                                          width: "35px",
+                                          height: "35px",
+                                          padding: "5px",
+                                        }}
+                                        src={`/assets/imgs/airlines/${segment.fD.aI.code}.png`}
+                                      />
+                                    )}
+                                    {!isUat && (
+                                      <img
+                                        style={{
+                                          width: "35px",
+                                          height: "35px",
+                                          padding: "5px",
+                                        }}
+                                        src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
+                                      />
+                                    )}
                                     <div className="text-[10px]">
                                       {segment.fD.aI.name}
                                     </div>
                                   </div>
                                 </div>
-                                <div className="flex  justify-between" style={{ width: "500px" }}>
-                                  <div className="text-sm  flex flex-col justify-center items-center " style={{ width: "150px" }}>
-                                    <p className="text-md-bold neutral-1000 city1name">{segment.da.city} ({segment.da.code})</p>
-                                    <p className="neutral-1000 time">{dayjs(segment.dt).format("HH:mm")}</p>
-
-
+                                <div
+                                  className="flex  justify-between"
+                                  style={{ width: "500px" }}
+                                >
+                                  <div
+                                    className="text-sm  flex flex-col justify-center items-center "
+                                    style={{ width: "150px" }}
+                                  >
+                                    <p className="text-md-bold neutral-1000 city1name">
+                                      {segment.da.city} ({segment.da.code})
+                                    </p>
+                                    <p className="neutral-1000 time">
+                                      {dayjs(segment.dt).format("HH:mm")}
+                                    </p>
                                   </div>
-                                  <div className="text-xs text-center  " style={{ width: "100px" }}>
-                                    < p className="text-sm-medium neutral-500">{formatTime(segment.duration)}</p>
+                                  <div
+                                    className="text-xs text-center  "
+                                    style={{ width: "100px" }}
+                                  >
+                                    <p className="text-sm-medium neutral-500">
+                                      {formatTime(segment.duration)}
+                                    </p>
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
                                       width="16"
@@ -405,13 +431,23 @@ export default function MulticitySelectionView({ flightData }) {
                                         d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
                                       />
                                     </svg>
-                                    <p className="text-sm-medium neutral-500">  {segment.stops > 0 ? `${segment.stops} stops` : "non-stop"}</p>
-
-
+                                    <p className="text-sm-medium neutral-500">
+                                      {" "}
+                                      {segment.stops > 0
+                                        ? `${segment.stops} stops`
+                                        : "non-stop"}
+                                    </p>
                                   </div>
-                                  <div className="text-sm  flex flex-col justify-center items-center gap-1 " style={{ width: "200px" }}>
-                                    <p className="text-md-bold neutral-1000 city1name">{segment.aa.city} ({segment.aa.code})</p>
-                                    <p className="neutral-1000 time">{dayjs(segment.at).format("HH:mm")}</p>
+                                  <div
+                                    className="text-sm  flex flex-col justify-center items-center gap-1 "
+                                    style={{ width: "200px" }}
+                                  >
+                                    <p className="text-md-bold neutral-1000 city1name">
+                                      {segment.aa.city} ({segment.aa.code})
+                                    </p>
+                                    <p className="neutral-1000 time">
+                                      {dayjs(segment.at).format("HH:mm")}
+                                    </p>
                                   </div>
                                 </div>
                               </div>
@@ -420,7 +456,9 @@ export default function MulticitySelectionView({ flightData }) {
 
                           <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
                             <Radio.Group
-                              onChange={(e) => setSelectedFare(tabIndex, i, e.target.value)}
+                              onChange={(e) =>
+                                setSelectedFare(tabIndex, i, e.target.value)
+                              }
                               value={selectedFares[tabIndex]?.[i] ?? 0}
                               className="fare-options flex flex-col gap-2 w-full"
                             >
@@ -436,7 +474,11 @@ export default function MulticitySelectionView({ flightData }) {
                                   getCookie
                                 );
                                 return (
-                                  <Radio key={j} value={j} className="w-full radiocomp">
+                                  <Radio
+                                    key={j}
+                                    value={j}
+                                    className="w-full radiocomp"
+                                  >
                                     <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
                                       <div className="flex flex-row gap-2 items-center">
                                         <div className="text-lg font-bold text-gray-800 price">
@@ -457,7 +499,9 @@ export default function MulticitySelectionView({ flightData }) {
                                         <span className="ml-2 cabinclass">
                                           {e.fd.ADULT.cc} |{" "}
                                           <span className="refundable">
-                                            {e.fd.rT === 1 ? "Non-refundable" : "Refundable"}
+                                            {e.fd.rT === 1
+                                              ? "Non-refundable"
+                                              : "Refundable"}
                                           </span>
                                         </span>
                                       </div>
@@ -468,22 +512,29 @@ export default function MulticitySelectionView({ flightData }) {
                               {ticket.totalPriceList.length > 2 && (
                                 <button
                                   className="view-more-txt"
-                                  style={{ textAlign: "right", fontSize: "10px" }}
-                                  onClick={() => setShowAllFares((prev) => !prev)}
+                                  style={{
+                                    textAlign: "right",
+                                    fontSize: "10px",
+                                  }}
+                                  onClick={() =>
+                                    setShowAllFares((prev) => !prev)
+                                  }
                                 >
-                                  {showAllFares ? "(-) View Less" : "(+) View More"}
+                                  {showAllFares
+                                    ? "(-) View Less"
+                                    : "(+) View More"}
                                 </button>
                               )}
                             </Radio.Group>
-
-
                           </div>
                           <div>
                             <button
                               className="btn btn-gray mt-2 "
                               onClick={() => {
-                                const selectedFareIndex = selectedFares[tabIndex]?.[i] ?? 0;
-                                const selectedFare = ticket.totalPriceList[selectedFareIndex];
+                                const selectedFareIndex =
+                                  selectedFares[tabIndex]?.[i] ?? 0;
+                                const selectedFare =
+                                  ticket.totalPriceList[selectedFareIndex];
                                 const fareFD = selectedFare.fd;
 
                                 const totalPrice = calculateTotalFare(
@@ -498,6 +549,9 @@ export default function MulticitySelectionView({ flightData }) {
                                   ticket.sI[ticket.sI.length - 1];
 
                                 console.log("ticket", ticket);
+                                const isUatAirlineLogo = isUat
+                                  ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
+                                  : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
                                 const updatedFlight = {
                                   priceId: selectedFare.id,
                                   flightName: firstSegment.fD.aI.name,
@@ -507,13 +561,17 @@ export default function MulticitySelectionView({ flightData }) {
                                   flightNumber: firstSegment.fD.fN,
                                   depCity: firstSegment.da.city,
                                   arrCity: lastSegment.aa.city,
-                                  depTime: dayjs(firstSegment.dt).format("HH:mm"),
-                                  arrTime: dayjs(lastSegment.at).format("HH:mm"),
-                                  airlineLogo: `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`,
-                                  price: totalPrice,
-                                  adultFare: new Intl.NumberFormat("en-IN").format(
-                                    fareFD.ADULT?.fC?.NF || 0
+                                  depTime: dayjs(firstSegment.dt).format(
+                                    "HH:mm"
                                   ),
+                                  arrTime: dayjs(lastSegment.at).format(
+                                    "HH:mm"
+                                  ),
+                                  airlineLogo: isUatAirlineLogo,
+                                  price: totalPrice,
+                                  adultFare: new Intl.NumberFormat(
+                                    "en-IN"
+                                  ).format(fareFD.ADULT?.fC?.NF || 0),
                                 };
                                 console.log("updatedFlight", updatedFlight);
 
@@ -534,14 +592,9 @@ export default function MulticitySelectionView({ flightData }) {
                               Select
                             </button>
                           </div>
-
                         </div>
                       </div>
-
-                    ) : (null)}
-
-
-
+                    ) : null}
                   </div>
                 </div>
               ))
@@ -554,7 +607,8 @@ export default function MulticitySelectionView({ flightData }) {
     };
   });
 
-  const isLastFlightSelected = Object.keys(selectedFlights).length === cities.length;
+  const isLastFlightSelected =
+    Object.keys(selectedFlights).length === cities.length;
   console.log("isLastFlightSelected", isLastFlightSelected);
 
   return (

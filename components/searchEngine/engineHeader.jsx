@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 
 import SearchEngHeader from "./SearchEngHeader";
 import AppListSearch from "./AppListSearch";
@@ -45,7 +51,9 @@ const EngineTabs = ({ active_border }) => {
   const [openDateRageR, setOpenDateRageR] = useState(false);
   const [showTraveller, setShowYTraveller] = useState(false);
   // const [datedep, setDatedep] = useState(dayjs());
-  const [departureDate, setDepartureDate] = useState(dayjs(dayjs().format("YYYY-MM-DD")));
+  const [departureDate, setDepartureDate] = useState(
+    dayjs(dayjs().format("YYYY-MM-DD"))
+  );
 
   const [returnDate, setReturnDate] = useState(dayjs().add(2, "day"));
   const dateRangeRef = useRef(null); // Ref for date range container
@@ -190,16 +198,18 @@ const EngineTabs = ({ active_border }) => {
   const [isDirectFlight, setIsDirectFlight] = useState(false);
 
   useEffect(() => {
-    if (selectedPlan !=="multi-city") {
-      setHasMultiCityError(false)
+    if (selectedPlan !== "multi-city") {
+      setHasMultiCityError(false);
     }
-  }, [selectedPlan])
+  }, [selectedPlan]);
 
   const openfrom = () => {
     if (showSearchState) {
       closeAllFields();
+      handleToggleSectionFn(null,null);
     } else {
       closeAllFields();
+      handleToggleSectionFn(null,null);
       setShowSearchState(true);
     }
   };
@@ -256,8 +266,10 @@ const EngineTabs = ({ active_border }) => {
   const openTraveller = () => {
     if (showTraveller) {
       closeAllFields();
+      handleToggleSectionFn(null,null);
     } else {
       closeAllFields();
+      handleToggleSectionFn(null,null);
       setShowYTraveller(true);
     }
   };
@@ -369,8 +381,10 @@ const EngineTabs = ({ active_border }) => {
   const openTo = () => {
     if (showSearchStateTo) {
       closeAllFields();
+      handleToggleSectionFn(null,null);
     } else {
       closeAllFields();
+      handleToggleSectionFn(null,null);
       setShowSearchStateTo(true);
     }
   };
@@ -378,16 +392,20 @@ const EngineTabs = ({ active_border }) => {
   const openToDateRange = () => {
     if (openDateRage) {
       closeAllFields();
+      handleToggleSectionFn(null,null);
     } else {
       closeAllFields();
+      handleToggleSectionFn(null,null);
       setOpenDateRage(true);
     }
   };
   const openToDateRangeR = () => {
     if (openDateRageR) {
       closeAllFields();
+      handleToggleSectionFn(null,null);
     } else {
       closeAllFields();
+      handleToggleSectionFn(null,null);
       setOpenDateRageR(true);
     }
   };
@@ -399,9 +417,23 @@ const EngineTabs = ({ active_border }) => {
     setShowYTraveller(false);
   };
 
+  const [openSection, setOpenSection] = useState({
+    segmentIndex: null,
+    type: null,
+  });
+
+  const handleToggleSectionFn = (index, type) => {
+    console.log("onToggleSection called with:", index, type);
+    setOpenSection((prev) =>
+      prev.segmentIndex === index && prev.type === type
+        ? { segmentIndex: null, type: null }
+        : { segmentIndex: index, type }
+    );
+  };
+
   const handleSelectFrom = (city, subCity) => {
     setFromError("");
-    console.log("handleSelectFrom == ")
+    console.log("handleSelectFrom == ");
     setSelectFrom(city);
     setSelectFromSub(subCity);
 
@@ -414,7 +446,7 @@ const EngineTabs = ({ active_border }) => {
 
   const handleSelectTo = (city, subCity) => {
     setFromError("");
-    console.log("handleSelectTo == ")
+    console.log("handleSelectTo == ");
     setSelectFromTo(city);
     setSelectFromSubTo(subCity);
 
@@ -453,7 +485,13 @@ const EngineTabs = ({ active_border }) => {
       for (let i = 0; i < multicitySegments.length - 1; i++) {
         const currentSegment = multicitySegments[i];
         const nextSegment = multicitySegments[i + 1];
-        if (currentSegment.departureDate && nextSegment.departureDate && dayjs(currentSegment.departureDate).isAfter(dayjs(nextSegment.departureDate))) {
+        if (
+          currentSegment.departureDate &&
+          nextSegment.departureDate &&
+          dayjs(currentSegment.departureDate).isAfter(
+            dayjs(nextSegment.departureDate)
+          )
+        ) {
           setDateError("Departure dates must be in ascending order.");
           return;
         }
@@ -743,6 +781,9 @@ const EngineTabs = ({ active_border }) => {
                   removeSegment={multicityRemoveSegment}
                   onMultiCityErrorChange={handleMultiCityErrorChange}
                   initialDepartureDate={departureDate}
+                  handleToggleSection={handleToggleSectionFn}
+                  openSection={openSection}
+                  multiCityCloseAllFields={closeAllFields}
                 />
                 {segmentError && (
                   <div className="text-red-500 text-sm font-medium my-2">
@@ -795,12 +836,22 @@ const EngineTabs = ({ active_border }) => {
           >
             <div
               onClick={
-                !fromError && !toError && selectFrom && selectFromTo && !hasMultiCityError && !dateError
+                !fromError &&
+                !toError &&
+                selectFrom &&
+                selectFromTo &&
+                !hasMultiCityError &&
+                !dateError
                   ? searchTickets
                   : null
               }
               className={`search_btn_font text-white uppercase tracking-wide cursor-pointer ${
-                !!fromError || !!toError || !selectFrom || !selectFromTo || hasMultiCityError || !!dateError
+                !!fromError ||
+                !!toError ||
+                !selectFrom ||
+                !selectFromTo ||
+                hasMultiCityError ||
+                !!dateError
                   ? "cursor-not-allowed opacity-50"
                   : ""
               }`}

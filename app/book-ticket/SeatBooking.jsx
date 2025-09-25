@@ -8,8 +8,9 @@ const SeatBooking = ({
   numChild,
   apiData,
   storedTravellerInfos,
-  onValueChange
+  onValueChange,
 }) => {
+  const isUat = process.env.UAT_ENV === "true";
   console.log("child typeof onValueChange:", typeof onValueChange);
   const { getCookie, setCookie } = useContext(AppContext);
   const [flightSeat, setFlightSeat] = useState(null);
@@ -75,8 +76,10 @@ const SeatBooking = ({
       };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
 
-      if (result?.tripSeatMap?.tripSeat?.[id]) {
+      if (result?.tripSeatMap?.tripSeat?.[id] && result?.tripSeatMap?.tripSeat?.[id]?.sData) {
         setFlightSeat({ seat: result.tripSeatMap.tripSeat[id], seg: seg });
+      } else if(result?.tripSeatMap?.tripSeat?.[id]?.nt) {
+        alert(result?.tripSeatMap?.tripSeat?.[id]?.nt)
       } else {
         alert("No seat data found");
       }
@@ -164,9 +167,9 @@ const SeatBooking = ({
 
     // Set final total into seatSsr_amount
     setCookie("seatSsr_amount", parseInt(totalAmount, 10).toString());
-    console.log("onValueChangeonValueChange ==> ",onValueChange)
+    console.log("onValueChangeonValueChange ==> ", onValueChange);
     if (typeof onValueChange === "function") {
-      console.log("onValueChangeonValueChange ==> 111")
+      console.log("onValueChangeonValueChange ==> 111");
       onValueChange(totalAmount);
     }
     console.log("Total amount calculated and stored:", totalAmount);
@@ -482,13 +485,24 @@ const SeatBooking = ({
                   }}
                 >
                   <div className="flex item-center">
-                    <img
-                      style={{ width: "35px", height: "35px", margin: "5px" }}
-                      src={`/assets/imgs/airlines/${flightSeat?.seg[
-                        "fD"
-                      ].aI.code.toLowerCase()}.png`}
-                      alt=""
-                    />
+                    {isUat && (
+                      <img
+                        style={{ width: "35px", height: "35px", margin: "5px" }}
+                        src={`/assets/imgs/airlines/${flightSeat?.seg[
+                          "fD"
+                        ].aI.code}.png`}
+                        alt=""
+                      />
+                    )}
+                    {!isUat && (
+                      <img
+                        style={{ width: "35px", height: "35px", margin: "5px" }}
+                        src={`/assets/imgs/airlines/${flightSeat?.seg[
+                          "fD"
+                        ].aI.code.toLowerCase()}.png`}
+                        alt=""
+                      />
+                    )}
                     <div>
                       <p>{flightSeat?.seg["fD"].aI.name}</p>
                       <p className="text-small">
