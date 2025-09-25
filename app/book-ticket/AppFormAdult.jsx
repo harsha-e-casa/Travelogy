@@ -264,7 +264,7 @@ const AppFormAdult = ({
                 </Col>
               )}
               {/* passportExpiryDate */}
-              {showPassport.pped === true && (
+              {showPassport?.pped === true && (
                 <Col span={12}>
                   <Form.Item
                     name={`adultpassportExpiryDate-${index}`}

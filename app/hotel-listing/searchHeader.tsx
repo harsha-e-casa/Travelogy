@@ -149,7 +149,8 @@ export default function HotelListingSearch() {
         countryName: matchedNationality?.countryName || "India",
         id: city || "699261", // fallback
       });
-      setNationalityId(matchedNationality?.countryId || "94");
+      // setNationalityId(matchedNationality?.countryId || "94");
+      setNationalityId(matchedNationality?.countryId || "");
     }
   }, [location, city, nationalities]);
 
@@ -268,9 +269,11 @@ export default function HotelListingSearch() {
     const matchedNationality = nationalities.find(
       (n) => n.countryName.toLowerCase() === safeCountry.toLowerCase()
     );
+    console.log("matchedNationality ===> ",matchedNationality?.countryId)
+    console.log("nationalityId ===> ",nationalityId)
 
-    const nationalityIdToUse =
-      matchedNationality?.countryId || nationalityId || "94";
+    // const nationalityIdToUse = matchedNationality?.countryId || nationalityId || "94";
+    const nationalityIdToUse = matchedNationality?.countryId || nationalityId || "94";
 
     if (!selectFrom) {
       setSelectFrom({

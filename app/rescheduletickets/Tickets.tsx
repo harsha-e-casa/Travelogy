@@ -40,6 +40,7 @@ import { tree } from "next/dist/build/templates/app-page";
 import { AppContext } from "../../util/AppContext";
 import { TravellerForm } from "@/components/searchEngine/TravellerForm";
 import { Dayjs } from "dayjs";
+import { checkTokenExpiry } from "@/services/Utils";
 
 // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -89,6 +90,19 @@ export default function Tickets() {
   const [loading, setloading] = useState<boolean>(false);
 
   const router = useRouter();
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setloading(false);
+    }
+  }, [router]);
   const searchParams = useSearchParams();
   const rsData = getCookie("rs_data");
   const fetchRescheduleData = JSON.parse(rsData);
@@ -434,7 +448,10 @@ export default function Tickets() {
               <div className="box-content-main">
                 <div className="content-right border ">
                   {loading && (
-                    <div className="box-list-flights box-list-flights-2">
+                    <div
+                      className="box-list-flights box-list-flights-2"
+                      style={{ padding: "10px" }}
+                    >
                       <div>
                         <div />
 
@@ -501,7 +518,10 @@ export default function Tickets() {
                             <>
                               <div className="box-grid-tours">
                                 <div className="row">
-                                  <div className="box-list-flights box-list-flights-2">
+                                  <div
+                                    className="box-list-flights box-list-flights-2"
+                                    style={{ padding: "10px" }}
+                                  >
                                     {tripInfo.map((ticket: any) => (
                                       <React.Fragment key={ticket.id}>
                                         <TicketCard1

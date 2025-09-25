@@ -12,6 +12,7 @@ export default function DomesticRoundTripTicketCard({
   tripPhase,
   selectedOnwardTicket,
 }: any) {
+  const isUat = process.env.UAT_ENV === "true";
   const { getCookie } = useContext(AppContext);
   const tripType = getCookie("gy_triptype");
   const [showAllFares, setShowAllFares] = useState(false);
@@ -72,12 +73,30 @@ export default function DomesticRoundTripTicketCard({
                   style={{ width: "unset", top: index === 0 ? "0" : "49%" }}
                 >
                   <div className="flex items-center justify-center">
-                    <img
-                      style={{ width: "35px", height: "35px", padding: "5px" }}
-                      src={`/assets/imgs/airlines/${segment[
-                        "fD"
-                      ].aI.code.toLowerCase()}.png`}
-                    />
+                    {isUat && (
+                      <img
+                        style={{
+                          width: "35px",
+                          height: "35px",
+                          padding: "5px",
+                        }}
+                        src={`/assets/imgs/airlines/${segment[
+                          "fD"
+                        ].aI.code}.png`}
+                      />
+                    )}
+                    {!isUat && (
+                      <img
+                        style={{
+                          width: "35px",
+                          height: "35px",
+                          padding: "5px",
+                        }}
+                        src={`/assets/imgs/airlines/${segment[
+                          "fD"
+                        ].aI.code.toLowerCase()}.png`}
+                      />
+                    )}
                     <div style={{ fontSize: "10px" }}>
                       {segment["fD"].aI.name}
                     </div>
@@ -96,8 +115,7 @@ export default function DomesticRoundTripTicketCard({
 
                         <p className="text-sm-medium time-flight timelogo">
                           <span className="neutral-1000 time ">
-                            {dayjs(segment["dt"]).format("HH:mm")
-                            }
+                            {dayjs(segment["dt"]).format("HH:mm")}
                           </span>
                         </p>
                       </div>
@@ -150,8 +168,7 @@ export default function DomesticRoundTripTicketCard({
 
                         <p className="text-sm-medium time-flight timelogo">
                           <span className="neutral-1000 time">
-                            {dayjs(segment["at"]).format("HH:mm")}
-                            {" "}
+                            {dayjs(segment["at"]).format("HH:mm")}{" "}
                           </span>
                         </p>
                       </div>
@@ -273,10 +290,11 @@ export default function DomesticRoundTripTicketCard({
               ) : (
                 selectedOnwardTicket && (
                   <Link
-                    href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
+                    href={`book-ticket?tcs_id=${
+                      selectedOnwardTicket.ticket.totalPriceList[
                         selectedOnwardTicket.selectedPriceIndex
                       ]?.id
-                      },${ticket.totalPriceList[value]?.id}`}
+                    },${ticket.totalPriceList[value]?.id}`}
                     className="btn btn-gray booknow btn"
                   >
                     Book Now

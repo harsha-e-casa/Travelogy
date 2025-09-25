@@ -369,6 +369,8 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
 
   console.log("seatSelectionsseatSelections ============= ", seatSelections);
 
+  const isUat = process.env.UAT_ENV === "true";
+
   return (
     <>
       {apiData?.tripInfos?.map((trip, idx) => {
@@ -457,12 +459,22 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                   }}
                 >
                   <div className="flex item-center">
-                    <img
-                      style={{ width: "35px", height: "35px", margin: "5px" }}
-                      src={`/assets/imgs/airlines/${flightSeat?.seg[
-                        "fD"
-                      ].aI.code.toLowerCase()}.png`}
-                    />
+                    {isUat && (
+                      <img
+                        style={{ width: "35px", height: "35px", margin: "5px" }}
+                        src={`/assets/imgs/airlines/${flightSeat?.seg[
+                          "fD"
+                        ].aI.code}.png`}
+                      />
+                    )}
+                    {!isUat && (
+                      <img
+                        style={{ width: "35px", height: "35px", margin: "5px" }}
+                        src={`/assets/imgs/airlines/${flightSeat?.seg[
+                          "fD"
+                        ].aI.code.toLowerCase()}.png`}
+                      />
+                    )}
                     <div>
                       <p>{flightSeat?.seg["fD"].aI.name}</p>
                       <p className="text-small">

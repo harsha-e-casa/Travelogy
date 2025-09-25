@@ -5,9 +5,9 @@ import Cookies from "js-cookie";
 
 // You can store the API base URL in an environment variable
 // const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
-// const API_BASE_URL = "http://localhost:3030";
+const API_BASE_URL = "http://localhost:3030";
 
-const API_BASE_URL = 'https://com.digilogy.co/';
+// const API_BASE_URL = 'https://com.digilogy.co/';
 
 const API_TEST_JACK = "https://apitest.tripjack.com/";
 const apiKey = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
@@ -105,6 +105,16 @@ export const postData = async (endpoint, payload) => {
     const response = await apiInstance.post(endpoint, payload);
     console.log("ressssssssss 1111111 ", response);
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const postDatav1 = async (endpoint, payload) => {
+  try {
+    const response = await apiInstance.post(endpoint, payload);
+    console.log("ressssssssss 1111111 ", response);
+    return response;
   } catch (error) {
     throw error;
   }
@@ -291,15 +301,15 @@ export const postSumbitAmendment = async (parameter) => {
 
 export const postAmendmentDetails = async (parameter) => {
   try {
-    console.log("🚀 Calling Amendment Details API with:", parameter); // <== Add this
+    console.log("🚀 Calling Amendment Details API with:", parameter);
     const response = await apiInstanceTripJack.post(
       "oms/v1/air/amendment/amendment-details",
       parameter
     );
-    console.log("✅ Amendment Details API Success:", response.data); // <== Add this
+    console.log("✅ Amendment Details API Success:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Error in postAmendmentDetails:", error); // <== Add this
+    console.error("❌ Error in postAmendmentDetails:", error);
     throw error;
   }
 };

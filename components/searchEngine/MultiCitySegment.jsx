@@ -17,6 +17,7 @@ const MultiCitySegment = ({
   onToggleSection,
   minDate,
   onSegmentErrorChange, // New prop
+  multiCityCloseAllFieldsFn,
 }) => {
   const fromRef = useRef({ from: segment.from, fromCode: segment.fromCode });
   const toRef = useRef({ to: segment.to, toCode: segment.toCode });
@@ -119,7 +120,7 @@ const MultiCitySegment = ({
       segment.to === "Select City";
 
     // Send validity to parent
-    console.log("hasInvalidCityhasInvalidCity ==> ",hasInvalidCity)
+    console.log("hasInvalidCityhasInvalidCity ==> ", hasInvalidCity);
     onSegmentErrorChange(index, hasInvalidCity);
   }, [segment.from, segment.to, index, onSegmentErrorChange]);
 
@@ -129,7 +130,7 @@ const MultiCitySegment = ({
       style={{ alignItems: "center" }}
     >
       {/* From */}
-      <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
+      <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1" onClick={() => multiCityCloseAllFieldsFn()}>
         <div onClick={() => onToggleSection(index, "from")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">From</div>
           <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
@@ -211,7 +212,7 @@ const MultiCitySegment = ({
       </div>
 
       {/* To */}
-      <div className="text_start b_right_2px g_w_2 css_pointer relative">
+      <div className="text_start b_right_2px g_w_2 css_pointer relative" onClick={() => multiCityCloseAllFieldsFn()}>
         <div onClick={() => onToggleSection(index, "to")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
           <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
@@ -245,9 +246,11 @@ const MultiCitySegment = ({
           </div>
         )}
       </div>
+      
       <div
         className="text_start b_right_2px g_w_3 css_pointer"
         style={{ paddingBottom: "13px" }}
+        onClick={() => multiCityCloseAllFieldsFn()}
       >
         <div
           className="flex pl-6 justify_content_space"

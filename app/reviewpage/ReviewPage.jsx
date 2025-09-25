@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState, Suspense } from "react";
 import { Tabs } from "antd";
+import { checkTokenExpiry } from "@/services/Utils";
 
 // import "./style.css"
 
@@ -30,6 +31,23 @@ const ReviewPage = () => {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
 
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
+
   //
   let ids = [];
   if (priceId.includes(",")) {
@@ -41,7 +59,6 @@ const ReviewPage = () => {
   console.log(parameter);
 
   const [flightData, setFlightData] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { getCookie } = useContext(AppContext);
 
@@ -81,7 +98,6 @@ const ReviewPage = () => {
       }
     }
   }, []);
-  const router = useRouter();
   useEffect(() => {
     const data = getCookie("travellerInfo");
     if (data) {
@@ -855,7 +871,7 @@ const ReviewPage = () => {
       // };
       // saveBookingId();
       if (result?.error) {
-        setError(result?.error)
+        setError(result?.error);
       } else {
         router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
       }

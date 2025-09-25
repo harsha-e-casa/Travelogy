@@ -121,10 +121,10 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
           </Form.Item>
         </Col>
 
-        {(showPassport.pped === true ||
-          showPassport.pid === true ||
-          showPassport.pm === true ||
-          showPassport.dobe === true) && (
+        {(showPassport?.pped === true ||
+          showPassport?.pid === true ||
+          showPassport?.pm === true ||
+          showPassport?.dobe === true) && (
           <>
             <p
               className="text-sm leading-5 font-bold text-gray-900"
@@ -218,7 +218,7 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
                 </Col>
               )}
               {/* passportExpiryDate */}
-              {showPassport.pped === true && (
+              {showPassport?.pped === true && (
                 <Col span={12}>
                   <Form.Item
                     name={`childpassportExpiryDate-${index}`}

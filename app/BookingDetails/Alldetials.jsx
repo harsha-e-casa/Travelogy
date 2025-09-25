@@ -427,12 +427,13 @@ const Alldetails = ({ totalpricee }) => {
     console.log("unHoldParams ----------- ", unHoldParams);
 
     try {
-      const result = await postUnHold(unHoldParams);
+      // const result = await postUnHold(unHoldParams);
+      let reqData = { action: "unholdBooking", requestData: unHoldParams };
+      const result = await postData("travelogy/one-way/fetch-data", reqData);
       console.log("Result => ", result);
 
       if (result?.status?.success === true) {
-        // Reload page or redirect to the booking details page
-        window.location.reload(); // Refreshing the page
+        window.location.reload();
       } else {
         setError("Unhold operation failed");
       }
@@ -2032,9 +2033,14 @@ const Alldetails = ({ totalpricee }) => {
                         return segmentKeys.map((segmentKey, segmentIndex) => {
                           const pnr =
                             traveller.pnrDetails?.[segmentKey] ?? "N/A";
-                          const baggage = traveller?.ssrBaggageInfos?.[segmentKey]?.desc ?? "N/A"
-                          const meal = traveller?.ssrMealInfos?.[segmentKey]?.desc ?? "N/A"
-                          const seat = traveller?.ssrSeatInfos?.[segmentKey].code ?? "N/A"
+                          const baggage =
+                            traveller?.ssrBaggageInfos?.[segmentKey]?.desc ??
+                            "N/A";
+                          const meal =
+                            traveller?.ssrMealInfos?.[segmentKey]?.desc ??
+                            "N/A";
+                          const seat =
+                            traveller?.ssrSeatInfos?.[segmentKey]?.code ?? "N/A";
                           const ticket =
                             traveller.ticketNumberDetails?.[segmentKey] ??
                             "N/A";
@@ -2110,9 +2116,8 @@ const Alldetails = ({ totalpricee }) => {
                                   {ticket}
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                  Baggage: {baggage} | 
-                                  Meal: {meal} |
-                                  Seat: {seat}
+                                  Baggage: {baggage} | Meal: {meal} | Seat:{" "}
+                                  {seat}
                                 </td>
                               </tr>
 

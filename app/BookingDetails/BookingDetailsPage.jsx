@@ -9,9 +9,22 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useState } from "react";
 import Alldetails from "./Alldetials";
 import { postDataBookingDetails } from "@/services/NetworkAdapter";
+import { checkTokenExpiry } from "@/services/Utils";
 
 const BookingDetailsPage = () => {
   const router = useRouter();
+    useEffect(() => {
+      const tokenValid = checkTokenExpiry();
+  
+      console.log("tokenValid ==> ", tokenValid);
+  
+      if (!tokenValid) {
+        localStorage.removeItem("authToken");
+        router.push("/login");
+      } else {
+        setLoading(false);
+      }
+    }, [router]);
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("booking_id");
 
@@ -289,7 +302,7 @@ const BookingDetailsPage = () => {
           </section>
 
           {loading ? (
-            <BookingSkeleton />
+          <BookingSkeleton />
           ) : (
             <section className="section-box  background-card">
               <div className="container pt-1">

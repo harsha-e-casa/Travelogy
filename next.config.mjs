@@ -2,11 +2,14 @@
 const nextConfig = {
   // for local dev
   reactStrictMode: false,
+  env: {
+    UAT_ENV: "false",
+  },
   async redirects() {
     return [
       {
         source: '/',
-        destination: '/flights',
+        destination: '/login',
         permanent: true, // 301 redirect (permanent)
       },
     ];

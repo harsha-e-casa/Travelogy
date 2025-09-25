@@ -10,8 +10,11 @@ import FlightBookingList from "./FlightBookingList.jsx";
 import AmendmentList from "./AmendmentList.jsx";
 import FlightReBookingList from "./FlightReBookingList.jsx";
 import HotelBookingList from "./HotelBookingList.jsx";
+import { checkTokenExpiry } from "@/services/Utils";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setloading] = useState(false);
   const [userData, setUserData] = useState();
@@ -19,6 +22,21 @@ const Page = () => {
   const [userHotelBookingData, setUserHotelBookingData] = useState();
   const [userAmendmentData, setUseramendmentData] = useState();
   const [userReBookingData, setReUserBookingData] = useState();
+
+  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      // setLoading(false);
+    }
+  }, [router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,8 +64,9 @@ const Page = () => {
         setloading(true);
 
         const reqParams = {
-          phone: "9677179866",
-          e_mail: "h@gmail.com",
+          // phone: "9677179866",
+          // e_mail: "h@gmail.com",
+          token: "Bearer " + token
         };
 
         const result = await postData(
