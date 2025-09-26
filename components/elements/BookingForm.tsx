@@ -1,5 +1,5 @@
 import { AppContext } from "@/util/AppContext";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 
 interface BookingFormProps {
   totalpricee: any;
@@ -10,6 +10,7 @@ interface BookingFormProps {
   seatinfo?: number;
   baggageAmount?: number;
   mealAmount?: number;
+  key?: number;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -22,22 +23,24 @@ const BookingForm: React.FC<BookingFormProps> = ({
   seatinfo = 0,
   baggageAmount = 0,
   mealAmount = 0,
+  key,
 }) => {
-  console.log("mealinfo 111111111111111111111==========> ", mealinfo);
-  console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
+  // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
+  // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
   console.log("baggageAmount 111111111111111111111==========> ", baggageAmount);
   console.log("seatinfo 111111111111111111111==========> ", seatinfo);
-  console.log(
-    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
-    totalpricee
-  );
+  console.log("key 111111111111111111111==========> ", key);
+  // console.log(
+  //   "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
+  //   totalpricee
+  // );
   if (totalpricee === undefined) {
     totalpricee = bookingData?.totalPriceInfo?.totalFareDetail;
   }
-  console.log(
-    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee11 ",
-    totalpricee
-  );
+  // console.log(
+  //   "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee11 ",
+  //   totalpricee
+  // );
   const basefare = totalpricee?.fC?.BF;
   const taxAndFees = totalpricee?.fC?.TAF;
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
@@ -45,6 +48,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const totalfare = totalpricee?.fC?.TF;
   const netprice = totalpricee?.fC?.NF;
   const { getCookie, removeCookie } = useContext(AppContext);
+  const initLoaded = useRef(false);
 
   let computedAmount = 0;
 
@@ -54,92 +58,95 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [displayAmount, setDisplayAmount] = useState(0);
 
   useEffect(() => {
-    // for booking details page
-    console.log("bookingDatabookingData =====> ", bookingData);
-    console.log(
-      "bookingDatabookingData =====> ",
-      Object.keys(bookingData).length
-    );
+    if (totalpricee && !initLoaded.current) {
+      initLoaded.current = true;
+      // for booking details page
+      // console.log("bookingDatabookingData =====> ", bookingData);
+      // console.log(
+      //   "bookingDatabookingData =====> ",
+      //   Object.keys(bookingData).length
+      // );
 
-    // except booking details page
-    if (Object.keys(bookingData).length === 0) {
-      console.log("mame inge dan da 000");
-      let savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
-      setTotalBaggageAmount(
-        savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0)
-      );
-      let savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
-      setTotalMealAmount(
-        savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0)
-      );
-      let ssrSeatAmount = getCookie("seatSsr_amount");
-      setTotalSeatAmount(Number(ssrSeatAmount));
-      console.log("saved baggage", savedBaggage);
-      console.log("saved meal", savedMeal);
-      console.log("totalfare ====> ", totalfare);
-      console.log("finalStage ===> ", finalStage);
+      // except booking details page
+      if (Object.keys(bookingData).length === 0) {
+        console.log("mame inge dan da 000");
+        let savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
+        setTotalBaggageAmount(
+          savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0)
+        );
+        let savedMeal = JSON.parse(getCookie("mealinfo") || "[]");
+        setTotalMealAmount(
+          savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0)
+        );
+        let ssrSeatAmount = getCookie("seatSsr_amount");
+        setTotalSeatAmount(Number(ssrSeatAmount));
+        console.log("saved baggage", savedBaggage);
+        console.log("saved meal", savedMeal);
+        console.log("totalfare ====> ", totalfare);
+        console.log("finalStage ===> ", finalStage);
 
-      if (finalStage === false) {
-        computedAmount =
-          Number(totalfare) +
-          savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-          savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-          (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+        if (finalStage === false) {
+          computedAmount =
+            Number(totalfare) +
+            savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+            savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
+            (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+        } else {
+          computedAmount = Number(totalfare);
+        }
       } else {
+        let baggageTotal = 0;
+        let seatTotal = 0;
+        let mealTotal = 0;
+
+        let travellerInfo = bookingData?.travellerInfos;
+
+        if (travellerInfo && travellerInfo.length > 0) {
+          travellerInfo.forEach((traveller: any) => {
+            // Check if ssrBaggageInfos exists and has keys
+            if (
+              traveller?.ssrBaggageInfos &&
+              Object.keys(traveller.ssrBaggageInfos).length > 0
+            ) {
+              Object.keys(traveller.ssrBaggageInfos).forEach((key) => {
+                baggageTotal += traveller.ssrBaggageInfos[key].amount || 0;
+              });
+            }
+
+            // Check if ssrSeatInfos exists and has keys
+            if (
+              traveller?.ssrSeatInfos &&
+              Object.keys(traveller.ssrSeatInfos).length > 0
+            ) {
+              Object.keys(traveller.ssrSeatInfos).forEach((key) => {
+                seatTotal += traveller.ssrSeatInfos[key].amount || 0;
+              });
+            }
+
+            // Check if ssrMealInfos exists and has keys
+            if (
+              traveller?.ssrMealInfos &&
+              Object.keys(traveller.ssrMealInfos).length > 0
+            ) {
+              Object.keys(traveller.ssrMealInfos).forEach((key) => {
+                mealTotal += traveller.ssrMealInfos[key].amount || 0;
+              });
+            }
+          });
+        }
+
+        setTotalBaggageAmount(baggageTotal);
+        setTotalSeatAmount(seatTotal);
+        setTotalMealAmount(mealTotal);
+
+        console.log("Total Baggage Amount: ", baggageTotal);
+        console.log("Total Seat Amount: ", seatTotal);
+        console.log("Total Amount: ", Number(totalfare));
         computedAmount = Number(totalfare);
       }
-    } else {
-      let baggageTotal = 0;
-      let seatTotal = 0;
-      let mealTotal = 0;
-
-      let travellerInfo = bookingData?.travellerInfos;
-
-      if (travellerInfo && travellerInfo.length > 0) {
-        travellerInfo.forEach((traveller: any) => {
-          // Check if ssrBaggageInfos exists and has keys
-          if (
-            traveller?.ssrBaggageInfos &&
-            Object.keys(traveller.ssrBaggageInfos).length > 0
-          ) {
-            Object.keys(traveller.ssrBaggageInfos).forEach((key) => {
-              baggageTotal += traveller.ssrBaggageInfos[key].amount || 0;
-            });
-          }
-
-          // Check if ssrSeatInfos exists and has keys
-          if (
-            traveller?.ssrSeatInfos &&
-            Object.keys(traveller.ssrSeatInfos).length > 0
-          ) {
-            Object.keys(traveller.ssrSeatInfos).forEach((key) => {
-              seatTotal += traveller.ssrSeatInfos[key].amount || 0;
-            });
-          }
-
-          // Check if ssrMealInfos exists and has keys
-          if (
-            traveller?.ssrMealInfos &&
-            Object.keys(traveller.ssrMealInfos).length > 0
-          ) {
-            Object.keys(traveller.ssrMealInfos).forEach((key) => {
-              mealTotal += traveller.ssrMealInfos[key].amount || 0;
-            });
-          }
-        });
-      }
-
-      setTotalBaggageAmount(baggageTotal);
-      setTotalSeatAmount(seatTotal);
-      setTotalMealAmount(mealTotal);
-
-      console.log("Total Baggage Amount: ", baggageTotal);
-      console.log("Total Seat Amount: ", seatTotal);
-      console.log("Total Amount: ", Number(totalfare));
-      computedAmount = Number(totalfare);
+      console.log("computedAmount ====== ", computedAmount);
+      setDisplayAmount(computedAmount);
     }
-    console.log("computedAmount ====== ", computedAmount);
-    setDisplayAmount(computedAmount);
   }, [totalpricee]);
 
   // useEffect(() => {
@@ -149,13 +156,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
   //   }
   // }, [seatinfo]);
 
-  // useEffect(() => {
-  //   setTotalMealAmount(mealAmount);
-  //   setTotalSeatAmount(seatinfo);
-  //   setTotalBaggageAmount(baggageAmount);
-
-  //   setDisplayAmount(Number(totalfare) + Number(seatinfo) + Number(baggageAmount) + Number(mealAmount));
-  // }, [totalpricee, seatinfo, baggageAmount, mealAmount]);
+  if (key == 1) {
+    useEffect(() => {
+      setTotalMealAmount(mealAmount);
+      setTotalSeatAmount(seatinfo);
+      setTotalBaggageAmount(baggageAmount);
+  
+      setDisplayAmount(Number(totalfare) + Number(seatinfo) + Number(baggageAmount) + Number(mealAmount));
+    }, [totalpricee, seatinfo, baggageAmount, mealAmount]);
+  }
+  
 
   useEffect(() => {
     if (Object.keys(seatinfo).length === 0) {

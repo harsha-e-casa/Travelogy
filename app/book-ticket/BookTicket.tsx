@@ -185,13 +185,14 @@ export default function BookTicket() {
   const [baggageAmount, setBaggageAmount] = useState(0);
   const [mealAmount, setMealAmount] = useState(0);
 
-  const handleBaggageChange = (amount: number) => {
+  const handleBaggageChange = useCallback((amount: number) => {
+    console.log("bag amount ", amount);
     setBaggageAmount(amount);
-  };
+  }, []);
 
-  const handleMealChange = (amount: number) => {
+  const handleMealChange = useCallback((amount: number) => {
     setMealAmount(amount);
-  };
+  }, []);
   const closeFareAlertModal = () => {
     setIsFareAlertModalOpen(false);
     fareAlert.current = {};
@@ -2008,7 +2009,6 @@ export default function BookTicket() {
                                     form={form}
                                     numAdults={numAdults}
                                     numChild={numChild}
-                                    numInfants={numInfants}
                                     apiData={apiData}
                                     storedTravellerInfos={storedTravellerInfos}
                                     onBaggageChange={handleBaggageChange}

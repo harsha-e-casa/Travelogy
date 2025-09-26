@@ -305,24 +305,35 @@ const ExtraBaggage = ({
   // Compute total baggage amount whenever form values change
   const handleValuesChange = (_, allValues) => {
     let totalAmount = 0;
-
-    // Sync local state to Form's values
-    setLocalValues((prev) => {
-      const updated = { ...prev, ...allValues };
-      Object.values(updated).forEach((val) => {
-        if (!val) return;
-        const [segmentId, code] = val.split("|");
-        const segment = segmentinfo.find(
-          (s) => String(s.id) === String(segmentId)
-        );
-        const baggage = segment?.ssrInfo?.BAGGAGE?.find((b) => b.code === code);
-        if (baggage) totalAmount += baggage.amount;
-      });
-
-      return updated;
+    Object.values(allValues).forEach((val) => {
+      if (!val) return;
+      const [segmentId, code] = val.split("|");
+      const segment = segmentinfo.find(
+        (s) => String(s.id) === String(segmentId)
+      );
+      const baggage = segment?.ssrInfo?.BAGGAGE?.find((b) => b.code === code);
+      if (baggage) {
+        totalAmount += baggage.amount;
+      }
     });
 
-    // Send total amount back to parent
+    onBaggageChange(totalAmount);
+  };
+
+  const handleChange = () => {
+    const allValues = form.getFieldsValue();
+    let totalAmount = 0;
+    Object.values(allValues).forEach((val) => {
+      if (!val) return;
+      const [segmentId, code] = val.split("|");
+      const segment = segmentinfo.find(
+        (s) => String(s.id) === String(segmentId)
+      );
+      const baggage = segment?.ssrInfo?.BAGGAGE?.find((b) => b.code === code);
+      if (baggage) {
+        totalAmount += baggage.amount;
+      }
+    });
     onBaggageChange(totalAmount);
   };
 
@@ -331,7 +342,6 @@ const ExtraBaggage = ({
       form={form}
       layout="vertical"
       autoComplete="off"
-      // onValuesChange={handleValuesChange}  // Use Form to handle value changes
     >
       {segmentinfo.map((segment, flightIndex) => {
         const baggageOptions = segment?.ssrInfo?.BAGGAGE || [];
@@ -358,6 +368,7 @@ const ExtraBaggage = ({
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
                       style={{ width: 500 }}
+                      onChange={handleChange}
                     >
                       {baggageOptions.map((bag) => (
                         <Option
@@ -390,6 +401,7 @@ const ExtraBaggage = ({
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
                       style={{ width: 500 }}
+                      onChange={handleChange}
                     >
                       {baggageOptions.map((bag) => (
                         <Option

@@ -1,16 +1,15 @@
-export default function ByFareIdentifier({
-  fareIdentifiers,
-  setFareIdentifiers,
-  tabIndex,
+export default function ByFareType({ 
+  selectedFareTypes,
+  setSelectedFareTypes,
   options,
+  tabIndex,
 }: any) {
-  
 
-  const toggleFareIdentifier = (value: string) => {
-    if (fareIdentifiers.includes(value)) {
-      setFareIdentifiers(fareIdentifiers.filter((item: string) => item !== value));
+  const toggleFareType = (value: string) => {
+    if (selectedFareTypes.includes(value)) {
+      setSelectedFareTypes(selectedFareTypes.filter((item: string) => item !== value));
     } else {
-      setFareIdentifiers([...fareIdentifiers, value]);
+      setSelectedFareTypes([...selectedFareTypes, value]);
     }
   };
 
@@ -22,10 +21,10 @@ export default function ByFareIdentifier({
             <label className="cb-container">
               <input
                 type="checkbox"
-                name={`fareIdentifier-${tabIndex}`}
+                name={`fareType-${tabIndex}`}
                 value={option.name}
-                checked={fareIdentifiers.includes(option.name)}
-                onChange={() => toggleFareIdentifier(option.name)}
+                checked={selectedFareTypes.includes(option.name)}
+                onChange={() => toggleFareType(option.name)}
               />
               <span className="text-sm-medium">{option.name}</span>
               <span className="checkmark" />
