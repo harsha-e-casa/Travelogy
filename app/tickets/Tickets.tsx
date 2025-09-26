@@ -45,6 +45,7 @@ import { tree } from "next/dist/build/templates/app-page";
 import { AppContext } from "../../util/AppContext";
 import { TravellerForm } from "@/components/searchEngine/TravellerForm";
 import { checkTokenExpiry } from "@/services/Utils";
+import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 
 // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -216,27 +217,44 @@ export default function Tickets() {
   const [filteredFlightData, setFilteredFlightData] = useState<any>(null);
 
   const [priceRange, setPriceRange] = useState([0, 10000000]);
+  const [minPriceRange, setMinPriceRange] = useState<any>(null);
+  const [maxPriceRange, setMaxPriceRange] = useState<any>(null);
   const [stops, setStops] = useState("all");
   const [departureTime, setDepartureTime] = useState("all");
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [arrivalTime, setArrivalTime] = useState("all");
 
+  useEffect(() => {
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
+      const dataToCheck = flightData.ONWARD || flightData.COMBO;
+      const [minPrice, maxPrice] = getPriceRangeFromData(dataToCheck);
+
+      setMinPriceRange(minPrice);
+      setMaxPriceRange(maxPrice);
+
+      if (priceRange[0] !== minPrice || priceRange[1] !== maxPrice) {
+        setPriceRange([minPrice, maxPrice]);
+      }
+    }
+  }, [flightData]);
+
   const applyFilters = () => {
+    console.log("applyFilters ==> ");
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToFilter = flightData.ONWARD || flightData.COMBO;
 
-      console.log("cccccccccccc 1",dataToFilter)
-
-      console.log("cccccccccccc 1.1.2 ",priceRange)
+      // const [minPrice, maxPrice] = getPriceRangeFromData(dataToFilter);
+      // setPriceRange([minPrice, maxPrice]);
+      // console.log("Min Price:", minPrice, "Max Price:", maxPrice);
 
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
-        console.log("cccccccccccc 1.2 ",ticket)
+        console.log("cccccccccccc 1.2 ", ticket);
         const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
         return price >= priceRange[0] && price <= priceRange[1];
       });
 
-      console.log("cccccccccccc 2",filteredData)
+      console.log("cccccccccccc 2", filteredData);
 
       // Stops Filter
       if (stops !== "all") {
@@ -296,13 +314,37 @@ export default function Tickets() {
         });
       }
 
+      // if (fareIdentifiers.length > 0) {
+      //   filteredData = filteredData.filter((ticket: any) => {
+      //     const fareId = ticket?.fareIdentifier || ""; // adjust to your data structure
+      //     return fareIdentifiers.includes(fareId);
+      //   });
+      // }
+
       setFilteredFlightData(filteredData);
     }
+  };
+
+  const getPriceRangeFromData = (data: any[]) => {
+    const prices: number[] = [];
+
+    data.forEach((ticket) => {
+      const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+      if (price !== undefined) {
+        prices.push(price);
+      }
+    });
+
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    return [minPrice, maxPrice];
   };
 
   useEffect(() => {
     applyFilters();
   }, [priceRange, stops, departureTime, selectedAirlines, flightData]);
+
   const [activeFlight, setActiveFlight] = useState<any>(true);
 
   // const router = useRouter();
@@ -2173,6 +2215,8 @@ export default function Tickets() {
                           <ByPrice
                             priceRange={priceRange}
                             setPriceRange={setPriceRange}
+                            minPriceRange={minPriceRange}
+                            maxPriceRange={maxPriceRange}
                           />
                         </div>
                       </div>
@@ -2252,7 +2296,22 @@ export default function Tickets() {
                         </div>
                       </div>
                     </div>
-                    <div className="sidebar-left border-1 background-body">
+
+                    {/* <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Fare Identifier
+                          </h6>
+                          <ByFareIdentifier
+                            fareIdentifiers={fareIdentifiers}
+                            setFareIdentifiers={setFareIdentifiers}
+                          />
+                        </div>
+                      </div>
+                    </div> */}
+                    
+                    {/* <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
                         <div className="block-filter border-1">
                           <h6 className="text-lg-bold item-collapse neutral-1000">
@@ -2265,7 +2324,7 @@ export default function Tickets() {
                           />
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                     {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
