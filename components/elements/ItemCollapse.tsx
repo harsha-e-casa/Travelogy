@@ -9,6 +9,10 @@ const ItemCollapse: React.FC = () => {
             if (!parent) return;
 
             const boxCollapse = parent.querySelector('.box-collapse') as HTMLElement;
+            if (!boxCollapse) {
+                console.warn('No .box-collapse element found in parent .block-filter');
+                return;
+            }
 
             // Toggle display between 'none' and 'block'
             if (boxCollapse.style.display === 'none' || !boxCollapse.style.display || boxCollapse.style.display === '') {

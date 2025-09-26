@@ -10,8 +10,9 @@ export default function ByAmenities({ uniqueAmenities, filter, handleCheckboxCha
 							<label className="cb-container">
 								<input
 									type="checkbox"
+									value={amenity}
 									checked={filter.amenities.includes(amenity)}
-									onChange={handleCheckboxChange("amenities", amenity)}
+									onChange={(e) => handleCheckboxChange(e, "amenities")}
 								/>
 								<span className="text-sm-medium">{amenity}</span>
 								<span className="checkmark" />

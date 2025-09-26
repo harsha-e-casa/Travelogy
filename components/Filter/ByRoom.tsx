@@ -8,8 +8,9 @@ export default function ByRoom({ uniqueRoomStyles, filter, handleCheckboxChange 
 							<label className="cb-container">
 								<input
 									type="checkbox"
+									value={room}
 									checked={filter.roomStyle.includes(room)}
-									onChange={handleCheckboxChange("roomStyle", room)}
+									onChange={(e) => handleCheckboxChange(e, "roomStyle")}
 								/>
 
 								<span className="text-sm-medium">{room} </span>

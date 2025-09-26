@@ -16,9 +16,11 @@ const ByRating: React.FC<ByRatingProps> = ({
   filter,
   handleCheckboxChange,
 }) => {
+  const sortedRatings = [...uniqueRatings].sort((a, b) => Number(a) - Number(b));
+
   return (
     <ul className="list-filter">
-      {uniqueRatings.map((rating) => (
+      {sortedRatings.map((rating) => (
         <li key={rating}>
           <label className="cb-container">
             <input
