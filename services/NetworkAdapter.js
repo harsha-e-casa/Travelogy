@@ -86,6 +86,7 @@ apiInstance.interceptors.response.use(
 export const fetchData = async (endpoint, params = {}) => {
   try {
     const response = await apiInstance.get(endpoint, { params });
+    console.log("networkadaptar ", response);
     return response.data;
   } catch (error) {
     // You can handle specific error cases or rethrow the error
@@ -98,11 +99,12 @@ export const fetchData = async (endpoint, params = {}) => {
  *
  * @param {string} endpoint - The API endpoint (relative to the base URL)
  * @param {object} payload - The data to send in the request body
+ * @param {object} options - Optional axios config options (e.g., { signal })
  * @returns {Promise<object>} - The response data
  */
-export const postData = async (endpoint, payload) => {
+export const postData = async (endpoint, payload, options = {}) => {
   try {
-    const response = await apiInstance.post(endpoint, payload);
+    const response = await apiInstance.post(endpoint, payload, options);
     console.log("ressssssssss 1111111 ", response);
     return response.data;
   } catch (error) {

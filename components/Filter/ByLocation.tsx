@@ -9,8 +9,9 @@ export default function ByLocation({ uniqueLocations, filter, handleCheckboxChan
 							<label className="cb-container">
 								<input
 									type="checkbox"
+									value={location}
 									checked={filter.locations.includes(location)}
-									onChange={handleCheckboxChange("locations", location)}
+									onChange={(e) => handleCheckboxChange(e, "locations")}
 								/>
 
 								<span className="text-sm-medium">{location} </span>

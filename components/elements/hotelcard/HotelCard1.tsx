@@ -4,20 +4,16 @@ import Link from "next/link";
 
 export default function HotelCard1({ hotel }: any) {
   const name = hotel?.name || "Unnamed Hotel";
-  const address = hotel?.ad?.adr;
-
-  const address1 = hotel?.ad?.adr2;
-  const city = hotel?.ad?.city?.name;
-  const rating = Math.round(hotel?.rt) || 0;
+  const fullAddress = hotel?.fullAddress || "";
+  const rating = Math.round(hotel?.rating) || 0;
   const totalStars = 5;
   const filledStars = Math.round(rating);
 
   const id = hotel?.id || "unknown-id";
-  const image = hotel?.img?.[0]?.url;
-  const totalPrice = hotel?.ops?.[0]?.tp ?? "N/A";
-  const refund = hotel?.ops?.cnp?.ifra;
-  const noRefund = hotel?.ops?.cnp?.inra;
-  const fullLocation = `${address} ${address1 ? `${address1}, ` : ""}${city}`;
+  const image = hotel?.image;
+  const totalPrice = hotel?.price ?? "N/A";
+  const checkInTime = hotel?.checkInTime;
+  const checkOutTime = hotel?.checkOutTime;
 
   return (
     <div className="card-journey-small background-card setHeightSlider">
@@ -58,16 +54,10 @@ export default function HotelCard1({ hotel }: any) {
           <div className="card-location">
             <p
               className="cursor-pointer text-location text-xs-medium neutral-500"
-              title={fullLocation}
+              title={fullAddress}
             >
-              {`${address}, ${address1 ? `${address1}, ` : ""}${city}`}{" "}
+              {fullAddress}
             </p>
-
-            {/* <Tooltip title={fullLocation}>
-              <p className="cursor-pointer text-location text-xs-medium neutral-500">
-                {`${address}, ${address1 ? `${address1}, ` : ""}${city}`}
-              </p>
-            </Tooltip> */}
             <p className="text-star">
               {[...Array(filledStars)].map((_, index) => (
                 <svg
@@ -82,6 +72,16 @@ export default function HotelCard1({ hotel }: any) {
                 </svg>
               ))}
             </p>
+            {checkInTime && (
+              <p className="text-xs-medium neutral-500">
+                Check-in: {checkInTime.beginTime} - {checkInTime.endTime}
+              </p>
+            )}
+            {checkOutTime && (
+              <p className="text-xs-medium neutral-500">
+                Check-out: {checkOutTime.beginTime}
+              </p>
+            )}
           </div>
           <div className="endtime">
             <p className="neutral-1000">
@@ -89,8 +89,6 @@ export default function HotelCard1({ hotel }: any) {
               Starts from <br />
               <span className="text-lg-bold "> ₹ {totalPrice}</span>
             </p>
-            {refund}
-            {noRefund}
             <div className="card-button">
               <Link className="btn btn-gray" href={`/hotel-listing/${id}`}>
                 Book Now

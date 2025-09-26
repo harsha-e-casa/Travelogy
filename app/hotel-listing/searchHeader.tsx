@@ -366,7 +366,7 @@ export default function HotelListingSearch() {
         },
         sync: true,
       };
-
+ console.log("searcheader ", payload);
       // const data = await apiCall(payload);
       // setLoading(false);
       // if (data) {
@@ -393,6 +393,7 @@ export default function HotelListingSearch() {
     };
 
     fetchData();
+   
   }, [
     city,
     // checkinDate,

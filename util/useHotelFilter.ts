@@ -1,7 +1,7 @@
 'use client'
 import { ChangeEvent, useState } from "react"
 
-interface Hotel {
+export interface Hotel {
 	id: number
 	price: number
 	// duration: number
@@ -12,6 +12,10 @@ interface Hotel {
 	roomStyle: string
 	location: string
 	image: string
+	fullAddress: string
+	checkInTime: any
+	checkOutTime: any
+	rawData: any
 }
 
 export interface Filter {
@@ -33,7 +37,7 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 		roomStyle: [],
 		amenities: [],
 		locations: [],
-		priceRange: [0, 500],
+		priceRange: [0, 41087],
 		// durationRange: [0, 30],
 		ratings: [],
 		hotelType: [],
@@ -51,6 +55,10 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 	const uniqueHotelsType = [...new Set(hotelsData.map((hotel) => hotel.hotelType))]
 
 	const filteredHotels = hotelsData.filter((hotel) => {
+		if (hotel.price <= 0 || isNaN(hotel.price)) {
+			console.warn(`Invalid price for hotel ${hotel.name}: ${hotel.price}`);
+			return false;
+		}
 		return (
 			(filter.names.length === 0 || filter.names.includes(hotel.name)) &&
 			(filter.roomStyle.length === 0 || filter.roomStyle.includes(hotel.roomStyle)) &&
@@ -79,12 +87,14 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 	const endIndex = startIndex + itemsPerPage
 	const paginatedHotels = sortedHotels.slice(startIndex, endIndex)
 
-	const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>, category: keyof Filter) => {
+	const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>, category: string) => {
 		const { value, checked } = e.target as HTMLInputElement;
+		const parsedValue = category === "ratings" ? Number(value) : value;
 		setFilter((prevFilter) => {
+			const currentValues = prevFilter[category as keyof Filter] as (string | number)[];
 			const newValues = checked
-				? [...(prevFilter[category] as (string | number)[]), value]
-				: (prevFilter[category] as (string | number)[]).filter((item) => item !== value);
+				? [...currentValues, parsedValue]
+				: currentValues.filter((item) => item !== parsedValue);
 			return { ...prevFilter, [category]: newValues };
 		});
 	};
@@ -97,8 +107,10 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 		setFilter((prevFilter) => ({
 			...prevFilter,
 			priceRange: values,
-		}))
+		}));
 	}
+
+
 
 	const handleItemsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
 		setItemsPerPage(Number(e.target.value))
@@ -122,16 +134,17 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 	}
 
 	const handleClearFilters = () => {
-		setFilter({
+		const defaultFilter: Filter = {
 			names: [],
 			roomStyle: [],
 			amenities: [],
 			locations: [],
-			priceRange: [0, 500],
+			priceRange: [0, 41087],
 			// durationRange: [0, 30],
 			ratings: [],
 			hotelType: [],
-		})
+		};
+		setFilter(defaultFilter);
 		setSortCriteria("name")
 		setItemsPerPage(4)
 		setCurrentPage(1)
@@ -142,7 +155,6 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 
 	return {
 		filter,
-		setFilter,
 		sortCriteria,
 		setSortCriteria,
 		itemsPerPage,
@@ -173,6 +185,7 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 		handleClearFilters,
 		startItemIndex,
 		endItemIndex,
+		totalResults: sortedHotels.length,
 	}
 }
 

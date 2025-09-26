@@ -9,8 +9,9 @@ export default function ByHotelType({ uniqueHotelsType, filter, handleCheckboxCh
 							<label className="cb-container">
 								<input
 									type="checkbox"
+									value={hotel}
 									checked={filter.hotelType.includes(hotel)}
-									onChange={handleCheckboxChange("hotelType", hotel)}
+									onChange={(e) => handleCheckboxChange(e, "hotelType")}
 								/>
 
 								<span className="text-sm-medium">{hotel} </span>

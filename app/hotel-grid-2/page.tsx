@@ -12,6 +12,10 @@ import Link from "next/link";
 const hotelsData = rawHotelsData.map((hotel) => ({
   ...hotel,
   rating: parseFloat(hotel.rating as string),
+  fullAddress: hotel.location,
+  checkInTime: null,
+  checkOutTime: null,
+  rawData: hotel,
 }));
 export default function HotelGrid2() {
   const {
@@ -37,6 +41,7 @@ export default function HotelGrid2() {
     handleClearFilters,
     startItemIndex,
     endItemIndex,
+    totalResults,
   } = useHotelFilter(hotelsData);
 
   return (
@@ -72,6 +77,7 @@ export default function HotelGrid2() {
                   handleClearFilters={handleClearFilters}
                   startItemIndex={startItemIndex}
                   endItemIndex={endItemIndex}
+                  totalResults={totalResults}
                   // sortedHotels={sortedHotels}
                 />
               </div>
