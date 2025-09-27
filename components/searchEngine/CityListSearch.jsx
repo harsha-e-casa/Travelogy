@@ -35,7 +35,7 @@ const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
         item.fullRegionName.toLowerCase().includes(searchText.toLowerCase())
     );
 
-    setFilteredOptions(filtered.slice(0, 10));
+    setFilteredOptions(filtered.slice(0, 20));
   };
 
   const mappedOptions = filteredOptions.map((item) => ({

@@ -5,7 +5,7 @@ import ByAmenities from "@/components/Filter/ByAmenities";
 import ByHotelType from "@/components/Filter/ByHotelType";
 import ByLocation from "@/components/Filter/ByLocation";
 import ByPagination from "@/components/Filter/ByPagination";
-import PriceRangeFilter from "@/components/Filter/PriceRangeFilter";
+import ByPrice from "@/components/Filter/ByPrice";
 import ByRating from "@/components/Filter/ByRating";
 import ByRoom from "@/components/Filter/ByRoom";
 import SortHotelsFilter from "@/components/elements/SortHotelsFilter";
@@ -27,6 +27,7 @@ import CityListSearch from "@/components/searchEngine/CityListSearch";
 import { useNationalities } from "@/util/HotelApi";
 import HotelListingSearch from "./searchHeader";
 import { postData } from "@/services/NetworkAdapter";
+import { checkTokenExpiry } from "@/services/Utils";
 type Nationality = {
   countryName: string;
   name: string;
@@ -39,6 +40,7 @@ type AppDateRageProps = {
   minDate?: dayjs.Dayjs | null | undefined;
 };
 export default function HotelListing() {
+  const [loading, setLoading] = useState(true); // Loading state to wait for client-side rendering
   const router = useRouter();
   const searchParams = useSearchParams();
   const location = searchParams.get("location");
@@ -55,6 +57,21 @@ export default function HotelListing() {
   const childAgesRaw = searchParams.get("childAges");
 
   let parsedChildAges: number[][] = [];
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry(); // Check if the token is valid
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      console.log("Token is valid.");
+      // If token is expired, remove from localStorage and redirect to login
+      localStorage.removeItem("authToken");
+      router.push("/login"); // Redirect to the login page
+    } else {
+      // If token is valid, continue loading the page
+      setLoading(false);
+    }
+  }, [router]); // Ensures the effect runs once on mount (after client-side rendering)
 
   try {
     parsedChildAges = childAgesRaw ? JSON.parse(childAgesRaw) : [];
@@ -184,7 +201,7 @@ export default function HotelListing() {
     if (!checkoutDate)
       setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
   }, []);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
@@ -691,10 +708,11 @@ export default function HotelListing() {
             </div>
           </div>
 
-          <section className="box-section block-content-tourlist background-body">
+          <section className="box-section block-content-tourlist background-body min-h-screen">
             <div className="container-fluid" style={{ width: "93%" }}>
-              <div className="box-content-main">
-                <div className="content-right">
+              <div className="">
+              <div className="box-content-main top-24 left-0 right-0 z-10 bg-white w-[93%] mx-auto flex flex-col lg:flex-row h-[calc(100vh-6rem)]  gap-3">
+                <div className="content-right lg:w-3/4 overflow-y-auto p-3 h-full overflow-hidden">
                   <div className="box-filters mb-25 pb-5 border-bottom border-1">
                   <SortHotelsFilter
                     sortCriteria={sortCriteria}
@@ -791,7 +809,7 @@ export default function HotelListing() {
                     handlePageChange={handlePageChange}
                   />
                 </div>
-                <div className="content-left order-lg-first">
+                <div className="content-left order-lg-first lg:w-1/4 min-w-[250px] overflow-y-auto bg-white p-4 h-full">
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
@@ -801,9 +819,11 @@ export default function HotelListing() {
                           </h6>
                         </div>
                         {showPriceFilter && (
-                          <PriceRangeFilter
+                          <ByPrice
                             priceRange={filter.priceRange}
-                            onPriceChange={handlePriceRangeChange}
+                            setPriceRange={handlePriceRangeChange}
+                            minPriceRange={0}
+                            maxPriceRange={41087}
                           />
                         )}
                       </div>
@@ -881,9 +901,10 @@ export default function HotelListing() {
                   </div>
                 </div>
               </div>
+              </div>
             </div>
           </section>
-          <section className="section-box box-install-app-2 background-body">
+          <section className="section-box box-install-app-2 background-body mt-[calc(100vh-6rem)]">
             <div className="container">
               <div className="block-install-app background-6">
                 <div className="row align-items-center">

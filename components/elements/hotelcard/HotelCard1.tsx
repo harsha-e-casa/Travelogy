@@ -5,11 +5,13 @@ import Link from "next/link";
 export default function HotelCard1({ hotel }: any) {
   const name = hotel?.name || "Unnamed Hotel";
   const fullAddress = hotel?.fullAddress || "";
-  const rating = Math.round(hotel?.rating) || 0;
+  const rating = hotel?.rating || 0;
   const totalStars = 5;
-  const filledStars = Math.round(rating);
+  const filledStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
 
-  const id = hotel?.id || "unknown-id";
+  const id = hotel?.rawData?.id || "unknown-id";
+  console.log("Hotel ID:", hotel); // Debugging line to check the id value
   const image = hotel?.image;
   const totalPrice = hotel?.price ?? "N/A";
   const checkInTime = hotel?.checkInTime;
@@ -18,10 +20,10 @@ export default function HotelCard1({ hotel }: any) {
   return (
     <div className="card-journey-small background-card setHeightSlider">
       <div className="card-image">
-        {/* <Link className="label" href="#">
+        {/* <div className="label top-rated-badge">
           Top Rated
-        </Link> */}
-        <Link className="wish" href="#">
+        </div> */}
+        {/* <Link className="wish" href="#">
           <svg
             width={20}
             height={18}
@@ -36,64 +38,53 @@ export default function HotelCard1({ hotel }: any) {
               strokeLinejoin="round"
             />
           </svg>
-        </Link>
+        </Link> */}
         <Link href={`/hotel-listing/${id}`}>
-          <img src={image} alt={name} />
+          <img src={image} alt={name} className="w-full h-48 object-cover rounded-t-lg" />
         </Link>
       </div>
       <div className="card-info">
-        <div className="card-title">
-          <Link
-            className="text-md-bold neutral-1000"
-            href={`/hotel-listing/${id}`}
-          >
-            {name}
-          </Link>
+        <div className="card-rating">
+          <div className="card-left"> </div>
+          <div className="card-right"> <span className="rating">{rating.toFixed(1)} </span></div>
         </div>
+        <div className="card-title"> <Link className="text-lg-bold neutral-1000" href={`/hotel-listing/${id}`}>{name} </Link></div>
         <div className="card-program">
           <div className="card-location">
-            <p
-              className="cursor-pointer text-location text-xs-medium neutral-500"
-              title={fullAddress}
-            >
-              {fullAddress}
-            </p>
-            <p className="text-star">
-              {[...Array(filledStars)].map((_, index) => (
-                <svg
+            <p className="text-location text-sm-medium neutral-500">{fullAddress}</p>
+            {/* <p className="text-star">
+              {[...Array(rating)].map((_, index) => (
+                <img
                   key={`filled-${index}`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="gold"
-                  viewBox="0 0 16 16"
-                >
-                  <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
-                </svg>
+                  className="light-mode"
+                  src="/assets/imgs/template/icons/star-black.svg"
+                  alt="star"
+                />
               ))}
-            </p>
-            {checkInTime && (
-              <p className="text-xs-medium neutral-500">
-                Check-in: {checkInTime.beginTime} - {checkInTime.endTime}
-              </p>
-            )}
-            {checkOutTime && (
-              <p className="text-xs-medium neutral-500">
-                Check-out: {checkOutTime.beginTime}
-              </p>
-            )}
+              {hasHalfStar && (
+                <img
+                  key="half-star"
+                  className="light-mode"
+                  src="/assets/imgs/template/icons/star-black.svg"
+                  alt="half-star"
+                />
+              )}
+              {[...Array(totalStars - rating - (hasHalfStar ? 1 : 0))].map((_, index) => (
+                <img
+                  key={`empty-${index}`}
+                  className="light-mode"
+                  src="/assets/imgs/template/icons/star-black.svg"
+                  alt="empty-star"
+                />
+              ))}
+            </p> */}
           </div>
           <div className="endtime">
-            <p className="neutral-1000">
-              {" "}
-              Starts from <br />
-              <span className="text-lg-bold "> ₹ {totalPrice}</span>
-            </p>
-            <div className="card-button">
-              <Link className="btn btn-gray" href={`/hotel-listing/${id}`}>
-                Book Now
-              </Link>
+            <div className="card-price">
+              <h6 className="heading-6 neutral-1000">₹{totalPrice}</h6>
+              <p className="text-md-medium neutral-500">/ night</p>
             </div>
+            <div className="card-button"> <Link className="btn btn-gray" href={`/hotel-listing/${id}`}>Book Now</Link></div>
           </div>
         </div>
       </div>
