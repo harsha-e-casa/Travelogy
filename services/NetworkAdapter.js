@@ -5,9 +5,9 @@ import Cookies from "js-cookie";
 
 // You can store the API base URL in an environment variable
 // const API_BASE_URL   =   process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001';
-// const API_BASE_URL = "http://localhost:3030";
+const API_BASE_URL = "http://localhost:3030";
 
-const API_BASE_URL = 'https://com.digilogy.co/';
+// const API_BASE_URL = 'https://com.digilogy.co/';
 
 const API_TEST_JACK = "https://apitest.tripjack.com/";
 const apiKey = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
@@ -102,9 +102,10 @@ export const fetchData = async (endpoint, params = {}) => {
  * @param {object} options - Optional axios config options (e.g., { signal })
  * @returns {Promise<object>} - The response data
  */
-export const postData = async (endpoint, payload, options = {}) => {
+
+export const postData = async (endpoint, payload, headers = {}, options = {}) => {
   try {
-    const response = await apiInstance.post(endpoint, payload, options);
+    const response = await apiInstance.post(endpoint, payload, {headers}, options);
     console.log("ressssssssss 1111111 ", response);
     return response.data;
   } catch (error) {

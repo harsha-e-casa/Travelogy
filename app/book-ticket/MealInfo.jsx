@@ -98,6 +98,11 @@ const MealInfo = ({
     onMealChange(totalMealAmount);
   };
 
+  const handleChange = () => {
+    const allValues = form.getFieldsValue();
+    handleValuesChange(null, allValues);
+  };
+
   return (
     <>
       {hasMeal ? (
@@ -106,7 +111,6 @@ const MealInfo = ({
           name="mealForm"
           layout="vertical"
           autoComplete="off"
-          // onValuesChange={handleValuesChange}
         >
           {segmentinfo.map((segment, flightIndex) => {
             const mealOptions = segment?.ssrInfo?.MEAL || [];
@@ -135,6 +139,7 @@ const MealInfo = ({
                         className="h-10 "
                         placeholder="Add Meal"
                         disabled={mealOptions.every((meal) => !meal.amount)}
+                        onChange={handleChange}
                       >
                         {mealOptions.map((meal) => (
                           <Option
@@ -165,7 +170,7 @@ const MealInfo = ({
                       name={`childMeal-${flightIndex}-${index}`}
                       style={{ marginBottom: 0, width: "500px" }}
                     >
-                      <Select className="h-10 w-100" placeholder="Add Meal">
+                      <Select className="h-10 w-100" placeholder="Add Meal" disabled={mealOptions.every((meal) => !meal.amount)} onChange={handleChange}>
                         {mealOptions.map((meal) => (
                           <Option
                             key={meal.code}
@@ -186,7 +191,7 @@ const MealInfo = ({
                       INFANT {index + 1}
                     </span>
                     <Form.Item name={`infantMeal-${flightIndex}-${index}`} style={{ marginBottom: 0 }}>
-                      <Select className="h-10 w-100" placeholder="Add Meal">
+                      <Select className="h-10 w-100" placeholder="Add Meal" onChange={handleChange}>
                         {mealOptions.map((meal) => (
                           <Option key={meal.code} value={`${segment.id}|${meal.code}`}>
                            {meal.desc} - ₹{meal.amount}
