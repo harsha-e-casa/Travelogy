@@ -18,6 +18,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
+import { checkTokenExpiry } from "@/services/Utils";
 // const hotelsData = rawHotelsData.map((hotel) => ({
 //   ...hotel,
 //   rating: parseFloat(hotel.rating as string),
@@ -39,6 +40,7 @@ type AppDateRageProps = {
   minDate?: dayjs.Dayjs | null | undefined;
 };
 export default function HotelListingSearch() {
+   const [loading, setLoading] = useState(false); // Loading state to wait for client-side rendering
   const router = useRouter();
   const searchParams = useSearchParams();
   const location = searchParams.get("location");
@@ -81,6 +83,21 @@ export default function HotelListingSearch() {
   } catch (e) {
     console.warn("Invalid roomsData JSON", e);
   }
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry(); // Check if the token is valid
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      console.log("Token is valid.");
+      // If token is expired, remove from localStorage and redirect to login
+      localStorage.removeItem("authToken");
+      router.push("/login"); // Redirect to the login page
+    } else {
+      // If token is valid, continue loading the page
+      setLoading(false);
+    }
+  }, [router]); // Ensures the effect runs once on mount (after client-side rendering)
   const onPickCheckin = (date: any) => {
     const ci = dayjs(date).format("YYYY-MM-DD");
     setCheckinDate(ci);
@@ -159,7 +176,7 @@ export default function HotelListingSearch() {
     if (!checkoutDate)
       setCheckoutDate(dayjs().add(1, "day").format("YYYY-MM-DD"));
   }, []);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
 
@@ -366,7 +383,7 @@ export default function HotelListingSearch() {
         },
         sync: true,
       };
-
+ console.log("searcheader ", payload);
       // const data = await apiCall(payload);
       // setLoading(false);
       // if (data) {
@@ -393,6 +410,7 @@ export default function HotelListingSearch() {
     };
 
     fetchData();
+   
   }, [
     city,
     // checkinDate,

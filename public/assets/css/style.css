@@ -3116,7 +3116,7 @@ body {
   width: 21px;
   left: 5px;
   bottom: 5px;
-  background: linear-gradient(236deg, #22d1ee 0%, #c5ff41 100%);
+  background: linear-gradient(236deg, #22d1ee 0%,);
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }

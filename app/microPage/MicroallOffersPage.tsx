@@ -19,7 +19,11 @@ const onChange = (key : any) => {
 
 const hotelsData = rawHotelsData.map(hotel => ({
   ...hotel,
-  rating: parseFloat(hotel.rating)
+  rating: parseFloat(hotel.rating),
+  fullAddress: hotel.location,
+  checkInTime: null,
+  checkOutTime: null,
+  rawData: hotel,
 }))
 
 const SortHotelsFilterApp = () => {

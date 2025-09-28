@@ -1,3 +1,4 @@
+"use client";
 import FilterSearch from "@/components/sections/FilterSearch";
 import Layout from "@/components/layout/Layout";
 import BannerHome3 from "@/components/sections/BannerHome3";
@@ -19,8 +20,32 @@ import RecommendedForYou from "@/components/sections/RecommendedForYou";
 import Section6Home3 from "@/components/sections/Section6Home3";
 import VideoGallery from "@/components/sections/VideoGallery";
 import Faqs1 from "@/components/sections/Faqs1";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { checkTokenExpiry } from "@/services/Utils";
 
 export default function Home4() {
+
+  const [loading, setLoading] = useState(false); // Loading state to wait for client-side rendering
+  const router = useRouter();
+
+
+  useEffect(() => {
+      const tokenValid = checkTokenExpiry(); // Check if the token is valid
+  
+      console.log("tokenValid ==> ", tokenValid);
+  
+      if (!tokenValid) {
+        console.log("Token is valid.");
+        // If token is expired, remove from localStorage and redirect to login
+        localStorage.removeItem("authToken");
+        router.push("/login"); // Redirect to the login page
+      } else {
+        // If token is valid, continue loading the page
+        setLoading(false);
+      }
+    }, [router]); // Ensures the effect runs once on mount (after client-side rendering)
+
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
