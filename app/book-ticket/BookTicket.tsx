@@ -158,6 +158,7 @@ export default function BookTicket() {
   }, []);
 
   const [apiData, setApiData] = useState<any>(null);
+  const [bookingFormKey, setBookingFormKey] = useState<any>(1);
   const [segments, setSegments] = useState<FlightSegment[]>([]);
   const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -1534,6 +1535,7 @@ export default function BookTicket() {
                         seatinfo={seatinfo}
                         baggageAmount={baggageAmount}
                         mealAmount={mealAmount}
+                        bookingFormKey={bookingFormKey}
                         // segmentsPrice={segmentsPrice}
                         // baggageinfo={baggageinfo}
                       />

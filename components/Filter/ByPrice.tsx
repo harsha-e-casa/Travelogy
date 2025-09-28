@@ -142,6 +142,10 @@ export default function ByPrice({
   minPriceRange,
   maxPriceRange,
 }: any) {
+  console.log("Byprice priceRange ==> ",priceRange)
+  console.log("Byprice setPriceRange ==> ",setPriceRange)
+  console.log("Byprice minPriceRange ==> ",minPriceRange)
+  console.log("Byprice maxPriceRange ==> ",maxPriceRange)
   const STEP = 10;
   const MIN = minPriceRange ?? 0;
   const MAX = maxPriceRange ?? 100000000;

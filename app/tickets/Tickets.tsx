@@ -402,12 +402,6 @@ export default function Tickets() {
         });
       }
 
-      if (flightNumberSearch) {
-        filteredData = filteredData.filter((ticket: any) => {
-          return ticket.sI.some((segment: any) => segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase()));
-        });
-      }
-
       if (selectedFareTypes.length > 0) {
         const typeMap: { [key: number]: string } = {
           1: "Refundable",
@@ -2411,7 +2405,11 @@ export default function Tickets() {
                               options={uniqueFareIdentifiers}
                             />
                           </div>
+                        </div>
+                      </div>
 
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
                           <div className="block-filter border-1">
                             <h6 className="text-lg-bold item-collapse neutral-1000">
                               Flight Number
@@ -2421,7 +2419,11 @@ export default function Tickets() {
                               setFlightNumberSearch={setFlightNumberSearch}
                             />
                           </div>
+                        </div>
+                      </div>
 
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
                           <div className="block-filter border-1">
                             <h6 className="text-lg-bold item-collapse neutral-1000">
                               Fare Type

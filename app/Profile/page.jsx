@@ -23,7 +23,16 @@ const Page = () => {
   const [userAmendmentData, setUseramendmentData] = useState();
   const [userReBookingData, setReUserBookingData] = useState();
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
+  const handleLogout = () => {
+    // Clear the token from localStorage
+    localStorage.removeItem("authToken");
+
+    // Redirect the user to the login page
+    window.location.href = "/login"; // Redirect to login page or public page
+  };
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -64,15 +73,16 @@ const Page = () => {
         setloading(true);
 
         const reqParams = {
-          // phone: "9677179866",
-          // e_mail: "h@gmail.com",
-          token: "Bearer " + token
+          phone: "",
+          e_mail: "",
         };
 
         const result = await postData(
           "/travelogy/flight/fetch-user",
-          reqParams
+          reqParams,
+          { Authorization: `Bearer ${token}` }
         );
+
         setUserData(result);
         setloading(false);
       } catch (error) {
@@ -86,12 +96,13 @@ const Page = () => {
         setloading(true);
 
         const reqParams = {
-          phone: "9677179866",
+          phone: "",
         };
 
         const result = await postData(
           "/travelogy/flight/fetech-bookings",
-          reqParams
+          reqParams,
+          { Authorization: `Bearer ${token}` }
         );
         setUserBookingData(result);
         setloading(false);
@@ -106,12 +117,13 @@ const Page = () => {
         setloading(true);
 
         const reqParams = {
-          phone: "9677179866",
+          phone: "",
         };
 
         const result = await postData(
           "/travelogy/flight/fetch-amendment",
-          reqParams
+          reqParams,
+          { Authorization: `Bearer ${token}` }
         );
         setUseramendmentData(result);
         setloading(false);
@@ -126,12 +138,13 @@ const Page = () => {
         setloading(true);
 
         const reqParams = {
-          phone: "9677179866",
+          phone: "",
         };
 
         const result = await postData(
           "/travelogy/flight/fetech-re-bookings",
-          reqParams
+          reqParams,
+          { Authorization: `Bearer ${token}` }
         );
         setReUserBookingData(result);
         setloading(false);
@@ -147,12 +160,13 @@ const Page = () => {
         setloading(true);
 
         const reqParams = {
-          phone: "9677179866",
+          phone: "",
         };
 
         const result = await postData(
-          "/travelogy/hotel/fetech-bookings",
-          reqParams
+          "/travelogy/hotel/fetch-bookings",
+          reqParams,
+          { Authorization: `Bearer ${token}` }
         );
         setUserHotelBookingData(result);
         setloading(false);
@@ -285,7 +299,7 @@ const Page = () => {
 
                   {/* //coTravellers bar */}
 
-                  <div
+                  {/* <div
                     className={`flex justify-between items-center sidebar-content border-b ${
                       activeTab === "coTravellers"
                         ? "bg-gray-100 font-semibold"
@@ -312,7 +326,7 @@ const Page = () => {
                       <span className="text-md neutral-500">Co-Travellers</span>
                     </div>
                     <span className="text-gray-500 text-lg">{">"}</span>
-                  </div>
+                  </div> */}
 
                   {/* bookings bar */}
 
@@ -345,7 +359,10 @@ const Page = () => {
                     <span className="text-gray-500 text-lg">{">"}</span>
                   </div>
 
-                  <button className="w-full mt-4 bg-red-400 text-white text-md  font-medium py-2 rounded hover:bg-gray-300 transition">
+                  <button
+                    className="w-full mt-4 bg-red-400 text-white text-md  font-medium py-2 rounded hover:bg-gray-300 transition"
+                    onClick={handleLogout}
+                  >
                     Log out
                   </button>
                 </div>
@@ -490,7 +507,7 @@ const Page = () => {
                 </div>
 
                 {/* co-travellers */}
-                <div
+                {/* <div
                   className="bg-white rounded-2xl shadow-md"
                   id="coTravellers"
                 >
@@ -505,7 +522,7 @@ const Page = () => {
                       </button>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* bookings */}
                 <div className="bg-white rounded-2xl shadow-md" id="bookings">

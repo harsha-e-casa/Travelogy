@@ -72,12 +72,21 @@ export default function Header1({
                     <li>
                       <Link href="/contact">Contact</Link>
                     </li>
+                    <li>
+                      <Link href="/profile">Profile</Link>
+                    </li>
+                    <li>
+                      <Link href="/dashboard">Dashboard</Link>
+                    </li>
+                    <li>
+                      <button style={{ padding: "18px"}} onClick={handleLogout}>Logout</button>
+                    </li>
                   </ul>
                 </nav>
               </div>
             </div>
 
-            <div className="header-right">
+            {/* <div className="header-right">
               <div
                 className="d-none d-xxl-inline-block align-middle"
                 onMouseEnter={() => setOpen(true)}
@@ -113,11 +122,23 @@ export default function Header1({
                     </div>
                   )}
                 </a>
-                {/* <ThemeSwitch /> */}
+                <ThemeSwitch />
               </div>
-              {/*<div className="burger-icon-2 burger-icon-white" onClick={handleSidebar}>
-								<img  src="/assets/imgs/template/icons/menu.svg" alt="Travelogy" />
-							</div>*/}
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
+              >
+                Logout
+              </button>
+              <div
+                className="burger-icon-2 burger-icon-white"
+                onClick={handleSidebar}
+              >
+                <img
+                  src="/assets/imgs/template/icons/menu.svg"
+                  alt="Travelogy"
+                />
+              </div>
               <div
                 className="burger-icon burger-icon-white"
                 onClick={handleMobileMenu}
@@ -126,7 +147,7 @@ export default function Header1({
                 <span className="burger-icon-mid" />
                 <span className="burger-icon-bottom" />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
