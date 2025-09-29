@@ -578,7 +578,7 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                <div className="content-left order-lg-first">
+                {/* <div className="content-left order-lg-first">
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
@@ -643,7 +643,7 @@ export default function Tickets() {
                       />
                     </Link>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>

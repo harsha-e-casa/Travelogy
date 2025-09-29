@@ -251,7 +251,7 @@ const FlightReBookingList = ({ bookings }) => {
                   </Link>
                 </td>
                 <td className="px-3 py-2 border">
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
+                  <Link href={`/BookingDetails?booking_id=${b.booking_id}?re=true`}>
                     {b.booking_id}
                   </Link>
                 </td>

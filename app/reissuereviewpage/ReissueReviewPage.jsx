@@ -33,7 +33,7 @@ const ReissueReviewPage = () => {
   const priceId = searchParams.get("tcs_id");
 
   const router = useRouter();
-  const [loading, setloading] = useState < boolean > false;
+  const [loading, setloading] = useState(false);
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
