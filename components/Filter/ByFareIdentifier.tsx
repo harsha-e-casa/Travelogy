@@ -17,7 +17,7 @@ export default function ByFareIdentifier({
   return (
     <div className="box-collapse scrollFilter">
       <ul className="list-filter-checkbox">
-        {options?.map((option) => (
+        {options?.map((option: any) => (
           <li key={option.name}>
             <label className="cb-container">
               <input

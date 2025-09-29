@@ -268,7 +268,7 @@ export default function Tickets() {
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      const type = {
+      const type: any = {
         1 : "Refundable",
         2 : "Partial Refundable"
       }
@@ -292,7 +292,7 @@ export default function Tickets() {
             });
           });
         })
-        .filter((val) => {
+        .filter((val: any) => {
           console.log("✅ Filtering value:", val);
           return val;
         });
