@@ -1,5 +1,5 @@
 "use client";
-import React, { Suspense } from 'react';
+import React, { Suspense } from "react";
 import BookingForm from "@/components/elements/BookingForm";
 import Layout from "@/components/layout/Layout";
 import "./Alldetials";
@@ -13,18 +13,18 @@ import { checkTokenExpiry } from "@/services/Utils";
 
 const BookingDetailsPage = () => {
   const router = useRouter();
-    useEffect(() => {
-      const tokenValid = checkTokenExpiry();
-  
-      console.log("tokenValid ==> ", tokenValid);
-  
-      if (!tokenValid) {
-        localStorage.removeItem("authToken");
-        router.push("/login");
-      } else {
-        setLoading(false);
-      }
-    }, [router]);
+  useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) {
+      localStorage.removeItem("authToken");
+      router.push("/login");
+    } else {
+      setLoading(false);
+    }
+  }, [router]);
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("booking_id");
 
@@ -302,7 +302,7 @@ const BookingDetailsPage = () => {
           </section>
 
           {loading ? (
-          <BookingSkeleton />
+            <BookingSkeleton />
           ) : (
             <section className="section-box  background-card">
               <div className="container pt-1">
