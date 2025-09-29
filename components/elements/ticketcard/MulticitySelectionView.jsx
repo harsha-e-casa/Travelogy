@@ -10,6 +10,9 @@ import ByStops from "@/components/Filter/ByStops";
 import ByDepartureTime from "@/components/Filter/ByDepartureTime";
 import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByAirline from "@/components/Filter/ByAirline";
+import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
+import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
+import ByFareType from "@/components/Filter/ByFareType";
 import SelectedFlightSummary from "./SelectedFlightSummary";
 
 export default function MulticitySelectionView({ flightData }) {
@@ -19,6 +22,70 @@ export default function MulticitySelectionView({ flightData }) {
   const [selectedFlights, setSelectedFlights] = useState({});
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [filters, setFilters] = useState([]);
+  const [uniqueFareIdentifiers, setUniqueFareIdentifiers] = useState([]);
+  const [uniqueFareTypes, setUniqueFareTypes] = useState([]);
+  const [selectedFares, setSelectedFares] = useState([])
+  const [showAllFares, setShowAllFares] = useState(false)
+
+  useEffect(() => {
+    if (flightData && activeTabKey) {
+      const tabIndex = parseInt(activeTabKey) - 1;
+      const flightsForSegment = flightData[String(tabIndex)] || [];
+
+      const allFareIdentifiers = flightsForSegment
+        .flatMap((ticket) =>
+          ticket.totalPriceList.map((priceInfo) => priceInfo.fareIdentifier)
+        )
+        .filter(Boolean);
+
+      const fareCounts = allFareIdentifiers.reduce((acc, fare) => {
+        acc[fare] = (acc[fare] || 0) + 1;
+        return acc;
+      }, {});
+
+      const uniqueFaresWithCounts = Object.keys(fareCounts).map((fare) => ({
+        name: fare,
+        count: fareCounts[fare],
+      }));
+
+      setUniqueFareIdentifiers(uniqueFaresWithCounts);
+    }
+  }, [flightData, activeTabKey]);
+
+  useEffect(() => {
+    if (flightData && activeTabKey) {
+      const tabIndex = parseInt(activeTabKey) - 1;
+      const flightsForSegment = flightData[String(tabIndex)] || [];
+
+      const FARE_TYPE_LABEL = {
+        "1": "Refundable",
+        "2": "Partial Refundable",
+      };
+
+      const allFareTypes = (flightsForSegment || [])
+        .flatMap((ticket) =>
+          (ticket.totalPriceList || []).flatMap((priceInfo) =>
+            Object.values(priceInfo.fd || {}).map((pax) => String(pax?.rT))
+          )
+        )
+        .filter(Boolean);
+
+      const fareTypeCounts = allFareTypes.reduce((acc, code) => {
+        const label = FARE_TYPE_LABEL[code] ?? code;
+        acc[label] = (acc[label] || 0) + 1;
+        return acc;
+      }, {});
+
+      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
+        (label) => ({
+          name: label,
+          count: fareTypeCounts[label],
+        })
+      );
+
+      setUniqueFareTypes(uniqueFaresWithCounts);
+    }
+  }, [flightData, activeTabKey]);
 
   const applyFilters = (flights, filter) => {
     if (!filter) return flights;
@@ -91,6 +158,40 @@ export default function MulticitySelectionView({ flightData }) {
       );
     }
 
+    if (filter.fareIdentifiers.length > 0) {
+      filteredData = filteredData.filter((ticket) =>
+        ticket.totalPriceList?.some(
+          (p) => p?.fareIdentifier && filter.fareIdentifiers.includes(p.fareIdentifier)
+        )
+      );
+    }
+
+    if (filter.flightNumberSearch) {
+      filteredData = filteredData.filter((ticket) => {
+        return ticket.sI.some((segment) =>
+          segment.fD.fN
+            .toLowerCase()
+            .includes(filter.flightNumberSearch.toLowerCase())
+        );
+      });
+    }
+
+    if (filter.selectedFareTypes.length > 0) {
+      const FARE_TYPE_LABEL = {
+        "1": "Refundable",
+        "2": "Partial Refundable",
+      };
+      filteredData = filteredData.filter((ticket) =>
+        (ticket.totalPriceList || []).some((priceInfo) =>
+          Object.values(priceInfo.fd || {}).some((pax) => {
+            const code = String(pax?.rT);
+            const label = FARE_TYPE_LABEL[code] ?? code;
+            return filter.selectedFareTypes.includes(label);
+          })
+        )
+      );
+    }
+
     return filteredData;
   };
 
@@ -112,18 +213,32 @@ export default function MulticitySelectionView({ flightData }) {
   const cities = [...firstIdxCity, ...simplifiedSegments];
 
   useEffect(() => {
-    // Initialize filters only when the number of cities/legs changes
-    if (filters.length !== cities.length) {
-      const initialFilters = cities.map(() => ({
-        priceRange: [0, 100000],
-        stops: "all",
-        departureTime: "all",
-        arrivalTime: "all",
-        selectedAirlines: [],
-      }));
+    if (flightData) {
+      const initialFilters = cities.map((_, tabIndex) => {
+        const flightsForSegment = flightData[String(tabIndex)] || [];
+        const prices = flightsForSegment.map(
+          (ticket) => ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0
+        );
+        const minPrice = Math.min(...prices);
+        const maxPrice = Math.max(...prices);
+
+        return {
+          priceRange: [minPrice, maxPrice],
+          minPriceRange: minPrice,
+          maxPriceRange: maxPrice,
+          stops: "all",
+          departureTime: "all",
+          arrivalTime: "all",
+          selectedAirlines: [],
+          fareIdentifiers: [],
+          flightNumberSearch: "",
+          selectedFareTypes: [],
+        };
+      });
+      console.log("initialFilters ==> ",initialFilters)
       setFilters(initialFilters);
     }
-  }, [cities.length]); // Depend on cities.length to re-initialize only when legs change
+  }, [flightData, cities.length]);
 
   const [departureFrom, setDepartureFrom] = useState("");
   const [arrivalTo, setArrivalTo] = useState("");
@@ -131,17 +246,15 @@ export default function MulticitySelectionView({ flightData }) {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
-  const [selectedFares, setSelectedFares] = useState({});
-  const [showAllFares, setShowAllFares] = useState(false);
 
-  const setSelectedFare = (tabIndex, flightIndex, fareIndex) => {
-    setSelectedFares((prev) => ({
-      ...prev,
-      [tabIndex]: {
-        ...(prev[tabIndex] || {}),
-        [flightIndex]: fareIndex,
-      },
-    }));
+  const formatTime = (durationInMinutes) => {
+    const hours = Math.floor(durationInMinutes / 60);
+    const minutes = durationInMinutes % 60;
+
+    if (hours === 0) return `${minutes}m`;
+    if (minutes === 0) return `${hours}h`;
+
+    return `${hours}h ${minutes}m`;
   };
 
   useEffect(() => {
@@ -157,8 +270,14 @@ export default function MulticitySelectionView({ flightData }) {
     if (!isNaN(infant)) setInfantCount(infant);
   }, []);
 
-  const onChange = (key) => {
-    console.log("Selected Tab:", key);
+  const setSelectedFare = (tabIndex, flightIndex, fareIndex) => {
+    setSelectedFares((prev) => ({
+      ...prev,
+      [tabIndex]: {
+        ...(prev[tabIndex] || {}),
+        [flightIndex]: fareIndex,
+      },
+    }));
   };
 
   const matchedFlights = cities.map((cityPair, tabIndex) => {
@@ -171,17 +290,6 @@ export default function MulticitySelectionView({ flightData }) {
     };
   });
 
-  console.log("matched flight", matchedFlights);
-
-  const formatTime = (durationInMinutes) => {
-    const hours = Math.floor(durationInMinutes / 60);
-    const minutes = durationInMinutes % 60;
-
-    if (hours === 0) return `${minutes}m`;
-    if (minutes === 0) return `${hours}h`;
-
-    return `${hours}h ${minutes}m`;
-  };
   const tabItems = matchedFlights.map((pair, tabIndex) => {
     const firstFlight = pair.flights[0];
     let travelDate = "";
@@ -219,7 +327,7 @@ export default function MulticitySelectionView({ flightData }) {
       children: (
         <div className="row">
           <div className="col-lg-3">
-            <div className="sidebar-left border-1 background-body">
+            {/* <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
                   <h6 className="text-lg-bold item-collapse neutral-1000">
@@ -238,10 +346,12 @@ export default function MulticitySelectionView({ flightData }) {
                         return newFilters;
                       });
                     }}
+                    minPriceRange={filters[tabIndex]?.minPriceRange}
+                    maxPriceRange={filters[tabIndex]?.maxPriceRange}
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
@@ -343,6 +453,75 @@ export default function MulticitySelectionView({ flightData }) {
                       }}
                     />
                   </div>
+                </div>
+              </div>
+            </div>
+            <div className="sidebar-left border-1 background-body">
+              <div className="box-filters-sidebar">
+                <div className="block-filter border-1">
+                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                    Fare Identifier
+                  </h6>
+                  <ByFareIdentifier
+                    key={`fare-${tabIndex}`}
+                    fareIdentifiers={filters[tabIndex]?.fareIdentifiers}
+                    setFareIdentifiers={(newFareIdentifiers) => {
+                      setFilters((prevFilters) => {
+                        const newFilters = [...prevFilters];
+                        newFilters[tabIndex] = {
+                          ...newFilters[tabIndex],
+                          fareIdentifiers: newFareIdentifiers,
+                        };
+                        return newFilters;
+                      });
+                    }}
+                    options={uniqueFareIdentifiers}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sidebar-left border-1 background-body">
+              <div className="box-filters-sidebar">
+                <div className="block-filter border-1">
+                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                    Flight Number
+                  </h6>
+                  <ByAirlineSearch
+                    flightNumberSearch={filters[tabIndex]?.flightNumberSearch}
+                    setFlightNumberSearch={(newFlightNumberSearch) => {
+                      setFilters((prevFilters) => {
+                        const newFilters = [...prevFilters];
+                        newFilters[tabIndex] = {
+                          ...newFilters[tabIndex],
+                          flightNumberSearch: newFlightNumberSearch,
+                        };
+                        return newFilters;
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="sidebar-left border-1 background-body">
+              <div className="box-filters-sidebar">
+                <div className="block-filter border-1">
+                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                    Fare Type
+                  </h6>
+                  <ByFareType
+                    selectedFareTypes={filters[tabIndex]?.selectedFareTypes}
+                    setSelectedFareTypes={(newFareTypes) => {
+                      setFilters((prevFilters) => {
+                        const newFilters = [...prevFilters];
+                        newFilters[tabIndex] = {
+                          ...newFilters[tabIndex],
+                          selectedFareTypes: newFareTypes,
+                        };
+                        return newFilters;
+                      });
+                    }}
+                    options={uniqueFareTypes}
+                  />
                 </div>
               </div>
             </div>
@@ -548,7 +727,7 @@ export default function MulticitySelectionView({ flightData }) {
                                 const lastSegment =
                                   ticket.sI[ticket.sI.length - 1];
 
-                                console.log("ticket", ticket);
+
                                 const isUatAirlineLogo = isUat
                                   ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
                                   : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
@@ -573,7 +752,7 @@ export default function MulticitySelectionView({ flightData }) {
                                     "en-IN"
                                   ).format(fareFD.ADULT?.fC?.NF || 0),
                                 };
-                                console.log("updatedFlight", updatedFlight);
+
 
                                 setSelectedFlights((prev) => {
                                   const newFlights = {
@@ -609,7 +788,6 @@ export default function MulticitySelectionView({ flightData }) {
 
   const isLastFlightSelected =
     Object.keys(selectedFlights).length === cities.length;
-  console.log("isLastFlightSelected", isLastFlightSelected);
 
   return (
     <>
@@ -627,5 +805,5 @@ export default function MulticitySelectionView({ flightData }) {
         />
       )}
     </>
-  );
+  )
 }
