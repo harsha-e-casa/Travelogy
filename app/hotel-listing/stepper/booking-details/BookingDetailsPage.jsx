@@ -15,6 +15,7 @@ import { DownOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { postData } from "@/services/NetworkAdapter";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -62,22 +63,21 @@ const BookingDetailsPage = () => {
         requestData: paymentData,
       };
 
-      const response = await postData(
-        "travelogy/hotel/fetch-data",
-        reqBody
-      );
+      const response = await postData("travelogy/hotel/fetch-data", reqBody);
 
-      const data = await response.json();
+      console.log("Booking response Success:", response);
+      console.log("Booking response Success:", response.status);
 
-      if (!response.ok) {
-        console.error("Error confirming booking:", data);
-        alert(
-          data?.message || "Booking confirmation failed. Please try again."
-        );
-        return;
-      }
+      // const data = await response.json();
 
-      console.log("Booking Success:", data);
+      // if (!response.ok) {
+      //   console.error("Error confirming booking:", data);
+      //   alert(
+      //     data?.message || "Booking confirmation failed. Please try again."
+      //   );
+      //   return;
+      // }
+
       // alert("Booking confirmed successfully!");
 
       setLoading(true);
