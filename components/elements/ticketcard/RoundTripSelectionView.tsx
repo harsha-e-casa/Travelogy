@@ -19,8 +19,6 @@ interface SelectedTicket {
 
 export default function RoundTripSelectionView({ flightData }: any) {
   const isUat = process.env.UAT_ENV === "true";
-  console.log("isUatisUat ==> ", isUat);
-
   const { getCookie } = useContext(AppContext);
   const departureFrom = getCookie("gy_da_str");
   const arrivalTo = getCookie("gy_aa_str");
@@ -108,25 +106,13 @@ export default function RoundTripSelectionView({ flightData }: any) {
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.RETURN)) {
       const onwardDataToCheck = flightData.ONWARD;
-      console.log("onwardDataToCheck ==> ", onwardDataToCheck);
       const returnDataToCheck = flightData.RETURN;
-      console.log("returnDataToCheck ==> ", returnDataToCheck);
+
       const [onwardMinPrice, onwardMaxPrice] =
         getPriceRangeFromData(onwardDataToCheck);
-      console.log(
-        "onwardMinPrice and onwardMaxPrice => ",
-        onwardMinPrice,
-        " ",
-        onwardMaxPrice
-      );
+
       const [returnMinPrice, returnMaxPrice] =
         getPriceRangeFromData(returnDataToCheck);
-      console.log(
-        "returnMinPrice and returnMaxPrice => ",
-        returnMinPrice,
-        " ",
-        returnMaxPrice
-      );
 
       if (tripPhase === "ONWARD") {
         setMinOnwardPriceRange(onwardMinPrice);
@@ -139,7 +125,6 @@ export default function RoundTripSelectionView({ flightData }: any) {
           setOnwardPriceRange([onwardMinPrice, onwardMaxPrice]);
         }
       } else {
-        console.log("mame else le vnata da .. vere error ah irukum");
         setMinReturnPriceRange(returnMinPrice);
         setMaxReturnPriceRange(returnMaxPrice);
 
@@ -174,10 +159,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
         )
         .filter(Boolean);
 
-      console.log("🎯 Final allFareTypes:", allFareTypes);
-
       const fareTypeCounts = allFareTypes.reduce((acc: any, code: string) => {
-        console.log("codecodecodecodecode ==> ",code)
         const label = FARE_TYPE_LABEL[code] ?? code;
         acc[label] = (acc[label] || 0) + 1;
         return acc;
@@ -188,9 +170,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           name: label,
           count: fareTypeCounts[label],
         })
-      );
-
-      setUniqueFareTypes(uniqueFaresWithCounts);
+      );      setUniqueFareTypes(uniqueFaresWithCounts);
     }
   }, [flightData, tripPhase]);
 
@@ -220,8 +200,6 @@ export default function RoundTripSelectionView({ flightData }: any) {
         name: fare,
         count: fareCounts[fare],
       }));
-
-      console.log("uniqueFaresWithCounts ==> ", uniqueFaresWithCounts);
 
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
     }
@@ -382,21 +360,14 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
   const handleTicketSelected = (ticket: any, selectedPriceIndex: number) => {
     if (tripPhase === "ONWARD") {
-      console.log("ticketttttttttttttttt ", ticket);
-      console.log("ticketttttttttttttttt ", selectedPriceIndex);
       setSelectedOnwardTicket({ ticket, selectedPriceIndex }); // save selected onward
       setCurrentTickets(flightData.RETURN); // move to return flights
       setTripPhase("RETURN");
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } else {
-      // Final step — onward and return selected
-      console.log("Selected ONWARD:", selectedOnwardTicket);
-      console.log("Selected RETURN:", ticket);
-      // handle complete selection
-    }
+    } 
   };
 
-  console.log("selectedOnwardTicket == ", selectedOnwardTicket);
+
 
   return (
     <>
@@ -708,7 +679,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
               <p className="text-sm text-white font-medium">
                 Fare: ₹
                 {(() => {
-                  console.log("ssss");
+
                   let adultCost = 0;
                   let childCost = 0;
                   let infantCost = 0;
@@ -721,13 +692,13 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       getCookie("gy_adult") !== undefined &&
                       getCookie("gy_adult") !== "Nan"
                     ) {
-                      console.log("adult count state == ", adultCount);
+
                       adultCost =
                         adultCount *
                         selectedOnwardTicket.ticket.totalPriceList[
                           selectedOnwardTicket.selectedPriceIndex
                         ].fd?.ADULT?.fC?.NF;
-                      console.log("adult total cost = ", adultCost);
+
                     }
                   }
                   if (
@@ -739,13 +710,13 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       getCookie("gy_child") !== undefined &&
                       getCookie("gy_child") !== "Nan"
                     ) {
-                      console.log("child count state == ", childCount);
+
                       childCost =
                         childCount *
                         selectedOnwardTicket.ticket.totalPriceList[
                           selectedOnwardTicket.selectedPriceIndex
                         ].fd?.CHILD?.fC?.NF;
-                      console.log("child total cost = ", childCost);
+
                     }
                   }
                   if (
@@ -757,13 +728,13 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       getCookie("gy_infant") !== undefined &&
                       getCookie("gy_infant") !== "Nan"
                     ) {
-                      console.log("infant count state == ", infantCount);
+
                       infantCost =
                         infantCount *
                         selectedOnwardTicket.ticket.totalPriceList[
                           selectedOnwardTicket.selectedPriceIndex
                         ].fd?.INFANT?.fC?.NF;
-                      console.log("infant total cost = ", infantCost);
+
                     }
                   }
 

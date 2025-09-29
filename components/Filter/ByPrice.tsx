@@ -142,10 +142,8 @@ export default function ByPrice({
   minPriceRange,
   maxPriceRange,
 }: any) {
-  console.log("Byprice priceRange ==> ",priceRange)
-  console.log("Byprice setPriceRange ==> ",setPriceRange)
-  console.log("Byprice minPriceRange ==> ",minPriceRange)
-  console.log("Byprice maxPriceRange ==> ",maxPriceRange)
+
+  console.log("byprice ==> ",priceRange)
   const STEP = 10;
   const MIN = minPriceRange ?? 0;
   const MAX = maxPriceRange ?? 100000000;
@@ -215,9 +213,9 @@ export default function ByPrice({
           type="number"
           className="form-control me-2"
           placeholder="Min"
-          value={priceRange[0]}
+          value={priceRange?.[0] || 0}
           min={MIN}
-          max={priceRange[1]}
+          max={priceRange?.[1] || 10000000}
           onChange={(e) => {
             const val = Number(e.target.value);
             if (isNaN(val)) return;
@@ -231,8 +229,8 @@ export default function ByPrice({
           type="number"
           className="form-control"
           placeholder="Max"
-          value={priceRange[1]}
-          min={priceRange[0]}
+          value={priceRange?.[1] || 100000000}
+          min={priceRange?.[0] || 0}
           max={MAX}
           onChange={(e) => {
             const val = Number(e.target.value);

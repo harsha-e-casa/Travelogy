@@ -256,7 +256,7 @@ export default function DomesticRoundTripTicketCard({
                           {e.fd.ADULT.cc} |
                           <span className="refundable">
                             {" "}
-                            {e.fd.rT === 1 ? "Non-refundable" : "Refundable"}
+                            {e.fd.ADULT.rT === 1 ? "Refundable" : "Partial Refundable"}
                           </span>
                         </span>
                       </div>
