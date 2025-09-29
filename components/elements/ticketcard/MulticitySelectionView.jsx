@@ -24,8 +24,8 @@ export default function MulticitySelectionView({ flightData }) {
   const [filters, setFilters] = useState([]);
   const [uniqueFareIdentifiers, setUniqueFareIdentifiers] = useState([]);
   const [uniqueFareTypes, setUniqueFareTypes] = useState([]);
-  const [selectedFares, setSelectedFares] = useState([])
-  const [showAllFares, setShowAllFares] = useState(false)
+  const [selectedFares, setSelectedFares] = useState([]);
+  const [showAllFares, setShowAllFares] = useState(false);
 
   useEffect(() => {
     if (flightData && activeTabKey) {
@@ -58,8 +58,8 @@ export default function MulticitySelectionView({ flightData }) {
       const flightsForSegment = flightData[String(tabIndex)] || [];
 
       const FARE_TYPE_LABEL = {
-        "1": "Refundable",
-        "2": "Partial Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
       };
 
       const allFareTypes = (flightsForSegment || [])
@@ -161,7 +161,9 @@ export default function MulticitySelectionView({ flightData }) {
     if (filter.fareIdentifiers.length > 0) {
       filteredData = filteredData.filter((ticket) =>
         ticket.totalPriceList?.some(
-          (p) => p?.fareIdentifier && filter.fareIdentifiers.includes(p.fareIdentifier)
+          (p) =>
+            p?.fareIdentifier &&
+            filter.fareIdentifiers.includes(p.fareIdentifier)
         )
       );
     }
@@ -178,8 +180,8 @@ export default function MulticitySelectionView({ flightData }) {
 
     if (filter.selectedFareTypes.length > 0) {
       const FARE_TYPE_LABEL = {
-        "1": "Refundable",
-        "2": "Partial Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
       };
       filteredData = filteredData.filter((ticket) =>
         (ticket.totalPriceList || []).some((priceInfo) =>
@@ -212,20 +214,59 @@ export default function MulticitySelectionView({ flightData }) {
 
   const cities = [...firstIdxCity, ...simplifiedSegments];
 
+  // useEffect(() => {
+  //   if (flightData) {
+  //     const initialFilters = cities.map((_, tabIndex) => {
+  //       const flightsForSegment = flightData[String(tabIndex)] || [];
+  //       const prices = flightsForSegment.map(
+  //         (ticket) => ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0
+  //       );
+  //       const minPrice = Math.min(...prices);
+  //       const maxPrice = Math.max(...prices);
+
+  //       return {
+  //         priceRange: [minPrice, maxPrice],
+  //         minPriceRange: minPrice,
+  //         maxPriceRange: maxPrice,
+  //         stops: "all",
+  //         departureTime: "all",
+  //         arrivalTime: "all",
+  //         selectedAirlines: [],
+  //         fareIdentifiers: [],
+  //         flightNumberSearch: "",
+  //         selectedFareTypes: [],
+  //       };
+  //     });
+  //     setFilters(initialFilters);
+  //   }
+  // }, [flightData, cities.length]);
+
+  const getSafeMinMax = (prices) => {
+    if (!Array.isArray(prices) || prices.length === 0) {
+      return { min: 0, max: 10000000 };
+    }
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    return {
+      min: Number.isFinite(min) ? min : 0,
+      max: Number.isFinite(max) ? max : 0,
+    };
+  };
+
   useEffect(() => {
     if (flightData) {
       const initialFilters = cities.map((_, tabIndex) => {
         const flightsForSegment = flightData[String(tabIndex)] || [];
         const prices = flightsForSegment.map(
-          (ticket) => ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0
+          (t) => t?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0
         );
-        const minPrice = Math.min(...prices);
-        const maxPrice = Math.max(...prices);
+
+        const { min, max } = getSafeMinMax(prices);
 
         return {
-          priceRange: [minPrice, maxPrice],
-          minPriceRange: minPrice,
-          maxPriceRange: maxPrice,
+          priceRange: [min, Math.max(min, max)], // ensure range is not inverted
+          minPriceRange: min,
+          maxPriceRange: Math.max(min, max),
           stops: "all",
           departureTime: "all",
           arrivalTime: "all",
@@ -235,7 +276,7 @@ export default function MulticitySelectionView({ flightData }) {
           selectedFareTypes: [],
         };
       });
-      console.log("initialFilters ==> ",initialFilters)
+
       setFilters(initialFilters);
     }
   }, [flightData, cities.length]);
@@ -290,6 +331,8 @@ export default function MulticitySelectionView({ flightData }) {
     };
   });
 
+  const currentFilter = filters[0];
+
   const tabItems = matchedFlights.map((pair, tabIndex) => {
     const firstFlight = pair.flights[0];
     let travelDate = "";
@@ -327,31 +370,64 @@ export default function MulticitySelectionView({ flightData }) {
       children: (
         <div className="row">
           <div className="col-lg-3">
-            {/* <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
-                    Filter Price{" "}
-                  </h6>
-                  <ByPrice
-                    key={`price-${tabIndex}`}
-                    priceRange={filters[tabIndex]?.priceRange}
-                    setPriceRange={(newRange) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          priceRange: newRange,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                    minPriceRange={filters[tabIndex]?.minPriceRange}
-                    maxPriceRange={filters[tabIndex]?.maxPriceRange}
-                  />
+            {!currentFilter && (
+              <div className="p-3 text-sm text-gray-500">Loading filters…</div>
+            )}
+            {currentFilter && (
+              <div className="sidebar-left border-1 background-body">
+                <div className="box-filters-sidebar">
+                  <div className="block-filter border-1">
+                    <h6 className="text-lg-bold item-collapse neutral-1000">
+                      Filter Price{" "}
+                    </h6>
+                    {/* <ByPrice
+                      key={`price-${tabIndex}`}
+                      priceRange={filters[tabIndex]?.priceRange}
+                      setPriceRange={(newRange) => {
+                        setFilters((prevFilters) => {
+                          const newFilters = [...prevFilters];
+                          newFilters[tabIndex] = {
+                            ...newFilters[tabIndex],
+                            priceRange: newRange,
+                          };
+                          return newFilters;
+                        });
+                      }}
+                      minPriceRange={filters[tabIndex]?.minPriceRange}
+                      maxPriceRange={filters[tabIndex]?.maxPriceRange}
+                    /> */}
+                    <ByPrice
+                      key={`price-${tabIndex}`}
+                      priceRange={
+                        Array.isArray(filters[tabIndex]?.priceRange)
+                          ? filters[tabIndex].priceRange
+                          : [0, 100000000]
+                      }
+                      setPriceRange={(newRange) => {
+                        setFilters((prev) => {
+                          const next = [...prev];
+                          next[tabIndex] = {
+                            ...next[tabIndex],
+                            priceRange: newRange,
+                          };
+                          return next;
+                        });
+                      }}
+                      minPriceRange={
+                        Number.isFinite(filters[tabIndex]?.minPriceRange)
+                          ? filters[tabIndex].minPriceRange
+                          : 0
+                      }
+                      maxPriceRange={
+                        Number.isFinite(filters[tabIndex]?.maxPriceRange)
+                          ? filters[tabIndex].maxPriceRange
+                          : 100000000
+                      }
+                    />
+                  </div>
                 </div>
               </div>
-            </div> */}
+            )}
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
@@ -678,9 +754,9 @@ export default function MulticitySelectionView({ flightData }) {
                                         <span className="ml-2 cabinclass">
                                           {e.fd.ADULT.cc} |{" "}
                                           <span className="refundable">
-                                            {e.fd.rT === 1
-                                              ? "Non-refundable"
-                                              : "Refundable"}
+                                            {e.fd.ADULT.rT === 1
+                                              ? "Refundable"
+                                              : "Partial Refundable"}
                                           </span>
                                         </span>
                                       </div>
@@ -727,7 +803,6 @@ export default function MulticitySelectionView({ flightData }) {
                                 const lastSegment =
                                   ticket.sI[ticket.sI.length - 1];
 
-
                                 const isUatAirlineLogo = isUat
                                   ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
                                   : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
@@ -752,7 +827,6 @@ export default function MulticitySelectionView({ flightData }) {
                                     "en-IN"
                                   ).format(fareFD.ADULT?.fC?.NF || 0),
                                 };
-
 
                                 setSelectedFlights((prev) => {
                                   const newFlights = {
@@ -805,5 +879,5 @@ export default function MulticitySelectionView({ flightData }) {
         />
       )}
     </>
-  )
+  );
 }
