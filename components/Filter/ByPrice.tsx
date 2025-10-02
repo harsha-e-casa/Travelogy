@@ -133,24 +133,56 @@
 //   );
 // }
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Range } from "react-range";
 
 export default function ByPrice({
+  flightData,
   priceRange,
   setPriceRange,
-  minPriceRange,
-  maxPriceRange,
 }: any) {
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(100000000);
 
-  console.log("byprice ==> ",priceRange)
+  useEffect(() => {
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
+      const dataToCheck = flightData.ONWARD || flightData.COMBO;
+      const prices: number[] = [];
+
+      dataToCheck.forEach((ticket: any) => {
+        const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+        if (price !== undefined) {
+          prices.push(price);
+        }
+      });
+
+      if (prices.length > 0) {
+        const calculatedMinPrice = Math.min(...prices);
+        const calculatedMaxPrice = Math.max(...prices);
+        setMinPrice(calculatedMinPrice);
+        setMaxPrice(calculatedMaxPrice);
+
+        // Initialize priceRange if it's still at default or outside new bounds
+        if (priceRange[0] === 0 && priceRange[1] === 100000000) {
+          setPriceRange([calculatedMinPrice, calculatedMaxPrice]);
+        } else {
+          // Adjust current range if it's out of new bounds
+          const newMin = Math.max(priceRange[0], calculatedMinPrice);
+          const newMax = Math.min(priceRange[1], calculatedMaxPrice);
+          if (newMin !== priceRange[0] || newMax !== priceRange[1]) {
+            setPriceRange([newMin, newMax]);
+          }
+        }
+      }
+    }
+  }, [flightData]);
+
   const STEP = 10;
-  const MIN = minPriceRange ?? 0;
-  const MAX = maxPriceRange ?? 100000000;
+  const MIN = minPrice;
+  const MAX = maxPrice;
 
   return (
     <div className="box-collapse scrollFilter">
-
       {/* Dual-thumb Range Slider */}
       <Range
         step={STEP}
@@ -215,7 +247,7 @@ export default function ByPrice({
           placeholder="Min"
           value={priceRange?.[0] || 0}
           min={MIN}
-          max={priceRange?.[1] || 10000000}
+          max={priceRange?.[1] || MAX}
           onChange={(e) => {
             const val = Number(e.target.value);
             if (isNaN(val)) return;
@@ -229,8 +261,8 @@ export default function ByPrice({
           type="number"
           className="form-control"
           placeholder="Max"
-          value={priceRange?.[1] || 100000000}
-          min={priceRange?.[0] || 0}
+          value={priceRange?.[1] || MAX}
+          min={priceRange?.[0] || MIN}
           max={MAX}
           onChange={(e) => {
             const val = Number(e.target.value);
