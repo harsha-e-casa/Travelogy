@@ -204,7 +204,7 @@ export default function Tickets() {
                         </div>
                         <div className="step-info">
                           <p className="text-xl-bold neutral-1000">
-                            Search for Flights
+                            Search for Hotels
                           </p>
                           <p className="text-sm-medium neutral-500">
                             Begin your journey by entering your departure city,

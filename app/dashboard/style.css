@@ -247,4 +247,358 @@ font-size: 10px;
 
         }
 
+/* Enhanced Dashboard Styles */
+
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #a39892 0%, #ffc75f 100%);
+  padding: 2rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  background: linear-gradient(135deg, #f79421, #d6b810);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-message {
+  margin: 0.5rem 0 0 0;
+  font-size: 1.1rem;
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-size: 1.2rem;
+  color: #6b7280;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dashboard-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.bookings-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: visible; /* Changed from hidden to visible to prevent clipping */
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+  max-width: 100%;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  min-width: 320px; /* Added min-width to prevent squishing */
+}
+
+.enhanced-tabs {
+  margin-top: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  min-width: 320px; /* Added min-width to tabs container */
+}
+
+.enhanced-tabs .ant-tabs-content-holder {
+  overflow-x: auto; /* Allow horizontal scroll if content is wide */
+  min-width: 320px;
+}
+
+.enhanced-tabs .ant-tabs-nav-list {
+  flex-wrap: nowrap !important;
+  min-width: 320px; /* Ensure tabs don't wrap and have min width */
+}
+
+.enhanced-tabs .ant-tabs-tab {
+  border-radius: 12px;
+  margin-right: 12px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 120px; /* Ensure tabs have minimum width */
+}
+
+table.min-w-full {
+  min-width: 600px; /* Ensure tables have minimum width to prevent squishing */
+  overflow-x: auto;
+  display: block;
+}
+
+.booking-tab {
+  font-size: 1rem;
+  padding: 1rem;
+  color: #555;
+}
+
+.bookings-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-header {
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: fixed;
+}
+
+.card-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.card-icon {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #f79421, #f79421);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  flex-shrink: 0;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-content {
+  padding: 1rem 2rem 2rem 2rem;
+  overflow-x: auto;
+  border-radius: 15px;
+}
+
+.enhanced-tabs {
+  margin-top: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.enhanced-tabs .ant-tabs-nav-list {
+  flex-wrap: nowrap !important;
+}
+
+.enhanced-tabs .ant-tabs-tab {
+  border-radius: 12px;
+  margin-right: 12px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.enhanced-tabs .ant-tabs-tab:hover {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.enhanced-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  background: linear-gradient(135deg, #f79421, #d6b810);
+  color: white;
+}
+
+.enhanced-tabs .ant-tabs-tab.ant-tabs-tab-active .tab-label {
+  color: white;
+}
+
+.tab-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #6b7280;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1rem;
+  }
+
+  .dashboard-header {
+    padding: 1.5rem;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-content h1 {
+    font-size: 2rem;
+  }
+
+  .welcome-message {
+    font-size: 1rem;
+  }
+
+  .card-header {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+  }
+
+  .tab-label {
+    font-size: 0.9rem;
+  }
+}
+
+   @media (max-width: 480px) {
+  .dashboard-header {
+    padding: 1rem;
+  }
+
+  .header-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .card-header {
+    padding: 1rem;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+  }
+
+  .card-content {
+    padding: 1rem;
+  }
+}
+
+/* Responsive Table Styles for HotelBookingList */
+.responsive-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.responsive-table th,
+.responsive-table td {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.responsive-table th {
+  background-color: #f9fafb;
+  cursor: pointer;
+  user-select: none;
+}
+
+.responsive-table td a {
+  color: #22c55e;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  .responsive-table th,
+  .responsive-table td {
+    white-space: normal;
+  }
+}
+
   

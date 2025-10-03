@@ -182,81 +182,106 @@ const Page = () => {
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <section>
-            <div className=" bg-gray-100 p-6 md:p-12 border border-black maindiv flex flex-col lg:flex-row lg:gap-6">
+            <div className="dashboard-container">
+
+              {/* Dashboard Header */}
+              <div className="dashboard-header">
+                <div className="header-content">
+                  <h1 className="dashboard-title">Dashboard</h1>
+                  <p className="welcome-message">
+                    Welcome back{userData?.user?.name ? `, ${userData.user.name}` : ''}! Here's an overview of your bookings.
+                  </p>
+                </div>
+                {/* <div className="header-actions">
+                  <button onClick={handleLogout} className="logout-btn">
+                    Logout
+                  </button>
+                </div> */}
+              </div>
+
+              {/* Loading Overlay */}
+              {loading && (
+                <div className="loading-overlay">
+                  <div className="loading-spinner"></div>
+                  <p>Loading your dashboard...</p>
+                </div>
+              )}
 
               {/* Main content */}
-              <div className="flex-1 space-y-6 ml-20">
+              <div className="dashboard-content">
 
                 {/* bookings */}
-                <div className="bg-white rounded-2xl shadow-md" id="bookings">
-                  <div className="p-4">
-                    <div className="flex flex-row justify-between items-center">
-                      <h4 className="font-bold text-neutral-900 booking-text headings">
-                        Your Bookings
-                      </h4>
-                    </div>
-
-                    <div></div>
-                    <Tabs
-                      defaultActiveKey="1"
-                      className="" // Optional: reduce padding if needed
-                      items={[
-                        {
-                          label: (
-                            <span className="text-md text-neutral-500 booking-tab">
-                              Flight Booking
-                            </span>
-                          ),
-                          key: "1",
-                          children: (
-                            <FlightBookingList
-                              bookings={userBookingData?.bookings}
-                            />
-                          ),
-                        },
-                        {
-                          label: (
-                            <span className="text-md text-neutral-500 booking-tab">
-                              Flight Amendments
-                            </span>
-                          ),
-                          key: "2",
-                          children: (
-                            <AmendmentList
-                              amendments={userAmendmentData?.amendments}
-                            />
-                          ),
-                        },
-                        {
-                          label: (
-                            <span className="text-md text-neutral-500 booking-tab">
-                              Re - Flight Booking
-                            </span>
-                          ),
-                          key: "3",
-                          children: (
-                            <FlightReBookingList
-                              bookings={userReBookingData?.reBookings}
-                            />
-                          ),
-                        },
-                        {
-                          label: (
-                            <span className="text-md text-neutral-500 booking-tab">
-                              Hotel Booking
-                            </span>
-                          ),
-                          key: "4",
-                          children: (
-                            <HotelBookingList
-                              bookings={userHotelBookingData?.bookings}
-                            />
-                          ),
-                        },
-                      ]}
-                    />
+              <div className="bookings-card" id="bookings">
+                <div className="card-header">
+                  <div className="card-title-section">
+                    <div className="card-icon">📋</div>
+                    {/* <h4 className="card-title">
+                      Your Bookings
+                    </h4> */}
                   </div>
                 </div>
+
+                <div className="card-content" style={{ minWidth: '320px', overflowX: 'auto', overflowY: 'auto', height:'68vh', background:'white' }}>
+                  <Tabs
+                    defaultActiveKey="1"
+                    className="enhanced-tabs"
+                    items={[
+                      {
+                        label: (
+                          <span className="tab-label">
+                            ✈️ Flight Booking
+                          </span>
+                        ),
+                        key: "1",
+                        children: (
+                          <FlightBookingList
+                            bookings={userBookingData?.bookings}
+                          />
+                        ),
+                      },
+                      {
+                        label: (
+                          <span className="tab-label">
+                            ✏️ Flight Amendments
+                          </span>
+                        ),
+                        key: "2",
+                        children: (
+                          <AmendmentList
+                            amendments={userAmendmentData?.amendments}
+                          />
+                        ),
+                      },
+                      {
+                        label: (
+                          <span className="tab-label">
+                            🔄 Re - Flight Booking
+                          </span>
+                        ),
+                        key: "3",
+                        children: (
+                          <FlightReBookingList
+                            bookings={userReBookingData?.reBookings}
+                          />
+                        ),
+                      },
+                      {
+                        label: (
+                          <span className="tab-label">
+                            🏨 Hotel Booking
+                          </span>
+                        ),
+                        key: "4",
+                        children: (
+                          <HotelBookingList
+                            bookings={userHotelBookingData?.bookings}
+                          />
+                        ),
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
               </div>
             </div>
           </section>
