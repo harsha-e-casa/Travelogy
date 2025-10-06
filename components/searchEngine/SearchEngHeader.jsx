@@ -239,15 +239,13 @@ const SearchEngHeader = ({ active_border }) => {
             <div className="text-sm-medium text-black card-link">Visa</div>
           </Link>
         </div>
-        <div className="w-32 css_pointer mr-8">
+        {/* <div className="w-32 css_pointer mr-8">
           <div className="section_book_svg_icon">
-            {/*?xml version="1.0" encoding="UTF-8"?*/}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               version="1.1"
               viewBox="0 0 54.38 54.38"
             >
-              {/* <rect class="shadow" x="20" y="25" width="20" height="20" fill="#dfdcdc" /> */}
               <defs>
                 <style
                   dangerouslySetInnerHTML={{
@@ -256,7 +254,6 @@ const SearchEngHeader = ({ active_border }) => {
                   }}
                 />
               </defs>
-              {/* Generator: Adobe Illustrator 28.7.4, SVG Export Plug-In . SVG Version: 1.2.0 Build 166)  */}
               <g>
                 <g id="Layer_1">
                   <g>
@@ -274,7 +271,7 @@ const SearchEngHeader = ({ active_border }) => {
             </svg>
           </div>
           <div className="text-sm-medium text-black card-link">Corporate</div>
-        </div>
+        </div> */}
       </div>
     </>
   );

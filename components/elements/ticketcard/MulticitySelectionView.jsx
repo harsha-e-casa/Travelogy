@@ -58,6 +58,7 @@ export default function MulticitySelectionView({ flightData }) {
       const flightsForSegment = flightData[String(tabIndex)] || [];
 
       const FARE_TYPE_LABEL = {
+        0: "Non Refundable",
         1: "Refundable",
         2: "Partial Refundable",
       };
@@ -180,6 +181,7 @@ export default function MulticitySelectionView({ flightData }) {
 
     if (filter.selectedFareTypes.length > 0) {
       const FARE_TYPE_LABEL = {
+        0: "Non Refundable",
         1: "Refundable",
         2: "Partial Refundable",
       };
@@ -377,25 +379,9 @@ export default function MulticitySelectionView({ flightData }) {
               <div className="sidebar-left border-1 background-body">
                 <div className="box-filters-sidebar">
                   <div className="block-filter border-1">
-                    <h6 className="text-lg-bold item-collapse neutral-1000">
+                    <h6 className="text-lg-bold filter-sty neutral-1000">
                       Filter Price{" "}
                     </h6>
-                    {/* <ByPrice
-                      key={`price-${tabIndex}`}
-                      priceRange={filters[tabIndex]?.priceRange}
-                      setPriceRange={(newRange) => {
-                        setFilters((prevFilters) => {
-                          const newFilters = [...prevFilters];
-                          newFilters[tabIndex] = {
-                            ...newFilters[tabIndex],
-                            priceRange: newRange,
-                          };
-                          return newFilters;
-                        });
-                      }}
-                      minPriceRange={filters[tabIndex]?.minPriceRange}
-                      maxPriceRange={filters[tabIndex]?.maxPriceRange}
-                    /> */}
                     <ByPrice
                       key={`price-${tabIndex}`}
                       priceRange={
@@ -431,7 +417,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Stops
                   </h6>
                   <ByStops
@@ -455,7 +441,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Departure Time
                   </h6>
                   <ByDepartureTime
@@ -479,7 +465,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Arrival Time
                   </h6>
                   <ByArrivalTime
@@ -503,7 +489,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Airlines
                   </h6>
                   <div className="box-collapse scrollFilter">
@@ -535,7 +521,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Fare Identifier
                   </h6>
                   <ByFareIdentifier
@@ -559,7 +545,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Flight Number
                   </h6>
                   <ByAirlineSearch
@@ -581,7 +567,7 @@ export default function MulticitySelectionView({ flightData }) {
             <div className="sidebar-left border-1 background-body">
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
-                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Fare Type
                   </h6>
                   <ByFareType
@@ -608,15 +594,15 @@ export default function MulticitySelectionView({ flightData }) {
                 <div key={i}>
                   <div className="" style={{ paddingBottom: "10px" }}>
                     {ticket.sI.length >= 1 ? (
-                      <div className="combined-connecting-flight  ">
-                        <div className="flex gap-4 border rounded-md justify-between items-center pr-20 ">
+                      <div className="combined-connecting-flight">
+                        <div className="flex gap-4 border rounded-md justify-around items-center pr-20 ">
                           <div className="flex flex-col">
                             {ticket.sI.map((segment, index) => (
                               <div
                                 key={index}
                                 className="relative flex flex-col rounded-md p-5"
                               >
-                                <div
+                                {/* <div
                                   className="air_detailes  "
                                   style={{
                                     width: "unset",
@@ -650,11 +636,30 @@ export default function MulticitySelectionView({ flightData }) {
                                       {segment.fD.aI.name}
                                     </div>
                                   </div>
-                                </div>
+                                </div> */}
                                 <div
-                                  className="flex  justify-between"
+                                  className="flex justify-between"
                                   style={{ width: "500px" }}
                                 >
+                                  <div className="flex flex-col items-center justify-center w-max">
+                                    {isUat && (
+                                      <img
+                                        style={{ width: "50%", margin: "5px" }}
+                                        src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                                      />
+                                    )}
+                                    {!isUat && (
+                                      <img
+                                        style={{ width: "50%", margin: "5px" }}
+                                        src={`/assets/imgs/airlines/${segment[
+                                          "fD"
+                                        ].aI.code.toLowerCase()}.png`}
+                                      />
+                                    )}
+                                    <div className="text-sm-medium">
+                                      {segment["fD"].aI.name}
+                                    </div>
+                                  </div>
                                   <div
                                     className="text-sm  flex flex-col justify-center items-center "
                                     style={{ width: "150px" }}
@@ -756,7 +761,9 @@ export default function MulticitySelectionView({ flightData }) {
                                           <span className="refundable">
                                             {e.fd.ADULT.rT === 1
                                               ? "Refundable"
-                                              : "Partial Refundable"}
+                                              : e.fd.ADULT.rT === 2
+                                              ? "Partial Refundable"
+                                              : "Non Refundable"}
                                           </span>
                                         </span>
                                       </div>
@@ -784,7 +791,7 @@ export default function MulticitySelectionView({ flightData }) {
                           </div>
                           <div>
                             <button
-                              className="btn btn-gray mt-2 "
+                              className="btn-book-now"
                               onClick={() => {
                                 const selectedFareIndex =
                                   selectedFares[tabIndex]?.[i] ?? 0;

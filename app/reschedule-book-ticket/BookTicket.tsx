@@ -57,6 +57,18 @@ import { checkTokenExpiry } from "@/services/Utils";
 const url =
   "https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg";
 
+type Traveller = {
+  ti: string; // Ticket information
+  fN: string; // First name
+  lN: string; // Last name
+  pt: string; // Passenger type (e.g., ADULT, CHILD, INFANT)
+  di?: string; // Document ID (optional)
+  ssrSeatInfos?: { key: string; code: string }[]; // Seat information (optional)
+  ssrBaggageInfos?: { key: string; code: string }[]; // Baggage information (optional)
+  ssrMealInfos?: { key: string; code: string }[]; // Meal information (optional)
+  dob?: string; // Date of birth (for infants)
+};
+
 export default function BookTicket() {
   const isUat = process.env.UAT_ENV === "true";
   const searchParams = useSearchParams();
@@ -143,6 +155,7 @@ export default function BookTicket() {
   }
 
   const [apiData, setApiData] = useState<any>(null);
+  const [bookingFormKey, setBookingFormKey] = useState<any>(1);
   const [segments, setSegments] = useState<FlightSegment[]>([]);
   const [segmentsPrice, setSegmentsPrice] = useState<TotalPriceListSeg[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -159,16 +172,25 @@ export default function BookTicket() {
   const [groupedChildrenV, setGroupedChildren] = useState(null);
   const [groupedInfantsV, setGroupedInfants] = useState(null);
 
-  const [travellerInfoV, setTravellerInfoV] = useState(null);
+  const [travellerInfoV, setTravellerInfoV] = useState<Traveller[]>([]);
 
   const [baggageinfo, setBaggageinfo] = useState([]);
   const fareAlert = useRef<{ oldFare?: number; newFare?: number }>({});
   const [isFareAlertModalOpen, setIsFareAlertModalOpen] = useState(false);
+  const [baggageAmount, setBaggageAmount] = useState(0);
+  const [mealAmount, setMealAmount] = useState(0);
   const closeFareAlertModal = () => {
     setIsFareAlertModalOpen(false);
     fareAlert.current = {};
   };
-
+  const handleBaggageChange = useCallback((amount: number) => {
+    console.log("bag amount ", amount);
+    setBaggageAmount(amount);
+  }, []);
+  const handleMealChange = useCallback((amount: number) => {
+    console.log("meal amount ", amount);
+    setMealAmount(amount);
+  }, []);
   const rsData = getCookie("rs_data");
   const fetchRescheduleData = JSON.parse(rsData);
   console.log(
@@ -179,6 +201,8 @@ export default function BookTicket() {
   const [numAdults, setNumAdults] = useState<number>(0);
   const [numChild, setNumChild] = useState<number>(0);
   const [numInfants, setNumInfants] = useState<number>(0);
+  const [mealinfo, setMealinfo] = useState<any>([]);
+  const [seatinfo, setSeatinfo] = useState<any>([]);
   const [segregateTravellerResultState, setSegregateTravellerResult] = useState(
     {
       segrigatedTravellerInfo: {
@@ -406,6 +430,15 @@ export default function BookTicket() {
     }
   }, [apiData]);
 
+  const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({});
+  useEffect(() => {
+    const storedTravellerInfo: any = getCookie("travellerInfo");
+    if (storedTravellerInfo !== undefined) {
+      console.log("iruku storedTravellerInfo == ", storedTravellerInfo);
+      setStoredTravellerInfos(JSON.parse(storedTravellerInfo));
+    }
+  }, []);
+
   const searchTickets = () => {
     // let departureFrom = getCookie("gy_da");
     // let arrivalTo = getCookie("gy_aa");
@@ -542,8 +575,9 @@ export default function BookTicket() {
 
   const handleNextClick = () => {
     form
-      .validateFields()
+      .validateFields() // Validate all fields
       .then(() => {
+        // Retrieve all form values for the current fields
         const formValues = form.getFieldsValue(true);
         console.log("all form vlaues", formValues);
 
@@ -553,29 +587,39 @@ export default function BookTicket() {
           formValues[`mNumber`],
           formValues[`mEmail`]
         );
-        updateemail(formValues["mEmail"]);
-        updatephone({
-          code: formValues["select_code"],
-          number: formValues["mNumber"],
-        });
+
+        console.log(
+          "GST Number for Business Travel (Optional): ",
+          formValues["gstNumber"],
+          formValues["registeredName"],
+          formValues["companyEmail"],
+          formValues["companyPhone"],
+          formValues["companyAddress"]
+        );
 
         if (
-          formValues["registrationNumber"] &&
-          formValues["companyName"] &&
+          formValues["gstNumber"] &&
+          formValues["registeredName"] &&
           formValues["companyEmail"] &&
           formValues["companyPhone"] &&
           formValues["companyAddress"]
         ) {
           console.log("vantan daaaaaaaaa");
           const gstInfo = {
-            registrationNumber: formValues["registrationNumber"],
-            companyName: formValues["companyName"],
-            companyEmail: formValues["companyEmail"],
-            companyPhone: formValues["companyPhone"],
-            companyAddress: formValues["companyAddress"],
+            gstNumber: formValues["gstNumber"],
+            registeredName: formValues["registeredName"],
+            email: formValues["companyEmail"],
+            mobile: formValues["companyPhone"],
+            address: formValues["companyAddress"],
           };
           setCookie("gst_info", JSON.stringify(gstInfo));
         }
+
+        updateemail(formValues["mEmail"]);
+        updatephone({
+          code: formValues["select_code"],
+          number: formValues["mNumber"],
+        });
 
         const segmentinfo = apiData.tripInfos.flatMap(
           (trip: any) => trip.sI || []
@@ -588,35 +632,47 @@ export default function BookTicket() {
           key: string;
           code: string;
           amount?: number;
-        }[] = [];
+          desc: string;
+        }[] = []; // Type baggage info array
         let mealinfosPaylode: {
           key: string;
           code: string;
           amount: number;
           desc: string;
-        }[] = [];
-
+        }[] = []; // Type meal info array
         let groupedAdults: {
           ti: string;
           fN: string;
           lN: string;
           pt: string;
           di?: string;
+          pNat?: string;
+          pNum?: string;
+          eD?: string;
+          pid?: string;
+          dob?: string;
           ssrSeatInfos?: { key: string; code: string }[];
           ssrBaggageInfos?: { key: string; code: string }[];
           ssrMealInfos?: {
             key: string;
             code: string;
           }[];
-        }[] = [];
+        }[] = []; // Type adult travellers array
 
         for (let i = 0; i < numAdults; i++) {
           const ti = formValues[`select-${i}`];
           const fN = formValues[`fname-${i}`];
           const lN = formValues[`lname-${i}`];
+
+          const pNat = formValues[`adultnationality-${i}`];
+          const pNum = formValues[`adultpassportno-${i}`];
+          const eD = formValues[`adultpassportIssueDate-${i}`];
+          const pid = formValues[`adultpassportExpiryDate-${i}`];
+          const dob = formValues[`adultdob-${i}`];
+
           const documentId = formValues[`documentId-${i}`];
 
-          const seatCookie = getCookie(`re-adult_seat_map-${i + 1}`);
+          const seatCookie = getCookie(`adult_seat_map-${i + 1}`);
           let seatInfo = [];
 
           try {
@@ -629,27 +685,45 @@ export default function BookTicket() {
           }
 
           if (ti && fN && lN) {
+            // const traveller = { ti, fN, lN, pt: "ADULT" };
             const traveller: {
               ti: string;
               fN: string;
               lN: string;
               pt: string;
               di?: string;
+              pNat?: string;
+              pNum?: string;
+              eD?: string;
+              pid?: string;
+              dob?: string;
               ssrSeatInfos?: { key: string; code: string }[];
               ssrBaggageInfos?: { key: string; code: string }[];
               ssrMealInfos?: { key: string; code: string }[];
             } = { ti, fN, lN, pt: "ADULT" };
 
-            if (documentId) {
-              traveller.di = documentId;
-            }
+            if (documentId) traveller.di = documentId;
+            if (pNat) traveller.pNat = pNat;
+            if (pNum) traveller.pNum = pNum;
+            if (eD)
+              traveller.eD = (
+                typeof eD === "string" ? eD : new Date(eD).toISOString()
+              ).split("T")[0];
+            if (pid)
+              traveller.pid = (
+                typeof pid === "string" ? pid : new Date(pid).toISOString()
+              ).split("T")[0];
+            if (dob)
+              traveller.dob = (
+                typeof dob === "string" ? dob : new Date(dob).toISOString()
+              ).split("T")[0];
 
             const baggageInfos: { key: string; code: string }[] = [];
             const mealInfos: { key: string; code: string }[] = [];
 
             segmentinfo.forEach((segment: any, flightIndex: number) => {
               const baggageValue =
-                formValues[`re-adultBaggage-${flightIndex}-${i}`];
+                formValues[`adultBaggage-${flightIndex}-${i}`];
               if (baggageValue) {
                 const [segmentId, baggageCode] = baggageValue.split("|");
 
@@ -664,17 +738,19 @@ export default function BookTicket() {
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
+                console.log("baggageOptionbaggageOption == > ", baggageOption);
 
                 if (baggageOption) {
                   baggageInfosPayload.push({
                     key: segmentId,
                     code: baggageCode,
                     amount: baggageOption.amount,
+                    desc: baggageOption.desc,
                   });
                 }
               }
 
-              const mealValue = formValues[`re-adultMeal-${flightIndex}-${i}`];
+              const mealValue = formValues[`adultMeal-${flightIndex}-${i}`];
               if (mealValue) {
                 const [segmentId, mealCode] = mealValue.split("|");
 
@@ -717,17 +793,24 @@ export default function BookTicket() {
             if (mealInfos.length > 0) {
               traveller.ssrMealInfos = mealInfos;
             }
+            console.log("travellertravellertraveller =====> ", traveller);
             groupedAdults.push(traveller);
           }
         }
 
         // Group children
+        // const groupedChildren = [];
         let groupedChildren: {
           ti: string;
           fN: string;
           lN: string;
           pt: string;
           di?: string;
+          pNat?: string;
+          pNum?: string;
+          eD?: string;
+          pid?: string;
+          dob?: string;
           ssrSeatInfos?: { key: string; code: string }[];
           ssrBaggageInfos?: { key: string; code: string }[];
           ssrMealInfos?: {
@@ -741,7 +824,13 @@ export default function BookTicket() {
           const fN = formValues[`childName-${i}`];
           const lN = formValues[`childlast-${i}`];
 
-          const seatCookie = getCookie(`re-child_seat_map-${i + 1}`);
+          const pNat = formValues[`childnationality-${i}`];
+          const pNum = formValues[`childpassportno-${i}`];
+          const eD = formValues[`childpassportIssueDate-${i}`];
+          const pid = formValues[`childpassportExpiryDate-${i}`];
+          const dob = formValues[`childdob-${i}`];
+
+          const seatCookie = getCookie(`child_seat_map-${i + 1}`);
           let seatInfo = [];
 
           try {
@@ -759,18 +848,39 @@ export default function BookTicket() {
           console.log("groupedChildren seatInfo = ", seatInfo);
 
           if (ti && fN && lN) {
+            // const traveller = { ti, fN, lN, pt: "CHILD" };
             const traveller: {
               ti: string;
               fN: string;
               lN: string;
               pt: string;
               di?: string;
+              pNat?: string;
+              pNum?: string;
+              eD?: string;
+              pid?: string;
+              dob?: string;
               ssrSeatInfos?: { key: string; code: string }[];
               ssrBaggageInfos?: { key: string; code: string }[];
               ssrMealInfos?: { key: string; code: string }[];
             } = { ti, fN, lN, pt: "CHILD" };
 
-            segmentinfo.forEach((segment: any, flightIndex: number) => {
+            if (pNat) traveller.pNat = pNat;
+            if (pNum) traveller.pNum = pNum;
+            if (eD)
+              traveller.eD = (
+                typeof eD === "string" ? eD : new Date(eD).toISOString()
+              ).split("T")[0];
+            if (pid)
+              traveller.pid = (
+                typeof pid === "string" ? pid : new Date(pid).toISOString()
+              ).split("T")[0];
+            if (dob)
+              traveller.dob = (
+                typeof dob === "string" ? dob : new Date(dob).toISOString()
+              ).split("T")[0];
+
+            segmentinfo.forEach((segment: any, flightIndex: any) => {
               const baggageValue =
                 formValues[`childBaggage-${flightIndex}-${i}`];
               if (baggageValue) {
@@ -790,6 +900,7 @@ export default function BookTicket() {
                     key: segmentId,
                     code: baggageCode,
                     amount: baggageOption.amount,
+                    desc: baggageOption.desc,
                   });
                 }
               }
@@ -842,6 +953,7 @@ export default function BookTicket() {
           }
         }
 
+        // Group infants
         const groupedInfants = [];
 
         for (let i = 0; i < numInfants; i++) {
@@ -859,19 +971,31 @@ export default function BookTicket() {
           }
         }
 
+        // Set all grouped travelers and cookie
+        // setBaggageinfo(baggageInfos);
+
         setCookie("baggageinfo", JSON.stringify(baggageInfosPayload), {
           expires: 7,
         });
+        // setBaggageinfo(baggageInfosPayload);
         setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
           expires: 7,
         });
+        // setMealinfo(mealinfosPaylode)
 
-        const travellerInfoV = [
+        console.log("groupedAdultsgroupedAdults === ", groupedAdults);
+
+        console.log("groupedChildrengroupedChildren === ", groupedChildren);
+
+        console.log("groupedInfantsgroupedInfants === ", groupedInfants);
+        // Combine all
+        const travellerInfoV: Traveller[] = [
           ...groupedAdults,
           ...groupedChildren,
           ...groupedInfants,
         ];
         console.log("travellerinfo", travellerInfoV);
+        setTravellerInfoV(travellerInfoV);
         setCookie("travellerInfo", JSON.stringify(travellerInfoV), {
           expires: 7,
         });
@@ -883,6 +1007,7 @@ export default function BookTicket() {
         console.log("Stored Email: key emale", getCookie("email"));
         console.log("Stored Phone: key number", getCookie("number"));
 
+        // api call to save traveller info
         const saveTravellerInfo = async () => {
           const reqTravellerInfo = {
             travellerInfoV,
@@ -897,11 +1022,31 @@ export default function BookTicket() {
           console.log("reqTravellerInfo result === > ", result);
         };
         saveTravellerInfo();
-        // router.push(`/reviewpage?tcs_id=${tcs_id}`);
+
+        // bookingReview();
+        // console.log('All forms are valid!');
+        // alert('Validation success!');
+        // Proceed with form submission or further actions
         router.push(`/reissuereviewpage?tcs_id=${tcs_id}`);
       })
       .catch((errorInfo) => {
         console.log("Validation failed:", errorInfo);
+        if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+          const firstErrorField = errorInfo.errorFields[0].name[0];
+          console.log("firstErrorField = ", firstErrorField);
+
+          const fieldElement = document.querySelector(
+            `[data-name="${firstErrorField}"]`
+          );
+          console.log("fieldElement = ", fieldElement);
+
+          if (fieldElement) {
+            fieldElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }
       });
   };
 
@@ -1224,7 +1369,14 @@ export default function BookTicket() {
                       </div>
                       <BookingForm
                         totalpricee={totalpricee}
+                        mealinfo={mealinfo}
+                        baggageinfo={baggageinfo}
+                        seatinfo={seatinfo}
+                        baggageAmount={baggageAmount}
+                        mealAmount={mealAmount}
+                        bookingFormKey={bookingFormKey}
                         // segmentsPrice={segmentsPrice}
+                        // baggageinfo={baggageinfo}
                       />
                     </div>
                   </div>
@@ -1475,8 +1627,9 @@ export default function BookTicket() {
                                     form={form}
                                     numAdults={numAdults}
                                     numChild={numChild}
-                                    numInfants={numInfants}
                                     apiData={apiData}
+                                    storedTravellerInfos={storedTravellerInfos}
+                                    onBaggageChange={handleBaggageChange}
                                   />
                                 </p>
                               </div>
@@ -1495,6 +1648,8 @@ export default function BookTicket() {
                                     numChild={numChild}
                                     numInfants={numInfants}
                                     apiData={apiData}
+                                    storedTravellerInfos={storedTravellerInfos}
+                                    onMealChange={handleMealChange}
                                   />
                                 </p>
                               </div>

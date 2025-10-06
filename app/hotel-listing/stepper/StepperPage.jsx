@@ -144,7 +144,7 @@ export default function Stepper() {
     }
   }, [formData]);
 
-  // const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
+  const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
   const steps = [
     {
       id: 1,
@@ -153,16 +153,16 @@ export default function Stepper() {
       icon: <UserIcon />,
     },
     { id: 2, title: "Review", subtitle: "Check info", icon: <FileTextIcon /> },
-    // ...(PanRequired !== false
-    //   ? [
+    ...(PanRequired !== false
+      ? [
     {
       id: 3,
       title: "Upload Document",
       subtitle: "Attach files",
       icon: <UploadIcon />,
     },
-    //   ]
-    // : []),
+      ]
+    : []),
     {
       id: 4,
       title: "Payments",
@@ -170,13 +170,13 @@ export default function Stepper() {
       icon: <CreditCardIcon />,
     },
   ];
-  // useEffect(() => {
-  //   if (PanRequired === false && currentStep === 3) {
-  //     setCurrentStep(4);
-  //   }
-  //   if (currentStep < 1) setCurrentStep(1);
-  //   if (currentStep > 4) setCurrentStep(4);
-  // }, [PanRequired]);
+  useEffect(() => {
+    if (PanRequired === false && currentStep === 3) {
+      setCurrentStep(4);
+    }
+    if (currentStep < 1) setCurrentStep(1);
+    if (currentStep > 4) setCurrentStep(4);
+  }, [PanRequired]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentStep]);
@@ -210,10 +210,10 @@ export default function Stepper() {
       }));
     }
 
-    // if (currentStep === 2 && PanRequired === false) {
-    //   setCurrentStep(4);
-    //   return;
-    // }
+    if (currentStep === 2 && PanRequired === false) {
+      setCurrentStep(4);
+      return;
+    }
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
@@ -297,7 +297,7 @@ export default function Stepper() {
                   "FIRST STEP",
                   "SECOND STEP",
                   "THIRD STEP",
-                  // ...(PanRequired === false ? [] : ["THIRD STEP"]),
+                  ...(PanRequired === false ? [] : ["THIRD STEP"]),
                   "FINISH",
                 ];
 
@@ -381,7 +381,7 @@ export default function Stepper() {
                     />
                   )}
                   {currentStep === 3 && 
-                  // PanRequired !== false &&
+                  PanRequired !== false &&
                    (
                     <Step3PersonalDocuments
                       formData={formData}

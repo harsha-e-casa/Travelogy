@@ -868,8 +868,9 @@ export function Step2Review({
       if (response.error) {
         throw new Error(response.error);
       }
-
+     setTimeout(() => {
       window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      }, 100000);
     } catch (error) {
       console.error("Error during block:", error.message);
     } finally {
@@ -1649,7 +1650,10 @@ export function Step3PersonalDocuments({
         hotelReviewData,
         isBlock: true,
       });
+           setTimeout(() => {
       window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      }, 100000);
+      // window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
       message.error("There was an error with the booking process.");
     } finally {

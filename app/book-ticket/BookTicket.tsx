@@ -231,7 +231,7 @@ export default function BookTicket() {
 
         if (!data.status?.success) {
           const apiErrorMessage =
-            data.errors?.[0]?.message || data.errors || "Unknown API error";
+            data.errors?.[0]?.message || data.error || "Unknown API error";
           const apiErrorDetails = data.errors?.[0]?.details || "";
           const fullErrorMessage = `${apiErrorMessage}${
             apiErrorDetails ? ` - ${apiErrorDetails}` : ""

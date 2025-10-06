@@ -13,10 +13,6 @@
 }
 
 .direct-flight-checkbox:checked {
-  background-color: #e9970038;  
-}
-
-.direct-flight-checkbox:checked {
   background-color: #e9970038;
   border-color: orange;
 }

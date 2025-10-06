@@ -183,10 +183,10 @@ export default function Tickets() {
           <div className="container mt-28">
             <Flights4 />
 
-            <MicroallOffersPage />
+            {/* <MicroallOffersPage /> */}
           </div>
 
-          <TopCategory2 />
+          {/* <TopCategory2 /> */}
           <section className="section-box box-how-it-work-3 mt-80 background-3">
             <div className="container">
               <div className="box-how-it-work-inner background-3">
@@ -272,7 +272,7 @@ export default function Tickets() {
           <br />
           <br />
 
-          <Section6Home3 />
+          {/* <Section6Home3 /> */}
 
           <LoveUs />
 

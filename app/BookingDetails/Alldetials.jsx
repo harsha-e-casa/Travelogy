@@ -20,6 +20,7 @@ import BarcodeGenerator from "./BarcodeGenerator.jsx";
 import { request } from "http";
 import { type } from "os";
 import BookingForm from "@/components/elements/BookingForm";
+import { DatePicker } from "antd";
 
 // import staticBookingData from "./staticBookingData.json";
 
@@ -29,6 +30,7 @@ const Alldetails = ({ totalpricee }) => {
 
   const bookingId = searchParams.get("booking_id");
   console.log("bookingid from alldetails", bookingId);
+  const reStatus = searchParams.get("re");
 
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
@@ -749,6 +751,10 @@ const Alldetails = ({ totalpricee }) => {
       // const data = await postDataBookingDetails(parameter);
       console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
+      if (data?.error) {
+        setError(data?.error)
+      }
+
       setBookingdetails(data);
 
       // save the bookingstatus
@@ -1196,7 +1202,7 @@ const Alldetails = ({ totalpricee }) => {
                   </div>
                 )}
 
-                {isNoPrintVisible && (
+                {!reStatus && isNoPrintVisible && (
                   <div className={isNoPrintVisible ? "" : "no-print"}>
                     {bookingDetails?.order?.status === "SUCCESS" && (
                       <div>
@@ -1414,8 +1420,7 @@ const Alldetails = ({ totalpricee }) => {
                               )}
                             </p>
                           </div>
-                          <div>
-                            {/* date picker */}
+                          {/* <div>
                             <label
                               className="block text-gray-700 font-medium mb-2"
                               htmlFor="reschedule-date"
@@ -1432,6 +1437,31 @@ const Alldetails = ({ totalpricee }) => {
                               }
                               disabled={!selectedPNR}
                               min={new Date().toISOString().split("T")[0]}
+                            />
+                          </div> */}
+                          <div>
+                            <label
+                              className="block text-gray-700 font-medium mb-2"
+                              htmlFor="reschedule-date"
+                            >
+                              Select New Travel Date:
+                            </label>
+                            <DatePicker
+                              id="reschedule-date"
+                              format="MM/DD/YYYY"
+                              value={
+                                rescheduleDate ? dayjs(rescheduleDate) : null
+                              }
+                              onChange={(d) =>
+                                setRescheduleDate(
+                                  d ? d.format("YYYY-MM-DD") : ""
+                                )
+                              }
+                              disabled={!selectedPNR}
+                              disabledDate={(current) =>
+                                current && current < dayjs().startOf("day")
+                              }
+                              className="border border-gray-400 px-2 py-2 rounded w-full"
                             />
                           </div>
                         </div>
@@ -1663,7 +1693,7 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
                         )}
                       </div>
-                    ) : bookingDetails?.order?.status === "PENDING" ||
+                    ) : bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ABORTED" ||
                       bookingDetails?.order?.status === "UNCONFIRMED" ? (
                       <>
                         <div className="relative inline-block">
@@ -2040,7 +2070,8 @@ const Alldetails = ({ totalpricee }) => {
                             traveller?.ssrMealInfos?.[segmentKey]?.desc ??
                             "N/A";
                           const seat =
-                            traveller?.ssrSeatInfos?.[segmentKey]?.code ?? "N/A";
+                            traveller?.ssrSeatInfos?.[segmentKey]?.code ??
+                            "N/A";
                           const ticket =
                             traveller.ticketNumberDetails?.[segmentKey] ??
                             "N/A";
@@ -2169,7 +2200,11 @@ const Alldetails = ({ totalpricee }) => {
                 <div class="head-booking-form">
                   <p class="text-xl-bold neutral-1000">Fare Summary</p>
                 </div>
-                <BookingForm totalpricee={totalpricee} finalStage={true} />
+                <BookingForm
+                  totalpricee={totalpricee}
+                  bookingData={bookingDetails}
+                  finalStage={true}
+                />
               </div>
             </div>
           </div>
