@@ -31,7 +31,40 @@ export interface Filter {
 
 type SortCriteria = "name" | "price" | "rating"
 
-const useHotelFilter = (hotelsData: Hotel[]) => {
+interface UseHotelFilterReturn {
+	filter: Filter
+	sortCriteria: SortCriteria
+	setSortCriteria: (criteria: SortCriteria) => void
+	itemsPerPage: number
+	setItemsPerPage: (items: number) => void
+	currentPage: number
+	setCurrentPage: (page: number) => void
+	uniqueNames: string[]
+	uniqueRoomStyles: string[]
+	uniqueAmenities: string[]
+	uniqueLocations: string[]
+	uniqueRatings: number[]
+	uniqueHotelsType: string[]
+	filteredHotels: Hotel[]
+	sortedHotels: Hotel[]
+	totalPages: number
+	startIndex: number
+	endIndex: number
+	paginatedHotels: Hotel[]
+	handleCheckboxChange: (e: ChangeEvent<HTMLInputElement>, category: string) => void
+	handleSortChange: (e: ChangeEvent<HTMLSelectElement>) => void
+	handlePriceRangeChange: (values: [number, number]) => void
+	handleItemsPerPageChange: (e: ChangeEvent<HTMLSelectElement>) => void
+	handlePageChange: (newPage: number) => void
+	handlePreviousPage: () => void
+	handleNextPage: () => void
+	handleClearFilters: () => void
+	startItemIndex: number
+	endItemIndex: number
+	totalResults: number
+}
+
+const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>): UseHotelFilterReturn => {
 	const [filter, setFilter] = useState<Filter>({
 		names: [],
 		roomStyle: [],
@@ -41,6 +74,7 @@ const useHotelFilter = (hotelsData: Hotel[]) => {
 		// durationRange: [0, 30],
 		ratings: [],
 		hotelType: [],
+		...initialFilter,
 	})
 	const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name")
 	const [itemsPerPage, setItemsPerPage] = useState<number>(10)

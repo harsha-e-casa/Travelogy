@@ -347,27 +347,70 @@ const BookingDetailsPage = () => {
       });
 
       const imgData = canvas.toDataURL("image/png");
+
+      // Fetch and convert logo to base64 to embed
+      const logoResponse = await fetch('/assets/imgs/logo-print.png');
+      if (!logoResponse.ok) {
+        throw new Error('Failed to load logo image');
+      }
+      const logoBuffer = await logoResponse.arrayBuffer();
+      const logoBase64 = btoa(
+        new Uint8Array(logoBuffer).reduce(
+          (data, byte) => data + String.fromCharCode(byte),
+          ''
+        )
+      );
+      const logoDataUrl = `data:image/png;base64,${logoBase64}`;
+
       const printWindow = window.open("", "_blank", "width=800,height=600");
 
-      printWindow.document.write(`
-      <html>
-        <head>
-          <title>Booking Details</title>
-          <style>
-            body { margin: 0; text-align: center; }
-            img { max-width: 100%; }
-          </style>
-        </head>
-        <body>
-          <img src="${imgData}" />
-        </body>
-      </html>
-    `);
+    printWindow.document.write(`
+    <html>
+      <head>
+        <title>Booking Details</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            font-family: Arial, sans-serif;
+          }
+          .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 200px;
+            z-index: 10;
+          }
+          .logo img {
+            width: 100%;
+            height: auto;
+          }
+          .print-content {
+            margin-top: 120px;
+            text-align: center;
+          }
+          .print-img {
+            max-width: 100%;
+            height: auto;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="logo">
+          <img src="${logoDataUrl}" alt="Travelogy Logo" />
+        </div>
+        <div class="print-content">
+          <img class="print-img" src="${imgData}" alt="Booking Details" />
+        </div>
+      </body>
+    </html>
+  `);
 
       printWindow.document.close();
       printWindow.focus();
 
-      // Wait until image is loaded before printing
+      // Wait until images are loaded before printing
       printWindow.onload = () => {
         printWindow.print();
         printWindow.close();

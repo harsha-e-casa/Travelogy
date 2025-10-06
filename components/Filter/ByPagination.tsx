@@ -90,18 +90,18 @@ export default function ByPagination({
 
           <span className="page-item" onClick={handleNextPage}>
             <span className="page-link">
-              <svg
-                width={12}
-                height={12}
-                viewBox="0 0 12 12"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M5.99967 10.6666L10.6663 5.99992L5.99968 1.33325M10.6663 5.99992L1.33301 5.99992"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                <svg
+                    width={12}
+                    height={12}
+                    viewBox="0 0 12 12"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 1.33325L10.6667 5.99992M10.6667 5.99992L6 10.6666M10.6667 5.99992H1.3335"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
             </span>
           </span>
         </div>

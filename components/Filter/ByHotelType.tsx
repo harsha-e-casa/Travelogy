@@ -17,7 +17,7 @@ export default function ByHotelType({ uniqueHotelsType, filter, handleCheckboxCh
 								<span className="text-sm-medium">{hotel} </span>
 								<span className="checkmark" />
 							</label>
-							<span className="number-item">{hotel?.length}</span>
+							{/* <span className="number-item">{hotel?.length}</span> */}
 						</li>
 					))}
 				</ul>

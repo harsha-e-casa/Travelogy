@@ -28,6 +28,13 @@ import { useNationalities } from "@/util/HotelApi";
 import HotelListingSearch from "./searchHeader";
 import { postData } from "@/services/NetworkAdapter";
 import { checkTokenExpiry } from "@/services/Utils";
+import citiesData from "../../util/cities.json";
+
+type CityData = {
+  id: string;
+  cityName: string;
+  countryName: string;
+};
 type Nationality = {
   countryName: string;
   name: string;
@@ -182,19 +189,20 @@ export default function HotelListing() {
   // }, [selectFrom, nationalities]);
 
   useEffect(() => {
-    if (!selectFrom && location && city && nationalities.length > 0) {
+    if (!selectFrom && location && nationalities.length > 0) {
+      const matchedCity = (citiesData as CityData[]).find((c: CityData) => c.cityName.toLowerCase() === location.toLowerCase());
       const matchedNationality = nationalities.find((n) =>
-        location.toLowerCase().includes(n.countryName.toLowerCase())
+        (matchedCity?.countryName || location).toLowerCase().includes(n.countryName.toLowerCase())
       );
 
       setSelectFrom({
         cityName: location,
-        countryName: matchedNationality?.countryName || "India",
-        id: city || "699261", // fallback
+        countryName: matchedCity?.countryName || matchedNationality?.countryName || "India",
+        id: matchedCity?.id || city || "699261", // fallback
       });
       setNationalityId(matchedNationality?.countryId || "94");
     }
-  }, [location, city, nationalities]);
+  }, [location, city, nationalities, selectFrom]);
 
   useEffect(() => {
     if (!checkinDate) setCheckinDate(dayjs().format("YYYY-MM-DD"));
@@ -211,6 +219,9 @@ export default function HotelListing() {
     setShowSearchState(false);
     setOpenDateRage(false);
   };
+
+  const starRatingParam = searchParams.get("starRating");
+  const isTopDestination = starRatingParam === "4,5";
 
   const {
     filter,
@@ -235,7 +246,24 @@ export default function HotelListing() {
     startItemIndex,
     endItemIndex,
     itemsPerPage,
-  } = useHotelFilter(transformedHotels);
+  } = useHotelFilter(transformedHotels, isTopDestination ? { ratings: [4, 5] } : undefined);
+
+  // Apply star rating filter from query params if present and not top destination
+  useEffect(() => {
+    if (!isTopDestination && starRatingParam && apiHotelData.length > 0) {
+      const starRatings = starRatingParam.split(",").map((s) => parseInt(s.trim(), 10));
+      if (starRatings.length > 0) {
+        // Update filter to include only hotels with rating in starRatings
+        handleClearFilters(); // Clear existing filters first
+        starRatings.forEach((rating) => {
+          if (!filter.ratings.includes(rating)) {
+            const fakeEvent = { target: { value: rating.toString(), checked: true } } as unknown as React.ChangeEvent<HTMLInputElement>;
+            handleCheckboxChange(fakeEvent, "ratings");
+          }
+        });
+      }
+    }
+  }, [starRatingParam, filter.ratings, handleCheckboxChange, handleClearFilters, apiHotelData.length, isTopDestination]);
 
   const initialPriceSet = useRef(false);
 

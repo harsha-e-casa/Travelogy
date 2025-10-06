@@ -36,7 +36,6 @@ const TravellerDetailsModal = ({
   const [reqAmendmentChargesPopUp, setReqAmendmentChargesPopUp] =
     useState(false);
   const [amendmentId, setAmendmentId] = useState(null);
-  const [] = useState(null);
 
   // Debug logs
   console.log("📦 travellerInfos:", travellerInfos);
@@ -304,6 +303,7 @@ const TravellerDetailsModal = ({
         </div>
         <button
           onClick={() => {
+            setLoading(true);
             const trips = Object.entries(selectedTravellersPerTrip)
               .filter(([_, travellers]) => travellers.length > 0)
               .map(([key, travellers]) => {
@@ -349,6 +349,9 @@ const TravellerDetailsModal = ({
                   setReqAmendmentChargesPopUp(true);
                 } catch (error) {
                   console.log("Error while requesting Amendment: ", error);
+                  setError("Error requesting amendment charges. Please try again.");
+                } finally {
+                  setLoading(false);
                 }
               };
               reqAmendmentCharges();
@@ -468,6 +471,8 @@ const TravellerDetailsModal = ({
                   } else {
                     setError("Something went wrong. Please try again.");
                   }
+                } finally {
+                  setLoading(false);
                 }
               };
 
@@ -475,9 +480,17 @@ const TravellerDetailsModal = ({
               submitAmendmentapi();
             }
           }}
-          className="btn btn-gray"
+          disabled={loading}
+          className={`btn btn-gray ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          Confirm Traveller
+          {loading ? (
+            <>
+              <div className="inline-block w-4 h-4 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mr-2"></div>
+              Confirming...
+            </>
+          ) : (
+            'Confirm Traveller'
+          )}
         </button>
       </div>
       {showDetailsModal && (
@@ -533,67 +546,67 @@ const TravellerDetailsModal = ({
       {reqAmendmentChargesPopUp &&
         reqAmendmentCharges &&
         reqAmendmentCharges.trips && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
-              <button
-                onClick={() => {
-                  setReqAmendmentChargesPopUp(false);
-                  setShowDetailsModal(false);
-                }}
-                className="absolute top-4 right-4 text-2xl text-black"
-              >
-                &times;
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
+            <button
+              onClick={() => {
+                setReqAmendmentChargesPopUp(false);
+                setShowDetailsModal(false);
+              }}
+              className="absolute top-4 right-4 text-2xl text-black"
+            >
+              &times;
+            </button>
 
-              <h3 className="text-xl font-bold text-green-700 mb-4">
-                Requested Amendment
-              </h3>
+                  <h3 className="text-xl font-bold text-green-700 mb-4">
+                    Requested Amendment
+                  </h3>
 
-              <div className="space-y-3 text-gray-700">
-                {reqAmendmentCharges.trips.map((trip, index) => {
-                  return (
-                    <div key={index} className="space-y-2">
-                      <p className="font-semibold text-gray-900">
-                        <strong>Route:</strong> {trip.src} → {trip.dest}
-                      </p>
-                      <p>
-                        <strong>Departure Date:</strong>{" "}
-                        {new Date(trip.departureDate).toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Flight Numbers:</strong>{" "}
-                        {trip.flightNumbers.join(", ")}
-                      </p>
-                      <p>
-                        <strong>Airlines:</strong> {trip.airlines.join(", ")}
-                      </p>
-
-                      <div className="mt-3">
-                        <h4 className="font-medium text-lg">
-                          Amendment Charges
-                        </h4>
-                        <div className="space-y-2">
-                          <p>
-                            <strong>Charges:</strong> ₹
-                            {trip.amendmentInfo.ADULT.amendmentCharges}
+                  <div className="space-y-3 text-gray-700">
+                    {reqAmendmentCharges.trips.map((trip, index) => {
+                      return (
+                        <div key={index} className="space-y-2">
+                          <p className="font-semibold text-gray-900">
+                            <strong>Route:</strong> {trip.src} → {trip.dest}
                           </p>
                           <p>
-                            <strong>Refund Amount:</strong> ₹
-                            {trip.amendmentInfo.ADULT.refundAmount}
+                            <strong>Departure Date:</strong>{" "}
+                            {new Date(trip.departureDate).toLocaleString()}
                           </p>
                           <p>
-                            <strong>Total Fare:</strong> ₹
-                            {trip.amendmentInfo.ADULT.totalFare}
+                            <strong>Flight Numbers:</strong>{" "}
+                            {trip.flightNumbers.join(", ")}
                           </p>
+                          <p>
+                            <strong>Airlines:</strong> {trip.airlines.join(", ")}
+                          </p>
+
+                          <div className="mt-3">
+                            <h4 className="font-medium text-lg">
+                              Amendment Charges
+                            </h4>
+                            <div className="space-y-2">
+                              <p>
+                                <strong>Charges:</strong> ₹
+                                {trip.amendmentInfo.ADULT.amendmentCharges}
+                              </p>
+                              <p>
+                                <strong>Refund Amount:</strong> ₹
+                                {trip.amendmentInfo.ADULT.refundAmount}
+                              </p>
+                              <p>
+                                <strong>Total Fare:</strong> ₹
+                                {trip.amendmentInfo.ADULT.totalFare}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+                      );
+                    })}
+                  </div>
           </div>
-        )}
+        </div>
+      )}
 
       {error && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

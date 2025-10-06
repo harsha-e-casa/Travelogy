@@ -17,7 +17,7 @@ export default function ByLocation({ uniqueLocations, filter, handleCheckboxChan
 								<span className="text-sm-medium">{location} </span>
 								<span className="checkmark" />
 							</label>
-							<span className="number-item">{location?.length}</span>
+							{/* <span className="number-item">{location?.length}</span> */}
 						</li>
 					))}
 				</ul>

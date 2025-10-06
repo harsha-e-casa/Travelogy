@@ -113,7 +113,7 @@ const HotelBookingList = ({ bookings }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="responsive-table-container">
       {/* Filter Row */}
       <div className="flex flex-wrap gap-3 items-center mb-2">
         <div>
@@ -203,11 +203,11 @@ const HotelBookingList = ({ bookings }) => {
         </div>
       </div>
 
-      <table className="min-w-full bg-white border border-gray-200">
+      <table className="responsive-table">
         <thead>
           <tr>
             <th
-              className="px-3 py-2 border cursor-pointer select-none"
+              className="cursor-pointer select-none"
               onClick={() => handleSort("idIndex")}
             >
               ID
@@ -215,9 +215,9 @@ const HotelBookingList = ({ bookings }) => {
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
-            <th className="px-3 py-2 border">Booking ID</th>
+            <th>Booking ID</th>
             <th
-              className="px-3 py-2 border cursor-pointer select-none"
+              className="cursor-pointer select-none"
               onClick={() => handleSort("amount")}
             >
               Amount
@@ -225,27 +225,25 @@ const HotelBookingList = ({ bookings }) => {
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
-            <th className="px-3 py-2 border">Status</th>
-            <th className="px-3 py-2 border">Booking Time</th>
+            <th>Status</th>
+            <th>Booking Time</th>
           </tr>
         </thead>
         <tbody>
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
-                <td className="px-3 py-2 border">{startIdx + idx + 1}</td>
-                <td className="px-3 py-2 border">
+                <td>{startIdx + idx + 1}</td>
+                <td>
                   <Link
                     href={`/hotel-listing/stepper/booking-details?bookingId=${b.booking_id}`}
                   >
                     {b.booking_id}
                   </Link>
                 </td>
-                <td className="px-3 py-2 border">{b.amount || "--"}</td>
-                <td className="px-3 py-2 border">{b.status || "--"}</td>
-                <td className="px-3 py-2 border">
-                  {formatDateTime(b.booking_time)}
-                </td>
+                <td>{b.amount || "--"}</td>
+                <td>{b.status || "--"}</td>
+                <td>{formatDateTime(b.booking_time)}</td>
               </tr>
             ))
           ) : (

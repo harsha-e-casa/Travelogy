@@ -382,33 +382,10 @@ const EngineHeaderHotel = ({ active_border }) => {
               ) : null}
             </div>
           ) : null}
-          <div className="text_start b_right_2px grid_w_4 css_pointer">
-            <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
-              <div className="ml__txt">
-                <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small">
-                  Total Nights
-                </div>
-                <div className="flex">
-                  <div>
-                    <span className="cus-text-5xl text-5xl font-bold text-gray-900">
-                      {totalNights}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
-                    <div className="w-full font-bold cust_text_res">
-                      {totalNights === 1 ? "Night" : "Nights"}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            className="b_right_2px grid_w_5 css_pointer relative box_left_ddr2"
-            onClick={openTraveller}
+          <div className="text_start b_right_2px grid_w_4 css_pointer"
+           onClick={openTraveller}
           >
-            <div className="text_start flex xs:pl-2 sm:pl-3 md:pl-4 lg:pl-6 slider-labels">
+           <div className="text_start flex xs:pl-2 sm:pl-3 md:pl-4 lg:pl-6 slider-labels">
               <div class="cus_mt_travelGroup xs:mt-0 sm:mt-2 md:mt-2 lg:mt-4 flex">
                 <div className="txt_travelSelect">
                   <span className="cus_txt_traveller lg:text-4xl xl:text-4xl font-bold text-gray-900">
@@ -433,7 +410,6 @@ const EngineHeaderHotel = ({ active_border }) => {
                 </div>
               </div>
             </div>
-
             <div className="flex md:pl-5 lg:pl-7 xl:pl-7 -pt-2 -mt-2">
               <div className="flex">
                 <div className="txt_travelSelect">
@@ -441,6 +417,27 @@ const EngineHeaderHotel = ({ active_border }) => {
                     {" "}
                     {rooms} {rooms > 1 ? "Rooms" : "Room"}{" "}
                   </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="text_start b_right_2px grid_w_4 css_pointer box_left_ddr2">
+              <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
+              <div className="ml__txt">
+                <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small">
+                  Total Nights
+                </div>
+                <div className="flex">
+                  <div>
+                    <span className="cus-text-5xl text-5xl font-bold text-gray-900">
+                      {totalNights}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
+                    <div className="w-full font-bold cust_text_res">
+                      {totalNights === 1 ? "Night" : "Nights"}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

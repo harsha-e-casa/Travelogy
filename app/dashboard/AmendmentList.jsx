@@ -134,7 +134,7 @@ const AmendmentList = ({ amendments }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="responsive-table-container">
       {/* Filter Row */}
       <div className="flex flex-wrap gap-3 items-center mb-2">
         <div>
@@ -226,11 +226,11 @@ const AmendmentList = ({ amendments }) => {
         </div>
       </div>
 
-      <table className="min-w-full bg-white border border-gray-200">
+      <table className="responsive-table">
         <thead>
           <tr>
             <th
-              className="px-3 py-2 border cursor-pointer select-none"
+              className="cursor-pointer select-none"
               onClick={() => handleSort("idIndex")}
             >
               ID
@@ -238,36 +238,32 @@ const AmendmentList = ({ amendments }) => {
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
-            <th className="px-3 py-2 border">Booking ID</th>
-            <th className="px-3 py-2 border">Amendment ID</th>
-            <th className="px-3 py-2 border cursor-pointer select-none">
-              Amount
-            </th>
-            <th className="px-3 py-2 border">Status</th>
-            <th className="px-3 py-2 border">Time of Amendment</th>
+            <th>Booking ID</th>
+            <th>Amendment ID</th>
+            <th className="cursor-pointer select-none">Amount</th>
+            <th>Status</th>
+            <th>Time of Amendment</th>
           </tr>
         </thead>
         <tbody>
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
-                <td className="px-3 py-2 border">{startIdx + idx + 1}</td>
-                <td className="px-3 py-2 border">
+                <td>{startIdx + idx + 1}</td>
+                <td>
                   <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
                     {b.booking_id}
                   </Link>
                 </td>
                 <td
-                  className="px-3 py-2 border cursor-pointer text-blue-500"
+                  className="cursor-pointer text-blue-500"
                   onClick={() => handleAmendmentClick(b.amendment_id)}
                 >
                   {b.amendment_id || "--"}
                 </td>
-                <td className="px-3 py-2 border">{b.refundable_amount || "--"}</td>
-                <td className="px-3 py-2 border">{b.amendment_status || "--"}</td>
-                <td className="px-3 py-2 border">
-                  {formatDateTime(b.time)}
-                </td>
+                <td>{b.refundable_amount || "--"}</td>
+                <td>{b.amendment_status || "--"}</td>
+                <td>{formatDateTime(b.time)}</td>
               </tr>
             ))
           ) : (
