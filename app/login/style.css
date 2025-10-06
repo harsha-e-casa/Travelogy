@@ -1,0 +1,98 @@
+/* Glassy card */
+.glass-card {
+  /* layout */
+  width: 100%;
+  max-width: 760px;               /* adjust to your design */
+  padding: 28px 32px;
+  border-radius: 18px;
+
+  /* glass look */
+  /* background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0.06)
+  ); */
+  background: #ffffff82;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px); /* Safari */
+
+  /* subtle border + glow */
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  /* text colors on glass */
+  color: #0b1220;
+}
+
+/* Optional: title styling */
+.glass-card .title {
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #ffffff;                 /* bright on dark bg */
+  text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  margin: 8px 0 20px;
+}
+
+/* Inputs look nice on glass */
+.glass-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.75);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.glass-input:focus {
+  border-color: rgba(255, 165, 0, 0.9);
+  box-shadow: 0 0 0 3px rgba(255,165,0,0.25);
+}
+
+/* Base (keeps your current look if you already set .btn-orange) */
+.btn-orange.ant-btn {
+  background: #f29900;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 10px;
+  box-shadow: 0 8px 18px rgba(242, 153, 0, 0.35);
+  transition:
+    transform .12s ease,
+    box-shadow .2s ease,
+    background .25s ease,
+    filter .25s ease;
+}
+
+/* 🔥 Hover effect */
+.btn-orange.ant-btn:hover,
+.btn-orange.ant-btn:focus {
+  background: linear-gradient(135deg, #ffad14, #ff8a00) !important;
+  box-shadow:
+    0 12px 26px rgba(255, 165, 0, 0.40),
+    0 0 0 2px rgba(255, 165, 0, 0.25) inset !important;
+  transform: translateY(-1px) !important;
+  filter: saturate(1.15) !important;
+}
+
+/* Pressed */
+.btn-orange.ant-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(242, 153, 0, 0.35);
+}
+
+/* Optional: better keyboard focus ring */
+.btn-orange.ant-btn:focus-visible {
+  outline: 3px solid rgba(255, 165, 0, 0.55);
+  outline-offset: 2px;
+}
+
+
+/* Fallback for browsers without backdrop-filter */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+  }
+}

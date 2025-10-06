@@ -45,8 +45,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
     "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee11 ",
     totalpricee
   );
-  const basefare = totalpricee?.fC?.BF;
-  const taxAndFees = totalpricee?.fC?.TAF;
+  const basefare = totalpricee?.fC?.BF || 0;
+  const taxAndFees = totalpricee?.fC?.TAF || 0;
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;

@@ -1691,7 +1691,8 @@ h6,
     }
 
     .box-filters-sidebar .block-filter .item-collapse {
-        background-image: url(../imgs/template/icons/arrow-up-dark.svg);
+        // background-image: url(../imgs/template/icons/arrow-up-dark.svg);
+        background-image: none !important
     }
 
     .box-filters-sidebar .block-filter .item-collapse.collapsed-item {

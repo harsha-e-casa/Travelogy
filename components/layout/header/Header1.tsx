@@ -4,6 +4,7 @@ import CurrencyDropdown from "@/components/elements/CurrencyDropdown";
 import LanguageDropdown from "@/components/elements/LanguageDropdown";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import "./style.css";
 
 // const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
 // 	ssr: false,
@@ -79,7 +80,7 @@ export default function Header1({
                       <Link href="/dashboard">Dashboard</Link>
                     </li>
                     <li>
-                      <button style={{ padding: "18px"}} onClick={handleLogout}>Logout</button>
+                      <button className="btn-logout" onClick={handleLogout}>Logout</button>
                     </li>
                   </ul>
                 </nav>

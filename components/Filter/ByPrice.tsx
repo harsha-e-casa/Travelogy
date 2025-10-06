@@ -133,7 +133,7 @@
 //   );
 // }
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Range } from "react-range";
 
 export default function ByPrice({

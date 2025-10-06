@@ -2289,6 +2289,27 @@ body {
   background-color: var(--bs-neutral-100);
 }
 
+.btn-book-now {
+  font-family: var(--manrope);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--bs-neutral-1000);
+  display: block;
+  text-decoration: none;
+  position: relative;
+  transition-duration: 0.2s;
+  background: orange;
+  margin: 10px 11px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.btn-book-now:hover{
+    color: white;
+}
+
 .btn.btn-gray {
   padding: 8px 18px !important;
   /* color: var(--bs-neutral-1000) !important; */
@@ -18131,8 +18152,8 @@ h2 span {
 }
 
 .on33_w_drf {
-  /*  width: 55%;*/
-  width: 60%;
+   width: 50%;
+  /* width: 60%; */
 }
 
 .active_border_org1 {
@@ -19629,4 +19650,12 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   .print-only .max-w-5xl {
     max-width: 77rem !important;
   }
+}
+
+.filter-sty {
+  margin-bottom: 20px;
+  background-position: right center;
+  background-repeat: no-repeat;
+  padding-right: 20px;
+  cursor: pointer;
 }

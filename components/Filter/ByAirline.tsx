@@ -25,7 +25,7 @@ export default function ByAirline({ uniqueAirlines, selectedAirlines, setSelecte
 								<span className="text-sm-medium">{airline} </span>
 								<span className="checkmark" />
 							</label>
-							<span className="number-item">{airline?.length}</span>
+							{/* <span className="number-item">{airline?.length}</span> */}
 						</li>
 					))}
 				</ul>

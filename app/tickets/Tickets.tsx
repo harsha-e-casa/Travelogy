@@ -248,18 +248,22 @@ export default function Tickets() {
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       const dataToCheck = flightData.ONWARD || flightData.COMBO;
-      const allFareIdentifiers = dataToCheck.flatMap((ticket: any) =>
-        ticket.totalPriceList.map((priceInfo: any) => priceInfo.fareIdentifier)
-      ).filter(Boolean);
+      const allFareIdentifiers = dataToCheck
+        .flatMap((ticket: any) =>
+          ticket.totalPriceList.map(
+            (priceInfo: any) => priceInfo.fareIdentifier
+          )
+        )
+        .filter(Boolean);
 
       const fareCounts = allFareIdentifiers.reduce((acc: any, fare: string) => {
         acc[fare] = (acc[fare] || 0) + 1;
         return acc;
       }, {});
 
-      const uniqueFaresWithCounts = Object.keys(fareCounts).map(fare => ({
+      const uniqueFaresWithCounts = Object.keys(fareCounts).map((fare) => ({
         name: fare,
-        count: fareCounts[fare]
+        count: fareCounts[fare],
       }));
 
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
@@ -269,46 +273,47 @@ export default function Tickets() {
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       const type: any = {
-        1 : "Refundable",
-        2 : "Partial Refundable"
-      }
+        0: "Non Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
+      };
       const dataToCheck = flightData.ONWARD || flightData.COMBO;
-      // const allFareTypes = dataToCheck.flatMap((ticket: any) => 
-      //   ticket.totalPriceList.flatMap((priceInfo: any) => 
+      // const allFareTypes = dataToCheck.flatMap((ticket: any) =>
+      //   ticket.totalPriceList.flatMap((priceInfo: any) =>
       //     Object.keys(priceInfo.fd).map(paxType => priceInfo.fd[paxType].paxType)
       //   )
       // ).filter(Boolean);
       const allFareTypes = dataToCheck
         .flatMap((ticket: any, ticketIndex: number) => {
-          console.log("🔹 Ticket Index:", ticketIndex, "Ticket Data:", ticket);
-
-          return ticket.totalPriceList.flatMap((priceInfo: any, priceIndex: number) => {
-            console.log("   🔸 PriceInfo Index:", priceIndex, "PriceInfo Data:", priceInfo);
-
-            return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-              console.log("      🔹 paxTypeKey:", paxTypeKey);
-              console.log("      🔹 paxTypeObj:", priceInfo.fd[paxTypeKey]);
-              return priceInfo.fd[paxTypeKey].rT;
-            });
-          });
+          return ticket.totalPriceList.flatMap(
+            (priceInfo: any, priceIndex: number) => {
+              return Object.keys(priceInfo.fd).map((paxTypeKey) => {
+                console.log("mame ingeeeeeeeee ",priceInfo.fd[paxTypeKey])
+                return (priceInfo.fd[paxTypeKey]?.rT || 0);
+              });
+            }
+          );
         })
-        .filter((val: any) => {
-          console.log("✅ Filtering value:", val);
-          return val;
-        });
+        .filter((val: any) => Number.isFinite(Number(val)));
 
       console.log("🎯 Final allFareTypes:", allFareTypes);
 
+      const fareTypeCounts = allFareTypes.reduce(
+        (acc: any, fareType: string) => {
+          acc[fareType] = (acc[fareType] || 0) + 1;
+          return acc;
+        },
+        {}
+      );
 
-      const fareTypeCounts = allFareTypes.reduce((acc: any, fareType: string) => {
-        acc[fareType] = (acc[fareType] || 0) + 1;
-        return acc;
-      }, {});
+      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
+        (fareType) => ({
+          name: type[fareType],
+          count: fareTypeCounts[fareType],
+        })
+      );
 
-      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(fareType => ({
-        name: type[fareType],
-        count: fareTypeCounts[fareType]
-      }));
+      console.log("uniqueFaresWithCounts --> ", uniqueFaresWithCounts);
 
       setUniqueFareTypes(uniqueFaresWithCounts);
     }
@@ -392,26 +397,35 @@ export default function Tickets() {
 
       if (fareIdentifiers.length > 0) {
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.totalPriceList.some((priceInfo: any) => fareIdentifiers.includes(priceInfo.fareIdentifier));
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            fareIdentifiers.includes(priceInfo.fareIdentifier)
+          );
         });
       }
 
       if (flightNumberSearch) {
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.sI.some((segment: any) => segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase()));
+          return ticket.sI.some((segment: any) =>
+            segment.fD.fN
+              .toLowerCase()
+              .includes(flightNumberSearch.toLowerCase())
+          );
         });
       }
 
       if (selectedFareTypes.length > 0) {
+        console.log("selectedFareTypes ===> ",selectedFareTypes)
         const typeMap: { [key: number]: string } = {
+          0: "Non Refundable",
           1: "Refundable",
-          2: "Partial Refundable"
+          2: "Partial Refundable",
         };
 
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.totalPriceList.some((priceInfo: any) => 
-            Object.keys(priceInfo.fd).some(paxType => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            Object.keys(priceInfo.fd).some((paxType) => {
               const fareType = typeMap[priceInfo.fd[paxType].rT];
+              console.log("fareType -------- ",fareType)
               return selectedFareTypes.includes(fareType);
             })
           );
@@ -440,7 +454,17 @@ export default function Tickets() {
 
   useEffect(() => {
     applyFilters();
-  }, [priceRange, stops, departureTime, selectedAirlines, arrivalTime, fareIdentifiers, flightNumberSearch, selectedFareTypes, flightData]);
+  }, [
+    priceRange,
+    stops,
+    departureTime,
+    selectedAirlines,
+    arrivalTime,
+    fareIdentifiers,
+    flightNumberSearch,
+    selectedFareTypes,
+    flightData,
+  ]);
 
   const [activeFlight, setActiveFlight] = useState<any>(true);
 
@@ -926,8 +950,8 @@ export default function Tickets() {
         },
         travelDate:
           item?.departureDate &&
-            typeof item.departureDate === "string" &&
-            item.departureDate.includes("T")
+          typeof item.departureDate === "string" &&
+          item.departureDate.includes("T")
             ? item.departureDate.split("T")[0]
             : item?.departureDate,
       }));
@@ -1572,97 +1596,97 @@ export default function Tickets() {
               {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
                 modifySearchRef) ||
                 (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                  <>
-                    <div className="hdt_header-item relative">
-                      <label>From</label>
-                      <div onClick={openfrom} className="hdt_value">
-                        {srx_departureFrom}
-                      </div>
-
-                      {showSearchState ? (
-                        <div className="searchFfromSelect searchFfromSelect_2">
-                          <AppListSearch
-                            operEngLocation={openfrom}
-                            setSelectFrom={handleFromCityChange}
-                            setSelectFromSub={setDepartureToCode}
-                          />
-                        </div>
-                      ) : null}
-                      <Tooltip
-                        className="flex shadow-md z-10"
-                        placement="bottom"
-                        title={fromError}
-                        open={!!fromError}
-                        arrow={{ pointAtCenter: true }}
-                        overlayInnerStyle={{
-                          backgroundColor: "#ffeaea",
-                          color: "#ff4d4f",
-                          fontWeight: 500,
-                        }}
-                      ></Tooltip>
+                <>
+                  <div className="hdt_header-item relative">
+                    <label>From</label>
+                    <div onClick={openfrom} className="hdt_value">
+                      {srx_departureFrom}
                     </div>
 
-                    <div className="hdt_header-item relative">
-                      <label>To</label>
-                      <div onClick={openTo} className="hdt_value">
-                        {srx_arrivalTo}
+                    {showSearchState ? (
+                      <div className="searchFfromSelect searchFfromSelect_2">
+                        <AppListSearch
+                          operEngLocation={openfrom}
+                          setSelectFrom={handleFromCityChange}
+                          setSelectFromSub={setDepartureToCode}
+                        />
                       </div>
+                    ) : null}
+                    <Tooltip
+                      className="flex shadow-md z-10"
+                      placement="bottom"
+                      title={fromError}
+                      open={!!fromError}
+                      arrow={{ pointAtCenter: true }}
+                      overlayInnerStyle={{
+                        backgroundColor: "#ffeaea",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                      }}
+                    ></Tooltip>
+                  </div>
 
-                      {showSearchStateTo ? (
-                        <div className="searchFfromSelect searchFfromSelect_2">
-                          <AppListSearch
-                            operEngLocation={openTo}
-                            setSelectFrom={handleToCityChange}
-                            setSelectFromSub={setArrivalToCode}
-                          />
-                        </div>
-                      ) : null}
-                      <Tooltip
-                        className="flex shadow-md z-50"
-                        placement="bottom"
-                        title={toError}
-                        open={!!toError}
-                        arrow={{ pointAtCenter: true }}
-                        overlayInnerStyle={{
-                          backgroundColor: "#ffeaea",
-                          color: "#ff4d4f",
-                          fontWeight: 500,
-                        }}
-                      ></Tooltip>
+                  <div className="hdt_header-item relative">
+                    <label>To</label>
+                    <div onClick={openTo} className="hdt_value">
+                      {srx_arrivalTo}
                     </div>
-                  </>
-                )}
+
+                    {showSearchStateTo ? (
+                      <div className="searchFfromSelect searchFfromSelect_2">
+                        <AppListSearch
+                          operEngLocation={openTo}
+                          setSelectFrom={handleToCityChange}
+                          setSelectFromSub={setArrivalToCode}
+                        />
+                      </div>
+                    ) : null}
+                    <Tooltip
+                      className="flex shadow-md z-50"
+                      placement="bottom"
+                      title={toError}
+                      open={!!toError}
+                      arrow={{ pointAtCenter: true }}
+                      overlayInnerStyle={{
+                        backgroundColor: "#ffeaea",
+                        color: "#ff4d4f",
+                        fontWeight: 500,
+                      }}
+                    ></Tooltip>
+                  </div>
+                </>
+              )}
 
               {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
                 modifySearchRef) ||
                 (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                  <div className="hdt_header-item">
-                    <label>Depart</label>
-                    <div
-                      onClick={() => {
-                        if (
-                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                            modifySearchRef) ||
-                          (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                        ) {
-                          openToDateRange();
-                        }
-                      }}
-                      className="hdt_value"
-                    >
-                      {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                    </div>
-
-                    {openDateRage ? (
-                      <AppDateRangeFlight
-                        openToDateRange={openToDateRange}
-                        setDate={setDatedep}
-                        minDate={null}
-                        value={datedep}
-                      />
-                    ) : null}
+                <div className="hdt_header-item">
+                  <label>Depart</label>
+                  <div
+                    onClick={() => {
+                      if (
+                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                          modifySearchRef) ||
+                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                      ) {
+                        openToDateRange();
+                      }
+                    }}
+                    className="hdt_value"
+                  >
+                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
                   </div>
-                )}
+
+                  {openDateRage ? (
+                    <AppDateRangeFlight
+                      openToDateRange={openToDateRange}
+                      setDate={setDatedep}
+                      minDate={null}
+                      value={datedep}
+                    />
+                  ) : null}
+                </div>
+              )}
 
               {(srx_tripType?.toLowerCase() || "") === "round-trip" ? (
                 <>
@@ -1707,7 +1731,7 @@ export default function Tickets() {
                 </div>
               </div>
               {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                !modifySearchRef ? (
+              !modifySearchRef ? (
                 <>
                   <button
                     onClick={handleModifySearch}
@@ -1721,28 +1745,29 @@ export default function Tickets() {
                   <div
                     onClick={
                       fromError ||
-                        toError ||
-                        errorMsg ||
-                        dateError ||
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          multicitySegments.some(
-                            (s) => s.fromError || s.toError || s.dateError
-                          ))
-                        ? () => { }
+                      toError ||
+                      errorMsg ||
+                      dateError ||
+                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                        multicitySegments.some(
+                          (s) => s.fromError || s.toError || s.dateError
+                        ))
+                        ? () => {}
                         : handlesearFlight
                       // onClickSearch
                     }
-                    className={`hdt_search-btn ${fromError ||
-                        toError ||
-                        errorMsg ||
-                        dateError ||
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          multicitySegments.some(
-                            (s) => s.fromError || s.toError || s.dateError
-                          ))
+                    className={`hdt_search-btn ${
+                      fromError ||
+                      toError ||
+                      errorMsg ||
+                      dateError ||
+                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                        multicitySegments.some(
+                          (s) => s.fromError || s.toError || s.dateError
+                        ))
                         ? "cursor-not-allowed opacity-50"
                         : ""
-                      }`}
+                    }`}
                   >
                     Search
                   </div>
@@ -1856,8 +1881,8 @@ export default function Tickets() {
                             >
                               {segment.departureDate
                                 ? dayjs(segment.departureDate).format(
-                                  "ddd, MMM D YYYY"
-                                )
+                                    "ddd, MMM D YYYY"
+                                  )
                                 : "Select Date"}
                             </div>
                           </div>
@@ -2095,13 +2120,13 @@ export default function Tickets() {
                                   </div>
                                 </div>
                               </div>
-                              <ByPagination
+                              {/* <ByPagination
                                 handlePreviousPage={handlePreviousPage}
                                 totalPages={totalPages}
                                 currentPage={currentPage}
                                 handleNextPage={handleNextPage}
                                 handlePageChange={handlePageChange}
-                              />
+                              /> */}
                             </>
                           ) : (
                             !loading && (
@@ -2170,13 +2195,13 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                  srx_tripType.trim().toLowerCase() === "round-trip" ? (
                     <>
                       {flightData &&
-                        flightData.ONWARD &&
-                        flightData.ONWARD.length > 0 &&
-                        flightData.RETURN &&
-                        flightData.RETURN.length > 0 ? (
+                      flightData.ONWARD &&
+                      flightData.ONWARD.length > 0 &&
+                      flightData.RETURN &&
+                      flightData.RETURN.length > 0 ? (
                         <RoundTripSelectionView
                           flightData={flightData}
                           departureFrom={departureFrom}
@@ -2199,14 +2224,14 @@ export default function Tickets() {
                     </>
                   ) : null}
                   {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "multi-city" &&
-                    !flightData?.COMBO ? (
+                  srx_tripType.trim().toLowerCase() === "multi-city" &&
+                  !flightData?.COMBO ? (
                     <>
                       {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
-                        // departureFrom={departureFrom}
-                        // arrivalTo={arrivalTo}
+                          // departureFrom={departureFrom}
+                          // arrivalTo={arrivalTo}
                         />
                       ) : (
                         <>
@@ -2301,182 +2326,130 @@ export default function Tickets() {
                     flightData?.COMBO?.length > 0) ||
                   (srx_tripType?.trim().toLowerCase() === "multi-city" &&
                     flightData?.COMBO?.length > 0)) && (
-                    <div className="content-left order-lg-first">
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Filter Price{" "}
-                            </h6>
-                            <ByPrice
-                              priceRange={priceRange}
-                              setPriceRange={setPriceRange}
-                              minPriceRange={minPriceRange}
-                              maxPriceRange={maxPriceRange}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Stops
-                            </h6>
-                            <ByStops stops={stops} setStops={setStops} />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Departure Time
-                            </h6>
-                            <ByDepartureTime
-                              departureTime={departureTime}
-                              setDepartureTime={setDepartureTime}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Arrival Time
-                            </h6>
-                            <ByArrivalTime
-                              arrivalTime={arrivalTime}
-                              setArrivalTime={setArrivalTime}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Airlines
-                            </h6>
-                            <div className="box-collapse scrollFilter">
-                              <ByAirline
-                                uniqueAirlines={[
-                                  ...new Set(
-                                    (
-                                      flightData?.ONWARD ||
-                                      flightData?.COMBO ||
-                                      []
-                                    ).map(
-                                      (ticket: any) => ticket.sI[0].fD.aI.name
-                                    )
-                                  ),
-                                ]}
-                                selectedAirlines={selectedAirlines}
-                                setSelectedAirlines={setSelectedAirlines}
-                              />
-                              <div className="box-see-more mt-20 mb-25">
-                                <Link className="link-see-more" href="#">
-                                  See more
-                                  <svg
-                                    width={8}
-                                    height={6}
-                                    viewBox="0 0 8 6"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path d="M7.89553 1.02367C7.75114 0.870518 7.50961 0.864815 7.35723 1.00881L3.9998 4.18946L0.642774 1.00883C0.490387 0.86444 0.249236 0.870534 0.104474 1.02369C-0.0402885 1.17645 -0.0338199 1.4176 0.118958 1.56236L3.73809 4.99102C3.81123 5.06036 3.90571 5.0954 3.9998 5.0954C4.0939 5.0954 4.18875 5.06036 4.26191 4.99102L7.88104 1.56236C8.03382 1.41758 8.04029 1.17645 7.89553 1.02367Z" />
-                                  </svg>
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Fare Identifier
-                            </h6>
-                            <ByFareIdentifier
-                              fareIdentifiers={fareIdentifiers}
-                              setFareIdentifiers={setFareIdentifiers}
-                              options={uniqueFareIdentifiers}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Flight Number
-                            </h6>
-                            <ByAirlineSearch
-                              flightNumberSearch={flightNumberSearch}
-                              setFlightNumberSearch={setFlightNumberSearch}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="block-filter border-1">
-                            <h6 className="text-lg-bold item-collapse neutral-1000">
-                              Fare Type
-                            </h6>
-                            <ByFareType
-                              selectedFareTypes={selectedFareTypes}
-                              setSelectedFareTypes={setSelectedFareTypes}
-                              options={uniqueFareTypes}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* <div className="sidebar-left border-1 background-body">
+                  <div className="content-left order-lg-first">
+                    <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
                         <div className="block-filter border-1">
-                          <h6 className="text-lg-bold item-collapse neutral-1000">
-                            Class / Cabin
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Filter Price{" "}
                           </h6>
-                          <ByClass
-                            uniqueClasses={uniqueClasses}
-                            filter={filter}
-                            handleCheckboxChange={handleCheckboxChange}
+                          <ByPrice
+                            priceRange={priceRange}
+                            setPriceRange={setPriceRange}
+                            minPriceRange={minPriceRange}
+                            maxPriceRange={maxPriceRange}
                           />
                         </div>
                       </div>
-                    </div> */}
-                      {/* <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">Review Score </h6>
-                        <ByRating uniqueRatings={uniqueRatings} filter={filter} handleCheckboxChange={handleCheckboxChange} />
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Stops
+                          </h6>
+                          <ByStops stops={stops} setStops={setStops} />
+                        </div>
                       </div>
                     </div>
-                  </div> */}
-                      {/* <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">Booking Location</h6>
-                        <ByLocation uniqueLocations={uniqueLocations} filter={filter} handleCheckboxChange={handleCheckboxChange} />
-                      </div>
-                    </div>
-                  </div> */}
-                      <div className="sidebar-banner">
-                        <Link href="#">
-                          <img
-                            src="/assets/imgs/page/tickets/banner-ads.png"
-                            alt="Travalogy"
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Departure Time
+                          </h6>
+                          <ByDepartureTime
+                            departureTime={departureTime}
+                            setDepartureTime={setDepartureTime}
                           />
-                        </Link>
+                        </div>
                       </div>
                     </div>
-                  )}
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Arrival Time
+                          </h6>
+                          <ByArrivalTime
+                            arrivalTime={arrivalTime}
+                            setArrivalTime={setArrivalTime}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Airlines
+                          </h6>
+                          <div className="box-collapse scrollFilter">
+                            <ByAirline
+                              uniqueAirlines={[
+                                ...new Set(
+                                  (
+                                    flightData?.ONWARD ||
+                                    flightData?.COMBO ||
+                                    []
+                                  ).map(
+                                    (ticket: any) => ticket.sI[0].fD.aI.name
+                                  )
+                                ),
+                              ]}
+                              selectedAirlines={selectedAirlines}
+                              setSelectedAirlines={setSelectedAirlines}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Fare Identifier
+                          </h6>
+                          <ByFareIdentifier
+                            fareIdentifiers={fareIdentifiers}
+                            setFareIdentifiers={setFareIdentifiers}
+                            options={uniqueFareIdentifiers}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Flight Number
+                          </h6>
+                          <ByAirlineSearch
+                            flightNumberSearch={flightNumberSearch}
+                            setFlightNumberSearch={setFlightNumberSearch}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Fare Type
+                          </h6>
+                          <ByFareType
+                            selectedFareTypes={selectedFareTypes}
+                            setSelectedFareTypes={setSelectedFareTypes}
+                            options={uniqueFareTypes}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </section>
