@@ -31,10 +31,13 @@ import { checkTokenExpiry } from "@/services/Utils";
 import citiesData from "../../util/cities.json";
 
 type CityData = {
-  id: string;
+  id: number;
   cityName: string;
   countryName: string;
+  type: string;
+  fullRegionName: string;
 };
+
 type Nationality = {
   countryName: string;
   name: string;
@@ -198,9 +201,9 @@ export default function HotelListing() {
       setSelectFrom({
         cityName: location,
         countryName: matchedCity?.countryName || matchedNationality?.countryName || "India",
-        id: matchedCity?.id || city || "699261", // fallback
+        id: String(matchedCity?.id ?? city ?? 699261)
       });
-      setNationalityId(matchedNationality?.countryId || "94");
+      setNationalityId(String(matchedNationality?.countryId ?? "94"));
     }
   }, [location, city, nationalities, selectFrom]);
 
