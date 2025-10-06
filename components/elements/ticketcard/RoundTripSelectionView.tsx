@@ -332,7 +332,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
       filteredData = filteredData.filter((ticket: any) =>
         (ticket.totalPriceList || []).some((priceInfo: any) =>
           Object.values(priceInfo.fd || {}).some((pax: any) => {
-            const code = String(pax?.rT);
+            const code = Number(pax?.rT);
             const label = FARE_TYPE_LABEL[code] ?? code;
             return activeFareTypes.includes(label);
           })

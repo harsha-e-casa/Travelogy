@@ -257,11 +257,13 @@ export default function Flights4() {
                       }}
                       onInit={(swiper) => {
                         if (prevRef.current && nextRef.current) {
-                          swiper.params.navigation.prevEl = prevRef.current;
-                          swiper.params.navigation.nextEl = nextRef.current;
-                          swiper.navigation.destroy();
-                          swiper.navigation.init();
-                          swiper.navigation.update();
+                          const nav = swiper.params.navigation!;
+                          if (typeof nav !== "boolean") {
+                            nav.prevEl = prevRef.current;
+                            nav.nextEl = nextRef.current;
+                            swiper.navigation.init();
+                            swiper.navigation.update();
+                          }
                         }
                       }}
                     >
