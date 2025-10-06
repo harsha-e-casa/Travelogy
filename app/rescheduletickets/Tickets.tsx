@@ -120,43 +120,61 @@ export default function Tickets() {
         setPriceRange([minPrice, maxPrice]);
       }
 
-      const allAirlines = dataToCheck.map((ticket: any) => ticket.sI[0].fD.aI.name);
+      const allAirlines = dataToCheck.map(
+        (ticket: any) => ticket.sI[0].fD.aI.name
+      );
       const unique = Array.from(new Set(allAirlines));
-      setUniqueAirlines(unique.map(name => ({ name, count: allAirlines.filter((a: string) => a === name).length })));
+      setUniqueAirlines(
+        unique.map((name) => ({
+          name,
+          count: allAirlines.filter((a: string) => a === name).length,
+        }))
+      );
 
-      const allFareIdentifiers = dataToCheck.flatMap((ticket: any) =>
-        ticket.totalPriceList.map((priceInfo: any) => priceInfo.fareIdentifier)
-      ).filter(Boolean);
+      const allFareIdentifiers = dataToCheck
+        .flatMap((ticket: any) =>
+          ticket.totalPriceList.map(
+            (priceInfo: any) => priceInfo.fareIdentifier
+          )
+        )
+        .filter(Boolean);
 
       const fareCounts = allFareIdentifiers.reduce((acc: any, fare: string) => {
         acc[fare] = (acc[fare] || 0) + 1;
         return acc;
       }, {});
 
-      const uniqueFaresWithCounts = Object.keys(fareCounts).map(fare => ({
+      const uniqueFaresWithCounts = Object.keys(fareCounts).map((fare) => ({
         name: fare,
-        count: fareCounts[fare]
+        count: fareCounts[fare],
       }));
 
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
 
       const type: any = {
-        1 : "Refundable",
-        2 : "Partial Refundable"
-      }
+        1: "Refundable",
+        2: "Partial Refundable",
+      };
       const allFareTypes = dataToCheck
         .flatMap((ticket: any, ticketIndex: number) => {
           console.log("🔹 Ticket Index:", ticketIndex, "Ticket Data:", ticket);
 
-          return ticket.totalPriceList.flatMap((priceInfo: any, priceIndex: number) => {
-            console.log("   🔸 PriceInfo Index:", priceIndex, "PriceInfo Data:", priceInfo);
+          return ticket.totalPriceList.flatMap(
+            (priceInfo: any, priceIndex: number) => {
+              console.log(
+                "   🔸 PriceInfo Index:",
+                priceIndex,
+                "PriceInfo Data:",
+                priceInfo
+              );
 
-            return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-              console.log("      🔹 paxTypeKey:", paxTypeKey);
-              console.log("      🔹 paxTypeObj:", priceInfo.fd[paxTypeKey]);
-              return priceInfo.fd[paxTypeKey].rT;
-            });
-          });
+              return Object.keys(priceInfo.fd).map((paxTypeKey) => {
+                console.log("      🔹 paxTypeKey:", paxTypeKey);
+                console.log("      🔹 paxTypeObj:", priceInfo.fd[paxTypeKey]);
+                return priceInfo.fd[paxTypeKey].rT;
+              });
+            }
+          );
         })
         .filter((val: any) => {
           console.log("✅ Filtering value:", val);
@@ -165,16 +183,20 @@ export default function Tickets() {
 
       console.log("🎯 Final allFareTypes:", allFareTypes);
 
+      const fareTypeCounts = allFareTypes.reduce(
+        (acc: any, fareType: string) => {
+          acc[fareType] = (acc[fareType] || 0) + 1;
+          return acc;
+        },
+        {}
+      );
 
-      const fareTypeCounts = allFareTypes.reduce((acc: any, fareType: string) => {
-        acc[fareType] = (acc[fareType] || 0) + 1;
-        return acc;
-      }, {});
-
-      const uniqueFareTypesWithCounts = Object.keys(fareTypeCounts).map(fareType => ({
-        name: type[fareType],
-        count: fareTypeCounts[fareType]
-      }));
+      const uniqueFareTypesWithCounts = Object.keys(fareTypeCounts).map(
+        (fareType) => ({
+          name: type[fareType],
+          count: fareTypeCounts[fareType],
+        })
+      );
 
       setUniqueFareTypes(uniqueFareTypesWithCounts);
     }
@@ -189,7 +211,9 @@ export default function Tickets() {
     );
   };
 
-  const handleFareIdentifierChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFareIdentifierChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const { value, checked } = event.target;
     setFareIdentifiers((prevFareIdentifiers) =>
       checked
@@ -281,19 +305,21 @@ export default function Tickets() {
 
       if (fareIdentifiers.length > 0) {
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.totalPriceList.some((priceInfo: any) => fareIdentifiers.includes(priceInfo.fareIdentifier));
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            fareIdentifiers.includes(priceInfo.fareIdentifier)
+          );
         });
       }
 
       if (selectedFareTypes.length > 0) {
         const typeMap: { [key: number]: string } = {
           1: "Refundable",
-          2: "Partial Refundable"
+          2: "Partial Refundable",
         };
 
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.totalPriceList.some((priceInfo: any) => 
-            Object.keys(priceInfo.fd).some(paxType => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            Object.keys(priceInfo.fd).some((paxType) => {
               const fareType = typeMap[priceInfo.fd[paxType].rT];
               return selectedFareTypes.includes(fareType);
             })
@@ -323,8 +349,16 @@ export default function Tickets() {
 
   useEffect(() => {
     applyFilters();
-  }, [priceRange, stops, departureTime, selectedAirlines, arrivalTime, fareIdentifiers, selectedFareTypes, flightData]);
-
+  }, [
+    priceRange,
+    stops,
+    departureTime,
+    selectedAirlines,
+    arrivalTime,
+    fareIdentifiers,
+    selectedFareTypes,
+    flightData,
+  ]);
 
   const router = useRouter();
 
@@ -819,13 +853,14 @@ export default function Tickets() {
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
                           Filter Price{" "}
                         </h6>
                         <ByPrice
-                          flightData={flightData}
                           priceRange={priceRange}
                           setPriceRange={setPriceRange}
+                          minPriceRange={minPriceRange}
+                          maxPriceRange={maxPriceRange}
                         />
                       </div>
                     </div>
@@ -834,7 +869,7 @@ export default function Tickets() {
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
                           Stops
                         </h6>
                         <ByStops stops={stops} setStops={setStops} />
@@ -845,7 +880,7 @@ export default function Tickets() {
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
                           Departure Time
                         </h6>
                         <ByDepartureTime
@@ -859,24 +894,7 @@ export default function Tickets() {
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Airlines
-                        </h6>
-                        <div className="box-collapse scrollFilter">
-                          <ByAirline
-                            uniqueAirlines={uniqueAirlines}
-                            selectedAirlines={selectedAirlines}
-                            handleCheckboxChange={handleCheckboxChange}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
                           Arrival Time
                         </h6>
                         <ByArrivalTime
@@ -890,14 +908,22 @@ export default function Tickets() {
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Fare Identifier
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
+                          Airlines
                         </h6>
                         <div className="box-collapse scrollFilter">
-                          <ByFareIdentifier
-                            uniqueFareIdentifiers={uniqueFareIdentifiers}
-                            selectedFareIdentifiers={fareIdentifiers}
-                            handleCheckboxChange={handleFareIdentifierChange}
+                          <ByAirline
+                            uniqueAirlines={[
+                              ...new Set(
+                                (
+                                  flightData?.ONWARD ||
+                                  flightData?.COMBO ||
+                                  []
+                                ).map((ticket: any) => ticket.sI[0].fD.aI.name)
+                              ),
+                            ]}
+                            selectedAirlines={selectedAirlines}
+                            setSelectedAirlines={setSelectedAirlines}
                           />
                         </div>
                       </div>
@@ -907,20 +933,36 @@ export default function Tickets() {
                   <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Fare Type
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
+                          Fare Identifier
                         </h6>
                         <div className="box-collapse scrollFilter">
-                          <ByFareType
-                            uniqueFareTypes={uniqueFareTypes}
-                            selectedFareTypes={selectedFareTypes}
-                            handleCheckboxChange={handleFareTypeChange}
+                          <ByFareIdentifier
+                            fareIdentifiers={fareIdentifiers}
+                            setFareIdentifiers={setFareIdentifiers}
+                            options={uniqueFareIdentifiers}
                           />
                         </div>
                       </div>
                     </div>
                   </div>
-                  
+
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
+                          Fare Type
+                        </h6>
+                        <div className="box-collapse scrollFilter">
+                          <ByFareType
+                            selectedFareTypes={selectedFareTypes}
+                            setSelectedFareTypes={setSelectedFareTypes}
+                            options={uniqueFareTypes}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

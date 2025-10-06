@@ -1027,7 +1027,7 @@ export default function BookTicket() {
         // console.log('All forms are valid!');
         // alert('Validation success!');
         // Proceed with form submission or further actions
-        router.push(`/reviewpage?tcs_id=${tcs_id}`);
+        router.push(`/reissuereviewpage?tcs_id=${tcs_id}`);
       })
       .catch((errorInfo) => {
         console.log("Validation failed:", errorInfo);

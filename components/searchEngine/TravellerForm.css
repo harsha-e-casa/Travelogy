@@ -17,7 +17,7 @@
 }
 
 .view-more-txt {
-    color:  #EB5B00 !important;
+    color:  #008cff !important;
     text-align: right;
     font-size: 10px;
     width: 38%;
@@ -27,7 +27,7 @@
 
 .view-more-txt:hover {
     color:  white !important;
-    background-color: #f46f1a !important;;
+    background-color: #008cff !important;;
 }
 
 .greyed-out {

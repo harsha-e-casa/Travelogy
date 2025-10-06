@@ -94,9 +94,9 @@ const BookingDetailsPage = () => {
       }
 
       if (typeof onConfirmPayment === "function") {
-        // setTimeout(() => {
+        setTimeout(() => {
         onConfirmPayment(bookingId);
-        // }, 10000);
+        }, 20000);
       }
     } catch (error) {
       console.error("Booking failed:", error);

@@ -68,36 +68,24 @@ export default function DomesticRoundTripTicketCard({
           <div style={{ width: "55%" }}>
             {ticket.sI.map((segment: any, index: number) => (
               <div className="flex justify-evenly" key={segment.id || index}>
-                <div
-                  className="air_detailes"
-                  style={{ width: "unset", top: index === 0 ? "0" : "49%" }}
-                >
-                  <div className="flex items-center justify-center">
+
+                <div className="flight-route flight-route-type-2 city1">
+                  <div className="flex flex-col items-center justify-center w-max">
                     {isUat && (
                       <img
-                        style={{
-                          width: "35px",
-                          height: "35px",
-                          padding: "5px",
-                        }}
-                        src={`/assets/imgs/airlines/${segment[
-                          "fD"
-                        ].aI.code}.png`}
+                        style={{ width: "50%", margin: "5px" }}
+                        src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
                       />
                     )}
                     {!isUat && (
                       <img
-                        style={{
-                          width: "35px",
-                          height: "35px",
-                          padding: "5px",
-                        }}
+                        style={{ width: "50%", margin: "5px" }}
                         src={`/assets/imgs/airlines/${segment[
                           "fD"
                         ].aI.code.toLowerCase()}.png`}
                       />
                     )}
-                    <div style={{ fontSize: "10px" }}>
+                    <div className="text-sm-medium">
                       {segment["fD"].aI.name}
                     </div>
                   </div>
@@ -256,7 +244,11 @@ export default function DomesticRoundTripTicketCard({
                           {e.fd.ADULT.cc} |
                           <span className="refundable">
                             {" "}
-                            {e.fd.ADULT.rT === 1 ? "Refundable" : "Partial Refundable"}
+                            {e.fd.ADULT.rT === 1
+                              ? "Refundable"
+                              : e.fd.ADULT.rT === 2
+                              ? "Partial Refundable"
+                              : "Non Refundable"}
                           </span>
                         </span>
                       </div>
@@ -282,7 +274,7 @@ export default function DomesticRoundTripTicketCard({
             <div className="flight-price-2 border-1 btndiv">
               {tripPhase === "ONWARD" ? (
                 <button
-                  className="btn btn-gray booknow btn"
+                  className="btn-book-now"
                   onClick={() => handleTicketSelected(ticket, value)}
                 >
                   Select
@@ -295,7 +287,7 @@ export default function DomesticRoundTripTicketCard({
                         selectedOnwardTicket.selectedPriceIndex
                       ]?.id
                     },${ticket.totalPriceList[value]?.id}`}
-                    className="btn btn-gray booknow btn"
+                    className="btn-book-now"
                   >
                     Book Now
                   </Link>

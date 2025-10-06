@@ -138,9 +138,10 @@ export default function RoundTripSelectionView({ flightData }: any) {
     }
   }, [flightData, tripPhase]);
 
-  const FARE_TYPE_LABEL: Record<string, string> = {
-    "1": "Refundable",
-    "2": "Partial Refundable",
+  const FARE_TYPE_LABEL: Record<number, string> = {
+    0: "Non Refundable",
+    1: "Refundable",
+    2: "Partial Refundable",
   };
 
   useEffect(() => {
@@ -148,29 +149,35 @@ export default function RoundTripSelectionView({ flightData }: any) {
       const dataToCheck =
         tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN;
 
-      const allFareTypes: string[] = (dataToCheck || [])
-        .flatMap((ticket: any) =>
-          (ticket.totalPriceList || []).flatMap(
-            (priceInfo: any) =>
-              Object.values(priceInfo.fd || {}).map((pax: any) =>
-                String(pax?.rT)
-              ) // "1" | "2" | ...
-          )
-        )
-        .filter(Boolean);
+      const allFareTypes = dataToCheck
+        .flatMap((ticket: any, ticketIndex: number) => {
+          return ticket.totalPriceList.flatMap(
+            (priceInfo: any, priceIndex: number) => {
+              return Object.keys(priceInfo.fd).map((paxTypeKey) => {
+                return priceInfo.fd[paxTypeKey].rT;
+              });
+            }
+          );
+        })
+        .filter((val: any) => Number.isFinite(Number(val)));
 
-      const fareTypeCounts = allFareTypes.reduce((acc: any, code: string) => {
-        const label = FARE_TYPE_LABEL[code] ?? code;
-        acc[label] = (acc[label] || 0) + 1;
-        return acc;
-      }, {});
+      console.log("🎯 Final allFareTypes:", allFareTypes);
+
+      const fareTypeCounts = allFareTypes.reduce(
+        (acc: any, fareType: string) => {
+          acc[fareType] = (acc[fareType] || 0) + 1;
+          return acc;
+        },
+        {}
+      );
 
       const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
-        (label) => ({
-          name: label,
-          count: fareTypeCounts[label],
+        (fareType: any) => ({
+          name: FARE_TYPE_LABEL[fareType],
+          count: fareTypeCounts[fareType],
         })
-      );      setUniqueFareTypes(uniqueFaresWithCounts);
+      );
+      setUniqueFareTypes(uniqueFaresWithCounts);
     }
   }, [flightData, tripPhase]);
 
@@ -364,10 +371,8 @@ export default function RoundTripSelectionView({ flightData }: any) {
       setCurrentTickets(flightData.RETURN); // move to return flights
       setTripPhase("RETURN");
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } 
+    }
   };
-
-
 
   return (
     <>
@@ -377,7 +382,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Filter Price{" "}
                 </h6>
                 <ByPrice
@@ -406,7 +411,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Stops
                 </h6>
                 <ByStops
@@ -421,7 +426,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Departure Time
                 </h6>
                 <ByDepartureTime
@@ -442,7 +447,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Arrival Time
                 </h6>
                 <ByArrivalTime
@@ -463,7 +468,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Airlines
                 </h6>
                 <div className="box-collapse scrollFilter">
@@ -494,7 +499,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Fare Identifier
                 </h6>
                 <ByFareIdentifier
@@ -518,7 +523,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Flight Number
                 </h6>
                 <ByAirlineSearch
@@ -540,7 +545,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold item-collapse neutral-1000">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
                   Fare Type
                 </h6>
                 <ByFareType
@@ -679,7 +684,6 @@ export default function RoundTripSelectionView({ flightData }: any) {
               <p className="text-sm text-white font-medium">
                 Fare: ₹
                 {(() => {
-
                   let adultCost = 0;
                   let childCost = 0;
                   let infantCost = 0;
@@ -692,13 +696,11 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       getCookie("gy_adult") !== undefined &&
                       getCookie("gy_adult") !== "Nan"
                     ) {
-
                       adultCost =
                         adultCount *
                         selectedOnwardTicket.ticket.totalPriceList[
                           selectedOnwardTicket.selectedPriceIndex
                         ].fd?.ADULT?.fC?.NF;
-
                     }
                   }
                   if (
@@ -710,13 +712,11 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       getCookie("gy_child") !== undefined &&
                       getCookie("gy_child") !== "Nan"
                     ) {
-
                       childCost =
                         childCount *
                         selectedOnwardTicket.ticket.totalPriceList[
                           selectedOnwardTicket.selectedPriceIndex
                         ].fd?.CHILD?.fC?.NF;
-
                     }
                   }
                   if (
@@ -728,13 +728,11 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       getCookie("gy_infant") !== undefined &&
                       getCookie("gy_infant") !== "Nan"
                     ) {
-
                       infantCost =
                         infantCount *
                         selectedOnwardTicket.ticket.totalPriceList[
                           selectedOnwardTicket.selectedPriceIndex
                         ].fd?.INFANT?.fC?.NF;
-
                     }
                   }
 

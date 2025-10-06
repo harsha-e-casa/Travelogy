@@ -751,6 +751,10 @@ const Alldetails = ({ totalpricee }) => {
       // const data = await postDataBookingDetails(parameter);
       console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
+      if (data?.error) {
+        setError(data?.error)
+      }
+
       setBookingdetails(data);
 
       // save the bookingstatus
@@ -1689,7 +1693,7 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
                         )}
                       </div>
-                    ) : bookingDetails?.order?.status === "PENDING" ||
+                    ) : bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ABORTED" ||
                       bookingDetails?.order?.status === "UNCONFIRMED" ? (
                       <>
                         <div className="relative inline-block">

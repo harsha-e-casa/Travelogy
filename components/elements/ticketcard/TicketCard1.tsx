@@ -13,13 +13,9 @@ export default function TicketCard1({
   reschedule = false,
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
-  console.log("isUatisUat ==> ", isUat);
-
-  console.log("flightData from ticketcard", flightData);
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
   const [totalPrice, setTotalprice] = useState();
-  console.log("tickets", ticket);
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -81,7 +77,7 @@ export default function TicketCard1({
           <div style={{ width: "55%" }}>
             {ticket.sI.map((segment: any, index: number) => (
               <>
-                <div
+                {/* <div
                   className="air_detailes"
                   // style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
                   style={{ top: index === 0 ? "0" : "49%" }}
@@ -114,8 +110,29 @@ export default function TicketCard1({
                       {segment["fD"].aI.name}
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="flex justify-evenly items-center  pl-20 pr-5">
+                  <div className="flight-route flight-route-type-2 city1">
+                    <div className="flex flex-col items-center justify-center w-max">
+                      {isUat && (
+                        <img
+                          style={{ width: "50%", margin: "5px" }}
+                          src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                        />
+                      )}
+                      {!isUat && (
+                        <img
+                          style={{ width: "50%", margin: "5px" }}
+                          src={`/assets/imgs/airlines/${segment[
+                            "fD"
+                          ].aI.code.toLowerCase()}.png`}
+                        />
+                      )}
+                      <div className="text-sm-medium">
+                        {segment["fD"].aI.name}
+                      </div>
+                    </div>
+                  </div>
                   <div className="flight-route flight-route-type-2 city1">
                     <div className="flight-route-1">
                       <div className="flight-name">
@@ -267,7 +284,11 @@ export default function TicketCard1({
                             {e.fd.ADULT.cc} |
                             <span className="refundable">
                               {" "}
-                              {e.fd.ADULT.rT === 1 ? "Refundable" : "Partial Refundable"}
+                              {e.fd.ADULT.rT === 1
+                                ? "Refundable"
+                                : e.fd.ADULT.rT === 2
+                                ? "Partial Refundable"
+                                : "Non Refundable"}
                             </span>
                           </span>
                         </div>
@@ -291,11 +312,12 @@ export default function TicketCard1({
           </div>
 
           {/* btn */}
-          <div className="flight-price-2 border-1 btndiv pr-20">
+          <div className="flight-price-2 border-1 btndiv">
             {reschedule && (
               <Link
                 href={`reschedule-book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
-                className="btn btn-gray booknow btn"
+                // className="btn btn-gray booknow btn"
+                className="btn-book-now"
               >
                 Book Now
               </Link>
@@ -303,7 +325,8 @@ export default function TicketCard1({
             {!reschedule && (
               <Link
                 href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
-                className="btn btn-gray booknow btn"
+                // className="btn btn-gray booknow btn"
+                className="btn-book-now"
               >
                 Book Now
               </Link>

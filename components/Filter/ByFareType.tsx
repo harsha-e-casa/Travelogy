@@ -51,6 +51,7 @@ export default function ByFareType({
     <div className="box-collapse scrollFilter">
       <ul className="list-filter-checkbox">
         {safeOptions.map((option) => {
+          console.log("by fare nameeeeeeee = ",option.name);
           const name = option.name; // guaranteed non-empty string
           const id = `fareType-${tabIndex ?? 0}-${name}`;
 
