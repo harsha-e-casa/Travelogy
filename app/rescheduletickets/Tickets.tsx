@@ -88,7 +88,7 @@ export default function Tickets() {
     endItemIndex,
   } = useTicketFilter(ticketsData);
 
-  const { getCookie } = useContext(AppContext);
+  const { getCookie, removeCookie } = useContext(AppContext);
   const [flightData, setFlightData] = useState<any>(null);
   const [activeFlight, setActiveFlight] = useState<any>(true);
   const [loading, setloading] = useState<boolean>(false);
@@ -107,6 +107,22 @@ export default function Tickets() {
   const [selectedFareTypes, setSelectedFareTypes] = useState<string[]>([]);
   const [uniqueFareTypes, setUniqueFareTypes] = useState<any[]>([]);
   const [uniqueAirlines, setUniqueAirlines] = useState<any[]>([]);
+
+  useEffect(() => {
+    removeCookie("travellerInfo");
+    removeCookie("mealinfo");
+    removeCookie("baggageinfo");
+    removeCookie("seatSsr_amount");
+    removeCookie("gst_info");
+    removeCookie("email");
+    removeCookie("number");
+
+    // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
+    for (let i = 1; i <= 9; i++) {
+      removeCookie(`adult_seat_map-${i}`);
+      removeCookie(`child_seat_map-${i}`);
+    }
+  }, []);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {

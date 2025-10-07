@@ -29,17 +29,24 @@ const BookingForm: React.FC<BookingFormProps> = ({
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
   console.log("baggageAmount 111111111111111111111==========> ", baggageAmount);
   console.log("seatinfo 111111111111111111111==========> ", seatinfo);
-  console.log("bookingData 111111111111111111111==========> ", bookingData);
   console.log(
     "bookingFormKey 111111111111111111111==========> ",
     bookingFormKey
   );
-  // console.log(
-  //   "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
-  //   totalpricee
-  // );
+
+  console.log("bookingData 111111111111111111111==========> ", bookingData);
+  console.log(
+    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
+    finalStage, totalpricee
+  );
+
   if (totalpricee === undefined) {
-    totalpricee = bookingData?.totalPriceInfo?.totalFareDetail;
+    if (bookingData?.totalPriceInfo?.totalFareDetail) {
+      totalpricee = bookingData?.totalPriceInfo?.totalFareDetail;
+    }
+    if (bookingData?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail) {
+      totalpricee = bookingData?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail;
+    }
   }
   console.log(
     "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee11 ",
@@ -179,15 +186,18 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
   useEffect(() => {
     if (bookingFormKey == 1) {
-      if (mealAmount != 0) {
-        setTotalMealAmount(mealAmount);
-      }
-      if (seatinfo != 0) {
-        setTotalSeatAmount(seatinfo);
-      }
-      if (baggageAmount != 0) {
-        setTotalBaggageAmount(baggageAmount);
-      }
+      // if (mealAmount != 0) {
+      //   setTotalMealAmount(mealAmount);
+      // }
+      // if (seatinfo != 0) {
+      //   setTotalSeatAmount(seatinfo);
+      // }
+      // if (baggageAmount != 0) {
+      //   setTotalBaggageAmount(baggageAmount);
+      // }
+      setTotalMealAmount(mealAmount);
+      setTotalSeatAmount(seatinfo);
+      setTotalBaggageAmount(baggageAmount);
 
       setDisplayAmount(
         Number(totalfare) +

@@ -180,7 +180,7 @@ export default function BookTicket() {
 
   const [baggageinfo, setBaggageinfo] = useState<any>([]);
   const [mealinfo, setMealinfo] = useState<any>([]);
-  const [seatinfo, setSeatinfo] = useState<any>([]);
+  const [seatinfo, setSeatinfo] = useState<any>(0);
   const fareAlert = useRef<{ oldFare?: number; newFare?: number }>({});
   const [isFareAlertModalOpen, setIsFareAlertModalOpen] = useState(false);
   const [baggageAmount, setBaggageAmount] = useState(0);

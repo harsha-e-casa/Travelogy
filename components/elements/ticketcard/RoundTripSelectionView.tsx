@@ -378,7 +378,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
     <>
       {/* render onward and return ticket */}
       <div className="row">
-        <div className="col-lg-3 p-10">
+        <div className="content-left p-10">
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">

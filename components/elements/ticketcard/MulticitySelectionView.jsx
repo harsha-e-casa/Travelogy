@@ -371,7 +371,7 @@ export default function MulticitySelectionView({ flightData }) {
       ),
       children: (
         <div className="row">
-          <div className="col-lg-3">
+          <div className="content-left">
             {!currentFilter && (
               <div className="p-3 text-sm text-gray-500">Loading filters…</div>
             )}
