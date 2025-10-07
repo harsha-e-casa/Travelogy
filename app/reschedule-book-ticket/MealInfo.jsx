@@ -106,12 +106,7 @@ const MealInfo = ({
   return (
     <>
       {hasMeal ? (
-        <Form
-          form={form}
-          name="mealForm"
-          layout="vertical"
-          autoComplete="off"
-        >
+        <Form form={form} name="mealForm" layout="vertical" autoComplete="off">
           {segmentinfo.map((segment, flightIndex) => {
             const mealOptions = segment?.ssrInfo?.MEAL || [];
 
@@ -136,15 +131,30 @@ const MealInfo = ({
                       style={{ marginBottom: 0, width: "500px" }}
                     >
                       <Select
-                        className="h-10 "
                         placeholder="Add Meal"
-                        disabled={mealOptions.every((meal) => !meal.amount)}
+                        disabled={mealOptions.every((b) => !b.amount)}
+                        style={{ width: 500 }}
                         onChange={handleChange}
+                        allowClear
+                        onClear={handleChange}
+                        dropdownRender={(menu) => (
+                          <>
+                            {menu}
+                            <div
+                              style={{
+                                borderTop: "1px solid #f0f0f0",
+                                padding: 8,
+                                textAlign: "right",
+                              }}
+                            ></div>
+                          </>
+                        )}
                       >
                         {mealOptions.map((meal) => (
                           <Option
                             key={meal.code}
                             value={`${segment.id}|${meal.code}`}
+                            // disabled={!meal.amount}
                           >
                             {meal.desc} - ₹{meal.amount}
                           </Option>
@@ -170,11 +180,31 @@ const MealInfo = ({
                       name={`childMeal-${flightIndex}-${index}`}
                       style={{ marginBottom: 0, width: "500px" }}
                     >
-                      <Select className="h-10 w-100" placeholder="Add Meal" disabled={mealOptions.every((meal) => !meal.amount)} onChange={handleChange}>
+                      <Select
+                        placeholder="Add Meal"
+                        disabled={mealOptions.every((b) => !b.amount)}
+                        style={{ width: 500 }}
+                        onChange={handleChange}
+                        allowClear
+                        onClear={handleChange}
+                        dropdownRender={(menu) => (
+                          <>
+                            {menu}
+                            <div
+                              style={{
+                                borderTop: "1px solid #f0f0f0",
+                                padding: 8,
+                                textAlign: "right",
+                              }}
+                            ></div>
+                          </>
+                        )}
+                      >
                         {mealOptions.map((meal) => (
                           <Option
                             key={meal.code}
                             value={`${segment.id}|${meal.code}`}
+                            // disabled={!meal.amount}
                           >
                             {meal.desc} - ₹{meal.amount}
                           </Option>

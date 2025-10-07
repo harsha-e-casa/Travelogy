@@ -2329,7 +2329,8 @@ export default function Tickets() {
                   <div className="content-left order-lg-first">
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Filter Price{" "}
                           </h6>
@@ -2344,7 +2345,8 @@ export default function Tickets() {
                     </div>
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Stops
                           </h6>
@@ -2354,7 +2356,8 @@ export default function Tickets() {
                     </div>
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Departure Time
                           </h6>
@@ -2367,7 +2370,8 @@ export default function Tickets() {
                     </div>
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Arrival Time
                           </h6>
@@ -2380,7 +2384,8 @@ export default function Tickets() {
                     </div>
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Airlines
                           </h6>
@@ -2407,7 +2412,8 @@ export default function Tickets() {
 
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Fare Identifier
                           </h6>
@@ -2422,7 +2428,8 @@ export default function Tickets() {
 
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Flight Number
                           </h6>
@@ -2436,7 +2443,8 @@ export default function Tickets() {
 
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
-                        <div className="block-filter border-1">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
                           <h6 className="text-lg-bold filter-sty neutral-1000">
                             Fare Type
                           </h6>

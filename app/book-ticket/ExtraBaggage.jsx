@@ -226,6 +226,8 @@
 // };
 // export default ExtraBaggage;
 
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
 import { Form, Select } from "antd";
 import { useMemo, useEffect, useState } from "react";
 
@@ -241,7 +243,6 @@ const ExtraBaggage = ({
 }) => {
   const tripInfos = apiData?.tripInfos || [];
 
-  // Flatten all segments
   const segmentinfo = useMemo(
     () => tripInfos.flatMap((trip) => trip.sI || []),
     [tripInfos]
@@ -256,17 +257,14 @@ const ExtraBaggage = ({
     [segmentinfo]
   );
 
-  // Local state for handling intermediate baggage amount
   const [localValues, setLocalValues] = useState({});
 
-  // Prefill initial values from storedTravellerInfos
   useEffect(() => {
     if (!storedTravellerInfos || !segmentinfo.length) return;
 
     const initialValues = {};
 
     segmentinfo.forEach((segment, flightIndex) => {
-      // Adults
       for (let i = 0; i < numAdults; i++) {
         const traveller = storedTravellerInfos[i];
         const code = traveller?.ssrBaggageInfos?.[flightIndex]?.code;
@@ -277,7 +275,6 @@ const ExtraBaggage = ({
         }
       }
 
-      // Children
       for (let i = 0; i < numChild; i++) {
         const traveller = storedTravellerInfos[numAdults + i];
         const code = traveller?.ssrBaggageInfos?.[flightIndex]?.code;
@@ -289,9 +286,8 @@ const ExtraBaggage = ({
       }
     });
 
-    // Set prefilled values in Form
     form?.setFieldsValue(initialValues);
-    setLocalValues(initialValues);  // Sync local state as well
+    setLocalValues(initialValues);
   }, [storedTravellerInfos, segmentinfo, numAdults, numChild, form]);
 
   if (!hasBaggage) {
@@ -302,7 +298,6 @@ const ExtraBaggage = ({
     );
   }
 
-  // Compute total baggage amount whenever form values change
   const handleValuesChange = (_, allValues) => {
     let totalAmount = 0;
     Object.values(allValues).forEach((val) => {
@@ -321,6 +316,7 @@ const ExtraBaggage = ({
   };
 
   const handleChange = () => {
+    console.log(" <== handleChange ==> ");
     const allValues = form.getFieldsValue();
     let totalAmount = 0;
     Object.values(allValues).forEach((val) => {
@@ -334,15 +330,12 @@ const ExtraBaggage = ({
         totalAmount += baggage.amount;
       }
     });
+    console.log(" <== handleChange ==> ", totalAmount);
     onBaggageChange(totalAmount);
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      autoComplete="off"
-    >
+    <Form form={form} layout="vertical" autoComplete="off">
       {segmentinfo.map((segment, flightIndex) => {
         const baggageOptions = segment?.ssrInfo?.BAGGAGE || [];
 
@@ -352,7 +345,6 @@ const ExtraBaggage = ({
               {`${segment?.fD?.aI?.name}-${segment?.fD?.fN}`}
             </h3>
 
-            {/* Adult Baggage */}
             {Array.from({ length: numAdults }).map((_, idx) => {
               const field = `adultBaggage-${flightIndex}-${idx}`;
               return (
@@ -364,11 +356,42 @@ const ExtraBaggage = ({
                     ADULT {idx + 1}
                   </span>
                   <Form.Item name={field} style={{ marginBottom: 0 }}>
+                    {/* <Select
+                      placeholder="Add Baggage"
+                      disabled={baggageOptions.every((b) => !b.amount)}
+                      style={{ width: 500 }}
+                      onChange={handleChange}
+                    >
+                      {baggageOptions.map((bag) => (
+                        <Option
+                          key={bag.code}
+                          value={`${segment.id}|${bag.code}`}
+                          disabled={!bag.amount}
+                        >
+                          {bag.desc} - ₹{bag.amount}
+                        </Option>
+                      ))}
+                    </Select> */}
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
                       style={{ width: 500 }}
                       onChange={handleChange}
+                      allowClear
+                      onClear={handleChange}
+                      dropdownRender={(menu) => (
+                        <>
+                          {menu}
+                          <div
+                            style={{
+                              borderTop: "1px solid #f0f0f0",
+                              padding: 8,
+                              textAlign: "right",
+                            }}
+                          >
+                          </div>
+                        </>
+                      )}
                     >
                       {baggageOptions.map((bag) => (
                         <Option
@@ -385,7 +408,6 @@ const ExtraBaggage = ({
               );
             })}
 
-            {/* Child Baggage */}
             {Array.from({ length: numChild }).map((_, idx) => {
               const field = `childBaggage-${flightIndex}-${idx}`;
               return (
@@ -397,11 +419,42 @@ const ExtraBaggage = ({
                     CHILD {idx + 1}
                   </span>
                   <Form.Item name={field} style={{ marginBottom: 0 }}>
+                    {/* <Select
+                      placeholder="Add Baggage"
+                      disabled={baggageOptions.every((b) => !b.amount)}
+                      style={{ width: 500 }}
+                      onChange={handleChange}
+                    >
+                      {baggageOptions.map((bag) => (
+                        <Option
+                          key={bag.code}
+                          value={`${segment.id}|${bag.code}`}
+                          disabled={!bag.amount}
+                        >
+                          {bag.desc} - ₹{bag.amount}
+                        </Option>
+                      ))}
+                    </Select> */}
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
                       style={{ width: 500 }}
                       onChange={handleChange}
+                      allowClear
+                      onClear={handleChange}
+                      dropdownRender={(menu) => (
+                        <>
+                          {menu}
+                          <div
+                            style={{
+                              borderTop: "1px solid #f0f0f0",
+                              padding: 8,
+                              textAlign: "right",
+                            }}
+                          >
+                          </div>
+                        </>
+                      )}
                     >
                       {baggageOptions.map((bag) => (
                         <Option
@@ -426,4 +479,4 @@ const ExtraBaggage = ({
 
 export default ExtraBaggage;
 
-
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||

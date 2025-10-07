@@ -259,6 +259,24 @@ const AppFormAdult = ({
                       format="YYYY-MM-DD"
                       className="h-10 w-full"
                       placeholder="Select Passport Issue Date"
+                      onKeyDown={(e) => {
+                        const ok = [
+                          "Backspace",
+                          "Tab",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Delete",
+                          "Enter",
+                        ];
+                        if (ok.includes(e.key)) return;
+                        if (!/[\d-]/.test(e.key)) e.preventDefault();
+                      }}
+                      onPaste={(e) => {
+                        const t = (
+                          e.clipboardData.getData("text") || ""
+                        ).trim();
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+                      }}
                     />
                   </Form.Item>
                 </Col>
@@ -288,6 +306,24 @@ const AppFormAdult = ({
                       format="YYYY-MM-DD"
                       className="h-10 w-full"
                       placeholder="Select Passport Expiry Date"
+                      onKeyDown={(e) => {
+                        const ok = [
+                          "Backspace",
+                          "Tab",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Delete",
+                          "Enter",
+                        ];
+                        if (ok.includes(e.key)) return;
+                        if (!/[\d-]/.test(e.key)) e.preventDefault();
+                      }}
+                      onPaste={(e) => {
+                        const t = (
+                          e.clipboardData.getData("text") || ""
+                        ).trim();
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+                      }}
                     />
                   </Form.Item>
                 </Col>
@@ -317,6 +353,24 @@ const AppFormAdult = ({
                       format="YYYY-MM-DD"
                       className="h-10 w-full"
                       placeholder="Select Date of Birth"
+                      onKeyDown={(e) => {
+                        const ok = [
+                          "Backspace",
+                          "Tab",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Delete",
+                          "Enter",
+                        ];
+                        if (ok.includes(e.key)) return;
+                        if (!/[\d-]/.test(e.key)) e.preventDefault();
+                      }}
+                      onPaste={(e) => {
+                        const t = (
+                          e.clipboardData.getData("text") || ""
+                        ).trim();
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+                      }}
                     />
                   </Form.Item>
                 </Col>

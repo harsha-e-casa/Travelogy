@@ -752,7 +752,7 @@ const Alldetails = ({ totalpricee }) => {
       console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
       if (data?.error) {
-        setError(data?.error)
+        setError(data?.error);
       }
 
       setBookingdetails(data);
@@ -1462,6 +1462,25 @@ const Alldetails = ({ totalpricee }) => {
                                 current && current < dayjs().startOf("day")
                               }
                               className="border border-gray-400 px-2 py-2 rounded w-full"
+                              onKeyDown={(e) => {
+                                const okKeys = [
+                                  "Backspace",
+                                  "Tab",
+                                  "ArrowLeft",
+                                  "ArrowRight",
+                                  "Delete",
+                                  "Enter",
+                                ];
+                                if (okKeys.includes(e.key)) return;
+                                if (!/[\d/]/.test(e.key)) e.preventDefault(); // only 0-9 and slash
+                              }}
+                              onPaste={(e) => {
+                                const text = (
+                                  e.clipboardData.getData("text") || ""
+                                ).trim();
+                                if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
+                                  e.preventDefault();
+                              }}
                             />
                           </div>
                         </div>
@@ -1693,7 +1712,8 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
                         )}
                       </div>
-                    ) : bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ABORTED" ||
+                    ) : bookingDetails?.order?.status === "PENDING" ||
+                      bookingDetails?.order?.status === "ABORTED" ||
                       bookingDetails?.order?.status === "UNCONFIRMED" ? (
                       <>
                         <div className="relative inline-block">

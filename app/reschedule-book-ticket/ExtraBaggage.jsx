@@ -60,7 +60,7 @@ const ExtraBaggage = ({
 
     // Set prefilled values in Form
     form?.setFieldsValue(initialValues);
-    setLocalValues(initialValues);  // Sync local state as well
+    setLocalValues(initialValues); // Sync local state as well
   }, [storedTravellerInfos, segmentinfo, numAdults, numChild, form]);
 
   if (!hasBaggage) {
@@ -90,7 +90,7 @@ const ExtraBaggage = ({
   };
 
   const handleChange = () => {
-    console.log("baggage handleChange")
+    console.log("baggage handleChange");
     const allValues = form.getFieldsValue();
     let totalAmount = 0;
     Object.values(allValues).forEach((val) => {
@@ -108,11 +108,7 @@ const ExtraBaggage = ({
   };
 
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      autoComplete="off"
-    >
+    <Form form={form} layout="vertical" autoComplete="off">
       {segmentinfo.map((segment, flightIndex) => {
         const baggageOptions = segment?.ssrInfo?.BAGGAGE || [];
 
@@ -139,6 +135,20 @@ const ExtraBaggage = ({
                       disabled={baggageOptions.every((b) => !b.amount)}
                       style={{ width: 500 }}
                       onChange={handleChange}
+                      allowClear
+                      onClear={handleChange}
+                      dropdownRender={(menu) => (
+                        <>
+                          {menu}
+                          <div
+                            style={{
+                              borderTop: "1px solid #f0f0f0",
+                              padding: 8,
+                              textAlign: "right",
+                            }}
+                          ></div>
+                        </>
+                      )}
                     >
                       {baggageOptions.map((bag) => (
                         <Option
@@ -172,6 +182,20 @@ const ExtraBaggage = ({
                       disabled={baggageOptions.every((b) => !b.amount)}
                       style={{ width: 500 }}
                       onChange={handleChange}
+                      allowClear
+                      onClear={handleChange}
+                      dropdownRender={(menu) => (
+                        <>
+                          {menu}
+                          <div
+                            style={{
+                              borderTop: "1px solid #f0f0f0",
+                              padding: 8,
+                              textAlign: "right",
+                            }}
+                          ></div>
+                        </>
+                      )}
                     >
                       {baggageOptions.map((bag) => (
                         <Option
