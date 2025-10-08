@@ -262,24 +262,26 @@ function formatDateTime(isoString) {
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
-const FlightBookingList = ({ bookings }) => {
+const FlightBookingList = ({
+  bookings,
+  statusOptions,
+  statusFilter,
+  setStatusFilter,
+  amountFilter,
+  setAmountFilter,
+  fromDate,
+  setFromDate,
+  toDate,
+  setToDate
+}) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
-  const [amountFilter, setAmountFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
 
   if (!bookings || bookings.length === 0) {
     return <p className="booking-tab">No bookings found.</p>;
   }
-
-  // Get unique statuses for dropdown
-  const statusOptions = Array.from(
-    new Set(bookings.map((b) => b.status).filter((v) => !!v))
-  );
 
   // FILTER LOGIC
   const filteredBookings = bookings.filter((b) => {
