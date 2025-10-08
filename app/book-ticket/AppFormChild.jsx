@@ -2,17 +2,24 @@ import React, { useEffect } from "react";
 import { Form, Input, Select, Row, Col, DatePicker } from "antd";
 import moment from "moment";
 import countries from "./countries";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
-const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
+const AppFormChild = ({
+  form,
+  index,
+  travellerParsedData,
+  showPassport,
+  pDateCheck,
+}) => {
   useEffect(() => {
+    const bookDate = dayjs(pDateCheck).startOf("day");
+    const minExpiry = bookDate.isValid()
+      ? bookDate.add(6, "month").endOf("day")
+      : null;
     // Check if travellerParsedData has the necessary fields to prefill
     if (travellerParsedData) {
-      console.log(
-        "childdddddddd travellerParsedData ===> ",
-        travellerParsedData
-      );
       const { ti, fN, lN } = travellerParsedData;
 
       // Prefill form fields using form.setFieldsValue
@@ -53,12 +60,10 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
       autoComplete="off"
     >
       <Row gutter={16}>
-        {/* Col for Child's Name */}
-
         <Col span={6}>
           <Form.Item
             name={`childselect-${index}`}
-            label="Select"
+            label="Title"
             hasFeedback
             rules={[{ required: true, message: "This field is required" }]}
             data-name={`childselect-${index}`}
@@ -75,15 +80,67 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
             name={`childName-${index}`}
             label="First Name"
             hasFeedback
+            // revalidate when last name changes
+            dependencies={[`childlast-${index}`]}
             rules={[
               { required: true, message: "Please enter the name" },
-              {
-                min: 2,
-                message: "Last name must be at least 2 characters",
-              },
+              { min: 2, message: "Last name must be at least 2 characters" },
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "Last name can only contain letters and spaces",
+              },
+              {
+                validator: () => {
+                  const norm = (v) =>
+                    String(v ?? "")
+                      .trim()
+                      .replace(/\s+/g, " ")
+                      .toLowerCase();
+
+                  // this child's names
+                  const thisFirst = norm(
+                    form.getFieldValue(`childName-${index}`)
+                  );
+                  const thisLast = norm(
+                    form.getFieldValue(`childlast-${index}`)
+                  );
+                  if (!thisFirst || !thisLast) return Promise.resolve();
+
+                  const all = form.getFieldsValue(true);
+
+                  // collect all other traveler full names (adults + children)
+                  const otherPairs = [];
+
+                  // adults: fname-*, lname-*
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("fname-"))
+                    .forEach((k) => {
+                      const i = k.replace("fname-", "");
+                      otherPairs.push([norm(all[k]), norm(all[`lname-${i}`])]);
+                    });
+
+                  // children: childName-*, childlast-*  (skip current index)
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("childName-"))
+                    .forEach((k) => {
+                      const i = k.replace("childName-", "");
+                      if (String(i) === String(index)) return; // skip self
+                      otherPairs.push([
+                        norm(all[k]),
+                        norm(all[`childlast-${i}`]),
+                      ]);
+                    });
+
+                  const dup = otherPairs.some(
+                    ([f, l]) => f && l && f === thisFirst && l === thisLast
+                  );
+
+                  return dup
+                    ? Promise.reject(
+                        new Error("This traveler name is already entered")
+                      )
+                    : Promise.resolve();
+                },
               },
             ]}
             data-name={`childName-${index}`}
@@ -95,21 +152,72 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
           </Form.Item>
         </Col>
 
-        {/* Col for Age */}
         <Col span={9}>
           <Form.Item
             name={`childlast-${index}`}
             label="Last Name"
             hasFeedback
+            // revalidate when first name changes
+            dependencies={[`childName-${index}`]}
             rules={[
               { required: true, message: "Please enter the Last name" },
-              {
-                min: 2,
-                message: "Last name must be at least 2 characters",
-              },
+              { min: 2, message: "Last name must be at least 2 characters" },
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "Last name can only contain letters and spaces",
+              },
+              {
+                validator: () => {
+                  const norm = (v) =>
+                    String(v ?? "")
+                      .trim()
+                      .replace(/\s+/g, " ")
+                      .toLowerCase();
+
+                  // this child's names
+                  const thisFirst = norm(
+                    form.getFieldValue(`childName-${index}`)
+                  );
+                  const thisLast = norm(
+                    form.getFieldValue(`childlast-${index}`)
+                  );
+                  if (!thisFirst || !thisLast) return Promise.resolve();
+
+                  const all = form.getFieldsValue(true);
+
+                  // collect all other traveler full names (adults + children)
+                  const otherPairs = [];
+
+                  // adults
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("fname-"))
+                    .forEach((k) => {
+                      const i = k.replace("fname-", "");
+                      otherPairs.push([norm(all[k]), norm(all[`lname-${i}`])]);
+                    });
+
+                  // children (skip current)
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("childName-"))
+                    .forEach((k) => {
+                      const i = k.replace("childName-", "");
+                      if (String(i) === String(index)) return;
+                      otherPairs.push([
+                        norm(all[k]),
+                        norm(all[`childlast-${i}`]),
+                      ]);
+                    });
+
+                  const dup = otherPairs.some(
+                    ([f, l]) => f && l && f === thisFirst && l === thisLast
+                  );
+
+                  return dup
+                    ? Promise.reject(
+                        new Error("This traveler name is already entered")
+                      )
+                    : Promise.resolve();
+                },
               },
             ]}
             data-name={`childlast-${index}`}
@@ -201,10 +309,17 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
                         message: "Please select passport issue date",
                       },
                       {
-                        validator: (_, value) =>
-                          value
-                            ? Promise.resolve()
-                            : Promise.reject("Invalid issue date"),
+                        validator: (_, value) => {
+                          if (!value) return Promise.resolve();
+                          if (!bookDate.isValid()) return Promise.resolve();
+                          return value.isAfter(bookDate)
+                            ? Promise.reject(
+                                new Error(
+                                  "Issue date cannot be after the booking date"
+                                )
+                              )
+                            : Promise.resolve();
+                        },
                       },
                     ]}
                     data-name={`passportIssueDate-${index}`}
@@ -248,10 +363,26 @@ const AppFormChild = ({ form, index, travellerParsedData, showPassport }) => {
                         message: "Please select passport expiry date",
                       },
                       {
-                        validator: (_, value) =>
-                          value
-                            ? Promise.resolve()
-                            : Promise.reject("Invalid expiry date"),
+                        validator: (_, value) => {
+                          // let "required" rule handle empty
+                          if (!value) return Promise.resolve();
+                          // if we don't have a valid travel date, don't block
+                          if (!hasTravelDate || !minExpiry)
+                            return Promise.resolve();
+
+                          if (value.isBefore(minExpiry, "day")) {
+                            return Promise.reject(
+                              new Error(
+                                `Passport must be valid for at least 6 months from travel date (${travelDate.format(
+                                  "YYYY-MM-DD"
+                                )}). Earliest allowed expiry: ${minExpiry.format(
+                                  "YYYY-MM-DD"
+                                )}`
+                              )
+                            );
+                          }
+                          return Promise.resolve();
+                        },
                       },
                     ]}
                     data-name={`passportExpiryDate-${index}`}

@@ -57,6 +57,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;
+  const ammendmentFees = totalpricee?.fC?.AFC;
   // const netprice = totalpricee?.fC?.NF;
   const { getCookie, removeCookie } = useContext(AppContext);
   // const initLoaded = useRef(false);
@@ -277,6 +278,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div>
               <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
             </div>
+            {ammendmentFees && (
+              <div className="flex flex-row justify-between">
+              <div>
+                <strong className="text-md-bold neutral-1000">
+                  Reissue Fees
+                </strong>
+              </div>
+              <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
+            </div>
+            )}
             <div className="line-booking-tickets">
               <div className="item-ticket">
                 <p className="text-small neutral-500 mr-30">Net Price</p>

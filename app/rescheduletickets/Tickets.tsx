@@ -684,7 +684,7 @@ export default function Tickets() {
               <>
                 <div className="hdt_header-item relative">
                   <label>From</label>
-                  <div className="hdt_value">
+                  <div className="hdt_value" style={{ cursor: "not-allowed" }}>
                     {
                       fetchRescheduleData?.searchQuery?.routeInfos?.[0]
                         ?.fromCityOrAirport?.city
@@ -694,7 +694,7 @@ export default function Tickets() {
 
                 <div className="hdt_header-item relative">
                   <label>To</label>
-                  <div className="hdt_value">
+                  <div className="hdt_value" style={{ cursor: "not-allowed" }}>
                     {
                       fetchRescheduleData?.searchQuery?.routeInfos?.[0]
                         ?.toCityOrAirport?.city
@@ -833,7 +833,7 @@ export default function Tickets() {
                             !loading && (
                               <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                                 <p className="text-xl font-semibold">
-                                  No result found
+                                  Request flight is not longer available. Please try different flight
                                 </p>
                                 <p className="text-sm mt-2 text-gray-400">
                                   Try adjusting your filters or search criteria.
