@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Tabs } from "antd";
 import Link from "next/link";
 import "./style.css";
+import "./modern-dashboard.css";
 import { postData } from "@/services/NetworkAdapter";
 import FlightBookingList from "./FlightBookingList.jsx";
 import AmendmentList from "./AmendmentList.jsx";
@@ -437,182 +438,194 @@ const Page = () => {
   return (
     <>
       <Layout headerStyle={1} footerStyle={7}>
-        <main className="main">
-          <section>
-            <div className="dashboard-container">
+        <main className="modern-dashboard">
+          {/* Loading Overlay */}
+          {loading && (
+            <div className="modern-loading">
+              <div className="loading-spinner"></div>
+              <p>Loading your dashboard...</p>
+            </div>
+          )}
 
-              {/* Dashboard Header */}
-              <div className="dashboard-header">
-                <div className="header-content">
-                  <div className="header-left">
-                    <h1 className="dashboard-title">Dashboard</h1>
-                    <p className="welcome-message" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>
-                      Welcome back{userData?.user?.name ? `, ${userData.user.name}` : ''}! Here's an overview of your bookings.
-                    </p>
-                  </div>
-                  <div className="header-right">
-                    <div className="status-cards cards-container">
-                      <div className="status-card">
-                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
-                        <div className="status-info">
-                          <h4 style={{ margin: '0' }}>✈️ Flight Bookings</h4>
-                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.flight)}</div>
-                        </div>
-                      </div>
-                      <div className="status-card">
-                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
-                        <div className="status-info">
-                          <h4 style={{ margin: '0' }}>✏️ Flight Amendments</h4>
-                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.amendments)}</div>
-                        </div>
-                      </div>
-                      <div className="status-card">
-                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
-                        <div className="status-info">
-                          <h4 style={{ margin: '0' }}>🔄 Re-Flight Bookings</h4>
-                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.reBookings)}</div>
-                        </div>
-                      </div>
-                      <div className="status-card">
-                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
-                        <div className="status-info">
-                          <h4 style={{ margin: '0' }}>🏨 Hotel Bookings</h4>
-                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.hotel)}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* <div className="header-actions">
-                  <button onClick={handleLogout} className="logout-btn">
-                    Logout
-                  </button>
-                </div> */}
+          {/* Hero Section */}
+          <div className="hero-section">
+            <div className="hero-content">
+              <div className="hero-text">
+                <h1 className="hero-title">
+                  Welcome back{userData?.user?.name ? `, ${userData.user.name}` : ''}!
+                </h1>
+                <p className="hero-subtitle">
+                  Manage your travel bookings with ease
+                </p>
               </div>
-
-              {/* Loading Overlay */}
-              {loading && (
-                <div className="loading-overlay">
-                  <div className="loading-spinner"></div>
-                  <p>Loading your dashboard...</p>
+              <div className="hero-stats">
+                <div className="stat-item">
+                  <span className="stat-number">{getTotalCount(bookingCounts.flight) + getTotalCount(bookingCounts.hotel) + getTotalCount(bookingCounts.amendments) + getTotalCount(bookingCounts.reBookings)}</span>
+                  <span className="stat-label">Total Bookings</span>
                 </div>
-              )}
-
-              {/* Main content */}
-              <div className="dashboard-content">
-
-                {/* bookings */}
-              <div className="bookings-card" id="bookings">
-                <div className="card-header">
-                  <div className="card-title-section">
-                    <div className="card-icon">📋</div>
-                    {/* <h4 className="card-title">
-                      Your Bookings
-                    </h4> */}
-                  </div>
-                </div>
-
-                <div className="card-content" style={{ minWidth: '320px', overflowX: 'auto', overflowY: 'auto', height:'68vh', background:'white' }}>
-                  <Tabs
-                    defaultActiveKey="1"
-                    className="enhanced-tabs"
-                    items={[
-                      {
-                        label: (
-                          <span className="tab-label">
-                            ✈️ Flight Booking
-                          </span>
-                        ),
-                        key: "1",
-                        children: (
-                          <FlightBookingList
-                            bookings={filteredFlightBookings}
-                            statusOptions={flightStatusOptions}
-                            statusFilter={flightStatusFilter}
-                            setStatusFilter={setFlightStatusFilter}
-                            amountFilter={flightAmountFilter}
-                            setAmountFilter={setFlightAmountFilter}
-                            fromDate={flightFromDate}
-                            setFromDate={setFlightFromDate}
-                            toDate={flightToDate}
-                            setToDate={setFlightToDate}
-                          />
-                        ),
-                      },
-                      {
-                        label: (
-                          <span className="tab-label">
-                            ✏️ Flight Amendments
-                          </span>
-                        ),
-                        key: "2",
-                        children: (
-                          <AmendmentList
-                            amendments={filteredAmendments}
-                            statusOptions={amendmentStatusOptions}
-                            statusFilter={amendmentStatusFilter}
-                            setStatusFilter={setAmendmentStatusFilter}
-                            amountFilter={amendmentAmountFilter}
-                            setAmountFilter={setAmendmentAmountFilter}
-                            fromDate={amendmentFromDate}
-                            setFromDate={setAmendmentFromDate}
-                            toDate={amendmentToDate}
-                            setToDate={setAmendmentToDate}
-                          />
-                        ),
-                      },
-                      {
-                        label: (
-                          <span className="tab-label">
-                            🔄 Re - Flight Booking
-                          </span>
-                        ),
-                        key: "3",
-                        children: (
-                          <FlightReBookingList
-                            bookings={filteredReBookings}
-                            statusOptions={reBookingStatusOptions}
-                            statusFilter={reBookingStatusFilter}
-                            setStatusFilter={setReBookingStatusFilter}
-                            amountFilter={reBookingAmountFilter}
-                            setAmountFilter={setReBookingAmountFilter}
-                            fromDate={reBookingFromDate}
-                            setFromDate={setReBookingFromDate}
-                            toDate={reBookingToDate}
-                            setToDate={setReBookingToDate}
-                          />
-                        ),
-                      },
-                      {
-                        label: (
-                          <span className="tab-label">
-                            🏨 Hotel Booking
-                          </span>
-                        ),
-                        key: "4",
-                        children: (
-                          <HotelBookingList
-                            bookings={filteredHotelBookings}
-                            statusOptions={hotelStatusOptions}
-                            statusFilter={hotelStatusFilter}
-                            setStatusFilter={setHotelStatusFilter}
-                            amountFilter={hotelAmountFilter}
-                            setAmountFilter={setHotelAmountFilter}
-                            fromDate={hotelFromDate}
-                            setFromDate={setHotelFromDate}
-                            toDate={hotelToDate}
-                            setToDate={setHotelToDate}
-                          />
-                        ),
-                      },
-                    ]}
-                  />
-                </div>
-              </div>
               </div>
             </div>
-          </section>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="stats-grid">
+            <div className="stat-card flight">
+              <div className="stat-icon">✈️</div>
+              <div className="stat-content">
+                <h3 className="stat-title">Flight Bookings</h3>
+                <div className="stat-number">{getTotalCount(bookingCounts.flight)}</div>
+                <div className="stat-trend">Active bookings</div>
+              </div>
+            </div>
+            
+            <div className="stat-card amendment">
+              <div className="stat-icon">✏️</div>
+              <div className="stat-content">
+                <h3 className="stat-title">Amendments</h3>
+                <div className="stat-number">{getTotalCount(bookingCounts.amendments)}</div>
+                <div className="stat-trend">Modifications</div>
+              </div>
+            </div>
+            
+            <div className="stat-card rebooking">
+              <div className="stat-icon">🔄</div>
+              <div className="stat-content">
+                <h3 className="stat-title">Re-bookings</h3>
+                <div className="stat-number">{getTotalCount(bookingCounts.reBookings)}</div>
+                <div className="stat-trend">New bookings</div>
+              </div>
+            </div>
+            
+            <div className="stat-card hotel">
+              <div className="stat-icon">🏨</div>
+              <div className="stat-content">
+                <h3 className="stat-title">Hotel Bookings</h3>
+                <div className="stat-number">{getTotalCount(bookingCounts.hotel)}</div>
+                <div className="stat-trend">Accommodations</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="main-content">
+            <div className="content-header">
+              <h2 className="section-title">Your Bookings</h2>
+              <p className="section-subtitle">Manage and track all your travel reservations</p>
+            </div>
+            
+            <div className="bookings-container">
+              <Tabs
+                defaultActiveKey="1"
+                className="modern-tabs"
+                items={[
+                  {
+                    label: (
+                      <div className="tab-item">
+                        <span className="tab-icon">✈️</span>
+                        <span className="tab-text">Flights</span>
+                        <span className="tab-badge">{getTotalCount(bookingCounts.flight)}</span>
+                      </div>
+                    ),
+                    key: "1",
+                    children: (
+                      <div className="tab-content">
+                        <FlightBookingList
+                          bookings={filteredFlightBookings}
+                          statusOptions={flightStatusOptions}
+                          statusFilter={flightStatusFilter}
+                          setStatusFilter={setFlightStatusFilter}
+                          amountFilter={flightAmountFilter}
+                          setAmountFilter={setFlightAmountFilter}
+                          fromDate={flightFromDate}
+                          setFromDate={setFlightFromDate}
+                          toDate={flightToDate}
+                          setToDate={setFlightToDate}
+                        />
+                      </div>
+                    ),
+                  },
+                  {
+                    label: (
+                      <div className="tab-item">
+                        <span className="tab-icon">✏️</span>
+                        <span className="tab-text">Amendments</span>
+                        <span className="tab-badge">{getTotalCount(bookingCounts.amendments)}</span>
+                      </div>
+                    ),
+                    key: "2",
+                    children: (
+                      <div className="tab-content">
+                        <AmendmentList
+                          amendments={filteredAmendments}
+                          statusOptions={amendmentStatusOptions}
+                          statusFilter={amendmentStatusFilter}
+                          setStatusFilter={setAmendmentStatusFilter}
+                          amountFilter={amendmentAmountFilter}
+                          setAmountFilter={setAmendmentAmountFilter}
+                          fromDate={amendmentFromDate}
+                          setFromDate={setAmendmentFromDate}
+                          toDate={amendmentToDate}
+                          setToDate={setAmendmentToDate}
+                        />
+                      </div>
+                    ),
+                  },
+                  {
+                    label: (
+                      <div className="tab-item">
+                        <span className="tab-icon">🔄</span>
+                        <span className="tab-text">Re-bookings</span>
+                        <span className="tab-badge">{getTotalCount(bookingCounts.reBookings)}</span>
+                      </div>
+                    ),
+                    key: "3",
+                    children: (
+                      <div className="tab-content">
+                        <FlightReBookingList
+                          bookings={filteredReBookings}
+                          statusOptions={reBookingStatusOptions}
+                          statusFilter={reBookingStatusFilter}
+                          setStatusFilter={setReBookingStatusFilter}
+                          amountFilter={reBookingAmountFilter}
+                          setAmountFilter={setReBookingAmountFilter}
+                          fromDate={reBookingFromDate}
+                          setFromDate={setReBookingFromDate}
+                          toDate={reBookingToDate}
+                          setToDate={setReBookingToDate}
+                        />
+                      </div>
+                    ),
+                  },
+                  {
+                    label: (
+                      <div className="tab-item">
+                        <span className="tab-icon">🏨</span>
+                        <span className="tab-text">Hotels</span>
+                        <span className="tab-badge">{getTotalCount(bookingCounts.hotel)}</span>
+                      </div>
+                    ),
+                    key: "4",
+                    children: (
+                      <div className="tab-content">
+                        <HotelBookingList
+                          bookings={filteredHotelBookings}
+                          statusOptions={hotelStatusOptions}
+                          statusFilter={hotelStatusFilter}
+                          setStatusFilter={setHotelStatusFilter}
+                          amountFilter={hotelAmountFilter}
+                          setAmountFilter={setHotelAmountFilter}
+                          fromDate={hotelFromDate}
+                          setFromDate={setHotelFromDate}
+                          toDate={hotelToDate}
+                          setToDate={setHotelToDate}
+                        />
+                      </div>
+                    ),
+                  },
+                ]}
+              />
+            </div>
+          </div>
         </main>
       </Layout>
     </>
