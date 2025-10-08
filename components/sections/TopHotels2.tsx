@@ -39,7 +39,7 @@ export default function TopHotels2() {
             </div>
             <div className="col-md-4">
               <div className="d-flex justify-content-end">
-                <Link className="btn btn-black-lg" href="/tour-grid">
+                {/* <Link className="btn btn-black-lg" href="/tour-grid">
                   View More
                   <svg
                     width={16}
@@ -56,7 +56,7 @@ export default function TopHotels2() {
                       fill="none"
                     />
                   </svg>
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>
@@ -253,8 +253,8 @@ export default function TopHotels2() {
                     <div className="card-meta">
                       <div className="meta-links">
                         {" "}
-                        <Link href="#">356 Tours, </Link>
-                        <Link href="#">248 Activities</Link>
+                        {/* <Link href="#">356 Tours, </Link>
+                        <Link href="#">248 Activities</Link> */}
                       </div>
                       <div
                         className="card-button"
