@@ -13,9 +13,11 @@ import FlightReBookingList from "./FlightReBookingList.jsx";
 import HotelBookingList from "./HotelBookingList.jsx";
 import { checkTokenExpiry } from "@/services/Utils";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 const Page = () => {
   const router = useRouter();
+
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setloading] = useState(false);
   const [userData, setUserData] = useState();
@@ -44,9 +46,15 @@ const Page = () => {
   const [reBookingFromDate, setReBookingFromDate] = useState("");
   const [reBookingToDate, setReBookingToDate] = useState("");
 
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    const decodedToken = jwtDecode(token);
+    if (decodedToken?.travelogy_admin != 1) {
+      router.push("/profile");
+    }
+  }, [router]);
 
-
-    // Helper function to count bookings grouped by status
+  // Helper function to count bookings grouped by status
   const countByStatus = (items, key = "status") => {
     if (!items || !Array.isArray(items)) return {};
     return items.reduce((acc, item) => {
@@ -218,21 +226,30 @@ const Page = () => {
     fetchHotelBookings();
   }, []);
 
-
   const hotelStatusOptions = Array.from(
-    new Set(userHotelBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)) || []
+    new Set(
+      userHotelBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)
+    ) || []
   );
 
   const flightStatusOptions = Array.from(
-    new Set(userBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)) || []
+    new Set(
+      userBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)
+    ) || []
   );
 
   const amendmentStatusOptions = Array.from(
-    new Set(userAmendmentData?.amendments?.map((b) => b.amendment_status).filter((v) => !!v)) || []
+    new Set(
+      userAmendmentData?.amendments
+        ?.map((b) => b.amendment_status)
+        .filter((v) => !!v)
+    ) || []
   );
 
   const reBookingStatusOptions = Array.from(
-    new Set(userReBookingData?.reBookings?.map((b) => b.status).filter((v) => !!v)) || []
+    new Set(
+      userReBookingData?.reBookings?.map((b) => b.status).filter((v) => !!v)
+    ) || []
   );
 
   useEffect(() => {
@@ -267,7 +284,10 @@ const Page = () => {
         matches =
           matches &&
           b.status &&
-          b.status.toString().toLowerCase().includes(hotelStatusFilter.toLowerCase());
+          b.status
+            .toString()
+            .toLowerCase()
+            .includes(hotelStatusFilter.toLowerCase());
       }
 
       // Date range
@@ -281,7 +301,13 @@ const Page = () => {
       return matches;
     });
     setFilteredHotelBookings(filtered);
-  }, [userHotelBookingData, hotelStatusFilter, hotelAmountFilter, hotelFromDate, hotelToDate]);
+  }, [
+    userHotelBookingData,
+    hotelStatusFilter,
+    hotelAmountFilter,
+    hotelFromDate,
+    hotelToDate,
+  ]);
 
   useEffect(() => {
     if (!userBookingData?.bookings) {
@@ -315,7 +341,10 @@ const Page = () => {
         matches =
           matches &&
           b.status &&
-          b.status.toString().toLowerCase().includes(flightStatusFilter.toLowerCase());
+          b.status
+            .toString()
+            .toLowerCase()
+            .includes(flightStatusFilter.toLowerCase());
       }
 
       // Date range
@@ -329,7 +358,13 @@ const Page = () => {
       return matches;
     });
     setFilteredFlightBookings(filtered);
-  }, [userBookingData, flightStatusFilter, flightAmountFilter, flightFromDate, flightToDate]);
+  }, [
+    userBookingData,
+    flightStatusFilter,
+    flightAmountFilter,
+    flightFromDate,
+    flightToDate,
+  ]);
 
   useEffect(() => {
     if (!userAmendmentData?.amendments) {
@@ -355,7 +390,10 @@ const Page = () => {
           matches =
             matches &&
             b.refundable_amount &&
-            b.refundable_amount.toString().toLowerCase().includes(val.toLowerCase());
+            b.refundable_amount
+              .toString()
+              .toLowerCase()
+              .includes(val.toLowerCase());
         }
       }
 
@@ -363,7 +401,10 @@ const Page = () => {
         matches =
           matches &&
           b.amendment_status &&
-          b.amendment_status.toString().toLowerCase().includes(amendmentStatusFilter.toLowerCase());
+          b.amendment_status
+            .toString()
+            .toLowerCase()
+            .includes(amendmentStatusFilter.toLowerCase());
       }
 
       // Date range
@@ -377,7 +418,13 @@ const Page = () => {
       return matches;
     });
     setFilteredAmendments(filtered);
-  }, [userAmendmentData, amendmentStatusFilter, amendmentAmountFilter, amendmentFromDate, amendmentToDate]);
+  }, [
+    userAmendmentData,
+    amendmentStatusFilter,
+    amendmentAmountFilter,
+    amendmentFromDate,
+    amendmentToDate,
+  ]);
 
   useEffect(() => {
     if (!userReBookingData?.reBookings) {
@@ -411,7 +458,10 @@ const Page = () => {
         matches =
           matches &&
           b.status &&
-          b.status.toString().toLowerCase().includes(reBookingStatusFilter.toLowerCase());
+          b.status
+            .toString()
+            .toLowerCase()
+            .includes(reBookingStatusFilter.toLowerCase());
       }
 
       // Date range
@@ -425,14 +475,21 @@ const Page = () => {
       return matches;
     });
     setFilteredReBookings(filtered);
-  }, [userReBookingData, reBookingStatusFilter, reBookingAmountFilter, reBookingFromDate, reBookingToDate]);
-
-
+  }, [
+    userReBookingData,
+    reBookingStatusFilter,
+    reBookingAmountFilter,
+    reBookingFromDate,
+    reBookingToDate,
+  ]);
 
   // Helper to get total count from status counts
   const getTotalCount = (statusCounts) => {
     if (!statusCounts || Object.keys(statusCounts).length === 0) return 0;
-    return Object.values(statusCounts).reduce((total, count) => total + count, 0);
+    return Object.values(statusCounts).reduce(
+      (total, count) => total + count,
+      0
+    );
   };
 
   return (
@@ -452,7 +509,8 @@ const Page = () => {
             <div className="hero-content">
               <div className="hero-text">
                 <h1 className="hero-title">
-                  Welcome back{userData?.user?.name ? `, ${userData.user.name}` : ''}!
+                  Welcome back
+                  {userData?.user?.name ? `, ${userData.user.name}` : ""}!
                 </h1>
                 <p className="hero-subtitle">
                   Manage your travel bookings with ease
@@ -460,7 +518,12 @@ const Page = () => {
               </div>
               <div className="hero-stats">
                 <div className="stat-item">
-                  <span className="stat-number">{getTotalCount(bookingCounts.flight) + getTotalCount(bookingCounts.hotel) + getTotalCount(bookingCounts.amendments) + getTotalCount(bookingCounts.reBookings)}</span>
+                  <span className="stat-number">
+                    {getTotalCount(bookingCounts.flight) +
+                      getTotalCount(bookingCounts.hotel) +
+                      getTotalCount(bookingCounts.amendments) +
+                      getTotalCount(bookingCounts.reBookings)}
+                  </span>
                   <span className="stat-label">Total Bookings</span>
                 </div>
               </div>
@@ -473,34 +536,42 @@ const Page = () => {
               <div className="stat-icon">✈️</div>
               <div className="stat-content">
                 <h3 className="stat-title">Flight Bookings</h3>
-                <div className="stat-number">{getTotalCount(bookingCounts.flight)}</div>
+                <div className="stat-number">
+                  {getTotalCount(bookingCounts.flight)}
+                </div>
                 <div className="stat-trend">Active bookings</div>
               </div>
             </div>
-            
+
             <div className="stat-card amendment">
               <div className="stat-icon">✏️</div>
               <div className="stat-content">
                 <h3 className="stat-title">Amendments</h3>
-                <div className="stat-number">{getTotalCount(bookingCounts.amendments)}</div>
+                <div className="stat-number">
+                  {getTotalCount(bookingCounts.amendments)}
+                </div>
                 <div className="stat-trend">Modifications</div>
               </div>
             </div>
-            
+
             <div className="stat-card rebooking">
               <div className="stat-icon">🔄</div>
               <div className="stat-content">
                 <h3 className="stat-title">Re-bookings</h3>
-                <div className="stat-number">{getTotalCount(bookingCounts.reBookings)}</div>
+                <div className="stat-number">
+                  {getTotalCount(bookingCounts.reBookings)}
+                </div>
                 <div className="stat-trend">New bookings</div>
               </div>
             </div>
-            
+
             <div className="stat-card hotel">
               <div className="stat-icon">🏨</div>
               <div className="stat-content">
                 <h3 className="stat-title">Hotel Bookings</h3>
-                <div className="stat-number">{getTotalCount(bookingCounts.hotel)}</div>
+                <div className="stat-number">
+                  {getTotalCount(bookingCounts.hotel)}
+                </div>
                 <div className="stat-trend">Accommodations</div>
               </div>
             </div>
@@ -510,9 +581,11 @@ const Page = () => {
           <div className="main-content">
             <div className="content-header">
               <h2 className="section-title">Your Bookings</h2>
-              <p className="section-subtitle">Manage and track all your travel reservations</p>
+              <p className="section-subtitle">
+                Manage and track all your travel reservations
+              </p>
             </div>
-            
+
             <div className="bookings-container">
               <Tabs
                 defaultActiveKey="1"
@@ -523,7 +596,9 @@ const Page = () => {
                       <div className="tab-item">
                         <span className="tab-icon">✈️</span>
                         <span className="tab-text">Flights</span>
-                        <span className="tab-badge">{getTotalCount(bookingCounts.flight)}</span>
+                        <span className="tab-badge">
+                          {getTotalCount(bookingCounts.flight)}
+                        </span>
                       </div>
                     ),
                     key: "1",
@@ -549,7 +624,9 @@ const Page = () => {
                       <div className="tab-item">
                         <span className="tab-icon">✏️</span>
                         <span className="tab-text">Amendments</span>
-                        <span className="tab-badge">{getTotalCount(bookingCounts.amendments)}</span>
+                        <span className="tab-badge">
+                          {getTotalCount(bookingCounts.amendments)}
+                        </span>
                       </div>
                     ),
                     key: "2",
@@ -575,7 +652,9 @@ const Page = () => {
                       <div className="tab-item">
                         <span className="tab-icon">🔄</span>
                         <span className="tab-text">Re-bookings</span>
-                        <span className="tab-badge">{getTotalCount(bookingCounts.reBookings)}</span>
+                        <span className="tab-badge">
+                          {getTotalCount(bookingCounts.reBookings)}
+                        </span>
                       </div>
                     ),
                     key: "3",
@@ -601,7 +680,9 @@ const Page = () => {
                       <div className="tab-item">
                         <span className="tab-icon">🏨</span>
                         <span className="tab-text">Hotels</span>
-                        <span className="tab-badge">{getTotalCount(bookingCounts.hotel)}</span>
+                        <span className="tab-badge">
+                          {getTotalCount(bookingCounts.hotel)}
+                        </span>
                       </div>
                     ),
                     key: "4",
