@@ -22,6 +22,46 @@ const Page = () => {
   const [userHotelBookingData, setUserHotelBookingData] = useState();
   const [userAmendmentData, setUseramendmentData] = useState();
   const [userReBookingData, setReUserBookingData] = useState();
+  const [filteredHotelBookings, setFilteredHotelBookings] = useState([]);
+  const [hotelStatusFilter, setHotelStatusFilter] = useState("");
+  const [hotelAmountFilter, setHotelAmountFilter] = useState("");
+  const [hotelFromDate, setHotelFromDate] = useState("");
+  const [hotelToDate, setHotelToDate] = useState("");
+  const [filteredFlightBookings, setFilteredFlightBookings] = useState([]);
+  const [flightStatusFilter, setFlightStatusFilter] = useState("");
+  const [flightAmountFilter, setFlightAmountFilter] = useState("");
+  const [flightFromDate, setFlightFromDate] = useState("");
+  const [flightToDate, setFlightToDate] = useState("");
+  const [filteredAmendments, setFilteredAmendments] = useState([]);
+  const [amendmentStatusFilter, setAmendmentStatusFilter] = useState("");
+  const [amendmentAmountFilter, setAmendmentAmountFilter] = useState("");
+  const [amendmentFromDate, setAmendmentFromDate] = useState("");
+  const [amendmentToDate, setAmendmentToDate] = useState("");
+  const [filteredReBookings, setFilteredReBookings] = useState([]);
+  const [reBookingStatusFilter, setReBookingStatusFilter] = useState("");
+  const [reBookingAmountFilter, setReBookingAmountFilter] = useState("");
+  const [reBookingFromDate, setReBookingFromDate] = useState("");
+  const [reBookingToDate, setReBookingToDate] = useState("");
+
+
+
+    // Helper function to count bookings grouped by status
+  const countByStatus = (items, key = "status") => {
+    if (!items || !Array.isArray(items)) return {};
+    return items.reduce((acc, item) => {
+      const status = item[key] || "UNKNOWN";
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+  };
+
+  // bookingCounts holds counts grouped by status for each booking type
+  const bookingCounts = {
+    flight: countByStatus(filteredFlightBookings),
+    amendments: countByStatus(filteredAmendments, "amendment_status"),
+    reBookings: countByStatus(filteredReBookings),
+    hotel: countByStatus(filteredHotelBookings),
+  };
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
@@ -177,9 +217,226 @@ const Page = () => {
     fetchHotelBookings();
   }, []);
 
+
+  const hotelStatusOptions = Array.from(
+    new Set(userHotelBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)) || []
+  );
+
+  const flightStatusOptions = Array.from(
+    new Set(userBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)) || []
+  );
+
+  const amendmentStatusOptions = Array.from(
+    new Set(userAmendmentData?.amendments?.map((b) => b.amendment_status).filter((v) => !!v)) || []
+  );
+
+  const reBookingStatusOptions = Array.from(
+    new Set(userReBookingData?.reBookings?.map((b) => b.status).filter((v) => !!v)) || []
+  );
+
+  useEffect(() => {
+    if (!userHotelBookingData?.bookings) {
+      setFilteredHotelBookings([]);
+      return;
+    }
+    const filtered = userHotelBookingData.bookings.filter((b) => {
+      const bookingDate = b.booking_time ? b.booking_time.slice(0, 10) : "";
+      let matches = true;
+
+      // Amount filter
+      if (hotelAmountFilter.trim() !== "") {
+        const val = hotelAmountFilter.trim();
+        if (val.includes("-")) {
+          const [min, max] = val.split("-").map((s) => s.trim());
+          const amt = Number(b.amount);
+          if (!isNaN(amt)) {
+            matches = matches && amt >= Number(min) && amt <= Number(max);
+          } else {
+            matches = false;
+          }
+        } else {
+          matches =
+            matches &&
+            b.amount &&
+            b.amount.toString().toLowerCase().includes(val.toLowerCase());
+        }
+      }
+
+      if (hotelStatusFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.status &&
+          b.status.toString().toLowerCase().includes(hotelStatusFilter.toLowerCase());
+      }
+
+      // Date range
+      if (hotelFromDate) {
+        matches = matches && bookingDate >= hotelFromDate;
+      }
+      if (hotelToDate) {
+        matches = matches && bookingDate <= hotelToDate;
+      }
+
+      return matches;
+    });
+    setFilteredHotelBookings(filtered);
+  }, [userHotelBookingData, hotelStatusFilter, hotelAmountFilter, hotelFromDate, hotelToDate]);
+
+  useEffect(() => {
+    if (!userBookingData?.bookings) {
+      setFilteredFlightBookings([]);
+      return;
+    }
+    const filtered = userBookingData.bookings.filter((b) => {
+      const bookingDate = b.booking_time ? b.booking_time.slice(0, 10) : "";
+      let matches = true;
+
+      // Amount filter
+      if (flightAmountFilter.trim() !== "") {
+        const val = flightAmountFilter.trim();
+        if (val.includes("-")) {
+          const [min, max] = val.split("-").map((s) => s.trim());
+          const amt = Number(b.amount);
+          if (!isNaN(amt)) {
+            matches = matches && amt >= Number(min) && amt <= Number(max);
+          } else {
+            matches = false;
+          }
+        } else {
+          matches =
+            matches &&
+            b.amount &&
+            b.amount.toString().toLowerCase().includes(val.toLowerCase());
+        }
+      }
+
+      if (flightStatusFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.status &&
+          b.status.toString().toLowerCase().includes(flightStatusFilter.toLowerCase());
+      }
+
+      // Date range
+      if (flightFromDate) {
+        matches = matches && bookingDate >= flightFromDate;
+      }
+      if (flightToDate) {
+        matches = matches && bookingDate <= flightToDate;
+      }
+
+      return matches;
+    });
+    setFilteredFlightBookings(filtered);
+  }, [userBookingData, flightStatusFilter, flightAmountFilter, flightFromDate, flightToDate]);
+
+  useEffect(() => {
+    if (!userAmendmentData?.amendments) {
+      setFilteredAmendments([]);
+      return;
+    }
+    const filtered = userAmendmentData.amendments.filter((b) => {
+      const amendmentDate = b.time ? b.time.slice(0, 10) : "";
+      let matches = true;
+
+      // Amount filter
+      if (amendmentAmountFilter.trim() !== "") {
+        const val = amendmentAmountFilter.trim();
+        if (val.includes("-")) {
+          const [min, max] = val.split("-").map((s) => s.trim());
+          const amt = Number(b.refundable_amount);
+          if (!isNaN(amt)) {
+            matches = matches && amt >= Number(min) && amt <= Number(max);
+          } else {
+            matches = false;
+          }
+        } else {
+          matches =
+            matches &&
+            b.refundable_amount &&
+            b.refundable_amount.toString().toLowerCase().includes(val.toLowerCase());
+        }
+      }
+
+      if (amendmentStatusFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.amendment_status &&
+          b.amendment_status.toString().toLowerCase().includes(amendmentStatusFilter.toLowerCase());
+      }
+
+      // Date range
+      if (amendmentFromDate) {
+        matches = matches && amendmentDate >= amendmentFromDate;
+      }
+      if (amendmentToDate) {
+        matches = matches && amendmentDate <= amendmentToDate;
+      }
+
+      return matches;
+    });
+    setFilteredAmendments(filtered);
+  }, [userAmendmentData, amendmentStatusFilter, amendmentAmountFilter, amendmentFromDate, amendmentToDate]);
+
+  useEffect(() => {
+    if (!userReBookingData?.reBookings) {
+      setFilteredReBookings([]);
+      return;
+    }
+    const filtered = userReBookingData.reBookings.filter((b) => {
+      const bookingDate = b.booking_time ? b.booking_time.slice(0, 10) : "";
+      let matches = true;
+
+      // Amount filter
+      if (reBookingAmountFilter.trim() !== "") {
+        const val = reBookingAmountFilter.trim();
+        if (val.includes("-")) {
+          const [min, max] = val.split("-").map((s) => s.trim());
+          const amt = Number(b.amount);
+          if (!isNaN(amt)) {
+            matches = matches && amt >= Number(min) && amt <= Number(max);
+          } else {
+            matches = false;
+          }
+        } else {
+          matches =
+            matches &&
+            b.amount &&
+            b.amount.toString().toLowerCase().includes(val.toLowerCase());
+        }
+      }
+
+      if (reBookingStatusFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.status &&
+          b.status.toString().toLowerCase().includes(reBookingStatusFilter.toLowerCase());
+      }
+
+      // Date range
+      if (reBookingFromDate) {
+        matches = matches && bookingDate >= reBookingFromDate;
+      }
+      if (reBookingToDate) {
+        matches = matches && bookingDate <= reBookingToDate;
+      }
+
+      return matches;
+    });
+    setFilteredReBookings(filtered);
+  }, [userReBookingData, reBookingStatusFilter, reBookingAmountFilter, reBookingFromDate, reBookingToDate]);
+
+
+
+  // Helper to get total count from status counts
+  const getTotalCount = (statusCounts) => {
+    if (!statusCounts || Object.keys(statusCounts).length === 0) return 0;
+    return Object.values(statusCounts).reduce((total, count) => total + count, 0);
+  };
+
   return (
     <>
-      <Layout headerStyle={1} footerStyle={1}>
+      <Layout headerStyle={1} footerStyle={7}>
         <main className="main">
           <section>
             <div className="dashboard-container">
@@ -187,11 +444,46 @@ const Page = () => {
               {/* Dashboard Header */}
               <div className="dashboard-header">
                 <div className="header-content">
-                  <h1 className="dashboard-title">Dashboard</h1>
-                  <p className="welcome-message">
-                    Welcome back{userData?.user?.name ? `, ${userData.user.name}` : ''}! Here's an overview of your bookings.
-                  </p>
+                  <div className="header-left">
+                    <h1 className="dashboard-title">Dashboard</h1>
+                    <p className="welcome-message" style={{ marginTop: '0.5rem', marginBottom: '1rem' }}>
+                      Welcome back{userData?.user?.name ? `, ${userData.user.name}` : ''}! Here's an overview of your bookings.
+                    </p>
+                  </div>
+                  <div className="header-right">
+                    <div className="status-cards cards-container">
+                      <div className="status-card">
+                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
+                        <div className="status-info">
+                          <h4 style={{ margin: '0' }}>✈️ Flight Bookings</h4>
+                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.flight)}</div>
+                        </div>
+                      </div>
+                      <div className="status-card">
+                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
+                        <div className="status-info">
+                          <h4 style={{ margin: '0' }}>✏️ Flight Amendments</h4>
+                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.amendments)}</div>
+                        </div>
+                      </div>
+                      <div className="status-card">
+                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
+                        <div className="status-info">
+                          <h4 style={{ margin: '0' }}>🔄 Re-Flight Bookings</h4>
+                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.reBookings)}</div>
+                        </div>
+                      </div>
+                      <div className="status-card">
+                        {/* <div className="status-icon" style={{ fontSize: '0.8rem' }}></div> */}
+                        <div className="status-info">
+                          <h4 style={{ margin: '0' }}>🏨 Hotel Bookings</h4>
+                          <div className="count" style={{ textAlign: 'center' }}>{getTotalCount(bookingCounts.hotel)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
                 {/* <div className="header-actions">
                   <button onClick={handleLogout} className="logout-btn">
                     Logout
@@ -235,7 +527,16 @@ const Page = () => {
                         key: "1",
                         children: (
                           <FlightBookingList
-                            bookings={userBookingData?.bookings}
+                            bookings={filteredFlightBookings}
+                            statusOptions={flightStatusOptions}
+                            statusFilter={flightStatusFilter}
+                            setStatusFilter={setFlightStatusFilter}
+                            amountFilter={flightAmountFilter}
+                            setAmountFilter={setFlightAmountFilter}
+                            fromDate={flightFromDate}
+                            setFromDate={setFlightFromDate}
+                            toDate={flightToDate}
+                            setToDate={setFlightToDate}
                           />
                         ),
                       },
@@ -248,7 +549,16 @@ const Page = () => {
                         key: "2",
                         children: (
                           <AmendmentList
-                            amendments={userAmendmentData?.amendments}
+                            amendments={filteredAmendments}
+                            statusOptions={amendmentStatusOptions}
+                            statusFilter={amendmentStatusFilter}
+                            setStatusFilter={setAmendmentStatusFilter}
+                            amountFilter={amendmentAmountFilter}
+                            setAmountFilter={setAmendmentAmountFilter}
+                            fromDate={amendmentFromDate}
+                            setFromDate={setAmendmentFromDate}
+                            toDate={amendmentToDate}
+                            setToDate={setAmendmentToDate}
                           />
                         ),
                       },
@@ -261,7 +571,16 @@ const Page = () => {
                         key: "3",
                         children: (
                           <FlightReBookingList
-                            bookings={userReBookingData?.reBookings}
+                            bookings={filteredReBookings}
+                            statusOptions={reBookingStatusOptions}
+                            statusFilter={reBookingStatusFilter}
+                            setStatusFilter={setReBookingStatusFilter}
+                            amountFilter={reBookingAmountFilter}
+                            setAmountFilter={setReBookingAmountFilter}
+                            fromDate={reBookingFromDate}
+                            setFromDate={setReBookingFromDate}
+                            toDate={reBookingToDate}
+                            setToDate={setReBookingToDate}
                           />
                         ),
                       },
@@ -274,7 +593,16 @@ const Page = () => {
                         key: "4",
                         children: (
                           <HotelBookingList
-                            bookings={userHotelBookingData?.bookings}
+                            bookings={filteredHotelBookings}
+                            statusOptions={hotelStatusOptions}
+                            statusFilter={hotelStatusFilter}
+                            setStatusFilter={setHotelStatusFilter}
+                            amountFilter={hotelAmountFilter}
+                            setAmountFilter={setHotelAmountFilter}
+                            fromDate={hotelFromDate}
+                            setFromDate={setHotelFromDate}
+                            toDate={hotelToDate}
+                            setToDate={setHotelToDate}
                           />
                         ),
                       },

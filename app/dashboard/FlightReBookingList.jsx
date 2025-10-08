@@ -14,13 +14,20 @@ function formatDateTime(isoString) {
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
-const FlightReBookingList = ({ bookings }) => {
+const FlightReBookingList = ({
+  bookings,
+  statusOptions,
+  statusFilter,
+  setStatusFilter,
+  amountFilter,
+  setAmountFilter,
+  fromDate,
+  setFromDate,
+  toDate,
+  setToDate
+}) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
-  const [amountFilter, setAmountFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
 
@@ -28,55 +35,8 @@ const FlightReBookingList = ({ bookings }) => {
     return <p className="booking-tab">No bookings found.</p>;
   }
 
-  // Get unique statuses for dropdown
-  const statusOptions = Array.from(
-    new Set(bookings.map((b) => b.status).filter((v) => !!v))
-  );
-
-  // FILTER LOGIC
-  const filteredBookings = bookings.filter((b) => {
-    const bookingDate = b.booking_time ? b.booking_time.slice(0, 10) : "";
-    let matches = true;
-
-    // Amount filter: supports number, string, range (eg: "100-300")
-    if (amountFilter.trim() !== "") {
-      const val = amountFilter.trim();
-      if (val.includes("-")) {
-        const [min, max] = val.split("-").map((s) => s.trim());
-        const amt = Number(b.amount);
-        if (!isNaN(amt)) {
-          matches = matches && amt >= Number(min) && amt <= Number(max);
-        } else {
-          matches = false;
-        }
-      } else {
-        matches =
-          matches &&
-          b.amount &&
-          b.amount.toString().toLowerCase().includes(val.toLowerCase());
-      }
-    }
-
-    if (statusFilter.trim() !== "") {
-      matches =
-        matches &&
-        b.status &&
-        b.status.toString().toLowerCase().includes(statusFilter.toLowerCase());
-    }
-
-    // Date range
-    if (fromDate) {
-      matches = matches && bookingDate >= fromDate;
-    }
-    if (toDate) {
-      matches = matches && bookingDate <= toDate;
-    }
-
-    return matches;
-  });
-
   // SORT LOGIC
-  let sortedBookings = [...filteredBookings];
+  let sortedBookings = [...bookings];
   if (sortBy === "idIndex") {
     // sort by index (which is just order of appearance)
     if (sortOrder === "desc") sortedBookings.reverse();

@@ -249,7 +249,7 @@ export default function HotelListing() {
     startItemIndex,
     endItemIndex,
     itemsPerPage,
-  } = useHotelFilter(transformedHotels, isTopDestination ? { ratings: [4, 5] } : undefined);
+  } = useHotelFilter(transformedHotels, isTopDestination && location ? { ratings: [4, 5], locations: [location] } : isTopDestination ? { ratings: [4, 5] } : undefined);
 
   // Apply star rating filter from query params if present and not top destination
   useEffect(() => {
