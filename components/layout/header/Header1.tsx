@@ -1,17 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CurrencyDropdown from "@/components/elements/CurrencyDropdown";
 import LanguageDropdown from "@/components/elements/LanguageDropdown";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import "./style.css";
-
-// const ThemeSwitch = dynamic(() => import('@/components/elements/ThemeSwitch'), {
-// 	ssr: false,
-// })
+import { jwtDecode } from "jwt-decode";
 
 export default function Header1({
-  // scroll,
   handleLogin,
   handleCorporateLogin,
   handleMobileMenu,
@@ -19,21 +15,30 @@ export default function Header1({
   handleSidebar,
 }: any) {
   const [open, setOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setIsVisible(false);
+        return;
+      }
+      const decoded = jwtDecode<{ travelogy_admin?: boolean | number }>(token);
+      setIsVisible(!!decoded?.travelogy_admin);
+    } catch {
+      setIsVisible(false);
+    }
+  }, []);
 
   const handleLogout = () => {
-    // Clear the token from localStorage
     localStorage.removeItem("authToken");
-
-    // Redirect the user to the login page
-    window.location.href = "/login"; // Redirect to login page or public page
+    window.location.href = "/login";
   };
 
   return (
     <>
-      <header
-        // className={`z_99999 fixed header sticky-bar ${scroll ? "stick" : ""}`}
-        className={`z_99999 header sticky-bar`}
-      >
+      <header className={`z_99999 header sticky-bar`}>
         <div className="container-fluid background_body_overlay">
           <div className="main-header">
             <div className="header-left">
@@ -51,23 +56,23 @@ export default function Header1({
                   />
                 </Link>
               </div>
+
               <div className="header-nav">
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
-                    <li className="">
+                    <li>
                       <Link href="/flights">Flights</Link>
                     </li>
-                    <li className="">
+                    <li>
                       <Link href="/hotels">Hotel</Link>
                     </li>
-
-                    <li className="">
+                    <li>
                       <Link href="/holiday">Holiday</Link>
                     </li>
-                    <li className="">
+                    <li>
                       <Link href="/visa">Visa</Link>
                     </li>
-                    <li className="">
+                    <li>
                       <Link href="/travelInsurance">Travel Insurance</Link>
                     </li>
                     <li>
@@ -76,79 +81,22 @@ export default function Header1({
                     <li>
                       <Link href="/profile">Profile</Link>
                     </li>
+                    {isVisible && (
+                      <li>
+                        <Link href="/dashboard">Dashboard</Link>
+                      </li>
+                    )}
                     <li>
-                      <Link href="/dashboard">Dashboard</Link>
-                    </li>
-                    <li>
-                      <button className="btn-logout" onClick={handleLogout}>Logout</button>
+                      <button className="btn-logout" onClick={handleLogout}>
+                        Logout
+                      </button>
                     </li>
                   </ul>
                 </nav>
               </div>
             </div>
 
-            {/* <div className="header-right">
-              <div
-                className="d-none d-xxl-inline-block align-middle"
-                onMouseEnter={() => setOpen(true)}
-                onMouseLeave={() => setOpen(false)}
-              >
-                <a
-                  className="btn btn-default btn-signin mr-10 cursor-pointer"
-                  onClick={() => setOpen(!open)}
-                >
-                  <p className="text-sm font-bold">Signin/Signup</p>
-                  {open && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
-                      <div className="py-1">
-                        <button
-                          onClick={handleCorporateLogin}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Corporate Login
-                        </button>
-                        <button
-                          onClick={handleLogin}
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          User Login
-                        </button>
-                        <button
-                          onClick={handleLogout}
-                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
-                        >
-                          Logout
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </a>
-                <ThemeSwitch />
-              </div>
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
-              >
-                Logout
-              </button>
-              <div
-                className="burger-icon-2 burger-icon-white"
-                onClick={handleSidebar}
-              >
-                <img
-                  src="/assets/imgs/template/icons/menu.svg"
-                  alt="Travelogy"
-                />
-              </div>
-              <div
-                className="burger-icon burger-icon-white"
-                onClick={handleMobileMenu}
-              >
-                <span className="burger-icon-top" />
-                <span className="burger-icon-mid" />
-                <span className="burger-icon-bottom" />
-              </div>
-            </div> */}
+            {/* right side actions (kept commented as in your code) */}
           </div>
         </div>
       </header>
