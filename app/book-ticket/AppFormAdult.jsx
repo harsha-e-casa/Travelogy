@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Form, Input, Select, Row, Col, DatePicker } from "antd";
 import moment from "moment";
 import countries from "./countries";
+import dayjs from "dayjs";
 
 const { Option } = Select;
 
@@ -12,7 +13,13 @@ const AppFormAdult = ({
   showPassportField,
   travellerParsedData,
   showPassport,
+  pDateCheck,
 }) => {
+  const bookDate = dayjs(pDateCheck).startOf("day");
+  const minExpiry = bookDate.isValid()
+    ? bookDate.add(6, "month").endOf("day")
+    : null;
+
   useEffect(() => {
     if (travellerParsedData) {
       const { ti, fN, lN } = travellerParsedData;
@@ -46,6 +53,41 @@ const AppFormAdult = ({
       });
   }, [travellerParsedData]);
 
+
+  const uniqueNameValidator = () => ({
+    validator: async () => {
+      const normalize = (v) =>
+        String(v ?? "")
+          .trim()
+          .replace(/\s+/g, " ")
+          .toLowerCase();
+
+      const thisFirst = normalize(form.getFieldValue(`fname-${index}`));
+      const thisLast = normalize(form.getFieldValue(`lname-${index}`));
+
+      if (!thisFirst || !thisLast) return Promise.resolve();
+
+      const allValues = form.getFieldsValue(true);
+      const otherIndices = Object.keys(allValues)
+        .filter((k) => k.startsWith("fname-"))
+        .map((k) => k.replace("fname-", ""))
+        .filter((i) => String(i) !== String(index));
+
+      const isDuplicate = otherIndices.some((i) => {
+        const f = normalize(allValues[`fname-${i}`]);
+        const l = normalize(allValues[`lname-${i}`]);
+        return f && l && f === thisFirst && l === thisLast;
+      });
+
+      if (isDuplicate) {
+        return Promise.reject(
+          new Error("This traveler name is already entered")
+        );
+      }
+      return Promise.resolve();
+    },
+  });
+
   return (
     <Form
       form={form}
@@ -58,7 +100,7 @@ const AppFormAdult = ({
         <Col span={6}>
           <Form.Item
             name={`select-${index}`}
-            label="Select"
+            label="Title"
             hasFeedback
             rules={[{ required: true, message: "This field is required" }]}
             data-name={`select-${index}`}
@@ -76,15 +118,46 @@ const AppFormAdult = ({
             name={`fname-${index}`}
             label="First Name"
             hasFeedback
+            // revalidate when last name changes
+            dependencies={[`lname-${index}`]}
             rules={[
               { required: true, message: " Please Enter your First Name" },
-              {
-                min: 2,
-                message: "First name must be at least 2 characters",
-              },
+              { min: 2, message: "First name must be at least 2 characters" },
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "First name can only contain letters and spaces",
+              },
+              {
+                validator: () => {
+                  const norm = (v) =>
+                    String(v ?? "")
+                      .trim()
+                      .replace(/\s+/g, " ")
+                      .toLowerCase();
+
+                  const thisFirst = norm(form.getFieldValue(`fname-${index}`));
+                  const thisLast = norm(form.getFieldValue(`lname-${index}`));
+
+                  if (!thisFirst || !thisLast) return Promise.resolve();
+
+                  const all = form.getFieldsValue(true);
+                  const otherIdxs = Object.keys(all)
+                    .filter((k) => k.startsWith("fname-"))
+                    .map((k) => k.replace("fname-", ""))
+                    .filter((i) => String(i) !== String(index));
+
+                  const dup = otherIdxs.some((i) => {
+                    const f = norm(all[`fname-${i}`]);
+                    const l = norm(all[`lname-${i}`]);
+                    return f && l && f === thisFirst && l === thisLast;
+                  });
+
+                  return dup
+                    ? Promise.reject(
+                        new Error("This traveler name is already entered")
+                      )
+                    : Promise.resolve();
+                },
               },
             ]}
             data-name={`fname-${index}`}
@@ -101,16 +174,46 @@ const AppFormAdult = ({
             name={`lname-${index}`}
             label="Last Name"
             hasFeedback
-            // rules={[{ required: true, message: "" }]}>
+            // revalidate when first name changes
+            dependencies={[`fname-${index}`]}
             rules={[
               { required: true, message: "Please enter your last name" },
-              {
-                min: 2,
-                message: "Last name must be at least 2 characters",
-              },
+              { min: 2, message: "Last name must be at least 2 characters" },
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "Last name can only contain letters and spaces",
+              },
+              {
+                validator: () => {
+                  const norm = (v) =>
+                    String(v ?? "")
+                      .trim()
+                      .replace(/\s+/g, " ")
+                      .toLowerCase();
+
+                  const thisFirst = norm(form.getFieldValue(`fname-${index}`));
+                  const thisLast = norm(form.getFieldValue(`lname-${index}`));
+
+                  if (!thisFirst || !thisLast) return Promise.resolve();
+
+                  const all = form.getFieldsValue(true);
+                  const otherIdxs = Object.keys(all)
+                    .filter((k) => k.startsWith("fname-"))
+                    .map((k) => k.replace("fname-", ""))
+                    .filter((i) => String(i) !== String(index));
+
+                  const dup = otherIdxs.some((i) => {
+                    const f = norm(all[`fname-${i}`]);
+                    const l = norm(all[`lname-${i}`]);
+                    return f && l && f === thisFirst && l === thisLast;
+                  });
+
+                  return dup
+                    ? Promise.reject(
+                        new Error("This traveler name is already entered")
+                      )
+                    : Promise.resolve();
+                },
               },
             ]}
             data-name={`lname-${index}`}
@@ -162,24 +265,6 @@ const AppFormAdult = ({
             </p>
             <Row gutter={16} className="p-2">
               {/* nationality */}
-              {/* <Col span={6}>
-                <Form.Item
-                  name={`adultnationality-${index}`}
-                  label="Nationality"
-                  hasFeedback
-                  rules={[
-                    { required: true, message: "Please select a nationality" },
-                  ]}
-                  data-name={`select-${index}`}
-                >
-                  <Select
-                    className="h-10"
-                    placeholder="Please select a nationality"
-                  >
-                    <Option value="IN">India</Option>
-                  </Select>
-                </Form.Item>
-              </Col> */}
               <Form.Item
                 name={`adultnationality-${index}`}
                 label="Nationality"
@@ -247,10 +332,17 @@ const AppFormAdult = ({
                         message: "Please select passport issue date",
                       },
                       {
-                        validator: (_, value) =>
-                          value
-                            ? Promise.resolve()
-                            : Promise.reject("Invalid issue date"),
+                        validator: (_, value) => {
+                          if (!value) return Promise.resolve();
+                          if (!bookDate.isValid()) return Promise.resolve();
+                          return value.isAfter(bookDate)
+                            ? Promise.reject(
+                                new Error(
+                                  "Issue date cannot be after the booking date"
+                                )
+                              )
+                            : Promise.resolve();
+                        },
                       },
                     ]}
                     data-name={`passportIssueDate-${index}`}
@@ -294,10 +386,25 @@ const AppFormAdult = ({
                         message: "Please select passport expiry date",
                       },
                       {
-                        validator: (_, value) =>
-                          value
-                            ? Promise.resolve()
-                            : Promise.reject("Invalid expiry date"),
+                        validator: (_, value) => {
+                          // let "required" rule handle empty
+                          if (!value) return Promise.resolve();
+                          // if we don't have a valid travel date, don't block
+                          if (!minExpiry) return Promise.resolve();
+
+                          if (value.isBefore(minExpiry, "day")) {
+                            return Promise.reject(
+                              new Error(
+                                `Passport must be valid for at least 6 months from travel date (${bookDate.format(
+                                  "YYYY-MM-DD"
+                                )}). Earliest allowed expiry: ${minExpiry.format(
+                                  "YYYY-MM-DD"
+                                )}`
+                              )
+                            );
+                          }
+                          return Promise.resolve();
+                        },
                       },
                     ]}
                     data-name={`passportExpiryDate-${index}`}
@@ -378,127 +485,6 @@ const AppFormAdult = ({
             </Row>
           </>
         )}
-
-        {/* {(showPassport.pped === true ||
-          showPassport.pid === true ||
-          showPassport.pm === true ||
-          showPassport.dobe === true) && (
-          <>
-            <p
-              className="text-sm leading-5 font-bold text-gray-900"
-              style={{ paddingLeft: "0.5rem" }}
-            >
-              Add passport information
-            </p>
-            <Row gutter={16} className="p-2">
-              <Col span={6}>
-                <Form.Item
-                  name={`adultnationality-${index}`}
-                  label="Nationality"
-                  hasFeedback
-                  rules={[
-                    { required: true, message: "This field is required" },
-                  ]}
-                  data-name={`select-${index}`}
-                >
-                  <Select
-                    className="h-10"
-                    placeholder="Please select a nationality"
-                  >
-                    <Option value="IN">India</Option>
-                  </Select>
-                </Form.Item>
-              </Col>
-              {showPassport.pm === true && (
-                <Col span={6}>
-                  <Form.Item
-                    name={`adultpassportno-${index}`}
-                    label="Passport Number"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: " Please Enter your Passport",
-                      },
-                    ]}
-                    data-name={`passportno-${index}`}
-                  >
-                    <Input
-                      className="h-10 flex flex-row justify-between items-center"
-                      placeholder="Passport Number"
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {showPassport.pped === true && (
-                <Col span={12}>
-                  <Form.Item
-                    name={`adultpassportExpiryDate-${index}`}
-                    label="Passport Expiry Date"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select the expiry date",
-                      },
-                    ]}
-                    data-name={`passportExpiryDate-${index}`}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      className="h-10 w-full"
-                      placeholder="Select Passport Expiry Date"
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {showPassport.pid === true && (
-                <Col span={12}>
-                  <Form.Item
-                    name={`adultpassportIssueDate-${index}`}
-                    label="Passport Issue Date"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select the issue date",
-                      },
-                    ]}
-                    data-name={`passportIssueDate-${index}`}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      className="h-10 w-full"
-                      placeholder="Select Passport Issue Date"
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {showPassport.dobe === true && (
-                <Col span={12}>
-                  <Form.Item
-                    name={`adultdob-${index}`}
-                    label="Date of Birth"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select Date of Birth",
-                      },
-                    ]}
-                    data-name={`dob-${index}`}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      className="h-10 w-full"
-                      placeholder="Select Date of Birth"
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-            </Row>
-          </>
-        )} */}
       </Row>
     </Form>
   );

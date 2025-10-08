@@ -55,13 +55,9 @@ export default function Login() {
       // Make the API request to the backend
       const response: any = await postDatav1("travelogy/flight/login", reqData); // Assuming the backend URL
 
-      console.log("rrrrrrrrrrrrr ", response);
-      console.log("rrrrrrrrrrrrr ", response.status);
-      console.log("rrrrrrrrrrrrr ", response.data.token);
-
       // If the login is successful, response will contain the JWT token
       if (response.status === 200) {
-        message.success("Login successful!");
+        // message.success("Login successful!");
 
         // Store the JWT token in localStorage (or sessionStorage, or cookies depending on your needs)
         localStorage.setItem("authToken", response.data.token);
@@ -117,7 +113,7 @@ export default function Login() {
           >
             <div className="p-20">
               <img
-                src="/assets/imgs/travelogy_logo.png"
+                src="/assets/imgs/logo_login.png"
                 width={594}
                 // height={195}
               />

@@ -23,6 +23,8 @@ const TravellerDetailsModal = ({
     {}
   );
 
+  const [submitAmendmentapiError, setSubmitAmendmentapiError] = useState("")
+
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
 
@@ -363,7 +365,7 @@ const TravellerDetailsModal = ({
                   const parameter = {
                     bookingId,
                     type: amendmentType,
-                    remarks: "test cancellation",
+                    remarks: "cancellation",
                     trips, // 🔁 include this if your API expects it
                   };
 
@@ -380,7 +382,11 @@ const TravellerDetailsModal = ({
                   );
                   const data = response;
 
-                  console.log("📌 amendmentId received:", data?.amendmentId);
+                  console.log("📌 amendmentId received:", data);
+                  console.log("📌 amendmentId received id:", data?.amendmentId);
+                  if(data?.error) {
+                    setSubmitAmendmentapiError(data?.error)
+                  }
 
                   setAmendmentDetailData(data);
                   setAmendmentId(data?.amendmentId);
@@ -492,6 +498,11 @@ const TravellerDetailsModal = ({
             'Confirm Traveller'
           )}
         </button>
+        {submitAmendmentapiError && (
+          <div style={{ padding: "10px" }}>
+            <p className="text-red-600 font-semibold">{submitAmendmentapiError}</p>
+          </div>
+        )}
       </div>
       {showDetailsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

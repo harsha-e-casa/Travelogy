@@ -978,29 +978,6 @@ export default function BookTicket() {
                           Log in to view your saved traveller list, unlock
                           amazing deals & much more!
                         </p>
-
-                        <a
-                          className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
-                          href="#"
-                        >
-                          Login
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M8 15L15 8L8 1M15 8L1 8"
-                              stroke=""
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              {" "}
-                            </path>
-                          </svg>
-                        </a>
                       </div>
                       <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
                         <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
@@ -1163,29 +1140,6 @@ export default function BookTicket() {
                         <p className="mt-1 max-w-2xl text-sm text-gray-500">
                           This is where your confirmation will be sent
                         </p>
-
-                        <a
-                          className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
-                          href="#"
-                        >
-                          Login
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M8 15L15 8L8 1M15 8L1 8"
-                              stroke=""
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              {" "}
-                            </path>
-                          </svg>
-                        </a>
                       </div>
                       <AppFormCustomer form={form} />
 
@@ -1215,29 +1169,6 @@ export default function BookTicket() {
                         <p className="mt-1 max-w-2xl text-sm text-gray-500">
                           This is where your confirmation will be sent
                         </p>
-
-                        <a
-                          className="btn btn-brand-secondary p-3 pt-1 pb-1 absolute right-4 top-4"
-                          href="#"
-                        >
-                          Login
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M8 15L15 8L8 1M15 8L1 8"
-                              stroke=""
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                            >
-                              {" "}
-                            </path>
-                          </svg>
-                        </a>
                       </div>
 
                       {/* 
