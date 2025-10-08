@@ -185,7 +185,7 @@ export default function BookTicket() {
   const [isFareAlertModalOpen, setIsFareAlertModalOpen] = useState(false);
   const [baggageAmount, setBaggageAmount] = useState(0);
   const [mealAmount, setMealAmount] = useState(0);
-  const [firstTravellDate, setFirstTravellDate] = useState("");
+  const [firstTravellDate, setFirstTravellDate] = useState<any>("");
 
   const handleBaggageChange = useCallback((amount: number) => {
     console.log("bag amount ", amount);
@@ -248,7 +248,9 @@ export default function BookTicket() {
             "ssssssssssssssssdddddddddddddd ==> ",
             (data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]
           );
-          setFirstTravellDate((data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]);
+          setFirstTravellDate(
+            (data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]
+          );
         }
         console.log("apidata from book-ticket page.tsx", apiData);
 
@@ -1882,6 +1884,7 @@ export default function BookTicket() {
                                               showPassport={
                                                 apiData?.conditions?.pcs
                                               }
+                                              pDateCheck={firstTravellDate}
                                             />
                                           </div>
                                         )
