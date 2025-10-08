@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import AmendmentModal from "./AmendmentModal";
 
-import { postAmendmentDetails } from "@/services/NetworkAdapter";
+import { postAmendmentDetails, postData } from "@/services/NetworkAdapter";
 
 function formatDateTime(isoString) {
   if (!isoString) return "--";
@@ -17,15 +17,22 @@ function formatDateTime(isoString) {
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
-const AmendmentList = ({ amendments }) => {
+const AmendmentList = ({
+  amendments,
+  statusOptions,
+  statusFilter,
+  setStatusFilter,
+  amountFilter,
+  setAmountFilter,
+  fromDate,
+  setFromDate,
+  toDate,
+  setToDate,
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
-  const [amountFilter, setAmountFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [sortBy, setSortBy] = useState("idIndex");
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(false);
@@ -34,50 +41,7 @@ const AmendmentList = ({ amendments }) => {
     return <p className="booking-tab">No amendments found.</p>;
   }
 
-  const statusOptions = Array.from(
-    new Set(amendments.map((b) => b.status).filter((v) => !!v))
-  );
-
-  const filteredBookings = amendments.filter((b) => {
-    const bookingDate = b.time ? b.time.slice(0, 10) : "";
-    let matches = true;
-
-    if (amountFilter.trim() !== "") {
-      const val = amountFilter.trim();
-      if (val.includes("-")) {
-        const [min, max] = val.split("-").map((s) => s.trim());
-        const amt = Number(b.amount);
-        if (!isNaN(amt)) {
-          matches = matches && amt >= Number(min) && amt <= Number(max);
-        } else {
-          matches = false;
-        }
-      } else {
-        matches =
-          matches &&
-          b.amount &&
-          b.amount.toString().toLowerCase().includes(val.toLowerCase());
-      }
-    }
-
-    if (statusFilter.trim() !== "") {
-      matches =
-        matches &&
-        b.status &&
-        b.status.toString().toLowerCase().includes(statusFilter.toLowerCase());
-    }
-
-    if (fromDate) {
-      matches = matches && bookingDate >= fromDate;
-    }
-    if (toDate) {
-      matches = matches && bookingDate <= toDate;
-    }
-
-    return matches;
-  });
-
-  let sortedBookings = [...filteredBookings];
+  let sortedBookings = [...amendments];
   if (sortBy === "idIndex") {
     if (sortOrder === "desc") sortedBookings.reverse();
   }
@@ -113,16 +77,24 @@ const AmendmentList = ({ amendments }) => {
   const handleAmendmentClick = async (amendmentId) => {
     try {
       setLoading(true);
-      const amendmentDetails = await postAmendmentDetails({
-        amendmentId: amendmentId,
-      });
+      // const amendmentDetails = await postAmendmentDetails({
+      //   amendmentId: amendmentId,
+      // });
+      let reqData = {
+        action: "pollAmendment",
+        requestData: { amendmentId: amendmentId },
+      };
+      const amendmentDetails = await postData(
+        "travelogy/one-way/fetch-data",
+        reqData
+      );
 
       setModalData(amendmentDetails);
       setIsModalOpen(true);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching amendment details:", error);
-      setModalData({ error: error.response.data.errors[0].message || "--" })
+      setModalData({ error: error.response.data.errors[0].message || "--" });
       setIsModalOpen(true);
       setLoading(false);
     }
@@ -225,7 +197,12 @@ const AmendmentList = ({ amendments }) => {
           </button>
         </div>
       </div>
-
+      <AmendmentModal
+        isOpen={isModalOpen}
+        closeModal={() => setIsModalOpen(false)}
+        data={modalData}
+        loading={loading}
+      />
       <table className="responsive-table">
         <thead>
           <tr>
@@ -275,7 +252,7 @@ const AmendmentList = ({ amendments }) => {
           )}
         </tbody>
       </table>
-      <AmendmentModal isOpen={isModalOpen} closeModal={() => setIsModalOpen(false)} data={modalData} loading={loading} />
+
       <div className="flex justify-end items-center mt-2 text-sm text-gray-600">
         Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of{" "}
         {total} amendments

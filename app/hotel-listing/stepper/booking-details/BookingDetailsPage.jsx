@@ -323,102 +323,82 @@ const BookingDetailsPage = () => {
     }
   };
 
+ // Typing for handlePrint: This is the primary function being fixed
   const handlePrint = async () => {
-    const container = document.querySelector(".print-container");
+    const container = printRef.current;
     if (!container) return;
+
+    const logoUrl = "/assets/imgs/logo-print.png";
 
     try {
       const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
-        backgroundColor: "#ffffff",
-        windowWidth: container.scrollWidth,
-        ignoreElements: (el) => el.id === "more-options",
-        onclone: (clonedDoc) => {
-          clonedDoc.querySelectorAll(".print-only").forEach((el) => {
+        backgroundColor: "#fff",
+        onclone: (doc) => {
+          doc.querySelectorAll(".print-only").forEach((el) => {
             el.style.display = "block";
           });
-          clonedDoc
-            .querySelectorAll(".screen-only, .no-print")
-            .forEach((el) => {
-              el.style.display = "none";
-            });
+          doc.querySelectorAll(".screen-only, .no-print").forEach((el) => {
+            el.style.display = "none";
+          });
         },
       });
 
       const imgData = canvas.toDataURL("image/png");
-
-      // Fetch and convert logo to base64 to embed
-      const logoResponse = await fetch('/assets/imgs/logo-print.png');
-      if (!logoResponse.ok) {
-        throw new Error('Failed to load logo image');
-      }
-      const logoBuffer = await logoResponse.arrayBuffer();
-      const logoBase64 = btoa(
-        new Uint8Array(logoBuffer).reduce(
-          (data, byte) => data + String.fromCharCode(byte),
-          ''
-        )
-      );
-      const logoDataUrl = `data:image/png;base64,${logoBase64}`;
-
       const printWindow = window.open("", "_blank", "width=800,height=600");
 
-    printWindow.document.write(`
-    <html>
-      <head>
-        <title>Booking Details</title>
-        <style>
-          body {
-            margin: 0;
-            padding: 20px;
-            position: relative;
-            font-family: Arial, sans-serif;
-          }
-          .logo {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 200px;
-            z-index: 10;
-          }
-          .logo img {
-            width: 100%;
-            height: auto;
-          }
-          .print-content {
-            margin-top: 120px;
-            text-align: center;
-          }
-          .print-img {
-            max-width: 100%;
-            height: auto;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="logo">
-          <img src="${logoDataUrl}" alt="Travelogy Logo" />
-        </div>
-        <div class="print-content">
-          <img class="print-img" src="${imgData}" alt="Booking Details" />
-        </div>
-      </body>
-    </html>
-  `);
+      if (!printWindow) return;
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Booking Details</title>
+            <style>
+              body { font-family: Arial; margin: 0; padding: 20px; }
+              .print-img { width: 100%; height: auto; }
+            </style>
+          </head>
+          <body>
+            <div class="print-content">
+              <img class="print-img" src="${imgData}" alt="Booking Details" />
+            </div>
+          </body>
+        </html>
+      `);
 
       printWindow.document.close();
-      printWindow.focus();
 
-      // Wait until images are loaded before printing
-      printWindow.onload = () => {
+      // Wait for all images in the print window to load before printing
+      const images = printWindow.document.images;
+      if (images.length === 0) {
         printWindow.print();
-        printWindow.close();
-      };
-    } catch (e) {
-      console.error("Failed to print:", e);
+      } else {
+        let loaded = 0;
+        for (let img of images) {
+          // If already loaded (from cache), count it
+          if (img.complete) {
+            loaded++;
+          } else {
+            img.onload = img.onerror = () => {
+              loaded++;
+              if (loaded === images.length) {
+                setTimeout(() => printWindow.print(), 300);
+              }
+            };
+          }
+        }
+        // If all images were already loaded
+        if (loaded === images.length) {
+          setTimeout(() => printWindow.print(), 300);
+        }
+      }
+    } catch (error) {
+      console.error("Print failed:", error);
     }
   };
+
+
 
   const statusLabel =
     status
@@ -439,6 +419,13 @@ const BookingDetailsPage = () => {
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <div className="print-container" ref={printRef}>
+           <div className="print-logo print-only" style={{ textAlign: "center", marginBottom: 20 }}>
+              <img
+                src="/assets/imgs/logo-print.png"
+                alt="Travelogy Logo"
+                style={{ height: 50, width: "auto" }}
+              />
+            </div>
             <div className="container w-full max-w-7xl">
               {status === "ON_HOLD" ? (
                 <div className="p-6 flex justify-start items-center w-full">
