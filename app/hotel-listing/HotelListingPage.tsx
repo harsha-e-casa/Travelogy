@@ -25,7 +25,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 import AppDateRange from "@/components/searchEngine/AppDateRange";
 import CityListSearch from "@/components/searchEngine/CityListSearch";
 import { useNationalities } from "@/util/HotelApi";
-import HotelListingSearch from "./searchHeader";
+// import HotelListingSearch from "./searchHeader";
 import { postData } from "@/services/NetworkAdapter";
 import { checkTokenExpiry } from "@/services/Utils";
 import citiesData from "../../util/cities.json";
@@ -142,21 +142,23 @@ export default function HotelListing() {
       if (price <= 0 || isNaN(price)) {
         console.log("Invalid price for hotel:", hotel.name, price);
       }
-      const finalPrice = (price <= 0 || isNaN(price)) ? 99999 : price;
-      const address = hotel.ad?.adr || '';
-      const address1 = hotel.ad?.adr2 || '';
-      const city = hotel.ad?.city?.name || '';
-      const fullAddress = `${address}${address1 ? `, ${address1}` : ''}${city ? `, ${city}` : ''}`;
+      const finalPrice = price <= 0 || isNaN(price) ? 99999 : price;
+      const address = hotel.ad?.adr || "";
+      const address1 = hotel.ad?.adr2 || "";
+      const city = hotel.ad?.city?.name || "";
+      const fullAddress = `${address}${address1 ? `, ${address1}` : ""}${
+        city ? `, ${city}` : ""
+      }`;
       return {
         id: Number(hotel.uid || 0),
-        name: hotel.name || '',
+        name: hotel.name || "",
         price: finalPrice,
-        hotelType: hotel.pt || '',
-        amenities: '', // Default; update if API provides
+        hotelType: hotel.pt || "",
+        amenities: "", // Default; update if API provides
         rating: Number(hotel.rt || 0),
-        roomStyle: hotel.ops?.[0]?.ris?.[0]?.rc || '',
+        roomStyle: hotel.ops?.[0]?.ris?.[0]?.rc || "",
         location: city,
-        image: hotel.img?.[0]?.url || '/assets/imgs/hotels/placeholder.jpg',
+        image: hotel.img?.[0]?.url || "/assets/imgs/hotels/placeholder.jpg",
         fullAddress,
         checkInTime: hotel.checkInTime,
         checkOutTime: hotel.checkOutTime,
@@ -164,8 +166,6 @@ export default function HotelListing() {
       };
     });
   }, [apiHotelData]);
-  
-  
 
   const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
@@ -193,15 +193,22 @@ export default function HotelListing() {
 
   useEffect(() => {
     if (!selectFrom && location && nationalities.length > 0) {
-      const matchedCity = (citiesData as CityData[]).find((c: CityData) => c.cityName.toLowerCase() === location.toLowerCase());
+      const matchedCity = (citiesData as CityData[]).find(
+        (c: CityData) => c.cityName.toLowerCase() === location.toLowerCase()
+      );
       const matchedNationality = nationalities.find((n) =>
-        (matchedCity?.countryName || location).toLowerCase().includes(n.countryName.toLowerCase())
+        (matchedCity?.countryName || location)
+          .toLowerCase()
+          .includes(n.countryName.toLowerCase())
       );
 
       setSelectFrom({
         cityName: location,
-        countryName: matchedCity?.countryName || matchedNationality?.countryName || "India",
-        id: String(matchedCity?.id ?? city ?? 699261)
+        countryName:
+          matchedCity?.countryName ||
+          matchedNationality?.countryName ||
+          "India",
+        id: String(matchedCity?.id ?? city ?? 699261),
       });
       setNationalityId(String(matchedNationality?.countryId ?? "94"));
     }
@@ -249,24 +256,42 @@ export default function HotelListing() {
     startItemIndex,
     endItemIndex,
     itemsPerPage,
-  } = useHotelFilter(transformedHotels, isTopDestination && location ? { ratings: [4, 5], locations: [location] } : isTopDestination ? { ratings: [4, 5] } : undefined);
+  } = useHotelFilter(
+    transformedHotels,
+    isTopDestination && location
+      ? { ratings: [4, 5], locations: [location] }
+      : isTopDestination
+      ? { ratings: [4, 5] }
+      : undefined
+  );
 
   // Apply star rating filter from query params if present and not top destination
   useEffect(() => {
     if (!isTopDestination && starRatingParam && apiHotelData.length > 0) {
-      const starRatings = starRatingParam.split(",").map((s) => parseInt(s.trim(), 10));
+      const starRatings = starRatingParam
+        .split(",")
+        .map((s) => parseInt(s.trim(), 10));
       if (starRatings.length > 0) {
         // Update filter to include only hotels with rating in starRatings
         handleClearFilters(); // Clear existing filters first
         starRatings.forEach((rating) => {
           if (!filter.ratings.includes(rating)) {
-            const fakeEvent = { target: { value: rating.toString(), checked: true } } as unknown as React.ChangeEvent<HTMLInputElement>;
+            const fakeEvent = {
+              target: { value: rating.toString(), checked: true },
+            } as unknown as React.ChangeEvent<HTMLInputElement>;
             handleCheckboxChange(fakeEvent, "ratings");
           }
         });
       }
     }
-  }, [starRatingParam, filter.ratings, handleCheckboxChange, handleClearFilters, apiHotelData.length, isTopDestination]);
+  }, [
+    starRatingParam,
+    filter.ratings,
+    handleCheckboxChange,
+    handleClearFilters,
+    apiHotelData.length,
+    isTopDestination,
+  ]);
 
   const initialPriceSet = useRef(false);
 
@@ -281,6 +306,13 @@ export default function HotelListing() {
   // const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   //   setSortCriteria(e.target.value);
   // };
+  const clearLocalStorageExceptAuthToken = () => {
+    Object.keys(localStorage).forEach((key) => {
+      if (key !== "authToken") {
+        localStorage.removeItem(key); // Remove items except authToken
+      }
+    });
+  };
 
   const apiCall = async (payload: any, signal?: AbortSignal) => {
     try {
@@ -289,9 +321,13 @@ export default function HotelListing() {
         requestData: payload,
       };
 
-      const response: any = await postData("travelogy/hotel/fetch-data", reqBody, signal ? { signal } : {});
+      const response: any = await postData(
+        "travelogy/hotel/fetch-data",
+        reqBody,
+        signal ? { signal } : {}
+      );
       console.log("fetch-data ", response);
-
+      clearLocalStorageExceptAuthToken();
       return response;
     } catch (e: any) {
       if (signal?.aborted) {
@@ -325,8 +361,9 @@ export default function HotelListing() {
       (n) => n.countryName.toLowerCase() === safeCountry.toLowerCase()
     );
 
-    const nationalityIdToUse = matchedNationality?.countryId || nationalityId || "94";
-    setNationalityId(nationalityIdToUse)
+    const nationalityIdToUse =
+      matchedNationality?.countryId || nationalityId || "94";
+    setNationalityId(nationalityIdToUse);
 
     if (!selectFrom) {
       setSelectFrom({
@@ -392,86 +429,165 @@ export default function HotelListing() {
     }
   };
   const hasFetched = useRef(false);
+  const prevParams = useRef({});
+  const shouldFetchData = useMemo(() => {
+    const currentParams = {
+      location,
+      city,
+      currency,
+      rooms,
+      adults,
+      children,
+      childAgesRaw,
+    };
 
+    const paramsChanged =
+      JSON.stringify(currentParams) !== JSON.stringify(prevParams.current);
+
+    if (paramsChanged) {
+      prevParams.current = currentParams;
+    }
+
+    return paramsChanged;
+  }, [location, city, currency, rooms, adults, children, childAgesRaw]);
   useEffect(() => {
     const fetchData = async () => {
-      if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
-        alert("Check-out date cannot be earlier than check-in date.");
-        return;
-      }
+      if (!shouldFetchData) return; // Prevent fetching if parameters haven't changed
 
-      // Skip if already fetched and no key changes (e.g., dates/rooms)
-      if (hasFetched.current && checkinDate === dayjs().format("YYYY-MM-DD") && checkoutDate === dayjs().add(1, "day").format("YYYY-MM-DD") && roomsData.length === 1 && roomsData[0].adults === 1) {
-        return;
-      }
-
-      const abortController = new AbortController();
-      const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
-      const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
       setLoading(true);
       setError(null);
       setErrorStatus(null);
 
-      const safeCityId = selectFrom?.id || city || "699261";
-      const safeNationalityId = nationalityId || "94";
-      const safeCurrency = currency || "INR";
-
       const payload = {
         searchQuery: {
-          checkinDate: formattedCheckIn,
-          checkoutDate: formattedCheckOut,
+          checkinDate: searchParams.get("checkinDate"),
+          checkoutDate: searchParams.get("checkoutDate"),
+          // roomInfo: [{ numberOfAdults: 1, numberOfChild: 0, childAge: [] }],
           roomInfo: cleanRoomInfo,
           searchCriteria: {
-            city: safeCityId,
-            nationality: safeNationalityId,
-            currency: safeCurrency,
+            city: selectFrom?.id || city,
+            nationality: nationalityId,
+            currency: currency || "INR",
           },
           searchPreferences: { fsc: true },
         },
         sync: true,
       };
-      console.log("hotelisting ", payload);
+
       try {
-        const data = await apiCall(payload, abortController.signal);
-
-        if (abortController.signal.aborted) return;
-
-        if (!data?.searchResult?.his) {
-          throw Object.assign(new Error(data?.message || "No data received"), {
-            status: 200,
-          });
+        const data = await apiCall(payload);
+        if (data?.searchResult?.his) {
+          setApiHotelData(data.searchResult.his);
+        } else {
+          throw new Error("No hotels found");
         }
-
-        setApiHotelData(data.searchResult.his || []);
-        hasFetched.current = true;
       } catch (e: any) {
-        if (abortController.signal.aborted) return;
-        const s = typeof e?.status === "number" ? e.status : undefined;
         setError(e?.message || "Something went wrong.");
-        setErrorStatus(s);
+        setErrorStatus(e?.status || 500);
       } finally {
-        if (!abortController.signal.aborted) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
-
-      return () => abortController.abort();
     };
 
-    if ((selectFrom || city) && nationalities.length > 0) {  // Only fetch if location and nationalities are ready
-      fetchData();
-    }
+    fetchData();
   }, [
-    checkinDate,
-    checkoutDate,
-    cleanRoomInfo,
-    selectFrom,
-    city,
-    nationalityId,
-    currency,
+    shouldFetchData, // Dependency on whether the parameters have changed
     location,
-    nationalities,
+    city,
+    currency,
+    // rooms,
+    cleanRoomInfo,
+    // adults,
+    // children,
+    // childAgesRaw,
   ]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (dayjs(checkinDate).isAfter(dayjs(checkoutDate))) {
+  //       alert("Check-out date cannot be earlier than check-in date.");
+  //       return;
+  //     }
+
+  //     // Skip if already fetched and no key changes (e.g., dates/rooms)
+  //     if (
+  //       hasFetched.current &&
+  //       checkinDate === dayjs().format("YYYY-MM-DD") &&
+  //       checkoutDate === dayjs().add(1, "day").format("YYYY-MM-DD") &&
+  //       roomsData.length === 1 &&
+  //       roomsData[0].adults === 1
+  //     ) {
+  //       return;
+  //     }
+
+  //     const abortController = new AbortController();
+  //     const formattedCheckIn = dayjs(checkinDate).format("YYYY-MM-DD");
+  //     const formattedCheckOut = dayjs(checkoutDate).format("YYYY-MM-DD");
+  //     setLoading(true);
+  //     setError(null);
+  //     setErrorStatus(null);
+
+  //     const safeCityId = selectFrom?.id || city || "699261";
+  //     const safeNationalityId = nationalityId || "94";
+  //     const safeCurrency = currency || "INR";
+
+  //     const payload = {
+  //       searchQuery: {
+  //         checkinDate: formattedCheckIn,
+  //         checkoutDate: formattedCheckOut,
+  //         roomInfo: cleanRoomInfo,
+  //         searchCriteria: {
+  //           city: safeCityId,
+  //           nationality: safeNationalityId,
+  //           currency: safeCurrency,
+  //         },
+  //         searchPreferences: { fsc: true },
+  //       },
+  //       sync: true,
+  //     };
+  //     console.log("hotelisting ", payload);
+  //     try {
+  //       const data = await apiCall(payload, abortController.signal);
+
+  //       if (abortController.signal.aborted) return;
+
+  //       if (!data?.searchResult?.his) {
+  //         throw Object.assign(new Error(data?.message || "No data received"), {
+  //           status: 200,
+  //         });
+  //       }
+
+  //       setApiHotelData(data.searchResult.his || []);
+  //       hasFetched.current = true;
+  //     } catch (e: any) {
+  //       if (abortController.signal.aborted) return;
+  //       const s = typeof e?.status === "number" ? e.status : undefined;
+  //       setError(e?.message || "Something went wrong.");
+  //       setErrorStatus(s);
+  //     } finally {
+  //       if (!abortController.signal.aborted) {
+  //         setLoading(false);
+  //       }
+  //     }
+
+  //     return () => abortController.abort();
+  //   };
+
+  //   if ((selectFrom || city) && nationalities.length > 0) {
+  //     // Only fetch if location and nationalities are ready
+  //     fetchData();
+  //   }
+  // }, [
+  //   checkinDate,
+  //   checkoutDate,
+  //   cleanRoomInfo,
+  //   selectFrom,
+  //   city,
+  //   nationalityId,
+  //   currency,
+  //   location,
+  //   nationalities,
+  // ]);
 
   const openToDateRange = () => {
     setOpenDateRage((prevState) => !prevState);
@@ -742,22 +858,22 @@ export default function HotelListing() {
           <section className="box-section block-content-tourlist background-body min-h-screen">
             <div className="container-fluid" style={{ width: "93%" }}>
               <div className="">
-              <div className="box-content-main top-24 left-0 right-0 z-10 bg-white w-[93%] mx-auto flex flex-col lg:flex-row h-[calc(100vh-6rem)]  gap-3">
-                <div className="content-right lg:w-3/4 overflow-y-auto p-3 h-full overflow-hidden">
-                  <div className="box-filters mb-25 pb-5 border-bottom border-1">
-                  <SortHotelsFilter
-                    sortCriteria={sortCriteria}
-                    handleSortChange={handleSortChange}
-                    itemsPerPage={itemsPerPage}
-                    handleItemsPerPageChange={handleItemsPerPageChange}
-                    handleClearFilters={handleClearFilters}
-                    startItemIndex={startItemIndex}
-                    endItemIndex={endItemIndex}
-                    totalResults={sortedHotels.length}
-                  />
-                  </div>
-                  <div className="box-grid-tours wow fadeIn">
-                    {/* <div className="row">
+                <div className="box-content-main top-24 left-0 right-0 z-10 bg-white w-[93%] mx-auto flex flex-col lg:flex-row h-[calc(100vh-6rem)]  gap-3">
+                  <div className="content-right lg:w-3/4 overflow-y-auto p-3 h-full overflow-hidden">
+                    <div className="box-filters mb-25 pb-5 border-bottom border-1">
+                      <SortHotelsFilter
+                        sortCriteria={sortCriteria}
+                        handleSortChange={handleSortChange}
+                        itemsPerPage={itemsPerPage}
+                        handleItemsPerPageChange={handleItemsPerPageChange}
+                        handleClearFilters={handleClearFilters}
+                        startItemIndex={startItemIndex}
+                        endItemIndex={endItemIndex}
+                        totalResults={sortedHotels.length}
+                      />
+                    </div>
+                    <div className="box-grid-tours wow fadeIn">
+                      {/* <div className="row">
                         {paginatedHotels.map((hotel) => (
                           <div
                             className="col-xl-4 col-lg-6 col-md-6"
@@ -767,8 +883,8 @@ export default function HotelListing() {
                           </div>
                         ))}
                       </div> */}
-                    <div className="container">
-                      {/* {loading ? (
+                      <div className="container">
+                        {/* {loading ? (
                         <div className="col-12 d-flex justify-center py-5">
                           <div className="loader"></div>
                         </div>
@@ -785,31 +901,32 @@ export default function HotelListing() {
                           </div>
                         ))
                       )} */}
-                      <div className="row">
-                        {(loading || (apiHotelData.length === 0 && !error && (selectFrom || city))) ? (
-                          <div className="col-12 d-flex justify-center py-5">
-                            <div className="loader"></div>
-                          </div>
-                        ) : paginatedHotels.length > 0 ? (
-                          paginatedHotels.map(
-                            (hotel: any, index: number) => (
+                        <div className="row">
+                          {loading ||
+                          (apiHotelData.length === 0 &&
+                            !error &&
+                            (selectFrom || city)) ? (
+                            <div className="col-12 d-flex justify-center py-5">
+                              <div className="loader"></div>
+                            </div>
+                          ) : paginatedHotels.length > 0 ? (
+                            paginatedHotels.map((hotel: any, index: number) => (
                               <div
                                 className="col-xl-4 col-lg-6 col-md-6"
                                 key={hotel.id || index}
                               >
                                 <HotelCard1 hotel={hotel} />
                               </div>
-                            )
-                          )
-                        ) : (
-                          <div className="col-12 text-center py-4 text-neutral-500">
-                            No hotels found for your criteria.
-                          </div>
-                        )}
+                            ))
+                          ) : (
+                            <div className="col-12 text-center py-4 text-neutral-500">
+                              No hotels found for your criteria.
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {/* <ByPagination
+                    {/* <ByPagination
                     handlePreviousPage={
                       apiHotelData.length > 0
                         ? handleApiPreviousPage
@@ -832,49 +949,52 @@ export default function HotelListing() {
                         : handlePageChange
                     }
                   /> */}
-                  <ByPagination
-                    handlePreviousPage={handlePreviousPage}
-                    totalPages={totalPages}
-                    currentPage={currentPage}
-                    handleNextPage={handleNextPage}
-                    handlePageChange={handlePageChange}
-                  />
-                </div>
-                <div className="content-left order-lg-first lg:w-1/4 min-w-[250px] overflow-y-auto bg-white p-4 h-full">
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <div className=" cursor-pointer" onClick={() => setShowPriceFilter(!showPriceFilter)}>
-                          <h6 className="text-lg-bold item-collapse neutral-1000">
-                            Price{" "}
-                          </h6>
+                    <ByPagination
+                      handlePreviousPage={handlePreviousPage}
+                      totalPages={totalPages}
+                      currentPage={currentPage}
+                      handleNextPage={handleNextPage}
+                      handlePageChange={handlePageChange}
+                    />
+                  </div>
+                  <div className="content-left order-lg-first lg:w-1/4 min-w-[250px] overflow-y-auto bg-white p-4 h-full">
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <div
+                            className=" cursor-pointer"
+                            onClick={() => setShowPriceFilter(!showPriceFilter)}
+                          >
+                            <h6 className="text-lg-bold item-collapse neutral-1000">
+                              Price{" "}
+                            </h6>
+                          </div>
+                          {showPriceFilter && (
+                            <ByPrice
+                              priceRange={filter.priceRange}
+                              setPriceRange={handlePriceRangeChange}
+                              minPriceRange={0}
+                              maxPriceRange={41087}
+                            />
+                          )}
                         </div>
-                        {showPriceFilter && (
-                          <ByPrice
-                            priceRange={filter.priceRange}
-                            setPriceRange={handlePriceRangeChange}
-                            minPriceRange={0}
-                            maxPriceRange={41087}
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Property Type
+                          </h6>
+                          <ByHotelType
+                            uniqueHotelsType={uniqueHotelsType}
+                            filter={filter}
+                            handleCheckboxChange={handleCheckboxChange}
                           />
-                        )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Property Type
-                        </h6>
-                        <ByHotelType
-                          uniqueHotelsType={uniqueHotelsType}
-                          filter={filter}
-                          handleCheckboxChange={handleCheckboxChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {/* <div className="sidebar-left border-1 background-body">
+                    {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
                         <h6 className="text-lg-bold item-collapse neutral-1000">
@@ -888,7 +1008,7 @@ export default function HotelListing() {
                       </div>
                     </div>
                   </div> */}
-                  {/* <div className="sidebar-left border-1 background-body">
+                    {/* <div className="sidebar-left border-1 background-body">
                     <div className="box-filters-sidebar">
                       <div className="block-filter border-1">
                         <h6 className="text-lg-bold item-collapse neutral-1000">
@@ -902,36 +1022,36 @@ export default function HotelListing() {
                       </div>
                     </div>
                   </div> */}
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Star Rating{" "}
-                        </h6>
-                        <ByRating
-                          uniqueRatings={uniqueRatings}
-                          filter={filter}
-                          handleCheckboxChange={handleCheckboxChange}
-                        />
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Star Rating{" "}
+                          </h6>
+                          <ByRating
+                            uniqueRatings={uniqueRatings}
+                            filter={filter}
+                            handleCheckboxChange={handleCheckboxChange}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold item-collapse neutral-1000">
-                          Location
-                        </h6>
-                        <ByLocation
-                          uniqueLocations={uniqueLocations}
-                          filter={filter}
-                          handleCheckboxChange={handleCheckboxChange}
-                        />
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <h6 className="text-lg-bold item-collapse neutral-1000">
+                            Location
+                          </h6>
+                          <ByLocation
+                            uniqueLocations={uniqueLocations}
+                            filter={filter}
+                            handleCheckboxChange={handleCheckboxChange}
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
               </div>
             </div>
           </section>
