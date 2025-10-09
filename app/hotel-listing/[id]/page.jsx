@@ -138,16 +138,28 @@ export default function ActivitiesDetail4() {
   };
   const roomInfo = searchQueryData?.roomInfo || [];
 
-  const prevCheckinDate = useRef(checkinDate);
-  const prevCheckoutDate = useRef(checkoutDate);
-  const prevRoomsData = useRef(JSON.stringify(normalizeRooms(roomsData)));
+  // const prevCheckinDate = useRef(checkinDate);
+  // const prevCheckoutDate = useRef(checkoutDate);
+  // const prevRoomsData = useRef(JSON.stringify(normalizeRooms(roomsData)));
+  // baseline refs + a gate so the watcher ignores the first hydration
+  const prevCheckinDate = useRef(null);
+  const prevCheckoutDate = useRef(null);
+  const prevRoomsData = useRef("");
+  const readyRef = useRef(false);
+
   const [searchCriteria, setSearchCriteria] = useState({});
   const [searchPreferences, setSearchPreferences] = useState({});
   const [dynamicId, setDynamicId] = useState(id); // Store dynamic id
   const [isFetchingButton, setIsFetchingButton] = useState(false);
+  // useEffect(() => {
+  //   if (dynamicId !== id) {
+  //     router.push(`/hotel-listing/${dynamicId}`, undefined, { shallow: true });
+  //   }
+  // }, [dynamicId, id, router]);
   useEffect(() => {
+    if (!dynamicId) return;
     if (dynamicId !== id) {
-      router.push(`/hotel-listing/${dynamicId}`, undefined, { shallow: true });
+      router.replace(`/hotel-listing/${dynamicId}`);
     }
   }, [dynamicId, id, router]);
 
@@ -196,6 +208,7 @@ export default function ActivitiesDetail4() {
   };
 
   useEffect(() => {
+    if (!readyRef.current) return;
     const isCheckinChanged = checkinDate !== prevCheckinDate.current;
     const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
     // const isRoomsChanged =
@@ -258,6 +271,16 @@ export default function ActivitiesDetail4() {
             "12312312312312312312312312312312321",
             response.searchQuery?.roomInfo
           );
+          // 🔒 Baseline "previous" refs so the watcher sees NO change right after initial load
+          const normalized = normalizeRooms(
+            response.searchQuery?.roomInfo || []
+          );
+          prevRoomsData.current = JSON.stringify(normalized);
+          prevCheckinDate.current = response.searchQuery?.checkinDate || null;
+          prevCheckoutDate.current = response.searchQuery?.checkoutDate || null;
+
+          // ✅ Now allow the watcher to respond to real user changes
+          readyRef.current = true;
         }
       } catch (error) {
         setError("Error fetching hotel data: " + error.message);
