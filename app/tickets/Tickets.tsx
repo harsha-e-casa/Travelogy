@@ -288,7 +288,6 @@ export default function Tickets() {
           return ticket.totalPriceList.flatMap(
             (priceInfo: any, priceIndex: number) => {
               return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-                console.log("mame ingeeeeeeeee ",priceInfo.fd[paxTypeKey])
                 return (priceInfo.fd[paxTypeKey]?.rT || 0);
               });
             }
@@ -330,12 +329,10 @@ export default function Tickets() {
 
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
-        console.log("cccccccccccc 1.2 ", ticket);
         const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
         return price >= priceRange[0] && price <= priceRange[1];
       });
 
-      console.log("cccccccccccc 2", filteredData);
 
       // Stops Filter
       if (stops !== "all") {
@@ -853,9 +850,13 @@ export default function Tickets() {
     // } else {
     //   // might move the code
     // }
+    console.log("inge ???????????? 0 ")
+
     if (!searchFlight || hasFetchedRef.current) return;
     closeAllFields();
     hasFetchedRef.current = true;
+
+    console.log("inge ????????????")
 
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       setModifySearchRef(false);
@@ -2132,7 +2133,7 @@ export default function Tickets() {
                             !loading && (
                               <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                                 <p className="text-xl font-semibold">
-                                  No result found
+                                  Request flight is not longer available. Please try different flight
                                 </p>
                                 <p className="text-sm mt-2 text-gray-400">
                                   Try adjusting your filters or search criteria.
@@ -2151,7 +2152,7 @@ export default function Tickets() {
                           {!loading && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                No result found
+                                Request flight is not longer available. Please try different flight
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
                                 Try adjusting your filters or search criteria.
@@ -2212,7 +2213,7 @@ export default function Tickets() {
                           {loading === false && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                No result found
+                                Request flight is not longer available. Please try different flight
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
                                 Try adjusting your filters or search criteria.
@@ -2238,7 +2239,7 @@ export default function Tickets() {
                           {loading === false && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                No result found
+                                Request flight is not longer available. Please try different flight
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
                                 Try adjusting your filters or search criteria.

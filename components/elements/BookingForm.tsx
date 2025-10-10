@@ -79,7 +79,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
       // except booking details page
       if (bookingData && Object.keys(bookingData).length === 0) {
-        console.log("mame inge dan da 000");
         let savedBaggage = JSON.parse(getCookie("baggageinfo") || "[]");
         let totalBaggageAmount = savedBaggage.reduce(
           (acc: any, curr: any) => acc + curr.amount,
