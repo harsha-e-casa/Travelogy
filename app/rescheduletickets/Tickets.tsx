@@ -254,12 +254,10 @@ export default function Tickets() {
 
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
-        console.log("cccccccccccc 1.2 ", ticket);
         const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
         return price >= priceRange[0] && price <= priceRange[1];
       });
 
-      console.log("cccccccccccc 2", filteredData);
 
       // Stops Filter
       if (stops !== "all") {
