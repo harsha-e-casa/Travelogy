@@ -10,7 +10,7 @@ import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 
 const ageOptions = Array.from({ length: 11 }, (_, i) => ({
   value: i + 1,
-  label: `${i + 1}`,
+  label: `${i + 0}`,
 }));
 
 export const TravellerForm = ({
@@ -491,7 +491,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
       if (newChildCount < 0 || newChildCount > 3) return updated;
       const hypothetical = [...updated];
       const newChildAges =
-        delta > 0 ? [...room.childAges, "1"] : room.childAges.slice(0, -1);
+        delta > 0 ? [...room.childAges, "0"] : room.childAges.slice(0, -1);
       hypothetical[roomIndex] = {
         ...room,
         children: newChildCount,

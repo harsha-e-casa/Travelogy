@@ -187,6 +187,7 @@ const Slider: React.FC = () => {
         
         </div>
 
+      
         <YourJourney />
 {/*
         <div className="container mt-8">
@@ -241,8 +242,8 @@ const Slider: React.FC = () => {
                 <label
                   className={`content ${getActiveClass(dest.id)}`}
                   htmlFor={dest.id}
-                  onMouseEnter={() => setHoveredCard(dest.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
+                  // onMouseEnter={() => setHoveredCard(dest.id)}
+                  // onMouseLeave={() => setHoveredCard(null)}
                 >
                   <div className="book_now_offers absolute_b0">
                     <span className="font-bold">{dest.label}</span>
@@ -258,7 +259,7 @@ const Slider: React.FC = () => {
           <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
             <div className="main_d2l_section p-8 pt-4">
               <h2 className="text-xl font-bold text-gray-900 tracking-wide">
-                Best Selling Destination
+                Best Destination
               </h2>
               <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
                 {destinations.map((dest, index) => (

@@ -48,12 +48,17 @@ export default function ByPagination({
   };
 
   const pagesToRender = getPagination(currentPage, totalPages);
+  const isDisabled = totalPages <= 1;
 
   return (
     <>
       <nav aria-label="Page navigation example">
         <div className="pagination">
-          <span className="page-item" onClick={handlePreviousPage}>
+          <span 
+            className={`page-item ${isDisabled || currentPage === 1 ? 'disabled' : ''}`} 
+            onClick={!isDisabled && currentPage > 1 ? handlePreviousPage : undefined}
+            style={{ cursor: isDisabled || currentPage === 1 ? 'not-allowed' : 'pointer', opacity: isDisabled || currentPage === 1 ? 0.5 : 1 }}
+          >
             <span className="page-link">
               <svg
                 width={12}
@@ -88,7 +93,11 @@ export default function ByPagination({
             )
           )}
 
-          <span className="page-item" onClick={handleNextPage}>
+          <span 
+            className={`page-item ${isDisabled || currentPage === totalPages ? 'disabled' : ''}`} 
+            onClick={!isDisabled && currentPage < totalPages ? handleNextPage : undefined}
+            style={{ cursor: isDisabled || currentPage === totalPages ? 'not-allowed' : 'pointer', opacity: isDisabled || currentPage === totalPages ? 0.5 : 1 }}
+          >
             <span className="page-link">
                 <svg
                     width={12}

@@ -3,566 +3,174 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { swiperGroupAnimateHoliday } from "@/util/swiperOption";
 import Link from "next/link";
 
+const cardStyles = `
+  .holiday-card {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    width:200px;
+    display:block;
+  }
+  .holiday-card:hover {
+    transform: translateY(-5px);
+  }
+  .card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 40px 30px 30px;
+    border-radius: 0 0 30px 30px;
+  }
+  .destination-name {
+    color: white;
+    font-size: 28px;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+`;
+
 export default function YourJourney() {
   const currentTime = new Date();
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: cardStyles }} />
       <section className="section-box box-your-journey background-body">
         <div className="container">
-          <div className="row align-items-end">
-            <div className="col-md-9 mb-30">
-              <h4 className="neutral-1000 wow fadeInUp mb-15 font_familyadd">
-                Your Journey, Your Way
-              </h4>
-              <h6 className="heading-6-medium neutral-400 wow fadeInUp">
-                Discover the World's Treasures with Travelogy
-              </h6>
-            </div>
-            <div className="col-md-3 position-relative mb-30">
-              <div className="box-button-slider box-button-slider-team justify-content-end">
-                <Link href="/trip-package">
-                  <button className="btn btn-black mr-10">View All</button>
-                </Link>
-                <div className="swiper-button-prev swiper-button-prev-style-1 swiper-button-prev-animate">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={16}
-                    height={16}
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M7.99992 3.33325L3.33325 7.99992M3.33325 7.99992L7.99992 12.6666M3.33325 7.99992H12.6666"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <div className="swiper-button-next swiper-button-next-style-1 swiper-button-next-animate">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width={16}
-                    height={16}
-                    viewBox="0 0 16 16"
-                  >
-                    <path
-                      d="M7.99992 12.6666L12.6666 7.99992L7.99992 3.33325M12.6666 7.99992L3.33325 7.99992"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+          <div className="row align-items-center mt-20">
+            {/* Left side - Catchy content */}
+            <div className="col-lg-6 col-md-6 mb-30">
+              <div className="pr-4">
+                <h1 className="neutral-1000 wow fadeInUp mb-20 font_familyadd" style={{fontSize: '3.5rem', fontWeight: '700', lineHeight: '1.2'}}>
+                  Discover Your Perfect
+                  <span style={{color: '#ff6b35'}}> Holiday Vibe</span>
+                </h1>
+                <p className="text-lg neutral-600 wow fadeInUp mb-30" style={{fontSize: '1.2rem', lineHeight: '1.6'}}>
+                  From romantic getaways to thrilling adventures, find the perfect mood for your next unforgettable journey. Let your wanderlust guide you to extraordinary experiences.
+                </p>
+                <div className="wow fadeInUp">
+                  <div className="d-flex align-items-center mb-3">
+                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#ff6b35'}}>
+                      <img src="/assets/imgs/page/tour/post5.png" alt="heart" style={{width: '40px', height: '40px', borderRadius:"20px"}} />
+                    </div>
+                    <span className="text-lg neutral-700">Curated experiences just for you</span>
+                  </div>
+                  <div className="d-flex align-items-center mb-3">
+                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#28a745'}}>
+                      <img src="/assets/imgs/page/tour/post2.png" alt="map" style={{width: '40px', height: '40px', borderRadius:"20px"}} />
+                    </div>
+                    <span className="text-lg neutral-700">Handpicked destinations worldwide</span>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#ffc107'}}>
+                      <img src="/assets/imgs/page/tour/post3.png" alt="star" style={{width: '40px', height: '40px', borderRadius:"20px"}} />
+                    </div>
+                    <span className="text-lg neutral-700">Premium travel experiences</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="container">
-          <div className="box-swiper mt-30">
-            <div className="swiper-container swiper-group-animate swiper-group-journey">
-              <Swiper {...swiperGroupAnimateHoliday}>
-                {/* <SwiperSlide>
-                  <div className="card-journey-big background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey1.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left">
-                          {" "}
-                          <span className="lightning">Exceptional</span>
-                        </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">5.00</span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link className="text-32-bold" href="#">
-                          California Sunset/Twilight Boat Cruise{" "}
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500 mb-25">
-                            7 days 6 nights - Small group
-                          </p>
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$35.62</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                        </div>
-                        <div className="endtime">
-                          <p className="text-sm-bold neutral-600">
-                            Promotion will end in
-                          </p>
-                          <div className="box-count box-count-square mb-0 mt-5 wow fadeInUp">
-                            <Countdown
-                              endDateTime={currentTime.setDate(
-                                currentTime.getDate() + 2
-                              )}
-                            />
-                          </div>
+            
+            {/* Right side - Holiday cards */}
+            <div className="col-lg-6 col-md-6">
+              <div className="row">
+                <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
+                  <Link href="/holiday/holiday_mood?mood=romantic">
+                    <div className="holiday-card">
+                      <div className="card-image" style={{
+                        backgroundImage: 'url(/assets/imgs/page/holiday/Clara-on-a-Longboat.jpg)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '200px',
+                        borderRadius: '20px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-overlay">
+                          <h3 className="destination-name" style={{fontSize: '20px'}}>Romantic</h3>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SwiperSlide> */}
-                <SwiperSlide>
-                  <div className="card-journey-small background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey2.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left"> </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">
-                            4.96{" "}
-                            <span className="text-sm-medium neutral-500">
-                              (672 reviews)
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link
-                          className="heading-6 neutral-1000"
-                          href="#"
-                        >
-                          California Sunset/Twilight Boat Cruise{" "}
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500">
-                            2 days 3 nights - Family
-                          </p>
-                        </div>
-                        <div className="endtime">
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$48.25</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                          <div className="card-button">
-                            {" "}
-                            <Link className="btn btn-gray" href="#">
-                              Book Now
-                            </Link>
-                          </div>
+                  </Link>
+                </div>
+                <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
+                  <Link href="/holiday/holiday_mood?mood=adventure">
+                    <div className="holiday-card">
+                      <div className="card-image" style={{
+                        backgroundImage: 'url(/assets/imgs/page/homepage5/activity-big.png)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '200px',
+                        borderRadius: '20px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-overlay">
+                          <h3 className="destination-name" style={{fontSize: '20px'}}>Adventure</h3>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className="card-journey-small background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey3.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left"> </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">
-                            4.96{" "}
-                            <span className="text-sm-medium neutral-500">
-                              (672 reviews)
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link
-                          className="heading-6 neutral-1000"
-                          href="#"
-                        >
-                          NYC: Food Tastings and Culture Tour
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500">
-                            3 days 3 nights - Company
-                          </p>
-                        </div>
-                        <div className="endtime">
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$17.32</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                          <div className="card-button">
-                            {" "}
-                            <Link className="btn btn-gray" href="#">
-                              Book Now
-                            </Link>
-                          </div>
+                  </Link>
+                </div>
+                <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
+                  <Link href="/holiday/holiday_mood?mood=beaches">
+                    <div className="holiday-card">
+                      <div className="card-image" style={{
+                        backgroundImage: 'url(/assets/imgs/page/holiday/demo3.jpeg)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '200px',
+                        borderRadius: '20px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-overlay">
+                          <h3 className="destination-name" style={{fontSize: '20px'}}>Beaches</h3>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className="card-journey-small background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey4.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left"> </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">
-                            4.96{" "}
-                            <span className="text-sm-medium neutral-500">
-                              (672 reviews)
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link
-                          className="heading-6 neutral-1000"
-                          href="#"
-                        >
-                          Grand Canyon Horseshoe Bend 2 days
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500">
-                            7 days 6 nights - Small group
-                          </p>
-                        </div>
-                        <div className="endtime">
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$15.63</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                          <div className="card-button">
-                            {" "}
-                            <Link className="btn btn-gray" href="#">
-                              Book Now
-                            </Link>
-                          </div>
+                  </Link>
+                </div>
+                <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
+                  <Link href="/holiday/holiday_mood?mood=wildlife">
+                    <div className="holiday-card">
+                      <div className="card-image" style={{
+                        backgroundImage: 'url(/assets/imgs/page/homepage5/activity-big3.png)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '200px',
+                        borderRadius: '20px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-overlay">
+                          <h3 className="destination-name" style={{fontSize: '20px'}}>Wildlife</h3>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className="card-journey-small background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey2.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left"> </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">
-                            4.96{" "}
-                            <span className="text-sm-medium neutral-500">
-                              (672 reviews)
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link
-                          className="heading-6 neutral-1000"
-                          href="#"
-                        >
-                          California Sunset/Twilight Boat Cruise{" "}
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500">
-                            2 days 3 nights - Family
-                          </p>
-                        </div>
-                        <div className="endtime">
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$48.25</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                          <div className="card-button">
-                            {" "}
-                            <Link className="btn btn-gray" href="#">
-                              Book Now
-                            </Link>
-                          </div>
+                  </Link>
+                </div>
+                <div className="col-lg-12 col-md-12 mb-30">
+                  <Link href="/holiday/holiday_mood?mood=luxury">
+                    <div className="holiday-card">
+                      <div className="card-image" style={{
+                        backgroundImage: 'url(/assets/imgs/page/homepage5/activity-big5.png)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '200px',
+                        borderRadius: '20px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-overlay">
+                          <h3 className="destination-name" style={{fontSize: '20px'}}>Luxury</h3>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className="card-journey-small background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey3.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left"> </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">
-                            4.96{" "}
-                            <span className="text-sm-medium neutral-500">
-                              (672 reviews)
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link
-                          className="heading-6 neutral-1000"
-                          href="#"
-                        >
-                          NYC: Food Tastings and Culture Tour
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500">
-                            3 days 3 nights - Company
-                          </p>
-                        </div>
-                        <div className="endtime">
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$17.32</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                          <div className="card-button">
-                            {" "}
-                            <Link className="btn btn-gray" href="#">
-                              Book Now
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SwiperSlide>
-                <SwiperSlide>
-                  <div className="card-journey-small background-card">
-                    <div className="card-image">
-                      {" "}
-                      <Link className="wish" href="#">
-                        <svg
-                          width={20}
-                          height={18}
-                          viewBox="0 0 20 18"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M17.071 10.1422L11.4141 15.7991C10.6331 16.5801 9.36672 16.5801 8.58568 15.7991L2.92882 10.1422C0.9762 8.1896 0.9762 5.02378 2.92882 3.07116C4.88144 1.11853 8.04727 1.11853 9.99989 3.07116C11.9525 1.11853 15.1183 1.11853 17.071 3.07116C19.0236 5.02378 19.0236 8.1896 17.071 10.1422Z"
-                            stroke="black"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            fill="none"
-                          />
-                        </svg>
-                      </Link>
-                      <img 
-                        src="/assets/imgs/page/homepage1/journey4.png"
-                        alt="Travalogy"
-                      />
-                    </div>
-                    <div className="card-info background-card">
-                      <div className="card-rating">
-                        <div className="card-left"> </div>
-                        <div className="card-right">
-                          {" "}
-                          <span className="rating">
-                            4.96{" "}
-                            <span className="text-sm-medium neutral-500">
-                              (672 reviews)
-                            </span>
-                          </span>
-                        </div>
-                      </div>
-                      <div className="card-title">
-                        {" "}
-                        <Link
-                          className="heading-6 neutral-1000"
-                          href="#"
-                        >
-                          Grand Canyon Horseshoe Bend 2 days
-                        </Link>
-                      </div>
-                      <div className="card-program">
-                        <div className="duration">
-                          <p className="text-md-medium neutral-500">
-                            7 days 6 nights - Small group
-                          </p>
-                        </div>
-                        <div className="endtime">
-                          <div className="card-price">
-                            <h6 className="heading-6 neutral-1000">$15.63</h6>
-                            <p className="text-md-medium neutral-500">
-                              / person
-                            </p>
-                          </div>
-                          <div className="card-button">
-                            {" "}
-                            <Link className="btn btn-gray" href="#">
-                              Book Now
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              </Swiper>
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>

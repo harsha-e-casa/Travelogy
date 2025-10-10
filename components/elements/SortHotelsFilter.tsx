@@ -57,16 +57,16 @@ export default function SortHotelsFilter({
         </div>
         <div className="col-xl-8 col-md-8 mb-10 text-lg-end text-center">
           <div className="box-item-sort">
-            <button onClick={handleClearFilters}>Clear Filters</button>
-            <div className="item-sort border-1">
+            <button className="btn btn-gray rounded-4" onClick={handleClearFilters}>Clear Filters</button>
+            {/* <div className="item-sort border-1">
               <span className="text-xs-medium neutral-500 mr-5">Show</span>
               <select value={itemsPerPage} onChange={handleItemsPerPageChange}>
                 <option value={10}>10</option>
                 <option value={15}>15</option>
                 <option value={20}>20</option>
               </select>
-            </div>
-            <div className="item-sort border-1">
+            </div> */}
+            <div className="item-sort border-1 rounded-3">
               <span className="text-xs-medium neutral-500 mr-5">Sort by:</span>
               <select value={sortCriteria} onChange={handleSortChange}>
                 <option value="name">Name</option>

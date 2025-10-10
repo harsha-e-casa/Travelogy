@@ -3750,7 +3750,7 @@ label {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
   min-height: 50px !important;
 }
 
@@ -18817,7 +18817,7 @@ h2 span {
 }
 
 .setHeightSlider {
-  height: 400px;
+  height: 300px;
 }
 
 .offersSection_1 {

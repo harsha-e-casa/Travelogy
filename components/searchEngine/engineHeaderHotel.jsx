@@ -299,10 +299,10 @@ const EngineHeaderHotel = ({ active_border }) => {
           </div>
 
           <div
-            className="text_start b_right_2px grid_w_2 css_pointer pb-6"
+            className="text_start b_right_2px grid_w_1 css_pointer"
             onClick={openToDateRange}
           >
-            <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
+            <div className="flex cus_mdls_pl md:pl-4 md:pl-6 lg:pl-6 justify_content_space">
               <div>
                 <div className="ml__txt">
                   <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small txt_travelClass">
@@ -342,10 +342,10 @@ const EngineHeaderHotel = ({ active_border }) => {
 
           {selectedPlan === "round-trip" ? (
             <div
-              className="text_start b_right_2px grid_w_3 css_pointer"
+              className="text_start b_right_2px grid_w_1 css_pointer"
               onClick={openToDateRangeR}
             >
-              <div className="flex cus_mdls_pl md:pl-4 lg:pl-6 xl:pl-6 justify_content_space">
+              <div className="flex cus_mdls_pl md:pl-4 md:pl-6 lg:pl-6 justify_content_space">
                 <div className="ml__txt">
                   <div className="pt-3 lg:pb-0 xl:pb-2 text-xl-small txt_travelClass">
                     Check-Out
@@ -382,27 +382,27 @@ const EngineHeaderHotel = ({ active_border }) => {
               ) : null}
             </div>
           ) : null}
-          <div className="text_start b_right_2px grid_w_4 css_pointer"
+          <div className="text_start b_right_2px grid_w_2 css_pointer pb-4"
            onClick={openTraveller}
           >
-           <div className="text_start flex xs:pl-2 sm:pl-3 md:pl-4 lg:pl-6 slider-labels">
+           <div className="text_start flex xs:pl-2 sm:pl-3 lg:pl-4 xl:pl-6 slider-labels">
               <div class="cus_mt_travelGroup xs:mt-0 sm:mt-2 md:mt-2 lg:mt-4 flex">
                 <div className="txt_travelSelect">
-                  <span className="cus_txt_traveller lg:text-4xl xl:text-4xl font-bold text-gray-900">
+                  <span className="cus_txt_traveller lg:text-4xl xl:text-3lg font-bold text-gray-900">
                     {adult}{" "}
                   </span>
-                  <span className="cus_txt_traveller lg:text-2xl xl:text-2xl font-bold text-gray-900">
+                  <span className="cus_txt_traveller lg:text-1xl xl:text-1lg font-bold text-gray-900">
                     {adult > 1 ? "Adults" : "Adult"}{" "}
                     {countchildren > 0 ? "," : null}{" "}
                   </span>
 
                   {countchildren > 0 ? (
                     <>
-                      <span className="cus_txt_traveller lg:text-4xl xl:text-4xl font-bold text-gray-900">
+                      <span className="cus_txt_traveller lg:text-4xl xl:text-3lg font-bold text-gray-900">
                         {" "}
                         {countchildren}{" "}
                       </span>
-                      <span className="cus_txt_traveller lg:text-2xl xl:text-2xl font-bold text-gray-900">
+                      <span className="cus_txt_traveller lg:text-1xl xl:text-1lg font-bold text-gray-900">
                         {countchildren > 1 ? "Children" : "Child"}{" "}
                       </span>
                     </>
@@ -410,12 +410,16 @@ const EngineHeaderHotel = ({ active_border }) => {
                 </div>
               </div>
             </div>
-            <div className="flex md:pl-5 lg:pl-7 xl:pl-7 -pt-2 -mt-2">
+            <div className="flex md:pl-5 lg:pl-7 lg:pl-6 -pt-2 ">
               <div className="flex">
                 <div className="txt_travelSelect">
-                  <span className="cus_txt_traveller text-xl font-bold text-gray-900">
+                  <span className="cus_txt_traveller xl:text-3xl font-bold text-gray-900">
                     {" "}
-                    {rooms} {rooms > 1 ? "Rooms" : "Room"}{" "}
+                    {rooms}
+                  </span>
+                  <span className="cus_txt_traveller text-lg font-bold text-gray-900">
+                    {" "}
+                    {rooms > 1 ? "Rooms" : "Room"}{" "}
                   </span>
                 </div>
               </div>
