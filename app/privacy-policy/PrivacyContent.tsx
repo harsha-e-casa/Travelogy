@@ -1,9 +1,13 @@
 export default function PrivacyContent() {
   return (
+    <div style={{background: 'linear-gradient(135deg, #aca491ff 0%, #d09409 100%)'}} className="min-vh-100 py-5">
     <div className="container mt-100 mb-100">
-      <div className="row">
-        <div className="col-lg-8 mx-auto">
-          <h1 className="heading-44-medium mb-30">Privacy Policy</h1>
+      <div className="row justify-content-center">
+        <div className="col-lg-10">
+          <div className="bg-white rounded-4 shadow-lg p-5">
+            <div className="text-center mb-5">
+              <h1 className="heading-44-medium mb-3">Privacy Policy</h1>
+            </div>
 
           <div className="mb-40">
             <h3 className="heading-6-medium mb-20">Others' rights</h3>
@@ -51,8 +55,10 @@ Any material submitted to this Site may be adapted, broadcast, changed, copied, 
               Last updated: {new Date().toLocaleDateString()}
             </p>
           </div> */}
+          </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
