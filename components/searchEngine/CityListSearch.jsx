@@ -28,12 +28,40 @@ const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
       setFilteredOptions(citiesData);
       return;
     }
-
-    const filtered = citiesData.filter(
-      (item) =>
-        item.cityName.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.fullRegionName.toLowerCase().includes(searchText.toLowerCase())
+    const q = searchText.toLowerCase();
+    const cityStarts = citiesData.filter((item) =>
+      item.cityName.toLowerCase().startsWith(q)
     );
+    const cityIncludes = citiesData.filter(
+      (item) =>
+        item.cityName.toLowerCase().includes(q) && !cityStarts.includes(item)
+    );
+    const regionStarts = citiesData.filter(
+      (item) =>
+        item.fullRegionName.toLowerCase().startsWith(q) &&
+        !cityStarts.includes(item) &&
+        !cityIncludes.includes(item)
+    );
+    const regionIncludes = citiesData.filter(
+      (item) =>
+        item.fullRegionName.toLowerCase().includes(q) &&
+        !cityStarts.includes(item) &&
+        !cityIncludes.includes(item) &&
+        !regionStarts.includes(item)
+    );
+    // const filtered = citiesData.filter(
+    //   (item) =>
+    //     item.cityName.toLowerCase().includes(searchText.toLowerCase()) ||
+    //     item.fullRegionName.toLowerCase().includes(searchText.toLowerCase())
+    // );
+
+    // setFilteredOptions(filtered.slice(0, 20));
+    const filtered = [
+      ...cityStarts,
+      ...cityIncludes,
+      ...regionStarts,
+      ...regionIncludes,
+    ];
 
     setFilteredOptions(filtered.slice(0, 20));
   };

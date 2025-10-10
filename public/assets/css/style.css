@@ -2306,8 +2306,8 @@ body {
   border-radius: 10px;
 }
 
-.btn-book-now:hover{
-    color: white;
+.btn-book-now:hover {
+  color: white;
 }
 
 .btn.btn-gray {
@@ -3137,7 +3137,7 @@ body {
   width: 21px;
   left: 5px;
   bottom: 5px;
-  background: linear-gradient(236deg, #22d1ee 0%,);
+  background: linear-gradient(236deg, #22d1ee 0%, );
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -18152,7 +18152,7 @@ h2 span {
 }
 
 .on33_w_drf {
-   width: 50%;
+  width: 50%;
   /* width: 60%; */
 }
 
@@ -19658,4 +19658,8 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   background-repeat: no-repeat;
   padding-right: 20px;
   cursor: pointer;
+}
+
+.border-bottom_1 {
+  border-bottom: 1px solid #000 !important;
 }

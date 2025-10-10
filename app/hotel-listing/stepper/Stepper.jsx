@@ -510,7 +510,7 @@ export function Step1TravellerDetails({
           <h6 className="text-sm font-bold">
             Guest Details
             <span className="text-xs text-red-600">
-              (Only Lead Guest Name is Required)
+              (Enter all guest names)
             </span>
           </h6>
           {hotelReviewData?.query?.roomInfo?.map((room, roomIndex) => {
@@ -868,8 +868,8 @@ export function Step2Review({
       if (response.error) {
         throw new Error(response.error);
       }
-     setTimeout(() => {
-      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      setTimeout(() => {
+        window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
       }, 100000);
     } catch (error) {
       console.error("Error during block:", error.message);
@@ -1045,13 +1045,13 @@ export function Step2Review({
                   </div>
                 </h4>
                 <div className="space-y-2">
-                  <p className="text-gray-700">
-                    {guest.title} {guest.firstName} {guest.lastName}
+                  <p className="text-gray-700 mt-2">
+                    1.{guest.title} {guest.firstName} {guest.lastName}
                   </p>
                   {guest.extraGuests?.map((extraGuest, index) => (
                     <div key={index}>
                       <p className="text-gray-700 text-sm">
-                        {extraGuest.title} {extraGuest.firstName}{" "}
+                        {index + 2}. {extraGuest.title} {extraGuest.firstName}{" "}
                         {extraGuest.lastName}
                       </p>
                     </div>
@@ -1067,12 +1067,10 @@ export function Step2Review({
 
                 <p className="text-gray-700 text-sm">
                   {room?.ti?.map((passenger, passengerIndex) => (
-                    <>
-                      {passenger?.ti}
-                      {"."}
+                    <div key={passengerIndex}>
+                      {passengerIndex + 1}. {passenger?.ti} {". "}{" "}
                       {passenger?.fN} {passenger?.lN}
-                      {passengerIndex < room?.ti?.length - 1 && ", "}
-                    </>
+                    </div>
                   ))}
                 </p>
               </div>
@@ -1373,6 +1371,9 @@ export function Step3PersonalDocuments({
   hotelReviewData,
   onNext,
 }) {
+  // helper (top-level in component)
+  const isMaster = (t) => !!t && /\bmaster\b/i.test(t);
+
   const [samePANForAll, setSamePANForAll] = useState(false);
   const [guardianPANs, setGuardianPANs] = useState({});
   const [individualPANs, setIndividualPANs] = useState({});
@@ -1437,8 +1438,12 @@ export function Step3PersonalDocuments({
           nextErrors.guardian[rIdx] = gErr;
         } else {
           const guests = getUiGuests(rIdx);
-          guests.forEach((_, gIdx) => {
+          guests.forEach((guest, gIdx) => {
             const key = `${rIdx}-${gIdx}`;
+            if (guest?.title?.toLowerCase().includes("master")) {
+              if (nextErrors.individual[key]) delete nextErrors.individual[key];
+              return;
+            }
             if (!isValidPAN(individualPANs[key])) {
               nextErrors.individual[key] = "Enter a valid PAN.";
               hasError = true;
@@ -1494,11 +1499,17 @@ export function Step3PersonalDocuments({
     const initialPANs = {};
     hotelReviewData?.query?.roomInfo?.forEach((room, rIdx) => {
       initialGuardian[rIdx] = false;
-      if (Array.isArray(room?.guests)) {
-        room.guests.forEach((_, gIdx) => {
+      // if (Array.isArray(room?.guests)) {
+      //   room.guests.forEach((_, gIdx) => {
+      //     initialPANs[`${rIdx}-${gIdx}`] = "";
+      //   });
+      // }
+      const guests = getUiGuests(rIdx);
+      guests.forEach((guest, gIdx) => {
+        if (!isMaster(guest?.title)) {
           initialPANs[`${rIdx}-${gIdx}`] = "";
-        });
-      }
+        }
+      });
     });
     setGuardianMode(initialGuardian);
     setIndividualPANs(initialPANs);
@@ -1578,29 +1589,41 @@ export function Step3PersonalDocuments({
       message.error("Please fix the highlighted errors.");
       return;
     }
+    const isMaster = (t) => !!t && /\bmaster\b/i.test(t);
 
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
           mode: "custom",
-          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
-            guardianMode[rIdx]
-              ? {
-                  useGuardian: true,
-                  guardian: {
-                    first: (guardianPANs[rIdx]?.first || "").trim(),
-                    last: (guardianPANs[rIdx]?.last || "").trim(),
-                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-                  },
-                }
-              : {
-                  useGuardian: false,
-                  guests: (room?.guests || []).map((_, gIdx) => ({
-                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-                      .toUpperCase()
-                      .trim(),
-                  })),
-                }
+          rooms: (hotelReviewData?.query?.roomInfo || []).map(
+            (room, rIdx) =>
+              guardianMode[rIdx]
+                ? {
+                    useGuardian: true,
+                    guardian: {
+                      first: (guardianPANs[rIdx]?.first || "").trim(),
+                      last: (guardianPANs[rIdx]?.last || "").trim(),
+                      pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                    },
+                  }
+                : {
+                    useGuardian: false,
+                    guests: getUiGuests(rIdx).map((guest, gIdx) => ({
+                      pan: isMaster(guest?.title)
+                        ? ""
+                        : (individualPANs[`${rIdx}-${gIdx}`] || "")
+                            .toUpperCase()
+                            .trim(),
+                    })),
+                  }
+            // : {
+            //     useGuardian: false,
+            //     guests: (room?.guests || []).map((_, gIdx) => ({
+            //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+            //         .toUpperCase()
+            //         .trim(),
+            //     })),
+            //   }
           ),
         };
 
@@ -1650,8 +1673,8 @@ export function Step3PersonalDocuments({
         hotelReviewData,
         isBlock: true,
       });
-           setTimeout(() => {
-      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      setTimeout(() => {
+        window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
       }, 100000);
       // window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
@@ -1823,12 +1846,12 @@ export function Step3PersonalDocuments({
                   </div>
                 ) : (
                   <>
-                    {[leadGuest, ...extraGuests].map((guest, gIdx) => (
+                    {/* {[leadGuest, ...extraGuests].map((guest, gIdx) => (
                       <div key={`guest-${rIdx}-${gIdx}`} className="mb-2">
                         <p className="text-sm font-medium text-gray-700 mb-1">
-                          {`${guest?.firstName || ""} ${
-                            guest?.lastName || ""
-                          }`.trim()}
+                          {`${guest?.title || ""}. ${
+                            guest?.firstName || ""
+                          } ${guest?.lastName || ""}`.trim()}
                         </p>
                         <Input
                           className={`w-60 stepper_input ${
@@ -1849,6 +1872,43 @@ export function Step3PersonalDocuments({
                           <p className="text-xs text-red-500 mt-1">
                             {errors.individual[`${rIdx}-${gIdx}`]}
                           </p>
+                        )}
+                      </div>
+                    ))} */}
+                    {[leadGuest, ...extraGuests].map((guest, gIdx) => (
+                      <div
+                        key={`guest-${rIdx}-${gIdx}`}
+                        className="flex items-center justify-between mb-3 space-x-3"
+                      >
+                        <p className="text-sm font-medium text-gray-700 w-2/6">
+                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${
+                            guest?.lastName || ""
+                          }`.trim()}
+                        </p>
+
+                        {!guest?.title?.toLowerCase().includes("master") && (
+                          <div className="flex-1">
+                            <Input
+                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${
+                                errors.individual?.[`${rIdx}-${gIdx}`]
+                                  ? "border-red-500"
+                                  : ""
+                              }`}
+                              placeholder="Enter PAN Individual"
+                              value={individualPANs[`${rIdx}-${gIdx}`] || ""}
+                              onChange={(e) =>
+                                handlePANChange(rIdx, gIdx, e.target.value)
+                              }
+                              ref={(el) =>
+                                (individualRefs.current[`${rIdx}-${gIdx}`] = el)
+                              }
+                            />
+                            {errors.individual?.[`${rIdx}-${gIdx}`] && (
+                              <p className="text-xs text-red-500 mt-1">
+                                {errors.individual[`${rIdx}-${gIdx}`]}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -2030,9 +2090,9 @@ export function Step4Payment({
         return;
       }
       console.log("Booking success:", result);
-      // setTimeout(() => {
-      onConfirmPayment(bookingId);
-      // }, 100000);
+      setTimeout(() => {
+        onConfirmPayment(bookingId);
+      }, 100000);
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);
