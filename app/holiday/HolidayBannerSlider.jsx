@@ -108,40 +108,42 @@ const Slider = () => {
         },
       });
       
-      gsap.from(
-        cardsRef.current[active].querySelectorAll('.card_sub'),
-        { y: 50, opacity: 1, bottom: '50%', marginLeft: '20px'}
-      );
+      if (cardsRef.current[active]) {
+        gsap.from(
+          cardsRef.current[active].querySelectorAll('.card_sub'),
+          { y: 50, opacity: 1, bottom: '50%', marginLeft: '20px'}
+        );
 
-      gsap.fromTo(
-        cardsRef.current[active].querySelectorAll('.card_sub > div'),
-        { y: 50, opacity: 0},
-        { y: 0, opacity: 1, stagger: 0.2, duration: 0.8, ease: 'power2.out' }
-      );
+        gsap.fromTo(
+          cardsRef.current[active].querySelectorAll('.card_sub > div'),
+          { y: 50, opacity: 0},
+          { y: 0, opacity: 1, stagger: 0.2, duration: 0.8, ease: 'power2.out' }
+        );
 
-      gsap.from(
-        cardsRef.current[active].querySelectorAll('.content-place'),
-        {  fontSize: '1.5em', marginBottom: '20px', paddingBottom: '15px'}
-      );
+        gsap.from(
+          cardsRef.current[active].querySelectorAll('.content-place'),
+          {  fontSize: '1.5em', marginBottom: '20px', paddingBottom: '15px'}
+        );
 
-       gsap.from(
-        cardsRef.current[active].querySelectorAll('.pt_set'),
-        {  fontSize: '6em', marginTop: '20px'}
-      );
+        gsap.from(
+          cardsRef.current[active].querySelectorAll('.pt_set'),
+          {  fontSize: '6em', marginTop: '20px'}
+        );
 
-      gsap.from(
-        cardsRef.current[active].querySelectorAll('.pt_set1'),
-        { paddingTop: '10px'}
-      );
-      gsap.from(
-        cardsRef.current[active].querySelectorAll('.pt_set2'),
-        { paddingTop: '50px'}
-      );
+        gsap.from(
+          cardsRef.current[active].querySelectorAll('.pt_set1'),
+          { paddingTop: '10px'}
+        );
+        gsap.from(
+          cardsRef.current[active].querySelectorAll('.pt_set2'),
+          { paddingTop: '50px'}
+        );
+      }
 
      
 
       rest.forEach((i, index) => {
-        if (i !== prev) {
+        if (i !== prev && cardsRef.current[i]) {
           gsap.to(cardsRef.current[i], {
             x: 900 + index * 210,
             y: 500,
@@ -153,15 +155,9 @@ const Slider = () => {
           });
         
           gsap.set(cardsRef.current[i].querySelectorAll('.card_sub'), { clearProps: 'all' });
-
           gsap.set(cardsRef.current[i].querySelectorAll('.pt_set'), { clearProps: 'all' });
-
           gsap.set(cardsRef.current[i].querySelectorAll('.pt_set2'), { clearProps: 'all' });
-          gsap.set(cardsRef.current[i].querySelectorAll('.pt_set2'), { clearProps: 'all' });
-
           gsap.set(cardsRef.current[i].querySelectorAll('.content-place'), { clearProps: 'all' });
-
-
         }
       });
     };
