@@ -72,10 +72,19 @@ const FlightReBookingList = ({
     setPage(1);
   };
 
+  const getStatusClass = (status) => {
+    if (!status) return "status-badge";
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('success')) return "status-badge status-success";
+    if (statusLower.includes('pending')) return "status-badge status-pending";
+    if (statusLower.includes('failed')) return "status-badge status-failed";
+    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
+    return "status-badge";
+  };
+
   return (
-    <div className="responsive-table-container">
-      {/* Filter Row */}
-      <div className="flex flex-wrap gap-3 items-center mb-2">
+    <div className="table-section">
+      <div className="filters-section">
         {/* <div>
           <label className="mr-1 text-sm font-medium">Amount:</label>
           <input
@@ -90,16 +99,15 @@ const FlightReBookingList = ({
             style={{ width: "100px" }}
           />
         </div> */}
-        <div>
-          <label className="mr-1 text-sm font-medium">Status:</label>
+        <div className="filter-group">
+          <label className="filter-label">Status:</label>
           <select
-            className="border px-2 py-1 rounded"
+            className="filter-select"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            style={{ width: "110px" }}
           >
             <option value="">All</option>
             {statusOptions.map((status) => (
@@ -109,64 +117,63 @@ const FlightReBookingList = ({
             ))}
           </select>
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">Booking Date From:</label>
+        <div className="filter-group">
+          <label className="filter-label">Booking Date From:</label>
           <input
             type="date"
-            className="border px-2 py-1 rounded"
+            className="filter-input"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">To:</label>
+        <div className="filter-group">
+          <label className="filter-label">To:</label>
           <input
             type="date"
-            className="border px-2 py-1 rounded"
+            className="filter-input"
             value={toDate}
             onChange={(e) => {
               setToDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
       </div>
 
       {/* Pagination Row */}
-      <div className="flex justify-between">
-        <div className="flex items-center" style={{ width: "30%"}}>
-          <label className="mr-2 font-medium" style={{ width: "40%"}}>Rows per page:</label>
-          <select
-            className="border px-2 py-1 rounded"
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            style={{ width: "30%"}}
-          >
-            {PAGE_SIZE_OPTIONS.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+    <div className="table-header">
+        <div className="pagination-info">
+          <div className="rows-per-page">
+            <label className="filter-label">Rows per page:</label>
+            <select
+              className="filter-select"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+            >
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="flex justify-end items-center mb-2">
-          <span className="mr-2">
+        <div className="pagination-controls">
+          <span className="page-info">
             Page {page} of {pageCount}
           </span>
           <button
-            className="mx-1 px-2 py-1 border rounded disabled:opacity-50"
+            className="pagination-btn"
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
           >
             Prev
           </button>
           <button
-            className="mx-1 px-2 py-1 border rounded disabled:opacity-50"
+            className="pagination-btn"
             onClick={() => setPage((prev) => Math.min(prev + 1, pageCount))}
             disabled={page === pageCount}
           >
@@ -174,8 +181,7 @@ const FlightReBookingList = ({
           </button>
         </div>
       </div>
-
-      <table className="responsive-table">
+      <table className="modern-table">
         <thead>
           <tr>
             <th className="cursor-pointer select-none"
@@ -206,31 +212,36 @@ const FlightReBookingList = ({
                   {startIdx + idx + 1}
                 </td>
                 <td>
-                  <Link href={`/BookingDetails?booking_id=${b.old_booking_id}`}>
+                  <Link href={`/BookingDetails?booking_id=${b.old_booking_id}`} className="booking-id">
                     {b.old_booking_id}
                   </Link>
                 </td>
-                <td className="px-3 py-2 border">
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}?re=true`}>
+                <td>
+                  <Link href={`/BookingDetails?booking_id=${b.booking_id}?re=true`} className="booking-id">
                     {b.booking_id}
                   </Link>
                 </td>
                 <td>{b.amount || "--"}</td>
-                <td>{b.status || "--"}</td>
+                <td>
+                  <span className={getStatusClass(b.status)}>
+                    {b.status || "--"}
+                  </span>
+                </td>
                 <td>{formatDateTime(b.booking_time)}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={5} className="text-center py-4">
-                No bookings found.
+              <td colSpan={6} className="empty-state">
+                <div className="empty-state-icon">🔄</div>
+                <div className="empty-state-text">No re-bookings found.</div>
               </td>
             </tr>
           )}
         </tbody>
       </table>
-      <div className="flex justify-end items-center mt-2 text-sm text-gray-600">
-        Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings
+      <div className="table-footer">
+        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
       </div>
     </div>
   );

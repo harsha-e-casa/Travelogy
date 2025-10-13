@@ -65,10 +65,10 @@ export default function TopHotels2() {
               <div className="col-lg-3 col-sm-6">
                 <div className="card-popular background-card hover-up">
                   <div className="card-image">
-                    {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top.png"
+                      src="/assets/imgs/holiday/chennai.jpg"
                       alt="Travelogy"
+                      style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -110,10 +110,10 @@ export default function TopHotels2() {
               <div className="col-lg-3 col-sm-6">
                 <div className="card-popular background-card hover-up">
                   <div className="card-image">
-                    {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top2.png"
+                      src="/assets/imgs/holiday/mumbai.jpg"
                       alt="Travelogy"
+                      style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -155,10 +155,10 @@ export default function TopHotels2() {
               <div className="col-lg-3 col-sm-6">
                 <div className="card-popular background-card hover-up">
                   <div className="card-image">
-                    {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top3.png"
+                      src="/assets/imgs/holiday/hyderabad.jpg"
                       alt="Travelogy"
+                      style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -197,10 +197,10 @@ export default function TopHotels2() {
               <div className="col-lg-3 col-sm-6">
                 <div className="card-popular background-card hover-up">
                   <div className="card-image">
-                    {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top4.png"
+                      src="/assets/imgs/holiday/delhi.jpg"
                       alt="Travelogy"
+                      style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -238,11 +238,12 @@ export default function TopHotels2() {
               </div>
               <div className="col-lg-3 col-sm-6">
                 <div className="card-popular background-card hover-up">
-                  <div className="card-image">
+                  <div className="card-image" >
                     {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top5.png"
+                      src="/assets/imgs/holiday/dubai.jpg"
                       alt="Travelogy"
+                       style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -280,11 +281,12 @@ export default function TopHotels2() {
               </div>
               <div className="col-lg-3 col-sm-6">
                 <div className="card-popular background-card hover-up">
-                  <div className="card-image">
+                  <div className="card-image" >
                     {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top6.png"
+                      src="/assets/imgs/holiday/paris.jpg"
                       alt="Travelogy"
+                       style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -325,8 +327,9 @@ export default function TopHotels2() {
                   <div className="card-image">
                     {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top7.png"
+                      src="/assets/imgs/holiday/singapore.jpg"
                       alt="Travelogy"
+                      style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
@@ -367,8 +370,9 @@ export default function TopHotels2() {
                   <div className="card-image">
                     {" "}
                     <img
-                      src="/assets/imgs/page/homepage2/top7.png"
+                      src="/assets/imgs/holiday/london.jpg"
                       alt="Travelogy"
+                       style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">

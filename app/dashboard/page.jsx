@@ -5,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { Tabs } from "antd";
 import Link from "next/link";
 import "./style.css";
-import "./modern-dashboard.css";
 import { postData } from "@/services/NetworkAdapter";
 import FlightBookingList from "./FlightBookingList.jsx";
 import AmendmentList from "./AmendmentList.jsx";
@@ -33,6 +32,7 @@ const Page = () => {
   const [filteredFlightBookings, setFilteredFlightBookings] = useState([]);
   const [flightStatusFilter, setFlightStatusFilter] = useState("");
   const [flightAmountFilter, setFlightAmountFilter] = useState("");
+  const [flightEmailFilter, setFlightEmailFilter] = useState("");
   const [flightFromDate, setFlightFromDate] = useState("");
   const [flightToDate, setFlightToDate] = useState("");
   const [filteredAmendments, setFilteredAmendments] = useState([]);
@@ -238,6 +238,12 @@ const Page = () => {
     ) || []
   );
 
+  const flightEmailOptions = Array.from(
+    new Set(
+      userBookingData?.bookings?.map((b) => b.user_email).filter((v) => !!v)
+    ) || []
+  );
+
   const amendmentStatusOptions = Array.from(
     new Set(
       userAmendmentData?.amendments
@@ -347,6 +353,16 @@ const Page = () => {
             .includes(flightStatusFilter.toLowerCase());
       }
 
+      if (flightEmailFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.user_email &&
+          b.user_email
+            .toString()
+            .toLowerCase()
+            .includes(flightEmailFilter.toLowerCase());
+      }
+
       // Date range
       if (flightFromDate) {
         matches = matches && bookingDate >= flightFromDate;
@@ -362,6 +378,7 @@ const Page = () => {
     userBookingData,
     flightStatusFilter,
     flightAmountFilter,
+    flightEmailFilter,
     flightFromDate,
     flightToDate,
   ]);
@@ -496,6 +513,7 @@ const Page = () => {
     <>
       <Layout headerStyle={1} footerStyle={7}>
         <main className="modern-dashboard">
+          <section className="section_main_book_dash_01 relative_MainBanner">
           {/* Loading Overlay */}
           {loading && (
             <div className="modern-loading">
@@ -503,7 +521,7 @@ const Page = () => {
               <p>Loading your dashboard...</p>
             </div>
           )}
-
+          
           {/* Hero Section */}
           <div className="hero-section">
             <div className="hero-content">
@@ -516,7 +534,7 @@ const Page = () => {
                   Manage your travel bookings with ease
                 </p>
               </div>
-              <div className="hero-stats">
+              {/* <div className="hero-stats">
                 <div className="stat-item">
                   <span className="stat-number">
                     {getTotalCount(bookingCounts.flight) +
@@ -526,12 +544,12 @@ const Page = () => {
                   </span>
                   <span className="stat-label">Total Bookings</span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
           {/* Stats Grid */}
-          <div className="stats-grid">
+          {/* <div className="stats-grid">
             <div className="stat-card flight">
               <div className="stat-icon">✈️</div>
               <div className="stat-content">
@@ -575,16 +593,16 @@ const Page = () => {
                 <div className="stat-trend">Accommodations</div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Main Content */}
           <div className="main-content">
-            <div className="content-header">
+            {/* <div className="content-header">
               <h2 className="section-title">Your Bookings</h2>
               <p className="section-subtitle">
                 Manage and track all your travel reservations
               </p>
-            </div>
+            </div> */}
 
             <div className="bookings-container">
               <Tabs
@@ -594,8 +612,8 @@ const Page = () => {
                   {
                     label: (
                       <div className="tab-item">
-                        <span className="tab-icon">✈️</span>
-                        <span className="tab-text">Flights</span>
+                        <span className="tab-icon"><img  src="/assets/dashboard/Flight booking.svg" alt="Flight booking" /></span>
+                        <span className="tab-text">Flight Booking</span>
                         <span className="tab-badge">
                           {getTotalCount(bookingCounts.flight)}
                         </span>
@@ -611,6 +629,9 @@ const Page = () => {
                           setStatusFilter={setFlightStatusFilter}
                           amountFilter={flightAmountFilter}
                           setAmountFilter={setFlightAmountFilter}
+                          emailOptions={flightEmailOptions}
+                          emailFilter={flightEmailFilter}
+                          setEmailFilter={setFlightEmailFilter}
                           fromDate={flightFromDate}
                           setFromDate={setFlightFromDate}
                           toDate={flightToDate}
@@ -622,8 +643,8 @@ const Page = () => {
                   {
                     label: (
                       <div className="tab-item">
-                        <span className="tab-icon">✏️</span>
-                        <span className="tab-text">Amendments</span>
+                        <span className="tab-icon"><img  src="/assets/dashboard/Amendments.svg" alt="Amendments" /></span>
+                        <span className="tab-text">Flight Amendments</span>
                         <span className="tab-badge">
                           {getTotalCount(bookingCounts.amendments)}
                         </span>
@@ -650,8 +671,8 @@ const Page = () => {
                   {
                     label: (
                       <div className="tab-item">
-                        <span className="tab-icon">🔄</span>
-                        <span className="tab-text">Re-bookings</span>
+                        <span className="tab-icon"><img  src="/assets/dashboard/Re booking.svg" alt="Re booking" /></span>
+                        <span className="tab-text">Re-Flight Bookings</span>
                         <span className="tab-badge">
                           {getTotalCount(bookingCounts.reBookings)}
                         </span>
@@ -678,8 +699,8 @@ const Page = () => {
                   {
                     label: (
                       <div className="tab-item">
-                        <span className="tab-icon">🏨</span>
-                        <span className="tab-text">Hotels</span>
+                        <span className="tab-icon"><img  src="/assets/dashboard/Hotel booking.svg" alt="Hotel booking" /></span>
+                        <span className="tab-text">Hotel Booking</span>
                         <span className="tab-badge">
                           {getTotalCount(bookingCounts.hotel)}
                         </span>
@@ -707,6 +728,7 @@ const Page = () => {
               />
             </div>
           </div>
+          </section>
         </main>
       </Layout>
     </>

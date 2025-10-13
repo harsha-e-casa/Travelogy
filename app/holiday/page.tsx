@@ -78,76 +78,76 @@ const Slider: React.FC = () => {
   const destinations: Destination[] = [
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Chennai Flights",
-      description: "Chennai Flights Via - Delhi, Mumbai, Coimbatore, Madurai",
+        "/assets/imgs/holiday/chennai.jpg",
+      title: "Chennai ",
+      description: "A coastal city known for its rich culture, temples, and Marina Beach.",
     },
     {
-      image: "https://promos.makemytrip.com/store/GoaDT.JPG",
-      title: "Goa Flights",
+      image: "/assets/imgs/holiday/goa.jpg",
+      title: "Goa ",
       description:
-        "Hotels, Budget Hotels, Resorts, Best Hotels, North Goa, Villas",
+        "India’s party paradise known for its beaches, nightlife, and Portuguese heritage.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a92e4b032e338f13fd5.jpg?cityName=Bathinda",
-      title: "Goa",
-      description: "Mumbai Flights Via - Delhi, Bangalore, Chennai, Ahmedabad",
+        "/assets/imgs/holiday/dubai.jpg",
+      title: "Dubai",
+      description: "A global hub of luxury, innovation, and skyscrapers like the Burj Khalifa.",
     },
     {
-      image: "http://promos.makemytrip.com/images/50x50-Ooty-23052019.png",
-      title: "Goa",
-      description: "Hyderabad Flights Via - Chennai, Mumbai, Bangalore, Delhi",
+      image: "/assets/imgs/holiday/mumbai.jpg",
+      title: "Mumbai",
+      description: "The financial capital of India, famous for Bollywood and the Gateway of India.",
     },
     {
-      image: "https://promos.makemytrip.com/store/DelhiDT.JPG",
-      title: "Hyderabad Flights",
-      description: "Delhi Flights Via - Mumbai, Pune, Bangalore, Chennai",
+      image: "/assets/imgs/holiday/hyderabad.jpg",
+      title: "Hyderabad ",
+      description: "The city of pearls, known for its tech industry and delicious biryani.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Delhi Flights",
+        "/assets/imgs/holiday/delhi.jpg",
+      title: "Delhi ",
       description:
-        "Hotels, Budget Hotels, Resorts, Best Hotels, North Goa, Villas",
+        "India’s capital, blending ancient heritage with modern vibrance.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Pune Flights",
+        "/assets/imgs/holiday/pune.jpg",
+      title: "Pune ",
       description:
-        "Hotels, Budget Hotels, Resorts, Best Hotels, North Goa, Villas",
+        "A youthful city known for education, IT, and pleasant weather.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Kolkata Flights",
-      description: "Via - Delhi, Mumbai, Bangalore, Pune",
+        "/assets/imgs/holiday/kolkatha.jpg",
+      title: "Kolkata ",
+      description: "The cultural capital of India, famed for art, literature, and sweets.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Bangalore Flights",
-      description: "Via - Delhi, Pune, Mumbai, Kolkata",
+        "/assets/imgs/holiday/banglore.jpg",
+      title: "Bangalore ",
+      description: "India’s Silicon Valley, thriving with startups and pleasant climate.",
     },
     {
-      image: "https://promos.makemytrip.com/store/DelhiDT.JPG",
-      title: "Hyderabad Flights",
-      description: "Delhi Flights Via - Mumbai, Pune, Bangalore, Chennai",
+      image: "/assets/imgs/holiday/malaysia.jpg",
+      title: "Malaysia ",
+      description: "A tropical nation known for its diverse culture and modern skyline.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Delhi Flights",
+        "/assets/imgs/holiday/paris.jpg",
+      title: "Paris ",
       description:
-        "Hotels, Budget Hotels, Resorts, Best Hotels, North Goa, Villas",
+        "The city of love, art, and the iconic Eiffel Tower.",
     },
     {
       image:
-        "https://images-cf.ixigo.workers.dev/v2/images_by_id/503b2a83e4b032e338f11b77.jpg?cityName=Jaipur",
-      title: "Pune Flights",
+        "/assets/imgs/holiday/rajasthan.jpg",
+      title: "Rajasthan ",
       description:
-        "Hotels, Budget Hotels, Resorts, Best Hotels, North Goa, Villas",
+        "The land of kings, showcasing grand forts, deserts, and royal heritage.",
     },
   ];
   interface Destinations {
@@ -187,6 +187,7 @@ const Slider: React.FC = () => {
         
         </div>
 
+      
         <YourJourney />
 {/*
         <div className="container mt-8">
@@ -218,12 +219,12 @@ const Slider: React.FC = () => {
         </section>
         
          <section className="container_sub mb-30 box-top-category">
-          {/*<h5
+          {/* <h5
             className="neutral-1000 wow fadeInUp mb-30"
             style={{ visibility: "visible" }}
           >
             Travel Made Visa-Free
-          </h5>*/}
+          </h5> */}
 
           <h2 className="neutral-1000 mt-20 mb-6">Travel Made Visa-Free</h2>
 
@@ -258,7 +259,7 @@ const Slider: React.FC = () => {
           <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
             <div className="main_d2l_section p-8 pt-4">
               <h2 className="text-xl font-bold text-gray-900 tracking-wide">
-                Best Selling Destination
+                Best Destinations
               </h2>
               <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
                 {destinations.map((dest, index) => (

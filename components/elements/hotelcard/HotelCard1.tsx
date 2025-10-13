@@ -1,6 +1,6 @@
 import Link from "next/link";
-
-// import { Tooltip } from "antd";
+import { Tooltip } from "antd";
+import "./HotelCard1.css";
 
 export default function HotelCard1({ hotel }: any) {
   const name = hotel?.name || "Unnamed Hotel";
@@ -51,40 +51,21 @@ export default function HotelCard1({ hotel }: any) {
         <div className="card-title"> <Link className="text-lg-bold neutral-1000" href={`/hotel-listing/${id}`}>{name} </Link></div>
         <div className="card-program">
           <div className="card-location">
-            <p className="text-location text-sm-medium neutral-500">{fullAddress}</p>
-            {/* <p className="text-star">
-              {[...Array(rating)].map((_, index) => (
-                <img
-                  key={`filled-${index}`}
-                  className="light-mode"
-                  src="/assets/imgs/template/icons/star-black.svg"
-                  alt="star"
-                />
-              ))}
-              {hasHalfStar && (
-                <img
-                  key="half-star"
-                  className="light-mode"
-                  src="/assets/imgs/template/icons/star-black.svg"
-                  alt="half-star"
-                />
-              )}
-              {[...Array(totalStars - rating - (hasHalfStar ? 1 : 0))].map((_, index) => (
-                <img
-                  key={`empty-${index}`}
-                  className="light-mode"
-                  src="/assets/imgs/template/icons/star-black.svg"
-                  alt="empty-star"
-                />
-              ))}
-            </p> */}
+            <Tooltip title={fullAddress} placement="top">
+              <p className="text-location text-sm-medium neutral-700">{fullAddress}</p>
+            </Tooltip>
           </div>
-          <div className="endtime">
-            <div className="card-price">
-              <h6 className="heading-6 neutral-1000">₹{totalPrice}</h6>
-              <p className="text-md-medium neutral-500">/ night</p>
+          <div className="card-pricing-section">
+            <div className="price-info">
+              <p className="starts-from-text neutral-700">Starts From</p>
+              <div className="price-container">
+                <h5 className="price-amount">₹{totalPrice}</h5>
+                <p className="price-period neutral-700">/ night</p>
+              </div>
             </div>
-            <div className="card-button"> <Link className="btn btn-gray" href={`/hotel-listing/${id}`}>Book Now</Link></div>
+            <div className="book-button-container">
+              <Link className="btn btn-book-now" href={`/hotel-listing/${id}`}>Book Now</Link>
+            </div>
           </div>
         </div>
       </div>

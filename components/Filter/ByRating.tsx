@@ -19,7 +19,8 @@ const ByRating: React.FC<ByRatingProps> = ({
   const sortedRatings = [...uniqueRatings].sort((a, b) => Number(a) - Number(b));
 
   return (
-    <ul className="list-filter">
+    <div className="box-collapse scrollFilter">
+    <ul className="list-filter-checkbox">
       {sortedRatings.map((rating) => (
         <li key={rating}>
           <label className="cb-container">
@@ -35,6 +36,7 @@ const ByRating: React.FC<ByRatingProps> = ({
         </li>
       ))}
     </ul>
+    </div>
   );
 };
 
