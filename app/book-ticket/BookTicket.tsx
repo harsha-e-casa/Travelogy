@@ -746,8 +746,8 @@ export default function BookTicket() {
 
           const pNat = formValues[`adultnationality-${i}`];
           const pNum = formValues[`adultpassportno-${i}`];
-          const eD = formValues[`adultpassportIssueDate-${i}`];
-          const pid = formValues[`adultpassportExpiryDate-${i}`];
+          const pid = formValues[`adultpassportIssueDate-${i}`];
+          const eD = formValues[`adultpassportExpiryDate-${i}`];
           const dob = formValues[`adultdob-${i}`];
 
           const documentId = formValues[`documentId-${i}`];
@@ -906,8 +906,8 @@ export default function BookTicket() {
 
           const pNat = formValues[`childnationality-${i}`];
           const pNum = formValues[`childpassportno-${i}`];
-          const eD = formValues[`childpassportIssueDate-${i}`];
-          const pid = formValues[`childpassportExpiryDate-${i}`];
+          const pid = formValues[`childpassportIssueDate-${i}`];
+          const eD = formValues[`childpassportExpiryDate-${i}`];
           const dob = formValues[`childdob-${i}`];
 
           const seatCookie = getCookie(`child_seat_map-${i + 1}`);
@@ -2055,7 +2055,10 @@ export default function BookTicket() {
 
                           <div className="bg-white shadow sm:rounded-lg relative">
                             <div className="px-4 py-3 border_xcolor_1px flex justify-between">
-                              <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition">
+                              <button
+                                onClick={() => window.history.back()}
+                                className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
+                              >
                                 Back
                               </button>
 

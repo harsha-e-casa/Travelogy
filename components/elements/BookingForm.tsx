@@ -11,6 +11,7 @@ interface BookingFormProps {
   baggageAmount?: number;
   mealAmount?: number;
   bookingFormKey?: number;
+  afsAmount?: number;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -24,6 +25,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   baggageAmount = 0,
   mealAmount = 0,
   bookingFormKey,
+  afsAmount = 0,
 }) => {
   // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
@@ -33,11 +35,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
     "bookingFormKey 111111111111111111111==========> ",
     bookingFormKey
   );
+  console.log("afsAmountafsAmountafsAmount ", afsAmount);
 
   console.log("bookingData 111111111111111111111==========> ", bookingData);
   console.log(
     "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
-    finalStage, totalpricee
+    finalStage,
+    totalpricee
   );
 
   if (totalpricee === undefined) {
@@ -45,7 +49,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
       totalpricee = bookingData?.totalPriceInfo?.totalFareDetail;
     }
     if (bookingData?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail) {
-      totalpricee = bookingData?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail;
+      totalpricee =
+        bookingData?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail;
     }
   }
   console.log(
@@ -57,7 +62,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;
-  const ammendmentFees = totalpricee?.fC?.AFC;
   // const netprice = totalpricee?.fC?.NF;
   const { getCookie, removeCookie } = useContext(AppContext);
   // const initLoaded = useRef(false);
@@ -69,9 +73,17 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [totalMealAmount, setTotalMealAmount] = useState(0);
   const [displayAmount, setDisplayAmount] = useState(0);
   const [netprice, setNetprice] = useState(totalpricee?.fC?.NF || 0);
+  const [ammendmentFees, setAmmendmentFees] = useState(afsAmount);
+
+  useEffect(() => {
+    if (afsAmount != 0) {
+      setAmmendmentFees(afsAmount);
+    }
+  }, [afsAmount]);
 
   useEffect(() => {
     // if (totalpricee && !initLoaded.current) {
+
     if (totalpricee) {
       // initLoaded.current = true;
       // for booking details page
@@ -279,13 +291,15 @@ const BookingForm: React.FC<BookingFormProps> = ({
             </div>
             {ammendmentFees && (
               <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Reissue Fees
-                </strong>
+                <div>
+                  <strong className="text-md-bold neutral-1000">
+                    Reissue Fees
+                  </strong>
+                </div>
+                <div className="text-md-bold neutral-1000">
+                  ₹{ammendmentFees}
+                </div>
               </div>
-              <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
-            </div>
             )}
             <div className="line-booking-tickets">
               <div className="item-ticket">

@@ -280,21 +280,28 @@ const BookingDetailsPage = () => {
   const cancelBooking = async (bookingId) => {
     try {
       setCancelling(true);
-      const response = await fetch(
-        `https://apitest.tripjack.com/oms/v1/hotel/cancel-booking/${bookingId}`,
-        {
-          method: "POST",
-          headers: {
-            apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const reqBody = {
+        action: "cancelBooking",
+        requestData: {bookingId: bookingId},
+      };
 
-      const data = await response.json();
+      const response = await postData("travelogy/hotel/fetch-data", reqBody);
 
-      if (response.ok) {
-        console.log("Booking cancelled successfully:", data);
+      // const response = await fetch(
+      //   `https://apitest.tripjack.com/oms/v1/hotel/cancel-booking/${bookingId}`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
+      //       "Content-Type": "application/json",
+      //     },
+      //   }
+      // );
+
+      // const data = await response.json();
+
+      if (response) {
+        console.log("Booking cancelled successfully:", response);
         setLoading(true);
         console.log("freshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh == 11 ");
         try {

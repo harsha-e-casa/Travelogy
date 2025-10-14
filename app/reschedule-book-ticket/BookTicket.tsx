@@ -167,6 +167,7 @@ export default function BookTicket() {
   const [bookingDetailsData, setBookingDetailsData] = useState<
     Record<string, any>
   >({});
+  const [afsAmount, setAfsAmount] = useState<number>(0)
 
   const [groupedAdultsV, setGroupedAdults] = useState(null);
   const [groupedChildrenV, setGroupedChildren] = useState(null);
@@ -428,6 +429,10 @@ export default function BookTicket() {
     if (apiData) {
       console.log("api data from the page.tsx kk", apiData);
     }
+    const adultAfs = apiData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.ADULT?.fC?.AFS || 0;
+    const childAfs = apiData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.CHILD?.fC?.AFS || 0;
+    const infantAfs = apiData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.INFANT?.fC?.AFS || 0;
+    setAfsAmount(adultAfs + childAfs + infantAfs)
   }, [apiData]);
 
   const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({});
@@ -1375,6 +1380,7 @@ export default function BookTicket() {
                         baggageAmount={baggageAmount}
                         mealAmount={mealAmount}
                         bookingFormKey={bookingFormKey}
+                        afsAmount={afsAmount}
                         // segmentsPrice={segmentsPrice}
                         // baggageinfo={baggageinfo}
                       />

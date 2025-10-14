@@ -288,7 +288,7 @@ export default function Tickets() {
           return ticket.totalPriceList.flatMap(
             (priceInfo: any, priceIndex: number) => {
               return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-                return (priceInfo.fd[paxTypeKey]?.rT || 0);
+                return priceInfo.fd[paxTypeKey]?.rT || 0;
               });
             }
           );
@@ -329,10 +329,19 @@ export default function Tickets() {
 
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
-        const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+        const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+        const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+        const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+        const adultFare =
+          (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+        const childFare =
+          (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+        const infantFare =
+          (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+        const price = adultFare + childFare + infantFare;
         return price >= priceRange[0] && price <= priceRange[1];
       });
-
 
       // Stops Filter
       if (stops !== "all") {
@@ -411,7 +420,7 @@ export default function Tickets() {
       }
 
       if (selectedFareTypes.length > 0) {
-        console.log("selectedFareTypes ===> ",selectedFareTypes)
+        console.log("selectedFareTypes ===> ", selectedFareTypes);
         const typeMap: { [key: number]: string } = {
           0: "Non Refundable",
           1: "Refundable",
@@ -422,7 +431,7 @@ export default function Tickets() {
           return ticket.totalPriceList.some((priceInfo: any) =>
             Object.keys(priceInfo.fd).some((paxType) => {
               const fareType = typeMap[priceInfo.fd[paxType].rT];
-              console.log("fareType -------- ",fareType)
+              console.log("fareType -------- ", fareType);
               return selectedFareTypes.includes(fareType);
             })
           );
@@ -436,8 +445,19 @@ export default function Tickets() {
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
 
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
     data.forEach((ticket) => {
-      const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+      const adultFare =
+        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+      const childFare =
+        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+      const infantFare =
+        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+      const price = adultFare + childFare + infantFare;
       if (price !== undefined) {
         prices.push(price);
       }
@@ -850,13 +870,13 @@ export default function Tickets() {
     // } else {
     //   // might move the code
     // }
-    console.log("inge ???????????? 0 ")
+    console.log("inge ???????????? 0 ");
 
     if (!searchFlight || hasFetchedRef.current) return;
     closeAllFields();
     hasFetchedRef.current = true;
 
-    console.log("inge ????????????")
+    console.log("inge ????????????");
 
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       setModifySearchRef(false);
@@ -2133,7 +2153,8 @@ export default function Tickets() {
                             !loading && (
                               <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                                 <p className="text-xl font-semibold">
-                                  Request flight is not longer available. Please try different flight
+                                  Request flight is not longer available. Please
+                                  try different flight
                                 </p>
                                 <p className="text-sm mt-2 text-gray-400">
                                   Try adjusting your filters or search criteria.
@@ -2152,7 +2173,8 @@ export default function Tickets() {
                           {!loading && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                Request flight is not longer available. Please try different flight
+                                Request flight is not longer available. Please
+                                try different flight
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
                                 Try adjusting your filters or search criteria.
@@ -2196,7 +2218,7 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "round-trip" ? (
+                  srx_tripType.trim().toLowerCase() === "round-trip" && srx_tripType.trim().toLowerCase() === "one-way" && srx_tripType.trim().toLowerCase() === "multi-city" ? (
                     <>
                       {flightData &&
                       flightData.ONWARD &&
@@ -2213,7 +2235,8 @@ export default function Tickets() {
                           {loading === false && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                Request flight is not longer available. Please try different flight
+                                Request flight is not longer available. Please
+                                try different flight
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
                                 Try adjusting your filters or search criteria.
@@ -2239,7 +2262,8 @@ export default function Tickets() {
                           {loading === false && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                Request flight is not longer available. Please try different flight
+                                Request flight is not longer available. Please
+                                try different flight
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
                                 Try adjusting your filters or search criteria.

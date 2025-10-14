@@ -321,6 +321,9 @@ const ExtraBaggage = ({
     let totalAmount = 0;
     Object.values(allValues).forEach((val) => {
       if (!val) return;
+
+      if (typeof val !== "string" || !val.includes("|")) return;
+      
       const [segmentId, code] = val.split("|");
       const segment = segmentinfo.find(
         (s) => String(s.id) === String(segmentId)
@@ -388,8 +391,7 @@ const ExtraBaggage = ({
                               padding: 8,
                               textAlign: "right",
                             }}
-                          >
-                          </div>
+                          ></div>
                         </>
                       )}
                     >
@@ -451,8 +453,7 @@ const ExtraBaggage = ({
                               padding: 8,
                               textAlign: "right",
                             }}
-                          >
-                          </div>
+                          ></div>
                         </>
                       )}
                     >
