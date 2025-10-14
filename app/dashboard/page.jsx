@@ -671,7 +671,7 @@ const Page = () => {
                   {
                     label: (
                       <div className="tab-item">
-                        <span className="tab-icon"><img  src="/assets/dashboard/Re booking.svg" alt="Re booking" /></span>
+                        <span className="tab-icon"><img  src="/assets/dashboard/Re Booking.svg" alt="Re booking" /></span>
                         <span className="tab-text">Re-Flight Bookings</span>
                         <span className="tab-badge">
                           {getTotalCount(bookingCounts.reBookings)}

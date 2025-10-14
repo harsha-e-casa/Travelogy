@@ -15,7 +15,7 @@ export default function PopularDestinationsGrid() {
                     
                     <div className="destinations-grid">
                         <div className="destination-card large">
-                            <Link href="/destination/dubai">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/india.jpg" alt="Dubai" />
                                 <div className="destination-overlay">
                                     <h3>INDIA</h3>
@@ -24,7 +24,7 @@ export default function PopularDestinationsGrid() {
                         </div>
 
                         <div className="destination-card medium">
-                            <Link href="/destination/kenya">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/dubai.jpg" alt="Kenya" />
                                 <div className="destination-overlay">
                                     <h3>DUBAI</h3>
@@ -33,7 +33,7 @@ export default function PopularDestinationsGrid() {
                         </div>
 
                         <div className="destination-card large">
-                            <Link href="/destination/japan">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/mumbai.jpg" alt="Japan" />
                                 <div className="destination-overlay">
                                     <h3>MUMBAI</h3>
@@ -42,7 +42,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card medium">
-                            <Link href="/destination/azerbaijan">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/goa.jpg" alt="Azerbaijan" />
                                 <div className="destination-overlay">
                                     <h3>GOA</h3>
@@ -51,7 +51,7 @@ export default function PopularDestinationsGrid() {
                         </div>
 
                         <div className="destination-card large">
-                            <Link href="/destination/kazakhstan">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/page/destination/banner6.png" alt="Kazakhstan" />
                                 <div className="destination-overlay">
                                     <h3>KAZAKHSTAN</h3>
@@ -60,7 +60,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card medium">
-                            <Link href="/destination/srilanka">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/page/destination/banner7.png" alt="Sri Lanka" />
                                 <div className="destination-overlay">
                                     <h3>SRILANKA</h3>
@@ -69,7 +69,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card large">
-                            <Link href="/destination/maldives">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/delhi.jpg" alt="Maldives" />
                                 <div className="destination-overlay">
                                     <h3>DELHI</h3>
@@ -78,7 +78,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card medium">
-                            <Link href="/destination/india">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/paris.jpg" alt="paris" />
                                 <div className="destination-overlay">
                                     <h3>PARIS</h3>
@@ -87,7 +87,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card medium">
-                            <Link href="/destination/georgia">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/page/destination/banner10.png" alt="Georgia" />
                                 <div className="destination-overlay">
                                     <h3>GEORGIA</h3>
@@ -96,7 +96,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card medium">
-                            <Link href="/destination/armenia">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/page/destination/banner11.png" alt="Armenia" />
                                 <div className="destination-overlay">
                                     <h3>ARMENIA</h3>
@@ -105,7 +105,7 @@ export default function PopularDestinationsGrid() {
                         </div>
                         
                         <div className="destination-card medium">
-                            <Link href="/destination/turkey">
+                            <Link href="/holiday">
                                 <img src="/assets/imgs/holiday/turkey.jpg" alt="Turkey" />
                                 <div className="destination-overlay">
                                     <h3>TURKEY</h3>
