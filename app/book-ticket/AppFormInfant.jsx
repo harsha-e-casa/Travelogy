@@ -51,74 +51,15 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             name={`infantName-${index}`}
             label="First Name"
             hasFeedback
-            dependencies={[`infantLast-${index}`]} // revalidate when last changes
             rules={[
               { required: true, message: "Please enter the name" },
-              { min: 2, message: "First name must be at least 2 characters" },
               {
-                pattern: /^[A-Za-z\s]+$/,
-                message: "First name can only contain letters and spaces",
+                min: 2,
+                message: "Last name must be at least 2 characters",
               },
               {
-                validator: () => {
-                  const norm = (v) =>
-                    String(v ?? "")
-                      .trim()
-                      .replace(/\s+/g, " ")
-                      .toLowerCase();
-
-                  const thisFirst = norm(
-                    form.getFieldValue(`infantName-${index}`)
-                  );
-                  const thisLast = norm(
-                    form.getFieldValue(`infantLast-${index}`)
-                  );
-                  if (!thisFirst || !thisLast) return Promise.resolve();
-
-                  const all = form.getFieldsValue(true);
-                  const otherPairs = [];
-
-                  // adults
-                  Object.keys(all)
-                    .filter((k) => k.startsWith("fname-"))
-                    .forEach((k) => {
-                      const i = k.replace("fname-", "");
-                      otherPairs.push([norm(all[k]), norm(all[`lname-${i}`])]);
-                    });
-
-                  // children
-                  Object.keys(all)
-                    .filter((k) => k.startsWith("childName-"))
-                    .forEach((k) => {
-                      const i = k.replace("childName-", "");
-                      otherPairs.push([
-                        norm(all[k]),
-                        norm(all[`childlast-${i}`]),
-                      ]);
-                    });
-
-                  // infants (skip current)
-                  Object.keys(all)
-                    .filter((k) => k.startsWith("infantName-"))
-                    .forEach((k) => {
-                      const i = k.replace("infantName-", "");
-                      if (String(i) === String(index)) return;
-                      otherPairs.push([
-                        norm(all[k]),
-                        norm(all[`infantLast-${i}`]),
-                      ]);
-                    });
-
-                  const dup = otherPairs.some(
-                    ([f, l]) => f && l && f === thisFirst && l === thisLast
-                  );
-
-                  return dup
-                    ? Promise.reject(
-                        new Error("This traveler name is already entered")
-                      )
-                    : Promise.resolve();
-                },
+                pattern: /^[A-Za-z\s]+$/,
+                message: "Last name can only contain letters and spaces",
               },
             ]}
             data-name={`infantName-${index}`}
@@ -130,80 +71,21 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
           </Form.Item>
         </Col>
 
-        {/* Col for Date of Birth (DOB) */}
+        {/* Col for Infant's Last Name */}
         <Col span={7}>
           <Form.Item
             name={`infantLast-${index}`}
             label="Last Name"
             hasFeedback
-            dependencies={[`infantName-${index}`]} // revalidate when first changes
             rules={[
               { required: true, message: "Please enter the last name" },
-              { min: 2, message: "Last name must be at least 2 characters" },
+              {
+                min: 2,
+                message: "Last name must be at least 2 characters",
+              },
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "Last name can only contain letters and spaces",
-              },
-              {
-                validator: () => {
-                  const norm = (v) =>
-                    String(v ?? "")
-                      .trim()
-                      .replace(/\s+/g, " ")
-                      .toLowerCase();
-
-                  const thisFirst = norm(
-                    form.getFieldValue(`infantName-${index}`)
-                  );
-                  const thisLast = norm(
-                    form.getFieldValue(`infantLast-${index}`)
-                  );
-                  if (!thisFirst || !thisLast) return Promise.resolve();
-
-                  const all = form.getFieldsValue(true);
-                  const otherPairs = [];
-
-                  // adults
-                  Object.keys(all)
-                    .filter((k) => k.startsWith("fname-"))
-                    .forEach((k) => {
-                      const i = k.replace("fname-", "");
-                      otherPairs.push([norm(all[k]), norm(all[`lname-${i}`])]);
-                    });
-
-                  // children
-                  Object.keys(all)
-                    .filter((k) => k.startsWith("childName-"))
-                    .forEach((k) => {
-                      const i = k.replace("childName-", "");
-                      otherPairs.push([
-                        norm(all[k]),
-                        norm(all[`childlast-${i}`]),
-                      ]);
-                    });
-
-                  // infants (skip current)
-                  Object.keys(all)
-                    .filter((k) => k.startsWith("infantName-"))
-                    .forEach((k) => {
-                      const i = k.replace("infantName-", "");
-                      if (String(i) === String(index)) return;
-                      otherPairs.push([
-                        norm(all[k]),
-                        norm(all[`infantLast-${i}`]),
-                      ]);
-                    });
-
-                  const dup = otherPairs.some(
-                    ([f, l]) => f && l && f === thisFirst && l === thisLast
-                  );
-
-                  return dup
-                    ? Promise.reject(
-                        new Error("This traveler name is already entered")
-                      )
-                    : Promise.resolve();
-                },
               },
             ]}
             data-name={`infantLast-${index}`}
@@ -211,6 +93,51 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             <Input
               className="h-10 flex flex-row justify-between items-center"
               placeholder="Last Name"
+            />
+          </Form.Item>
+        </Col>
+
+        {/* Col for Date of Birth (DOB) */}
+        <Col span={6}>
+          <Form.Item
+            name={`infantDOB-${index}`}
+            label="Date of Birth"
+            hasFeedback
+            rules={[{ required: true, message: "Please choose the DOB" }]}
+            data-name={`infantDOB-${index}`}
+          >
+            <DatePicker
+              className="h-10 flex flex-row justify-between items-center"
+              format="YYYY-MM-DD"
+              placeholder="Select Date of Birth"
+              // defaultValue={dayjs()} // Default to today's date
+              value={
+                travellerParsedData && travellerParsedData.dob
+                  ? dayjs(travellerParsedData.dob)
+                  : null
+              }
+              disabledDate={(current) => {
+                const today = dayjs();
+                const minDate = today.subtract(2, "year"); // 2 years ago
+                const maxDate = today.subtract(15, "day"); // 15 days ago
+                return current && (current < minDate || current > maxDate);
+              }}
+              onKeyDown={(e) => {
+                const ok = [
+                  "Backspace",
+                  "Tab",
+                  "ArrowLeft",
+                  "ArrowRight",
+                  "Delete",
+                  "Enter",
+                ];
+                if (ok.includes(e.key)) return;
+                if (!/[\d-]/.test(e.key)) e.preventDefault();
+              }}
+              onPaste={(e) => {
+                const t = (e.clipboardData.getData("text") || "").trim();
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+              }}
             />
           </Form.Item>
         </Col>

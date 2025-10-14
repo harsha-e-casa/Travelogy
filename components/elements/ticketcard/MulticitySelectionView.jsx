@@ -14,6 +14,7 @@ import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
 import SelectedFlightSummary from "./SelectedFlightSummary";
+import Cookies from "js-cookie";
 
 export default function MulticitySelectionView({ flightData }) {
   const isUat = process.env.UAT_ENV === "true";
@@ -94,11 +95,21 @@ export default function MulticitySelectionView({ flightData }) {
 
     // Price Range Filter
     filteredData = filteredData.filter((ticket) => {
-      const ticketPrice = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+      const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+      const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+      const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+      const adultFare =
+        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+      const childFare =
+        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+      const infantFare =
+        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+      const price = adultFare + childFare + infantFare;
       return (
-        ticketPrice !== undefined &&
-        ticketPrice >= filter.priceRange[0] &&
-        ticketPrice <= filter.priceRange[1]
+        price !== undefined &&
+        price >= filter.priceRange[0] &&
+        price <= filter.priceRange[1]
       );
     });
 
@@ -258,10 +269,32 @@ export default function MulticitySelectionView({ flightData }) {
   useEffect(() => {
     if (flightData) {
       const initialFilters = cities.map((_, tabIndex) => {
+        const prices = [];
         const flightsForSegment = flightData[String(tabIndex)] || [];
-        const prices = flightsForSegment.map(
-          (t) => t?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0
-        );
+
+        const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+        const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+        const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
+        // const prices = flightsForSegment.map(
+        //   (t) => t?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0
+        // );
+        flightsForSegment.forEach((ticket) => {
+          const adultFare =
+            (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) *
+            (dfadu ?? 0);
+          const childFare =
+            (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) *
+            (dfchi ?? 0);
+          const infantFare =
+            (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) *
+            (dfinf ?? 0);
+
+          const price = adultFare + childFare + infantFare;
+          if (price !== undefined) {
+            prices.push(price);
+          }
+        });
 
         const { min, max } = getSafeMinMax(prices);
 

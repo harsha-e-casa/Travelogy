@@ -42,6 +42,7 @@ const Alldetails = ({ totalpricee }) => {
   const printRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [fareType, setFareType] = useState("");
+  const [afsAmount, setAfsAmount] = useState(0)
 
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
@@ -64,6 +65,16 @@ const Alldetails = ({ totalpricee }) => {
 
   const [isReIssueModalOpen, setIsReIssueModalOpen] = useState(false);
   const [selectedTravellers, setSelectedTravellers] = useState([]);
+
+  useEffect(() => {
+    if (bookingDetails) {
+        console.log("api data from the page.tsx kk", bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS);
+      }
+      const adultAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
+      // const childAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
+      // const infantAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
+      setAfsAmount(adultAfs)
+  }, [bookingDetails])
 
   // const createStructuredData = (bookingDetails) => {
   //   console.log("bookingDetailsbookingDetails -------- bookingDetails ",bookingDetails)
@@ -2224,6 +2235,7 @@ const Alldetails = ({ totalpricee }) => {
                   totalpricee={totalpricee}
                   bookingData={bookingDetails}
                   finalStage={true}
+                  afsAmount={afsAmount}
                 />
               </div>
             </div>

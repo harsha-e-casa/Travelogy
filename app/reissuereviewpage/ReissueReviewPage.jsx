@@ -387,6 +387,18 @@ const ReissueReviewPage = () => {
     e.ADULT?.rT === 0 ? "Refundable" : "non-refundable"
   );
 
+  const [afsAmount, setAfsAmount] = useState(0)
+
+  useEffect(() => {
+      if (flightData) {
+        console.log("api data from the page.tsx kk", flightData);
+      }
+      const adultAfs = flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.ADULT?.fC?.AFS || 0;
+      const childAfs = flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.CHILD?.fC?.AFS || 0;
+      const infantAfs = flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.INFANT?.fC?.AFS || 0;
+      setAfsAmount(adultAfs + childAfs + infantAfs)
+    }, [flightData]);
+
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
   console.log("mame totalprice amount cookie lendhu == ", totalprice);
@@ -2183,7 +2195,7 @@ const ReissueReviewPage = () => {
                         <div class="head-booking-form">
                           <p class="text-xl-bold neutral-1000">Fare Summary</p>
                         </div>
-                        <BookingForm totalpricee={totalPriceinfo} />
+                        <BookingForm totalpricee={totalPriceinfo} afsAmount={afsAmount} />
                       </div>
                     </div>
                   </div>

@@ -10,6 +10,7 @@ import ByAirline from "@/components/Filter/ByAirline";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
+import Cookies from "js-cookie";
 // import TicketCard1 from "./TicketCard1";
 
 interface SelectedTicket {
@@ -90,8 +91,19 @@ export default function RoundTripSelectionView({ flightData }: any) {
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
 
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
     data.forEach((ticket) => {
-      const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+      const adultFare =
+        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+      const childFare =
+        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+      const infantFare =
+        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+      const price = adultFare + childFare + infantFare;
       if (price !== undefined) {
         prices.push(price);
       }
@@ -235,10 +247,18 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
     // Price Range Filter
     filteredData = filteredData.filter((ticket: any) => {
-      return (
-        ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF >= priceRange[0] &&
-        ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF <= priceRange[1]
-      );
+      const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+      const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+      const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+      const adultFare =
+        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+      const childFare =
+        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+      const infantFare =
+        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+      const price = adultFare + childFare + infantFare;
+      return price >= priceRange[0] && price <= priceRange[1];
     });
 
     // Stops Filter
@@ -411,9 +431,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
           <div className="sidebar-left border-1 background-body">
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Stops
-                </h6>
+                <h6 className="text-lg-bold filter-sty neutral-1000">Stops</h6>
                 <ByStops
                   stops={tripPhase === "ONWARD" ? onwardStops : returnStops}
                   setStops={

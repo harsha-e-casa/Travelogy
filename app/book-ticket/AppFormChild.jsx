@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Form, Input, Select, Row, Col, DatePicker } from "antd";
-import moment from "moment";
 import countries from "./countries";
 import dayjs from "dayjs";
 
@@ -13,11 +12,12 @@ const AppFormChild = ({
   showPassport,
   pDateCheck,
 }) => {
+  const travelDate = dayjs(pDateCheck).startOf("day");
+  const hasTravelDate = travelDate.isValid();
+  const minExpiry = hasTravelDate
+    ? travelDate.add(6, "month").endOf("day")
+    : null;
   useEffect(() => {
-    const bookDate = dayjs(pDateCheck).startOf("day");
-    const minExpiry = bookDate.isValid()
-      ? bookDate.add(6, "month").endOf("day")
-      : null;
     // Check if travellerParsedData has the necessary fields to prefill
     if (travellerParsedData) {
       const { ti, fN, lN } = travellerParsedData;
@@ -36,11 +36,11 @@ const AppFormChild = ({
       });
     if (travellerParsedData?.eD)
       form.setFieldsValue({
-        [`childpassportExpiryDate-${index}`]: moment(travellerParsedData.eD),
+        [`childpassportExpiryDate-${index}`]: dayjs(travellerParsedData.eD),
       });
     if (travellerParsedData?.pid)
       form.setFieldsValue({
-        [`childpassportIssueDate-${index}`]: moment(travellerParsedData.pid),
+        [`childpassportIssueDate-${index}`]: dayjs(travellerParsedData.pid),
       });
     if (travellerParsedData?.pm)
       form.setFieldsValue({
@@ -48,7 +48,7 @@ const AppFormChild = ({
       });
     if (travellerParsedData?.dob)
       form.setFieldsValue({
-        [`childdob-${index}`]: moment(travellerParsedData.dob),
+        [`childdob-${index}`]: dayjs(travellerParsedData.dob),
       });
   }, [travellerParsedData]);
 
@@ -310,9 +310,10 @@ const AppFormChild = ({
                       },
                       {
                         validator: (_, value) => {
-                          if (!value) return Promise.resolve();
-                          if (!bookDate.isValid()) return Promise.resolve();
-                          return value.isAfter(bookDate)
+                          if (!value || !hasTravelDate)
+                            return Promise.resolve();
+                          const v = dayjs(value).endOf("day");
+                          return v.isAfter(travelDate)
                             ? Promise.reject(
                                 new Error(
                                   "Issue date cannot be after the booking date"
@@ -364,13 +365,10 @@ const AppFormChild = ({
                       },
                       {
                         validator: (_, value) => {
-                          // let "required" rule handle empty
-                          if (!value) return Promise.resolve();
-                          // if we don't have a valid travel date, don't block
-                          if (!hasTravelDate || !minExpiry)
+                          if (!value || !hasTravelDate || !minExpiry)
                             return Promise.resolve();
-
-                          if (value.isBefore(minExpiry, "day")) {
+                          const v = dayjs(value).endOf("day");
+                          if (v.isBefore(minExpiry, "day")) {
                             return Promise.reject(
                               new Error(
                                 `Passport must be valid for at least 6 months from travel date (${travelDate.format(

@@ -81,6 +81,10 @@ const MealInfo = ({
       .filter((value) => value);
 
     allMeals.forEach((value) => {
+      if (!value) return;
+      
+      if (typeof value !== "string" || !value.includes("|")) return;
+      
       const [segmentId, mealCode] = value.split("|");
       const segment = segmentinfo.find(
         (s) => String(s.id) === String(segmentId)

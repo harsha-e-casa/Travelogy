@@ -32,7 +32,7 @@ import { Skeleton } from "antd";
 import AppListSearch from "@/components/searchEngine/AppListSearch";
 import AppDateRangeFlight from "@/components/searchEngine/AppDateRangeFlight";
 import "./customeHeader_1.css";
-// import Cookies from "js-cookie";
+import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import type { MenuProps } from "antd";
 import { Dropdown, Space } from "antd";
@@ -254,10 +254,19 @@ export default function Tickets() {
 
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
-        const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+        const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+        const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+        const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+        const adultFare =
+          (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+        const childFare =
+          (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+        const infantFare =
+          (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+        const price = adultFare + childFare + infantFare;
         return price >= priceRange[0] && price <= priceRange[1];
       });
-
 
       // Stops Filter
       if (stops !== "all") {
@@ -348,8 +357,19 @@ export default function Tickets() {
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
 
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
     data.forEach((ticket) => {
-      const price = ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF;
+      const adultFare =
+        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+      const childFare =
+        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+      const infantFare =
+        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+
+      const price = adultFare + childFare + infantFare;
       if (price !== undefined) {
         prices.push(price);
       }
@@ -831,7 +851,8 @@ export default function Tickets() {
                             !loading && (
                               <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                                 <p className="text-xl font-semibold">
-                                  Request flight is not longer available. Please try different flight
+                                  Request flight is not longer available. Please
+                                  try different flight
                                 </p>
                                 <p className="text-sm mt-2 text-gray-400">
                                   Try adjusting your filters or search criteria.
