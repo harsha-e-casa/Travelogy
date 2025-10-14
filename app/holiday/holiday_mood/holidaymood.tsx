@@ -9,7 +9,8 @@ export default function Holidaymood() {
   const searchParams = useSearchParams();
   const mood = searchParams.get("mood") || "romantic";
   const [showModal, setShowModal] = useState(false);
-  const destinations = [
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const mood_destinations = [
     "Bali",
     "Dubai",
     "Europe",
@@ -27,7 +28,7 @@ export default function Holidaymood() {
       title: "Romantic",
       bannerImage:
         "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      destinations: [
+      mood_destinations: [
         "Maldives",
         "Bali",
         "Paris",
@@ -70,7 +71,7 @@ export default function Holidaymood() {
       title: "Adventure",
       bannerImage:
         "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      destinations: [
+      mood_destinations: [
         "Nepal",
         "New Zealand",
         "Costa Rica",
@@ -113,7 +114,7 @@ export default function Holidaymood() {
       title: "Beaches",
       bannerImage:
         "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      destinations: [
+      mood_destinations: [
         "Maldives",
         "Bali",
         "Hawaii",
@@ -156,7 +157,7 @@ export default function Holidaymood() {
       title: "Wildlife",
       bannerImage:
         "https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      destinations: [
+      mood_destinations: [
         "Kenya",
         "Tanzania",
         "South Africa",
@@ -199,7 +200,7 @@ export default function Holidaymood() {
       title: "Luxury",
       bannerImage:
         "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
-      destinations: [
+      mood_destinations: [
         "Dubai",
         "Monaco",
         "Switzerland",
@@ -239,6 +240,144 @@ export default function Holidaymood() {
       ],
     },
   };
+
+    const locations = [
+    {
+      city: "London",
+      place: "Big Ben",
+      rating: 4.5,
+      image:
+        "https://images.unsplash.com/photo-1486299267070-83823f5448dd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80",
+    },
+    {
+      city: "Paris",
+      place: "Eiffel Tower",
+      rating: 5,
+      image:
+        "https://images.unsplash.com/photo-1581010864468-c972b8705439?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+    },
+    {
+      city: "Rome",
+      place: "Colosseum",
+      rating: 4.7,
+      image:
+        "https://images.unsplash.com/photo-1552832230-c0197dd311b5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1096&q=80",
+    },
+    {
+      city: "Pisa",
+      place: "Pisa Tower",
+      rating: 4.3,
+      image:
+        "https://images.unsplash.com/photo-1581473483413-313a5afffb08?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=714&q=80",
+    },
+    {
+      city: "New York",
+      place: "Statue of Liberty",
+      rating: 4.0,
+      image:
+        "https://images.unsplash.com/photo-1585155967849-91c736589c84?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=627&q=80",
+    },
+    {
+      city: "Sydney",
+      place: "Sydney Opera House",
+      rating: 4.0,
+      image:
+        "https://images.unsplash.com/photo-1527915676329-fd5ec8a12d4b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80",
+    },
+  ];
+
+   const StarIcon = () => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-5 w-5 inline-block"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </svg>
+  );
+
+   interface Destination {
+    image: string;
+    title: string;
+    description: string;
+  }
+
+   const destinations: Destination[] = [
+    {
+      image:
+        "/assets/imgs/holiday/chennai.jpg",
+      title: "Chennai ",
+      description: "A coastal city known for its rich culture, temples, and Marina Beach.",
+    },
+    {
+      image: "/assets/imgs/holiday/goa.jpg",
+      title: "Goa ",
+      description:
+        "India’s party paradise known for its beaches, nightlife, and Portuguese heritage.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/dubai.jpg",
+      title: "Dubai",
+      description: "A global hub of luxury, innovation, and skyscrapers like the Burj Khalifa.",
+    },
+    {
+      image: "/assets/imgs/holiday/mumbai.jpg",
+      title: "Mumbai",
+      description: "The financial capital of India, famous for Bollywood and the Gateway of India.",
+    },
+    {
+      image: "/assets/imgs/holiday/hyderabad.jpg",
+      title: "Hyderabad ",
+      description: "The city of pearls, known for its tech industry and delicious biryani.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/delhi.jpg",
+      title: "Delhi ",
+      description:
+        "India’s capital, blending ancient heritage with modern vibrance.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/pune.jpg",
+      title: "Pune ",
+      description:
+        "A youthful city known for education, IT, and pleasant weather.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/kolkatha.jpg",
+      title: "Kolkata ",
+      description: "The cultural capital of India, famed for art, literature, and sweets.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/banglore.jpg",
+      title: "Bangalore ",
+      description: "India’s Silicon Valley, thriving with startups and pleasant climate.",
+    },
+    {
+      image: "/assets/imgs/holiday/malaysia.jpg",
+      title: "Malaysia ",
+      description: "A tropical nation known for its diverse culture and modern skyline.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/paris.jpg",
+      title: "Paris ",
+      description:
+        "The city of love, art, and the iconic Eiffel Tower.",
+    },
+    {
+      image:
+        "/assets/imgs/holiday/rajasthan.jpg",
+      title: "Rajasthan ",
+      description:
+        "The land of kings, showcasing grand forts, deserts, and royal heritage.",
+    },
+  ];
 
   const currentMood =
     moodData[mood as keyof typeof moodData] || moodData.romantic;
@@ -324,7 +463,7 @@ export default function Holidaymood() {
             className="mb-4"
             style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
           >
-            {currentMood.destinations.map((dest, index) => (
+            {currentMood.mood_destinations.map((dest, index) => (
               <span
                 key={index}
                 style={{
@@ -360,6 +499,7 @@ export default function Holidaymood() {
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.transform = "translateY(0)")
                   }
+                  onClick={() => setShowModal(true)}
                 >
                   <div
                     style={{
@@ -390,6 +530,58 @@ export default function Holidaymood() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+            <h2 className="container neutral-1000 mt-20">Destination Dreams</h2>
+        <section className="section__category container mb-30 box-top-category">
+          {locations.map((loc, index) => (
+            <div className="dgfry_card" key={index}>
+              <div className="card__img">
+                <img  src={loc.image} alt={loc.place || "Travel Destination"} />
+                <span>
+                  <StarIcon /> {loc.rating}
+                </span>
+                <div className="card__overlay">
+                  <h6>{loc.city}</h6>
+                  <p>{loc.place}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+
+         <section>
+          <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
+            <div className="main_d2l_section p-8 pt-4">
+              <h2 className="text-xl font-bold text-gray-900 tracking-wide">
+                Best Destinations
+              </h2>
+              <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
+                {destinations.map((dest, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center rounded-lg aft_hvr w-full"
+                  >
+                    <div className="w-1/3 rounded-full overflow-hidden">
+                      <img 
+                        src={dest.image}
+                        alt={dest.title}
+                        className="h-20 w-20 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="w-2/3 pl-3">
+                      <p className="text-xl font-semibold text-gray-900">
+                        {dest.title}
+                      </p>
+                      <p className="text-xs text-gray-900">
+                        {dest.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -425,7 +617,7 @@ export default function Holidaymood() {
             >
               {/* Close Button */}
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => { setShowModal(false); setIsSubmitted(false); }}
                 style={{
                   position: "absolute",
                   top: "15px",
@@ -442,6 +634,8 @@ export default function Holidaymood() {
 
               {/* Modal Content */}
               <div style={{ color: "white" }}>
+                {!isSubmitted ? (
+                  <form onSubmit={(e) => { e.preventDefault(); setIsSubmitted(true); }}>
                 <h3
                   style={{
                     marginBottom: "10px",
@@ -462,24 +656,10 @@ export default function Holidaymood() {
                   your dream trip
                 </p>
 
-                <form>
-                  <input
-                    type="tel"
-                    placeholder="Phone +91"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      marginBottom: "20px",
-                      background: "rgba(255,255,255,0.1)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "8px",
-                      color: "white",
-                      fontSize: "14px",
-                    }}
-                  />
+                
                   <input
                     type="text"
-                    placeholder="destination..."
+                    placeholder="Enter your Name"
                     style={{
                       width: "100%",
                       padding: "12px",
@@ -491,6 +671,39 @@ export default function Holidaymood() {
                       fontSize: "14px",
                     }}
                   />
+                  <input
+                    type="tel"
+                    placeholder="Enter your Phone Number"
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      marginBottom: "20px",
+                      background: "rgba(255,255,255,0.1)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      borderRadius: "8px",
+                      color: "white",
+                      fontSize: "14px",
+                    }}
+                  />
+                  <select
+                    style={{
+                      width: "100%",
+                      padding: "16px",
+                      marginBottom: "30px",
+                      background: "rgba(255,255,255,0.1)",
+                      border: "1px solid rgba(255,255,255,0.3)",
+                      borderRadius: "8px",
+                      color: "white",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <option value="" style={{ background: "#333", color: "white" }}>Select your mood...</option>
+                    <option value="romantic" style={{ background: "#333", color: "white" }}>Romantic</option>
+                    <option value="adventure" style={{ background: "#333", color: "white" }}>Adventure</option>
+                    <option value="beaches" style={{ background: "#333", color: "white" }}>Beaches</option>
+                    <option value="wildlife" style={{ background: "#333", color: "white" }}>Wildlife</option>
+                    <option value="luxury" style={{ background: "#333", color: "white" }}>Luxury</option>
+                  </select>
                   <button
                     type="submit"
                     style={{
@@ -519,7 +732,13 @@ export default function Holidaymood() {
                     </svg>
                     Request a call back
                   </button>
-                </form>
+                  </form>
+                ) : (
+                  <div style={{ textAlign: "center", padding: "40px 0" }}>
+                    <h3 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "10px" }}>Thanks!</h3>
+                    <p style={{ fontSize: "16px", opacity: 0.9 }}>We will contact you soon.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

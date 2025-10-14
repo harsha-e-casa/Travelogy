@@ -70,7 +70,7 @@ export default function Header1({
                       <Link href="/hotels">Hotel</Link>
                     </li>
                     <li>
-                      <Link href="/holiday">Holiday</Link>
+                      <Link href="/holiday">Holiday Package</Link>
                     </li>
                     <li>
                       <Link href="/visa">Visa</Link>
