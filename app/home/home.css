@@ -1,0 +1,214 @@
+/* Home Page Specific Styles */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600&display=swap');
+
+/* Video Banner Section */
+.box-video-banner {
+    position: relative;
+    height: 85vh;
+    overflow: hidden;
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.banner-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-content {
+    color: white;
+    z-index: 2;
+}
+
+.video-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.video-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.95;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+    .box-video-banner {
+        height: 70vh;
+    }
+    
+    .video-title {
+        font-size: 2.8rem;
+    }
+    
+    .video-subtitle {
+        font-size: 1.1rem;
+    }
+}
+
+.box-home-intro {
+    padding: 80px 0;
+}
+
+.box-image-home img {
+    width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.box-button-home .btn {
+    margin-bottom: 15px;
+}
+
+.box-home-features {
+    padding: 80px 0;
+}
+
+.card-feature {
+    padding: 40px 30px;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.card-feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.card-feature .card-image {
+    margin-bottom: 25px;
+}
+
+.card-feature .card-image img {
+    width: 60px;
+    height: 60px;
+}
+
+.box-home-services {
+    padding: 80px 0;
+}
+
+.list-services {
+    margin-top: 30px;
+}
+
+.item-service {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.service-icon {
+    width: 50px;
+    height: 50px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.service-icon img {
+    width: 24px;
+    height: 24px;
+}
+
+.service-info h6 {
+    margin-bottom: 8px;
+}
+
+.box-image-services img {
+    width: 100%;
+    border-radius: 16px;
+}
+
+.box-home-dashboard {
+    padding: 80px 0;
+}
+
+.card-dashboard {
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.card-dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+}
+
+.card-dashboard .card-image {
+    margin-bottom: 20px;
+}
+
+.card-dashboard .card-image img {
+    width: 48px;
+    height: 48px;
+}
+
+.card-dashboard h5 {
+    margin-bottom: 15px;
+}
+
+.card-dashboard .btn {
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .box-home-intro,
+    .box-home-features,
+    .box-home-services,
+    .box-home-dashboard {
+        padding: 60px 0;
+    }
+    
+    .box-button-home .btn {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .item-service {
+        margin-bottom: 25px;
+    }
+    
+    .service-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 15px;
+    }
+    
+    .service-icon img {
+        width: 20px;
+        height: 20px;
+    }
+}

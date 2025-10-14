@@ -105,20 +105,28 @@ const AmendmentList = ({
     setModalData(null);
   };
 
+  const getStatusClass = (status) => {
+    if (!status) return "status-badge";
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('success')) return "status-badge status-success";
+    if (statusLower.includes('pending')) return "status-badge status-pending";
+    if (statusLower.includes('failed')) return "status-badge status-failed";
+    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
+    return "status-badge";
+  };
+
   return (
-    <div className="responsive-table-container">
-      {/* Filter Row */}
-      <div className="flex flex-wrap gap-3 items-center mb-2">
-        <div>
-          <label className="mr-1 text-sm font-medium">Status:</label>
+    <div className="table-section">
+      <div className="filters-section">
+        <div className="filter-group">
+          <label className="filter-label">Status:</label>
           <select
-            className="border px-2 py-1 rounded"
+            className="filter-select"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            style={{ width: "110px" }}
           >
             <option value="">All</option>
             {statusOptions.map((status) => (
@@ -128,68 +136,64 @@ const AmendmentList = ({
             ))}
           </select>
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">
-            Amendment Date From:
-          </label>
+        <div className="filter-group">
+          <label className="filter-label">Amendment Date From:</label>
           <input
             type="date"
-            className="border px-2 py-1 rounded"
+            className="filter-input"
+             placeholder="DD/MM/YYYY"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">To:</label>
+        <div className="filter-group">
+          <label className="filter-label">To:</label>
           <input
             type="date"
-            className="border px-2 py-1 rounded"
+            className="filter-input"
             value={toDate}
             onChange={(e) => {
               setToDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
       </div>
 
       {/* Pagination Row */}
-      <div className="flex justify-between">
-        <div className="flex items-center" style={{ width: "30%" }}>
-          <label className="mr-2 font-medium" style={{ width: "40%" }}>
-            Rows per page:
-          </label>
-          <select
-            className="border px-2 py-1 rounded"
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            style={{ width: "30%" }}
-          >
-            {PAGE_SIZE_OPTIONS.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+     <div className="table-header">
+        <div className="pagination-info">
+          <div className="rows-per-page">
+            <label className="filter-label">Rows per page:</label>
+            <select
+              className="filter-select"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+            >
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="flex justify-end items-center mb-2">
-          <span className="mr-2">
+        <div className="pagination-controls">
+          <span className="page-info">
             Page {page} of {pageCount}
           </span>
           <button
-            className="mx-1 px-2 py-1 border rounded disabled:opacity-50"
+            className="pagination-btn"
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
           >
             Prev
           </button>
           <button
-            className="mx-1 px-2 py-1 border rounded disabled:opacity-50"
+            className="pagination-btn"
             onClick={() => setPage((prev) => Math.min(prev + 1, pageCount))}
             disabled={page === pageCount}
           >
@@ -203,59 +207,68 @@ const AmendmentList = ({
         data={modalData}
         loading={loading}
       />
-      <table className="responsive-table">
+    <table className="modern-table">
         <thead>
           <tr>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("idIndex")}
-            >
+            <th className="cursor-pointer select-none"
+                onClick={() => handleSort("idIndex")}>
               ID
               {sortBy === "idIndex" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
+            <th>Old Booking ID</th>
             <th>Booking ID</th>
-            <th>Amendment ID</th>
-            <th className="cursor-pointer select-none">Amount</th>
+            <th className="cursor-pointer select-none"
+                onClick={() => handleSort("amount")}>
+              Amount
+              {sortBy === "amount" && (
+                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+              )}
+            </th>
             <th>Status</th>
-            <th>Time of Amendment</th>
+            <th>Booking Time</th>
           </tr>
         </thead>
         <tbody>
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
-                <td>{startIdx + idx + 1}</td>
                 <td>
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
+                  {startIdx + idx + 1}
+                </td>
+                <td>
+                  <Link href={`/BookingDetails?booking_id=${b.old_booking_id}`} className="booking-id">
+                    {b.old_booking_id}
+                  </Link>
+                </td>
+                <td>
+                  <Link href={`/BookingDetails?booking_id=${b.booking_id}?re=true`} className="booking-id">
                     {b.booking_id}
                   </Link>
                 </td>
-                <td
-                  className="cursor-pointer text-blue-500"
-                  onClick={() => handleAmendmentClick(b.amendment_id)}
-                >
-                  {b.amendment_id || "--"}
+                <td>{b.amount || "--"}</td>
+                <td>
+                  <span className={getStatusClass(b.status)}>
+                    {b.status || "--"}
+                  </span>
                 </td>
-                <td>{b.refundable_amount || "--"}</td>
-                <td>{b.amendment_status || "--"}</td>
-                <td>{formatDateTime(b.time)}</td>
+                <td>{formatDateTime(b.booking_time)}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={5} className="text-center py-4">
-                No amendments found.
+              <td colSpan={6} className="empty-state">
+                <div className="empty-state-icon">✏️</div>
+                <div className="empty-state-text">No amendments found.</div>
               </td>
             </tr>
           )}
         </tbody>
       </table>
 
-      <div className="flex justify-end items-center mt-2 text-sm text-gray-600">
-        Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of{" "}
-        {total} amendments
+      <div className="table-footer">
+        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
       </div>
     </div>
   );

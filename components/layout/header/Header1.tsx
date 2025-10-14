@@ -61,13 +61,16 @@ export default function Header1({
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
                     <li>
+                      <Link href="/home">Home</Link>
+                    </li>
+                    <li>
                       <Link href="/flights">Flights</Link>
                     </li>
                     <li>
                       <Link href="/hotels">Hotel</Link>
                     </li>
                     <li>
-                      <Link href="/holiday">Holiday</Link>
+                      <Link href="/holiday">Holiday Package</Link>
                     </li>
                     <li>
                       <Link href="/visa">Visa</Link>

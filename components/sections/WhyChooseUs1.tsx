@@ -7,11 +7,11 @@ export default function WhyChooseUs1() {
             <section className="section-box box-why-choose-us background-body">
                 <div className="container">
                     <div className="row align-items-center">
-                        <div className="col-lg-6 mb-40"><span className="btn btn-tag">Why Choose Us</span>
+                        <div className="col-lg-6 mb-40">
                             <h2 className="title-why neutral-1000">Dare to live the lift you’ve always wanted</h2>
                             <p className="text-xl-medium neutral-500">Discover how you can offset your adventure's carbon
                                 emissions and support the sustainable initiatives practiced by our operators worldwide.</p>
-                            <div className="download-apps"> <Link href="#"><img  src="/assets/imgs/template/googleplay.png" alt="Travelogy" /></Link><Link href="#"><img  src="/assets/imgs/template/appstore.png" alt="Travelogy" /></Link></div>
+                            {/* <div className="download-apps"> <Link href="#"><img  src="/assets/imgs/template/googleplay.png" alt="Travelogy" /></Link><Link href="#"><img  src="/assets/imgs/template/appstore.png" alt="Travelogy" /></Link></div> */}
                         </div>
                         <div className="col-lg-6 mb-40">
                             <div className="row">

@@ -9,7 +9,7 @@ function formatDateTime(isoString) {
   const day = String(date.getDate()).padStart(2, "0");
   const hour = String(date.getHours()).padStart(2, "0");
   const minute = String(date.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day} ${hour}:${minute}`;
+  return `${day}/${month}/${year} ${hour}:${minute}`;
 }
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
@@ -21,6 +21,9 @@ const FlightBookingList = ({
   setStatusFilter,
   amountFilter,
   setAmountFilter,
+  emailOptions,
+  emailFilter,
+  setEmailFilter,
   fromDate,
   setFromDate,
   toDate,
@@ -114,34 +117,49 @@ const FlightBookingList = ({
     setPage(1);
   };
 
+  const getStatusClass = (status) => {
+    if (!status) return "status-badge";
+    const statusLower = status.toLowerCase();
+    if (statusLower.includes('success')) return "status-badge status-success";
+    if (statusLower.includes('pending')) return "status-badge status-pending";
+    if (statusLower.includes('failed')) return "status-badge status-failed";
+    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
+    if (statusLower.includes('on_hold')) return "status-badge status-on_hold";
+    if (statusLower.includes('aborted')) return "status-badge status-aborted";
+    return "status-badge";
+  };
+
   return (
-    <div className="responsive-table-container">
-      {/* Filter Row */}
-      <div className="flex flex-wrap gap-3 items-center mb-2">
-        {/* <div>
-          <label className="mr-1 text-sm font-medium">Amount:</label>
-          <input
-            type="text"
-            className="border px-2 py-1 rounded"
-            placeholder="100 or 100-300"
-            value={amountFilter}
+    <div className="table-section">
+      {/* Filter Section */}
+      <div className="filters-section">
+         <div className="filter-group">
+          <label className="filter-label">Email:</label>
+          <select
+            className="filter-select"
+            value={emailFilter}
             onChange={(e) => {
-              setAmountFilter(e.target.value);
+              setEmailFilter(e.target.value);
               setPage(1);
             }}
-            style={{ width: "100px" }}
-          />
-        </div> */}
-        <div>
-          <label className="mr-1 text-sm font-medium">Status:</label>
+          >
+            <option value="">All</option>
+            {emailOptions?.map((email) => (
+              <option key={email} value={email}>
+                {email}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Status:</label>
           <select
-            className="border px-2 py-1 rounded"
+            className="filter-select"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            style={{ width: "110px" }}
           >
             <option value="">All</option>
             {statusOptions.map((status) => (
@@ -151,64 +169,65 @@ const FlightBookingList = ({
             ))}
           </select>
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">Booking Date From:</label>
+        <div className="filter-group">
+          <label className="filter-label">Booking Date From:</label>
           <input
             type="date"
-            className="border px-2 py-1 rounded"
+            className="filter-input"
+            placeholder="DD/MM/YYYY"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">To:</label>
+        <div className="filter-group">
+          <label className="filter-label">To:</label>
           <input
             type="date"
-            className="border px-2 py-1 rounded"
+            className="filter-input"
+            placeholder="DD/MM/YYYY"
             value={toDate}
             onChange={(e) => {
               setToDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
       </div>
 
-      {/* Pagination Row */}
-      <div className="flex justify-between">
-        <div className="flex items-center" style={{ width: "30%"}}>
-          <label className="mr-2 font-medium" style={{ width: "40%"}}>Rows per page:</label>
-          <select
-            className="border px-2 py-1 rounded"
-            value={pageSize}
-            onChange={handlePageSizeChange}
-            style={{ width: "30%"}}
-          >
-            {PAGE_SIZE_OPTIONS.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
+      {/* Table Header */}
+      <div className="table-header">
+        <div className="pagination-info">
+          <div className="rows-per-page">
+            <label className="filter-label">Rows per page:</label>
+            <select
+              className="filter-select"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+            >
+              {PAGE_SIZE_OPTIONS.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-        <div className="flex justify-end items-center mb-2">
-          <span className="mr-2">
+        <div className="pagination-controls">
+          <span className="page-info">
             Page {page} of {pageCount}
           </span>
           <button
-            className="mx-1 px-2 py-1 border rounded disabled:opacity-50"
+            className="pagination-btn"
             onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
             disabled={page === 1}
           >
             Prev
           </button>
           <button
-            className="mx-1 px-2 py-1 border rounded disabled:opacity-50"
+            className="pagination-btn"
             onClick={() => setPage((prev) => Math.min(prev + 1, pageCount))}
             disabled={page === pageCount}
           >
@@ -217,7 +236,7 @@ const FlightBookingList = ({
         </div>
       </div>
 
-      <table className="responsive-table">
+      <table className="modern-table">
         <thead>
           <tr>
             <th className="cursor-pointer select-none"
@@ -247,26 +266,32 @@ const FlightBookingList = ({
                   {startIdx + idx + 1}
                 </td>
                 <td>
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
+                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`} className="booking-id">
                     {b.booking_id}
                   </Link>
                 </td>
                 <td>{b.amount || "--"}</td>
-                <td>{b.status || "--"}</td>
+                <td>
+                  <span className={getStatusClass(b.status)}>
+                    {b.status || "--"}
+                  </span>
+                </td>
                 <td>{formatDateTime(b.booking_time)}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={5} className="text-center py-4">
-                No bookings found.
+              <td colSpan={5} className="empty-state">
+                <div className="empty-state-icon">📋</div>
+                <div className="empty-state-text">No bookings found.</div>
               </td>
             </tr>
           )}
         </tbody>
       </table>
-      <div className="flex justify-end items-center mt-2 text-sm text-gray-600">
-        Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings
+      
+      <div className="table-footer">
+        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
       </div>
     </div>
   );

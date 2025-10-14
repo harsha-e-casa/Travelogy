@@ -41,7 +41,7 @@ export default function Footer1() {
             </div>
           </div>
           <div className="row">
-            <div className="col-md-3 col-sm-12 footer-1">
+            <div className="col-md-3 col-lg-12 footer-1">
               <h6>Contact Us </h6>
               <div className="mt-20 mb-20">
                 <div className="box-info-contact">
@@ -101,7 +101,7 @@ export default function Footer1() {
                 </div>
               </div>
             </div>
-            <div className="col-md-2 col-xs-6 footer-2">
+            {/* <div className="col-md-2 col-xs-6 footer-2">
               <h6 className="text-linear-3">Support</h6>
               <ul className="menu-footer">
                 <li>
@@ -123,70 +123,52 @@ export default function Footer1() {
                   <Link href="#">Charges logs</Link>
                 </li>
               </ul>
-            </div>
-            <div className="col-md-2 col-xs-6 footer-3">
-              <h6 className="text-linear-3">Company</h6>
-              <ul className="menu-footer">
-                <li>
-                  <Link href="#">About Us</Link>
-                </li>
-                <li>
-                  <Link href="#">Community Blog</Link>
-                </li>
-                <li>
-                  <Link href="#">Jobs and Careers</Link>
-                </li>
-                <li>
-                  <Link href="#">Contact Us</Link>
-                </li>
-                <li>
-                  <Link href="#">Our Awards</Link>
-                </li>
-                <li>
-                  <Link href="#">Agencies</Link>
-                </li>
-              </ul>
-            </div>
-            <div className="col-md-2 col-xs-6 footer-4">
-              <h6 className="text-linear-3">Services</h6>
-              <ul className="menu-footer">
-                <li>
-                  <Link href="#">Tour Guide</Link>
-                </li>
-                <li>
-                  <Link href="#">Tour Booking</Link>
-                </li>
-                <li>
-                  <Link href="#">Hotel Booking</Link>
-                </li>
-                <li>
-                  <Link href="#">Ticket Booking</Link>
-                </li>
-                <li>
-                  <Link href="#">Rental Services</Link>
-                </li>
-              </ul>
-            </div>
-            <div className="col-md-3 col-xs-6 footer-5">
+            </div> */}
+             <div className="col-md-3 col-xs-6 footer-2">
               <h6 className="text-linear-3">Legal</h6>
               <ul className="menu-footer">
                 <li>
-                  <Link href="#">Terms of Service</Link>
+                  <Link href="/terms-of-service">Terms of Service</Link>
                 </li>
                 <li>
-                  <Link href="#">Privacy Policy</Link>
+                  <Link href="/privacy-policy">Privacy Policy</Link>
                 </li>
                 <li>
-                  <Link href="#">Cookies Policy</Link>
+                  <Link href="/cookies-policy">Cookies Policy</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link href="#">Data Processing</Link>
                 </li>
                 <li>
                   <Link href="#">Data Policy</Link>
+                </li> */}
+                <li>
+                  <Link href="/refund-policy">Refund Policy</Link>
+                </li>
+              </ul>
+            </div>
+            <div className="col-md-4 col-xs-6 footer-2">
+              <h6 className="text-linear-3">Services</h6>
+              <ul className="menu-footer">
+                <li>
+                  <Link href="/tour-booking">Tour Booking</Link>
                 </li>
                 <li>
-                  <Link href="#">Refund Policy</Link>
+                  <Link href="/hotel-booking">Hotel Booking</Link>
+                </li>
+                <li>
+                  <Link href="/flight-booking">Flight Booking</Link>
+                </li>
+              </ul>
+            </div>
+            <div className="col-md-4 col-xs-6 footer-2">
+              <h6 className="text-linear-3">Company</h6>
+              <ul className="menu-footer">
+                <li>
+                  <Link href="/about-us">About Us</Link>
+                </li>
+                <li>
+                  <Link href="/contact-us">Contact Us</Link>
                 </li>
               </ul>
             </div>

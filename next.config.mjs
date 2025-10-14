@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/flights',
+        destination: '/home',
         permanent: true, // 301 redirect (permanent)
       },
     ];

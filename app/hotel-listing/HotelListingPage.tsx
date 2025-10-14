@@ -1055,7 +1055,7 @@ export default function HotelListing() {
               </div>
             </div>
           </section>
-          <section className="section-box box-install-app-2 background-body mt-[calc(100vh-6rem)]">
+          {/* <section className="section-box box-install-app-2 background-body mt-[calc(100vh-6rem)]">
             <div className="container">
               <div className="block-install-app background-6">
                 <div className="row align-items-center">
@@ -1097,7 +1097,7 @@ export default function HotelListing() {
                 </div>
               </div>
             </div>
-          </section>
+          </section> */}
           <div className="pb-90 background-body" />
         </main>
       </Layout>
