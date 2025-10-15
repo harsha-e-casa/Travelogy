@@ -51,6 +51,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             name={`infantName-${index}`}
             label="First Name"
             hasFeedback
+            dependencies={[`infantLame-${index}`]}
             rules={[
               { required: true, message: "Please enter the name" },
               {
@@ -60,6 +61,59 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "Last name can only contain letters and spaces",
+              },
+              {
+                validator: () => {
+                  const norm = (v) =>
+                    String(v ?? "")
+                      .trim()
+                      .replace(/\s+/g, " ")
+                      .toLowerCase();
+
+                  // this child's names
+                  const thisFirst = norm(
+                    form.getFieldValue(`infantName-${index}`)
+                  );
+                  const thisLast = norm(
+                    form.getFieldValue(`infantLast-${index}`)
+                  );
+                  if (!thisFirst || !thisLast) return Promise.resolve();
+
+                  const all = form.getFieldsValue(true);
+
+                  // collect all other traveler full names (adults + children)
+                  const otherPairs = [];
+
+                  // adults: fname-*, lname-*
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("fname-"))
+                    .forEach((k) => {
+                      const i = k.replace("fname-", "");
+                      otherPairs.push([norm(all[k]), norm(all[`lname-${i}`])]);
+                    });
+
+                  // children: childName-*, childlast-*  (skip current index)
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("infantName-"))
+                    .forEach((k) => {
+                      const i = k.replace("infantName-", "");
+                      if (String(i) === String(index)) return; // skip self
+                      otherPairs.push([
+                        norm(all[k]),
+                        norm(all[`infantLast-${i}`]),
+                      ]);
+                    });
+
+                  const dup = otherPairs.some(
+                    ([f, l]) => f && l && f === thisFirst && l === thisLast
+                  );
+
+                  return dup
+                    ? Promise.reject(
+                        new Error("This traveler name is already entered")
+                      )
+                    : Promise.resolve();
+                },
               },
             ]}
             data-name={`infantName-${index}`}
@@ -77,6 +131,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             name={`infantLast-${index}`}
             label="Last Name"
             hasFeedback
+            dependencies={[`infantName-${index}`]}
             rules={[
               { required: true, message: "Please enter the last name" },
               {
@@ -86,6 +141,59 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
               {
                 pattern: /^[A-Za-z\s]+$/,
                 message: "Last name can only contain letters and spaces",
+              },
+              {
+                validator: () => {
+                  const norm = (v) =>
+                    String(v ?? "")
+                      .trim()
+                      .replace(/\s+/g, " ")
+                      .toLowerCase();
+
+                  // this child's names
+                  const thisFirst = norm(
+                    form.getFieldValue(`infantName-${index}`)
+                  );
+                  const thisLast = norm(
+                    form.getFieldValue(`infantLast-${index}`)
+                  );
+                  if (!thisFirst || !thisLast) return Promise.resolve();
+
+                  const all = form.getFieldsValue(true);
+
+                  // collect all other traveler full names (adults + children)
+                  const otherPairs = [];
+
+                  // adults
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("fname-"))
+                    .forEach((k) => {
+                      const i = k.replace("fname-", "");
+                      otherPairs.push([norm(all[k]), norm(all[`lname-${i}`])]);
+                    });
+
+                  // children (skip current)
+                  Object.keys(all)
+                    .filter((k) => k.startsWith("infantName-"))
+                    .forEach((k) => {
+                      const i = k.replace("infantName-", "");
+                      if (String(i) === String(index)) return;
+                      otherPairs.push([
+                        norm(all[k]),
+                        norm(all[`infantLast-${i}`]),
+                      ]);
+                    });
+
+                  const dup = otherPairs.some(
+                    ([f, l]) => f && l && f === thisFirst && l === thisLast
+                  );
+
+                  return dup
+                    ? Promise.reject(
+                        new Error("This traveler name is already entered")
+                      )
+                    : Promise.resolve();
+                },
               },
             ]}
             data-name={`infantLast-${index}`}

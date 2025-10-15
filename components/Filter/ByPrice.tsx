@@ -431,10 +431,10 @@
 // |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
 import { useEffect, useState } from "react";
-import { Range } from "react-range";
+import { Range, getTrackBackground } from "react-range";
 
 type Props = {
-  priceRange: [number, number];
+  priceRange: any;
   setPriceRange: (r: [number, number]) => void;
   minPriceRange?: number;
   maxPriceRange?: number;
@@ -457,11 +457,9 @@ export default function ByPrice({
       ? Number(maxPriceRange)
       : 100000000;
 
-  // inputs (users can type)
   const [minInput, setMinInput] = useState(String(priceRange?.[0] ?? MIN));
   const [maxInput, setMaxInput] = useState(String(priceRange?.[1] ?? MAX));
 
-  // local slider state for smooth dragging
   const [sliderVals, setSliderVals] = useState<[number, number]>([
     Number(priceRange?.[0] ?? MIN),
     Number(priceRange?.[1] ?? MAX),
@@ -487,14 +485,6 @@ export default function ByPrice({
     const n = Number(s);
     return Number.isFinite(n) ? n : fallback;
   };
-
-  // const applyInputs = () => {
-  //   const next = normalizeRange(parseOr(minInput, MIN), parseOr(maxInput, MAX));
-  //   setPriceRange(next);
-  //   setSliderVals(next);
-  //   setMinInput(String(next[0]));
-  //   setMaxInput(String(next[1]));
-  // };
 
   const applyInputs = () => {
     let nextMin = parseFloat(minInput);
@@ -522,7 +512,6 @@ export default function ByPrice({
 
   return (
     <div className="box-collapse scrollFilter">
-      {/* Slider */}
       <Range
         step={STEP}
         min={MIN}
@@ -544,73 +533,57 @@ export default function ByPrice({
           setMinInput(String(next[0]));
           setMaxInput(String(next[1]));
         }}
-        renderTrack={({ props, children }) => {
-          const [curMin, curMax] = sliderVals;
-          return (
+        renderTrack={({ props, children }) => (
+          // OUTER: flex container to vertically center the track
+          <div
+            onMouseDown={props.onMouseDown}
+            onTouchStart={props.onTouchStart}
+            style={{
+              ...props.style,
+              height: 36,
+              display: "flex",
+              width: "100%",
+            }}
+          >
+            {/* INNER: actual bar with ref (thumbs are positioned relative to this) */}
             <div
-              {...props}
+              ref={props.ref}
               style={{
-                ...props.style,
                 height: 8,
                 width: "100%",
-                backgroundColor: "#e5e7eb",
                 borderRadius: 4,
+                background: getTrackBackground({
+                  values: sliderVals,
+                  colors: ["#e5e7eb", "orange", "#e5e7eb"],
+                  min: MIN,
+                  max: MAX,
+                }),
+                alignSelf: "center",
                 position: "relative",
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  height: "100%",
-                  left: `${((curMin - MIN) / (MAX - MIN)) * 100}%`,
-                  right: `${100 - ((curMax - MIN) / (MAX - MIN)) * 100}%`,
-                  backgroundColor: "orange",
-                  borderRadius: 4,
-                }}
-              />
               {children}
             </div>
-          );
-        }}
-        renderThumb={({ props, index }) => {
-          const val = sliderVals[index];
-          return (
-            <div
-              {...props}
-              style={{
-                ...props.style,
-                height: 20,
-                width: 20,
-                backgroundColor: "#fff",
-                border: "2px solid orange",
-                borderRadius: "50%",
-                boxShadow: "0 2px 6px rgba(0,0,0,.3)",
-                cursor: "pointer",
-                position: "relative",
-              }}
-            >
-              {/* value bubble under the thumb */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 24, // below the thumb
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  fontSize: 12,
-                  color: "#374151",
-                  background: "#fff",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 6,
-                  padding: "2px 6px",
-                  whiteSpace: "nowrap",
-                  boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-                }}
-              >
-                {val}
-              </div>
-            </div>
-          );
-        }}
+          </div>
+        )}
+        renderThumb={({ props, index }) => (
+          <div
+            {...props}
+            style={{
+              ...props.style,
+              height: 20,
+              width: 20,
+              borderRadius: "50%",
+              backgroundColor: "#fff",
+              border: "2px solid orange",
+              boxShadow: "0 2px 6px rgba(0,0,0,.3)",
+              cursor: "pointer",
+              boxSizing: "border-box",
+              outline: "none",
+            }}
+            aria-label={index === 0 ? "Minimum price" : "Maximum price"}
+          />
+        )}
       />
 
       {/* Inputs below slider */}

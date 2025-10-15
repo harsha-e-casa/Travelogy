@@ -84,7 +84,7 @@ const MealInfo = ({
       if (!value) return;
       
       if (typeof value !== "string" || !value.includes("|")) return;
-      
+
       const [segmentId, mealCode] = value.split("|");
       const segment = segmentinfo.find(
         (s) => String(s.id) === String(segmentId)
@@ -136,7 +136,7 @@ const MealInfo = ({
                     >
                       <Select
                         placeholder="Add Meal"
-                        disabled={mealOptions.every((b) => !b.amount)}
+                        // disabled={mealOptions.every((b) => !b.amount)}
                         style={{ width: 500 }}
                         onChange={handleChange}
                         allowClear
@@ -186,7 +186,7 @@ const MealInfo = ({
                     >
                       <Select
                         placeholder="Add Meal"
-                        disabled={mealOptions.every((b) => !b.amount)}
+                        // disabled={mealOptions.every((b) => !b.amount)}
                         style={{ width: 500 }}
                         onChange={handleChange}
                         allowClear
