@@ -151,7 +151,7 @@ const MealInfo = ({
                       </Select> */}
                       <Select
                         placeholder="Add Meal"
-                        disabled={mealOptions.every((b) => !b.amount)}
+                        // disabled={mealOptions.every((b) => !b.amount)}
                         style={{ width: 500 }}
                         onChange={handleChange}
                         allowClear
@@ -218,7 +218,7 @@ const MealInfo = ({
 
                       <Select
                         placeholder="Add Meal"
-                        disabled={mealOptions.every((b) => !b.amount)}
+                        // disabled={mealOptions.every((b) => !b.amount)}
                         style={{ width: 500 }}
                         onChange={handleChange}
                         allowClear

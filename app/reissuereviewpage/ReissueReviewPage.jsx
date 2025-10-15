@@ -34,6 +34,7 @@ const ReissueReviewPage = () => {
 
   const router = useRouter();
   const [loading, setloading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -387,17 +388,20 @@ const ReissueReviewPage = () => {
     e.ADULT?.rT === 0 ? "Refundable" : "non-refundable"
   );
 
-  const [afsAmount, setAfsAmount] = useState(0)
+  const [afsAmount, setAfsAmount] = useState(0);
 
   useEffect(() => {
-      if (flightData) {
-        console.log("api data from the page.tsx kk", flightData);
-      }
-      const adultAfs = flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.ADULT?.fC?.AFS || 0;
-      const childAfs = flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.CHILD?.fC?.AFS || 0;
-      const infantAfs = flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.INFANT?.fC?.AFS || 0;
-      setAfsAmount(adultAfs + childAfs + infantAfs)
-    }, [flightData]);
+    if (flightData) {
+      console.log("api data from the page.tsx kk", flightData);
+    }
+    const adultAfs =
+      flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.ADULT?.fC?.AFS || 0;
+    const childAfs =
+      flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.CHILD?.fC?.AFS || 0;
+    const infantAfs =
+      flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.INFANT?.fC?.AFS || 0;
+    setAfsAmount(adultAfs + childAfs + infantAfs);
+  }, [flightData]);
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
@@ -878,6 +882,7 @@ const ReissueReviewPage = () => {
       if (result?.status?.success === true) {
         saveBookingIdFn();
       }
+      setBookingLoading(false)
       router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
     } catch (err) {
       console.error("Error while fetching flight data 1 :", err);
@@ -905,6 +910,7 @@ const ReissueReviewPage = () => {
 
   // Function to handle booking review and trigger loadDataBook
   const bookingReview = () => {
+    setBookingLoading(true);
     console.log("travellers (before update)", travellers);
     console.log("totalprice bookingId", totalprice, bookingId);
 
@@ -1353,7 +1359,7 @@ const ReissueReviewPage = () => {
                                           <p className="text-sm-bold neutral-900">
                                             Cabin:{" "}
                                             <span className="text-sm-medium neutral-500">
-                                              {baggageObj?.iB} per adult
+                                              {baggageObj?.cB} per adult
                                             </span>
                                           </p>
                                         </div>
@@ -1371,7 +1377,7 @@ const ReissueReviewPage = () => {
                                           <p className="text-sm-bold neutral-900 ">
                                             Check-in:{" "}
                                             <span className="text-sm-medium neutral-500 ">
-                                              {baggageObj?.cB}, 1 piece/adult
+                                              {baggageObj?.iB}, 1 piece/adult
                                             </span>
                                           </p>
                                         </div>
@@ -1923,10 +1929,10 @@ const ReissueReviewPage = () => {
                                       style={{ borderBottom: "grey 1px solid" }}
                                     >
                                       <tr>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300" style={{ width: "1rem" }}>
                                           S.No
                                         </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300" style={{ width: "20rem" }}>
                                           Full Name
                                         </th>
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
@@ -2176,11 +2182,48 @@ const ReissueReviewPage = () => {
                                     Hold Booking
                                   </div>
                                 )} */}
-                                <div
+                                {/* <div
                                   onClick={bookingReview}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                 >
                                   continue
+                                </div> */}
+                                <div
+                                  onClick={bookingReview}
+                                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                                    bookingLoading
+                                      ? "bg-gray-300"
+                                      : "bg-yellow-300 hover:bg-yellow-400"
+                                  }`}
+                                  disabled={bookingLoading}
+                                >
+                                  {bookingLoading ? (
+                                    <div className="flex items-center gap-2">
+                                      <svg
+                                        className="animate-spin h-5 w-5 text-black"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <circle
+                                          className="opacity-25"
+                                          cx="12"
+                                          cy="12"
+                                          r="10"
+                                          stroke="currentColor"
+                                          strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                          className="opacity-75"
+                                          fill="currentColor"
+                                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                        ></path>
+                                      </svg>
+                                      <span>Loading...</span>
+                                    </div>
+                                  ) : (
+                                    "Continue"
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -2195,7 +2238,10 @@ const ReissueReviewPage = () => {
                         <div class="head-booking-form">
                           <p class="text-xl-bold neutral-1000">Fare Summary</p>
                         </div>
-                        <BookingForm totalpricee={totalPriceinfo} afsAmount={afsAmount} />
+                        <BookingForm
+                          totalpricee={totalPriceinfo}
+                          afsAmount={afsAmount}
+                        />
                       </div>
                     </div>
                   </div>

@@ -49,18 +49,18 @@ export default function Flights4() {
     const infant = "0";
 
     //update in cookies
-    setCookie("gy_aa", departureFrom);
-    setCookie("gy_aa_str", departureFromSr);
-    setCookie("gy_da", arrivalTo);
-    setCookie("gy_da_str", arrivalToSr);
-    setCookie("gy_adult", adults);
-    setCookie("gy_child", children);
-    setCookie("gy_infant", infant);
-    setCookie("gy_class", cabinType);
-    setCookie("gy_direct_flight", false);
-    setCookie("gy_passender_type", "REGULAR");
-    setCookie("gy_trd", departDate);
-    setCookie("gy_triptype", "one-way");
+    // setCookie("gy_aa", departureFrom);
+    // setCookie("gy_aa_str", departureFromSr);
+    // setCookie("gy_da", arrivalTo);
+    // setCookie("gy_da_str", arrivalToSr);
+    // setCookie("gy_adult", adults);
+    // setCookie("gy_child", children);
+    // setCookie("gy_infant", infant);
+    // setCookie("gy_class", cabinType);
+    // setCookie("gy_direct_flight", false);
+    // setCookie("gy_passender_type", "REGULAR");
+    // setCookie("gy_trd", departDate);
+    // setCookie("gy_triptype", "one-way");
 
     return {
       pathname: "/tickets",
@@ -82,6 +82,7 @@ export default function Flights4() {
   };
 
   const primeCookiesFromItem = (item: any) => {
+    console.log("jjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkk")
     const sI = item?.data?.sI || [];
     const first = sI[0];
     const last = sI[sI.length - 1];

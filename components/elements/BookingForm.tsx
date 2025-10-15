@@ -289,7 +289,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div>
               <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
             </div>
-            {ammendmentFees && (
+            {ammendmentFees != 0 && (
               <div className="flex flex-row justify-between">
                 <div>
                   <strong className="text-md-bold neutral-1000">

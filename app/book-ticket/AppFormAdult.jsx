@@ -31,6 +31,11 @@ const AppFormAdult = ({
       });
     }
 
+    if (travellerParsedData?.di)
+      form.setFieldsValue({
+        [`documentId-${index}`]: travellerParsedData.di,
+      });
+
     if (travellerParsedData?.pNat)
       form.setFieldsValue({
         [`adultnationality-${index}`]: travellerParsedData.pNat,
@@ -107,8 +112,8 @@ const AppFormAdult = ({
           >
             <Select className="h-10" placeholder="Please select a title">
               <Option value="Mr">Mr</Option>
-              <Option value="MRS">Mrs</Option>
-              <Option value="MS">Ms</Option>
+              <Option value="Mrs">Mrs</Option>
+              <Option value="Ms">Ms</Option>
             </Select>
           </Form.Item>
         </Col>

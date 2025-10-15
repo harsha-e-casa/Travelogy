@@ -61,6 +61,7 @@ const ReviewPage = () => {
   const [flightData, setFlightData] = useState(null);
   const [error, setError] = useState(null);
   const { getCookie } = useContext(AppContext);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   const [fareDetails, setFareDetails] = useState(null);
 
@@ -873,7 +874,10 @@ const ReviewPage = () => {
       if (result?.error) {
         setError(result?.error);
       } else {
-        router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
+        setBookingLoading(false);
+        router.push(
+          `/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`
+        );
       }
     } catch (err) {
       console.error("Error while fetching flight data 1 :", err);
@@ -900,6 +904,8 @@ const ReviewPage = () => {
 
   // Function to handle booking review and trigger loadDataBook
   const bookingReview = () => {
+    setBookingLoading(true);
+
     console.log("travellers (before update)", travellers);
     console.log("totalprice bookingId", totalprice, bookingId);
 
@@ -1384,15 +1390,15 @@ const ReviewPage = () => {
                                             width="16"
                                             height="16"
                                             fill="currentColor"
-                                            class="bi bi-suitcase-lg-fill"
+                                            class="bi bi-suitcase2-fill"
                                             viewBox="0 0 16 16"
                                           >
-                                            <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
+                                            <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
                                           </svg>
-                                          <p className="text-sm-bold neutral-900">
-                                            Cabin:{" "}
-                                            <span className="text-sm-medium neutral-500">
-                                              {baggageObj?.iB} per adult
+                                          <p className="text-sm-bold neutral-900 ">
+                                            Check-in:{" "}
+                                            <span className="text-sm-medium neutral-500 ">
+                                              {baggageObj?.iB}, 1 piece/adult
                                             </span>
                                           </p>
                                         </div>
@@ -1402,15 +1408,15 @@ const ReviewPage = () => {
                                             width="16"
                                             height="16"
                                             fill="currentColor"
-                                            class="bi bi-suitcase2-fill"
+                                            class="bi bi-suitcase-lg-fill"
                                             viewBox="0 0 16 16"
                                           >
-                                            <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
+                                            <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
                                           </svg>
-                                          <p className="text-sm-bold neutral-900 ">
-                                            Check-in:{" "}
-                                            <span className="text-sm-medium neutral-500 ">
-                                              {baggageObj?.cB}, 1 piece/adult
+                                          <p className="text-sm-bold neutral-900">
+                                            Cabin:{" "}
+                                            <span className="text-sm-medium neutral-500">
+                                              {baggageObj?.cB} per adult
                                             </span>
                                           </p>
                                         </div>
@@ -1962,10 +1968,16 @@ const ReviewPage = () => {
                                       style={{ borderBottom: "grey 1px solid" }}
                                     >
                                       <tr>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                        <th
+                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                          style={{ width: "1rem" }}
+                                        >
                                           S.No
                                         </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                        <th
+                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                          style={{ width: "20rem" }}
+                                        >
                                           Full Name
                                         </th>
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
@@ -1976,12 +1988,8 @@ const ReviewPage = () => {
                                     <tbody>
                                       {travellers.length > 0 ? (
                                         travellers.map((traveller, index) => {
-                                          console.log(
-                                            "cccccccfffffff ",
-                                            traveller
-                                          );
                                           const fullName = `${
-                                            traveller?.ti || ""
+                                            traveller?.ti + "." || ""
                                           } ${traveller?.fN || ""} ${
                                             traveller?.lN || ""
                                           }`.trim();
@@ -2144,10 +2152,26 @@ const ReviewPage = () => {
                                                   </>
                                                 )}
                                               </td>
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                              {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
                                                 {addOns.length > 0
                                                   ? addOns.join(" | ")
                                                   : "None"}
+                                              </td> */}
+                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                {addOns && addOns.length > 0 ? (
+                                                  <div className="flex flex-col gap-1">
+                                                    {addOns.map((item, i) => (
+                                                      <span
+                                                        key={i}
+                                                        className="text-sm"
+                                                      >
+                                                        {item}
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                ) : (
+                                                  "None"
+                                                )}
                                               </td>
                                             </tr>
                                           );
@@ -2215,11 +2239,48 @@ const ReviewPage = () => {
                                     Hold Booking
                                   </div>
                                 )}
-                                <div
+                                {/* <div
                                   onClick={bookingReview}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                 >
                                   continue
+                                </div> */}
+                                <div
+                                  onClick={bookingReview}
+                                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                                    bookingLoading
+                                      ? "bg-gray-300"
+                                      : "bg-yellow-300 hover:bg-yellow-400"
+                                  }`}
+                                  disabled={bookingLoading}
+                                >
+                                  {bookingLoading ? (
+                                    <div className="flex items-center gap-2">
+                                      <svg
+                                        className="animate-spin h-5 w-5 text-black"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <circle
+                                          className="opacity-25"
+                                          cx="12"
+                                          cy="12"
+                                          r="10"
+                                          stroke="currentColor"
+                                          strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                          className="opacity-75"
+                                          fill="currentColor"
+                                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                        ></path>
+                                      </svg>
+                                      <span>Loading...</span>
+                                    </div>
+                                  ) : (
+                                    "Continue"
+                                  )}
                                 </div>
                               </div>
                             </div>
