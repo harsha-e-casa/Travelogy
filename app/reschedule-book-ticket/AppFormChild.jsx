@@ -51,7 +51,6 @@
 
 import React, { useEffect } from "react";
 import { Form, Input, Select, Row, Col, DatePicker } from "antd";
-import countries from "./countries";
 import dayjs from "dayjs";
 
 const { Option } = Select;
@@ -163,29 +162,15 @@ const AppFormChild = ({ form, index, fieldData = {}, disabled = false }) => {
                 <Form.Item
                   name={`childnationality-${index}`}
                   label="Nationality"
-                  hasFeedback
                   rules={[
                     { required: true, message: "Please enter nationality" },
                   ]}
                 >
-                  <Select
-                    showSearch
-                    placeholder="Select nationality"
-                    className="h-10"
+                  <Input
+                    className="h-10 flex flex-row justify-between items-center"
+                    placeholder="e.g., Indian"
                     disabled={disabled}
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.children ?? "")
-                        .toLowerCase()
-                        .includes(input.toLowerCase())
-                    }
-                  >
-                    {countries.map((c) => (
-                      <Option key={c.code} value={c.nationality || c.name}>
-                        {c.nationality || c.name}
-                      </Option>
-                    ))}
-                  </Select>
+                  />
                 </Form.Item>
               </Col>
             )}
