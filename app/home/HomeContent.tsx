@@ -24,19 +24,19 @@ export default function HomeContent() {
             <section className="section-box box-home-intro background-body">
                 <div className="container">
                     <div className="row align-items-center">
-                        <div className="col-lg-6 mb-30">
-                            <span className="btn btn-gray mb-5">
-                                <img className="mr-10" src="/assets/imgs/page/homepage9/real.svg" alt="Travelogy" />
-                                Welcome to Travelogy
+                        <div className="col-lg-6 col-md-12 mb-30 mb-lg-0">
+                            <span className="btn btn-gray mb-5 d-flex align-items-center intro-badge">
+                                <img className="mr-15" src="/assets/imgs/page/homepage9/real.svg" alt="Travelogy" />
+                                <span className="text-md neutral-600 text-bold-200">Welcome to Travelogy</span>
                             </span>
-                            <h1 className="neutral-1000 mt-15 mb-15">
+                            <h1 className="neutral-1000 mt-15 mb-15 home-title">
                                 Your Gateway to <span style={{color: '#e5a910ff'}}>Amazing Travel</span> Experiences
                             </h1>
-                            <p className="text-xl-medium neutral-500">
+                            <p className="text-xl-medium neutral-500 home-description">
                                 Discover the world with our comprehensive travel booking platform. From flights to hotels, we make your journey seamless and memorable.
                             </p>
                             <div className="box-button-home mt-35">
-                                <Link className="btn btn-black-lg mr-20" href="/flights">
+                                <Link className="btn btn-black-lg mr-20 mb-3 mb-md-0" href="/flights">
                                     Book Flights
                                     <svg width={16} height={16} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8 15L15 8L8 1M15 8L1 8" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
@@ -50,7 +50,7 @@ export default function HomeContent() {
                                 </Link>
                             </div>
                         </div>
-                        <div className="col-lg-6 mb-30">
+                        <div className="col-lg-6 col-md-12 mb-30">
                             <div className="box-image-home">
                                 <img src="/assets/imgs/page/pages/banner.png" alt="Travelogy" />
                             </div>

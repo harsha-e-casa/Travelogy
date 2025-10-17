@@ -2,7 +2,7 @@
 import dayjs from "dayjs";
 import React, { useState, useRef, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { fetchHotelReviewData, hotelBooking } from "../../../util/HotelApi";
+import { hotelBooking } from "../../../util/HotelApi";
 import { Input, Checkbox, message, Radio } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
