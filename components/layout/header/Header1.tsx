@@ -16,6 +16,7 @@ export default function Header1({
 }: any) {
   const [open, setOpen] = useState(false);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -36,75 +37,58 @@ export default function Header1({
     window.location.href = "/login";
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <>
-      <header className={`z_99999 header sticky-bar`}>
-        <div className="container-fluid background_body_overlay">
-          <div className="main-header">
-            <div className="header-left">
-              <div className="header-logo">
-                <Link className="d-flex" href="/">
-                  <img
-                    className="light-mode header_logo"
-                    alt="Travelogy"
-                    src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
-                  />
-                  <img
-                    className="dark-mode"
-                    alt="Travelogy"
-                    src="/assets/imgs/template/logo-w.svg"
-                  />
-                </Link>
-              </div>
-
-              <div className="header-nav">
-                <nav className="nav-main-menu">
-                  <ul className="main-menu">
-                    <li>
-                      <Link href="/home">Home</Link>
-                    </li>
-                    <li>
-                      <Link href="/flights">Flights</Link>
-                    </li>
-                    <li>
-                      <Link href="/hotels">Hotel</Link>
-                    </li>
-                    <li>
-                      <Link href="/holiday">Holiday Package</Link>
-                    </li>
-                    <li>
-                      <Link href="/visa">Visa</Link>
-                    </li>
-                    <li>
-                      <Link href="/travelInsurance">Travel Insurance</Link>
-                    </li>
-                    <li>
-                      <Link href="/contact">Contact</Link>
-                    </li>
-                    <li>
-                      <Link href="/profile">Profile</Link>
-                    </li>
-                    {isVisible && (
-                      <>
-                        <li>
-                          <Link href="/dashboard">Dashboard</Link>
-                        </li>
-                        <li>
-                          <Link href="/user-create">Vendor Creation</Link>
-                        </li>
-                      </>
-                    )}
-                    <li>
-                      <button className="btn-logout" onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+      <header className="responsive-header">
+        <div className="header-container">
+          <div className="header-content">
+            <div className="header-logo">
+              <Link href="/">
+                <img
+                  className="logo-img"
+                  alt="Travelogy"
+                  src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
+                />
+              </Link>
             </div>
 
-            {/* right side actions (kept commented as in your code) */}
+            <button 
+              className="mobile-menu-toggle"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+
+            <nav className={`header-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+              <ul className="main-menu">
+                <li><Link href="/home">Home</Link></li>
+                <li><Link href="/flights">Flights</Link></li>
+                <li><Link href="/hotels">Hotel</Link></li>
+                <li><Link href="/holiday">Holiday Package</Link></li>
+                <li><Link href="/visa">Visa</Link></li>
+                <li><Link href="/travelInsurance">Travel Insurance</Link></li>
+                <li><Link href="/contact">Contact</Link></li>
+                <li><Link href="/profile">Profile</Link></li>
+                {isVisible && (
+                  <>
+                    <li><Link href="/dashboard">Dashboard</Link></li>
+                    <li><Link href="/user-create">Vendor Creation</Link></li>
+                  </>
+                )}
+                <li>
+                  <button className="btn-logout" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </header>

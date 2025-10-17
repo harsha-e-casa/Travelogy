@@ -13,6 +13,7 @@ import HotelBookingList from "./HotelBookingList.jsx";
 import { checkTokenExpiry } from "@/services/Utils";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+// import "./responsive.css";
 
 const Page = () => {
   const router = useRouter();

@@ -116,7 +116,7 @@
   backdrop-filter: blur(10px);
   padding: 12px 20px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
   border-bottom: 1px solid rgba(229, 231, 235, 0.5);
   font-size: 0.75rem;
@@ -593,7 +593,7 @@
   background: #f8fafc;
   padding: 15px 20px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
   border-bottom: 2px solid #e5e7eb;
   font-size: 0.85rem;
@@ -618,7 +618,7 @@
 
 .booking-id {
   color: #059669;
-  font-weight: 600;
+  font-weight: 500;
   font-family: monospace;
 }
 
@@ -911,7 +911,7 @@
   background: #f9fafb;
   padding: 12px 20px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
   font-size: 0.75rem;
@@ -1314,7 +1314,7 @@
   background: #f9fafb;
   padding: 12px 20px;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
   border-bottom: 1px solid #e5e7eb;
   font-size: 0.75rem;
@@ -1347,4 +1347,143 @@
   align-items: center;
   font-size: 0.875rem;
   color: #6b7280;
+}
+
+/* Additional responsive styles for both dashboard and vendor pages */
+
+@media (max-width: 1024px) {
+  .bookings-container {
+    padding: 15px !important;
+  }
+  
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  
+  .tab-item {
+    min-width: 200px;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bookings-container {
+    padding: 10px !important;
+  }
+  
+  .hero-section {
+    padding: 30px 15px;
+  }
+  
+  .main-content {
+    padding: 30px 15px;
+  }
+  
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .tab-item {
+    min-width: auto;
+    padding: 10px 15px;
+    font-size: 0.85rem;
+  }
+  
+  .modern-table {
+    font-size: 0.8rem;
+  }
+  
+  .modern-table th,
+  .modern-table td {
+    padding: 10px 12px;
+  }
+  
+  .filter-input,
+  .filter-select {
+    width: 100px;
+    font-size: 0.8rem;
+  }
+  
+  .filters-section {
+    gap: 15px;
+    padding: 15px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bookings-container {
+    padding: 8px !important;
+  }
+  
+  .hero-section {
+    padding: 25px 10px;
+  }
+  
+  .main-content {
+    padding: 25px 10px;
+  }
+  
+  .hero-title {
+    font-size: 1.8rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+  
+  .tab-item {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .modern-table {
+    font-size: 0.75rem;
+  }
+  
+  .modern-table th,
+  .modern-table td {
+    padding: 8px 10px;
+  }
+  
+  .filter-input,
+  .filter-select {
+    width: 90px;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+  
+  .filters-section {
+    gap: 10px;
+    padding: 10px 15px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 5px;
+  }
+  
+  .pagination-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    min-width: 50px;
+  }
+  
+  .table-header {
+    padding: 10px 15px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .pagination-info {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
