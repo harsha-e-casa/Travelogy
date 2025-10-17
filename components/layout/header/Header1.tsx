@@ -16,10 +16,12 @@ export default function Header1({
 }: any) {
   const [open, setOpen] = useState(false);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [authToken, setAuthToken] = useState<string | null>(null);
 
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
+      setAuthToken(token);
       if (!token) {
         setIsVisible(false);
         return;
@@ -30,8 +32,6 @@ export default function Header1({
       setIsVisible(false);
     }
   }, []);
-
-  const authToken = localStorage.getItem("authToken");
 
   const handleLogout = () => {
     localStorage.removeItem("authToken");
