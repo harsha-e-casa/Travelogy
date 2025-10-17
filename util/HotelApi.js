@@ -2,61 +2,62 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { getData, postData } from "@/services/NetworkAdapter";
 
-const API_KEY = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
+// const API_KEY = "412605943ad923-4ae7-49f6-9c8e-8b75be573422";
 
-export const fetchHotelReviewData = async (hotelId, optionId) => {
-  const API_URL_REVIEW = "https://apitest.tripjack.com/hms/v1/hotel-review";
+// export const fetchHotelReviewData = async (hotelId, optionId) => {
+//   const API_URL_REVIEW = "https://apitest.tripjack.com/hms/v1/hotel-review";
 
-  try {
-    const response = await axios.post(
-      API_URL_REVIEW,
-      {
-        hotelId: hotelId,
-        optionId: optionId,
-      },
-      {
-        headers: {
-          apikey: `${API_KEY}`,
-        },
-      }
-    );
+//   try {
+//     const response = await axios.post(
+//       API_URL_REVIEW,
+//       {
+//         hotelId: hotelId,
+//         optionId: optionId,
+//       },
+//       {
+//         headers: {
+//           apikey: `${API_KEY}`,
+//         },
+//       }
+//     );
 
-    if (response.data?.status?.success) {
-      return response.data;
-    } else {
-      const apiError = response.data?.errors?.[0]?.message;
-      throw new Error(apiError);
-    }
-  } catch (err) {
-    const apiMessage =
-      err?.response?.data?.errors?.[0]?.message || err?.message;
-    throw new Error(apiMessage);
-  }
-};
-export const useCities = () => {
-  const [cities, setCities] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const API_URL_CITY = "https://apitest.tripjack.com/hms/v1/static-cities/";
+//     if (response.data?.status?.success) {
+//       return response.data;
+//     } else {
+//       const apiError = response.data?.errors?.[0]?.message;
+//       throw new Error(apiError);
+//     }
+//   } catch (err) {
+//     const apiMessage =
+//       err?.response?.data?.errors?.[0]?.message || err?.message;
+//     throw new Error(apiMessage);
+//   }
+// };
 
-  useEffect(() => {
-    axios
-      .get(API_URL_CITY, {
-        headers: {
-          apikey: API_KEY,
-        },
-      })
-      .then((res) => {
-        const cityList = res.data.response?.cil || [];
-        setCities(cityList);
-      })
-      .catch((err) => {
-        console.error("Error fetching cities:", err);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+// export const useCities = () => {
+//   const [cities, setCities] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const API_URL_CITY = "https://apitest.tripjack.com/hms/v1/static-cities/";
 
-  return { cities, loading };
-};
+//   useEffect(() => {
+//     axios
+//       .get(API_URL_CITY, {
+//         headers: {
+//           apikey: API_KEY,
+//         },
+//       })
+//       .then((res) => {
+//         const cityList = res.data.response?.cil || [];
+//         setCities(cityList);
+//       })
+//       .catch((err) => {
+//         console.error("Error fetching cities:", err);
+//       })
+//       .finally(() => setLoading(false));
+//   }, []);
+
+//   return { cities, loading };
+// };
 
 export const useNationalities = () => {
   const [nationalities, setNationalities] = useState([]);

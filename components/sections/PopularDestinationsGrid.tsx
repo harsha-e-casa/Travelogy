@@ -6,9 +6,9 @@ export default function PopularDestinationsGrid() {
         <>
             <section className="section-box box-popular-destinations-grid background-body">
                 <div className="container">
-                    <div className="text-center mb-60">
-                        <h2 className="neutral-1000">DISCOVER <span style={{color: '#e5a910ff'}}>DESTINATIONS</span></h2>
-                        <p className="text-xl-medium neutral-500">
+                    <div className="text-center mb-60 mb-md-40 mb-sm-30">
+                        <h2 className="neutral-1000 h2-responsive">DISCOVER <span style={{color: '#e5a910ff'}}>DESTINATIONS</span></h2>
+                        <p className="text-xl-medium neutral-500 p-responsive">
                             Uncover your next adventure with our curated selection of must-visit destinations.
                         </p>
                     </div>

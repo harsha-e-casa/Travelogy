@@ -231,6 +231,7 @@ export default function Login() {
                     size="large"
                     prefix={<MailOutlined />}
                     placeholder="Enter your email"
+                    // style={{ paddingLeft: "10px" }} 
                   />
                 </Form.Item>
 
@@ -245,7 +246,7 @@ export default function Login() {
                 >
                   <Input.Password
                     size="large"
-                    prefix={<LockOutlined />}
+                    prefix={<LockOutlined style={{ paddingRight: "10px" }} />}
                     placeholder="Enter your password"
                   />
                 </Form.Item>
