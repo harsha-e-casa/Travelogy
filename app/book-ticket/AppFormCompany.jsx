@@ -23,7 +23,7 @@ const AppFormCompany = ({ form, manditory = false }) => {
             label="GST Number"
             hasFeedback
             rules={getRequiredRules()}
-            getValueFromEvent={(e) => e?.target?.value?.replace(/\D/g, "").slice(0, 10)}
+            // getValueFromEvent={(e) => e?.target?.value?.replace(/\D/g, "").slice(0, 10)}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"

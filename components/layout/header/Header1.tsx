@@ -31,6 +31,8 @@ export default function Header1({
     }
   }, []);
 
+  const authToken = localStorage.getItem("authToken");
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     window.location.href = "/login";
@@ -94,11 +96,23 @@ export default function Header1({
                         </li>
                       </>
                     )}
-                    <li>
-                      <button className="btn-logout" onClick={handleLogout}>
-                        Logout
-                      </button>
-                    </li>
+                    {authToken && (
+                      <li>
+                        <button className="btn-logout" onClick={handleLogout}>
+                          Logout
+                        </button>
+                      </li>
+                    )}
+                    {!authToken && (
+                      <li>
+                        <button
+                          className="btn-logout"
+                          onClick={() => (window.location.href = "/login")}
+                        >
+                          Login
+                        </button>
+                      </li>
+                    )}
                   </ul>
                 </nav>
               </div>
