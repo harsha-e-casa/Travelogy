@@ -110,10 +110,10 @@ export default function Flights4() {
     const infant = "0";
 
     // set cookies (add expires/path as needed)
-    setCookie("gy_aa", departureFrom); // from
-    setCookie("gy_aa_str", departureFromSr);
-    setCookie("gy_da", arrivalTo); // to
-    setCookie("gy_da_str", arrivalToSr);
+    setCookie("gy_aa", arrivalTo); // from
+    setCookie("gy_aa_str", arrivalToSr);
+    setCookie("gy_da", departureFrom); // to
+    setCookie("gy_da_str", departureFromSr);
     setCookie("gy_adult", adults);
     setCookie("gy_child", children);
     setCookie("gy_infant", infant);

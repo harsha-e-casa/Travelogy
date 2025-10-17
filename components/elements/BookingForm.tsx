@@ -427,7 +427,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
 					<path d="M8 15L15 8L8 1M15 8L1 8" stroke='#0D0D0D' strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 				</svg></a></div> */}
         {/* <div className="box-need-help"> <a href="help-center.html"></a> */}
-        <div className="box-need-help">
+        {/* <div className="box-need-help">
           {" "}
           <a href="#">
             <svg
@@ -444,7 +444,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             </svg>
             Need some help?
           </a>
-        </div>
+        </div> */}
       </div>
     </>
   );

@@ -872,9 +872,10 @@ const ReviewPage = () => {
       // };
       // saveBookingId();
       if (result?.error) {
+        console.log("result?.error ==> ",result?.error);
         setError(result?.error);
       } else {
-        setBookingLoading(false);
+        // setBookingLoading(false);
         router.push(
           `/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`
         );
