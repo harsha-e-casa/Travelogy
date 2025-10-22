@@ -25,6 +25,7 @@ export default function BookingCard({
   showTraveller,
   roomsData,
   setRoomsData,
+  openDateRange, setOpenDateRange
 }) {
   const basefare = totalpricee?.fC?.BF;
   const RoomType = totalpricee?.fC?.MB;
@@ -35,7 +36,7 @@ export default function BookingCard({
   const totalfare = totalpricee?.fC?.TF;
   const hotelId = totalpricee?.fC?.HID || totalpricee?.hotelId;
   const optionId = totalpricee?.fC?.OID || totalpricee?.optionId;
-  const [openDateRange, setOpenDateRange] = useState(null);
+
 
   const roomCount = searchData?.roomInfo?.length;
   const netprice = totalpricee?.fC?.NF;
@@ -245,7 +246,7 @@ export default function BookingCard({
             if (isFetching) e.preventDefault();
           }}
         >
-          {isFetching ? "Fetching..." : "Book This Room"}
+          {isFetching ? "Updating Room Details..." : "Book This Room"}
           {!isFetching && (
             <svg
               width={16}

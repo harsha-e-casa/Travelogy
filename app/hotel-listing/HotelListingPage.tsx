@@ -901,7 +901,7 @@ export default function HotelListing() {
                           </div>
                         ))
                       )} */}
-                        <div className="row">
+                        <div className="row" style={{rowGap:'18px'}}>
                           {loading ||
                           (apiHotelData.length === 0 &&
                             !error &&

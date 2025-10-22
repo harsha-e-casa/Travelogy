@@ -125,14 +125,20 @@ const EngineHeaderHotel = ({ active_border }) => {
   }, [datedepr, selectedPlan]);
 
   const openToDateRange = () => {
-    setOpenDateRage((prevState) => !prevState); // Correct way to toggle the state
-    closeallform();
-    setOpenDateRage(true);
+    if (openDateRage) {
+      closeallform();
+    } else {
+      closeallform();
+      setOpenDateRage(true);
+    }
   };
   const openToDateRangeR = () => {
-    setOpenDateRageR((prevState) => !prevState); // Correct way to toggle the state
-    closeallform();
-    setOpenDateRageR(true);
+    if (openDateRageR) {
+      closeallform();
+    } else {
+      closeallform();
+      setOpenDateRageR(true);
+    }
   };
   const closeallform = () => {
     setOpenDateRage(false);

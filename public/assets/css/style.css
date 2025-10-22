@@ -12699,7 +12699,7 @@ h1 span {
 
 .box-list-tours .card-journey-small .card-info,
 .box-grid-tours .card-journey-small .card-info {
-  padding: 28px 21px;
+  padding: 14px 21px;
   border-radius: 24px;
 }
 
@@ -17437,7 +17437,7 @@ h2 span {
   }
 
   .header .main-menu li a {
-    padding: 20px 14px 20px 8px;
+    padding: 20px 8px 20px 8px;
   }
 
   .btn.btn-mode {

@@ -151,6 +151,10 @@ export default function ActivitiesDetail4() {
   const [searchPreferences, setSearchPreferences] = useState({});
   const [dynamicId, setDynamicId] = useState(id); // Store dynamic id
   const [isFetchingButton, setIsFetchingButton] = useState(false);
+
+  const [openDateRange, setOpenDateRange] = useState(null);
+
+
   // useEffect(() => {
   //   if (dynamicId !== id) {
   //     router.push(`/hotel-listing/${dynamicId}`, undefined, { shallow: true });
@@ -210,14 +214,26 @@ export default function ActivitiesDetail4() {
   useEffect(() => {
     if (!readyRef.current) return;
     const isCheckinChanged = checkinDate !== prevCheckinDate.current;
+
+    if(isCheckinChanged){
+      setOpenDateRange("checkout")
+    }
+
     const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
-    // const isRoomsChanged =
-    //   JSON.stringify(roomInfo) !== JSON.stringify(prevRoomsData.current);
+    if(isCheckoutChanged && checkoutDate){
+    setOpenDateRange(null)
+  }
+    // alert(checkoutDate);
+    
     const normalizedRooms = normalizeRooms(roomsData);
     const roomsChanged =
       JSON.stringify(normalizedRooms) !== prevRoomsData.current;
 
-    if (isCheckinChanged || isCheckoutChanged || roomsChanged) {
+    // Only fetch when both dates are complete OR when rooms change
+    const bothDatesComplete = checkinDate && checkoutDate;
+    const shouldFetch = isCheckoutChanged && bothDatesComplete || roomsChanged;
+
+    if (shouldFetch) {
       fetchHotelDetails(
         {
           checkinDate,
@@ -231,7 +247,7 @@ export default function ActivitiesDetail4() {
       prevCheckoutDate.current = checkoutDate;
       prevRoomsData.current = JSON.stringify(normalizedRooms);
     }
-  }, [checkinDate, checkoutDate, roomsData]); // Only trigger when these values change
+  }, [checkinDate, checkoutDate, roomsData, readyRef]); // Only trigger when these values change
 
   useEffect(() => {
     async function fetchInitialHotelDetails({
@@ -690,6 +706,8 @@ export default function ActivitiesDetail4() {
                       showTraveller={showTraveller}
                       roomsData={roomsData}
                       setRoomsData={setRoomsData}
+                      openDateRange={openDateRange} 
+                      setOpenDateRange={setOpenDateRange}
                     />
                   </div>
                 </div>
