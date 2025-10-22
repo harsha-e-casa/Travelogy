@@ -146,6 +146,7 @@ export default function Flights4() {
       } catch (e) {
         console.error("Top flights fetch failed:", e);
       } finally {
+        // testing
         if (mounted) setLoading(false);
       }
     })();
@@ -394,6 +395,7 @@ export default function Flights4() {
       )}
 
       {loading && <p className="text-center py-6">Fetching best flights…</p>}
+      {/* {loading && <img src="/assets/imgs/flight_loading_gif.gif" alt="" />} */}
     </>
   );
 }

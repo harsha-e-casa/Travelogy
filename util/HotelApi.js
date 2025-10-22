@@ -263,6 +263,9 @@ export async function hotelBooking({
   updatedFormData,
   isBlock = false,
 }) {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  console.log("tokentoken 1111111 => ",token)
   try {
     const roomInfo = hotelReviewData?.query?.roomInfo || [];
     const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
@@ -300,13 +303,35 @@ export async function hotelBooking({
       action: "book",
       requestData: payload,
     });
+
+    // save hotel bookings
+    const updateHotelBookingData = async () => {
+      let saveReq = {
+        type: "save",
+        booking_id: hotelReviewData?.bookingId,
+        status: "",
+        amount: hotelReviewData?.hInfo?.ops?.[0]?.tp || 0,
+      };
+
+      const res = await postData("travelogy/hotel/save-booking-data", saveReq, {
+        Authorization: `Bearer ${token}`,
+      });
+      console.log("res == ", res);
+    };
+
+    if (res?.status?.success === true) {
+      updateHotelBookingData();
+    }
+
     return res;
   } catch (e) {
     console.error(e);
     throw e;
   }
 }
-export async function getBookingDetails(bookingId, setError) {
+export async function getBookingDetails(bookingId, setError) {4
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   try {
     // const response = await fetch(
     //   "https://apitest.tripjack.com/oms/v1/hotel/booking-details",
@@ -343,16 +368,17 @@ export async function getBookingDetails(bookingId, setError) {
     const updateHotelBookingData = async () => {
       let saveReq = {
         type: "update",
-        phone: "9677179866",
         booking_id: bookingId,
         status: data?.order?.status,
         booking_time: new Date().toISOString(),
       };
 
-      const res = await postData("travelogy/hotel/save-booking-data", saveReq);
+      const res = await postData("travelogy/hotel/save-booking-data", saveReq,{
+        Authorization: `Bearer ${token}`,
+      });
       console.log("res == ", res);
     };
-    // updateHotelBookingData();
+    updateHotelBookingData();
 
     if (data?.status?.success) {
       return data;

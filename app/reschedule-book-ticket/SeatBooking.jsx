@@ -11,6 +11,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
   const [seatSelections, setSeatSelections] = useState({});
   const [selectedAmounts, setSelectedAmounts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errorModal, setErrorModal] = useState("");
   const [seatNo, setSeatNo] = useState({});
   // const prevIdRef = useRef();
 
@@ -42,7 +43,11 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
       if (result?.tripSeatMap?.tripSeat?.[id]) {
         setFlightSeat({ seat: result.tripSeatMap.tripSeat[id], seg: seg });
       } else {
-        alert("No seat data found");
+        // alert("No seat data found");
+        if (result?.error) {
+          // setErrorModal(result?.error)
+          setErrorModal("No seat found");
+        }
       }
     } catch (error) {
       console.log("SeatBooking error = ", error);
@@ -429,6 +434,24 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
         </div>
       )}
 
+      {errorModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-4 rounded shadow text-center relative">
+            <p className="font-semibold text-lg mb-4">Message: {errorModal}</p>
+
+            {/* Close Button - bottom right */}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setErrorModal("")} // or your close handler
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Seat Map Modal */}
       {flightSeat && (
         <div
@@ -462,9 +485,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                     {isUat && (
                       <img
                         style={{ width: "35px", height: "35px", margin: "5px" }}
-                        src={`/assets/imgs/airlines/${flightSeat?.seg[
-                          "fD"
-                        ].aI.code}.png`}
+                        src={`/assets/imgs/airlines/${flightSeat?.seg["fD"].aI.code}.png`}
                       />
                     )}
                     {!isUat && (

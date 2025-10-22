@@ -42,6 +42,8 @@
 
 // export default BarcodeGenerator
 
+// ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
 import React from "react";
 
 const BarcodeGenerator = ({ passengerDetails }) => {
@@ -58,7 +60,7 @@ const BarcodeGenerator = ({ passengerDetails }) => {
     } = details;
 
     let paddedFlightNumber = flightNumber.toString();
-    let ftCode = flightCode.toString()
+    let ftCode = flightCode.toString();
 
     if (paddedFlightNumber.length === 1) {
       paddedFlightNumber = "000" + paddedFlightNumber + " ";
@@ -69,12 +71,12 @@ const BarcodeGenerator = ({ passengerDetails }) => {
     } else if (paddedFlightNumber.length === 4) {
       paddedFlightNumber = paddedFlightNumber + " ";
     }
-    
+
     if (ftCode.length === 2) {
-      ftCode = ftCode + " "
+      ftCode = ftCode + " ";
     }
     if (ftCode.length === 1) {
-      ftCode = ftCode + "  "
+      ftCode = ftCode + "  ";
     }
 
     // return `M1${passengerName} ${pnrCode.padEnd(7, " ")} ${fromCityCode}${toCityCode}6E ${flightNumber.toString().padStart(5, "0")} ${julianDate.toString().slice(-3)}Y00000000 000`;
@@ -82,9 +84,10 @@ const BarcodeGenerator = ({ passengerDetails }) => {
     return `M1${passengerName} ${pnrCode.padEnd(
       7,
       " "
-    )}${fromCityCode}${toCityCode}6E ${paddedFlightNumber}${julianDate.toString().slice(-3)}Y000000000000`;
+    )}${fromCityCode}${toCityCode}6E ${paddedFlightNumber}${julianDate
+      .toString()
+      .slice(-3)}Y000000000000`;
   };
-
 
   return (
     <div
@@ -97,21 +100,36 @@ const BarcodeGenerator = ({ passengerDetails }) => {
     >
       {passengerDetails.map((details, index) => {
         const barcodeData = generateBarcodeData(details);
+
         // Build TEC-IT PDF417 API URL
-        const apiUrl = `https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
+        const apiUrlOne = `https://barcode.tec-it.com/barcode.ashx?data=${encodeURIComponent(
           barcodeData
         )}&code=PDF417&multiplebarcodes=false&translate-esc=false`;
 
+        const apiUrlTwo = `/api/barcode/pdf417?data=${encodeURIComponent(barcodeData)}&scale=3&eclevel=5&truncated=true`;
+
         return (
-          <div key={index} style={{ width: "100%", textAlign: "center" }}>
-            {/* <p>Your Airlines Reference: {barcodeData}</p> */}
-            <img
-              // src={apiUrl}
-              src={`/api/image-proxy?url=${encodeURIComponent(apiUrl)}`}
-              alt="PDF417 Barcode"
-              style={{ background: "#fff", padding: 8, maxWidth: 400 }}
-            />
-          </div>
+          <>
+            
+            {/* testing img render using third party api */}
+
+            {/* <div key={index} style={{ width: "100%", textAlign: "center" }}>
+              <p>Your Airlines Reference: {barcodeData}</p>
+              <img
+                src={`/api/image-proxy?url=${encodeURIComponent(apiUrlOne)}`}
+                alt="PDF417 Barcode"
+                style={{ background: "#fff", padding: 8, width: 294, height: 99 }}
+              />
+            </div> */}
+            
+            <div key={index} style={{ width: "100%", textAlign: "center" }}>
+              <img
+                src={apiUrlTwo}
+                alt="PDF417 Barcode"
+                style={{ background: "#fff", padding: 8, width: 294, height: 99 }}
+              />
+            </div>
+          </>
         );
       })}
     </div>

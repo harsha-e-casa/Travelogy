@@ -108,10 +108,11 @@ const AmendmentList = ({
   const getStatusClass = (status) => {
     if (!status) return "status-badge";
     const statusLower = status.toLowerCase();
-    if (statusLower.includes('success')) return "status-badge status-success";
-    if (statusLower.includes('pending')) return "status-badge status-pending";
-    if (statusLower.includes('failed')) return "status-badge status-failed";
-    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
+    if (statusLower.includes("success")) return "status-badge status-success";
+    if (statusLower.includes("pending")) return "status-badge status-pending";
+    if (statusLower.includes("failed")) return "status-badge status-failed";
+    if (statusLower.includes("unconfirmed"))
+      return "status-badge status-unconfirmed";
     return "status-badge";
   };
 
@@ -141,7 +142,7 @@ const AmendmentList = ({
           <input
             type="date"
             className="filter-input"
-             placeholder="DD/MM/YYYY"
+            placeholder="DD/MM/YYYY"
             value={fromDate}
             onChange={(e) => {
               setFromDate(e.target.value);
@@ -164,7 +165,7 @@ const AmendmentList = ({
       </div>
 
       {/* Pagination Row */}
-     <div className="table-header">
+      <div className="table-header">
         <div className="pagination-info">
           <div className="rows-per-page">
             <label className="filter-label">Rows per page:</label>
@@ -207,53 +208,56 @@ const AmendmentList = ({
         data={modalData}
         loading={loading}
       />
-    <table className="modern-table">
+      <table className="modern-table">
         <thead>
           <tr>
-            <th className="cursor-pointer select-none"
-                onClick={() => handleSort("idIndex")}>
+            <th
+              className="cursor-pointer select-none"
+              onClick={() => handleSort("idIndex")}
+            >
               ID
               {sortBy === "idIndex" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
-            <th>Old Booking ID</th>
             <th>Booking ID</th>
-            <th className="cursor-pointer select-none"
-                onClick={() => handleSort("amount")}>
+            <th>Amendment ID</th>
+            <th
+              className="cursor-pointer select-none"
+              onClick={() => handleSort("amount")}
+            >
               Amount
               {sortBy === "amount" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
             <th>Status</th>
-            <th>Booking Time</th>
+            <th>Time Of Amendment</th>
           </tr>
         </thead>
         <tbody>
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
-                <td>
-                  {startIdx + idx + 1}
-                </td>
-                <td>
-                  <Link href={`/BookingDetails?booking_id=${b.old_booking_id}`} className="booking-id">
-                    {b.old_booking_id}
-                  </Link>
-                </td>
-                <td>
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}?re=true`} className="booking-id">
+                <td>{startIdx + idx + 1}</td>
+                <td className="px-3 py-2 border">
+                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
                     {b.booking_id}
                   </Link>
                 </td>
-                <td>{b.amount || "--"}</td>
-                <td>
-                  <span className={getStatusClass(b.status)}>
-                    {b.status || "--"}
-                  </span>
+                <td
+                  className="px-3 py-2 border cursor-pointer text-blue-500"
+                  onClick={() => handleAmendmentClick(b.amendment_id)}
+                >
+                  {b.amendment_id || "--"}
                 </td>
-                <td>{formatDateTime(b.booking_time)}</td>
+                <td className="px-3 py-2 border">
+                  {b.refundable_amount || "--"}
+                </td>
+                <td className="px-3 py-2 border">
+                  {b.amendment_status || "--"}
+                </td>
+                <td className="px-3 py-2 border">{formatDateTime(b.time)}</td>
               </tr>
             ))
           ) : (
@@ -268,7 +272,10 @@ const AmendmentList = ({
       </table>
 
       <div className="table-footer">
-        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
+        <span>
+          Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)}{" "}
+          of {total} bookings
+        </span>
       </div>
     </div>
   );

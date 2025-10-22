@@ -882,7 +882,7 @@ const ReissueReviewPage = () => {
       if (result?.status?.success === true) {
         saveBookingIdFn();
       }
-      setBookingLoading(false)
+      setBookingLoading(false);
       router.push(`/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`);
     } catch (err) {
       console.error("Error while fetching flight data 1 :", err);
@@ -1929,10 +1929,16 @@ const ReissueReviewPage = () => {
                                       style={{ borderBottom: "grey 1px solid" }}
                                     >
                                       <tr>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300" style={{ width: "1rem" }}>
+                                        <th
+                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                          style={{ width: "1rem" }}
+                                        >
                                           S.No
                                         </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300" style={{ width: "20rem" }}>
+                                        <th
+                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                          style={{ width: "20rem" }}
+                                        >
                                           Full Name
                                         </th>
                                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
@@ -2112,9 +2118,20 @@ const ReissueReviewPage = () => {
                                                 )}
                                               </td>
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {addOns.length > 0
-                                                  ? addOns.join(" | ")
-                                                  : "None"}
+                                                {addOns && addOns.length > 0 ? (
+                                                  <div className="flex flex-col gap-1">
+                                                    {addOns.map((item, i) => (
+                                                      <span
+                                                        key={i}
+                                                        className="text-sm"
+                                                      >
+                                                        {item}
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                ) : (
+                                                  "None"
+                                                )}
                                               </td>
                                             </tr>
                                           );
