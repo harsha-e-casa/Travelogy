@@ -42,7 +42,7 @@ const Alldetails = ({ totalpricee }) => {
   const printRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [fareType, setFareType] = useState("");
-  const [afsAmount, setAfsAmount] = useState(0)
+  const [afsAmount, setAfsAmount] = useState(0);
 
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
@@ -68,13 +68,19 @@ const Alldetails = ({ totalpricee }) => {
 
   useEffect(() => {
     if (bookingDetails) {
-        console.log("api data from the page.tsx kk", bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS);
-      }
-      const adultAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
-      // const childAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
-      // const infantAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
-      setAfsAmount(adultAfs)
-  }, [bookingDetails])
+      console.log(
+        "api data from the page.tsx kk",
+        bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd
+          ?.fC?.AFS
+      );
+    }
+    const adultAfs =
+      bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd
+        ?.fC?.AFS;
+    // const childAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
+    // const infantAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
+    setAfsAmount(adultAfs);
+  }, [bookingDetails]);
 
   // const createStructuredData = (bookingDetails) => {
   //   console.log("bookingDetailsbookingDetails -------- bookingDetails ",bookingDetails)
@@ -1159,6 +1165,36 @@ const Alldetails = ({ totalpricee }) => {
             className="mt-20 bg-white shadow rounded-lg p-6 mb-20 print-area"
             ref={printRef}
           >
+            {!isNoPrintVisible && (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    className="light-mode header_logo"
+                    alt="Travelogy"
+                    src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
+                  ></img>
+                  <div>
+                    <p>
+                      <span className="font-bold">Address:</span>
+                      <span> NPL Devi, 111, Lattice Brg Rd,</span>
+                    </p>
+                    <p>Thiruvanmiyur, Chennai, </p>
+                    <p>Tamil Nadu 600041</p>
+                    <p>
+                      <span className="font-bold">Email:</span>
+                      <span> support@Travelogy.com</span>
+                    </p>
+                  </div>
+                </div>
+                <hr className="border-t border-gray-300 mt-3 mb-3" />
+              </div>
+            )}
             <div className="mb-10 shadow-md p-3 rounded">
               <div className="flex flex-row justify-between gap-2">
                 <div className="flex flex-col justify-start">

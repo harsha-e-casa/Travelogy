@@ -59,7 +59,7 @@ export default function Header1({
                 </Link>
               </div>
 
-              <div className="header-nav">
+              <div className="header-nav" style={{ justifyContent: "flex-end"}}>
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
                     <li>

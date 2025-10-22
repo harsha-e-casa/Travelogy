@@ -203,7 +203,7 @@ export default function BookTicket() {
   const [numChild, setNumChild] = useState<number>(0);
   const [numInfants, setNumInfants] = useState<number>(0);
   const [mealinfo, setMealinfo] = useState<any>([]);
-  const [seatinfo, setSeatinfo] = useState<any>([]);
+  const [seatinfo, setSeatinfo] = useState<any>(0);
   const [segregateTravellerResultState, setSegregateTravellerResult] = useState(
     {
       segrigatedTravellerInfo: {

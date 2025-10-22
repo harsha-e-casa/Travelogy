@@ -59,13 +59,12 @@
 //   );
 // }
 
-
 export default function ByStops({ stops, setStops, tabIndex }: any) {
   const OPTIONS = [
-    {label: "0", value: "all"},
-    { label: "1", value: "non-stop" },
-    { label: "2", value: "1-stop" },
-    { label: "3+", value: "2-stops" },
+    // {label: "0", value: "all"},
+    { label: "0", value: "non-stop" },
+    { label: "1", value: "1-stop" },
+    { label: "2+", value: "2-stops" },
   ];
 
   const wrapStyle: React.CSSProperties = {
@@ -142,9 +141,11 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
         })}
 
         {/* Cancel / Reset */}
-        {/* <button type="button" onClick={handleCancel} style={cancelStyle}>
-          Cancel
-        </button> */}
+        {stops !== "all" && (
+          <button type="button" onClick={handleCancel} style={cancelStyle}>
+            Reset
+          </button>
+        )}
       </div>
     </div>
   );
