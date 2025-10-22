@@ -219,7 +219,7 @@ export default function Login() {
               <h1 className="title">Welcome</h1>
 
               <Form layout="vertical" onFinish={onFinish}>
-                <label style={{ color: "white" }}>Email ID</label>
+                <label style={{ marginTop: "12px", color: "white" }}>Email ID</label>
                 <Form.Item
                   name="email"
                   rules={[
@@ -229,9 +229,8 @@ export default function Login() {
                 >
                   <Input
                     size="large"
-                    prefix={<MailOutlined />}
+                    prefix={<MailOutlined style={{ paddingRight: "10px" }} />}
                     placeholder="Enter your email"
-                    // style={{ paddingLeft: "10px" }} 
                   />
                 </Form.Item>
 
