@@ -167,6 +167,61 @@ export default function HotelListing() {
     });
   }, [apiHotelData]);
 
+  // Hotel price filter states (following flights pattern)
+  const [priceRange, setPriceRange] = useState([0, 41087]);
+  const [minPriceRange, setMinPriceRange] = useState<any>(null);
+  const [maxPriceRange, setMaxPriceRange] = useState<any>(null);
+  const [filteredHotels, setFilteredHotels] = useState<Hotel[]>([]);
+
+  // Calculate price range from hotel data (following flights pattern)
+  const getPriceRangeFromData = (data: any[]) => {
+    const prices: number[] = [];
+    
+    data.forEach((hotel) => {
+      const totalPrice = hotel.price * nights; // multiply by nights like flights multiply by passengers
+      if (totalPrice > 0 && totalPrice < 99999) { // exclude invalid/placeholder prices
+        prices.push(totalPrice);
+      }
+    });
+
+    if (prices.length === 0) {
+      return [0, 99999]; // fallback
+    }
+
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    return [minPrice, maxPrice];
+  };
+
+  // Update price range when hotel data changes (following flights pattern)
+  useEffect(() => {
+    if (transformedHotels.length > 0) {
+      const [minPrice, maxPrice] = getPriceRangeFromData(transformedHotels);
+      
+      setMinPriceRange(minPrice);
+      setMaxPriceRange(maxPrice);
+      
+      if (priceRange[0] !== minPrice || priceRange[1] !== maxPrice) {
+        setPriceRange([minPrice, maxPrice]);
+      }
+    }
+  }, [transformedHotels]);
+
+  // Apply price filtering (following flights pattern)
+  const applyPriceFilter = () => {
+    if (transformedHotels.length > 0) {
+      const filtered = transformedHotels.filter((hotel) => {
+        const totalPrice = hotel.price * nights;
+        return totalPrice >= priceRange[0] && totalPrice <= priceRange[1];
+      });
+      setFilteredHotels(filtered);
+    }
+  };
+
+  useEffect(() => {
+    applyPriceFilter();
+  }, [priceRange, transformedHotels]);
+
   const totalAdults = roomsData.reduce((sum, r) => sum + r.adults, 0);
   const totalChildren = roomsData.reduce((sum, r) => sum + r.children, 0);
   const childAges = roomsData.flatMap((r) => r.childAges);
@@ -257,7 +312,7 @@ export default function HotelListing() {
     endItemIndex,
     itemsPerPage,
   } = useHotelFilter(
-    transformedHotels,
+    filteredHotels, // use filtered hotels instead of all hotels
     isTopDestination && location
       ? { ratings: [4, 5], locations: [location] }
       : isTopDestination
@@ -293,15 +348,7 @@ export default function HotelListing() {
     isTopDestination,
   ]);
 
-  const initialPriceSet = useRef(false);
 
-  // Apply initial price filter only once after data loads
-  useEffect(() => {
-    if (apiHotelData.length > 0 && !initialPriceSet.current) {
-      handlePriceRangeChange([initialMinPrice, initialMaxPrice]);
-      initialPriceSet.current = true;
-    }
-  }, [apiHotelData, initialMinPrice, initialMaxPrice, handlePriceRangeChange]);
   // const [sortCriteria, setSortCriteria] = useState("default");
   // const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
   //   setSortCriteria(e.target.value);
@@ -416,10 +463,11 @@ export default function HotelListing() {
           status: 200,
         });
       }
-      if (data) {
-        setApiHotelData(data.searchResult?.his || []);
-        router.push(`/hotel-listing?${queryParams}`);
-      }
+      
+      // Update data and URL
+      setApiHotelData(data.searchResult?.his || []);
+      router.push(`/hotel-listing?${queryParams}`);
+      
     } catch (e: any) {
       const s = typeof e?.status === "number" ? e.status : undefined;
       setError(e?.message || "Something went wrong.");
@@ -428,31 +476,17 @@ export default function HotelListing() {
       setLoading(false);
     }
   };
-  const hasFetched = useRef(false);
-  const prevParams = useRef({});
-  const shouldFetchData = useMemo(() => {
-    const currentParams = {
-      location,
-      city,
-      currency,
-      rooms,
-      adults,
-      children,
-      childAgesRaw,
-    };
-
-    const paramsChanged =
-      JSON.stringify(currentParams) !== JSON.stringify(prevParams.current);
-
-    if (paramsChanged) {
-      prevParams.current = currentParams;
-    }
-
-    return paramsChanged;
-  }, [location, city, currency, rooms, adults, children, childAgesRaw]);
+  // Load initial data from URL params on page load only
   useEffect(() => {
-    const fetchData = async () => {
-      if (!shouldFetchData) return; // Prevent fetching if parameters haven't changed
+    const loadInitialData = async () => {
+      // Only fetch if we have URL params and no existing data
+      if (apiHotelData.length > 0) return;
+      
+      const hasRequiredParams = searchParams.get("checkinDate") && 
+                               searchParams.get("checkoutDate") && 
+                               (city || location);
+      
+      if (!hasRequiredParams) return;
 
       setLoading(true);
       setError(null);
@@ -462,7 +496,6 @@ export default function HotelListing() {
         searchQuery: {
           checkinDate: searchParams.get("checkinDate"),
           checkoutDate: searchParams.get("checkoutDate"),
-          // roomInfo: [{ numberOfAdults: 1, numberOfChild: 0, childAge: [] }],
           roomInfo: cleanRoomInfo,
           searchCriteria: {
             city: selectFrom?.id || city,
@@ -478,8 +511,6 @@ export default function HotelListing() {
         const data = await apiCall(payload);
         if (data?.searchResult?.his) {
           setApiHotelData(data.searchResult.his);
-        } else {
-          throw new Error("No hotels found");
         }
       } catch (e: any) {
         setError(e?.message || "Something went wrong.");
@@ -489,18 +520,8 @@ export default function HotelListing() {
       }
     };
 
-    fetchData();
-  }, [
-    shouldFetchData, // Dependency on whether the parameters have changed
-    location,
-    city,
-    currency,
-    // rooms,
-    cleanRoomInfo,
-    // adults,
-    // children,
-    // childAgesRaw,
-  ]);
+    loadInitialData();
+  }, []); // Only run once on mount
 
   // useEffect(() => {
   //   const fetchData = async () => {
@@ -915,7 +936,7 @@ export default function HotelListing() {
                                 className="col-xl-4 col-lg-6 col-md-6"
                                 key={hotel.id || index}
                               >
-                                <HotelCard1 hotel={hotel} />
+                                <HotelCard1 hotel={hotel} nights={nights} />
                               </div>
                             ))
                           ) : (
@@ -971,10 +992,10 @@ export default function HotelListing() {
                           </div>
                           {showPriceFilter && (
                             <ByPrice
-                              priceRange={filter.priceRange}
-                              setPriceRange={handlePriceRangeChange}
-                              minPriceRange={0}
-                              maxPriceRange={41087}
+                              priceRange={priceRange}
+                              setPriceRange={setPriceRange}
+                              minPriceRange={minPriceRange}
+                              maxPriceRange={maxPriceRange}
                             />
                           )}
                         </div>
