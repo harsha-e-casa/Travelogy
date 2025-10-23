@@ -69,7 +69,7 @@ const SortHotelsFilterApp = () => {
                         {paginatedHotels.map((hotel, index) => (
                           <SwiperSlide key={index}>
                             
-                              <HotelCard1 hotel={hotel} key={index} />
+                              <HotelCard1 hotel={hotel} nights={1} key={index} />
                           
                           </SwiperSlide>
                         ))}

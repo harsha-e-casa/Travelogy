@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Tooltip } from "antd";
 import "./HotelCard1.css";
 
-export default function HotelCard1({ hotel }: any) {
+export default function HotelCard1({ hotel, nights }: any) {
   const name = hotel?.name || "Unnamed Hotel";
   const fullAddress = hotel?.fullAddress || "";
   const rating = hotel?.rating || 0;
@@ -60,7 +60,7 @@ export default function HotelCard1({ hotel }: any) {
               <p className="starts-from-text neutral-700">Starts From</p>
               <div className="price-container">
                 <h5 className="price-amount">₹{totalPrice}</h5>
-                <p className="price-period neutral-700">/ night</p>
+                <p className="price-period neutral-700">{nights && nights > 0 ? `/ ${nights} night${nights > 1 ? 's' : ''} ` : '/'}</p>
               </div>
             </div>
             <div className="book-button-container">
