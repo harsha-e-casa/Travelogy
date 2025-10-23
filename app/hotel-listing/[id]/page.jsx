@@ -390,11 +390,11 @@ export default function ActivitiesDetail4() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-8">
                 <div className="box-banner-activities-detail-4">
-                  <div className="image-gallery flex gap-2 h-[24rem]">
+                  <div className="image-gallery flex gap-2 h-[400px] rounded-lg overflow-hidden">
                     {/* Main large image */}
-                    <div className="flex-1 relative">
+                    <div className="flex-[2] relative">
                       <img
-                        className="w-full h-full object-cover rounded-l-lg"
+                        className="w-full h-full object-cover"
                         src={
                           hotelData?.img?.find(
                             (image) => image.sz === "Standard"
@@ -407,29 +407,24 @@ export default function ActivitiesDetail4() {
                     </div>
                     
                     {/* Thumbnail grid */}
-                    <div className="w-80 grid grid-cols-4 gap-1">
-                      {Array.from({ length: 16 }, (_, index) => {
+                    <div className="flex-1 grid grid-cols-2 gap-1">
+                      {Array.from({ length: 4 }, (_, index) => {
                         const imageIndex = index + 1;
                         const image = hotelData?.img?.[imageIndex];
                         
                         return (
-                          <div key={index} className="relative h-[5.75rem]">
+                          <div key={index} className="relative h-[calc(50%-2px)]">
                             {image ? (
                               <img
-                                className="w-full h-full object-cover rounded"
+                                className="w-full h-full object-cover"
                                 src={image.url}
                                 alt={`Thumbnail ${index + 1}`}
+                                onClick={() => setIsModalOpen(true)}
                               />
                             ) : (
-                              <div className="w-full h-full bg-gray-200 rounded"></div>
+                              <div className="w-full h-full bg-gray-200"></div>
                             )}
-                            {index === 15 && images.length > 17 && (
-                              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded cursor-pointer" onClick={() => setIsModalOpen(true)}>
-                                <span className="text-white font-semibold text-sm">
-                                  +{images.length - 17} photos
-                                </span>
-                              </div>
-                            )}
+
                           </div>
                         );
                       })}
@@ -443,7 +438,7 @@ export default function ActivitiesDetail4() {
                         href="#"
                         onClick={() => setIsModalOpen(true)}
                       >
-                        <svg
+                        {/* <svg
                           width={22}
                           height={22}
                           viewBox="0 0 22 22"
@@ -453,9 +448,8 @@ export default function ActivitiesDetail4() {
                           <path d="M20 19.25V14C20 13.5875 19.6625 13.25 19.25 13.25H14C13.5875 13.25 13.25 13.5875 13.25 14V19.25C13.25 19.6625 13.5875 20 14 20H19.25C19.6625 20 20 19.6625 20 19.25ZM19.25 11.75C20.495 11.75 21.5 12.755 21.5 14V19.25C21.5 20.495 20.495 21.5 19.25 21.5H14C12.755 21.5 11.75 20.495 11.75 19.25V14C11.75 12.755 12.755 11.75 14 11.75H19.25Z" />
                           <path d="M8 8.75C8.4125 8.75 8.75 8.4125 8.75 8V2.75C8.75 2.3375 8.4125 2 8 2H2.75C2.3375 2 2 2.3375 2 2.75V8C2 8.4125 2.3375 8.75 2.75 8.75H8ZM8 0.5C9.245 0.5 10.25 1.505 10.25 2.75V8C10.25 9.245 9.245 10.25 8 10.25H2.75C1.505 10.25 0.5 9.245 0.5 8V2.75C0.5 1.505 1.505 0.5 2.75 0.5H8Z" />
                           <path d="M8 20C8.4125 20 8.75 19.6625 8.75 19.25V14C8.75 13.5875 8.4125 13.25 8 13.25H2.75C2.3375 13.25 2 13.5875 2 14V19.25C2 19.6625 2.3375 20 2.75 20H8ZM8 11.75C9.245 11.75 10.25 12.755 10.25 14V19.25C10.25 20.495 9.245 21.5 8 21.5H2.75C1.505 21.5 0.5 20.495 0.5 19.25V14C0.5 12.755 1.505 11.75 2.75 11.75H8Z" />
-                        </svg>
-                        {images.length}{" "}
-                        {images.length === 1 ? "Photo" : "Photos"}
+                        </svg> */}
+                        {images.length > 5 ? `+${images.length - 5} Photos` : `${images.length} ${images.length === 1 ? "Photo" : "Photos"}`}
                       </Link>
 
                       <Modal

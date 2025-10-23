@@ -19251,6 +19251,8 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   position: relative;
   width: 80%;
   max-width: 800px;
+  border-radius: 10px;
+  height: 45%;
 }
 
 .modal-slider {
@@ -19272,8 +19274,8 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   position: absolute;
   top: 50%;
   font-size: 2rem;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.5);
+  color: #100e0e;
+  /* background-color: rgba(0, 0, 0, 0.5); */
   border: none;
   padding: 10px;
   cursor: pointer;
@@ -19309,6 +19311,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   display: flex;
   align-items: end;
   justify-content: flex-end;
+  font-size: 30px;
 }
 
 .image-gallery {
