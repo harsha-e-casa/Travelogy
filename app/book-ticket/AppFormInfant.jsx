@@ -51,6 +51,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             name={`infantName-${index}`}
             label="First Name"
             hasFeedback
+            getValueFromEvent={(e) => (e?.target?.value || "").toUpperCase()}
             dependencies={[`infantLame-${index}`]}
             rules={[
               { required: true, message: "Please enter the name" },
@@ -131,6 +132,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
             name={`infantLast-${index}`}
             label="Last Name"
             hasFeedback
+            getValueFromEvent={(e) => (e?.target?.value || "").toUpperCase()}
             dependencies={[`infantName-${index}`]}
             rules={[
               { required: true, message: "Please enter the last name" },

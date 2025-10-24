@@ -58,7 +58,6 @@ const AppFormAdult = ({
       });
   }, [travellerParsedData]);
 
-
   const uniqueNameValidator = () => ({
     validator: async () => {
       const normalize = (v) =>
@@ -125,6 +124,7 @@ const AppFormAdult = ({
             hasFeedback
             // revalidate when last name changes
             dependencies={[`lname-${index}`]}
+            getValueFromEvent={(e) => (e?.target?.value || "").toUpperCase()}
             rules={[
               { required: true, message: " Please Enter your First Name" },
               { min: 2, message: "First name must be at least 2 characters" },
@@ -170,6 +170,9 @@ const AppFormAdult = ({
             <Input
               className="h-10 flex flex-row justify-between items-center"
               placeholder="First Name"
+              onChange={(e) =>
+                form.setFieldsValue({ firstName: e.target.value.toUpperCase() })
+              }
             />
           </Form.Item>
         </Col>
@@ -181,6 +184,7 @@ const AppFormAdult = ({
             hasFeedback
             // revalidate when first name changes
             dependencies={[`fname-${index}`]}
+            getValueFromEvent={(e) => (e?.target?.value || "").toUpperCase()}
             rules={[
               { required: true, message: "Please enter your last name" },
               { min: 2, message: "Last name must be at least 2 characters" },
@@ -226,6 +230,9 @@ const AppFormAdult = ({
             <Input
               className="h-10 flex flex-row justify-between items-center"
               placeholder="Last Name"
+              onChange={(e) =>
+                form.setFieldsValue({ firstName: e.target.value.toUpperCase() })
+              }
             />
           </Form.Item>
         </Col>

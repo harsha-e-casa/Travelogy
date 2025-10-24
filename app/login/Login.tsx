@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import { postDatav1 } from "@/services/NetworkAdapter"; // Ensure postData function is defined
 import CryptoJS from "crypto-js"; // Importing crypto-js to encrypt the password
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { checkTokenExpiry } from "@/services/Utils";
 import { url } from "inspector";
 
@@ -19,7 +19,9 @@ export default function Login() {
   // const [loading, setLoading] = useState(false); // For handling loading state during login
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const nextUrl = searchParams.get("next") || "/flights";
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -34,51 +36,92 @@ export default function Login() {
   }, [router]);
 
   // Login handler
+  // const onFinish = async (values: any) => {
+  //   setLoading(true);
+
+  //   console.log("Login values:", values);
+
+  //   try {
+  //     // Encrypt password using crypto-js before sending it
+  //     const encryptedPassword = CryptoJS.AES.encrypt(
+  //       values.password,
+  //       "yourSecretKey"
+  //     ).toString();
+
+  //     // Prepare the request data
+  //     let reqData = {
+  //       email: values.email,
+  //       password: encryptedPassword,
+  //     };
+
+  //     // Make the API request to the backend
+  //     const response: any = await postDatav1("travelogy/flight/login", reqData); // Assuming the backend URL
+  //     console.log("response === > ",response)
+
+  //     // If the login is successful, response will contain the JWT token
+  //     if (response.status === 200) {
+  //       // message.success("Login successful!");
+
+  //       // Store the JWT token in localStorage (or sessionStorage, or cookies depending on your needs)
+  //       localStorage.setItem("authToken", response.data.token);
+
+  //       // Redirect to the protected page
+  //       setTimeout(() => {
+  //         window.location.href = "/flights"; // Redirect to flights or dashboard
+  //       }, 1000);
+  //     } else if (response.status === 401) {
+  //       message.error("Incorrect password. Please try again.");
+  //     } else if (response.status === 403) {
+  //       message.error("Your account is inactive. Please contact support.");
+  //     } else {
+  //       message.error("Login failed. Please try again later.");
+  //     }
+  //   } catch (error) {
+  //     message.error("Login failed. Please try again later.");
+  //     console.error(error);
+  //   }
+
+  //   setLoading(false); // Hide the loading spinner after the request
+  // };
   const onFinish = async (values: any) => {
     setLoading(true);
-
-    console.log("Login values:", values);
-
     try {
-      // Encrypt password using crypto-js before sending it
-      const encryptedPassword = CryptoJS.AES.encrypt(
-        values.password,
-        "yourSecretKey"
-      ).toString();
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // Same-origin; cookies are handled automatically
+        body: JSON.stringify({
+          email: values.email,
+          password: values.password, // 🔒 rely on HTTPS; avoid client-side "encryption"
+        }),
+      });
 
-      // Prepare the request data
-      let reqData = {
-        email: values.email,
-        password: encryptedPassword,
-      };
-
-      // Make the API request to the backend
-      const response: any = await postDatav1("travelogy/flight/login", reqData); // Assuming the backend URL
-
-      // If the login is successful, response will contain the JWT token
-      if (response.status === 200) {
-        // message.success("Login successful!");
-
-        // Store the JWT token in localStorage (or sessionStorage, or cookies depending on your needs)
-        localStorage.setItem("authToken", response.data.token);
-
-        // Redirect to the protected page
-        setTimeout(() => {
-          window.location.href = "/flights"; // Redirect to flights or dashboard
-        }, 1000);
-      } else if (response.status === 401) {
-        message.error("Incorrect password. Please try again.");
-      } else if (response.status === 403) {
-        message.error("Your account is inactive. Please contact support.");
-      } else {
-        message.error("Login failed. Please try again later.");
+      if (!res.ok) {
+        const { message: msg } = await res
+          .json()
+          .catch(() => ({ message: "Login failed" }));
+        message.error(msg || "Login failed");
+        return;
       }
-    } catch (error) {
-      message.error("Login failed. Please try again later.");
-      console.error(error);
-    }
 
-    setLoading(false); // Hide the loading spinner after the request
+      console.log("resres ==> ",res)
+      const data = await res.json();
+      console.log("data from /api/login => ", data);
+
+      if (data && data?.token) {
+        localStorage.setItem("authToken", data.token);
+      }
+
+      message.success("Login successful");
+      console.log("nextUrlnextUrl ==> ",nextUrl)
+      router.push(nextUrl);
+      window.location.href = nextUrl;
+    } catch (e) {
+      console.error(e);
+      message.error("Network error. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -108,7 +151,7 @@ export default function Login() {
               justifyContent: "center",
               alignItems: "center",
               padding: "15px",
-              paddingLeft: "60px"
+              paddingLeft: "60px",
             }}
           >
             <div className="p-20">
@@ -125,7 +168,14 @@ export default function Login() {
                 // height={259}
               />
             </div>
-            <div style={{ textAlign: "center", color: "white", fontFamily: "Puritan" }} className="p-20">
+            <div
+              style={{
+                textAlign: "center",
+                color: "white",
+                fontFamily: "Puritan",
+              }}
+              className="p-20"
+            >
               <h2 style={{ color: "white", fontFamily: "Puritan" }}>
                 Login & Let Your
               </h2>
@@ -219,7 +269,7 @@ export default function Login() {
               <h1 className="title">Welcome</h1>
 
               <Form layout="vertical" onFinish={onFinish}>
-                <label style={{ marginTop: "12px", color: "white" }}>Email ID</label>
+                <label style={{ color: "white" }}>Email ID</label>
                 <Form.Item
                   name="email"
                   rules={[
@@ -229,8 +279,9 @@ export default function Login() {
                 >
                   <Input
                     size="large"
-                    prefix={<MailOutlined style={{ paddingRight: "10px" }} />}
+                    prefix={<MailOutlined />}
                     placeholder="Enter your email"
+                    // style={{ paddingLeft: "10px" }}
                   />
                 </Form.Item>
 

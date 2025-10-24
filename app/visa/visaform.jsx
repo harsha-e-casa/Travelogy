@@ -1,6 +1,11 @@
+import { postData } from "@/services/NetworkAdapter";
+import { message } from "antd";
 import React, { useState } from "react";
 
 const VisaForm = () => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
   const [isOtherSelected, setIsOtherSelected] = useState(false);
 
   const [errors, setErrors] = useState({
@@ -14,13 +19,15 @@ const VisaForm = () => {
   const handleRadioChange = (event) => {
     if (event.target.value === "other") {
       setIsOtherSelected(true);
+      setErrors((prev) => ({ ...prev, purposeOfTravel: "" }));
     } else {
       setIsOtherSelected(false);
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    const form = event.currentTarget;
 
     let newErrors = {};
 
@@ -44,7 +51,58 @@ const VisaForm = () => {
       newErrors.country = "Country for visa application is required.";
     }
 
+    const purpose = form.purposeOfTravel?.value;
+    if (!purpose) {
+      newErrors.purposeOfTravel = "Please select your purpose of travel.";
+    }
+
+    let otherText = "";
+    if (purpose === "other") {
+      otherText = (form.otherPurpose?.value || "").trim();
+      if (!otherText) {
+        newErrors.otherPurpose = "Please specify your purpose of travel.";
+      }
+    }
+
     setErrors(newErrors);
+
+    const fullName = form.name.value.trim();
+    const mobile = form.mobile.value.trim();
+    const email = form.email.value.trim().toLowerCase();
+    const travelingDestination = form.travelingDestination.value.trim();
+    const country = form.country.value.trim();
+
+    // Use the 'other' text when "other" is selected, else the selected purpose
+    const purposeResolved = purpose === "other" ? otherText : purpose;
+
+    const reqData = {
+      action: "visaSave",
+      requestData: {
+        fullName,
+        mobile,
+        email,
+        travelingDestination,
+        country,
+        purposeOfTravel: purposeResolved,
+        rawPurpose: purpose,
+        ...(purpose === "other" ? { otherPurpose: otherText } : {}),
+      },
+    };
+
+    try {
+      const response = await postData("/travelogy/common/save", reqData, {
+        Authorization: `Bearer ${token}`,
+      });
+      console.log("responseresponse ==> ", response);
+      if (response.success) {
+        message.success("Data saved successfully!");
+        form.reset();
+      } else {
+        message.error("Failed to save data.");
+      }
+    } catch (err) {
+      console.error("Save failed:", err);
+    }
   };
 
   return (
@@ -164,8 +222,13 @@ const VisaForm = () => {
           >
             Purpose of Travel
           </label>
+
           <div className="custom-radio-group">
-            <div className="pt-8 grid grid-cols-2 gap-4">
+            <div
+              className="pt-8 grid grid-cols-2 gap-4"
+              role="radiogroup"
+              aria-invalid={Boolean(errors.purposeOfTravel)}
+            >
               <label className="custom-radio-button flex items-center gap-2">
                 <input
                   type="radio"
@@ -177,6 +240,7 @@ const VisaForm = () => {
                 />
                 <span className="radio_label text-sm">Leisure</span>
               </label>
+
               <label className="custom-radio-button flex items-center gap-2">
                 <input
                   type="radio"
@@ -188,6 +252,7 @@ const VisaForm = () => {
                 />
                 <span className="radio_label text-sm">Business</span>
               </label>
+
               <label className="custom-radio-button flex items-center gap-2">
                 <input
                   type="radio"
@@ -199,6 +264,7 @@ const VisaForm = () => {
                 />
                 <span className="radio_label text-sm">Student</span>
               </label>
+
               <label className="custom-radio-button flex items-center gap-2">
                 <input
                   type="radio"
@@ -211,6 +277,12 @@ const VisaForm = () => {
                 <span className="radio_label text-sm">Other</span>
               </label>
             </div>
+
+            {errors.purposeOfTravel && (
+              <p className="flex item-left form-error-space text-red-500 text-xs mt-1">
+                {errors.purposeOfTravel}
+              </p>
+            )}
           </div>
         </div>
 
@@ -227,8 +299,16 @@ const VisaForm = () => {
               id="otherPurpose"
               name="otherPurpose"
               placeholder="Please describe your purpose of travel"
-              className="h-12 transition-all duration-300 hover:!border-primary/50 focus:!ring-2 focus:!ring-primary/20"
-            ></textarea>
+              className={`h-12 transition-all duration-300 hover:!border-primary/50 focus:!ring-2 focus:!ring-primary/20 ${
+                errors.otherPurpose ? "border-red-500" : ""
+              }`}
+              aria-invalid={Boolean(errors.otherPurpose)}
+            />
+            {errors.otherPurpose && (
+              <p className="flex item-left form-error-space text-red-500 text-xs mt-1">
+                {errors.otherPurpose}
+              </p>
+            )}
           </div>
         )}
 

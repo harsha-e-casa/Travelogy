@@ -35,9 +35,27 @@ export default function Header1({
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    window.location.href = "/login";
+  const handleLogout = async () => {
+    try {
+      // Call the Next.js API route to clear the cookie
+      const res = await fetch("/api/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // ensures cookies are sent with request
+      });
+      
+      localStorage.removeItem("authToken");
+
+      if (res.ok) {
+        console.log("Logout successful");
+        // Optional: show a message or redirect
+        window.location.href = "/login";
+      } else {
+        console.error("Logout failed", await res.text());
+      }
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
   };
 
   return (
@@ -61,7 +79,10 @@ export default function Header1({
                 </Link>
               </div>
 
-              <div className="header-nav" style={{ justifyContent: "flex-end"}}>
+              <div
+                className="header-nav"
+                style={{ justifyContent: "flex-end" }}
+              >
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
                     <li className={pathname === "/home" || pathname === "/" ? "active" : ""}>

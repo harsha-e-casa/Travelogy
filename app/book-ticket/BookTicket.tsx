@@ -713,12 +713,14 @@ export default function BookTicket() {
           code: string;
           amount?: number;
           desc: string;
+          fromToCode?: string;
         }[] = []; // Type baggage info array
         let mealinfosPaylode: {
           key: string;
           code: string;
           amount: number;
           desc: string;
+          fromToCode?: string;
         }[] = []; // Type meal info array
         let groupedAdults: {
           ti: string;
@@ -815,6 +817,11 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+                console.log("baggabe matchedSegment ==> ", matchedSegment);
+                
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+                
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
@@ -826,6 +833,7 @@ export default function BookTicket() {
                     code: baggageCode,
                     amount: baggageOption.amount,
                     desc: baggageOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
@@ -842,6 +850,10 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+
                 const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
                   (meal: any) => meal.code === mealCode
                 );
@@ -852,12 +864,14 @@ export default function BookTicket() {
                     code: mealCode,
                     amount: mealOption.amount,
                     desc: mealOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
             });
             const adultSeatInfo = [];
             if (seatInfo?.length > 0) {
+              console.log("seatInfoseatInfo ==> ",seatInfo);
               for (let i = 0; i < seatInfo.length; i++) {
                 const item = seatInfo[i];
                 adultSeatInfo.push({
@@ -971,6 +985,11 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+
+
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
@@ -981,6 +1000,7 @@ export default function BookTicket() {
                     code: baggageCode,
                     amount: baggageOption.amount,
                     desc: baggageOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
@@ -994,6 +1014,10 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+
                 const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
                   (meal: any) => meal.code === mealCode
                 );
@@ -1004,6 +1028,7 @@ export default function BookTicket() {
                     code: mealCode,
                     amount: mealOption.amount,
                     desc: mealOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
@@ -1402,9 +1427,9 @@ export default function BookTicket() {
                                                     height={16}
                                                     viewBox="0 0 16 16"
                                                     xmlns="http://www.w3.org/2000/svg"
+                                                    style={{ margin: "0" }}
                                                   >
                                                     <path d="M14.122 7.23384H12.3453V5.80934C12.3453 5.55009 12.135 5.33991 11.8757 5.33991H9.33781C9.1025 4.62166 8.42469 4.10641 7.63672 4.10641H6.82216V0.469438C6.82216 0.210188 6.61194 0 6.35262 0H3.07384C2.81453 0 2.60428 0.210188 2.60428 0.469438V4.10644H1.78972C0.802875 4.10644 0 4.90906 0 5.89566V14.2107C0 15.1973 0.802875 16 1.78972 16H14.122C15.1575 16 16 15.1578 16 14.1225V9.11134C16 8.07609 15.1575 7.23384 14.122 7.23384ZM15.0609 9.11134V12.0802H5.77616V9.11134C5.77616 8.59378 6.19734 8.17269 6.71506 8.17269H14.122C14.6397 8.17269 15.0609 8.59375 15.0609 9.11134ZM11.4062 7.23384H9.43094V6.27878H11.4062V7.23384ZM3.54338 0.938844H5.88306V4.10641H3.54338V0.938844ZM0.939094 14.2107V5.89566C0.939094 5.42675 1.32069 5.04528 1.78972 5.04528H7.63672C8.08409 5.04528 8.45697 5.39431 8.48556 5.83991C8.48669 5.85728 8.48887 5.87431 8.49178 5.89106V7.23384H6.71503C5.6795 7.23384 4.83703 8.07609 4.83703 9.11134V14.1225C4.83703 14.4643 4.92931 14.7848 5.08962 15.0612H1.78972C1.32069 15.0612 0.939094 14.6797 0.939094 14.2107ZM14.122 15.0612H7.63672H6.71506C6.19734 15.0612 5.77616 14.6401 5.77616 14.1225V13.0191H15.0609V14.1225C15.0609 14.6401 14.6397 15.0612 14.122 15.0612Z">
-                                                      {" "}
                                                     </path>
                                                   </svg>
                                                   : (Adult) Check-in :{" "}
@@ -1412,7 +1437,6 @@ export default function BookTicket() {
                                                     segmentsPrice[0].fd.ADULT.bI
                                                       .iB
                                                   }{" "}
-                                                  (01 Piece only)
                                                 </li>
                                                 <li className="cabin">
                                                   <svg
@@ -1420,6 +1444,7 @@ export default function BookTicket() {
                                                     height={16}
                                                     viewBox="0 0 10 16"
                                                     xmlns="http://www.w3.org/2000/svg"
+                                                    style={{ margin: "0" }}
                                                   >
                                                     <path d="M7.82422 3.76562H6.41016V0.9375H6.88281C7.14169 0.9375 7.35156 0.727625 7.35156 0.46875C7.35156 0.209875 7.14169 0 6.88281 0H3.11719C2.85831 0 2.64844 0.209875 2.64844 0.46875C2.64844 0.727625 2.85831 0.9375 3.11719 0.9375H3.58984V3.76562H2.17578C1.39822 3.76562 0.765625 4.39822 0.765625 5.17578V12.707C0.765625 13.3572 1.20803 13.9057 1.8075 14.0681C1.74294 14.2296 1.70703 14.4056 1.70703 14.5898C1.70703 15.3674 2.33963 16 3.11719 16C3.89475 16 4.52734 15.3674 4.52734 14.5898C4.52734 14.4241 4.49838 14.265 4.44559 14.1172H5.55437C5.50159 14.265 5.47262 14.4241 5.47262 14.5898C5.47262 15.3674 6.10522 16 6.88278 16C7.66034 16 8.29294 15.3674 8.29294 14.5898C8.29294 14.4056 8.25703 14.2296 8.19247 14.0681C8.79197 13.9057 9.23434 13.3572 9.23434 12.707V5.17578C9.23437 4.39822 8.60178 3.76562 7.82422 3.76562ZM4.52734 0.9375H5.47266V3.76562H4.52734V0.9375ZM3.58984 14.5898C3.58984 14.8505 3.37781 15.0625 3.11719 15.0625C2.85656 15.0625 2.64453 14.8505 2.64453 14.5898C2.64453 14.3292 2.85656 14.1172 3.11719 14.1172C3.37781 14.1172 3.58984 14.3292 3.58984 14.5898ZM6.88281 15.0625C6.62219 15.0625 6.41016 14.8505 6.41016 14.5898C6.41016 14.3292 6.62219 14.1172 6.88281 14.1172C7.14344 14.1172 7.35547 14.3292 7.35547 14.5898C7.35547 14.8505 7.14344 15.0625 6.88281 15.0625ZM8.29688 12.707C8.29688 12.9677 8.08484 13.1797 7.82422 13.1797H2.17578C1.91516 13.1797 1.70312 12.9677 1.70312 12.707V5.17578C1.70312 4.91516 1.91516 4.70312 2.17578 4.70312H7.82422C8.08484 4.70312 8.29688 4.91516 8.29688 5.17578V12.707Z" />
                                                     <path d="M3.11719 5.64844C2.85831 5.64844 2.64844 5.85831 2.64844 6.11719V11.7656C2.64844 12.0245 2.85831 12.2344 3.11719 12.2344C3.37606 12.2344 3.58594 12.0245 3.58594 11.7656V6.11719C3.58594 5.85831 3.37606 5.64844 3.11719 5.64844Z" />
@@ -1428,7 +1453,7 @@ export default function BookTicket() {
                                                       {" "}
                                                     </path>
                                                   </svg>
-                                                  Cabin baggage{" "}
+                                                  : Cabin baggage{" : "}
                                                   {
                                                     segmentsPrice[0].fd.ADULT.bI
                                                       .cB
@@ -2057,6 +2082,7 @@ export default function BookTicket() {
                             <div className="px-4 py-3 border_xcolor_1px flex justify-between">
                               <button
                                 onClick={() => window.history.back()}
+                                style={{ borderRadius: "5px" }}
                                 className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
                               >
                                 Back
@@ -2064,6 +2090,7 @@ export default function BookTicket() {
 
                               <button
                                 onClick={handleNextClick}
+                                style={{ borderRadius: "5px" }}
                                 className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-block text-center"
                               >
                                 Continue

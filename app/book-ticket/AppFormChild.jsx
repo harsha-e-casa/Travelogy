@@ -81,6 +81,7 @@ const AppFormChild = ({
             label="First Name"
             hasFeedback
             // revalidate when last name changes
+            getValueFromEvent={(e) => (e?.target?.value || "").toUpperCase()}
             dependencies={[`childlast-${index}`]}
             rules={[
               { required: true, message: "Please enter the name" },
@@ -158,6 +159,7 @@ const AppFormChild = ({
             label="Last Name"
             hasFeedback
             // revalidate when first name changes
+            getValueFromEvent={(e) => (e?.target?.value || "").toUpperCase()}
             dependencies={[`childName-${index}`]}
             rules={[
               { required: true, message: "Please enter the Last name" },

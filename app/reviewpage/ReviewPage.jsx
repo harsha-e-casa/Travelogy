@@ -1399,7 +1399,7 @@ const ReviewPage = () => {
                                           <p className="text-sm-bold neutral-900 ">
                                             Check-in:{" "}
                                             <span className="text-sm-medium neutral-500 ">
-                                              {baggageObj?.iB}, 1 piece/adult
+                                              {baggageObj?.iB}
                                             </span>
                                           </p>
                                         </div>
@@ -2017,6 +2017,7 @@ const ReviewPage = () => {
                                             traveller.ssrBaggageInfos &&
                                             traveller.ssrBaggageInfos.length > 0
                                           ) {
+                                            console.log("traveller.ssrBaggageInfos ==> ",traveller.ssrBaggageInfos)
                                             const baggageDetails =
                                               traveller.ssrBaggageInfos
                                                 .map((b) => {
@@ -2029,11 +2030,12 @@ const ReviewPage = () => {
                                                     baggageFromCookie
                                                   );
                                                   return baggageFromCookie
-                                                    ? baggageFromCookie.desc
+                                                    ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
                                                     : b.code;
                                                 })
                                                 .filter(Boolean)
                                                 .join(", ");
+                                            console.log("baggageDetailsbaggageDetails ==> ",baggageDetails)
                                             if (baggageDetails) {
                                               addOns.push(
                                                 `Baggage: ${baggageDetails}`
@@ -2069,7 +2071,7 @@ const ReviewPage = () => {
                                                       (c) => c.code === m.code
                                                     );
                                                   return mealFromCookie
-                                                    ? mealFromCookie.desc
+                                                    ? `${mealFromCookie.desc} [${mealFromCookie.fromToCode}]`
                                                     : m.code;
                                                 })
                                                 .filter(Boolean)
@@ -2228,6 +2230,7 @@ const ReviewPage = () => {
                               <div className="mt-60 flex justify-between">
                                 <Link
                                   href={`/book-ticket?tcs_id=${priceId}`}
+                                  style={{ borderRadius: "5px" }}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                 >
                                   Back
@@ -2235,6 +2238,7 @@ const ReviewPage = () => {
                                 {flightData?.conditions?.isBA === true && (
                                   <div
                                     onClick={handleHoldBooking}
+                                    style={{ borderRadius: "5px" }}
                                     className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                   >
                                     Hold Booking

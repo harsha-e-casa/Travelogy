@@ -1215,555 +1215,302 @@ const Alldetails = ({ totalpricee }) => {
                   </p>
                 </div>
 
-                {isNoPrintVisible && (
-                  <div className={isNoPrintVisible ? "" : "no-print"}>
-                    {bookingDetails?.order?.status === "SUCCESS" && (
-                      <div className="flex flex-row gap-3">
-                        <button
-                          className={isNoPrintVisible ? "" : "no-print"}
-                          onClick={handleCancellation}
-                        >
-                          <AmendmentPopup
-                            bookingId={bookingId}
-                            bookingDetails={bookingDetails}
-                            onSubmit={(
-                              bookingId,
-                              amendmentType,
-                              remarks,
-                              callback
-                            ) =>
-                              sumbitAmendmentapi(
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                  {isNoPrintVisible && (
+                    <div className={isNoPrintVisible ? "" : "no-print"}>
+                      {bookingDetails?.order?.status === "SUCCESS" && (
+                        <div className="flex flex-row gap-3">
+                          <button
+                            className={isNoPrintVisible ? "" : "no-print"}
+                            style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}
+                            onClick={handleCancellation}
+                          >
+                            <AmendmentPopup
+                              bookingId={bookingId}
+                              bookingDetails={bookingDetails}
+                              onSubmit={(
                                 bookingId,
                                 amendmentType,
                                 remarks,
-                                (data) => {
-                                  callback?.(data);
-                                  setShowTravellerModal(true);
-                                }
-                              )
-                            }
-                          />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {!reStatus && isNoPrintVisible && (
-                  <div className={isNoPrintVisible ? "" : "no-print"}>
-                    {bookingDetails?.order?.status === "SUCCESS" && (
-                      <div>
-                        <button
-                          className="border border-grey rounded px-4 py-2"
-                          onClick={openReIssueModal}
-                        >
-                          Reschedule
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* {isReIssueModalOpen && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div
-                      className="bg-white rounded-lg p-6 shadow-lg relative"
-                      style={{ width: "75%" }}
-                    >
-                      <button
-                        onClick={closeReIssueModal}
-                        className="absolute top-4 right-4 text-2xl text-black"
-                      >
-                        &times;
-                      </button>
-                      <h2 className="text-xl font-bold text-blue-800 mb-6">
-                        Reschedule Flight
-                      </h2>
-                      <div className="flex flex-col gap-4 mb-6">
-                        <div>
-                          <label className="text-gray-500 mb-1 block">
-                            Select Passenger for Flight Rescheduling
-                          </label>
-
-                          <table className="min-w-full table-auto border-collapse border border-gray-200">
-                            <thead>
-                              <tr className="bg-gray-100">
-                                <th className="px-4 py-2 border-b text-center">
-                                  Si No
-                                </th>
-                                <th className="px-4 py-2 border-b text-center">
-                                  Name
-                                </th>
-                                <th className="px-4 py-2 border-b text-center">
-                                  From-To
-                                </th>
-                                <th className="px-4 py-2 border-b text-center">
-                                  PNR
-                                </th>
-                                <th className="px-4 py-2 border-b text-center">
-                                  Departure Date
-                                </th>
-                                <th className="px-4 py-2 border-b text-center">
-                                  Departure Time
-                                </th>
-                                <th className="px-4 py-2 border-b text-center">
-                                  Select
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {bookingDetails.itemInfos.AIR.travellerInfos.map(
-                                (traveller, index) => {
-                                  return Object.keys(traveller.pnrDetails).map(
-                                    (pnrKey, pnrIndex) => {
-                                      const tripInfo =
-                                        bookingDetails.itemInfos.AIR.tripInfos.find(
-                                          (trip) =>
-                                            trip.sI.some(
-                                              (sI) =>
-                                                sI.da.code ===
-                                                  pnrKey.split("-")[0] &&
-                                                sI.aa.code ===
-                                                  pnrKey.split("-")[1]
-                                            )
-                                        );
-
-                                      const flightDate = tripInfo?.sI?.find(
-                                        (sI) =>
-                                          sI.da.code === pnrKey.split("-")[0] &&
-                                          sI.aa.code === pnrKey.split("-")[1]
-                                      )?.dt;
-
-                                      const [date, time] = flightDate
-                                        ? flightDate.split("T")
-                                        : ["", ""];
-                                      const [hours, minutes] = time
-                                        ? time.split(":")
-                                        : ["", ""];
-                                      const formattedTime = `${hours}:${minutes}`;
-
-                                      return (
-                                        <tr key={`${index}-${pnrIndex}`}>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            {index + 1}
-                                          </td>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            {traveller.ti} {traveller.fN}{" "}
-                                            {traveller.lN}
-                                          </td>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            {pnrKey.split("-")[0]} -{" "}
-                                            {pnrKey.split("-")[1]}
-                                          </td>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            {traveller.pnrDetails[pnrKey]}
-                                          </td>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            {date}
-                                          </td>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            {formattedTime}
-                                          </td>
-                                          <td className="px-4 py-2 border-b text-center">
-                                            <input
-                                              style={{ height: "20px" }}
-                                              type="checkbox"
-                                            />
-                                          </td>
-                                        </tr>
-                                      );
-                                    }
-                                  );
-                                }
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      <button
-                        // onClick={handleSubmitReIssue}
-                        className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
-                      >
-                        Submit
-                      </button>
-                    </div>
-                  </div>
-                )} */}
-
-                {isReIssueModalOpen && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div
-                      className="bg-white rounded-lg p-6 shadow-lg relative"
-                      style={{ width: "75%" }}
-                    >
-                      <button
-                        onClick={closeReIssueModal}
-                        className="absolute top-4 right-4 text-2xl text-black"
-                      >
-                        &times;
-                      </button>
-                      <h2 className="text-xl font-bold text-blue-800 mb-6">
-                        Reschedule Flight
-                      </h2>
-
-                      <div className="mb-4">
-                        <label
-                          htmlFor="pnr-select"
-                          className="block text-gray-500 mb-2"
-                        >
-                          Select PNR
-                        </label>
-                        <select
-                          id="pnr-select"
-                          value={selectedPNR}
-                          onChange={(e) => handlePNRSelect(e.target.value)}
-                          className="w-full border-b border-gray-400 py-2 px-4"
-                        >
-                          <option value="">-- Select PNR --</option>
-                          {Object.keys(rescheduleData.pnrs).map(
-                            (pnr, index) => (
-                              <option key={index} value={pnr}>
-                                {pnr} - {rescheduleData.pnrs[pnr]}{" "}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      </div>
-
-                      {/* Display travel details after PNR selection */}
-                      {selectedPNR && (
-                        <div className="mb-6 flex justify-around items-center">
-                          <div>
-                            <h6 className="font-bold text-gray-700">
-                              Travel Details:
-                            </h6>
-                            <p className="text-gray-600">
-                              From:{" "}
-                              {
-                                rescheduleData.pnrFlightDetails[selectedPNR]
-                                  .from
-                              }
-                            </p>
-                            <p className="text-gray-600">
-                              To:{" "}
-                              {rescheduleData.pnrFlightDetails[selectedPNR].to}
-                            </p>
-                            {/* <p className="text-gray-600">
-                            Flight Number: {pnrFlightDetails.flightNumber}
-                          </p> */}
-                            <p className="text-gray-600">
-                              Departure Time:{" "}
-                              {formatDateTime(
-                                rescheduleData.pnrFlightDetails[selectedPNR]
-                                  .departureTime
-                              )}
-                            </p>
-                            <p className="text-gray-600">
-                              Arrival Time:{" "}
-                              {formatDateTime(
-                                rescheduleData.pnrFlightDetails[selectedPNR]
-                                  .arrivalTime
-                              )}
-                            </p>
-                          </div>
-                          {/* <div>
-                            <label
-                              className="block text-gray-700 font-medium mb-2"
-                              htmlFor="reschedule-date"
-                            >
-                              Select New Travel Date:
-                            </label>
-                            <input
-                              type="date"
-                              id="reschedule-date"
-                              className="border border-gray-400 px-4 py-2 rounded"
-                              value={rescheduleDate} // You need to manage this state!
-                              onChange={(e) =>
-                                setRescheduleDate(e.target.value)
-                              }
-                              disabled={!selectedPNR}
-                              min={new Date().toISOString().split("T")[0]}
-                            />
-                          </div> */}
-                          <div>
-                            <label
-                              className="block text-gray-700 font-medium mb-2"
-                              htmlFor="reschedule-date"
-                            >
-                              Select New Travel Date:
-                            </label>
-                            <DatePicker
-                              id="reschedule-date"
-                              format="MM/DD/YYYY"
-                              value={
-                                rescheduleDate ? dayjs(rescheduleDate) : null
-                              }
-                              onChange={(d) =>
-                                setRescheduleDate(
-                                  d ? d.format("YYYY-MM-DD") : ""
+                                callback
+                              ) =>
+                                sumbitAmendmentapi(
+                                  bookingId,
+                                  amendmentType,
+                                  remarks,
+                                  (data) => {
+                                    callback?.(data);
+                                    setShowTravellerModal(true);
+                                  }
                                 )
                               }
-                              disabled={!selectedPNR}
-                              disabledDate={(current) =>
-                                current && current < dayjs().startOf("day")
-                              }
-                              className="border border-gray-400 px-2 py-2 rounded w-full"
-                              onKeyDown={(e) => {
-                                const okKeys = [
-                                  "Backspace",
-                                  "Tab",
-                                  "ArrowLeft",
-                                  "ArrowRight",
-                                  "Delete",
-                                  "Enter",
-                                ];
-                                if (okKeys.includes(e.key)) return;
-                                if (!/[\d/]/.test(e.key)) e.preventDefault(); // only 0-9 and slash
-                              }}
-                              onPaste={(e) => {
-                                const text = (
-                                  e.clipboardData.getData("text") || ""
-                                ).trim();
-                                if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
-                                  e.preventDefault();
-                              }}
                             />
-                          </div>
+                          </button>
                         </div>
-                      )}
-
-                      {/* List of travellers with checkboxes */}
-                      {/* {selectedPNR &&
-                        rescheduleData.pnrPassengerDetails[selectedPNR] && (
-                          <div className="mb-6">
-                            <h6 className="font-bold text-gray-700">
-                              Travellers:
-                            </h6>
-                            <div className="">
-                              {rescheduleData.pnrPassengerDetails[
-                                selectedPNR
-                              ].map((passenger, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    style={{ width: "20px" }}
-                                    id={`traveller-${index}`}
-                                    className="form-checkbox"
-                                    checked={selectedTravellers.some(
-                                      (p) =>
-                                        p.firstName === passenger.firstName &&
-                                        p.lastName === passenger.lastName &&
-                                        p.title === passenger.title &&
-                                        p.passengerType ===
-                                          passenger.passengerType
-                                    )}
-                                    onChange={(e) => {
-                                      let updated;
-                                      if (e.target.checked) {
-                                        updated = [
-                                          ...selectedTravellers,
-                                          passenger,
-                                        ];
-                                      } else {
-                                        updated = selectedTravellers.filter(
-                                          (p) =>
-                                            !(
-                                              p.firstName ===
-                                                passenger.firstName &&
-                                              p.lastName ===
-                                                passenger.lastName &&
-                                              p.title === passenger.title &&
-                                              p.passengerType ===
-                                                passenger.passengerType
-                                            )
-                                        );
-                                      }
-                                      console.log(
-                                        "Updated selectedTravellers:",
-                                        updated
-                                      );
-                                      setSelectedTravellers(updated);
-                                    }}
-                                  />
-
-                                  <label htmlFor={`traveller-${index}`}>
-                                    {passenger.title} {passenger.firstName}{" "}
-                                    {passenger.lastName} (
-                                    {passenger.passengerType})
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )} */}
-                      {selectedPNR &&
-                        rescheduleData.pnrPassengerDetails[selectedPNR] && (
-                          <div className="mb-6">
-                            <h6 className="font-bold text-gray-700">
-                              Travellers:
-                            </h6>
-                            <div>
-                              {rescheduleData.pnrPassengerDetails[
-                                selectedPNR
-                              ].map((passenger, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center gap-2"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    style={{ width: "20px" }}
-                                    id={`traveller-${index}`}
-                                    className="form-checkbox"
-                                    checked={selectedTravellers.some(
-                                      (p) =>
-                                        p.firstName === passenger.firstName &&
-                                        p.lastName === passenger.lastName &&
-                                        p.title === passenger.title &&
-                                        p.passengerType ===
-                                          passenger.passengerType &&
-                                        p.index === index // compare index also!
-                                    )}
-                                    onChange={(e) => {
-                                      let updated;
-                                      if (e.target.checked) {
-                                        // Add index to the selected passenger object
-                                        updated = [
-                                          ...selectedTravellers,
-                                          { ...passenger, index },
-                                        ];
-                                      } else {
-                                        // Remove by comparing all fields including index
-                                        updated = selectedTravellers.filter(
-                                          (p) =>
-                                            !(
-                                              p.firstName ===
-                                                passenger.firstName &&
-                                              p.lastName ===
-                                                passenger.lastName &&
-                                              p.title === passenger.title &&
-                                              p.passengerType ===
-                                                passenger.passengerType &&
-                                              p.index === index
-                                            )
-                                        );
-                                      }
-                                      console.log(
-                                        "updatedupdated ======== ",
-                                        updated
-                                      );
-                                      setSelectedTravellers(updated);
-                                    }}
-                                  />
-
-                                  <label htmlFor={`traveller-${index}`}>
-                                    {passenger.title} {passenger.firstName}{" "}
-                                    {passenger.lastName} (
-                                    {passenger.passengerType})
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                      {/* <button
-                        onClick={handleSubmitReIssue}
-                        className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
-                        disabled={
-                          !rescheduleDate || selectedTravellers.length === 0
-                        }
-                      >
-                        Submit
-                      </button> */}
-                      <button
-                        onClick={handleSubmitReIssue}
-                        className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
-                        disabled={
-                          !rescheduleDate ||
-                          selectedTravellers.length === 0 ||
-                          rescheduleLoading // Disable while loading!
-                        }
-                      >
-                        {rescheduleLoading ? (
-                          <>
-                            <svg
-                              className="animate-spin h-5 w-5 mr-2"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="white"
-                                strokeWidth="4"
-                                fill="none"
-                              />
-                              <path
-                                className="opacity-75"
-                                fill="white"
-                                d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
-                              />
-                            </svg>
-                            Loading...
-                          </>
-                        ) : (
-                          "Submit"
-                        )}
-                      </button>
-
-                      {rescheduleError !== "" && (
-                        <p className="text-sm-medium text-red-400">
-                          {rescheduleError}
-                        </p>
                       )}
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {isNoPrintVisible && (
-                  <div className={isNoPrintVisible ? "" : "no-print"}>
-                    {bookingDetails?.order?.status === "SUCCESS" ? (
-                      <div className="relative inline-block">
+                  {!reStatus && isNoPrintVisible && (
+                    <div className={isNoPrintVisible ? "" : "no-print"}>
+                      {bookingDetails?.order?.status === "SUCCESS" && (
+                        <div style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
+                          <button
+                            className="border border-grey rounded px-4 py-2"
+                            onClick={openReIssueModal}
+                          >
+                            Reschedule
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {isReIssueModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                      <div
+                        className="bg-white rounded-lg p-6 shadow-lg relative"
+                        style={{ width: "75%" }}
+                      >
                         <button
-                          onClick={() => setShowDropdown(!showDropdown)}
-                          className="border border-grey rounded px-4 py-2"
+                          onClick={closeReIssueModal}
+                          className="absolute top-4 right-4 text-2xl text-black"
                         >
-                          More
+                          &times;
                         </button>
-                        {showDropdown && (
-                          <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                handlePrint(printRef);
-                                setShowDropdown(false);
-                              }}
-                            >
-                              Print Ticket
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                              onClick={() => {
-                                handleDownload(printRef);
-                                setShowDropdown(false);
-                              }}
-                            >
-                              Download Ticket
-                            </button>
+                        <h2 className="text-xl font-bold text-blue-800 mb-6">
+                          Reschedule Flight
+                        </h2>
+
+                        <div className="mb-4">
+                          <label
+                            htmlFor="pnr-select"
+                            className="block text-gray-500 mb-2"
+                          >
+                            Select PNR
+                          </label>
+                          <select
+                            id="pnr-select"
+                            value={selectedPNR}
+                            onChange={(e) => handlePNRSelect(e.target.value)}
+                            className="w-full border-b border-gray-400 py-2 px-4"
+                          >
+                            <option value="">-- Select PNR --</option>
+                            {Object.keys(rescheduleData.pnrs).map(
+                              (pnr, index) => (
+                                <option key={index} value={pnr}>
+                                  {pnr} - {rescheduleData.pnrs[pnr]}{" "}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </div>
+
+                        {/* Display travel details after PNR selection */}
+                        {selectedPNR && (
+                          <div className="mb-6 flex justify-around items-center">
+                            <div>
+                              <h6 className="font-bold text-gray-700">
+                                Travel Details:
+                              </h6>
+                              <p className="text-gray-600">
+                                From:{" "}
+                                {
+                                  rescheduleData.pnrFlightDetails[selectedPNR]
+                                    .from
+                                }
+                              </p>
+                              <p className="text-gray-600">
+                                To:{" "}
+                                {
+                                  rescheduleData.pnrFlightDetails[selectedPNR]
+                                    .to
+                                }
+                              </p>
+                              <p className="text-gray-600">
+                                Departure Time:{" "}
+                                {formatDateTime(
+                                  rescheduleData.pnrFlightDetails[selectedPNR]
+                                    .departureTime
+                                )}
+                              </p>
+                              <p className="text-gray-600">
+                                Arrival Time:{" "}
+                                {formatDateTime(
+                                  rescheduleData.pnrFlightDetails[selectedPNR]
+                                    .arrivalTime
+                                )}
+                              </p>
+                            </div>
+
+                            <div>
+                              <label
+                                className="block text-gray-700 font-medium mb-2"
+                                htmlFor="reschedule-date"
+                              >
+                                Select New Travel Date:
+                              </label>
+                              <DatePicker
+                                id="reschedule-date"
+                                format="MM/DD/YYYY"
+                                value={
+                                  rescheduleDate ? dayjs(rescheduleDate) : null
+                                }
+                                onChange={(d) =>
+                                  setRescheduleDate(
+                                    d ? d.format("YYYY-MM-DD") : ""
+                                  )
+                                }
+                                disabled={!selectedPNR}
+                                disabledDate={(current) =>
+                                  current && current < dayjs().startOf("day")
+                                }
+                                className="border border-gray-400 px-2 py-2 rounded w-full"
+                                onKeyDown={(e) => {
+                                  const okKeys = [
+                                    "Backspace",
+                                    "Tab",
+                                    "ArrowLeft",
+                                    "ArrowRight",
+                                    "Delete",
+                                    "Enter",
+                                  ];
+                                  if (okKeys.includes(e.key)) return;
+                                  if (!/[\d/]/.test(e.key)) e.preventDefault(); // only 0-9 and slash
+                                }}
+                                onPaste={(e) => {
+                                  const text = (
+                                    e.clipboardData.getData("text") || ""
+                                  ).trim();
+                                  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
+                                    e.preventDefault();
+                                }}
+                              />
+                            </div>
                           </div>
                         )}
+
+                        {selectedPNR &&
+                          rescheduleData.pnrPassengerDetails[selectedPNR] && (
+                            <div className="mb-6">
+                              <h6 className="font-bold text-gray-700">
+                                Travellers:
+                              </h6>
+                              <div>
+                                {rescheduleData.pnrPassengerDetails[
+                                  selectedPNR
+                                ].map((passenger, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-2"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      style={{ width: "20px" }}
+                                      id={`traveller-${index}`}
+                                      className="form-checkbox"
+                                      checked={selectedTravellers.some(
+                                        (p) =>
+                                          p.firstName === passenger.firstName &&
+                                          p.lastName === passenger.lastName &&
+                                          p.title === passenger.title &&
+                                          p.passengerType ===
+                                            passenger.passengerType &&
+                                          p.index === index // compare index also!
+                                      )}
+                                      onChange={(e) => {
+                                        let updated;
+                                        if (e.target.checked) {
+                                          // Add index to the selected passenger object
+                                          updated = [
+                                            ...selectedTravellers,
+                                            { ...passenger, index },
+                                          ];
+                                        } else {
+                                          // Remove by comparing all fields including index
+                                          updated = selectedTravellers.filter(
+                                            (p) =>
+                                              !(
+                                                p.firstName ===
+                                                  passenger.firstName &&
+                                                p.lastName ===
+                                                  passenger.lastName &&
+                                                p.title === passenger.title &&
+                                                p.passengerType ===
+                                                  passenger.passengerType &&
+                                                p.index === index
+                                              )
+                                          );
+                                        }
+                                        console.log(
+                                          "updatedupdated ======== ",
+                                          updated
+                                        );
+                                        setSelectedTravellers(updated);
+                                      }}
+                                    />
+
+                                    <label htmlFor={`traveller-${index}`}>
+                                      {passenger.title} {passenger.firstName}{" "}
+                                      {passenger.lastName} (
+                                      {passenger.passengerType})
+                                    </label>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                        <button
+                          onClick={handleSubmitReIssue}
+                          className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
+                          disabled={
+                            !rescheduleDate ||
+                            selectedTravellers.length === 0 ||
+                            rescheduleLoading // Disable while loading!
+                          }
+                        >
+                          {rescheduleLoading ? (
+                            <>
+                              <svg
+                                className="animate-spin h-5 w-5 mr-2"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="white"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="white"
+                                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
+                                />
+                              </svg>
+                              Loading...
+                            </>
+                          ) : (
+                            "Submit"
+                          )}
+                        </button>
+
+                        {rescheduleError !== "" && (
+                          <p className="text-sm-medium text-red-400">
+                            {rescheduleError}
+                          </p>
+                        )}
                       </div>
-                    ) : bookingDetails?.order?.status === "PENDING" ||
-                      bookingDetails?.order?.status === "ABORTED" ||
-                      bookingDetails?.order?.status === "UNCONFIRMED" ? (
-                      <>
-                        <div className="relative inline-block">
+                    </div>
+                  )}
+
+                  {isNoPrintVisible && (
+                    <div className={isNoPrintVisible ? "" : "no-print"}>
+                      {bookingDetails?.order?.status === "SUCCESS" ? (
+                        <div className="relative inline-block" style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
                           <button
                             onClick={() => setShowDropdown(!showDropdown)}
                             className="border border-grey rounded px-4 py-2"
@@ -1793,58 +1540,91 @@ const Alldetails = ({ totalpricee }) => {
                             </div>
                           )}
                         </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-row gap-3">
-                        <button
-                          className="border border-grey rounded"
-                          onClick={handleUnHold}
-                        >
-                          Unhold
-                        </button>
-                        <button
-                          className="border border-grey rounded"
-                          onClick={handlePayNow}
-                        >
-                          Pay Now
-                        </button>
-                        {/* <button className="border border-grey rounded">
-                        More
-                      </button> */}
-                        <div className="relative inline-block">
+                      ) : bookingDetails?.order?.status === "PENDING" ||
+                        bookingDetails?.order?.status === "ABORTED" ||
+                        bookingDetails?.order?.status === "UNCONFIRMED" ||
+                        bookingDetails?.order?.status === "CANCELLED" ? (
+                        <>
+                          <div className="relative inline-block" style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
+                            <button
+                              onClick={() => setShowDropdown(!showDropdown)}
+                              className="border border-grey rounded px-4 py-2"
+                            >
+                              More
+                            </button>
+                            {showDropdown && (
+                              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handlePrint(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Print Ticket
+                                </button>
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handleDownload(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Download Ticket
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-row gap-3">
                           <button
-                            onClick={() => setShowDropdown(!showDropdown)}
-                            className="border border-grey rounded px-4 py-2"
+                            className="border border-grey rounded"
+                            onClick={handleUnHold}
                           >
-                            More
+                            Unhold
                           </button>
-                          {showDropdown && (
-                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                onClick={() => {
-                                  handlePrint(printRef);
-                                  setShowDropdown(false);
-                                }}
-                              >
-                                Print Ticket
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                                onClick={() => {
-                                  handleDownload(printRef);
-                                  setShowDropdown(false);
-                                }}
-                              >
-                                Download Ticket
-                              </button>
-                            </div>
-                          )}
+                          <button
+                            className="border border-grey rounded"
+                            onClick={handlePayNow}
+                          >
+                            Pay Now
+                          </button>
+                          <div className="relative inline-block" style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
+                            <button
+                              onClick={() => setShowDropdown(!showDropdown)}
+                              className="border border-grey rounded px-4 py-2"
+                            >
+                              More
+                            </button>
+                            {showDropdown && (
+                              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handlePrint(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Print Ticket
+                                </button>
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handleDownload(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Download Ticket
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="mt-20">
