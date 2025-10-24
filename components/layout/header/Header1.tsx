@@ -4,6 +4,7 @@ import CurrencyDropdown from "@/components/elements/CurrencyDropdown";
 import LanguageDropdown from "@/components/elements/LanguageDropdown";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import "./style.css";
 import { jwtDecode } from "jwt-decode";
 
@@ -17,6 +18,7 @@ export default function Header1({
   const [open, setOpen] = useState(false);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [authToken, setAuthToken] = useState<string | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     try {
@@ -83,36 +85,36 @@ export default function Header1({
               >
                 <nav className="nav-main-menu">
                   <ul className="main-menu">
-                    <li>
+                    <li className={pathname === "/home" || pathname === "/" ? "active" : ""}>
                       <Link href="/home">Home</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/flights" ? "active" : ""}>
                       <Link href="/flights">Flights</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/hotels" ? "active" : ""}>
                       <Link href="/hotels">Hotel</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/holiday" ? "active" : ""}>
                       <Link href="/holiday">Holiday Package</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/visa" ? "active" : ""}>
                       <Link href="/visa">Visa</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/travelInsurance" ? "active" : ""}>
                       <Link href="/travelInsurance">Travel Insurance</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/contact" ? "active" : ""}>
                       <Link href="/contact">Contact</Link>
                     </li>
-                    <li>
+                    <li className={pathname === "/profile" ? "active" : ""}>
                       <Link href="/profile">Profile</Link>
                     </li>
                     {isVisible && (
                       <>
-                        <li>
+                        <li className={pathname === "/dashboard" ? "active" : ""}>
                           <Link href="/dashboard">Dashboard</Link>
                         </li>
-                        <li>
+                        <li className={pathname === "/user-create" ? "active" : ""}>
                           <Link href="/user-create">Vendor Creation</Link>
                         </li>
                       </>

@@ -89,7 +89,7 @@ export default function HotelGrid2() {
                         className="mb-5 col-xl-3 col-lg-4 col-md-6"
                         key={hotel.id}
                       >
-                        <HotelCard1 hotel={hotel} />
+                        <HotelCard1 hotel={hotel} nights={1} />
                       </div>
                     ))}
                   </div>

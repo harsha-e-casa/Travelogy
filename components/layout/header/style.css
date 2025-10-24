@@ -88,6 +88,32 @@
   color: #f09814;
 }
 
+/* Active menu item styles - matching hotel search engine design */
+.main-menu li.active {
+  position: relative;
+}
+
+.main-menu li.active:after {
+  transition: width 0.3s;
+  content: "";
+  position: absolute;
+  height: 4px;
+  width: 80%;
+  background: #f09814;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 2px 2px 0 0;
+}
+
+.main-menu li.active a {
+  color: #f09814;
+}
+
+.main-menu li.active a:hover {
+  color: #f09814;
+}
+
 .btn-logout {
   background: #f09814;
   color: white;

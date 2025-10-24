@@ -66,7 +66,7 @@ export default function HomeDashboard() {
                                     <img src="/assets/imgs/template/icons/ticket.svg" alt="Tickets" />
                                 </div>
                                 <div className="card-info">
-                                    <h5 className="neutral-1000">My Bookings</h5>
+                                    <h5 className="neutral-1000">Bookings</h5>
                                     <p className="text-sm-medium neutral-500">
                                         Manage your travel bookings
                                     </p>

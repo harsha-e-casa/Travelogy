@@ -1,5 +1,5 @@
 'use client'
-import { ChangeEvent, useState } from "react"
+import { ChangeEvent, useState, useEffect } from "react"
 
 export interface Hotel {
 	id: number
@@ -64,18 +64,30 @@ interface UseHotelFilterReturn {
 	totalResults: number
 }
 
-const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>): UseHotelFilterReturn => {
+const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>, minPrice: number = 0, maxPrice: number = 41087): UseHotelFilterReturn => {
 	const [filter, setFilter] = useState<Filter>({
 		names: [],
 		roomStyle: [],
 		amenities: [],
 		locations: [],
-		priceRange: [0, 41087],
+		priceRange: [minPrice, maxPrice],
 		// durationRange: [0, 30],
 		ratings: [],
 		hotelType: [],
 		...initialFilter,
 	})
+	const [priceRangeInitialized, setPriceRangeInitialized] = useState(false)
+
+	// Update price range only when min/max prices change and haven't been manually set
+	useEffect(() => {
+		if (!priceRangeInitialized && hotelsData.length > 0) {
+			setFilter(prev => ({
+				...prev,
+				priceRange: [minPrice, maxPrice]
+			}))
+			setPriceRangeInitialized(true)
+		}
+	}, [minPrice, maxPrice, hotelsData.length, priceRangeInitialized])
 	const [sortCriteria, setSortCriteria] = useState<SortCriteria>("name")
 	const [itemsPerPage, setItemsPerPage] = useState<number>(10)
 	const [currentPage, setCurrentPage] = useState<number>(1)
@@ -142,6 +154,7 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>): U
 			...prevFilter,
 			priceRange: values,
 		}));
+		setPriceRangeInitialized(true); // Mark as manually set
 	}
 
 
@@ -173,7 +186,7 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>): U
 			roomStyle: [],
 			amenities: [],
 			locations: [],
-			priceRange: [0, 41087],
+			priceRange: [minPrice, maxPrice],
 			// durationRange: [0, 30],
 			ratings: [],
 			hotelType: [],
