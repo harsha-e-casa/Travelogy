@@ -125,7 +125,7 @@ export default function VisaPage() {
       </div>*/}
             </div>
 
-            <div className="flex flex-wrap w-1/2 mx-auto gap-2 justify-center">
+            {/* <div className="flex flex-wrap w-1/2 mx-auto gap-2 justify-center">
               <div>
                 <Button shape="round">United Arab Emirates (Dubai) (AE)</Button>{" "}
               </div>
@@ -144,7 +144,7 @@ export default function VisaPage() {
               <div>
                 <Button shape="round"> 40+ Countries </Button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className="container pt-30 pb-80">

@@ -638,12 +638,14 @@ export default function BookTicket() {
           code: string;
           amount?: number;
           desc: string;
+          fromToCode?: string;
         }[] = []; // Type baggage info array
         let mealinfosPaylode: {
           key: string;
           code: string;
           amount: number;
           desc: string;
+          fromToCode?: string;
         }[] = []; // Type meal info array
         let groupedAdults: {
           ti: string;
@@ -740,6 +742,10 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
@@ -751,6 +757,7 @@ export default function BookTicket() {
                     code: baggageCode,
                     amount: baggageOption.amount,
                     desc: baggageOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
@@ -767,6 +774,10 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+
                 const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
                   (meal: any) => meal.code === mealCode
                 );
@@ -777,6 +788,7 @@ export default function BookTicket() {
                     code: mealCode,
                     amount: mealOption.amount,
                     desc: mealOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
@@ -896,6 +908,10 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+                
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
@@ -906,6 +922,7 @@ export default function BookTicket() {
                     code: baggageCode,
                     amount: baggageOption.amount,
                     desc: baggageOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }
@@ -919,6 +936,10 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
+
+                const tripFrom = matchedSegment?.da?.code;
+                const tripTo = matchedSegment?.aa?.code;
+                
                 const mealOption = matchedSegment?.ssrInfo?.MEAL?.find(
                   (meal: any) => meal.code === mealCode
                 );
@@ -929,6 +950,7 @@ export default function BookTicket() {
                     code: mealCode,
                     amount: mealOption.amount,
                     desc: mealOption.desc,
+                    fromToCode: `${tripFrom}-${tripTo}`
                   });
                 }
               }

@@ -27,7 +27,7 @@ const FlightBookingList = ({
   fromDate,
   setFromDate,
   toDate,
-  setToDate
+  setToDate,
 }) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
@@ -120,12 +120,13 @@ const FlightBookingList = ({
   const getStatusClass = (status) => {
     if (!status) return "status-badge";
     const statusLower = status.toLowerCase();
-    if (statusLower.includes('success')) return "status-badge status-success";
-    if (statusLower.includes('pending')) return "status-badge status-pending";
-    if (statusLower.includes('failed')) return "status-badge status-failed";
-    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
-    if (statusLower.includes('on_hold')) return "status-badge status-on_hold";
-    if (statusLower.includes('aborted')) return "status-badge status-aborted";
+    if (statusLower.includes("success")) return "status-badge status-success";
+    if (statusLower.includes("pending")) return "status-badge status-pending";
+    if (statusLower.includes("failed")) return "status-badge status-failed";
+    if (statusLower.includes("unconfirmed"))
+      return "status-badge status-unconfirmed";
+    if (statusLower.includes("on_hold")) return "status-badge status-on_hold";
+    if (statusLower.includes("aborted")) return "status-badge status-aborted";
     return "status-badge";
   };
 
@@ -133,7 +134,7 @@ const FlightBookingList = ({
     <div className="table-section">
       {/* Filter Section */}
       <div className="filters-section">
-         <div className="filter-group">
+        <div className="filter-group">
           <label className="filter-label">Email:</label>
           <select
             className="filter-select"
@@ -239,16 +240,20 @@ const FlightBookingList = ({
       <table className="modern-table">
         <thead>
           <tr>
-            <th className="cursor-pointer select-none"
-                onClick={() => handleSort("idIndex")}>
+            <th
+              className="cursor-pointer select-none"
+              onClick={() => handleSort("idIndex")}
+            >
               ID
               {sortBy === "idIndex" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
             <th>Booking ID</th>
-            <th className="cursor-pointer select-none"
-                onClick={() => handleSort("amount")}>
+            <th
+              className="cursor-pointer select-none"
+              onClick={() => handleSort("amount")}
+            >
               Amount
               {sortBy === "amount" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
@@ -262,11 +267,12 @@ const FlightBookingList = ({
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
+                <td>{startIdx + idx + 1}</td>
                 <td>
-                  {startIdx + idx + 1}
-                </td>
-                <td>
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`} className="booking-id">
+                  <Link
+                    href={`/BookingDetails?booking_id=${b.booking_id}`}
+                    className="booking-id"
+                  >
                     {b.booking_id}
                   </Link>
                 </td>
@@ -276,7 +282,7 @@ const FlightBookingList = ({
                     {b.status || "--"}
                   </span>
                 </td>
-                <td>{formatDateTime(b.booking_time)}</td>
+                <td>{formatDateTime(b.created)}</td>
               </tr>
             ))
           ) : (
@@ -289,13 +295,15 @@ const FlightBookingList = ({
           )}
         </tbody>
       </table>
-      
+
       <div className="table-footer">
-        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
+        <span>
+          Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)}{" "}
+          of {total} bookings
+        </span>
       </div>
     </div>
   );
 };
 
 export default FlightBookingList;
-

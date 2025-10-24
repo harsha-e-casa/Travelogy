@@ -359,22 +359,6 @@ const ExtraBaggage = ({
                     ADULT {idx + 1}
                   </span>
                   <Form.Item name={field} style={{ marginBottom: 0 }}>
-                    {/* <Select
-                      placeholder="Add Baggage"
-                      disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: 500 }}
-                      onChange={handleChange}
-                    >
-                      {baggageOptions.map((bag) => (
-                        <Option
-                          key={bag.code}
-                          value={`${segment.id}|${bag.code}`}
-                          disabled={!bag.amount}
-                        >
-                          {bag.desc} - ₹{bag.amount}
-                        </Option>
-                      ))}
-                    </Select> */}
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}

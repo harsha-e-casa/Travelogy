@@ -433,6 +433,7 @@ const SeatBooking = ({
 
                       <button
                         onClick={() => handleViewSeat({ id: seg.id, seg })}
+                        style={{ borderRadius: "5px" }}
                         className="border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black"
                       >
                         View Seats

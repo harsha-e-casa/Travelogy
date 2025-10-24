@@ -153,20 +153,18 @@ export default function Tickets() {
   const router = useRouter();
   const [loading, setLoading] = useState(true); // Loading state to wait for client-side rendering
 
-  useEffect(() => {
-    const tokenValid = checkTokenExpiry(); // Check if the token is valid
+  // useEffect(() => {
+  //   const tokenValid = checkTokenExpiry();
 
-    console.log("tokenValid ==> ", tokenValid);
+  //   console.log("tokenValid ==> ", tokenValid);
 
-    if (!tokenValid) {
-      // If token is expired, remove from localStorage and redirect to login
-      localStorage.removeItem("authToken");
-      router.push("/login"); // Redirect to the login page
-    } else {
-      // If token is valid, continue loading the page
-      setLoading(false);
-    }
-  }, [router]); // Ensures the effect runs once on mount (after client-side rendering)
+  //   if (!tokenValid) {
+  //     localStorage.removeItem("authToken");
+  //     router.push("/login");
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, [router]);
 
   // if (loading) {
   //   return <div>Loading...</div>; // Show loading until token check is complete
