@@ -2218,7 +2218,7 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "round-trip" && srx_tripType.trim().toLowerCase() === "one-way" && srx_tripType.trim().toLowerCase() === "multi-city" ? (
+                  srx_tripType.trim().toLowerCase() === "round-trip" && srx_tripType.trim().toLowerCase() !== "one-way" && srx_tripType.trim().toLowerCase() !== "multi-city" ? (
                     <>
                       {flightData &&
                       flightData.ONWARD &&

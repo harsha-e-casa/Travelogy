@@ -389,6 +389,7 @@ const ReissueReviewPage = () => {
   );
 
   const [afsAmount, setAfsAmount] = useState(0);
+  const [rssrAmount, setRssrAmount] = useState(0);
 
   useEffect(() => {
     if (flightData) {
@@ -401,6 +402,8 @@ const ReissueReviewPage = () => {
     const infantAfs =
       flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.INFANT?.fC?.AFS || 0;
     setAfsAmount(adultAfs + childAfs + infantAfs);
+    const rssrAmt = flightData?.totalPriceInfo?.totalFareDetail?.fC?.RSSR;
+    setRssrAmount(rssrAmt);
   }, [flightData]);
 
   //totalfare
@@ -1284,9 +1287,9 @@ const ReissueReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    <div className=" flex flex-row justify-between  bg-gray-100 p-2 rounded-md  space-y-6 ">
+                                    <div className="flex justify-center items-center bg-gray-100 p-2 rounded-md space-y-6">
                                       {/* Flight Timings */}
-                                      <div className="flex justify-between items-center gap-5 ">
+                                      <div className="flex justify-between items-center gap-5" style={{ width: "85%" }}>
                                         <div className="text-left space-y-1">
                                           {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
                                           <h4
@@ -1344,7 +1347,7 @@ const ReissueReviewPage = () => {
                                       </div>
 
                                       {/* Baggage Info */}
-                                      <div className="flex flex-col items-center justify-center gap-3  space-x-10">
+                                      {/* <div className="flex flex-col items-center justify-center gap-3  space-x-10">
                                         <div className="flex items-center space-x-2">
                                           <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -1381,6 +1384,44 @@ const ReissueReviewPage = () => {
                                             </span>
                                           </p>
                                         </div>
+                                      </div> */}
+                                    </div>
+                                    <div className="flex items-center justify-center gap-3  space-x-10 bg-gray-100 pb-5">
+                                      <div className="flex items-center space-x-2">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          fill="currentColor"
+                                          class="bi bi-suitcase-lg-fill"
+                                          viewBox="0 0 16 16"
+                                        >
+                                          <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
+                                        </svg>
+                                        <p className="text-sm-bold neutral-900">
+                                          Cabin:{" "}
+                                          <span className="text-sm-medium neutral-500">
+                                            {baggageObj?.cB} per adult
+                                          </span>
+                                        </p>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          fill="currentColor"
+                                          class="bi bi-suitcase2-fill"
+                                          viewBox="0 0 16 16"
+                                        >
+                                          <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
+                                        </svg>
+                                        <p className="text-sm-bold neutral-900 ">
+                                          Check-in:{" "}
+                                          <span className="text-sm-medium neutral-500 ">
+                                            {baggageObj?.iB}, 1 piece/adult
+                                          </span>
+                                        </p>
                                       </div>
                                     </div>
 
@@ -2259,6 +2300,7 @@ const ReissueReviewPage = () => {
                         <BookingForm
                           totalpricee={totalPriceinfo}
                           afsAmount={afsAmount}
+                          rssrAmount={rssrAmount}
                         />
                       </div>
                     </div>

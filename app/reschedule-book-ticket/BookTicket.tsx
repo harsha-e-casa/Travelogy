@@ -168,6 +168,7 @@ export default function BookTicket() {
     Record<string, any>
   >({});
   const [afsAmount, setAfsAmount] = useState<number>(0)
+  const [rssrAmount, setRssrAmount] = useState<number>(0)
 
   const [groupedAdultsV, setGroupedAdults] = useState(null);
   const [groupedChildrenV, setGroupedChildren] = useState(null);
@@ -433,6 +434,9 @@ export default function BookTicket() {
     const childAfs = apiData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.CHILD?.fC?.AFS || 0;
     const infantAfs = apiData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.INFANT?.fC?.AFS || 0;
     setAfsAmount(adultAfs + childAfs + infantAfs)
+
+    const rssrAmt = apiData?.totalPriceInfo?.totalFareDetail?.fC?.RSSR;
+    setRssrAmount(rssrAmt)
   }, [apiData]);
 
   const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({});
@@ -1403,6 +1407,7 @@ export default function BookTicket() {
                         mealAmount={mealAmount}
                         bookingFormKey={bookingFormKey}
                         afsAmount={afsAmount}
+                        rssrAmount={rssrAmount}
                         // segmentsPrice={segmentsPrice}
                         // baggageinfo={baggageinfo}
                       />

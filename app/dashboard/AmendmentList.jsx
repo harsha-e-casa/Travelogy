@@ -77,9 +77,6 @@ const AmendmentList = ({
   const handleAmendmentClick = async (amendmentId) => {
     try {
       setLoading(true);
-      // const amendmentDetails = await postAmendmentDetails({
-      //   amendmentId: amendmentId,
-      // });
       let reqData = {
         action: "pollAmendment",
         requestData: { amendmentId: amendmentId },
@@ -231,6 +228,7 @@ const AmendmentList = ({
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
+            <th>Type Of Amendment</th>
             <th>Status</th>
             <th>Time Of Amendment</th>
           </tr>
@@ -253,6 +251,9 @@ const AmendmentList = ({
                 </td>
                 <td className="px-3 py-2 border">
                   {b.refundable_amount || "--"}
+                </td>
+                <td className="px-3 py-2 border">
+                  {b.type_of_amendment || "--"}
                 </td>
                 <td className="px-3 py-2 border">
                   {b.amendment_status || "--"}
