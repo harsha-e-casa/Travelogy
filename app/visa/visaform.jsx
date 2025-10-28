@@ -142,7 +142,14 @@ const VisaForm = () => {
               name="mobile"
               placeholder="Enter your mobile number"
               className="visa_input_fields flex text-left"
+              maxLength={10}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
             />
+
             {errors.mobile && (
               <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
                 {errors.mobile}

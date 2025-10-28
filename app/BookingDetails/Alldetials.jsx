@@ -43,6 +43,7 @@ const Alldetails = ({ totalpricee }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [fareType, setFareType] = useState("");
   const [afsAmount, setAfsAmount] = useState(0);
+  const [rssrAmount, setRssrAmount] = useState(0);
 
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
@@ -74,12 +75,13 @@ const Alldetails = ({ totalpricee }) => {
           ?.fC?.AFS
       );
     }
-    const adultAfs =
-      bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd
-        ?.fC?.AFS;
+    const afsAmt = bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.AFS;
+    // const adultAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
     // const childAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
     // const infantAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
-    setAfsAmount(adultAfs);
+    setAfsAmount(afsAmt);
+    const rssrAmt = bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.RSSR
+    setRssrAmount(rssrAmt)
   }, [bookingDetails]);
 
   // const createStructuredData = (bookingDetails) => {
@@ -2052,6 +2054,7 @@ const Alldetails = ({ totalpricee }) => {
                   bookingData={bookingDetails}
                   finalStage={true}
                   afsAmount={afsAmount}
+                  rssrAmount={rssrAmount}
                 />
               </div>
             </div>

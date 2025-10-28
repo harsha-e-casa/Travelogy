@@ -31,21 +31,21 @@ export default function Home4() {
   const router = useRouter();
 
 
-  useEffect(() => {
-      const tokenValid = checkTokenExpiry(); // Check if the token is valid
+  // useEffect(() => {
+  //     const tokenValid = checkTokenExpiry(); // Check if the token is valid
   
-      console.log("tokenValid ==> ", tokenValid);
+  //     console.log("tokenValid ==> ", tokenValid);
   
-      if (!tokenValid) {
-        console.log("Token is valid.");
-        // If token is expired, remove from localStorage and redirect to login
-        localStorage.removeItem("authToken");
-        router.push("/login"); // Redirect to the login page
-      } else {
-        // If token is valid, continue loading the page
-        setLoading(false);
-      }
-    }, [router]); // Ensures the effect runs once on mount (after client-side rendering)
+  //     if (!tokenValid) {
+  //       console.log("Token is valid.");
+  //       // If token is expired, remove from localStorage and redirect to login
+  //       localStorage.removeItem("authToken");
+  //       router.push("/login"); // Redirect to the login page
+  //     } else {
+  //       // If token is valid, continue loading the page
+  //       setLoading(false);
+  //     }
+  //   }, [router]); // Ensures the effect runs once on mount (after client-side rendering)
 
   return (
     <>

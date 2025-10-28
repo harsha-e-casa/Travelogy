@@ -32,7 +32,7 @@ const InsurancePage = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap w-1/2 mx-auto gap-2 justify-center">
+            {/* <div className="flex flex-wrap w-1/2 mx-auto gap-2 justify-center">
               <div>
                 <Button shape="round">United States (US)</Button>{" "}
               </div>
@@ -51,7 +51,7 @@ const InsurancePage = () => {
               <div>
                 <Button shape="round">Worldwide Coverage</Button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

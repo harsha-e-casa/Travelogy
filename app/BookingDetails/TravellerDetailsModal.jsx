@@ -327,7 +327,6 @@ const TravellerDetailsModal = ({
               amendmentType == "REQUEST_FULL_REFUND" ||
               amendmentType == "REQUEST_VOIDED"
             ) {
-              console.log("33333333333333");
               const reqAmendmentCharges = async () => {
                 try {
                   let splitWords = amendmentType.split("_");
@@ -335,7 +334,7 @@ const TravellerDetailsModal = ({
                   const splitResult = splitWords.join("_");
                   const param = {
                     bookingId,
-                    remarks: "Conform full refund",
+                    remarks: "Request",
                     type: splitResult,
                     trips,
                   };
@@ -345,7 +344,7 @@ const TravellerDetailsModal = ({
                   };
                   console.log("📤 Sending parameters to API:", reqData);
 
-                  const req = postData("travelogy/one-way/fetch-data", reqData);
+                  const req = await postData("travelogy/one-way/fetch-data", reqData);
                   console.log("rrrrrrrrrrr ", req);
                   setReqAmendmentCharges(req);
                   setReqAmendmentChargesPopUp(true);
@@ -417,6 +416,7 @@ const TravellerDetailsModal = ({
                           booking_id: bookingDetails?.order?.bookingId,
                           amendment_id: data.amendmentId,
                           amendment_status: amendmentDetails?.amendmentStatus,
+                          type_of_amendment: amendmentType,
                           refundable_amount: amendmentDetails?.refundableAmount,
                           is_active: 1,
                           // time: dayjs().format()
