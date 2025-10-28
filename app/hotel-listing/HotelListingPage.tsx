@@ -923,10 +923,7 @@ export default function HotelListing() {
                         ))
                       )} */}
                         <div className="row" style={{rowGap:'18px'}}>
-                          {loading ||
-                          (apiHotelData.length === 0 &&
-                            !error &&
-                            (selectFrom || city)) ? (
+                          {loading ? (
                             <div className="col-12 d-flex justify-center py-5">
                               <div className="loader"></div>
                             </div>

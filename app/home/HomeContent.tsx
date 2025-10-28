@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import Link from "next/link";
 import "./home.css";
 
@@ -25,9 +26,9 @@ export default function HomeContent() {
                 <div className="container">
                     <div className="row align-items-center">
                         <div className="col-lg-6 col-md-12 mb-30 mb-lg-0">
-                            <span className="btn btn-gray mb-5 d-flex align-items-center intro-badge">
+                            <span className="d-flex align-items-center intro-badge intro-badge-custom">
                                 <img className="mr-15" src="/assets/imgs/page/homepage9/real.svg" alt="Travelogy" />
-                                <span className="text-md neutral-600 text-bold-200">Welcome to Travelogy</span>
+                                <span className="text-md neutral-600 text-bold-800">Welcome to Travelogy</span>
                             </span>
                             <h1 className="neutral-1000 mt-15 mb-15 home-title">
                                 Your Gateway to <span style={{color: '#e5a910ff'}}>Amazing Travel</span> Experiences

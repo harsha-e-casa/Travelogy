@@ -7,7 +7,7 @@ const cardStyles = `
   .holiday-card {
     cursor: pointer;
     transition: transform 0.3s ease;
-    width:200px;
+    width:100%;
     display:block;
   }
   .holiday-card:hover {
