@@ -18,7 +18,9 @@ const SeatBooking = ({
   const [seatSelections, setSeatSelections] = useState({});
   const [selectedAmounts, setSelectedAmounts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errorModal, setErrorModal] = useState("");
   const [seatNo, setSeatNo] = useState({});
+  const [formToCode, setFromToCode] = useState("");
   // const prevIdRef = useRef();
 
   useEffect(() => {
@@ -63,8 +65,9 @@ const SeatBooking = ({
     setPrefilledSeatNo(seatMap);
   }, [storedTravellerInfos, numAdults, numChild]);
 
-  const handleViewSeat = async ({ id, seg }) => {
+  const handleViewSeat = async ({ id, seg, fromCode, toCode }) => {
     // prevIdRef.current = id;
+    setFromToCode("");
     try {
       setLoading(true);
 
@@ -76,12 +79,16 @@ const SeatBooking = ({
       };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
 
-      if (result?.tripSeatMap?.tripSeat?.[id] && result?.tripSeatMap?.tripSeat?.[id]?.sData) {
+      if (
+        result?.tripSeatMap?.tripSeat?.[id] &&
+        result?.tripSeatMap?.tripSeat?.[id]?.sData
+      ) {
         setFlightSeat({ seat: result.tripSeatMap.tripSeat[id], seg: seg });
-      } else if(result?.tripSeatMap?.tripSeat?.[id]?.nt) {
-        alert(result?.tripSeatMap?.tripSeat?.[id]?.nt)
+        setFromToCode(`${fromCode}-${toCode}`);
+      } else if (result?.tripSeatMap?.tripSeat?.[id]?.nt) {
+        setErrorModal(result?.tripSeatMap?.tripSeat?.[id]?.nt);
       } else {
-        alert("No seat data found");
+        setErrorModal("No seat data found");
       }
     } catch (error) {
       console.log("SeatBooking error = ", error);
@@ -204,6 +211,7 @@ const SeatBooking = ({
       seat: seatNo,
       amount: String(cost),
       flightId: String(flightId),
+      fromTo: formToCode,
     };
 
     // Check existing cookie
@@ -214,7 +222,7 @@ const SeatBooking = ({
       try {
         updatedData = JSON.parse(existingData);
         let foundIndex = updatedData.findIndex(
-          (entry) => entry.flightId === newSeatData.flightId
+          (entry) => entry.fromTo === newSeatData.fromTo
         );
 
         if (foundIndex !== -1) {
@@ -341,8 +349,6 @@ const SeatBooking = ({
             <div className="box-content-tickets-detail">
               {segments.map((seg, segIndex) => {
                 const dep = dayjs(seg.dt);
-                console.log("mame seg id ", seg.id);
-                console.log("mame seg id ", typeof seg.id);
                 return (
                   <React.Fragment key={seg.id}>
                     <div className="flex justify-between items-center p-4 border-b">
@@ -432,7 +438,14 @@ const SeatBooking = ({
                       </div> */}
 
                       <button
-                        onClick={() => handleViewSeat({ id: seg.id, seg })}
+                        onClick={() =>
+                          handleViewSeat({
+                            id: seg.id,
+                            seg,
+                            fromCode: seg.da.code,
+                            toCode: seg.aa.code,
+                          })
+                        }
                         style={{ borderRadius: "5px" }}
                         className="border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black"
                       >
@@ -452,6 +465,24 @@ const SeatBooking = ({
           <div className="bg-white p-4 rounded shadow text-center">
             <p className="font-semibold text-lg mb-2">Loading seat map...</p>
             <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+          </div>
+        </div>
+      )}
+
+      {errorModal && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex justify-center items-center">
+          <div className="bg-white p-4 rounded shadow text-center relative">
+            <p className="font-semibold text-lg mb-4">Message: {errorModal}</p>
+
+            {/* Close Button - bottom right */}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setErrorModal("")} // or your close handler
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -489,9 +520,7 @@ const SeatBooking = ({
                     {isUat && (
                       <img
                         style={{ width: "35px", height: "35px", margin: "5px" }}
-                        src={`/assets/imgs/airlines/${flightSeat?.seg[
-                          "fD"
-                        ].aI.code}.png`}
+                        src={`/assets/imgs/airlines/${flightSeat?.seg["fD"].aI.code}.png`}
                         alt=""
                       />
                     )}

@@ -13,6 +13,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
   const [loading, setLoading] = useState(false);
   const [errorModal, setErrorModal] = useState("");
   const [seatNo, setSeatNo] = useState({});
+  const [formToCode, setFromToCode] = useState("");
   // const prevIdRef = useRef();
 
   useEffect(() => {
@@ -27,8 +28,9 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     };
   }, [flightSeat]);
 
-  const handleViewSeat = async ({ id, seg }) => {
+  const handleViewSeat = async ({ id, seg, fromCode, toCode }) => {
     // prevIdRef.current = id;
+    setFromToCode("");
     try {
       setLoading(true);
 
@@ -40,14 +42,18 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
       };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
 
-      if (result?.tripSeatMap?.tripSeat?.[id]) {
+      if (
+        result?.tripSeatMap?.tripSeat?.[id] &&
+        result?.tripSeatMap?.tripSeat?.[id]?.sData
+      ) {
         setFlightSeat({ seat: result.tripSeatMap.tripSeat[id], seg: seg });
+        setFromToCode(`${fromCode}-${toCode}`);
+      } else if (result?.tripSeatMap?.tripSeat?.[id]?.nt) {
+        // alert(result?.tripSeatMap?.tripSeat?.[id]?.nt);
+        setErrorModal(result?.tripSeatMap?.tripSeat?.[id]?.nt)
       } else {
         // alert("No seat data found");
-        if (result?.error) {
-          // setErrorModal(result?.error)
-          setErrorModal("No seat found");
-        }
+        setErrorModal("No seat data found")
       }
     } catch (error) {
       console.log("SeatBooking error = ", error);
@@ -411,8 +417,9 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                       </div>
 
                       <button
-                        onClick={() => handleViewSeat({ id: seg.id, seg })}
+                        onClick={() => handleViewSeat({ id: seg.id, seg, fromCode: seg.da.code, toCode: seg.aa.code })}
                         className="border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black"
+                        style={{ borderRadius: "5px"}}
                       >
                         View Seats
                       </button>

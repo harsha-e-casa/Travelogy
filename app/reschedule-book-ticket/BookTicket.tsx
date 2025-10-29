@@ -373,17 +373,18 @@ export default function BookTicket() {
     }
   };
 
-  // useEffect(() => {
-  //   removeCookie("travellerInfo");
-  //   removeCookie("mealinfo");
-  //   removeCookie("baggageinfo");
-  //   removeCookie("seatSsr_amount");
+  useEffect(() => {
+    removeCookie("mappedSeatInfo");
+    //   removeCookie("travellerInfo");
+    //   removeCookie("mealinfo");
+    //   removeCookie("baggageinfo");
+    //   removeCookie("seatSsr_amount");
 
-  //   for (let i = 1; i <= 9; i++) {
-  //     removeCookie(`adult_seat_map-${i}`);
-  //     removeCookie(`child_seat_map-${i}`);
-  //   }
-  // }, []);
+    //   for (let i = 1; i <= 9; i++) {
+    //     removeCookie(`adult_seat_map-${i}`);
+    //     removeCookie(`child_seat_map-${i}`);
+    //   }
+  }, []);
 
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
@@ -654,6 +655,11 @@ export default function BookTicket() {
           desc: string;
           fromToCode?: string;
         }[] = []; // Type meal info array
+        let seatInfosPaylode: {
+          key: string;
+          code: string;
+          fromToCode?: string;
+        }[] = [];
         let groupedAdults: {
           ti: string;
           fN: string;
@@ -807,6 +813,11 @@ export default function BookTicket() {
                 adultSeatInfo.push({
                   key: item.flightId,
                   code: item.seat,
+                });
+                seatInfosPaylode.push({
+                  key: item.flightId,
+                  code: item.seat,
+                  fromToCode: item.fromTo,
                 });
               }
               traveller.ssrSeatInfos = adultSeatInfo;
@@ -971,6 +982,11 @@ export default function BookTicket() {
                   key: item.flightId,
                   code: item.seat,
                 });
+                seatInfosPaylode.push({
+                  key: item.flightId,
+                  code: item.seat,
+                  fromToCode: item.fromTo,
+                });
               }
               traveller.ssrSeatInfos = childSeatInfo;
             }
@@ -1016,6 +1032,9 @@ export default function BookTicket() {
           expires: 7,
         });
         // setMealinfo(mealinfosPaylode)
+        setCookie("mappedSeatInfo", JSON.stringify(seatInfosPaylode), {
+          expires: 7,
+        });
 
         console.log("groupedAdultsgroupedAdults === ", groupedAdults);
 
@@ -1679,13 +1698,17 @@ export default function BookTicket() {
 
                           <div className="bg-white shadow sm:rounded-lg relative">
                             <div className="px-4 py-3 border_xcolor_1px flex justify-between">
-                              <button className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition">
+                              <button
+                                className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
+                                style={{ borderRadius: "5px" }}
+                              >
                                 Back
                               </button>
 
                               <button
                                 onClick={handleNextClick}
                                 className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-block text-center"
+                                style={{ borderRadius: "5px" }}
                               >
                                 Continue
                               </button>
