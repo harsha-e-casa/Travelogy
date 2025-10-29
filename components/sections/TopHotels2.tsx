@@ -72,24 +72,18 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
-                    <Link
+                      <div
+                        className="card-button text-center"
+                        onClick={() => handleTopHotels("Chennai")}
+                      >
+                         {" "}
+                        <Link
                       className="card-title"
                       href="/hotel-listing?location=Chennai&starRating=4,5"
                     >
                       Chennai
                     </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
-                      <div
-                        className="card-button"
-                        onClick={() => handleTopHotels("Chennai")}
-                      >
-                        {" "}
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -101,9 +95,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -111,30 +104,24 @@ export default function TopHotels2() {
                 <div className="card-popular background-card hover-up">
                   <div className="card-image">
                     <img
-                      src="/assets/imgs/holiday/mumbai.jpg"
+                      src="/assets/imgs/holiday/mumbai_1.jpg"
                       alt="Travelogy"
                       style={{width: "100%", height: "200px", objectFit: "cover"}}
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
+                      <div
+                        className="card-button text-center"
+                        onClick={() => handleTopHotels("Mumbai")}
+                      >
+                         {" "}
                     <Link
                       className="card-title"
                       href="/hotel-listing?location=Mumbai&starRating=4,5"
                     >
                       Mumbai
                     </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
-                      <div
-                        className="card-button"
-                        onClick={() => handleTopHotels("Mumbai")}
-                      >
-                        {" "}
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -146,9 +133,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -162,21 +148,15 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
-                    <Link className="card-title" href="/hotel-listing?location=Hyderabad&starRating=4,5">
-                      Hyderabad
-                    </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
                       <div
-                        className="card-button"
+                        className="card-button text-center"
                         onClick={() => handleTopHotels("Hyderabad")}
                       >
                         {" "}
+                    <Link className="card-title" href="/hotel-listing?location=Hyderabad&starRating=4,5">
+                      Hyderabad
+                    </Link>
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -188,9 +168,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -204,21 +183,15 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
+                      <div
+                        className="card-button text-center"
+                        onClick={() => handleTopHotels("Delhi")}
+                      >
+                         {" "}
                     <Link className="card-title" href="/hotel-listing?location=Delhi&starRating=4,5">
                       Delhi
                     </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
-                      <div
-                        className="card-button"
-                        onClick={() => handleTopHotels("Delhi")}
-                      >
-                        {" "}
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -230,9 +203,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -247,21 +219,15 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
+                      <div
+                        className="card-button text-center"
+                        onClick={() => handleTopHotels("Dubai")}
+                      >
+                         {" "}
                     <Link className="card-title" href="/hotel-listing?location=Dubai&starRating=4,5">
                       Dubai
                     </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                        <Link href="#">248 Activities</Link> */}
-                      </div>
-                      <div
-                        className="card-button"
-                        onClick={() => handleTopHotels("Dubai")}
-                      >
-                        {" "}
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -273,9 +239,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -290,21 +255,16 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
+                   
+                      <div
+                        className="card-button text-center"
+                        onClick={() => handleTopHotels("Paris")}
+                      >
+                         {" "}
                     <Link className="card-title" href="/hotel-listing?location=Paris&starRating=4,5">
                       Paris
                     </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
-                      <div
-                        className="card-button"
-                        onClick={() => handleTopHotels("Paris")}
-                      >
-                        {" "}
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -316,9 +276,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -333,21 +292,15 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
+                      <div
+                        className="card-button text-center"
+                        onClick={() => handleTopHotels("Singapore")}
+                      >
+                         {" "}
                     <Link className="card-title" href="/hotel-listing?location=Singapore&starRating=4,5">
                       Singapore
                     </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
-                      <div
-                        className="card-button"
-                        onClick={() => handleTopHotels("Singapore")}
-                      >
-                        {" "}
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -359,9 +312,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -376,21 +328,16 @@ export default function TopHotels2() {
                     />
                   </div>
                   <div className="card-info">
-                    {" "}
-                    <Link className="card-title" href="/hotel-listing?location=London&starRating=4,5">
-                      London
-                    </Link>
-                    <div className="card-meta">
-                      <div className="meta-links">
-                        {" "}
-                        {/* <Link href="#">356 Tours, </Link>
-                          <Link href="#">248 Activities</Link> */}
-                      </div>
+                    
                       <div
-                        className="card-button"
+                        className="card-button text-center"
                         onClick={() => handleTopHotels("London")}
                       >
                         {" "}
+                    <Link className="card-title" href="/hotel-listing?location=London&starRating=4,5">
+                      London
+                    </Link>
+                        {/* {" "}
                         <svg
                           width={10}
                           height={10}
@@ -402,9 +349,8 @@ export default function TopHotels2() {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                           />
-                        </svg>
+                        </svg> */}
                       </div>
-                    </div>
                   </div>
                 </div>
               </div>

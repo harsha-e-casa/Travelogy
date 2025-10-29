@@ -721,6 +721,8 @@ export default function HotelListing() {
       </Layout>
     );
   }
+console.log("11111111111111111111111error1111111111111111111111", error)
+console.log("22222222222222222221error2222222222222222222", paginatedHotels)
 
   return (
     <Suspense
@@ -923,10 +925,7 @@ export default function HotelListing() {
                         ))
                       )} */}
                         <div className="row" style={{rowGap:'18px'}}>
-                          {loading ||
-                          (apiHotelData.length === 0 &&
-                            !error &&
-                            (selectFrom || city)) ? (
+                          {loading ? (
                             <div className="col-12 d-flex justify-center py-5">
                               <div className="loader"></div>
                             </div>

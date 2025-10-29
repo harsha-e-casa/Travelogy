@@ -470,6 +470,58 @@ export default function HomeContent(): JSX.Element {
         </div>
       )}
       {/* Services section commented out */}
+      {/* <section className="section-box box-home-services background-body">
+                <div className="container">
+                    <div className="row align-items-center">
+                        <div className="col-lg-6 mb-30">
+                            <h2 className="neutral-1000 mb-25">Our Travel Services</h2>
+                            <p className="text-xl-medium neutral-500 mb-35">
+                                From flights to accommodations, we provide comprehensive travel solutions for all your needs.
+                            </p>
+                            <div className="list-services">
+                                <div className="item-service">
+                                    <div className="service-icon">
+                                        <img src="/assets/imgs/airplane_1604953.svg" alt="Flights" />
+                                    </div>
+                                    <div className="service-info">
+                                        <h6 className="neutral-1000">Flight Booking</h6>
+                                        <p className="text-sm-medium neutral-500">
+                                            Book domestic and international flights at competitive prices
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="item-service">
+                                    <div className="service-icon">
+                                        <img src="/assets/imgs/template/icons/hotel.svg" alt="Hotels" />
+                                    </div>
+                                    <div className="service-info">
+                                        <h6 className="neutral-1000">Hotel Reservations</h6>
+                                        <p className="text-sm-medium neutral-500">
+                                            Find and book the perfect accommodation for your stay
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="item-service">
+                                    <div className="service-icon">
+                                        <img src="/assets/imgs/template/icons/tour.svg" alt="Tours" />
+                                    </div>
+                                    <div className="service-info">
+                                        <h6 className="neutral-1000">Tour Packages</h6>
+                                        <p className="text-sm-medium neutral-500">
+                                            Explore curated tour packages for memorable experiences
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-lg-6 mb-30">
+                            <div className="box-image-services">
+                                <img src="/assets/imgs/page/pages/banner.png" alt="Travelogy Services" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section> */}
     </>
   );
 }

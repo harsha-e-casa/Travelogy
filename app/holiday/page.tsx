@@ -95,7 +95,7 @@ const Slider: React.FC = () => {
       description: "A global hub of luxury, innovation, and skyscrapers like the Burj Khalifa.",
     },
     {
-      image: "/assets/imgs/holiday/mumbai.jpg",
+      image: "/assets/imgs/holiday/mumbai_1.jpg",
       title: "Mumbai",
       description: "The financial capital of India, famous for Bollywood and the Gateway of India.",
     },
