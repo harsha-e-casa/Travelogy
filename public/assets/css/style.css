@@ -394,7 +394,7 @@ body {
   border: 1px solid var(--bs-neutral-200);
   border-radius: 8px;
   background-color: var(--bs-background-card);
-  padding: 11px 15px 13px 15px;
+  padding: 0px 0px 0px 10px !important;
   width: 100%;
   color: var(--bs-neutral-600);
 }
@@ -19252,7 +19252,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   width: 80%;
   max-width: 800px;
   border-radius: 10px;
-  height: 45%;
+  height: 65%;
 }
 
 .modal-slider {

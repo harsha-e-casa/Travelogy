@@ -437,7 +437,7 @@ type Props = {
   priceRange: any;
   setPriceRange: (r: [number, number]) => void;
   minPriceRange?: number;
-  maxPriceRange?: number;
+    maxPriceRange?: number;
 };
 
 export default function ByPrice({
@@ -602,13 +602,13 @@ export default function ByPrice({
             onKeyDown={onEnterApply}
           />
         </div>
-        <span style={{ color: "#6b7280", marginTop: 16 }}>to</span>
+        <span style={{ color: "#6b7280", marginTop: 30 }}>to</span>
         <div style={{ flex: 1 }}>
           <label style={{ fontSize: 12, color: "#6b7280" }}>Max</label>
           <input
             type="number"
             className="form-control"
-            placeholder="Max"
+            placeholder="Max" 
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             onKeyDown={onEnterApply}

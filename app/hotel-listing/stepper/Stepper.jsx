@@ -527,7 +527,7 @@ export function Step1TravellerDetails({
             );
 
             return (
-              <div key={roomIndex} className="space-y-4 border-b pb-6">
+              <div key={roomIndex} className="space-y-4 border-b">
                 <h4 className="font-semibold text-sm mt-6">
                   For Room {roomIndex + 1} - {roomDetails?.rc} (
                   {roomDetails?.mb}){" "}
@@ -548,7 +548,7 @@ export function Step1TravellerDetails({
                     <option>Ms</option>
                     <option>Mrs</option>
                   </select>
-
+                  <div className="row">
                   <div className="flex flex-col">
                     <input
                       ref={(el) =>
@@ -565,13 +565,14 @@ export function Step1TravellerDetails({
                         )
                       }
                     />
-                    {errors[`firstName_r${roomIndex}`] && (
-                      <span className="form-error-space text-red-500 text-xs mt-1">
-                        {errors[`firstName_r${roomIndex}`]}
-                      </span>
-                    )}
-                  </div>
-
+                    </div>
+                    
+                      <div className="flex flex-col">
+                    <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                      {errors[`firstName_r${roomIndex}`] || ""}
+                    </span>
+                      </div>
+                    </div>
                   <div className="flex flex-col">
                     <input
                       ref={(el) =>
@@ -588,11 +589,9 @@ export function Step1TravellerDetails({
                         )
                       }
                     />
-                    {errors[`lastName_r${roomIndex}`] && (
-                      <span className="form-error-space text-red-500 text-xs mt-1">
-                        {errors[`lastName_r${roomIndex}`]}
-                      </span>
-                    )}
+                    <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                      {errors[`lastName_r${roomIndex}`] || ""}
+                    </span>
                   </div>
                   {ipmValue && (
                     <>
@@ -612,11 +611,9 @@ export function Step1TravellerDetails({
                           }
                         />
 
-                        {errors[`passportNumber_r${roomIndex}`] && (
-                          <span className="text-red-500 text-xs">
-                            {errors[`passportNumber_r${roomIndex}`]}
-                          </span>
-                        )}
+                        <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                          {errors[`passportNumber_r${roomIndex}`] || ""}
+                        </span>
                       </div>
 
                       <div className="flex flex-col">
@@ -775,9 +772,9 @@ export function Step1TravellerDetails({
                   setFormData({ ...formData, mobile: e.target.value })
                 }
               />{" "}
-              {errors.mobile && (
-                <span className="form-error-space">{errors.mobile}</span>
-              )}
+              <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                {errors.mobile || ""}
+              </span>
             </div>
             <div className="flex flex-col">
               {" "}
@@ -791,9 +788,9 @@ export function Step1TravellerDetails({
                   setFormData({ ...formData, email: e.target.value })
                 }
               />{" "}
-              {errors.email && (
-                <span className="form-error-space">{errors.email}</span>
-              )}
+              <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                {errors.email || ""}
+              </span>
             </div>
           </div>
         </div>
@@ -919,7 +916,7 @@ export function Step2Review({
               ))}
             </span>
           </h2>
-          <p className="text-xs text-gray-600">
+          <p className="text-md text-gray-600">
             {hotelReviewData?.hInfo?.ad?.adr && (
               <>{hotelReviewData.hInfo.ad.adr} </>
             )}
@@ -1028,7 +1025,7 @@ export function Step2Review({
         {Category !== "abook"
           ? Object.values(formData.guests || {}).map((guest, roomIndex) => (
               <div key={roomIndex} className="border-b pb-4">
-                <h4 className="font-bold text-sm">
+                <h4 className="font-bold text-md">
                   <div>
                     <p>
                       {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.rc} -{" "}
@@ -1045,12 +1042,12 @@ export function Step2Review({
                   </div>
                 </h4>
                 <div className="space-y-2">
-                  <p className="text-gray-700 mt-2">
+                  <p className="text-gray-800 mt-2 text-md">
                     1.{guest.title} {guest.firstName} {guest.lastName}
                   </p>
                   {guest.extraGuests?.map((extraGuest, index) => (
                     <div key={index}>
-                      <p className="text-gray-700 text-sm">
+                      <p className="text-gray-700 text-md">
                         {index + 2}. {extraGuest.title} {extraGuest.firstName}{" "}
                         {extraGuest.lastName}
                       </p>
@@ -1062,10 +1059,10 @@ export function Step2Review({
           : hotelPassenger?.map((room, roomIndex) => (
               <div key={roomIndex} className="border-b pb-4 space-y-2">
                 <p className="text-gray-800 font-bold">
-                  {room?.rc} <span className="text-xs">( {room?.mb})</span>
+                  {room?.rc} <span className="text-md">( {room?.mb})</span>
                 </p>
 
-                <p className="text-gray-700 text-sm">
+                <p className="text-gray-700 text-md">
                   {room?.ti?.map((passenger, passengerIndex) => (
                     <div key={passengerIndex}>
                       {passengerIndex + 1}. {passenger?.ti} {". "}{" "}
@@ -1091,7 +1088,7 @@ export function Step2Review({
           <div className="mt-4">
             <h3 className="font-semibold text-base">Special request(s)</h3>
             {hotelPassenger[0]?.ssr.map((item, index) => (
-              <p key={index} className="text-sm text-gray-700 mt-1">
+              <p key={index} className="text-md text-gray-700 mt-1">
                 {item.rm?.trim() && item.rm}{" "}
               </p>
             ))}
@@ -1101,16 +1098,16 @@ export function Step2Review({
         {Category !== "abook" ? (
           formData.email?.trim() ? (
             <>
-              <h3 className="font-semibold text-base">Contact Details</h3>
-              <p>Email: {formData.email}</p>
-              <p>
+              <h3 className="font-semibold text-base text-md">Contact Details:</h3>
+              <p className="text-md">Email: {formData.email}</p>
+              <p className="text-md">
                 Mobile: {formData.countryCode} {formData.mobile}
               </p>
             </>
           ) : null
         ) : passengerContact?.emails?.length > 0 ? (
           <div className="mt-4">
-            <h3 className="font-semibold text-base pb-4">Contact Details</h3>
+            <h3 className="font-semibold text-base pb-4 text-md">Contact Details</h3>
             {passengerContact.emails.map((email, index) => (
               <div key={index}>
                 <p className="pb-3">Email: {email}</p>
@@ -1150,7 +1147,7 @@ export function Step2Review({
             </tbody>
           </table>
 
-          <ul className="text-xs text-gray-600 mt-2">
+          <ul className="text-md text-gray-600 mt-2">
             <li>
               * Each booking is applicable for ₹20 per room/night non-refundable
               service fee.
@@ -1226,7 +1223,7 @@ export function Step2Review({
           <h3 className="font-semibold text-base mb-2">
             General Terms & Conditions:
           </h3>
-          <ul className="text-xs text-gray-700 list-decimal ml-6 space-y-1">
+          <ul className="text-md text-gray-700 list-decimal ml-6 space-y-1">
             <li>
               Each country/state may have its own set of COVID-19 guidelines and
               restrictions. Please check with the hotel or visit the
@@ -1296,7 +1293,7 @@ export function Step2Review({
             </li>
           </ul>
           <div className="mt-2">
-            <span className="text-sm">
+            <span className="text-md">
               <a
                 href={hotelReviewData?.hInfo?.tac?.sc?.[0]?.info}
                 className="text-red-600"
@@ -1307,7 +1304,7 @@ export function Step2Review({
               </a>
             </span>
             <br />
-            <span className="text-sm">
+            <span className="text-md">
               <a
                 href={hotelReviewData?.hInfo?.tac?.sc?.[1]?.info}
                 className="text-red-600"
@@ -1330,7 +1327,7 @@ export function Step2Review({
 
               <label
                 htmlFor="acceptTerms"
-                className="mb-0 text-sm text-gray-700"
+                className="mb-0 text-md text-gray-700"
               >
                 Accept Terms & Conditions
               </label>
