@@ -159,6 +159,17 @@ const AmendmentList = ({
             }}
           />
         </div>
+        <button
+          className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
+          onClick={() => {
+            setStatusFilter("");
+            setFromDate("");
+            setToDate("");
+            setPage(1);
+          }}
+        >
+          Reset
+        </button>
       </div>
 
       {/* Pagination Row */}

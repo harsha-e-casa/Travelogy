@@ -35,7 +35,7 @@ const AmendmentList = ({ amendments }) => {
   }
 
   const statusOptions = Array.from(
-    new Set(amendments.map((b) => b.status).filter((v) => !!v))
+    new Set(amendments.map((b) => b.amendment_status).filter((v) => !!v))
   );
 
   const filteredBookings = amendments.filter((b) => {
@@ -63,8 +63,8 @@ const AmendmentList = ({ amendments }) => {
     if (statusFilter.trim() !== "") {
       matches =
         matches &&
-        b.status &&
-        b.status.toString().toLowerCase().includes(statusFilter.toLowerCase());
+        b.amendment_status &&
+        b.amendment_status.toString().toLowerCase().includes(statusFilter.toLowerCase());
     }
 
     if (fromDate) {
@@ -184,6 +184,17 @@ const AmendmentList = ({ amendments }) => {
             style={{ width: "150px" }}
           />
         </div>
+        <button
+          className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
+          onClick={() => {
+            setStatusFilter("");
+            setFromDate("");
+            setToDate("");
+            setPage(1);
+          }}
+        >
+          Reset
+        </button>
       </div>
 
       {/* Pagination Row */}
@@ -243,6 +254,7 @@ const AmendmentList = ({ amendments }) => {
             <th className="px-3 py-2 border cursor-pointer select-none">
               Amount
             </th>
+            <th className="px-3 py-2 border">Type Of Amendment</th>
             <th className="px-3 py-2 border">Status</th>
             <th className="px-3 py-2 border">Time of Amendment</th>
           </tr>
@@ -264,6 +276,7 @@ const AmendmentList = ({ amendments }) => {
                   {b.amendment_id || "--"}
                 </td>
                 <td className="px-3 py-2 border">{b.refundable_amount || "--"}</td>
+                <td className="px-3 py-2 border">{b.type_of_amendment || "--"}</td>
                 <td className="px-3 py-2 border">{b.amendment_status || "--"}</td>
                 <td className="px-3 py-2 border">
                   {formatDateTime(b.time)}

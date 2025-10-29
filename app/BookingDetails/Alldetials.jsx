@@ -1194,7 +1194,7 @@ const Alldetails = ({ totalpricee }) => {
                     </p>
                   </div>
                 </div>
-                <hr className="border-t border-gray-300 mt-3 mb-3" />
+                <hr className="border-t border-black-300 mt-3 mb-3" />
               </div>
             )}
             <div className="mb-10 shadow-md p-3 rounded">

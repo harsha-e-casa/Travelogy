@@ -14,7 +14,18 @@ function formatDateTime(isoString) {
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
-const HotelBookingList = ({ bookings, statusOptions, statusFilter, setStatusFilter, amountFilter, setAmountFilter, fromDate, setFromDate, toDate, setToDate }) => {
+const HotelBookingList = ({
+  bookings,
+  statusOptions,
+  statusFilter,
+  setStatusFilter,
+  amountFilter,
+  setAmountFilter,
+  fromDate,
+  setFromDate,
+  toDate,
+  setToDate,
+}) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
@@ -64,10 +75,11 @@ const HotelBookingList = ({ bookings, statusOptions, statusFilter, setStatusFilt
   const getStatusClass = (status) => {
     if (!status) return "status-badge";
     const statusLower = status.toLowerCase();
-    if (statusLower.includes('success')) return "status-badge status-success";
-    if (statusLower.includes('pending')) return "status-badge status-pending";
-    if (statusLower.includes('failed')) return "status-badge status-failed";
-    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
+    if (statusLower.includes("success")) return "status-badge status-success";
+    if (statusLower.includes("pending")) return "status-badge status-pending";
+    if (statusLower.includes("failed")) return "status-badge status-failed";
+    if (statusLower.includes("unconfirmed"))
+      return "status-badge status-unconfirmed";
     return "status-badge";
   };
 
@@ -130,7 +142,7 @@ const HotelBookingList = ({ bookings, statusOptions, statusFilter, setStatusFilt
             style={{ width: "150px" }}
           />
         </div>
-          {/* <div>
+        {/* <div>
           <label className="mr-1 text-sm font-medium">Email:</label>
           <input
             type="text"
@@ -143,11 +155,21 @@ const HotelBookingList = ({ bookings, statusOptions, statusFilter, setStatusFilt
             style={{ width: "200px" }}
           />
         </div> */}
-        
+        <button
+          className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
+          onClick={() => {
+            setStatusFilter("");
+            setFromDate("");
+            setToDate("");
+            setPage(1);
+          }}
+        >
+          Reset
+        </button>
       </div>
 
       {/* Pagination Row */}
-    <div className="table-header">
+      <div className="table-header">
         <div className="pagination-info">
           <div className="rows-per-page">
             <label className="filter-label">Rows per page:</label>
@@ -243,7 +265,10 @@ const HotelBookingList = ({ bookings, statusOptions, statusFilter, setStatusFilt
         </tbody>
       </table>
       <div className="table-footer">
-        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
+        <span>
+          Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)}{" "}
+          of {total} bookings
+        </span>
       </div>
     </div>
   );

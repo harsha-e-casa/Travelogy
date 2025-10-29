@@ -360,6 +360,7 @@ const ReissueReviewPage = () => {
 
   const [cookieMealData, setCookieMealData] = useState({});
   const [cookieBaggageData, setCookieBaggageData] = useState({});
+  const [cookieMappedSeatData, setCookieMappedSeatData] = useState({});
 
   useEffect(() => {
     const getCookieMealData = getCookie("mealinfo");
@@ -369,6 +370,10 @@ const ReissueReviewPage = () => {
     const getCookiebaggageData = getCookie("baggageinfo");
     const baggageData = JSON.parse(getCookiebaggageData);
     setCookieBaggageData(baggageData);
+
+    const getCookieSeatData = getCookie("mappedSeatInfo");
+    const mappedSeatData = JSON.parse(getCookieSeatData);
+    setCookieMappedSeatData(mappedSeatData);
   }, []);
 
   //bookingid
@@ -1289,7 +1294,10 @@ const ReissueReviewPage = () => {
 
                                     <div className="flex justify-center items-center bg-gray-100 p-2 rounded-md space-y-6">
                                       {/* Flight Timings */}
-                                      <div className="flex justify-between items-center gap-5" style={{ width: "85%" }}>
+                                      <div
+                                        className="flex justify-between items-center gap-5"
+                                        style={{ width: "85%" }}
+                                      >
                                         <div className="text-left space-y-1">
                                           {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
                                           <h4
@@ -2002,22 +2010,6 @@ const ReissueReviewPage = () => {
 
                                           const addOns = [];
 
-                                          // if (
-                                          //   traveller.ssrBaggageInfos &&
-                                          //   traveller.ssrBaggageInfos.length > 0
-                                          // ) {
-                                          //   const baggageDetails =
-                                          //     traveller.ssrBaggageInfos
-                                          //       .map((b) => b.desc || b.code)
-                                          //       .filter(Boolean)
-                                          //       .join(", ");
-                                          //   if (baggageDetails) {
-                                          //     addOns.push(
-                                          //       `Baggage: ${baggageDetails}`
-                                          //     );
-                                          //   }
-                                          // }
-
                                           if (
                                             traveller.ssrBaggageInfos &&
                                             traveller.ssrBaggageInfos.length > 0
@@ -2045,22 +2037,6 @@ const ReissueReviewPage = () => {
                                               );
                                             }
                                           }
-
-                                          // if (
-                                          //   traveller.ssrMealInfos &&
-                                          //   traveller.ssrMealInfos.length > 0
-                                          // ) {
-                                          //   const mealDetails =
-                                          //     traveller.ssrMealInfos
-                                          //       .map((m) => m.desc || m.code)
-                                          //       .filter(Boolean)
-                                          //       .join(", ");
-                                          //   if (mealDetails) {
-                                          //     addOns.push(
-                                          //       `Meals: ${mealDetails}`
-                                          //     );
-                                          //   }
-                                          // }
 
                                           if (
                                             traveller.ssrMealInfos &&
@@ -2091,14 +2067,21 @@ const ReissueReviewPage = () => {
                                           ) {
                                             const seatDetails =
                                               traveller.ssrSeatInfos
-                                                .map((s) => s.code)
+                                                .map((s) => {
+                                                  const mealFromCookie =
+                                                    cookieMappedSeatData.find(
+                                                      (c) => c.code === s.code
+                                                    );
+                                                  return mealFromCookie
+                                                    ? `${mealFromCookie.code} [${mealFromCookie.fromToCode}]`
+                                                    : s.code;
+                                                })
                                                 .filter(Boolean)
                                                 .join(", ");
-                                            if (seatDetails) {
+                                            if (seatDetails)
                                               addOns.push(
                                                 `Seat: ${seatDetails}`
                                               );
-                                            }
                                           }
 
                                           return (

@@ -24,7 +24,7 @@ const FlightReBookingList = ({
   fromDate,
   setFromDate,
   toDate,
-  setToDate
+  setToDate,
 }) => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
@@ -75,10 +75,11 @@ const FlightReBookingList = ({
   const getStatusClass = (status) => {
     if (!status) return "status-badge";
     const statusLower = status.toLowerCase();
-    if (statusLower.includes('success')) return "status-badge status-success";
-    if (statusLower.includes('pending')) return "status-badge status-pending";
-    if (statusLower.includes('failed')) return "status-badge status-failed";
-    if (statusLower.includes('unconfirmed')) return "status-badge status-unconfirmed";
+    if (statusLower.includes("success")) return "status-badge status-success";
+    if (statusLower.includes("pending")) return "status-badge status-pending";
+    if (statusLower.includes("failed")) return "status-badge status-failed";
+    if (statusLower.includes("unconfirmed"))
+      return "status-badge status-unconfirmed";
     return "status-badge";
   };
 
@@ -141,10 +142,21 @@ const FlightReBookingList = ({
             }}
           />
         </div>
+        <button
+          className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
+          onClick={() => {
+            setStatusFilter("");
+            setFromDate("");
+            setToDate("");
+            setPage(1);
+          }}
+        >
+          Reset
+        </button>
       </div>
 
       {/* Pagination Row */}
-    <div className="table-header">
+      <div className="table-header">
         <div className="pagination-info">
           <div className="rows-per-page">
             <label className="filter-label">Rows per page:</label>
@@ -184,8 +196,10 @@ const FlightReBookingList = ({
       <table className="modern-table">
         <thead>
           <tr>
-            <th className="cursor-pointer select-none"
-                onClick={() => handleSort("idIndex")}>
+            <th
+              className="cursor-pointer select-none"
+              onClick={() => handleSort("idIndex")}
+            >
               ID
               {sortBy === "idIndex" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
@@ -193,8 +207,10 @@ const FlightReBookingList = ({
             </th>
             <th>Old Booking ID</th>
             <th>Booking ID</th>
-            <th className="cursor-pointer select-none"
-                onClick={() => handleSort("amount")}>
+            <th
+              className="cursor-pointer select-none"
+              onClick={() => handleSort("amount")}
+            >
               Amount
               {sortBy === "amount" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
@@ -208,16 +224,20 @@ const FlightReBookingList = ({
           {pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
+                <td>{startIdx + idx + 1}</td>
                 <td>
-                  {startIdx + idx + 1}
-                </td>
-                <td>
-                  <Link href={`/BookingDetails?booking_id=${b.old_booking_id}`} className="booking-id">
+                  <Link
+                    href={`/BookingDetails?booking_id=${b.old_booking_id}`}
+                    className="booking-id"
+                  >
                     {b.old_booking_id}
                   </Link>
                 </td>
                 <td>
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}?re=true`} className="booking-id">
+                  <Link
+                    href={`/BookingDetails?booking_id=${b.booking_id}?re=true`}
+                    className="booking-id"
+                  >
                     {b.booking_id}
                   </Link>
                 </td>
@@ -241,11 +261,13 @@ const FlightReBookingList = ({
         </tbody>
       </table>
       <div className="table-footer">
-        <span>Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)} of {total} bookings</span>
+        <span>
+          Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)}{" "}
+          of {total} bookings
+        </span>
       </div>
     </div>
   );
 };
 
 export default FlightReBookingList;
-
