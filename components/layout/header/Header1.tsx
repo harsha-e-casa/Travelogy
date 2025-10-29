@@ -54,7 +54,7 @@ export default function Header1(props: Header1Props) {
       const res = await fetch("/api/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // ensures cookies are sent with request
+        // credentials: "include", // ensures cookies are sent with request
       });
       
       localStorage.removeItem("authToken");

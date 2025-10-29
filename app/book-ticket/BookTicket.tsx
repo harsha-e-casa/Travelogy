@@ -332,19 +332,20 @@ export default function BookTicket() {
 
   // moved to tickets/page.tsx
 
-  // useEffect(() => {
-  //   removeCookie("travellerInfo");
-  //   removeCookie("mealinfo");
-  //   removeCookie("baggageinfo");
-  //   removeCookie("seatSsr_amount");
-  //   removeCookie("gst_info");
+  useEffect(() => {
+    removeCookie("mappedSeatInfo");
+    //   removeCookie("travellerInfo");
+    //   removeCookie("mealinfo");
+    //   removeCookie("baggageinfo");
+    //   removeCookie("seatSsr_amount");
+    //   removeCookie("gst_info");
 
-  //   // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
-  //   for (let i = 1; i <= 9; i++) {
-  //     removeCookie(`adult_seat_map-${i}`);
-  //     removeCookie(`child_seat_map-${i}`);
-  //   }
-  // }, []);
+    //   // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
+    //   for (let i = 1; i <= 9; i++) {
+    //     removeCookie(`adult_seat_map-${i}`);
+    //     removeCookie(`child_seat_map-${i}`);
+    //   }
+  }, []);
 
   const [travellerPrsedData, setTravellerPrsedData] = useState<
     Record<string, any>
@@ -722,6 +723,11 @@ export default function BookTicket() {
           desc: string;
           fromToCode?: string;
         }[] = []; // Type meal info array
+        let seatInfosPaylode: {
+          key: string;
+          code: string;
+          fromToCode?: string;
+        }[] = [];
         let groupedAdults: {
           ti: string;
           fN: string;
@@ -818,10 +824,10 @@ export default function BookTicket() {
                   (seg: any) => seg.id === segmentId
                 );
                 console.log("baggabe matchedSegment ==> ", matchedSegment);
-                
+
                 const tripFrom = matchedSegment?.da?.code;
                 const tripTo = matchedSegment?.aa?.code;
-                
+
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
@@ -833,7 +839,7 @@ export default function BookTicket() {
                     code: baggageCode,
                     amount: baggageOption.amount,
                     desc: baggageOption.desc,
-                    fromToCode: `${tripFrom}-${tripTo}`
+                    fromToCode: `${tripFrom}-${tripTo}`,
                   });
                 }
               }
@@ -864,19 +870,24 @@ export default function BookTicket() {
                     code: mealCode,
                     amount: mealOption.amount,
                     desc: mealOption.desc,
-                    fromToCode: `${tripFrom}-${tripTo}`
+                    fromToCode: `${tripFrom}-${tripTo}`,
                   });
                 }
               }
             });
             const adultSeatInfo = [];
             if (seatInfo?.length > 0) {
-              console.log("seatInfoseatInfo ==> ",seatInfo);
+              console.log("seatInfoseatInfo ==> ", seatInfo);
               for (let i = 0; i < seatInfo.length; i++) {
                 const item = seatInfo[i];
                 adultSeatInfo.push({
                   key: item.flightId,
                   code: item.seat,
+                });
+                seatInfosPaylode.push({
+                  key: item.flightId,
+                  code: item.seat,
+                  fromToCode: item.fromTo,
                 });
               }
               traveller.ssrSeatInfos = adultSeatInfo;
@@ -989,7 +1000,6 @@ export default function BookTicket() {
                 const tripFrom = matchedSegment?.da?.code;
                 const tripTo = matchedSegment?.aa?.code;
 
-
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
@@ -1000,7 +1010,7 @@ export default function BookTicket() {
                     code: baggageCode,
                     amount: baggageOption.amount,
                     desc: baggageOption.desc,
-                    fromToCode: `${tripFrom}-${tripTo}`
+                    fromToCode: `${tripFrom}-${tripTo}`,
                   });
                 }
               }
@@ -1028,7 +1038,7 @@ export default function BookTicket() {
                     code: mealCode,
                     amount: mealOption.amount,
                     desc: mealOption.desc,
-                    fromToCode: `${tripFrom}-${tripTo}`
+                    fromToCode: `${tripFrom}-${tripTo}`,
                   });
                 }
               }
@@ -1041,6 +1051,11 @@ export default function BookTicket() {
                 childSeatInfo.push({
                   key: item.flightId,
                   code: item.seat,
+                });
+                seatInfosPaylode.push({
+                  key: item.flightId,
+                  code: item.seat,
+                  fromToCode: item.fromTo,
                 });
               }
               traveller.ssrSeatInfos = childSeatInfo;
@@ -1084,6 +1099,10 @@ export default function BookTicket() {
         });
         // setBaggageinfo(baggageInfosPayload);
         setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
+          expires: 7,
+        });
+
+        setCookie("mappedSeatInfo", JSON.stringify(seatInfosPaylode), {
           expires: 7,
         });
         // setMealinfo(mealinfosPaylode)
@@ -1429,8 +1448,7 @@ export default function BookTicket() {
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     style={{ margin: "0" }}
                                                   >
-                                                    <path d="M14.122 7.23384H12.3453V5.80934C12.3453 5.55009 12.135 5.33991 11.8757 5.33991H9.33781C9.1025 4.62166 8.42469 4.10641 7.63672 4.10641H6.82216V0.469438C6.82216 0.210188 6.61194 0 6.35262 0H3.07384C2.81453 0 2.60428 0.210188 2.60428 0.469438V4.10644H1.78972C0.802875 4.10644 0 4.90906 0 5.89566V14.2107C0 15.1973 0.802875 16 1.78972 16H14.122C15.1575 16 16 15.1578 16 14.1225V9.11134C16 8.07609 15.1575 7.23384 14.122 7.23384ZM15.0609 9.11134V12.0802H5.77616V9.11134C5.77616 8.59378 6.19734 8.17269 6.71506 8.17269H14.122C14.6397 8.17269 15.0609 8.59375 15.0609 9.11134ZM11.4062 7.23384H9.43094V6.27878H11.4062V7.23384ZM3.54338 0.938844H5.88306V4.10641H3.54338V0.938844ZM0.939094 14.2107V5.89566C0.939094 5.42675 1.32069 5.04528 1.78972 5.04528H7.63672C8.08409 5.04528 8.45697 5.39431 8.48556 5.83991C8.48669 5.85728 8.48887 5.87431 8.49178 5.89106V7.23384H6.71503C5.6795 7.23384 4.83703 8.07609 4.83703 9.11134V14.1225C4.83703 14.4643 4.92931 14.7848 5.08962 15.0612H1.78972C1.32069 15.0612 0.939094 14.6797 0.939094 14.2107ZM14.122 15.0612H7.63672H6.71506C6.19734 15.0612 5.77616 14.6401 5.77616 14.1225V13.0191H15.0609V14.1225C15.0609 14.6401 14.6397 15.0612 14.122 15.0612Z">
-                                                    </path>
+                                                    <path d="M14.122 7.23384H12.3453V5.80934C12.3453 5.55009 12.135 5.33991 11.8757 5.33991H9.33781C9.1025 4.62166 8.42469 4.10641 7.63672 4.10641H6.82216V0.469438C6.82216 0.210188 6.61194 0 6.35262 0H3.07384C2.81453 0 2.60428 0.210188 2.60428 0.469438V4.10644H1.78972C0.802875 4.10644 0 4.90906 0 5.89566V14.2107C0 15.1973 0.802875 16 1.78972 16H14.122C15.1575 16 16 15.1578 16 14.1225V9.11134C16 8.07609 15.1575 7.23384 14.122 7.23384ZM15.0609 9.11134V12.0802H5.77616V9.11134C5.77616 8.59378 6.19734 8.17269 6.71506 8.17269H14.122C14.6397 8.17269 15.0609 8.59375 15.0609 9.11134ZM11.4062 7.23384H9.43094V6.27878H11.4062V7.23384ZM3.54338 0.938844H5.88306V4.10641H3.54338V0.938844ZM0.939094 14.2107V5.89566C0.939094 5.42675 1.32069 5.04528 1.78972 5.04528H7.63672C8.08409 5.04528 8.45697 5.39431 8.48556 5.83991C8.48669 5.85728 8.48887 5.87431 8.49178 5.89106V7.23384H6.71503C5.6795 7.23384 4.83703 8.07609 4.83703 9.11134V14.1225C4.83703 14.4643 4.92931 14.7848 5.08962 15.0612H1.78972C1.32069 15.0612 0.939094 14.6797 0.939094 14.2107ZM14.122 15.0612H7.63672H6.71506C6.19734 15.0612 5.77616 14.6401 5.77616 14.1225V13.0191H15.0609V14.1225C15.0609 14.6401 14.6397 15.0612 14.122 15.0612Z"></path>
                                                   </svg>
                                                   : (Adult) Check-in :{" "}
                                                   {

@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
@@ -46,5 +45,5 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/profile/:path*", "/flights/:path*", "/hotel/:path*", "/holiday/:path*", "/visa/:path*"],
+  matcher: ["/dashboard/:path*", "/profile/:path*", "/flights/:path*", "/hotels/:path*", "/user-create/:path*"],
 };

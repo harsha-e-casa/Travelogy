@@ -27,7 +27,7 @@ import CryptoJS from "crypto-js";
 export const runtime = "nodejs"; // ensure Node runtime
 export const dynamic = "force-dynamic"; // avoid caching
 
-const BACKEND_URL = "https://com.digilogy.co/";
+const BACKEND_URL = "https://api.travelogy.co/";
 
 export async function POST(req) {
   try {

@@ -1,6 +1,10 @@
+import { postData } from "@/services/NetworkAdapter";
+import { message } from "antd";
 import React, { useState } from "react";
 
 const TravelForm = () => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const [isOtherSelected, setIsOtherSelected] = useState(false);
 
   const [errors, setErrors] = useState({
@@ -18,36 +22,80 @@ const TravelForm = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData(event.target); 
-    let newErrors = {};
-    if (!event.target.name.value) {
-      newErrors.fullName = "Full name is required.";
-    }
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    if (!event.target.mobile.value) {
-      newErrors.mobile = "Mobile number is required.";
-    }
+    // helper
+    const trim = (v) => String(v ?? "").trim();
 
-    if (!event.target.email.value) {
-      newErrors.email = "Email address is required.";
-    }
+    // read values
+    const fullName = trim(form.name?.value);
+    const mobile = trim(form.mobile?.value);
+    const email = trim(form.email?.value).toLowerCase();
+    const durationOfStay = trim(formData.get("durationOfStay"));
+    const policyType = trim(formData.get("policyType"));
+    const insuranceCoverage = trim(formData.get("insuranceCoverage")); // leisure | business | student | other
+    const otherCoverageDetails = trim(formData.get("otherCoverageDetails"));
 
-    if (!formData.get("durationOfStay")) {
-      newErrors.durationOfStay = "Travel destination is required.";
-    }
+    // validations
+    const newErrors = {};
 
-    if (!formData.get("policyType")) {
-      newErrors.policyType = "Policy type is required.";
-    }
-
-    if (!formData.get("insuranceCoverage")) {
+    if (!fullName) newErrors.fullName = "Full name is required.";
+    if (!mobile) newErrors.mobile = "Mobile number is required.";
+    if (!email) newErrors.email = "Email address is required.";
+    if (!durationOfStay)
+      newErrors.durationOfStay = "Duration of stay is required.";
+    if (!policyType) newErrors.policyType = "Policy type is required.";
+    if (!insuranceCoverage)
       newErrors.insuranceCoverage = "Insurance coverage is required.";
+    if (insuranceCoverage === "other" && !otherCoverageDetails) {
+      newErrors.otherCoverageDetails =
+        "Please specify your insurance coverage.";
     }
+
+    // (optional) stricter mobile rule: 10 digits only
+    // if (!/^\d{10}$/.test(mobile)) newErrors.mobile = "Enter a valid 10-digit mobile number.";
 
     setErrors(newErrors);
+    if (Object.keys(newErrors).length) return;
+
+    // resolve coverage to a meaningful value
+    const resolvedCoverage =
+      insuranceCoverage === "other" ? otherCoverageDetails : insuranceCoverage;
+
+    const reqData = {
+      action: "insuranceSave",
+      requestData: {
+        fullName,
+        mobile,
+        email,
+        durationOfStay,
+        policyType,
+        insuranceCoverage: resolvedCoverage,
+        rawCoverage: insuranceCoverage,
+        ...(insuranceCoverage === "other" ? { otherCoverageDetails } : {}),
+        submittedAt: new Date().toISOString(),
+      },
+    };
+
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+      const resp = await postData("/travelogy/common/save", reqData, headers);
+
+      if (resp?.success) {
+        message.success("Successfully submitted your query");
+        form.reset();
+        setIsOtherSelected(false);
+        setErrors({});
+      } else {
+        message.error("Failed to submit your query");
+      }
+    } catch (err) {
+      message.error("Something went wrong while saving.");
+    }
   };
 
   return (
@@ -87,6 +135,12 @@ const TravelForm = () => {
               name="mobile"
               placeholder="Enter your mobile number"
               className="visa_input_fields flex text-left"
+              maxLength={10}
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
             />
             {errors.mobile && (
               <span className="flex item-left form-error-space text-red-500 text-xs mt-1">

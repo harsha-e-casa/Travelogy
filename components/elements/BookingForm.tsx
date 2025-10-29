@@ -12,6 +12,7 @@ interface BookingFormProps {
   mealAmount?: number;
   bookingFormKey?: number;
   afsAmount?: number;
+  rssrAmount?: number
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -26,6 +27,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   mealAmount = 0,
   bookingFormKey,
   afsAmount = 0,
+  rssrAmount = 0
 }) => {
   // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
@@ -36,6 +38,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
     bookingFormKey
   );
   console.log("afsAmountafsAmountafsAmount ", afsAmount);
+  console.log("rssrAmountrssrAmountrssrAmount ", rssrAmount);
 
   console.log("bookingData 111111111111111111111==========> ", bookingData);
   console.log(
@@ -74,12 +77,19 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [displayAmount, setDisplayAmount] = useState(0);
   const [netprice, setNetprice] = useState(totalpricee?.fC?.NF || 0);
   const [ammendmentFees, setAmmendmentFees] = useState(afsAmount);
+  const [rssrFees, setRssrFees] = useState(rssrAmount);
 
   useEffect(() => {
     if (afsAmount != 0) {
       setAmmendmentFees(afsAmount);
     }
   }, [afsAmount]);
+
+  useEffect(() => {
+    if (rssrAmount != 0) {
+      setRssrFees(rssrAmount);
+    }
+  }, [rssrAmount]);
 
   useEffect(() => {
     // if (totalpricee && !initLoaded.current) {
@@ -298,6 +308,19 @@ const BookingForm: React.FC<BookingFormProps> = ({
                 </div>
                 <div className="text-md-bold neutral-1000">
                   ₹{ammendmentFees}
+                </div>
+              </div>
+            )}
+            {rssrFees != 0 && (
+              <div className="flex flex-row justify-between">
+                <div>
+                  <strong className="text-md-bold neutral-1000">
+                    Old ancillary amount
+                  </strong>
+                </div>
+                <div className="text-md-bold neutral-1000">
+                  {rssrFees < 0 ? "- " : ""}
+                  ₹{Math.abs(rssrFees)}
                 </div>
               </div>
             )}

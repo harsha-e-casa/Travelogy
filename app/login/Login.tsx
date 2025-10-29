@@ -22,18 +22,19 @@ export default function Login() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const nextUrl = searchParams.get("next") || "/flights";
+  console.log("nextUrlnextUrl login page ==> ",nextUrl)
 
-  useEffect(() => {
-    const tokenValid = checkTokenExpiry();
+  // useEffect(() => {
+  //   const tokenValid = checkTokenExpiry();
 
-    if (!tokenValid) {
-      localStorage.removeItem("authToken");
-      router.push("/login"); // Redirect to the login page
-    } else {
-      setLoading(false);
-      router.push("/flights");
-    }
-  }, [router]);
+  //   if (!tokenValid) {
+  //     localStorage.removeItem("authToken");
+  //     router.push("/login"); // Redirect to the login page
+  //   } else {
+  //     setLoading(false);
+  //     // router.push("/flights");
+  //   }
+  // }, [router]);
 
   // Login handler
   // const onFinish = async (values: any) => {
@@ -93,6 +94,7 @@ export default function Login() {
         body: JSON.stringify({
           email: values.email,
           password: values.password, // 🔒 rely on HTTPS; avoid client-side "encryption"
+          next: nextUrl,
         }),
       });
 
@@ -114,7 +116,7 @@ export default function Login() {
 
       message.success("Login successful");
       console.log("nextUrlnextUrl ==> ",nextUrl)
-      router.push(nextUrl);
+      // router.push(nextUrl);
       window.location.href = nextUrl;
     } catch (e) {
       console.error(e);
