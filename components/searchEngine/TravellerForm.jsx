@@ -553,7 +553,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   // }
 
   const handleRemoveRoom = (roomIndex) => {
-    if (rooms.length === 1) return;
+    if (rooms.length === 0) return;
     const updated = [...rooms];
     updated.splice(roomIndex, 1);
     setRooms(updated);

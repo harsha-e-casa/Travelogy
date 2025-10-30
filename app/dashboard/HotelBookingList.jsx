@@ -31,10 +31,6 @@ const HotelBookingList = ({
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
 
-  if (!bookings || bookings.length === 0) {
-    return <p className="booking-tab">No bookings found.</p>;
-  }
-
   // SORT LOGIC
   let sortedBookings = [...bookings];
   if (sortBy === "idIndex") {
@@ -234,7 +230,13 @@ const HotelBookingList = ({
           </tr>
         </thead>
         <tbody>
-          {pagedBookings.length > 0 ? (
+          {!bookings || bookings.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="empty-state">
+                <div className="empty-state-text">No bookings found</div>
+              </td>
+            </tr>
+          ) : pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
                 <td>{startIdx + idx + 1}</td>
@@ -258,7 +260,7 @@ const HotelBookingList = ({
           ) : (
             <tr>
               <td colSpan={5} className="text-center py-4">
-                No bookings found.
+                No bookings found
               </td>
             </tr>
           )}

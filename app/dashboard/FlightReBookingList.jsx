@@ -31,10 +31,6 @@ const FlightReBookingList = ({
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
 
-  if (!bookings || bookings.length === 0) {
-    return <p className="booking-tab">No bookings found.</p>;
-  }
-
   // SORT LOGIC
   let sortedBookings = [...bookings];
   if (sortBy === "idIndex") {
@@ -221,7 +217,13 @@ const FlightReBookingList = ({
           </tr>
         </thead>
         <tbody>
-          {pagedBookings.length > 0 ? (
+          {!bookings || bookings.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="empty-state">
+                <div className="empty-state-text">No Re-bookings found</div>
+              </td>
+            </tr>
+          ) : pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
                 <td>{startIdx + idx + 1}</td>
@@ -253,8 +255,8 @@ const FlightReBookingList = ({
           ) : (
             <tr>
               <td colSpan={6} className="empty-state">
-                <div className="empty-state-icon">🔄</div>
-                <div className="empty-state-text">No re-bookings found.</div>
+                <div className="empty-state-icon"></div>
+                <div className="empty-state-text">No Re-bookings found</div>
               </td>
             </tr>
           )}

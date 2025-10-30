@@ -524,8 +524,8 @@ export default function ActivitiesDetail4() {
 
                               return (
                                 <div key={key} className="mb-6">
-                                  <h3 className="text-base font-semibold text-gray-800 mb-1">
-                                    {label}
+                                  <h3 className="text-base font-bold text-gray-900 mb-1">
+                                    {label}:
                                   </h3>
 
                                   {hasDoubleSpace ? (

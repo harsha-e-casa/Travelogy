@@ -237,7 +237,7 @@ function buildRoomTravellerInfo({ formData, roomInfo, panInfo }) {
 
     return {
       travellerInfo: guests.map((guest, gIdx) => {
-        const isChild = (guest?.type || "").toLowerCase() === "children";
+        const isChild = (guest?.type || "").toLowerCase() === "children" || "Adults";
         const base = {
           fN: guest?.firstName || "TBA",
           lN: guest?.lastName || "TBA",

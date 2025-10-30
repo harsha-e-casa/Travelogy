@@ -1,21 +1,15 @@
 "use client";
-import Layout from "@/components/layout/Layout";
-import HomeContent from "./HomeContent";
-import HomeDashboard from "@/components/sections/HomeDashboard";
-import PopularDestinationsGrid from "@/components/sections/PopularDestinationsGrid";
-import WhyChooseUs1 from "@/components/sections/WhyChooseUs1";
-import Testimonials1 from "@/components/sections/Testimonials1";
+import dynamic from 'next/dynamic';
 
-export default function Home() {
-    return (
-        <>
-            <Layout headerStyle={1} footerStyle={1}>
-                <HomeContent />
-                <PopularDestinationsGrid />
-                <HomeDashboard />
-                <WhyChooseUs1 />
-                {/* <Testimonials1 /> */}
-            </Layout>
-        </>
-    );
+// Dynamically import BookingDetailsPage with ssr: false to disable SSR
+
+// const Login = dynamic(() => import("./Login_static"), { ssr: false });
+const Home = dynamic(() => import("./home"), { ssr: false });
+
+export default function Page() {
+  return (
+    <div>
+      <Home />
+    </div>
+  );
 }

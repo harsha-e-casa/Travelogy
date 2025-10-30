@@ -37,11 +37,7 @@ const AmendmentList = ({
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(false);
 
-  if (!amendments || amendments.length === 0) {
-    return <p className="booking-tab">No amendments found.</p>;
-  }
-
-  let sortedBookings = [...amendments];
+  let sortedBookings = amendments ? [...amendments] : [];
   if (sortBy === "idIndex") {
     if (sortOrder === "desc") sortedBookings.reverse();
   }
@@ -245,7 +241,13 @@ const AmendmentList = ({
           </tr>
         </thead>
         <tbody>
-          {pagedBookings.length > 0 ? (
+          {!amendments || amendments.length === 0 ? (
+            <tr>
+              <td colSpan={7} className="empty-state">
+                <div className="empty-state-text">No Amendments found</div>
+              </td>
+            </tr>
+          ) : pagedBookings.length > 0 ? (
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
                 <td>{startIdx + idx + 1}</td>
@@ -274,9 +276,8 @@ const AmendmentList = ({
             ))
           ) : (
             <tr>
-              <td colSpan={6} className="empty-state">
-                <div className="empty-state-icon">✏️</div>
-                <div className="empty-state-text">No amendments found.</div>
+              <td colSpan={5} className="empty-state">
+                <div className="empty-state-text">No amendments found</div>
               </td>
             </tr>
           )}
