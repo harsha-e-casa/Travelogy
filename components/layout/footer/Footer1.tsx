@@ -143,7 +143,7 @@ export default function Footer1() {
                   <Link href="#">Data Policy</Link>
                 </li> */}
                 <li>
-                  <Link href="/refund-policy">Refund Policy</Link>
+                  <Link href="/refund-policy">Cancellation / Refund Terms</Link>
                 </li>
               </ul>
             </div>
