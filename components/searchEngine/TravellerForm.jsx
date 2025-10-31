@@ -553,7 +553,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   // }
 
   const handleRemoveRoom = (roomIndex) => {
-    if (rooms.length === 0) return;
+    if (rooms.length === 1) return;
     const updated = [...rooms];
     updated.splice(roomIndex, 1);
     setRooms(updated);
@@ -594,12 +594,14 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
           <div key={roomIndex} className="border px-2 mb-2 rounded-lg relative">
             <div className="font-bold primary-text-color text-md mb-2 text-left">
               Room {roomIndex + 1}
-              <span
-                className="absolute top-2 right-3 text-black cursor-pointer"
-                onClick={() => handleRemoveRoom(roomIndex)}
-              >
-                x
-              </span>
+              {rooms.length > 1 && (
+                <span
+                  className="absolute top-2 right-3 text-black cursor-pointer"
+                  onClick={() => handleRemoveRoom(roomIndex)}
+                >
+                  x
+                </span>
+              )}
             </div>
 
             <div className="mb-3">
