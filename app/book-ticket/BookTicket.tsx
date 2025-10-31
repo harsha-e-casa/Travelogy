@@ -157,6 +157,8 @@ export default function BookTicket() {
     window.scrollTo(0, 0);
   }, []);
 
+  const [loadingBtn, setLoadingBtn] = useState<any>(false);
+  console.log("loadingBtnloadingBtn ==> ",loadingBtn);
   const [apiData, setApiData] = useState<any>(null);
   const [bookingFormKey, setBookingFormKey] = useState<any>(1);
   const [segments, setSegments] = useState<FlightSegment[]>([]);
@@ -655,6 +657,7 @@ export default function BookTicket() {
   const [form] = Form.useForm();
 
   const handleNextClick = () => {
+    setLoadingBtn(true)
     form
       .validateFields() // Validate all fields
       .then(() => {
@@ -1151,6 +1154,7 @@ export default function BookTicket() {
         // console.log('All forms are valid!');
         // alert('Validation success!');
         // Proceed with form submission or further actions
+        // setLoadingBtn(false);
         router.push(`/reviewpage?tcs_id=${tcs_id}`);
       })
       .catch((errorInfo) => {
@@ -1171,6 +1175,7 @@ export default function BookTicket() {
             });
           }
         }
+        setLoadingBtn(false)
       });
   };
 
@@ -2106,12 +2111,49 @@ export default function BookTicket() {
                                 Back
                               </button>
 
-                              <button
+                              {/* <button
                                 onClick={handleNextClick}
                                 style={{ borderRadius: "5px" }}
                                 className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-block text-center"
                               >
                                 Continue
+                              </button> */}
+                              <button
+                                onClick={handleNextClick}
+                                disabled={loadingBtn}
+                                style={{ borderRadius: "5px" }}
+                                className={`cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-flex items-center justify-center gap-2 ${
+                                  loadingBtn ? "opacity-75 cursor-not-allowed" : ""
+                                }`}
+                              >
+                                {loadingBtn ? (
+                                  <>
+                                    {/* Spinner animation */}
+                                    <svg
+                                      className="animate-spin h-5 w-5 text-black"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                      ></circle>
+                                      <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                      ></path>
+                                    </svg>
+                                    <span>Loading...</span>
+                                  </>
+                                ) : (
+                                  "Continue"
+                                )}
                               </button>
                             </div>
                           </div>

@@ -1,11 +1,11 @@
-@media print {
+/* @media print {
   body * {
-    visibility: hidden; /* hide everything */
+    visibility: hidden;
   }
 
   .print-area,
   .print-area * {
-    visibility: visible; /* except this area */
+    visibility: visible;
   }
 
   .print-area {
@@ -18,8 +18,39 @@
   .no-print {
     display: none !important;
   }
-}
+} */
 
 .no-print {
   display: none !important;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  th,
+  td {
+    border: 1px solid #d1d5db !important;
+    padding: 0.5rem !important;
+    text-align: left !important;
+  }
+
+  th {
+    background-color: #f3f4f6 !important;
+    font-weight: 600 !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
 }

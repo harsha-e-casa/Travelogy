@@ -2210,7 +2210,7 @@ const ReissueReviewPage = () => {
                             <div className="bg-white relative flex justify-between  flex-col">
                               <div className="mt-60 flex justify-between">
                                 <Link
-                                  href={`/book-ticket?tcs_id=${priceId}`}
+                                  href={`/reschedule-book-ticket?tcs_id=${priceId}`}
                                   style={{ borderRadius: "5px" }}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                 >
