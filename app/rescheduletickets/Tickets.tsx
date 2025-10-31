@@ -833,6 +833,7 @@ export default function Tickets() {
                                           ticket={ticket}
                                           flightData={flightData}
                                           reschedule={true}
+                                          requestId={requestId}
                                         />
                                       </React.Fragment>
                                     ))}

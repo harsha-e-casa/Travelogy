@@ -11,6 +11,7 @@ export default function TicketCard1({
   ticket,
   flightData,
   reschedule = false,
+  requestId = ""
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [showAllFares, setShowAllFares] = useState(false);
@@ -315,7 +316,7 @@ export default function TicketCard1({
           <div className="flight-price-2 border-1 btndiv">
             {reschedule && (
               <Link
-                href={`reschedule-book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
+                href={`reschedule-book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}&requestId=${requestId}`}
                 // className="btn btn-gray booknow btn"
                 className="btn-book-now"
               >

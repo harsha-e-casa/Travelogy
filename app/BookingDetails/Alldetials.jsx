@@ -21,6 +21,7 @@ import { request } from "http";
 import { type } from "os";
 import BookingForm from "@/components/elements/BookingForm";
 import { DatePicker } from "antd";
+import { printTicket, downloadTicketPdf } from "./TicketPrint";
 
 // import staticBookingData from "./staticBookingData.json";
 
@@ -44,6 +45,66 @@ const Alldetails = ({ totalpricee }) => {
   const [fareType, setFareType] = useState("");
   const [afsAmount, setAfsAmount] = useState(0);
   const [rssrAmount, setRssrAmount] = useState(0);
+
+  const [ticketData, setTicketData] = useState(null);
+  const [ticketLoading, setTicketLoading] = useState(false);
+
+  useEffect(() => {
+    // setTicketData(...) once your parent passes it or your API completes.
+    // Example seed so you can test print now:
+    setTicketData({
+      bookingRef: "6PNR12",
+      airlineLogo:
+        "https://upload.wikimedia.org/wikipedia/commons/4/4b/IndiGo_Airlines_logo.svg",
+      airlineName: "IndiGo",
+      passengers: [
+        { title: "MR", firstName: "ARUN", lastName: "K", pnr: "AB12CD" },
+        { title: "MS", firstName: "PRIYA", lastName: "R" },
+      ],
+      segments: [
+        {
+          flightNo: "6E-502",
+          from: { code: "MAA", name: "Chennai" },
+          to: { code: "DEL", name: "Delhi" },
+          depTime: "2025-11-05T06:00:00+05:30",
+          arrTime: "2025-11-05T08:30:00+05:30",
+          durationMins: 150,
+          cabin: "ECONOMY",
+          fareClass: "T",
+        },
+      ],
+      contact: { email: "user@email.com", phone: "+91 9xxxx xxxxx" },
+    });
+  }, []);
+
+  const openPrintWindowSync = (name) => {
+    // 1) Try normal window.open with only 'noopener'
+    let win = window.open("", name, "noopener,width=900,height=1200");
+    if (win) return win;
+
+    // 2) Fallback: anchor-click trick (often bypasses blockers)
+    const a = document.createElement("a");
+    a.href = "about:blank";
+    a.target = name;
+    a.rel = "noopener"; // do NOT use noreferrer here
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // 3) Grab a handle to the newly opened named window
+    try {
+      win = window.open("", name);
+    } catch (_) {
+      win = null;
+    }
+    return win;
+  };
+
+  const handlePrintv1 = () => {
+    if (!ticketData) return;
+    printTicket(ticketData);
+  };
 
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
@@ -75,13 +136,15 @@ const Alldetails = ({ totalpricee }) => {
           ?.fC?.AFS
       );
     }
-    const afsAmt = bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.AFS;
+    const afsAmt =
+      bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.AFS;
     // const adultAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
     // const childAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
     // const infantAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
     setAfsAmount(afsAmt);
-    const rssrAmt = bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.RSSR
-    setRssrAmount(rssrAmt)
+    const rssrAmt =
+      bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.RSSR;
+    setRssrAmount(rssrAmt);
   }, [bookingDetails]);
 
   // const createStructuredData = (bookingDetails) => {
@@ -1217,14 +1280,25 @@ const Alldetails = ({ totalpricee }) => {
                   </p>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   {isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
                       {bookingDetails?.order?.status === "SUCCESS" && (
                         <div className="flex flex-row gap-3">
                           <button
                             className={isNoPrintVisible ? "" : "no-print"}
-                            style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}
+                            style={{
+                              paddingTop: "5px",
+                              paddingBottom: "5px",
+                              paddingLeft: "10px",
+                              paddingRight: "10px",
+                            }}
                             onClick={handleCancellation}
                           >
                             <AmendmentPopup
@@ -1256,7 +1330,14 @@ const Alldetails = ({ totalpricee }) => {
                   {!reStatus && isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
                       {bookingDetails?.order?.status === "SUCCESS" && (
-                        <div style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
+                        <div
+                          style={{
+                            paddingTop: "5px",
+                            paddingBottom: "5px",
+                            paddingLeft: "10px",
+                            paddingRight: "10px",
+                          }}
+                        >
                           <button
                             className="border border-grey rounded px-4 py-2"
                             onClick={openReIssueModal}
@@ -1512,8 +1593,16 @@ const Alldetails = ({ totalpricee }) => {
                   {isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
                       {bookingDetails?.order?.status === "SUCCESS" ? (
-                        <div className="relative inline-block" style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
-                          <button
+                        <div
+                          className="relative inline-block"
+                          style={{
+                            paddingTop: "5px",
+                            paddingBottom: "5px",
+                            paddingLeft: "10px",
+                            paddingRight: "10px",
+                          }}
+                        >
+                          {/* <button
                             onClick={() => setShowDropdown(!showDropdown)}
                             className="border border-grey rounded px-4 py-2"
                           >
@@ -1523,9 +1612,12 @@ const Alldetails = ({ totalpricee }) => {
                             <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
                               <button
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                disabled={!ticketData}
                                 onClick={() => {
-                                  handlePrint(printRef);
-                                  setShowDropdown(false);
+                                  // handlePrint(printRef);
+                                  // setShowDropdown(false);
+                                  // handlePrintv1();
+                                  printTicket(bookingDetails)
                                 }}
                               >
                                 Print Ticket
@@ -1533,22 +1625,40 @@ const Alldetails = ({ totalpricee }) => {
                               <button
                                 className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                                 onClick={() => {
-                                  handleDownload(printRef);
-                                  setShowDropdown(false);
+                                  // handleDownload(printRef);
+                                  // setShowDropdown(false);
+                                  downloadTicketPdf(bookingDetails)
                                 }}
                               >
                                 Download Ticket
                               </button>
                             </div>
-                          )}
+                          )} */}
+                          <button
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                            disabled={!ticketData}
+                            onClick={() => {
+                              printTicket(bookingDetails);
+                            }}
+                          >
+                            Print Ticket
+                          </button>
                         </div>
                       ) : bookingDetails?.order?.status === "PENDING" ||
                         bookingDetails?.order?.status === "ABORTED" ||
                         bookingDetails?.order?.status === "UNCONFIRMED" ||
                         bookingDetails?.order?.status === "CANCELLED" ? (
                         <>
-                          <div className="relative inline-block" style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
-                            <button
+                          <div
+                            className="relative inline-block"
+                            style={{
+                              paddingTop: "5px",
+                              paddingBottom: "5px",
+                              paddingLeft: "10px",
+                              paddingRight: "10px",
+                            }}
+                          >
+                            {/* <button
                               onClick={() => setShowDropdown(!showDropdown)}
                               className="border border-grey rounded px-4 py-2"
                             >
@@ -1575,7 +1685,16 @@ const Alldetails = ({ totalpricee }) => {
                                   Download Ticket
                                 </button>
                               </div>
-                            )}
+                            )} */}
+                            <button
+                              className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                              disabled={!ticketData}
+                              onClick={() => {
+                                printTicket(bookingDetails);
+                              }}
+                            >
+                              Print Ticket
+                            </button>
                           </div>
                         </>
                       ) : (
@@ -1592,8 +1711,16 @@ const Alldetails = ({ totalpricee }) => {
                           >
                             Pay Now
                           </button>
-                          <div className="relative inline-block" style={{ paddingTop: "5px", paddingBottom: "5px", paddingLeft: "10px", paddingRight: "10px" }}>
-                            <button
+                          <div
+                            className="relative inline-block"
+                            style={{
+                              paddingTop: "5px",
+                              paddingBottom: "5px",
+                              paddingLeft: "10px",
+                              paddingRight: "10px",
+                            }}
+                          >
+                            {/* <button
                               onClick={() => setShowDropdown(!showDropdown)}
                               className="border border-grey rounded px-4 py-2"
                             >
@@ -1620,7 +1747,16 @@ const Alldetails = ({ totalpricee }) => {
                                   Download Ticket
                                 </button>
                               </div>
-                            )}
+                            )} */}
+                            <button
+                              className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                              disabled={!ticketData}
+                              onClick={() => {
+                                printTicket(bookingDetails);
+                              }}
+                            >
+                              Print Ticket
+                            </button>
                           </div>
                         </div>
                       )}
