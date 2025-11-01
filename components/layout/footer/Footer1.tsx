@@ -128,7 +128,7 @@ export default function Footer1() {
               <h6 className="text-linear-3">Legal</h6>
               <ul className="menu-footer">
                 <li>
-                  <Link href="/terms-of-service">Terms of Service</Link>
+                  <Link href="/terms-of-service">Terms & Conditions</Link>
                 </li>
                 <li>
                   <Link href="/privacy-policy">Privacy Policy</Link>
@@ -143,7 +143,7 @@ export default function Footer1() {
                   <Link href="#">Data Policy</Link>
                 </li> */}
                 <li>
-                  <Link href="/refund-policy">Cancellation / Refund Terms</Link>
+                  <Link href="/refund-policy">Refund & Cancellation Policy</Link>
                 </li>
               </ul>
             </div>
@@ -151,13 +151,16 @@ export default function Footer1() {
               <h6 className="text-linear-3">Services</h6>
               <ul className="menu-footer">
                 <li>
-                  <Link href="/tour-booking">Tour Booking</Link>
+                  {/* <Link href="/tour-booking">Tour Booking</Link> */}
+                  <Link href="/holiday">Tour Booking</Link>
                 </li>
                 <li>
-                  <Link href="/hotel-booking">Hotel Booking</Link>
+                  {/* <Link href="/hotel-booking">Hotel Booking</Link> */}
+                  <Link href="/hotels">Hotel Booking</Link>
                 </li>
                 <li>
-                  <Link href="/flight-booking">Flight Booking</Link>
+                  <Link href="/flights">Flight Booking</Link>
+                  {/* <Link href="/flight-booking">Flight Booking</Link> */}
                 </li>
               </ul>
             </div>
@@ -182,7 +185,7 @@ export default function Footer1() {
                   reserved.
                 </p>
               </div>
-              <div className="col-md-6 text-md-end text-center mb-20">
+              {/* <div className="col-md-6 text-md-end text-center mb-20">
                 <ul className="menu-bottom-footer">
                   <li>
                     {" "}
@@ -199,7 +202,7 @@ export default function Footer1() {
                     <Link href="#">Accessibility</Link>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -103,7 +103,7 @@ export default function RefundContent() {
             <div className="bg-white rounded-4 shadow-lg p-5">
               <div className="text-center mb-5">
                 <h1 className="heading-44-medium mb-3" style={{ fontSize: "32px"}} >
-                  Cancellation / Refund Terms
+                  Refund & Cancellation Policy
                 </h1>
               </div>
 

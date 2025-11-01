@@ -102,7 +102,7 @@ export default function TermsContent() {
           <div className="col-lg-10">
             <div className="bg-white rounded-4 shadow-lg p-5">
               <div className="text-center mb-5">
-                <h1 className="heading-44-medium mb-3" style={{ fontSize: "32px" }}>Terms of Service</h1>
+                <h1 className="heading-44-medium mb-3" style={{ fontSize: "32px" }}>Terms & Conditions</h1>
               </div>
 
               {/* Added Terms content from your brief, structured into sections */}
