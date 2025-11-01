@@ -34,7 +34,7 @@ export default function Footer1() {
                     Need help? Call us
                   </Link>
                   <Link className="heading-6 phone-support" href="#">
-                    +91 9818739838
+                    +91 95662 66061
                   </Link>
                 </div>
               </div>
@@ -53,7 +53,7 @@ export default function Footer1() {
                     Hours: 8:00 - 7:00, Mon - Fri
                   </p>
                   <p className="text-md neutral-400 icon-email">
-                    support@Travelogy.com
+                    info@casagrandtravelogy.co.in
                   </p>
                 </div>
                 <p className="text-lg-bold title-follow neutral-0">Follow us</p>

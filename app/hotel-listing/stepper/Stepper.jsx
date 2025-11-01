@@ -564,7 +564,7 @@ export function Step1TravellerDetails({
                         )
                       }
                     />
-                    <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                    <span className="text-red-500 text-xs mt-1">
                       {errors[`firstName_r${roomIndex}`] || ""}
                     </span>
                   </div>
@@ -584,7 +584,7 @@ export function Step1TravellerDetails({
                         )
                       }
                     />
-                    <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                    <span className="text-red-500 text-xs mt-1">
                       {errors[`lastName_r${roomIndex}`] || ""}
                     </span>
                   </div>
@@ -606,7 +606,7 @@ export function Step1TravellerDetails({
                           }
                         />
 
-                        <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                        <span className="text-red-500 text-xs mt-1">
                           {errors[`passportNumber_r${roomIndex}`] || ""}
                         </span>
                       </div>
@@ -767,7 +767,7 @@ export function Step1TravellerDetails({
                   setFormData({ ...formData, mobile: e.target.value })
                 }
               />{" "}
-              <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+              <span className="text-red-500 text-xs mt-1">
                 {errors.mobile || ""}
               </span>
             </div>
@@ -783,7 +783,7 @@ export function Step1TravellerDetails({
                   setFormData({ ...formData, email: e.target.value })
                 }
               />{" "}
-              <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+              <span className="text-red-500 text-xs mt-1">
                 {errors.email || ""}
               </span>
             </div>

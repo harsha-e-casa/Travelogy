@@ -588,7 +588,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   return (
-    <div className="p-2 w-1-6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden">
+    <div className="p-2 w-1-6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden mt-5">
       {Array.isArray(rooms) &&
         rooms.map((room, roomIndex) => (
           <div key={roomIndex} className="border px-2 mb-2 rounded-lg relative">
