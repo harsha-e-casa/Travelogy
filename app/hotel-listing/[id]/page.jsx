@@ -219,12 +219,11 @@ export default function ActivitiesDetail4() {
     if(isCheckinChanged){
       setOpenDateRange("checkout")
     }
-
+    
     const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
     if(isCheckoutChanged && checkoutDate){
-    setOpenDateRange(null)
-  }
-    // alert(checkoutDate);
+      setOpenDateRange(null)
+    }
     
     const normalizedRooms = normalizeRooms(roomsData);
     const roomsChanged =
@@ -232,9 +231,27 @@ export default function ActivitiesDetail4() {
 
     // Only fetch when both dates are complete OR when rooms change
     const bothDatesComplete = checkinDate && checkoutDate;
-    const shouldFetch = isCheckoutChanged && bothDatesComplete || roomsChanged;
+    const shouldFetch = ((isCheckinChanged || isCheckoutChanged) && bothDatesComplete) || roomsChanged;
+
+    console.log('Fetch Debug:', {
+      isCheckinChanged,
+      isCheckoutChanged,
+      bothDatesComplete,
+      roomsChanged,
+      shouldFetch,
+      checkinDate,
+      checkoutDate,
+      prevCheckinDate: prevCheckinDate.current,
+      prevCheckoutDate: prevCheckoutDate.current
+    });
 
     if (shouldFetch) {
+      console.log('Triggering fetch with:', {
+        checkinDate,
+        checkoutDate,
+        roomInfo: normalizedRooms,
+      });
+      
       fetchHotelDetails(
         {
           checkinDate,
@@ -248,7 +265,7 @@ export default function ActivitiesDetail4() {
       prevCheckoutDate.current = checkoutDate;
       prevRoomsData.current = JSON.stringify(normalizedRooms);
     }
-  }, [checkinDate, checkoutDate, roomsData, readyRef]); // Only trigger when these values change
+  }, [checkinDate, checkoutDate, roomsData]); // Only trigger when these values change
 
   useEffect(() => {
     async function fetchInitialHotelDetails({
@@ -524,8 +541,8 @@ export default function ActivitiesDetail4() {
 
                               return (
                                 <div key={key} className="mb-6">
-                                  <h3 className="text-base font-semibold text-gray-800 mb-1">
-                                    {label}
+                                  <h3 className="text-base font-bold text-gray-900 mb-1">
+                                    {label}:
                                   </h3>
 
                                   {hasDoubleSpace ? (

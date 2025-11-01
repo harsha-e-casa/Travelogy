@@ -4,9 +4,9 @@ import { gsap } from 'gsap';
 const data = [
   {
     place: 'London',
-    title: 'London',
+    title: 'LONDON',
     title2: 'PREFECTURE',
-    description: '',
+    description: 'Love for the city',
     image: 'https://travelogy.digilogy.co/demo1.jpg',
   },
   {
@@ -18,7 +18,7 @@ const data = [
   },
   {
     place: 'Australia - Morocco',
-    title: 'Morocco',
+    title: 'MOROCCO',
     title2: 'MERZOUGA',
     description: "Morocco offers vibrant markets, desert landscapes, and rich cultural experiences.",
     image: 'https://travelogy.digilogy.co/demo3.jpeg',
@@ -26,21 +26,21 @@ const data = [
 
   {
     place: 'Switzerland Alps',
-    title: 'Alps',
+    title: 'ALPS',
     title2: 'ANTONIEN',
     description: "Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for tranquility and adventure.",
     image: 'https://travelogy.digilogy.co/demo2.jpg',
   },
   {
     place: 'Australia - Morocco',
-    title: 'Australia',
+    title: 'AUSTRALIA',
     title2: 'MERZOUGA',
     description: "Morocco offers vibrant markets, desert landscapes, and rich cultural experiences.",
     image: 'https://travelogy.digilogy.co/demo3.jpeg',
   },
   {
     place: 'London',
-    title: 'London',
+    title: 'LONDON',
     title2: 'PREFECTURE',
     description: '',
     image: 'https://travelogy.digilogy.co/demo1.jpg',
@@ -111,7 +111,7 @@ const Slider = () => {
       if (cardsRef.current[active]) {
         gsap.from(
           cardsRef.current[active].querySelectorAll('.card_sub'),
-          { y: 50, opacity: 1, bottom: '50%', marginLeft: '20px'}
+          { y: 50, opacity: 1, bottom:'10px' ,top: '80px', left: '50px', marginTop:'20px', fontSize:'100px'}
         );
 
         gsap.fromTo(
@@ -122,21 +122,21 @@ const Slider = () => {
 
         gsap.from(
           cardsRef.current[active].querySelectorAll('.content-place'),
-          {  fontSize: '1.5em', marginBottom: '20px', paddingBottom: '15px'}
+          {  fontSize: '1.5em', marginTop: '50px'}
         );
 
         gsap.from(
           cardsRef.current[active].querySelectorAll('.pt_set'),
-          {  fontSize: '6em', marginTop: '20px'}
+          {  fontSize: '10em', marginTop: '85px'}
         );
 
         gsap.from(
           cardsRef.current[active].querySelectorAll('.pt_set1'),
-          { paddingTop: '10px'}
+          {marginTop: '30px', fontSize: '15em', marginBottom:'50px'}
         );
         gsap.from(
           cardsRef.current[active].querySelectorAll('.pt_set2'),
-          { paddingTop: '50px'}
+          { marginTop: '100px', fontSize: '15em'}
         );
       }
 

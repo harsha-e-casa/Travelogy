@@ -281,7 +281,7 @@ export default function Login() {
                 >
                   <Input
                     size="large"
-                    prefix={<MailOutlined />}
+                    prefix={<MailOutlined style={{ paddingRight: "10px" }}/>}
                     placeholder="Enter your email"
                     // style={{ paddingLeft: "10px" }}
                   />

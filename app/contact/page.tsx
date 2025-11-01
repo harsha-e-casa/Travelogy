@@ -37,12 +37,12 @@ export default function Contact() {
                                                 <path d="M6.00016 0.5C2.805 0.5 0.205566 3.09944 0.205566 6.29456C0.205566 10.2598 5.39116 16.081 5.61194 16.3269C5.81932 16.5579 6.18138 16.5575 6.38838 16.3269C6.60916 16.081 11.7948 10.2598 11.7948 6.29456C11.7947 3.09944 9.19529 0.5 6.00016 0.5ZM6.00016 9.20997C4.3926 9.20997 3.08478 7.90212 3.08478 6.29456C3.08478 4.687 4.39263 3.37919 6.00016 3.37919C7.60769 3.37919 8.9155 4.68703 8.9155 6.29459C8.9155 7.90216 7.60769 9.20997 6.00016 9.20997Z" />
                                             </svg>Our Location
                                         </p>
-                                        <p className="text-md-medium neutral-500">111, NPL Devi. Thiruvanmiyur</p>
+                                        <p className="text-md-large neutral-500">NPL Devi, 111, Lattice Brg Rd, Thiruvanmiyur, Chennai,Tamil Nadu 600041.</p>
                                     </div>
                                 </div>
                             </div>
                             <div className="row mt-60">
-                                <div className="col-lg-3 col-sm-6">
+                                <div className="col-lg-6 col-sm-12">
                                     <div className="card-contact">
                                         <div className="card-image">
                                             <div className="card-icon">
@@ -55,11 +55,11 @@ export default function Contact() {
                                             <div className="card-title"> <Link className="title text-lg-bold" href="#">Help  support</Link>
                                                 <p className="text-xs-medium neutral-500">For help with a current product or service or refer to FAQs and developer tools</p>
                                             </div>
-                                            <div className="card-method-contact"> <Link className="email text-sm-bold" href="/mailto:support@travalogy.com">support@travalogy.com</Link></div>
+                                            <div className="card-method-contact"> <Link className="email text-sm-bold" href="/mailto:support@travalogy.com">info@casagrandtravelogy.co.in</Link></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-3 col-sm-6">
+                                <div className="col-lg-6 col-sm-12">
                                     <div className="card-contact">
                                         <div className="card-image">
                                             <div className="card-icon">
@@ -84,11 +84,11 @@ export default function Contact() {
                                             <div className="card-title"> <Link className="title text-lg-bold" href="#">Call Us</Link>
                                                 <p className="text-xs-medium neutral-500">Call us to speak to a member of our team.</p>
                                             </div>
-                                            <div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 234 567 89">(+91) 91 92 98 39 83 - 91 92 98 39 18</Link></div>
+                                            <div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 234 567 89">(+91) 95662 66061</Link></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-lg-3 col-sm-6">
+                                {/* <div className="col-lg-3 col-sm-6">
                                     <div className="card-contact">
                                         <div className="card-image">
                                             <div className="card-icon">
@@ -103,9 +103,9 @@ export default function Contact() {
                                             </div>
                                             <div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 789 456 23">(+91) 98 78 94 56 23</Link></div>
                                         </div>
-                                    </div>
-                                </div>
-                                <div className="col-lg-3 col-sm-6">
+                                    </div> 
+                                </div>*/}
+                                {/* <div className="col-lg-3 col-sm-6">
                                     <div className="card-contact">
                                         <div className="card-image">
                                             <div className="card-icon">
@@ -121,7 +121,7 @@ export default function Contact() {
                                             <div className="card-method-contact"> <Link className="email text-sm-bold" href="/tel:(+01) 789 456 23">(+91) 99 78 94 56 08 87</Link></div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </section>
@@ -129,7 +129,7 @@ export default function Contact() {
                         <div className="container">
                             <div className="row">
                                 <div className="col-lg-7 mb-30">
-                                    <h2 className="neutral-1000 mb-25">Get in Touch</h2>
+                                    <h2 className="neutral-1000 mb-25">Let's Connect</h2>
                                     <div className="form-contact">
                                         <div className="row">
                                             <div className="col-lg-6">
@@ -316,7 +316,7 @@ export default function Contact() {
                             </div>
                         </div>
                     </section>
-                    <section className="box-section box-contact-support background-body">
+                    {/* <section className="box-section box-contact-support background-body">
                         <div className="container">
                             <div className="box-footer-col-3">
                                 <div className="footer-col-1">
@@ -339,7 +339,7 @@ export default function Contact() {
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </section> */}
                    
                 </main>
 

@@ -19493,18 +19493,34 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   /* Default for mobile */
   gap: 0.5rem !important;
   /* Tailwind's gap-2 = 0.5rem */
+  align-items: start !important;
 }
 
 @media (min-width: 768px) {
   .stepper-guest-row {
     grid-template-columns: 100px 200px 200px 100px !important;
     /* Title | First | Last | Action */
-    align-items: center !important;
+    align-items: start !important;
   }
 }
 
 .stepper_input::placeholder {
   font-size: 13px;
+}
+
+/* Fix for error message alignment - prevents layout shift */
+.stepper-guest-row > div {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.stepper-guest-row > div > span {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  display: block;
 }
 
 .room_options {

@@ -548,7 +548,6 @@ export function Step1TravellerDetails({
                     <option>Ms</option>
                     <option>Mrs</option>
                   </select>
-                  <div className="row">
                   <div className="flex flex-col">
                     <input
                       ref={(el) =>
@@ -565,14 +564,10 @@ export function Step1TravellerDetails({
                         )
                       }
                     />
-                    </div>
-                    
-                      <div className="flex flex-col">
-                    <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                    <span className="text-red-500 text-xs mt-1">
                       {errors[`firstName_r${roomIndex}`] || ""}
                     </span>
-                      </div>
-                    </div>
+                  </div>
                   <div className="flex flex-col">
                     <input
                       ref={(el) =>
@@ -589,7 +584,7 @@ export function Step1TravellerDetails({
                         )
                       }
                     />
-                    <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                    <span className="text-red-500 text-xs mt-1">
                       {errors[`lastName_r${roomIndex}`] || ""}
                     </span>
                   </div>
@@ -611,7 +606,7 @@ export function Step1TravellerDetails({
                           }
                         />
 
-                        <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+                        <span className="text-red-500 text-xs mt-1">
                           {errors[`passportNumber_r${roomIndex}`] || ""}
                         </span>
                       </div>
@@ -772,7 +767,7 @@ export function Step1TravellerDetails({
                   setFormData({ ...formData, mobile: e.target.value })
                 }
               />{" "}
-              <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+              <span className="text-red-500 text-xs mt-1">
                 {errors.mobile || ""}
               </span>
             </div>
@@ -788,7 +783,7 @@ export function Step1TravellerDetails({
                   setFormData({ ...formData, email: e.target.value })
                 }
               />{" "}
-              <span className="text-red-500 text-xs mt-1 min-h-[16px]">
+              <span className="text-red-500 text-xs mt-1">
                 {errors.email || ""}
               </span>
             </div>
@@ -1021,7 +1016,7 @@ export function Step2Review({
             </p>
           </div>
         </div>
-        <h3 className="font-semibold text-base">Guest Details:</h3>
+        <h3 className="font-bold text-base">Guest Details:</h3>
         {Category !== "abook"
           ? Object.values(formData.guests || {}).map((guest, roomIndex) => (
               <div key={roomIndex} className="border-b pb-4">
@@ -1041,22 +1036,35 @@ export function Step2Review({
                     </p>
                   </div>
                 </h4>
-                <div className="space-y-2">
-                  <p className="text-gray-800 mt-2 text-md">
-                    1.{guest.title} {guest.firstName} {guest.lastName}
-                  </p>
+                <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                <thead className="bg-blue-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">No.</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Title</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">First Name</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Last Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="px-4 py-2 text-sm text-gray-800">1.</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">{guest.title}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">{guest.firstName}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">{guest.lastName}</td>
+                  </tr>
                   {guest.extraGuests?.map((extraGuest, index) => (
-                    <div key={index}>
-                      <p className="text-gray-700 text-md">
-                        {index + 2}. {extraGuest.title} {extraGuest.firstName}{" "}
-                        {extraGuest.lastName}
-                      </p>
-                    </div>
+                    <tr key={index} className="border-b">
+                      <td className="px-4 py-2 text-sm text-gray-700">{index + 2}.</td>
+                      <td className="px-4 py-2 text-sm text-gray-700">{extraGuest.title}</td>
+                      <td className="px-4 py-2 text-sm text-gray-700">{extraGuest.firstName}</td>
+                      <td className="px-4 py-2 text-sm text-gray-700">{extraGuest.lastName}</td>
+                    </tr>
                   ))}
-                </div>
-              </div>
-            ))
-          : hotelPassenger?.map((room, roomIndex) => (
+                </tbody>
+              </table>        
+              </div>    
+              ))
+              : hotelPassenger?.map((room, roomIndex) => (
               <div key={roomIndex} className="border-b pb-4 space-y-2">
                 <p className="text-gray-800 font-bold">
                   {room?.rc} <span className="text-md">( {room?.mb})</span>
@@ -1098,7 +1106,7 @@ export function Step2Review({
         {Category !== "abook" ? (
           formData.email?.trim() ? (
             <>
-              <h3 className="font-semibold text-base text-md">Contact Details:</h3>
+              <h3 className="font-bold text-base text-md">Contact Details:</h3>
               <p className="text-md">Email: {formData.email}</p>
               <p className="text-md">
                 Mobile: {formData.countryCode} {formData.mobile}

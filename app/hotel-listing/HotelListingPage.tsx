@@ -169,8 +169,8 @@ export default function HotelListing() {
 
   // Hotel price filter states (following flights pattern)
   const [priceRange, setPriceRange] = useState([0, 41087]);
-  const [minPriceRange, setMinPriceRange] = useState<any>(null);
-  const [maxPriceRange, setMaxPriceRange] = useState<any>(null);
+  const [minPriceRange, setMinPriceRange] = useState<any>(0);
+  const [maxPriceRange, setMaxPriceRange] = useState<any>(41087);
   const [filteredHotels, setFilteredHotels] = useState<Hotel[]>([]);
 
   // Calculate price range from hotel data (following flights pattern)
@@ -467,11 +467,38 @@ export default function HotelListing() {
       // Update data and URL
       setApiHotelData(data.searchResult?.his || []);
       router.push(`/hotel-listing?${queryParams}`);
-      
+      console.log('data1',data);
     } catch (e: any) {
-      const s = typeof e?.status === "number" ? e.status : undefined;
+      console.log("Error in handleSearch:", e); // Add logging to debug
+
+      // Extract status code from error message or response
+      let statusCode = typeof e?.status === "number" ? e.status : undefined;
+
+      // Check if status code is in the error message (e.g., "Request failed with status code 504")
+      if (!statusCode && e?.message) {
+        const statusMatch = e.message.match(/status code (\d+)/);
+        if (statusMatch) {
+          statusCode = parseInt(statusMatch[1], 10);
+        }
+      }
+
+      // Check response status
+      if (!statusCode && e?.response?.status) {
+        statusCode = e.response.status;
+      }
+
+      // Special handling for 504 Gateway Timeout
+      if (!statusCode && e?.code === 'ECONNABORTED') {
+        statusCode = 504; // Treat timeout as 504
+      }
+
+      // If still no status and message contains 504, set to 504
+      if (!statusCode && /(^|[^0-9])504([^0-9]|$)/.test(String(e?.message))) {
+        statusCode = 504;
+      }
+
       setError(e?.message || "Something went wrong.");
-      setErrorStatus(s);
+      setErrorStatus(statusCode);
     } finally {
       setLoading(false);
     }
@@ -512,9 +539,26 @@ export default function HotelListing() {
         if (data?.searchResult?.his) {
           setApiHotelData(data.searchResult.his);
         }
+        console.log('data2', data);
       } catch (e: any) {
+        // Extract status code from error message or response
+        let statusCode = typeof e?.status === "number" ? e.status : 504;
+        
+        // Check if status code is in the error message
+        if (e?.message) {
+          const statusMatch = e.message.match(/status code (\d+)/);
+          if (statusMatch) {
+            statusCode = parseInt(statusMatch[1], 10);
+          }
+        }
+        
+        // Check response status
+        if (e?.response?.status) {
+          statusCode = e.response.status;
+        }
+        
         setError(e?.message || "Something went wrong.");
-        setErrorStatus(e?.status || 500);
+        setErrorStatus(statusCode);
       } finally {
         setLoading(false);
       }
@@ -688,9 +732,33 @@ export default function HotelListing() {
     if (!checkinDate || !checkoutDate) return 0;
     return Math.max(dayjs(checkoutDate).diff(dayjs(checkinDate), "day"), 0);
   }, [checkinDate, checkoutDate]);
+  
+  console.log("DEBUG - error:", error)
+  console.log("DEBUG - apiHotelData length:", apiHotelData.length)
+  console.log("DEBUG - transformedHotels length:", transformedHotels.length)
+  console.log("DEBUG - filteredHotels length:", filteredHotels.length)
+  console.log("DEBUG - paginatedHotels length:", paginatedHotels.length)
+  console.log("DEBUG - priceRange:", priceRange)
+  console.log("DEBUG - minPriceRange:", minPriceRange)
+  console.log("DEBUG - maxPriceRange:", maxPriceRange)
+  console.log("DEBUG - nights:", nights)
+  
+  // Debug first few hotels
+  if (transformedHotels.length > 0) {
+    console.log("DEBUG - First 3 transformed hotels:", transformedHotels.slice(0, 3).map(h => ({
+      name: h.name,
+      price: h.price,
+      totalPrice: h.price * nights,
+      rating: h.rating,
+      location: h.location
+    })))
+  }
+  
+  // Check for errors FIRST before rendering anything else
   if (error) {
-    const isRetryable =
-      !errorStatus || [408, 429, 500, 502, 503, 504].includes(errorStatus);
+    const isRetryable = 
+      !errorStatus || [408, 429, 500, 502, 503, 504 ].includes(errorStatus) || 
+      error.includes("Request failed with status code 504");
     return (
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
@@ -721,8 +789,7 @@ export default function HotelListing() {
       </Layout>
     );
   }
-console.log("11111111111111111111111error1111111111111111111111", error)
-console.log("22222222222222222221error2222222222222222222", paginatedHotels)
+  
 
   return (
     <Suspense
