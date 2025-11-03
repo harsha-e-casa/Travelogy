@@ -231,13 +231,32 @@ function buildRoomTravellerInfo({ formData, roomInfo, panInfo }) {
     const extras = lead?.extraGuests || [];
     const guests = lead ? [lead, ...extras] : [];
 
+    // Calculate required number of guests based on room configuration
+    const requiredAdults = room?.numberOfAdults || 0;
+    const requiredChildren = room?.numberOfChild || 0;
+    const totalRequired = requiredAdults + requiredChildren;
+
+    // Fill missing guests with TBA placeholders
+    while (guests.length < totalRequired) {
+      const missingAdults = guests.filter(g => g?.type !== "children").length;
+      const isChildSlot = missingAdults >= requiredAdults;
+      
+      guests.push({
+        title: isChildSlot ? "Master" : "Mr",
+        firstName: "TBA",
+        lastName: "TBA",
+        type: isChildSlot ? "children" : "adults",
+        passportNumber: "",
+      });
+    }
+
     const roomEntry = (panInfo?.rooms || [])[roomIndex];
     const useGuardian = roomEntry?.useGuardian;
     const guardianPAN = (roomEntry?.guardian?.pan || "").toUpperCase().trim();
 
     return {
       travellerInfo: guests.map((guest, gIdx) => {
-        const isChild = (guest?.type || "").toLowerCase() === "children" || "Adults";
+        const isChild = (guest?.type || "").toLowerCase() === "children";
         const base = {
           fN: guest?.firstName || "TBA",
           lN: guest?.lastName || "TBA",

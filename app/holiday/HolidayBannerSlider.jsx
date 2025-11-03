@@ -111,7 +111,7 @@ const Slider = () => {
       if (cardsRef.current[active]) {
         gsap.from(
           cardsRef.current[active].querySelectorAll('.card_sub'),
-          { y: 50, opacity: 1, bottom:'10px' ,top: '80px', left: '50px', marginTop:'20px', fontSize:'100px'}
+          { y: 50, opacity: 1, top: '50%', left: '50px', transform: 'translateY(-50%)', marginTop:'0px', fontSize:'100px'}
         );
 
         gsap.fromTo(
@@ -122,21 +122,21 @@ const Slider = () => {
 
         gsap.from(
           cardsRef.current[active].querySelectorAll('.content-place'),
-          {  fontSize: '1.5em', marginTop: '50px'}
+          {  fontSize: '2.5em', marginTop: '5px'}
         );
 
         gsap.from(
           cardsRef.current[active].querySelectorAll('.pt_set'),
-          {  fontSize: '10em', marginTop: '85px'}
+          {  fontSize: '8em', marginTop: '60px'}
         );
 
         gsap.from(
           cardsRef.current[active].querySelectorAll('.pt_set1'),
-          {marginTop: '30px', fontSize: '15em', marginBottom:'50px'}
+           {marginTop: '10px', fontSize: '6em', marginBottom:'20px',lineHeight: '0.5'}
         );
         gsap.from(
           cardsRef.current[active].querySelectorAll('.pt_set2'),
-          { marginTop: '100px', fontSize: '15em'}
+         { marginTop: '40px', fontSize: '9em'}
         );
       }
 

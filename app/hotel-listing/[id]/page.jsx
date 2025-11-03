@@ -15,7 +15,7 @@ const Modal = ({
   setSelectedImage,
 }) => {
   const standardImages = useMemo(() => {
-    const filteredImages = images.filter((image) => image.sz === "Standard");
+    const filteredImages = images.filter((image) => image.sz === "XXL");
 
     return filteredImages.length > 0 ? filteredImages : images;
   }, [images]);
@@ -387,11 +387,16 @@ export default function ActivitiesDetail4() {
   const googleMapsUrl = `https://www.google.com/maps?q=${lt},${ln}`;
   const images = hotelData?.img || [];
   
+  // Filter XXL images for display
+  const displayImages = images.filter((image) => !image.sz || image.sz === "XXL");
+  const totalImageCount = displayImages.length;
+  const hasMultipleImages = totalImageCount > 1;
+  
   // Debug: Log the images to see what we're working with
   console.log('Hotel images:', images);
-  console.log('Images length:', images.length);
-  console.log('First 5 images:', images.slice(0, 5));
-  console.log('Thumbnail images (1-5):', images.slice(1, 5));
+  console.log('Display images:', displayImages);
+  console.log('Total image count:', totalImageCount);
+  console.log('Has multiple images:', hasMultipleImages);
 
   let hotelDescription = {};
   try {
@@ -408,94 +413,84 @@ export default function ActivitiesDetail4() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-8">
                  <div className="box-banner-activities-detail-4">
-                  <div className="image-gallery">
+                  <div className={`image-gallery ${hasMultipleImages ? 'has-button-overlay' : ''}`}>
                     <div className="image-row">
-                      <div className="image-column">
+                      <div className={`image-column ${hasMultipleImages ? 'has-overlay' : ''}`}>
                         <img
                           className="main-banner-img"
                           src={
-                            hotelData?.img?.find(
-                              (image) => image.sz === "Standard"
-                            )?.url ||
+                            displayImages[0]?.url ||
                             hotelData?.img?.[0]?.url ||
                             "/mnt/data/025be28a-239a-4b79-8f15-236603e87e5e.png"
                           }
                           alt="Main Hotel Image"
                         />
                       </div>
-                      <div className="image-column">
-                        <div className="image-row-3">
-                          {hotelData?.img
-                            ?.filter(
-                              (image) => !image.sz || image.sz === "Standard"
-                            )
-                            .slice(1, 4)
-                            .map((image, index) => (
-                              <div key={index} className="image-item">
-                                <img
-                                  src={image.url}
-                                  alt={`Thumbnail ${index + 1}`}
-                                />
-                              </div>
-                            ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="image-row">
-                      {hotelData?.img
-                        ?.filter(
-                          (image) => !image.sz || image.sz === "Standard"
-                        )
-                        .slice(4, 8)
-                        .map((image, index) => (
-                          <div key={index} className="image-item">
-                            <img
-                              src={image.url}
-                              alt={`Thumbnail ${index + 1}`}
-                            />
+                      {hasMultipleImages && (
+                        <div className="image-column">
+                          <div className="image-row-3">
+                            {displayImages
+                              .slice(1, 4)
+                              .map((image, index) => (
+                                <div key={index} className="image-item">
+                                  <img
+                                    src={image.url}
+                                    alt={`Thumbnail ${index + 1}`}
+                                  />
+                                </div>
+                              ))}
                           </div>
-                        ))}
+                        </div>
+                      )}
                     </div>
+                    {hasMultipleImages && (
+                      <div className={`image-row ${hasMultipleImages ? 'has-button-overlay' : ''}`}>
+                        {displayImages
+                          .slice(4, 8)
+                          .map((image, index) => (
+                            <div key={index} className="image-item">
+                              <img
+                                src={image.url}
+                                alt={`Thumbnail ${index + 4}`}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    )}
                   </div>
 
-                  <div className="container-banner-activities">
-                    <div className="box-button-abs box-button-abs-right">
-                      <Link
-                        className="btn btn-brand-secondary"
-                        href="#"
-                        onClick={() => setIsModalOpen(true)}
-                      >
-                        <svg
-                          width={22}
-                          height={22}
-                          viewBox="0 0 22 22"
-                          xmlns="http://www.w3.org/2000/svg"
+                  <div className={`container-banner-activities ${!hasMultipleImages ? 'single-image-mode' : ''}`}>
+                    {hasMultipleImages && (
+                      <div className="box-button-abs box-button-abs-right">
+                        <Link
+                          className="btn btn-brand-secondary"
+                          href="#"
+                          onClick={() => setIsModalOpen(true)}
                         >
-                          <path d="M20 8V2.75C20 2.3375 19.6625 2 19.25 2H14C13.5875 2 13.25 2.3375 13.25 2.75V8C13.25 8.4125 13.5875 8.75 14 8.75H19.25C19.6625 8.75 20 8.4125 20 8ZM19.25 0.5C20.495 0.5 21.5 1.505 21.5 2.75V8C21.5 9.245 20.495 10.25 19.25 10.25H14C12.755 10.25 11.75 9.245 11.75 8V2.75C11.75 1.505 12.755 0.5 14 0.5H19.25Z" />
-                          <path d="M20 19.25V14C20 13.5875 19.6625 13.25 19.25 13.25H14C13.5875 13.25 13.25 13.5875 13.25 14V19.25C13.25 19.6625 13.5875 20 14 20H19.25C19.6625 20 20 19.6625 20 19.25ZM19.25 11.75C20.495 11.75 21.5 12.755 21.5 14V19.25C21.5 20.495 20.495 21.5 19.25 21.5H14C12.755 21.5 11.75 20.495 11.75 19.25V14C11.75 12.755 12.755 11.75 14 11.75H19.25Z" />
-                          <path d="M8 8.75C8.4125 8.75 8.75 8.4125 8.75 8V2.75C8.75 2.3375 8.4125 2 8 2H2.75C2.3375 2 2 2.3375 2 2.75V8C2 8.4125 2.3375 8.75 2.75 8.75H8ZM8 0.5C9.245 0.5 10.25 1.505 10.25 2.75V8C10.25 9.245 9.245 10.25 8 10.25H2.75C1.505 10.25 0.5 9.245 0.5 8V2.75C0.5 1.505 1.505 0.5 2.75 0.5H8Z" />
-                          <path d="M8 20C8.4125 20 8.75 19.6625 8.75 19.25V14C8.75 13.5875 8.4125 13.25 8 13.25H2.75C2.3375 13.25 2 13.5875 2 14V19.25C2 19.6625 2.3375 20 2.75 20H8ZM8 11.75C9.245 11.75 10.25 12.755 10.25 14V19.25C10.25 20.495 9.245 21.5 8 21.5H2.75C1.505 21.5 0.5 20.495 0.5 19.25V14C0.5 12.755 1.505 11.75 2.75 11.75H8Z" />
-                        </svg>
-                        {hotelData?.img?.filter(
-                          (image) => image.sz === "Standard"
-                        ).length + 1}{" "}
-                        {hotelData?.img?.filter(
-                          (image) => image.sz === "Standard"
-                        ).length +
-                          1 ===
-                        1
-                          ? "Photo"
-                          : "Photos"}
-                      </Link>
+                          <svg
+                            width={22}
+                            height={22}
+                            viewBox="0 0 22 22"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M20 8V2.75C20 2.3375 19.6625 2 19.25 2H14C13.5875 2 13.25 2.3375 13.25 2.75V8C13.25 8.4125 13.5875 8.75 14 8.75H19.25C19.6625 8.75 20 8.4125 20 8ZM19.25 0.5C20.495 0.5 21.5 1.505 21.5 2.75V8C21.5 9.245 20.495 10.25 19.25 10.25H14C12.755 10.25 11.75 9.245 11.75 8V2.75C11.75 1.505 12.755 0.5 14 0.5H19.25Z" />
+                            <path d="M20 19.25V14C20 13.5875 19.6625 13.25 19.25 13.25H14C13.5875 13.25 13.25 13.5875 13.25 14V19.25C13.25 19.6625 13.5875 20 14 20H19.25C19.6625 20 20 19.6625 20 19.25ZM19.25 11.75C20.495 11.75 21.5 12.755 21.5 14V19.25C21.5 20.495 20.495 21.5 19.25 21.5H14C12.755 21.5 11.75 20.495 11.75 19.25V14C11.75 12.755 12.755 11.75 14 11.75H19.25Z" />
+                            <path d="M8 8.75C8.4125 8.75 8.75 8.4125 8.75 8V2.75C8.75 2.3375 8.4125 2 8 2H2.75C2.3375 2 2 2.3375 2 2.75V8C2 8.4125 2.3375 8.75 2.75 8.75H8ZM8 0.5C9.245 0.5 10.25 1.505 10.25 2.75V8C10.25 9.245 9.245 10.25 8 10.25H2.75C1.505 10.25 0.5 9.245 0.5 8V2.75C0.5 1.505 1.505 0.5 2.75 0.5H8Z" />
+                            <path d="M8 20C8.4125 20 8.75 19.6625 8.75 19.25V14C8.75 13.5875 8.4125 13.25 8 13.25H2.75C2.3375 13.25 2 13.5875 2 14V19.25C2 19.6625 2.3375 20 2.75 20H8ZM8 11.75C9.245 11.75 10.25 12.755 10.25 14V19.25C10.25 20.495 9.245 21.5 8 21.5H2.75C1.505 21.5 0.5 20.495 0.5 19.25V14C0.5 12.755 1.505 11.75 2.75 11.75H8Z" />
+                          </svg>
+                          {totalImageCount}{" "}
+                          {totalImageCount === 1 ? "Photo" : "Photos"}
+                        </Link>
 
-                      <Modal
-                        images={images}
-                        isOpen={isModalOpen}
-                        onClose={() => setIsModalOpen(false)}
-                        setSelectedImage={setSelectedImage}
-                        selectedImage={selectedImage}
-                      />
-                    </div>
+                        <Modal
+                          images={images}
+                          isOpen={isModalOpen}
+                          onClose={() => setIsModalOpen(false)}
+                          setSelectedImage={setSelectedImage}
+                          selectedImage={selectedImage}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import MicroallOffersPage from "@/app/microPage/MicroallOffersPage";
 import YourJourney from "./TripSlider";
 import HolidayBannerSlider from "./HolidayBannerSlider";
+import "../../public/assets/css/holidayStyle.css";
 
 const Slider: React.FC = () => {
 
