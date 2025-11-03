@@ -13,7 +13,8 @@ export default function HotelCard1({ hotel, nights }: any) {
   const id = hotel?.rawData?.id || "unknown-id";
   console.log("Hotel ID:", hotel); // Debugging line to check the id value
   const image = hotel?.image;
-  const totalPrice = hotel?.price ?? "N/A";
+  const pricePerNight = hotel?.price ?? 0;
+  const totalPrice = nights && nights > 0 ? (pricePerNight * nights).toFixed(2) : pricePerNight;
   const checkInTime = hotel?.checkInTime;
   const checkOutTime = hotel?.checkOutTime;
 
@@ -60,7 +61,7 @@ export default function HotelCard1({ hotel, nights }: any) {
               <p className="starts-from-text neutral-700">Starts From</p>
               <div className="price-container">
                 <h5 className="price-amount">₹{totalPrice}</h5>
-                <p className="price-period neutral-700">{nights && nights > 0 ? `/ ${nights} night${nights > 1 ? 's' : ''} ` : '/'}</p>
+                <p className="price-period neutral-700">{nights && nights > 0 ? `/ ${nights} night${nights > 1 ? 's' : ''}` : ''}</p>
               </div>
             </div>
             <div className="book-button-container">

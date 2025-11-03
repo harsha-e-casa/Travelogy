@@ -169,8 +169,8 @@ export default function HotelListing() {
 
   // Hotel price filter states (following flights pattern)
   const [priceRange, setPriceRange] = useState([0, 41087]);
-  const [minPriceRange, setMinPriceRange] = useState<any>(null);
-  const [maxPriceRange, setMaxPriceRange] = useState<any>(null);
+  const [minPriceRange, setMinPriceRange] = useState<any>(0);
+  const [maxPriceRange, setMaxPriceRange] = useState<any>(41087);
   const [filteredHotels, setFilteredHotels] = useState<Hotel[]>([]);
 
   // Calculate price range from hotel data (following flights pattern)
@@ -361,6 +361,48 @@ export default function HotelListing() {
     });
   };
 
+  // Helper function to extract status code from error
+  const extractStatusCode = (e: any): number | undefined => {
+    // Check response status first
+    if (e?.response?.status && typeof e.response.status === "number") {
+      return e.response.status;
+    }
+    
+    // Check direct status property
+    if (typeof e?.status === "number") {
+      return e.status;
+    }
+    
+    // Check error code for timeout
+    if (e?.code === "ECONNABORTED" || e?.code === "ETIMEDOUT") {
+      return 504;
+    }
+    
+    // Parse error message for status codes
+    if (e?.message) {
+      const statusMatch = e.message.match(/status code (\d+)/i);
+      if (statusMatch) {
+        return parseInt(statusMatch[1], 10);
+      }
+      
+      // Check for specific error patterns
+      if (/504|gateway timeout/i.test(e.message)) {
+        return 504;
+      }
+      if (/503|service unavailable/i.test(e.message)) {
+        return 503;
+      }
+      if (/502|bad gateway/i.test(e.message)) {
+        return 502;
+      }
+      if (/500|internal server/i.test(e.message)) {
+        return 500;
+      }
+    }
+    
+    return undefined;
+  };
+
   const apiCall = async (payload: any, signal?: AbortSignal) => {
     try {
       const reqBody = {
@@ -381,17 +423,16 @@ export default function HotelListing() {
         console.log("Request aborted");
         return null;
       }
+      
+      console.error("API Call Error:", e);
+      
       const err = new Error(e?.message || "Network error") as Error & {
         status?: number;
       };
-      const maybeStatus =
-        typeof e?.status === "number"
-          ? e.status
-          : /(^|[^0-9])504([^0-9]|$)/.test(String(e?.message))
-          ? 504
-          : undefined;
-
-      err.status = maybeStatus ?? undefined;
+      err.status = extractStatusCode(e);
+      
+      console.error("Extracted status code:", err.status);
+      
       throw err;
     }
   };
@@ -459,19 +500,27 @@ export default function HotelListing() {
       const data = await apiCall(payload);
 
       if (!data?.searchResult?.his) {
-        throw Object.assign(new Error(data?.message || "No data received"), {
-          status: 200,
-        });
+        const err = new Error(data?.message || "No data received") as Error & {
+          status?: number;
+        };
+        err.status = 200;
+        throw err;
       }
       
       // Update data and URL
       setApiHotelData(data.searchResult?.his || []);
       router.push(`/hotel-listing?${queryParams}`);
-      
+      console.log('data1',data);
     } catch (e: any) {
-      const s = typeof e?.status === "number" ? e.status : undefined;
-      setError(e?.message || "Something went wrong.");
-      setErrorStatus(s);
+      console.error("Error in handleSearch:", e);
+      
+      const statusCode = extractStatusCode(e);
+      const errorMessage = e?.message || "Something went wrong. Please try again.";
+      
+      console.error("Setting error state - Status:", statusCode, "Message:", errorMessage);
+      
+      setError(errorMessage);
+      setErrorStatus(statusCode ?? null);
     } finally {
       setLoading(false);
     }
@@ -482,24 +531,52 @@ export default function HotelListing() {
       // Only fetch if we have URL params and no existing data
       if (apiHotelData.length > 0) return;
       
-      const hasRequiredParams = searchParams.get("checkinDate") && 
-                               searchParams.get("checkoutDate") && 
-                               (city || location);
+      // Check if we have location (from TopHotels) or full search params
+      const hasLocation = location || city;
+      const hasDateParams = searchParams.get("checkinDate") && searchParams.get("checkoutDate");
       
-      if (!hasRequiredParams) return;
+      // If no location at all, don't fetch
+      if (!hasLocation) return;
 
       setLoading(true);
       setError(null);
       setErrorStatus(null);
 
+      // Use dates from URL params or default to today and tomorrow
+      const checkinDateToUse = searchParams.get("checkinDate") || dayjs().format("YYYY-MM-DD");
+      const checkoutDateToUse = searchParams.get("checkoutDate") || dayjs().add(1, "day").format("YYYY-MM-DD");
+
+      // Find city ID from location name if not provided
+      let cityIdToUse = selectFrom?.id || city;
+      if (!cityIdToUse && location) {
+        const matchedCity = (citiesData as CityData[]).find(
+          (c: CityData) => c.cityName.toLowerCase() === location.toLowerCase()
+        );
+        cityIdToUse = String(matchedCity?.id || "699261");
+      }
+
+      // Find nationality from location if not provided
+      let nationalityIdToUse = nationalityId;
+      if (!nationalityIdToUse && location && nationalities.length > 0) {
+        const matchedCity = (citiesData as CityData[]).find(
+          (c: CityData) => c.cityName.toLowerCase() === location.toLowerCase()
+        );
+        const matchedNationality = nationalities.find((n) =>
+          (matchedCity?.countryName || location)
+            .toLowerCase()
+            .includes(n.countryName.toLowerCase())
+        );
+        nationalityIdToUse = String(matchedNationality?.countryId || "94");
+      }
+
       const payload = {
         searchQuery: {
-          checkinDate: searchParams.get("checkinDate"),
-          checkoutDate: searchParams.get("checkoutDate"),
+          checkinDate: checkinDateToUse,
+          checkoutDate: checkoutDateToUse,
           roomInfo: cleanRoomInfo,
           searchCriteria: {
-            city: selectFrom?.id || city,
-            nationality: nationalityId,
+            city: cityIdToUse,
+            nationality: nationalityIdToUse || "94",
             currency: currency || "INR",
           },
           searchPreferences: { fsc: true },
@@ -511,10 +588,24 @@ export default function HotelListing() {
         const data = await apiCall(payload);
         if (data?.searchResult?.his) {
           setApiHotelData(data.searchResult.his);
+        } else if (data && !data.searchResult?.his) {
+          const err = new Error(data?.message || "No hotels found") as Error & {
+            status?: number;
+          };
+          err.status = 200;
+          throw err;
         }
+        console.log('data2', data);
       } catch (e: any) {
-        setError(e?.message || "Something went wrong.");
-        setErrorStatus(e?.status || 500);
+        console.error("Error in loadInitialData:", e);
+        
+        const statusCode = extractStatusCode(e);
+        const errorMessage = e?.message || "Failed to load hotels. Please try again.";
+        
+        console.error("Setting error state - Status:", statusCode, "Message:", errorMessage);
+        
+        setError(errorMessage);
+        setErrorStatus(statusCode ?? null);
       } finally {
         setLoading(false);
       }
@@ -688,9 +779,33 @@ export default function HotelListing() {
     if (!checkinDate || !checkoutDate) return 0;
     return Math.max(dayjs(checkoutDate).diff(dayjs(checkinDate), "day"), 0);
   }, [checkinDate, checkoutDate]);
+  
+  console.log("DEBUG - error:", error)
+  console.log("DEBUG - apiHotelData length:", apiHotelData.length)
+  console.log("DEBUG - transformedHotels length:", transformedHotels.length)
+  console.log("DEBUG - filteredHotels length:", filteredHotels.length)
+  console.log("DEBUG - paginatedHotels length:", paginatedHotels.length)
+  console.log("DEBUG - priceRange:", priceRange)
+  console.log("DEBUG - minPriceRange:", minPriceRange)
+  console.log("DEBUG - maxPriceRange:", maxPriceRange)
+  console.log("DEBUG - nights:", nights)
+  
+  // Debug first few hotels
+  if (transformedHotels.length > 0) {
+    console.log("DEBUG - First 3 transformed hotels:", transformedHotels.slice(0, 3).map(h => ({
+      name: h.name,
+      price: h.price,
+      totalPrice: h.price * nights,
+      rating: h.rating,
+      location: h.location
+    })))
+  }
+  
+  // Check for errors FIRST before rendering anything else
   if (error) {
-    const isRetryable =
-      !errorStatus || [408, 429, 500, 502, 503, 504].includes(errorStatus);
+    const isRetryable = 
+      !errorStatus || [408, 429, 500, 502, 503, 504 ].includes(errorStatus) || 
+      error.includes("Request failed with status code 504");
     return (
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
@@ -721,8 +836,7 @@ export default function HotelListing() {
       </Layout>
     );
   }
-console.log("11111111111111111111111error1111111111111111111111", error)
-console.log("22222222222222222221error2222222222222222222", paginatedHotels)
+  
 
   return (
     <Suspense

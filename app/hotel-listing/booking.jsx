@@ -161,7 +161,7 @@ export default function BookingCard({
               >
                 <AppDateRange
                   minDate={
-                    checkinDate ? dayjs(checkinDate).add(1, "day") : dayjs()
+                    checkinDate ? dayjs(checkinDate) : dayjs()
                   }
                   valueDate={checkoutDate ? dayjs(checkoutDate) : null}
                   openToDateRange={() => setOpenDateRange(null)}
