@@ -23,7 +23,7 @@ export default function AboutContent() {
             >
               <div className="card-body p-30">
                 <div className="text-center mb-40">
-                  <h1 className="heading-44-medium mb-20 text-brand-1">
+                  <h1 className="heading-44-medium text-brand-1" style={{ fontSize: "32px" }} >
                     About Us
                   </h1>
                 </div>
@@ -31,7 +31,7 @@ export default function AboutContent() {
                 <div className="row">
                   {/* <div className="col-md-6 mb-30"> */}
                   <div className="mb-30">
-                    <h3 className="heading-6-medium mb-20 text-brand-1">
+                    <h3 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }}>
                       Your Gateway to the World!
                     </h3>
                     <p className="text-md neutral-700">
@@ -51,7 +51,7 @@ export default function AboutContent() {
                   </div>
 
                   <div className="mb-30">
-                    <h3 className="heading-6-medium mb-20 text-brand-1">
+                    <h3 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }} >
                       Services:
                     </h3>
                     <p className="text-md neutral-700">
@@ -70,7 +70,7 @@ export default function AboutContent() {
                   {/* </div> */}
 
                   {/* <div className="col-md-6 mb-30"> */}
-                  <h3 className="heading-6-medium mb-20 text-brand-1 font-bold">
+                  <h3 className="heading-6-medium text-brand-1 font-bold" style={{ fontSize: "26px" }}>
                     Why Choose Us?
                   </h3>
                   <ul className="list-disc pl-6 space-y-2">

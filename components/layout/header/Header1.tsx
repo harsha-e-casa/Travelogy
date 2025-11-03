@@ -127,8 +127,8 @@ export default function Header1(props: Header1Props) {
                 <li className={pathname === "/travelInsurance" ? "active" : ""}>
                   <Link href="/travelInsurance">Travel Insurance</Link>
                 </li>
-                <li className={pathname === "/contact" ? "active" : ""}>
-                  <Link href="/contact">Contact</Link>
+                <li className={pathname === "/contact-us" ? "active" : ""}>
+                  <Link href="/contact-us">Contact</Link>
                 </li>
 
                 {authToken && (
@@ -222,7 +222,7 @@ export default function Header1(props: Header1Props) {
             </Link>
           </li>
           <li>
-            <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>
+            <Link href="/contact-us" onClick={() => setMobileMenuOpen(false)}>
               Contact
             </Link>
           </li>

@@ -15,7 +15,7 @@ export default function ContactContent() {
             <div className="card shadow-lg border-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', marginTop:'10px' }}>
               <div className="card-body p-30">
                 <div className="text-center mb-40">
-                  <h1 className="heading-44-medium mb-20 text-brand-1">Contact Us</h1>
+                  <h1 className="heading-44-medium text-brand-1" style={{ fontSize: "32px" }}>Contact Us</h1>
                   <p className="text-lg neutral-600">
                     Have questions about your booking or need travel assistance? Our customer support team is here to help you 24/7.
                   </p>
@@ -23,7 +23,7 @@ export default function ContactContent() {
 
                 <div className="row">
                   <div className="col-md-6 mb-30">
-                    <h4 className="heading-6-medium mb-20 text-brand-1">Contact Information</h4>
+                    <h4 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }}>Contact Information</h4>
                     <div className="mb-15">
                       <strong className="text-brand-2">Phone:</strong>
                       <p className="text-md neutral-700 mb-0">+91 9818739838</p>
@@ -43,7 +43,7 @@ export default function ContactContent() {
                   </div>
 
                   <div className="col-md-6 mb-30">
-                    <h4 className="heading-6-medium mb-20 text-brand-1">Quick Support</h4>
+                    <h4 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }}>Quick Support</h4>
                     <p className="text-md neutral-700 mb-20">
                       For immediate assistance with:
                     </p>
