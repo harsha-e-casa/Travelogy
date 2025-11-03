@@ -860,6 +860,7 @@ export function Step2Review({
       if (response.error) {
         throw new Error(response.error);
       }
+      //work with ai for fixing this to next routing
       setTimeout(() => {
         window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
       }, 100000);
@@ -893,7 +894,7 @@ export function Step2Review({
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
-        <div className="border-b pb-4">
+        <div className="border-b pb-2">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}{" "}
             <span className="text-star ml-2">
@@ -1039,10 +1040,10 @@ export function Step2Review({
                 <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
                 <thead className="bg-blue-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">No.</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Title</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">First Name</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Last Name</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1064,22 +1065,65 @@ export function Step2Review({
               </table>        
               </div>    
               ))
-              : hotelPassenger?.map((room, roomIndex) => (
-              <div key={roomIndex} className="border-b pb-4 space-y-2">
-                <p className="text-gray-800 font-bold">
-                  {room?.rc} <span className="text-md">( {room?.mb})</span>
-                </p>
+              : hotelPassenger?.map((room, roomIndex) => {
+              // Count valid guests (excluding TBA) for display in table
+              const validGuestCount = room?.ti?.filter(
+                (passenger) => 
+                  passenger?.fN?.trim().toUpperCase() !== "TBA" && 
+                  passenger?.lN?.trim().toUpperCase() !== "TBA"
+              ).length || 0;
 
-                <p className="text-gray-700 text-md">
-                  {room?.ti?.map((passenger, passengerIndex) => (
-                    <div key={passengerIndex}>
-                      {passengerIndex + 1}. {passenger?.ti} {". "}{" "}
-                      {passenger?.fN} {passenger?.lN}
-                    </div>
-                  ))}
-                </p>
-              </div>
-            ))}
+              // Only render the room section if there are valid guests
+              if (validGuestCount === 0) return null;
+
+              // Total guest count includes all guests (including TBA)
+              const totalGuestCount = room?.ti?.length || 0;
+
+              return (
+                <div key={roomIndex} className="border-b space-y-2">
+                  <h4 className="font-bold text-md">
+                    <p>
+                      {room?.rc} <span className="text-md">( {room?.mb})</span>
+                      <span className="text-gray-500">
+                        {" "}
+                        ({totalGuestCount}{" "}
+                        {totalGuestCount === 1 ? "Guest" : "Guests"})
+                      </span>
+                    </p>
+                  </h4>
+
+                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                    <thead className="bg-blue-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {room?.ti?.map((passenger, passengerIndex) => {
+                        // Skip rendering TBA guests but keep original numbering
+                        const isTBA = 
+                          passenger?.fN?.trim().toUpperCase() === "TBA" || 
+                          passenger?.lN?.trim().toUpperCase() === "TBA";
+                        
+                        if (isTBA) return null;
+
+                        return (
+                          <tr key={passengerIndex} className="border-b">
+                            <td className="px-4 py-2 text-sm text-gray-800">{passengerIndex + 1}.</td>
+                            <td className="px-4 py-2 text-sm text-gray-800">{passenger?.ti}</td>
+                            <td className="px-4 py-2 text-sm text-gray-800">{passenger?.fN}</td>
+                            <td className="px-4 py-2 text-sm text-gray-800">{passenger?.lN}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })}
 
         {Category !== "abook" ? (
           formData.specialRequest?.trim() ? (
@@ -1105,30 +1149,51 @@ export function Step2Review({
 
         {Category !== "abook" ? (
           formData.email?.trim() ? (
-            <>
-              <h3 className="font-bold text-base text-md">Contact Details:</h3>
-              <p className="text-md">Email: {formData.email}</p>
-              <p className="text-md">
-                Mobile: {formData.countryCode} {formData.mobile}
-              </p>
-            </>
+            <div className="mt-4">
+              <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
+              <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                <thead className="bg-blue-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Mobile</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="px-4 py-2 text-sm text-gray-800">{formData.email}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">
+                      {formData.countryCode} {formData.mobile}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           ) : null
         ) : passengerContact?.emails?.length > 0 ? (
           <div className="mt-4">
-            <h3 className="font-semibold text-base pb-4 text-md">Contact Details</h3>
-            {passengerContact.emails.map((email, index) => (
-              <div key={index}>
-                <p className="pb-3">Email: {email}</p>
-                <p>
-                  Mobile: {passengerContact.code[0]}{" "}
-                  {passengerContact.contacts[index]}
-                </p>
-              </div>
-            ))}
+            <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
+            <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+              <thead className="bg-blue-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Mobile</th>
+                </tr>
+              </thead>
+              <tbody>
+                {passengerContact.emails.map((email, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="px-4 py-2 text-sm text-gray-800">{email}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">
+                      {passengerContact.code[0]} {passengerContact.contacts[index]}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : null}
 
-        <div className="border-t pt-4">
+        <div className="border-t pt-3">
           <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
           <table className="w-full border text-center text-sm">
             <thead className="bg-gray-100">
@@ -1227,7 +1292,7 @@ export function Step2Review({
               </div>
             )}
         </div>
-        <div className="border-t pt-4">
+        <div className="border-t pt-3">
           <h3 className="font-semibold text-base mb-2">
             General Terms & Conditions:
           </h3>
@@ -2082,6 +2147,8 @@ export function Step4Payment({
     setLoading(true);
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
+      console.log("result: ", result);
+      console.log("formdata",formData);
       setLoading(false);
       if (result?.error) {
         console.error("Booking error:", result.error);
@@ -2097,7 +2164,7 @@ export function Step4Payment({
       console.log("Booking success:", result);
       setTimeout(() => {
         onConfirmPayment(bookingId);
-      }, 100000);
+      }, 1000);//time decreased to check the booking flow 
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);
@@ -2267,7 +2334,7 @@ export function FareAmount({ hotelReviewData, Category }) {
 
           {isDetailsVisible &&
             hotelPassenger?.map((room, roomIndex) => (
-              <div key={roomIndex} className="border-b pb-4 space-y-2">
+              <div key={roomIndex} className="border-b space-y-2">
                 {room?.tfcs && (
                   <>
                     <div className="flex justify-between">

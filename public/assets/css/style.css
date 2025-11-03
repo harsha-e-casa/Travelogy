@@ -19319,25 +19319,38 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   flex-direction: column;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .image-row {
   display: flex;
   gap: 10px;
-  justify-content: start;
+  justify-content: flex-end;
   width: 100%;
   max-width: 1000px;
+  position: relative;
 }
 
 .image-column {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .image-row-3 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Blur the last thumbnail image in the bottom row when button is present */
+.image-row.has-button-overlay .image-item:last-child img {
+  filter: blur(1px);
+  transition: filter 0.3s ease;
+}
+
+.image-row.has-button-overlay:hover .image-item:last-child img {
+  filter: blur(0px);
 }
 
 .image-item img {
@@ -19366,10 +19379,17 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   max-width: 490px;
   min-height: 392px;
   min-width: 592px;
+  border-radius: 8px;
 }
 
 .image-row-3 img {
   min-height: 124px !important;
+  border-radius: 8px;
+}
+
+/* Hide button when single image */
+.container-banner-activities.single-image-mode {
+  display: none !important;
 }
 
 .bg-black-40 {
