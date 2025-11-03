@@ -102,7 +102,7 @@ export default function RefundContent() {
           <div className="col-lg-10">
             <div className="bg-white rounded-4 shadow-lg p-5">
               <div className="text-center mb-5">
-                <h1 className="heading-44-medium mb-3" style={{ fontSize: "32px"}} >
+                <h1 className="heading-44-medium" style={{ fontSize: "32px"}} >
                   Refund & Cancellation Policy
                 </h1>
               </div>
@@ -135,7 +135,7 @@ export default function RefundContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Flight</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Flight</h2>
                 <p className="text-md neutral-700 mb-10">
                   On cancelling flights marked as “Non-Refundable” on the final
                   travel vouchers, customers will be eligible for a zero refund.
@@ -199,7 +199,7 @@ export default function RefundContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Hotels</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Hotels</h2>
                 <p className="text-md neutral-700 mb-10">
                   On cancelling hotels which have been marked as
                   “Non-Refundable” on the final travel vouchers, the customer
@@ -235,7 +235,7 @@ export default function RefundContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Activities</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Activities</h2>
                 <p className="text-md neutral-700 mb-10">
                   On cancelling activities marked as “Non-Refundable” on the
                   final travel vouchers, the customer will be eligible for a
@@ -255,7 +255,7 @@ export default function RefundContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Visa &amp; Insurance</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Visa &amp; Insurance</h2>
                 <p className="text-md neutral-700 mb-10">
                   Travelogy acts as a facilitator for processing Visa
                   applications. We will guide customers on Visa formalities
@@ -278,7 +278,7 @@ export default function RefundContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Transfers</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Transfers</h2>
                 <p className="text-md neutral-700 mb-10">
                   For all transfers, refunds and their timelines will be
                   applicable as mentioned under the “Cancellation Policy”

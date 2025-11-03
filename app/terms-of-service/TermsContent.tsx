@@ -102,12 +102,12 @@ export default function TermsContent() {
           <div className="col-lg-10">
             <div className="bg-white rounded-4 shadow-lg p-5">
               <div className="text-center mb-5">
-                <h1 className="heading-44-medium mb-3" style={{ fontSize: "32px" }}>Terms & Conditions</h1>
+                <h1 className="heading-44-medium" style={{ fontSize: "32px" }}>Terms & Conditions</h1>
               </div>
 
               {/* Added Terms content from your brief, structured into sections */}
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Applicability of the Agreement
                 </h2>
                 <p className="text-md neutral-700 mb-20">
@@ -124,7 +124,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   User’s Responsibility of Cognizance
                 </h2>
                 <p className="text-md neutral-700 mb-20">
@@ -155,7 +155,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Third Party Account Information
                 </h2>
                 <p className="text-md neutral-700 mb-20">
@@ -172,7 +172,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Confidentiality</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Confidentiality</h2>
                 <p className="text-md neutral-700 mb-0">
                   Any information specifically mentioned by Travelogy as
                   Confidential shall be maintained confidentially by the user
@@ -183,7 +183,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Website and Mobile App Usage
                 </h2>
                 <p className="text-md neutral-700 mb-20">
@@ -196,7 +196,7 @@ export default function TermsContent() {
                   this website or app. Travelogy may modify, revise, or delete
                   content without prior notice.
                 </p>
-                <h3 className="heading-6-medium mb-10" style={{ fontSize: "26px" }}>Onus of the User</h3>
+                <h3 className="heading-6-medium" style={{ fontSize: "26px" }}>Onus of the User</h3>
                 <p className="text-md neutral-700 mb-0">
                   Travelogy is responsible only for transactions done by the
                   User through Travelogy. Travelogy will not be responsible for
@@ -209,7 +209,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Insurance</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Insurance</h2>
                 <p className="text-md neutral-700 mb-20">
                   Unless explicitly provided by Travelogy, obtaining sufficient
                   insurance coverage is the User’s obligation. Insurance
@@ -217,7 +217,7 @@ export default function TermsContent() {
                   insurer’s terms. Claims/disputes must be taken up with the
                   insurer directly.
                 </p>
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Force Majeure</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Force Majeure</h2>
                 <p className="text-md neutral-700 mb-20">
                   Service operators (airlines, hotels, transport providers) may
                   be unable to honor bookings due to reasons like climatic
@@ -239,7 +239,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Limitation of Liability
                 </h2>
                 <p className="text-md neutral-700 mb-0">
@@ -259,7 +259,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Safety of Data Downloaded
                 </h2>
                 <p className="text-md neutral-700 mb-0">
@@ -272,7 +272,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Feedback and Solicitation
                 </h2>
                 <p className="text-md neutral-700 mb-0">
@@ -286,7 +286,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Proprietary Rights</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Proprietary Rights</h2>
                 <p className="text-md neutral-700 mb-20">
                   Content such as sound, photographs, graphics, and video may be
                   protected by copyrights, trademarks, or other IP rights. Use
@@ -302,7 +302,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Visa Obligations of the User
                 </h2>
                 <p className="text-md neutral-700 mb-0">
@@ -314,7 +314,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Indemnification</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Indemnification</h2>
                 <p className="text-md neutral-700 mb-0">
                   The User agrees to indemnify, defend, and hold harmless
                   Travelogy and/or its affiliates from all losses, liabilities,
@@ -326,7 +326,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Right to Refuse</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Right to Refuse</h2>
                 <p className="text-md neutral-700 mb-10">
                   Travelogy reserves the right to not accept any customer order
                   without assigning a reason. A contract to provide service is
@@ -358,7 +358,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Right to Cancellation in Case of Invalid User Information
                 </h2>
                 <p className="text-md neutral-700 mb-20">
@@ -370,7 +370,7 @@ export default function TermsContent() {
                   without prior notice and without liability. The User
                   indemnifies Travelogy against related claims.
                 </p>
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Severability; Headings; Relationship
                 </h2>
                 <p className="text-md neutral-700 mb-10">
@@ -380,7 +380,7 @@ export default function TermsContent() {
                   Nothing herein constitutes a partnership or agency between the
                   User and Travelogy.
                 </p>
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Updation and Modification
                 </h2>
                 <p className="text-md neutral-700 mb-10">
@@ -399,7 +399,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>Jurisdiction</h2>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>Jurisdiction</h2>
                 <p className="text-md neutral-700 mb-0">
                   Travelogy disclaims implied warranties imputed by laws of any
                   jurisdiction other than those where it operates. It intends to
@@ -409,7 +409,7 @@ export default function TermsContent() {
               </div>
 
               <div className="mb-40">
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Responsibilities of User vis-à-vis the Agreement
                 </h2>
                 <p className="text-md neutral-700 mb-20">
@@ -424,7 +424,7 @@ export default function TermsContent() {
                   notifying Travelogy in writing.
                 </p>
 
-                <h2 className="heading-6-medium mb-20" style={{ fontSize: "26px" }}>
+                <h2 className="heading-6-medium" style={{ fontSize: "26px" }}>
                   Usage of Customer’s Holiday Content
                 </h2>
                 <p className="text-md neutral-700 mb-20">

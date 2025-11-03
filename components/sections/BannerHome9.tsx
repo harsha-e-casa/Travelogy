@@ -17,7 +17,7 @@ export default function BannerHome9() {
 						<li>Transparent Booking Process</li>
 						<li>Exceptional Customer Support</li>
 					</ul>
-					<div className="box-buttons-banner mt-65"> <Link className="btn btn-brand-secondary" href="/contact">Contact Us
+					<div className="box-buttons-banner mt-65"> <Link className="btn btn-brand-secondary" href="/contact-us">Contact Us
 						<svg width={24} height={24} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 							<path d="M12 19L19 12L12 5M19 12L5 12" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
 						</svg></Link>

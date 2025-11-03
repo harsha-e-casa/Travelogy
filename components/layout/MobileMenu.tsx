@@ -148,7 +148,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
 											<Link href="/#">Pages</Link>
 											<ul className="sub-menu" style={{ display: `${isAccordion == 8 ? "block" : "none"}` }}>
 												<li><Link href="/about">About</Link></li>
-												<li><Link href="/contact">Contact</Link></li>
+												<li><Link href="/contact-us">Contact</Link></li>
 												<li><Link href="/faq">FAQs</Link></li>
 												<li><Link href="/help-center">Help center</Link></li>
 												<li><Link href="/become-expert">Become Expert</Link></li>
@@ -171,7 +171,7 @@ export default function MobileMenu({ isMobileMenu, handleMobileMenu }: any) {
 												<li><Link href="/blog-detail-2">Blog Details 2</Link></li>
 											</ul>
 										</li>
-										<li><Link href="/contact">Contact</Link></li>
+										<li><Link href="/contact-us">Contact</Link></li>
 									</ul>
 								</nav>
 							</div>

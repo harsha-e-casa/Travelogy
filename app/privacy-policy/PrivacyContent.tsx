@@ -6,11 +6,11 @@ export default function PrivacyContent() {
         <div className="col-lg-10">
           <div className="bg-white rounded-4 shadow-lg p-5">
             <div className="text-center mb-5">
-              <h1 className="heading-44-medium mb-3">Privacy Policy</h1>
+              <h1 className="heading-44-medium" style={{ fontSize: "32px" }}>Privacy Policy</h1>
             </div>
 
           <div className="mb-40">
-            <h3 className="heading-6-medium mb-20">Others' rights</h3>
+            <h3 className="heading-6-medium" style={{ fontSize: "26px" }}>Others' rights</h3>
             <p className="text-md neutral-700 mb-20">
              If this Site contains bulletin boards, chat rooms, access to mailing lists or other message or communication facilities, you agree to use the same only to send and receive messages and materials that are proper and related thereto. By way of example and not as a limitation, you agree that when using the Site or any facility available here from, you shall not do any of the following:
             </p>
@@ -26,7 +26,7 @@ export default function PrivacyContent() {
           </div>
 
           <div className="mb-40">
-            <h3 className="heading-6-medium mb-20">User's Material</h3>
+            <h3 className="heading-6-medium" style={{ fontSize: "26px" }} >User's Material</h3>
             <p className="text-md neutral-700 mb-20">
               You are prohibited from posting or transmitting any defamatory, libellous, obscene, pornographic, profane, threatening or unlawful material or any material that could constitute or encourage conduct that would be considered a criminal offense or give rise to civil liability, or otherwise violate any law.
 Digilogy assumes no liability or responsibility arising from the contents of any communications containing any defamatory, erroneous, inaccurate, libellous, obscene or profane material. Digilogy may change, edit, or remove any user material or conversations that are illegal, indecent, obscene or offensive, or that violates Digilogy's policies in any way.
@@ -35,7 +35,7 @@ Digilogy will fully cooperate with any law enforcement authorities or court orde
           </div>
 
           <div className="mb-40">
-            <h3 className="heading-6-medium mb-20">Digilogy Rights</h3>
+            <h3 className="heading-6-medium" style={{ fontSize: "26px" }} >Digilogy Rights</h3>
             <p className="text-md neutral-700 mb-20">
              If you send any communications or materials to the Site by electronic mail or otherwise, including any comments, data, questions, suggestions or the like, all such communications are, and will be treated by Digilogy, as non-confidential.
 You hereby give up any and all claim that any use of such material violates any of your rights including moral rights, privacy rights, proprietary or other property rights, publicity rights, rights to credit for material or ideas, or any other right, including the right to approve the way Digilogy uses such material.
