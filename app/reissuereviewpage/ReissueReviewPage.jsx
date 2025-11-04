@@ -474,26 +474,27 @@ const ReissueReviewPage = () => {
   const seatChargeSt = seatCharge.map((e) => e.st ?? null);
   const seatChargeEt = seatCharge.map((e) => e.et / 24 ?? null);
   const searchTickets = () => {
-    let departureFrom = getCookie("gy_da");
-    let arrivalTo = getCookie("gy_aa");
-    let adults = getCookie("gy_adult");
-    let children = getCookie("gy_child");
-    let cabinType = getCookie("gy_class");
-    let departDate = getCookie("gy_trd");
-    let returnDate = getCookie("gy_return");
+    // let departureFrom = getCookie("gy_da");
+    // let arrivalTo = getCookie("gy_aa");
+    // let adults = getCookie("gy_adult");
+    // let children = getCookie("gy_child");
+    // let cabinType = getCookie("gy_class");
+    // let departDate = getCookie("gy_trd");
+    // let returnDate = getCookie("gy_return");
 
-    const mydata = {
-      departureFrom: departureFrom,
-      arrivalTo: arrivalTo,
-      adults: adults,
-      children: children,
-      cabinType: cabinType,
-      departDate: departDate,
-    };
+    // const mydata = {
+    //   departureFrom: departureFrom,
+    //   arrivalTo: arrivalTo,
+    //   adults: adults,
+    //   children: children,
+    //   cabinType: cabinType,
+    //   departDate: departDate,
+    // };
 
-    const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+    // const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
-    router.push(`/tickets?${queryString}`);
+    // router.push(`/tickets?${queryString}`);
+    window.history.back();
   };
 
   let date = new Date(traveldata);

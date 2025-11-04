@@ -698,7 +698,10 @@ export default function Tickets() {
           <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
             {/* Header Section */}
 
-            <div className="hdt_header" style={{ ...searchEnginewidth }}>
+            <div className="hdt_header" 
+              // style={{ ...searchEnginewidth }}
+              style={{ width: "60%" }}
+            >
               <>
                 <div className="hdt_header-item relative">
                   <label>From</label>

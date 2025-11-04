@@ -47,7 +47,7 @@ const Alldetails = ({ totalpricee }) => {
   const [rssrAmount, setRssrAmount] = useState(0);
 
   const [ticketData, setTicketData] = useState(null);
-  const [ticketLoading, setTicketLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
   useEffect(() => {
     // setTicketData(...) once your parent passes it or your API completes.
@@ -481,14 +481,14 @@ const Alldetails = ({ totalpricee }) => {
   const handleUnHold = async () => {
     console.log("handleUnHold ==> ");
     console.log(bookingDetails);
+    setModalLoading(true);
 
     // Validate Fare
-    const validateFare = async () => {};
+    // const validateFare = async () => {};
 
     // Call validateFare function to validate the booking details
-    await validateFare();
+    // await validateFare();
 
-    // Extract traveller information and PNRs
     const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos || [];
     const pnrs = [];
 
@@ -496,13 +496,12 @@ const Alldetails = ({ totalpricee }) => {
       travellerInfos.forEach((traveller) => {
         const pnrDetails = traveller.pnrDetails;
         if (pnrDetails && typeof pnrDetails === "object") {
-          const pnrValues = Object.values(pnrDetails); // gets array of values like ["X8B25P"]
-          pnrs.push(...pnrValues); // append all values to pnrs array
+          const pnrValues = Object.values(pnrDetails);
+          pnrs.push(...pnrValues);
         }
       });
     }
 
-    // Prepare unhold parameters
     const unHoldParams = {
       bookingId: bookingId,
       pnrs: pnrs,
@@ -534,7 +533,7 @@ const Alldetails = ({ totalpricee }) => {
         setError("Something went wrong. Please try again.");
       }
     } finally {
-      setLoading(false);
+      setModalLoading(false);
     }
   };
 
@@ -754,6 +753,7 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   const handlePayNow = async () => {
+    setModalLoading(true);
     const parameter = { bookingId: bookingId };
     try {
       let reqData = { action: "fareValidate", requestData: parameter };
@@ -782,6 +782,7 @@ const Alldetails = ({ totalpricee }) => {
     } catch (error) {
       console.log("handlePayNow error ", error);
     }
+    setModalLoading(false);
   };
 
   function formatDateTime(isoString) {
@@ -1433,7 +1434,7 @@ const Alldetails = ({ totalpricee }) => {
                               >
                                 Select New Travel Date:
                               </label>
-                              <DatePicker
+                              {/* <DatePicker
                                 id="reschedule-date"
                                 format="MM/DD/YYYY"
                                 value={
@@ -1460,6 +1461,47 @@ const Alldetails = ({ totalpricee }) => {
                                   ];
                                   if (okKeys.includes(e.key)) return;
                                   if (!/[\d/]/.test(e.key)) e.preventDefault(); // only 0-9 and slash
+                                }}
+                                onPaste={(e) => {
+                                  const text = (
+                                    e.clipboardData.getData("text") || ""
+                                  ).trim();
+                                  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
+                                    e.preventDefault();
+                                }}
+                              /> */}
+                              <DatePicker
+                                id="reschedule-date"
+                                format="MM/DD/YYYY"
+                                value={
+                                  rescheduleDate ? dayjs(rescheduleDate) : null
+                                }
+                                onChange={(d) =>
+                                  setRescheduleDate(
+                                    d ? d.format("YYYY-MM-DD") : ""
+                                  )
+                                }
+                                disabled={!selectedPNR}
+                                disabledDate={(current) =>
+                                  current && current < dayjs().startOf("day")
+                                }
+                                className="border border-gray-400 px-2 py-2 rounded w-full"
+                                popupClassName="z-[9999]"
+                                /* Render popup at body level to avoid clipping */
+                                getPopupContainer={() => document.body}
+                                /* Optional: force it to appear below the input */
+                                placement="bottomLeft"
+                                onKeyDown={(e) => {
+                                  const okKeys = [
+                                    "Backspace",
+                                    "Tab",
+                                    "ArrowLeft",
+                                    "ArrowRight",
+                                    "Delete",
+                                    "Enter",
+                                  ];
+                                  if (okKeys.includes(e.key)) return;
+                                  if (!/[\d/]/.test(e.key)) e.preventDefault();
                                 }}
                                 onPaste={(e) => {
                                   const text = (
@@ -1698,15 +1740,18 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
                         </>
                       ) : (
-                        <div className="flex flex-row gap-3">
+                        <div
+                          className="flex flex-row gap-3"
+                          style={{ alignItems: "center" }}
+                        >
                           <button
-                            className="border border-grey rounded"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                             onClick={handleUnHold}
                           >
                             Unhold
                           </button>
                           <button
-                            className="border border-grey rounded"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                             onClick={handlePayNow}
                           >
                             Pay Now
@@ -2196,6 +2241,23 @@ const Alldetails = ({ totalpricee }) => {
             </div>
           </div>
         </>
+      )}
+
+      {modalLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white px-6 py-6 rounded-lg shadow-lg flex flex-col items-center gap-4">
+            {/* Dot Pulse Loader */}
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
+              <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse delay-150"></div>
+              <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse delay-300"></div>
+            </div>
+
+            <p className="text-gray-700 font-medium">
+              Processing, please wait...
+            </p>
+          </div>
+        </div>
       )}
 
       {error && (

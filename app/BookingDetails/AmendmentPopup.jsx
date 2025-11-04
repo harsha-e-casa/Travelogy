@@ -126,6 +126,7 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
             firstSegment?.dt?.split("T")[0]
           }`}
           onClose={() => setShowTravellerModal(false)}
+          setmodalClose={() => setShowModal(false)}
         />
       )}
     </div>
