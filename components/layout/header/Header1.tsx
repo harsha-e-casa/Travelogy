@@ -52,8 +52,8 @@ export default function Header1(props: Header1Props) {
   }, [adminDropdownOpen]);
 
   const handleLogout = async () => {
+    window.location.href = "/login";
     try {
-      // Call the Next.js API route to clear the cookie
       const res = await fetch("/api/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -64,8 +64,6 @@ export default function Header1(props: Header1Props) {
 
       if (res.ok) {
         console.log("Logout successful");
-        // Optional: show a message or redirect
-        window.location.href = "/login";
       } else {
         console.error("Logout failed", await res.text());
       }
@@ -132,7 +130,7 @@ export default function Header1(props: Header1Props) {
                   <Link href="/contact-us">Contact</Link>
                 </li>
 
-                {!isVisible && (
+                {!isVisible && authToken && (
                   <li className={pathname === "/profile" ? "active" : ""}>
                     <Link href="/profile">Profile</Link>
                   </li>

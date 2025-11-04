@@ -22,7 +22,7 @@ const AmendmentModal = ({ isOpen, closeModal, data, loading }) => {
             <p className="ml-2">Loading...</p>
           </div>
         ) : (
-          <div>
+          <div style={{ textAlign: "left" }}>
             {data?.amendmentId && (
               <p>
                 <strong>Amendment ID:</strong> {data?.amendmentId || "--"}
@@ -33,9 +33,9 @@ const AmendmentModal = ({ isOpen, closeModal, data, loading }) => {
                 <strong>Status:</strong> {data?.amendmentStatus || "--"}
               </p>
             )}
-            {data?.refundableAmount && (
+            {"refundableAmount" in data && (
               <p>
-                <strong>Amount:</strong> {data?.refundableAmount || "--"}
+                <strong>Amount:</strong> {data.refundableAmount}
               </p>
             )}
             {data?.remarks && (

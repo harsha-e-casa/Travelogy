@@ -1816,14 +1816,14 @@ export default function BookTicket() {
               )}
             </div>
           </section>
-          {/* {loading ? null : (
+          {loading ? null : (
             <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
               />
             </div>
-          )} */}
+          )}
         </main>
       </Layout>
     </Suspense>
