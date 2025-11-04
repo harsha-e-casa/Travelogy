@@ -1241,7 +1241,7 @@ export function Step2Review({
           {Array.isArray(hotelReviewData?.hInfo?.inst) &&
             hotelReviewData.hInfo.inst.length > 0 && (
               <div>
-                <h3 className="font-semibold text-base mb-2">Booking Notes:</h3>
+                <h3 className="font-bold text-base mb-2">Booking Notes:</h3>
                 {hotelReviewData.hInfo.inst.map((note, idx) => {
                   let parsedMsg;
                   try {
@@ -1260,7 +1260,7 @@ export function Step2Review({
 
                   return (
                     <div key={idx} className="mb-4">
-                      <strong className="text-sm text-dark-800 block mb-1">
+                      <strong className="text-md text-dark-800 block mb-1">
                         {note.type
                           .replace(/_/g, " ")
                           .toLowerCase()
@@ -1268,10 +1268,10 @@ export function Step2Review({
                       </strong>
 
                       {typeof parsedMsg === "object" ? (
-                        <ul className="text-sm text-grey-700 space-y-1">
+                        <ul className="text-md text-grey-700 space-y-1">
                           {Object.entries(parsedMsg).map(([key, value]) => (
-                            <li className="text-xs" key={key}>
-                              <span className="text-xs">
+                            <li className="text-sm" key={key}>
+                              <span className="text-sm">
                                 {key
                                   .replace(/_/g, " ")
                                   .replace(/\b\w/g, (char) =>
@@ -1279,12 +1279,12 @@ export function Step2Review({
                                   )}
                                 :
                               </span>{" "}
-                              <span className="text-grey-700">{value}</span>
+                              <span className="text-sm text-grey-700">{value}</span>
                             </li>
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-sm text-gray-700">{parsedMsg.raw}</p>
+                        <p className="text-md text-gray-700">{parsedMsg.raw}</p>
                       )}
                     </div>
                   );

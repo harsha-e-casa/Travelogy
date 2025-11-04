@@ -16,6 +16,7 @@ import { Spin } from "antd";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { postData } from "@/services/NetworkAdapter";
+import CancellationModal from "./CancellationModal";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -32,6 +33,7 @@ const BookingDetailsPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [showCancellationModal, setShowCancellationModal] = useState(false);
 
   const handlePayClick = () => setShowModal(true);
   const handleCloseModal = () => !confirming && setShowModal(false);
@@ -213,7 +215,7 @@ const BookingDetailsPage = () => {
     setShowOptions(false);
     switch (action) {
       case "cancel":
-        cancelBooking(bookingId);
+        setShowCancellationModal(true);
         break;
       case "pdf":
         handleDownloadPDF();
@@ -277,49 +279,34 @@ const BookingDetailsPage = () => {
     }
   };
 
-  const cancelBooking = async (bookingId) => {
+  const cancelBooking = async () => {
+    setShowCancellationModal(false);
+    setCancelling(true);
+    
     try {
-      setCancelling(true);
       const reqBody = {
         action: "cancelBooking",
-        requestData: {bookingId: bookingId},
+        requestData: { bookingId: bookingId },
       };
 
       const response = await postData("travelogy/hotel/fetch-data", reqBody);
 
-      // const response = await fetch(
-      //   `https://apitest.tripjack.com/oms/v1/hotel/cancel-booking/${bookingId}`,
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-      //       "Content-Type": "application/json",
-      //     },
-      //   }
-      // );
-
-      // const data = await response.json();
-
       if (response) {
         console.log("Booking cancelled successfully:", response);
-        setLoading(true);
-        console.log("freshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh == 11 ");
+        
         try {
           const fresh = await getBookingDetails(bookingId);
-          console.log("freshhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh == ", fresh);
           if (fresh?.error) {
-            console.log("dddddddddddddddddddddddddddddddddddd ", fresh.error);
             setError(fresh.error);
           } else {
             setBookingDetails(fresh);
           }
         } catch (e) {
           console.error("Refresh after cancel failed:", e);
-        } finally {
-          setLoading(false);
+          alert("Cancellation succeeded, but refreshing details failed. Please reload.");
         }
       } else {
-        console.error("Error cancelling booking:", data);
+        console.error("Error cancelling booking:", response);
         alert("Failed to cancel booking. Please try again.");
       }
     } catch (error) {
@@ -412,6 +399,10 @@ const BookingDetailsPage = () => {
       ?.replace(/_/g, " ")
       .toLowerCase()
       .replace(/\b\w/g, (c) => c.toUpperCase()) ?? "";
+
+  // Extract cancellation policy
+  const cancellationPolicy =
+    bookingDetails?.itemInfos?.HOTEL?.hInfo?.ops?.[0]?.cnp?.pd || [];
 
   return (
     <Suspense
@@ -612,6 +603,14 @@ const BookingDetailsPage = () => {
               </div>
             </div>
           )}
+          <CancellationModal
+            isOpen={showCancellationModal}
+            onClose={() => setShowCancellationModal(false)}
+            onConfirm={cancelBooking}
+            cancellationPolicy={cancellationPolicy}
+            isProcessing={cancelling}
+          />
+
           {cancelling && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">

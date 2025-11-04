@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const HotelData = ({ fetchHotelData = [], hotelId }) => {
+const HotelData = ({ fetchHotelData = [], hotelId, availabilityError }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [currentFacilities, setCurrentFacilities] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]); // ← This tracks ops[].ris[]
@@ -28,7 +28,13 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
     <>
       <h6 className="mt-3">Rooms</h6>
       <div className="border rounded-md mt-10">
-        {fetchHotelData.map((room, index) => {
+        {fetchHotelData.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <p className="text-sm">No rooms available for the selected dates.</p>
+            <p className="text-xs mt-2">Please try different dates or room configurations.</p>
+          </div>
+        ) : (
+          fetchHotelData.map((room, index) => {
           const dataLen = room.ris?.length;
           return (
             <>
@@ -158,7 +164,8 @@ const HotelData = ({ fetchHotelData = [], hotelId }) => {
               })}
             </>
           );
-        })}
+        })
+        )}
       </div>
 
       {/* Facilities Modal */}
