@@ -26,7 +26,9 @@ export default function BookingCard({
   showTraveller,
   roomsData,
   setRoomsData,
-  openDateRange, setOpenDateRange
+  openDateRange, 
+  setOpenDateRange,
+  availabilityError
 }) {
   const basefare = totalpricee?.fC?.BF;
   const RoomType = totalpricee?.fC?.MB;
@@ -101,6 +103,25 @@ export default function BookingCard({
             </svg>
           </a>
         </div>
+        
+        {/* Display availability error if present */}
+        {availabilityError && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-300 rounded-md">
+            <div className="flex items-start gap-2">
+              <div className="flex-1">
+                {/* <p className="text-xs font-semibold text-red-800 mb-1">
+                  Availability Issue
+                </p> */}
+                <p className="text-xs text-red-700">
+                  {availabilityError}
+                </p>
+                <p className="text-xs text-red-600 mt-1">
+                  Please try different dates or room selections.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div className="space-y-3">
         <h5 className="text-md font-bold text-neutral-800">

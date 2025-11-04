@@ -89,6 +89,7 @@ export default function ActivitiesDetail4() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [error, setError] = useState(null);
+  const [availabilityError, setAvailabilityError] = useState(null);
   const [checkinDate, setCheckinDate] = useState(null);
   const [checkoutDate, setCheckoutDate] = useState(null);
   const [roomsData, setRoomsData] = useState([
@@ -190,6 +191,8 @@ export default function ActivitiesDetail4() {
         },
       };
       const response = await postData("travelogy/hotel/fetch-data", reqData);
+
+      console.log('karthik', response.status)
       if (response?.status?.success) {
         setHotelData(response.hotel);
         setSearchQueryData(response.searchQuery);
@@ -197,9 +200,34 @@ export default function ActivitiesDetail4() {
         setCheckoutDate(response.searchQuery?.checkoutDate);
         setDynamicId(response.hotel.id);
         setRoomsData(response.searchQuery?.roomInfo);
+        setAvailabilityError(null); // Clear availability error on success
         console.log("roomInfo", response.searchQuery?.roomInfo);
       } else {
-        console.error(response?.error || "Error fetching hotel details");
+        console.log('error',response?.error);
+        const errorMessage = response?.error || "Error fetching hotel details";
+        
+        // Check if it's a network/server error (status codes, request failed, etc.)
+        const isNetworkError = errorMessage.toLowerCase().includes('status code') || 
+                               errorMessage.toLowerCase().includes('request failed') ||
+                               errorMessage.toLowerCase().includes('network error') ||
+                               errorMessage.toLowerCase().includes('timeout');
+        
+        // Check if it's an availability error (hotel not available, no rooms, etc.)
+        const isAvailabilityError = !isNetworkError && (
+          errorMessage.toLowerCase().includes('no longer available') || 
+          errorMessage.toLowerCase().includes('not available') ||
+          errorMessage.toLowerCase().includes('no rooms') ||
+          response?.status === undefined
+        );
+        
+        if (isAvailabilityError && hotelData) {
+          // If we already have hotel data, show error in availability section (booking card)
+          setAvailabilityError(errorMessage);
+        } else {
+          // Network/server errors or critical errors - show full error layout
+          setError(errorMessage);
+        }
+        console.error(errorMessage);
       }
     } catch (error) {
       setError("Error fetching hotel details: " + error.message);
@@ -291,10 +319,12 @@ export default function ActivitiesDetail4() {
         const response = await postData("travelogy/hotel/fetch-data", reqData);
 
         if (response?.error) {
+          // Initial load errors should show full error layout
           setError(response.error);
         } else if (response?.errors?.[0]?.message) {
           setError(response.errors?.[0].message);
         } else if (response?.status?.success) {
+          setAvailabilityError(null); // Clear any previous availability errors
           const hotel = response.hotel;
           const searchData = response.searchQuery;
           if (searchData) {
@@ -647,6 +677,7 @@ export default function ActivitiesDetail4() {
                     latitude={hotelData?.gl?.ln}
                     fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}
                     hotelId={hotelData?.id}
+                    availabilityError={availabilityError}
                   />
                 </div>
               </div>
@@ -738,6 +769,7 @@ export default function ActivitiesDetail4() {
                       setRoomsData={setRoomsData}
                       openDateRange={openDateRange} 
                       setOpenDateRange={setOpenDateRange}
+                      availabilityError={availabilityError}
                     />
                   </div>
                 </div>
