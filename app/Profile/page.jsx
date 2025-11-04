@@ -422,7 +422,7 @@ const Page = () => {
                             <span className="label">DOB</span>
                             <span className="value">
                               {!loading
-                                ? userData?.userData?.dob.split("T")[0]
+                                ? userData?.userData?.dob?.split("T")[0]
                                 : null}
                             </span>
                           </div>
