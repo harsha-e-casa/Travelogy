@@ -153,6 +153,7 @@ export default function ActivitiesDetail4() {
   const [isFetchingButton, setIsFetchingButton] = useState(false);
 
   const [openDateRange, setOpenDateRange] = useState(null);
+  const [triggerFetch, setTriggerFetch] = useState(0); // Counter to force fetch
 
 
   // useEffect(() => {
@@ -214,30 +215,24 @@ export default function ActivitiesDetail4() {
 
   useEffect(() => {
     if (!readyRef.current) return;
-    const isCheckinChanged = checkinDate !== prevCheckinDate.current;
-
-    if(isCheckinChanged){
-      setOpenDateRange("checkout")
-    }
-    
-    const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
-    if(isCheckoutChanged && checkoutDate){
-      setOpenDateRange(null)
-    }
     
     const normalizedRooms = normalizeRooms(roomsData);
     const roomsChanged =
       JSON.stringify(normalizedRooms) !== prevRoomsData.current;
 
-    // Only fetch when both dates are complete OR when rooms change
+    // Only fetch when:
+    // 1. Checkout date changes AND both dates are complete, OR
+    // 2. Rooms change AND both dates are complete, OR
+    // 3. Manual trigger (when user re-selects same date)
     const bothDatesComplete = checkinDate && checkoutDate;
-    const shouldFetch = ((isCheckinChanged || isCheckoutChanged) && bothDatesComplete) || roomsChanged;
+    const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
+    const shouldFetch = (isCheckoutChanged && bothDatesComplete) || (roomsChanged && bothDatesComplete) || (triggerFetch > 0 && bothDatesComplete);
 
     console.log('Fetch Debug:', {
-      isCheckinChanged,
-      isCheckoutChanged,
       bothDatesComplete,
+      isCheckoutChanged,
       roomsChanged,
+      triggerFetch,
       shouldFetch,
       checkinDate,
       checkoutDate,
@@ -264,8 +259,23 @@ export default function ActivitiesDetail4() {
       prevCheckinDate.current = checkinDate;
       prevCheckoutDate.current = checkoutDate;
       prevRoomsData.current = JSON.stringify(normalizedRooms);
+      
+      // Reset trigger after fetch
+      if (triggerFetch > 0) {
+        setTriggerFetch(0);
+      }
+    } else {
+      // Update refs even when not fetching to track state changes
+      const isCheckinChanged = checkinDate !== prevCheckinDate.current;
+      if (isCheckinChanged) {
+        prevCheckinDate.current = checkinDate;
+      }
+      
+      if (isCheckoutChanged) {
+        prevCheckoutDate.current = checkoutDate;
+      }
     }
-  }, [checkinDate, checkoutDate, roomsData]); // Only trigger when these values change
+  }, [checkinDate, checkoutDate, roomsData, triggerFetch]);
 
   useEffect(() => {
     async function fetchInitialHotelDetails({
@@ -719,6 +729,7 @@ export default function ActivitiesDetail4() {
                       checkoutDate={checkoutDate}
                       setCheckinDate={setCheckinDate}
                       setCheckoutDate={setCheckoutDate}
+                      setTriggerFetch={setTriggerFetch}
                       setOpenCheckin={setOpenCheckin}
                       setOpenCheckout={setOpenCheckout}
                       toggleTraveller={toggleTraveller}

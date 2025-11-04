@@ -894,7 +894,7 @@ export function Step2Review({
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
-        <div className="border-b pb-2">
+        <div className="border-b">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}{" "}
             <span className="text-star ml-2">
@@ -934,7 +934,7 @@ export function Step2Review({
           <p className="text-blue-700 text-sm">
             <span className="text-blue-700 font-semibold">
               {freeCancellationDate && (
-                <div className="text-xs mb-1">
+                <div className="text-sm mb-1 font-bold">
                   Last Cancellation Date:
                   {freeCancellationDate}
                 </div>

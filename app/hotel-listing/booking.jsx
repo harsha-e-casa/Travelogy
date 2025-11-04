@@ -19,6 +19,7 @@ export default function BookingCard({
   checkoutDate,
   setCheckinDate,
   setCheckoutDate,
+  setTriggerFetch,
   setOpenCheckin,
   setOpenCheckout,
   toggleTraveller,
@@ -130,10 +131,16 @@ export default function BookingCard({
                 <AppDateRange
                   minDate={dayjs()}
                   valueDate={checkinDate ? dayjs(checkinDate) : null}
-                  openToDateRange={() => setOpenDateRange(null)}
+                  openToDateRange={() => {
+                    // Always open checkout picker after closing check-in
+                    setOpenDateRange("checkout");
+                  }}
                   setDatedep={(date) => {
-                    setCheckinDate(date ? date.format("YYYY-MM-DD") : null);
-                    setOpenDateRange(null);
+                    const newDate = date ? date.format("YYYY-MM-DD") : null;
+                    setCheckinDate(newDate);
+                    
+                    // Always open checkout picker after selecting check-in
+                    setOpenDateRange("checkout");
                   }}
                 />
               </div>
@@ -164,9 +171,30 @@ export default function BookingCard({
                     checkinDate ? dayjs(checkinDate) : dayjs()
                   }
                   valueDate={checkoutDate ? dayjs(checkoutDate) : null}
-                  openToDateRange={() => setOpenDateRange(null)}
+                  openToDateRange={() => {
+                    console.log('Date picker closing, current checkout:', checkoutDate);
+                    // When closing, if both dates exist, trigger a fetch to refresh data
+                    if (checkinDate && checkoutDate) {
+                      console.log('✅ Triggering fetch on date picker close');
+                      setTriggerFetch(prev => prev + 1);
+                    }
+                    setOpenDateRange(null);
+                  }}
                   setDatedep={(date) => {
-                    setCheckoutDate(date ? date.format("YYYY-MM-DD") : null);
+                    console.log('=== CHECKOUT DATE PICKER CALLBACK FIRED ===');
+                    console.log('Raw date object:', date);
+                    
+                    const newDate = date ? date.format("YYYY-MM-DD") : null;
+                    const isSameDate = newDate === checkoutDate;
+                    
+                    console.log('Checkout date selected:', {
+                      newDate,
+                      currentCheckoutDate: checkoutDate,
+                      isSameDate,
+                      checkinDate
+                    });
+                    
+                    setCheckoutDate(newDate);
                     setOpenDateRange(null);
                   }}
                 />
