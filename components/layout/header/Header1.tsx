@@ -34,6 +34,9 @@ export default function Header1(props: Header1Props) {
         return;
       }
       const decoded = jwtDecode<{ travelogy_admin?: boolean | number }>(token);
+      console.log("decodeddecoded ==> ",decoded)
+      console.log("decodeddecoded ==> ",decoded?.travelogy_admin)
+      console.log("decodeddecoded ==> ",!!decoded?.travelogy_admin)
       setIsVisible(!!decoded?.travelogy_admin);
     } catch {
       setIsVisible(false);
@@ -56,7 +59,7 @@ export default function Header1(props: Header1Props) {
         headers: { "Content-Type": "application/json" },
         // credentials: "include", // ensures cookies are sent with request
       });
-      
+
       localStorage.removeItem("authToken");
 
       if (res.ok) {
@@ -91,9 +94,7 @@ export default function Header1(props: Header1Props) {
             <div className="header-mobile-menu">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className={`mobile-menu-btn ${
-                  mobileMenuOpen ? "active" : ""
-                }`}
+                className={`mobile-menu-btn ${mobileMenuOpen ? "active" : ""}`}
                 aria-label="Toggle mobile menu"
               >
                 <span></span>
@@ -131,8 +132,22 @@ export default function Header1(props: Header1Props) {
                   <Link href="/contact-us">Contact</Link>
                 </li>
 
-                {authToken && (
-                  <li className={`dropdown ${pathname.startsWith('/profile') && pathname.startsWith('/dashboard') && pathname.startsWith('/user-create') ? 'active' : ''}`}>
+                {!isVisible && (
+                  <li className={pathname === "/profile" ? "active" : ""}>
+                    <Link href="/profile">Profile</Link>
+                  </li>
+                )}
+
+                {isVisible && authToken && (
+                  <li
+                    className={`dropdown ${
+                      pathname.startsWith("/profile") &&
+                      pathname.startsWith("/dashboard") &&
+                      pathname.startsWith("/user-create")
+                        ? "active"
+                        : ""
+                    }`}
+                  >
                     <button
                       className="dropdown-toggle"
                       onClick={(e) => {
@@ -144,18 +159,28 @@ export default function Header1(props: Header1Props) {
                     </button>
                     <ul
                       className={`dropdown-menu ${
-                        adminDropdownOpen ? "show" : "" 
+                        adminDropdownOpen ? "show" : ""
                       }`}
                     >
-                      <li className={`${pathname === "/profile" ? "active" : ""}`}>
+                      <li
+                        className={`${pathname === "/profile" ? "active" : ""}`}
+                      >
                         <Link href="/profile">Profile</Link>
                       </li>
                       {isVisible && (
                         <>
-                          <li className={`${pathname === "/dashboard" ? "active" : ""}`}>
+                          <li
+                            className={`${
+                              pathname === "/dashboard" ? "active" : ""
+                            }`}
+                          >
                             <Link href="/dashboard">Dashboard</Link>
                           </li>
-                          <li className={`${pathname === "/user-create" ? "active" : ""}`}>
+                          <li
+                            className={`${
+                              pathname === "/user-create" ? "active" : ""
+                            }`}
+                          >
                             <Link href="/user-create">Vendor Creation</Link>
                           </li>
                         </>
