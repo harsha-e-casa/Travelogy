@@ -17,6 +17,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { postData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
+import { printHotelBooking } from "./HotelPrint";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -317,78 +318,17 @@ const BookingDetailsPage = () => {
     }
   };
 
- // Typing for handlePrint: This is the primary function being fixed
-  const handlePrint = async () => {
-    const container = printRef.current;
-    if (!container) return;
-
-    const logoUrl = "/assets/imgs/logo-print.png";
-
+  const handlePrint = () => {
+    if (!bookingDetails) {
+      console.error("No booking details available for printing");
+      return;
+    }
+    
     try {
-      const canvas = await html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#fff",
-        onclone: (doc) => {
-          doc.querySelectorAll(".print-only").forEach((el) => {
-            el.style.display = "block";
-          });
-          doc.querySelectorAll(".screen-only, .no-print").forEach((el) => {
-            el.style.display = "none";
-          });
-        },
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const printWindow = window.open("", "_blank", "width=800,height=600");
-
-      if (!printWindow) return;
-
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Booking Details</title>
-            <style>
-              body { font-family: Arial; margin: 0; padding: 20px; }
-              .print-img { width: 100%; height: auto; }
-            </style>
-          </head>
-          <body>
-            <div class="print-content">
-              <img class="print-img" src="${imgData}" alt="Booking Details" />
-            </div>
-          </body>
-        </html>
-      `);
-
-      printWindow.document.close();
-
-      // Wait for all images in the print window to load before printing
-      const images = printWindow.document.images;
-      if (images.length === 0) {
-        printWindow.print();
-      } else {
-        let loaded = 0;
-        for (let img of images) {
-          // If already loaded (from cache), count it
-          if (img.complete) {
-            loaded++;
-          } else {
-            img.onload = img.onerror = () => {
-              loaded++;
-              if (loaded === images.length) {
-                setTimeout(() => printWindow.print(), 300);
-              }
-            };
-          }
-        }
-        // If all images were already loaded
-        if (loaded === images.length) {
-          setTimeout(() => printWindow.print(), 300);
-        }
-      }
+      printHotelBooking(bookingDetails);
     } catch (error) {
       console.error("Print failed:", error);
+      alert("Failed to print booking details. Please try again.");
     }
   };
 
