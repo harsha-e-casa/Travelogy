@@ -1,6 +1,9 @@
 // Hotel Booking Print Functionality
 // Similar to flight ticket print but adapted for hotel bookings
 
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
 export function printHotelBooking(bookingDetails) {
   if (!bookingDetails) return;
 
@@ -241,17 +244,20 @@ function renderHotelHTML(vm) {
       .container {
         max-width: 100%;
         margin: 0 auto;
+        padding: 20px;
       }
       
       /* Logo Header */
       .logo-header {
-        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
         margin-bottom: 15px;
         padding-bottom: 10px;
         border-bottom: 1px solid #e5e7eb;
       }
       .logo-header img {
-        height: 60px;
+        height: 80px;
         width: auto;
       }
       .company-info {
@@ -259,7 +265,7 @@ function renderHotelHTML(vm) {
         font-size: 11px;
         color: #666;
         line-height: 1.5;
-        margin-top: 8px;
+        margin-top: 0;
       }
       
       /* Status Header */
@@ -477,7 +483,8 @@ function renderHotelHTML(vm) {
       <div class="company-info">
         <strong>Address:</strong> NPL Devi, 111, Lattice Brg Rd,<br/>
        Thiruvanmiyur, Chennai, Tamil Nadu 600041<br/>
-        Phone: +91-XXXXXXXXXX | Email: support@travelogy.com
+        <strong>Phone:</strong> +91-95662 66061<br/>
+        <strong>Email:</strong> info@casagrandtravelogy.co.in
       </div>
     </div>
   `;
@@ -736,7 +743,12 @@ function renderHotelHTML(vm) {
         <li>Additional GST Payment (if any) to be paid to the hotel directly by the guest.</li>
       </ol>
     </div>
+    
+    <div style="text-align: center; font-size: 12px; color: #6B7280; margin-top: 20px; padding: 12px; border: 1px solid #E5E7EB; border-radius: 8px;">
+      This booking receipt is system generated. Please carry a valid government ID along with this document.
+    </div>
   `;
+  
 
   return `
     <!doctype html>
@@ -763,4 +775,85 @@ function renderHotelHTML(vm) {
       </body>
     </html>
   `;
+}
+
+/**
+ * Download hotel booking as PDF with the same layout as print
+ * Uses browser's native print-to-PDF for proper page breaks
+ * @param {Object} bookingDetails - The booking details object
+ */
+export async function downloadHotelBookingAsPDF(bookingDetails) {
+  if (!bookingDetails) {
+    console.error("No booking details provided for PDF generation");
+    return;
+  }
+
+  try {
+    // Normalize data and render HTML using the same functions as print
+    const vm = normalizeHotelData(bookingDetails);
+    const html = renderHotelHTML(vm);
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    if (!printWindow) {
+      alert('Please allow popups to download the PDF. Then try again.');
+      return;
+    }
+
+    // Write the HTML content
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+
+    // Wait for images and fonts to load
+    const waitForLoad = new Promise((resolve) => {
+      if (printWindow.document.readyState === 'complete') {
+        resolve();
+      } else {
+        printWindow.addEventListener('load', resolve);
+      }
+    });
+
+    await waitForLoad;
+
+    // Wait for images
+    const imgs = Array.from(printWindow.document.images || []);
+    if (imgs.length > 0) {
+      await new Promise((resolve) => {
+        let loaded = 0;
+        const done = () => {
+          loaded++;
+          if (loaded >= imgs.length) resolve();
+        };
+        imgs.forEach((img) => {
+          if (img.complete) return done();
+          img.addEventListener('load', done);
+          img.addEventListener('error', done);
+        });
+        // Fallback timeout
+        setTimeout(resolve, 3000);
+      });
+    }
+
+    // Small delay to ensure rendering is complete
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Trigger print dialog (user can save as PDF)
+    printWindow.focus();
+    printWindow.print();
+
+    // Close the window after printing
+    // Note: We can't automatically close it immediately as the print dialog needs to stay open
+    printWindow.addEventListener('afterprint', () => {
+      setTimeout(() => {
+        printWindow.close();
+      }, 100);
+    });
+
+    console.log("Print dialog opened for PDF generation");
+  } catch (error) {
+    console.error("Failed to generate PDF:", error);
+    throw error;
+  }
 }

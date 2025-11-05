@@ -17,7 +17,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { postData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
-import { printHotelBooking } from "./HotelPrint";
+import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -230,53 +230,17 @@ const BookingDetailsPage = () => {
   };
 
   const handleDownloadPDF = async () => {
+    if (!bookingDetails) {
+      console.error("No booking details available for PDF generation");
+      alert("Unable to generate PDF. Booking details are not available.");
+      return;
+    }
+    
     try {
-      const container = printRef.current;
-      if (!container) return;
-
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgWidth = 210;
-      const pageHeight = 297;
-
-      const canvas = await html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        windowWidth: container.scrollWidth,
-        ignoreElements: (el) => el.id === "more-options", // keep hiding the button
-        onclone: (clonedDoc) => {
-          // Make print-only visible for export
-          clonedDoc.querySelectorAll(".print-only").forEach((el) => {
-            el.style.display = "block";
-          });
-          // Hide screen-only & no-print in export
-          clonedDoc
-            .querySelectorAll(".screen-only, .no-print")
-            .forEach((el) => {
-              el.style.display = "none";
-            });
-        },
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      let heightLeft = imgHeight;
-      let position = 0;
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      pdf.save(`booking-${orderBookingId}.pdf`);
-    } catch (e) {
-      console.error("Failed to generate PDF:", e);
-      setError("Failed to generate PDF.");
+      await downloadHotelBookingAsPDF(bookingDetails);
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
     }
   };
 
