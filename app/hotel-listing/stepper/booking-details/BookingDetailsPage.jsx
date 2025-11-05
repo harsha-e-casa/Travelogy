@@ -441,14 +441,50 @@ const BookingDetailsPage = () => {
                     {confirming ? "Processing…" : "Pay Now"}
                   </button>
                 </div>
-              ) : status === "CANCELLED" ? (
-                <div className="p-6 flex justify-start items-center w-full">
-                  <img
-                    style={{ width: "50px", marginRight: "10px" }}
-                    src="/assets/imgs/tick.png"
-                    alt="tick"
-                  />
-                  <h6 className="status_text2 print_pdf1">{statusLabel}</h6>
+              ) : status === "CANCELLED" || status === "CANCELLATION_PENDING" ? (
+                <div className="p-6 flex justify-between items-center w-full">
+                  <div className="flex items-center">
+                    <img
+                      style={{ width: "50px", marginRight: "10px" }}
+                      src="/assets/imgs/tick.png"
+                      alt="tick"
+                    />
+                    <h6 className="status_text2 print_pdf1">{statusLabel}</h6>
+                  </div>
+                  <div
+                    id="more-options"
+                    className="relative inline-block text-left no-print"
+                    ref={dropdownRef}
+                  >
+                    <button
+                      className="book-now-btn ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                      onClick={() =>
+                        !confirming && setShowOptions((prev) => !prev)
+                      }
+                      aria-haspopup="true"
+                      aria-expanded={showOptions ? "true" : "false"}
+                      disabled={confirming}
+                    >
+                      More Options
+                      <DownOutlined className="ml-2 mt-1" />
+                    </button>
+                    {showOptions && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                        <button
+                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                          onClick={() => handleOptionClick("print")}
+                        >
+                          Print
+                        </button>
+                        <button
+                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                          onClick={() => handleOptionClick("pdf")}
+                        >
+                          Download as PDF
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="p-6 flex justify-between items-center w-full">
