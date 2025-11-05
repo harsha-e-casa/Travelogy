@@ -21,6 +21,9 @@ const HotelBookingList = ({
   setStatusFilter,
   amountFilter,
   setAmountFilter,
+  emailOptions,
+  emailFilter,
+  setEmailFilter,
   fromDate,
   setFromDate,
   toDate,
@@ -83,6 +86,24 @@ const HotelBookingList = ({
     <div className="table-section">
       <div className="filters-section">
         <div className="filter-group">
+          <label className="filter-label">Email:</label>
+          <select
+            className="filter-select"
+            value={emailFilter}
+            onChange={(e) => {
+              setEmailFilter(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">All</option>
+            {emailOptions?.map((email) => (
+              <option key={email} value={email}>
+                {email}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="filter-group">
           <label className="filter-label">Status:</label>
           <select
             className="filter-select"
@@ -125,8 +146,8 @@ const HotelBookingList = ({
             }}
           />
         </div>
-        <div>
-          <label className="mr-1 text-sm font-medium">To:</label>
+        <div className="filter-group">
+          <label className="filter-label">To:</label>
           <input
             type="date"
             className="filter-input"
@@ -135,25 +156,12 @@ const HotelBookingList = ({
               setToDate(e.target.value);
               setPage(1);
             }}
-            style={{ width: "150px" }}
           />
         </div>
-        {/* <div>
-          <label className="mr-1 text-sm font-medium">Email:</label>
-          <input
-            type="text"
-            className="filter-input"
-            value={amountFilter}
-            onChange={(e) => {
-              // setAmountFilter(e.target.value);
-              // setPage(1);
-            }}
-            style={{ width: "200px" }}
-          />
-        </div> */}
         <button
           className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
           onClick={() => {
+            setEmailFilter("");
             setStatusFilter("");
             setFromDate("");
             setToDate("");

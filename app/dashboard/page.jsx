@@ -28,6 +28,7 @@ const Page = () => {
   const [filteredHotelBookings, setFilteredHotelBookings] = useState([]);
   const [hotelStatusFilter, setHotelStatusFilter] = useState("");
   const [hotelAmountFilter, setHotelAmountFilter] = useState("");
+  const [hotelEmailFilter, setHotelEmailFilter] = useState("");
   const [hotelFromDate, setHotelFromDate] = useState("");
   const [hotelToDate, setHotelToDate] = useState("");
   const [filteredFlightBookings, setFilteredFlightBookings] = useState([]);
@@ -39,11 +40,13 @@ const Page = () => {
   const [filteredAmendments, setFilteredAmendments] = useState([]);
   const [amendmentStatusFilter, setAmendmentStatusFilter] = useState("");
   const [amendmentAmountFilter, setAmendmentAmountFilter] = useState("");
+  const [amendmentEmailFilter, setAmendmentEmailFilter] = useState("");
   const [amendmentFromDate, setAmendmentFromDate] = useState("");
   const [amendmentToDate, setAmendmentToDate] = useState("");
   const [filteredReBookings, setFilteredReBookings] = useState([]);
   const [reBookingStatusFilter, setReBookingStatusFilter] = useState("");
   const [reBookingAmountFilter, setReBookingAmountFilter] = useState("");
+  const [reBookingEmailFilter, setReBookingEmailFilter] = useState("");
   const [reBookingFromDate, setReBookingFromDate] = useState("");
   const [reBookingToDate, setReBookingToDate] = useState("");
 
@@ -233,6 +236,12 @@ const Page = () => {
     ) || []
   );
 
+  const hotelEmailOptions = Array.from(
+    new Set(
+      userHotelBookingData?.bookings?.map((b) => b.user_email).filter((v) => !!v)
+    ) || []
+  );
+
   const flightStatusOptions = Array.from(
     new Set(
       userBookingData?.bookings?.map((b) => b.status).filter((v) => !!v)
@@ -253,9 +262,21 @@ const Page = () => {
     ) || []
   );
 
+  const amendmentEmailOptions = Array.from(
+    new Set(
+      userAmendmentData?.amendments?.map((b) => b.user_email).filter((v) => !!v)
+    ) || []
+  );
+
   const reBookingStatusOptions = Array.from(
     new Set(
       userReBookingData?.reBookings?.map((b) => b.status).filter((v) => !!v)
+    ) || []
+  );
+
+  const reBookingEmailOptions = Array.from(
+    new Set(
+      userReBookingData?.reBookings?.map((b) => b.user_email).filter((v) => !!v)
     ) || []
   );
 
@@ -297,6 +318,16 @@ const Page = () => {
             .includes(hotelStatusFilter.toLowerCase());
       }
 
+      if (hotelEmailFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.user_email &&
+          b.user_email
+            .toString()
+            .toLowerCase()
+            .includes(hotelEmailFilter.toLowerCase());
+      }
+
       // Date range
       if (hotelFromDate) {
         matches = matches && bookingDate >= hotelFromDate;
@@ -312,6 +343,7 @@ const Page = () => {
     userHotelBookingData,
     hotelStatusFilter,
     hotelAmountFilter,
+    hotelEmailFilter,
     hotelFromDate,
     hotelToDate,
   ]);
@@ -425,6 +457,16 @@ const Page = () => {
             .includes(amendmentStatusFilter.toLowerCase());
       }
 
+      if (amendmentEmailFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.user_email &&
+          b.user_email
+            .toString()
+            .toLowerCase()
+            .includes(amendmentEmailFilter.toLowerCase());
+      }
+
       // Date range
       if (amendmentFromDate) {
         matches = matches && amendmentDate >= amendmentFromDate;
@@ -440,6 +482,7 @@ const Page = () => {
     userAmendmentData,
     amendmentStatusFilter,
     amendmentAmountFilter,
+    amendmentEmailFilter,
     amendmentFromDate,
     amendmentToDate,
   ]);
@@ -482,6 +525,16 @@ const Page = () => {
             .includes(reBookingStatusFilter.toLowerCase());
       }
 
+      if (reBookingEmailFilter.trim() !== "") {
+        matches =
+          matches &&
+          b.user_email &&
+          b.user_email
+            .toString()
+            .toLowerCase()
+            .includes(reBookingEmailFilter.toLowerCase());
+      }
+
       // Date range
       if (reBookingFromDate) {
         matches = matches && bookingDate >= reBookingFromDate;
@@ -497,6 +550,7 @@ const Page = () => {
     userReBookingData,
     reBookingStatusFilter,
     reBookingAmountFilter,
+    reBookingEmailFilter,
     reBookingFromDate,
     reBookingToDate,
   ]);
@@ -661,6 +715,9 @@ const Page = () => {
                           setStatusFilter={setAmendmentStatusFilter}
                           amountFilter={amendmentAmountFilter}
                           setAmountFilter={setAmendmentAmountFilter}
+                          emailOptions={amendmentEmailOptions}
+                          emailFilter={amendmentEmailFilter}
+                          setEmailFilter={setAmendmentEmailFilter}
                           fromDate={amendmentFromDate}
                           setFromDate={setAmendmentFromDate}
                           toDate={amendmentToDate}
@@ -689,6 +746,9 @@ const Page = () => {
                           setStatusFilter={setReBookingStatusFilter}
                           amountFilter={reBookingAmountFilter}
                           setAmountFilter={setReBookingAmountFilter}
+                          emailOptions={reBookingEmailOptions}
+                          emailFilter={reBookingEmailFilter}
+                          setEmailFilter={setReBookingEmailFilter}
                           fromDate={reBookingFromDate}
                           setFromDate={setReBookingFromDate}
                           toDate={reBookingToDate}
@@ -717,6 +777,9 @@ const Page = () => {
                           setStatusFilter={setHotelStatusFilter}
                           amountFilter={hotelAmountFilter}
                           setAmountFilter={setHotelAmountFilter}
+                          emailOptions={hotelEmailOptions}
+                          emailFilter={hotelEmailFilter}
+                          setEmailFilter={setHotelEmailFilter}
                           fromDate={hotelFromDate}
                           setFromDate={setHotelFromDate}
                           toDate={hotelToDate}
