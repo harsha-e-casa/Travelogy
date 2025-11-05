@@ -17,6 +17,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { postData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
+import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -229,53 +230,17 @@ const BookingDetailsPage = () => {
   };
 
   const handleDownloadPDF = async () => {
+    if (!bookingDetails) {
+      console.error("No booking details available for PDF generation");
+      alert("Unable to generate PDF. Booking details are not available.");
+      return;
+    }
+    
     try {
-      const container = printRef.current;
-      if (!container) return;
-
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgWidth = 210;
-      const pageHeight = 297;
-
-      const canvas = await html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-        windowWidth: container.scrollWidth,
-        ignoreElements: (el) => el.id === "more-options", // keep hiding the button
-        onclone: (clonedDoc) => {
-          // Make print-only visible for export
-          clonedDoc.querySelectorAll(".print-only").forEach((el) => {
-            el.style.display = "block";
-          });
-          // Hide screen-only & no-print in export
-          clonedDoc
-            .querySelectorAll(".screen-only, .no-print")
-            .forEach((el) => {
-              el.style.display = "none";
-            });
-        },
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      let heightLeft = imgHeight;
-      let position = 0;
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      pdf.save(`booking-${orderBookingId}.pdf`);
-    } catch (e) {
-      console.error("Failed to generate PDF:", e);
-      setError("Failed to generate PDF.");
+      await downloadHotelBookingAsPDF(bookingDetails);
+    } catch (error) {
+      console.error("Failed to generate PDF:", error);
+      alert("Failed to generate PDF. Please try again.");
     }
   };
 
@@ -317,78 +282,17 @@ const BookingDetailsPage = () => {
     }
   };
 
- // Typing for handlePrint: This is the primary function being fixed
-  const handlePrint = async () => {
-    const container = printRef.current;
-    if (!container) return;
-
-    const logoUrl = "/assets/imgs/logo-print.png";
-
+  const handlePrint = () => {
+    if (!bookingDetails) {
+      console.error("No booking details available for printing");
+      return;
+    }
+    
     try {
-      const canvas = await html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#fff",
-        onclone: (doc) => {
-          doc.querySelectorAll(".print-only").forEach((el) => {
-            el.style.display = "block";
-          });
-          doc.querySelectorAll(".screen-only, .no-print").forEach((el) => {
-            el.style.display = "none";
-          });
-        },
-      });
-
-      const imgData = canvas.toDataURL("image/png");
-      const printWindow = window.open("", "_blank", "width=800,height=600");
-
-      if (!printWindow) return;
-
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Booking Details</title>
-            <style>
-              body { font-family: Arial; margin: 0; padding: 20px; }
-              .print-img { width: 100%; height: auto; }
-            </style>
-          </head>
-          <body>
-            <div class="print-content">
-              <img class="print-img" src="${imgData}" alt="Booking Details" />
-            </div>
-          </body>
-        </html>
-      `);
-
-      printWindow.document.close();
-
-      // Wait for all images in the print window to load before printing
-      const images = printWindow.document.images;
-      if (images.length === 0) {
-        printWindow.print();
-      } else {
-        let loaded = 0;
-        for (let img of images) {
-          // If already loaded (from cache), count it
-          if (img.complete) {
-            loaded++;
-          } else {
-            img.onload = img.onerror = () => {
-              loaded++;
-              if (loaded === images.length) {
-                setTimeout(() => printWindow.print(), 300);
-              }
-            };
-          }
-        }
-        // If all images were already loaded
-        if (loaded === images.length) {
-          setTimeout(() => printWindow.print(), 300);
-        }
-      }
+      printHotelBooking(bookingDetails);
     } catch (error) {
       console.error("Print failed:", error);
+      alert("Failed to print booking details. Please try again.");
     }
   };
 
@@ -441,14 +345,50 @@ const BookingDetailsPage = () => {
                     {confirming ? "Processing…" : "Pay Now"}
                   </button>
                 </div>
-              ) : status === "CANCELLED" ? (
-                <div className="p-6 flex justify-start items-center w-full">
-                  <img
-                    style={{ width: "50px", marginRight: "10px" }}
-                    src="/assets/imgs/tick.png"
-                    alt="tick"
-                  />
-                  <h6 className="status_text2 print_pdf1">{statusLabel}</h6>
+              ) : status === "CANCELLED" || status === "CANCELLATION_PENDING" ? (
+                <div className="p-6 flex justify-between items-center w-full">
+                  <div className="flex items-center">
+                    <img
+                      style={{ width: "50px", marginRight: "10px" }}
+                      src="/assets/imgs/tick.png"
+                      alt="tick"
+                    />
+                    <h6 className="status_text2 print_pdf1">{statusLabel}</h6>
+                  </div>
+                  <div
+                    id="more-options"
+                    className="relative inline-block text-left no-print"
+                    ref={dropdownRef}
+                  >
+                    <button
+                      className="book-now-btn ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                      onClick={() =>
+                        !confirming && setShowOptions((prev) => !prev)
+                      }
+                      aria-haspopup="true"
+                      aria-expanded={showOptions ? "true" : "false"}
+                      disabled={confirming}
+                    >
+                      More Options
+                      <DownOutlined className="ml-2 mt-1" />
+                    </button>
+                    {showOptions && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                        <button
+                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                          onClick={() => handleOptionClick("print")}
+                        >
+                          Print
+                        </button>
+                        <button
+                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                          onClick={() => handleOptionClick("pdf")}
+                        >
+                          Download as PDF
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="p-6 flex justify-between items-center w-full">

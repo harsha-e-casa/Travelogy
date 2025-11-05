@@ -24,6 +24,9 @@ const AmendmentList = ({
   setStatusFilter,
   amountFilter,
   setAmountFilter,
+  emailOptions,
+  emailFilter,
+  setEmailFilter,
   fromDate,
   setFromDate,
   toDate,
@@ -113,6 +116,24 @@ const AmendmentList = ({
     <div className="table-section">
       <div className="filters-section">
         <div className="filter-group">
+          <label className="filter-label">Email:</label>
+          <select
+            className="filter-select"
+            value={emailFilter}
+            onChange={(e) => {
+              setEmailFilter(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value="">All</option>
+            {emailOptions?.map((email) => (
+              <option key={email} value={email}>
+                {email}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="filter-group">
           <label className="filter-label">Status:</label>
           <select
             className="filter-select"
@@ -158,6 +179,7 @@ const AmendmentList = ({
         <button
           className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
           onClick={() => {
+            setEmailFilter("");
             setStatusFilter("");
             setFromDate("");
             setToDate("");
@@ -251,27 +273,26 @@ const AmendmentList = ({
             pagedBookings.map((b, idx) => (
               <tr key={b.id || idx}>
                 <td>{startIdx + idx + 1}</td>
-                <td className="px-3 py-2 border">
+                <td >
                   <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
                     {b.booking_id}
                   </Link>
                 </td>
                 <td
-                  className="px-3 py-2 border cursor-pointer text-blue-500"
                   onClick={() => handleAmendmentClick(b.amendment_id)}
                 >
                   {b.amendment_id || "--"}
                 </td>
-                <td className="px-3 py-2 border">
+                <td >
                   {b.refundable_amount || "--"}
                 </td>
-                <td className="px-3 py-2 border">
+                <td >
                   {b.type_of_amendment || "--"}
                 </td>
-                <td className="px-3 py-2 border">
+                <td >
                   {b.amendment_status || "--"}
                 </td>
-                <td className="px-3 py-2 border">{formatDateTime(b.time)}</td>
+                <td >{formatDateTime(b.time)}</td>
               </tr>
             ))
           ) : (

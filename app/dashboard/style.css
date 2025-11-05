@@ -473,8 +473,9 @@
 .filter-label {
   font-weight: 600;
   color: #374151;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   white-space: nowrap;
+  
 }
 
 .filter-input, .filter-select {
@@ -802,7 +803,7 @@
 .filter-label {
   font-weight: 500;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   min-width: fit-content;
 }
@@ -966,7 +967,7 @@
 .filter-label {
   font-weight: 500;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   min-width: fit-content;
   
@@ -1087,7 +1088,7 @@
 .filter-label {
   font-weight: 500;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   min-width: fit-content;
 }
@@ -1205,7 +1206,7 @@
 .filter-label {
   font-weight: 500;
   color: #374151;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   white-space: nowrap;
   min-width: fit-content;
 }

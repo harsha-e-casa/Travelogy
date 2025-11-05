@@ -21,6 +21,9 @@ const FlightReBookingList = ({
   setStatusFilter,
   amountFilter,
   setAmountFilter,
+  emailOptions,
+  emailFilter,
+  setEmailFilter,
   fromDate,
   setFromDate,
   toDate,
@@ -82,20 +85,24 @@ const FlightReBookingList = ({
   return (
     <div className="table-section">
       <div className="filters-section">
-        {/* <div>
-          <label className="mr-1 text-sm font-medium">Amount:</label>
-          <input
-            type="text"
-            className="border px-2 py-1 rounded"
-            placeholder="100 or 100-300"
-            value={amountFilter}
+        <div className="filter-group">
+          <label className="filter-label">Email:</label>
+          <select
+            className="filter-select"
+            value={emailFilter}
             onChange={(e) => {
-              setAmountFilter(e.target.value);
+              setEmailFilter(e.target.value);
               setPage(1);
             }}
-            style={{ width: "100px" }}
-          />
-        </div> */}
+          >
+            <option value="">All</option>
+            {emailOptions?.map((email) => (
+              <option key={email} value={email}>
+                {email}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="filter-group">
           <label className="filter-label">Status:</label>
           <select
@@ -141,6 +148,7 @@ const FlightReBookingList = ({
         <button
           className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
           onClick={() => {
+            setEmailFilter("");
             setStatusFilter("");
             setFromDate("");
             setToDate("");
