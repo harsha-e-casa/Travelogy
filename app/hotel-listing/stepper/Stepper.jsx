@@ -1031,16 +1031,17 @@ export function Step2Review({
               // Only render if there are valid guests
               if (validGuests.length === 0) return null;
 
-              // Total guest count for display
-              const totalGuestCount = allGuests.length;
+              // Get the actual room configuration for accurate guest count
+              const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
+              const totalGuestCount = (roomConfig?.numberOfAdults || 0) + (roomConfig?.numberOfChild || 0);
 
               return (
                 <div key={roomIndex} className="border-b pb-4">
                   <h4 className="font-bold text-md">
                     <div>
                       <p>
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.rc} -{" "}
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.mb}
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc} -{" "}
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
                         <span className="text-gray-500">
                           {" "}
                           ({totalGuestCount}{" "}
