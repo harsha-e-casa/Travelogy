@@ -105,8 +105,12 @@ function normalizeHotelData(raw) {
   const hotel = {
     name: hotelInfo.name || "",
     address: hotelInfo.ad?.adr || "",
+    address2: hotelInfo.ad?.adr2 || "",
+    cityTown: hotelInfo.ad?.ctn || "",
     city: hotelInfo.ad?.city?.name || "",
     country: hotelInfo.ad?.country?.name || "",
+    countryName: hotelInfo.ad?.cn || "",
+    postalCode: hotelInfo.ad?.postalCode || "",
     phone: hotelInfo.cnt?.ph || "",
     email: hotelInfo.cnt?.em || "",
     rating: hotelInfo.rt || 0,
@@ -516,6 +520,15 @@ function renderHotelHTML(vm) {
     <div class="booking-id">Booking ID: ${sanitize(vm.bookingRef)}</div>
   `;
 
+  // Calculate free cancellation date
+  let freeCancellationDate = null;
+  if (Array.isArray(vm.cancellationPolicy)) {
+    const freeCancellation = vm.cancellationPolicy.find((p) => p.am === 0);
+    if (freeCancellation?.tdt) {
+      freeCancellationDate = formatDate(freeCancellation.tdt);
+    }
+  }
+
   // Hotel Header
   const hotelHeader = `
     <div class="hotel-header">
@@ -527,10 +540,15 @@ function renderHotelHTML(vm) {
             : ""
         }
       </div>
-      <div class="hotel-address">${sanitize(vm.hotel.address)}</div>
-      <div class="hotel-address">${sanitize(vm.hotel.city)}${
-    vm.hotel.country ? `, ${sanitize(vm.hotel.country)}` : ""
-  } -</div>
+      <div class="hotel-address">
+        ${sanitize(vm.hotel.address)}${vm.hotel.address ? '<br/>' : ''}
+        ${vm.hotel.address2 ? sanitize(vm.hotel.address2) + ', ' : ''}${vm.hotel.cityTown ? sanitize(vm.hotel.cityTown) + ', ' : ''}${vm.hotel.countryName ? sanitize(vm.hotel.countryName) : ''}${vm.hotel.postalCode ? ' - Postal code: ' + sanitize(vm.hotel.postalCode) : ''}
+      </div>
+      ${freeCancellationDate ? `
+        <div style="color: #1d4ed8; font-weight: 600; margin-top: 8px; font-size: 13px;">
+          Last Cancellation Date: ${freeCancellationDate}
+        </div>
+      ` : ''}
     </div>
   `;
 
