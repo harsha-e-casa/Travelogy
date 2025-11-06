@@ -510,7 +510,7 @@ export function Step1TravellerDetails({
           <h6 className="text-sm font-bold">
             Guest Details
             <span className="text-xs text-red-600">
-              (Enter all guest names)
+              (Enter the Lead Name)
             </span>
           </h6>
           {hotelReviewData?.query?.roomInfo?.map((room, roomIndex) => {
@@ -731,7 +731,7 @@ export function Step1TravellerDetails({
                         }
                       }}
                     >
-                      + Add Guest(s) Details
+                      + Add Guest(s) Details(Optional)
                     </button>
                   ) : null}
                 </div>
@@ -1019,64 +1019,80 @@ export function Step2Review({
         </div>
         <h3 className="font-bold text-base">Guest Details:</h3>
         {Category !== "abook"
-          ? Object.values(formData.guests || {}).map((guest, roomIndex) => (
-              <div key={roomIndex} className="border-b pb-4">
-                <h4 className="font-bold text-md">
-                  <div>
-                    <p>
-                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.rc} -{" "}
-                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.mb}
-                      <span className="text-gray-500">
-                        {" "}
-                        ({guest.extraGuests?.length + 1}{" "}
-                        {guest.extraGuests?.length + 1 === 1
-                          ? "Guest"
-                          : "Guests"}
-                        )
-                      </span>
-                    </p>
-                  </div>
-                </h4>
-                <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                <thead className="bg-blue-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b">
-                    <td className="px-4 py-2 text-sm text-gray-800">1.</td>
-                    <td className="px-4 py-2 text-sm text-gray-800">{guest.title}</td>
-                    <td className="px-4 py-2 text-sm text-gray-800">{guest.firstName}</td>
-                    <td className="px-4 py-2 text-sm text-gray-800">{guest.lastName}</td>
-                  </tr>
-                  {guest.extraGuests?.map((extraGuest, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="px-4 py-2 text-sm text-gray-700">{index + 2}.</td>
-                      <td className="px-4 py-2 text-sm text-gray-700">{extraGuest.title}</td>
-                      <td className="px-4 py-2 text-sm text-gray-700">{extraGuest.firstName}</td>
-                      <td className="px-4 py-2 text-sm text-gray-700">{extraGuest.lastName}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>        
-              </div>    
-              ))
+          ? Object.values(formData.guests || {}).map((guest, roomIndex) => {
+              // Filter valid guests (lead + extra guests with valid data)
+              const allGuests = [guest, ...(guest.extraGuests || [])];
+              const validGuests = allGuests.filter((g) => {
+                const firstName = g?.firstName?.trim() || "";
+                const lastName = g?.lastName?.trim() || "";
+                return firstName && lastName;
+              });
+
+              // Only render if there are valid guests
+              if (validGuests.length === 0) return null;
+
+              // Total guest count for display
+              const totalGuestCount = allGuests.length;
+
+              return (
+                <div key={roomIndex} className="border-b pb-4">
+                  <h4 className="font-bold text-md">
+                    <div>
+                      <p>
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.rc} -{" "}
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[0]?.mb}
+                        <span className="text-gray-500">
+                          {" "}
+                          ({totalGuestCount}{" "}
+                          {totalGuestCount === 1 ? "Guest" : "Guests"})
+                        </span>
+                      </p>
+                    </div>
+                  </h4>
+                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                    <thead className="bg-blue-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {validGuests.map((validGuest, index) => (
+                        <tr key={index} className="border-b">
+                          <td className="px-4 py-2 text-sm text-gray-800">{index + 1}.</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.title}</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.firstName}</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.lastName}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })
               : hotelPassenger?.map((room, roomIndex) => {
-              // Count valid guests (excluding TBA) for display in table
-              const validGuestCount = room?.ti?.filter(
-                (passenger) => 
-                  passenger?.fN?.trim().toUpperCase() !== "TBA" && 
-                  passenger?.lN?.trim().toUpperCase() !== "TBA"
-              ).length || 0;
+              // Filter valid guests (excluding TBA and empty values)
+              const validGuests = room?.ti?.filter(
+                (passenger) => {
+                  const firstName = passenger?.fN?.trim() || "";
+                  const lastName = passenger?.lN?.trim() || "";
+                  
+                  // Filter out TBA, empty, or undefined values
+                  return (
+                    firstName && 
+                    lastName && 
+                    firstName.toUpperCase() !== "TBA" && 
+                    lastName.toUpperCase() !== "TBA"
+                  );
+                }
+              ) || [];
 
               // Only render the room section if there are valid guests
-              if (validGuestCount === 0) return null;
+              if (validGuests.length === 0) return null;
 
-              // Total guest count includes all guests (including TBA)
+              // Total guest count includes all guests (for display purposes)
               const totalGuestCount = room?.ti?.length || 0;
 
               return (
@@ -1102,23 +1118,14 @@ export function Step2Review({
                       </tr>
                     </thead>
                     <tbody>
-                      {room?.ti?.map((passenger, passengerIndex) => {
-                        // Skip rendering TBA guests but keep original numbering
-                        const isTBA = 
-                          passenger?.fN?.trim().toUpperCase() === "TBA" || 
-                          passenger?.lN?.trim().toUpperCase() === "TBA";
-                        
-                        if (isTBA) return null;
-
-                        return (
-                          <tr key={passengerIndex} className="border-b">
-                            <td className="px-4 py-2 text-sm text-gray-800">{passengerIndex + 1}.</td>
-                            <td className="px-4 py-2 text-sm text-gray-800">{passenger?.ti}</td>
-                            <td className="px-4 py-2 text-sm text-gray-800">{passenger?.fN}</td>
-                            <td className="px-4 py-2 text-sm text-gray-800">{passenger?.lN}</td>
-                          </tr>
-                        );
-                      })}
+                      {validGuests.map((passenger, index) => (
+                        <tr key={index} className="border-b">
+                          <td className="px-4 py-2 text-sm text-gray-800">{index + 1}.</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.ti}</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.fN}</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.lN}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
