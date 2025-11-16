@@ -424,7 +424,17 @@ export default function ActivitiesDetail4() {
   const rating = hotelData?.rt || 0;
   const filledStars = Math.round(rating);
   const { ln, lt } = hotelData?.gl || {};
-  const googleMapsUrl = `https://www.google.com/maps?q=${lt},${ln}`;
+  
+  // Create a more descriptive Google Maps URL with hotel name and address
+  const hotelName = hotelData?.name || "Hotel";
+  const hotelAddress = hotelData?.ad?.adr || "";
+  const hotelCity = hotelData?.ad?.city?.name || "";
+  const hotelCountry = hotelData?.ad?.country?.name || "";
+  
+  // Encode the search query for Google Maps
+  const searchQuery = encodeURIComponent(`${hotelName}, ${hotelAddress}, ${hotelCity}, ${hotelCountry}`);
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
+  
   const images = hotelData?.img || [];
   
   // Filter XXL images for display
@@ -658,7 +668,7 @@ export default function ActivitiesDetail4() {
                     >
                       <div className="cards card-body">
                         <iframe
-                          src={`https://www.google.com/maps?q=${hotelData?.gl?.lt},${hotelData?.gl?.ln}&z=15&output=embed`}
+                          src={`https://www.google.com/maps?q=${encodeURIComponent(`${hotelName}, ${hotelAddress}, ${hotelCity}`)}&ll=${hotelData?.gl?.lt},${hotelData?.gl?.ln}&z=15&output=embed`}
                           width="100%"
                           height={290}
                           style={{ border: 0 }}

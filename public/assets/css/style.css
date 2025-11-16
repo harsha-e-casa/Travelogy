@@ -19506,6 +19506,16 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   height: 40px !important;
 }
 
+.stepper_select-Mr {
+  width: 65px !important;
+  height: 40px !important;
+}
+
+.stepper_select-Master {
+  width: 90px !important;
+  height: 40px !important;
+}
+
 /* styles.css or global.css */
 .stepper-guest-row {
   display: grid !important;

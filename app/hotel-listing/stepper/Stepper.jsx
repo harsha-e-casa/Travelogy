@@ -538,7 +538,7 @@ export function Step1TravellerDetails({
                 </h4>
                 <div className="stepper-guest-row">
                   <select
-                    className="border p-2 rounded stepper_select"
+                    className="border p-2 rounded stepper_select-Mr"
                     value={formData.guests?.[roomIndex]?.title || "Mr"}
                     onChange={(e) =>
                       handleGuestInputChange(roomIndex, "title", e.target.value)
@@ -654,7 +654,11 @@ export function Step1TravellerDetails({
                       className="stepper-guest-row"
                     >
                       <select
-                        className="border p-2 rounded stepper_select"
+                        className={`border p-2 rounded ${
+                          guest.type === "children"
+                            ? "stepper_select-Master"
+                            : "stepper_select-Mr"
+                        }`}
                         value={guest.title}
                         onChange={(e) => {
                           const updated = [
