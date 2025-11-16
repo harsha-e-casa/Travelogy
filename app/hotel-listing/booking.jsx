@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { AppContext } from "@/util/AppContext";
 import { useContext } from "react";
 import Link from "next/link";
@@ -65,6 +65,13 @@ export default function BookingCard({
       numberOfChild: r?.children ?? 0,
       childAge: Array.isArray(r?.childAges) ? r.childAges : [],
     }));
+
+  // Use ref to store temporary check-in date and calculated checkout
+  const tempCheckinRef = useRef(null);
+  const tempCheckoutRef = useRef(null);
+
+  // Calculate display checkout date (either temp or actual)
+  const displayCheckoutDate = tempCheckoutRef.current || checkoutDate;
 
   return (
     <div className="p-0 bg-white space-y-4">
@@ -158,7 +165,23 @@ export default function BookingCard({
                   }}
                   setDatedep={(date) => {
                     const newDate = date ? date.format("YYYY-MM-DD") : null;
-                    setCheckinDate(newDate);
+                    const dateChanged = newDate !== checkinDate;
+                    
+                    if (dateChanged && newDate) {
+                      // Store new check-in date in ref (temporary)
+                      tempCheckinRef.current = newDate;
+                      
+                      // Calculate new checkout date (check-in + 1 day) and store in ref
+                      const newCheckoutDate = dayjs(newDate).add(1, "day").format("YYYY-MM-DD");
+                      tempCheckoutRef.current = newCheckoutDate;
+                      
+                      // Update check-in date in state
+                      setCheckinDate(newDate);
+                      
+                      // DON'T clear checkout or trigger fetch yet - wait for checkout confirmation
+                    } else {
+                      setCheckinDate(newDate);
+                    }
                     
                     // Always open checkout picker after selecting check-in
                     setOpenDateRange("checkout");
@@ -179,7 +202,7 @@ export default function BookingCard({
               <label className="text-xs text-gray-500 mb-1 block">
                 Check-out
               </label>
-              <span className="text-xs font-semibold">{checkoutDate}</span>
+              <span className="text-xs font-semibold">{displayCheckoutDate}</span>
             </button>
 
             {openDateRange === "checkout" && (
@@ -191,31 +214,53 @@ export default function BookingCard({
                   minDate={
                     checkinDate ? dayjs(checkinDate) : dayjs()
                   }
-                  valueDate={checkoutDate ? dayjs(checkoutDate) : null}
+                  valueDate={displayCheckoutDate ? dayjs(displayCheckoutDate) : null}
+                  isCheckout={true}
                   openToDateRange={() => {
-                    console.log('Date picker closing, current checkout:', checkoutDate);
-                    // When closing, if both dates exist, trigger a fetch to refresh data
-                    if (checkinDate && checkoutDate) {
-                      console.log('✅ Triggering fetch on date picker close');
-                      setTriggerFetch(prev => prev + 1);
-                    }
+                    // Just close the date picker without triggering any fetch
                     setOpenDateRange(null);
                   }}
                   setDatedep={(date) => {
-                    console.log('=== CHECKOUT DATE PICKER CALLBACK FIRED ===');
-                    console.log('Raw date object:', date);
-                    
                     const newDate = date ? date.format("YYYY-MM-DD") : null;
-                    const isSameDate = newDate === checkoutDate;
                     
                     console.log('Checkout date selected:', {
                       newDate,
                       currentCheckoutDate: checkoutDate,
-                      isSameDate,
-                      checkinDate
+                      tempCheckin: tempCheckinRef.current,
+                      tempCheckout: tempCheckoutRef.current
                     });
                     
-                    setCheckoutDate(newDate);
+                    // Check if we have a temporary check-in date from recent selection
+                    const effectiveCheckinDate = tempCheckinRef.current || checkinDate;
+                    
+                    if (newDate && effectiveCheckinDate) {
+                      console.log('Triggering fetch with:', {
+                        checkin: effectiveCheckinDate,
+                        checkout: newDate
+                      });
+                      
+                      // If we have a temp check-in, update it
+                      if (tempCheckinRef.current) {
+                        setCheckinDate(tempCheckinRef.current);
+                      }
+                      
+                      // Update the checkout date
+                      setCheckoutDate(newDate);
+                      
+                      // Always trigger fetch when user selects a checkout date
+                      setTriggerFetch(prev => {
+                        console.log('setTriggerFetch called, prev:', prev);
+                        return prev + 1;
+                      });
+                      
+                      // Clear the temp refs after processing
+                      tempCheckinRef.current = null;
+                      tempCheckoutRef.current = null;
+                    } else {
+                      // Just update checkout if no valid dates
+                      setCheckoutDate(newDate);
+                    }
+                    
                     setOpenDateRange(null);
                   }}
                 />
@@ -229,9 +274,9 @@ export default function BookingCard({
                 Total Night(s)
               </label>{" "}
               <span className="p-2 text-xs font-semibold">
-                {checkinDate && checkoutDate
+                {checkinDate && displayCheckoutDate
                   ? Math.ceil(
-                      (new Date(checkoutDate) - new Date(checkinDate)) /
+                      (new Date(displayCheckoutDate) - new Date(checkinDate)) /
                         (1000 * 60 * 60 * 24)
                     )
                   : "-"}
