@@ -1,18 +1,36 @@
-/* Custom Checkbox Styles */
 .direct-flight-checkbox {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 18px;
+  height: 18px;
   border: 2px solid #e9970038;
   border-radius: 50%;
   background-color: #e997001a;
   position: relative;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .direct-flight-checkbox:checked {
   background-color: #e9970038;
   border-color: orange;
+}
+
+.direct-flight-checkbox:checked::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  left: 15%;
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid orange;
+  border-bottom: 2px solid orange;
+  transform: rotate(-45deg);
+  transform-origin: center center;
+}
+
+.direct-flight-checkbox:hover {
+  border-color: #e99700;
+  background-color: #e9970038;
 }

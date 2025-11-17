@@ -23,6 +23,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/holiday/page.tsx", "app/hotel-listing/[id]/page.jsx", "app/hotel-listing/[id]/Untitled-1.jsx", "util/HotelApi.js", "components/searchEngine/CityListSearch.jsx", "app/hotel-listing/stepper/SessionTimer.jsx", "app/hotel-listing/stepper/StepperPage.jsx", "components/searchEngine/AppDateRage.jsx", "components/searchEngine/AppDateRange.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/holiday/page.tsx", "app/hotel-listing/[id]/page.jsx", "app/hotel-listing/[id]/Untitled-1.jsx", "util/HotelApi.js", "components/searchEngine/CityListSearch.jsx", "app/hotel-listing/stepper/SessionTimer.jsx", "app/hotel-listing/stepper/StepperPage.jsx", "components/searchEngine/AppDateRage.jsx", "components/searchEngine/AppDateRange.jsx", "app/api/login/route.js", "app/api/barcode/pdf417/route.js", "app/api/barcode/pdf417/route.js", "app/api/barcode/pdf417/route.jx", "app/api/barcode/pdf417/route.js", "app/api/barcode/pdf417/route.js"],
   "exclude": ["node_modules"]
 }

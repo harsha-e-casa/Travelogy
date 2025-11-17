@@ -462,9 +462,11 @@ function sumObjectKeys(obj, keys) {
 function extractFees(raw) {
   const air = raw?.itemInfos?.AIR;
   const topFC = air?.totalPriceInfo?.totalFareDetail?.fC || {};
+  console.log("topFC ==> ", topFC);
   const travellers = Array.isArray(air?.travellerInfos)
     ? air.travellerInfos
     : [];
+  console.log("travellers ==> ", travellers);
 
   // Common keys (observed or typical) for ancillary fees in different APIs
   const KEYSETS = {
@@ -475,35 +477,40 @@ function extractFees(raw) {
     reissue: ["afs"], // Reissue fee
   };
 
-  // Sum from top
-  const topMeals = sumObjectKeys(topFC, KEYSETS.meal);
-  const topSeats = sumObjectKeys(topFC, KEYSETS.seat);
-  const topBaggage = sumObjectKeys(topFC, KEYSETS.baggage);
-  const topOldAnc = sumObjectKeys(topFC, KEYSETS.oldAncillary);
-  const topReissue = sumObjectKeys(topFC, KEYSETS.reissue);
+  const topOldAnc =
+    raw?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.AFS;
+  const topReissue =
+    raw?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.RSSR;
 
   // Sum from each traveller’s fd.fC if present
-  let trMeals = 0,
-    trSeats = 0,
-    trBaggage = 0,
-    trOldAnc = 0,
-    trReissue = 0;
+  let totalMeal = 0,
+    totalSeat = 0,
+    totalBaggage = 0;
   for (const t of travellers) {
-    const fc = t?.fd?.fC || {};
-    trMeals += sumObjectKeys(fc, KEYSETS.meal);
-    trSeats += sumObjectKeys(fc, KEYSETS.seat);
-    trBaggage += sumObjectKeys(fc, KEYSETS.baggage);
-    trOldAnc += sumObjectKeys(fc, KEYSETS.oldAncillary);
-    trReissue += sumObjectKeys(fc, KEYSETS.reissue);
+    const ssrMeals = t?.ssrMealInfos;
+    const ssrSeats = t?.ssrSeatInfos;
+    const ssrBaggages = t?.ssrBaggageInfos;
+    totalMeal += sumSSRAmounts(ssrMeals);
+    totalSeat += sumSSRAmounts(ssrSeats);
+    totalBaggage += sumSSRAmounts(ssrBaggages);
   }
 
   return {
-    mealFee: topMeals || trMeals || 0,
-    seatFee: topSeats || trSeats || 0,
-    baggageFee: topBaggage || trBaggage || 0,
-    oldAncillary: topOldAnc || trOldAnc || 0, // rssr
-    reissueFee: topReissue || trReissue || 0, // afs
+    mealFee: totalMeal || 0,
+    seatFee: totalSeat || 0,
+    baggageFee: totalBaggage || 0,
+    oldAncillary: topOldAnc || 0, // rssr
+    reissueFee: topReissue || 0, // afs
   };
+}
+
+function sumSSRAmounts(ssrObj) {
+  if (!ssrObj || typeof ssrObj !== "object") return 0;
+
+  return Object.values(ssrObj).reduce((sum, item) => {
+    const amt = Number(item?.amount) || 0;
+    return sum + amt;
+  }, 0);
 }
 
 export function printTicket(raw) {
@@ -1022,13 +1029,6 @@ function renderTicketHTML(vm) {
           <img src="${seg.barcodeUrl}"
                alt="PDF417 Barcode"
                style="background:#fff;padding:8px;width:294px;height:99px;border:1px solid #E5E7EB;" />
-          <div class="small muted" style="margin-top:2px;">
-            ${sanitize(seg.fromCode)} → ${sanitize(seg.toCode)} | ${sanitize(
-            seg.airlineCode
-          )} ${sanitize(digitsOnly(seg.flightNo))} | PNR: ${sanitize(
-            seg.pnr || "-"
-          )}
-          </div>
         </td>
       </tr>
     `;
@@ -1128,7 +1128,7 @@ function renderTicketHTML(vm) {
         }
 
         ${
-          vm.totals.oldAncillary
+          vm.totals.oldAncillary != 0
             ? `
         <tr>
           <th>Old Ancillary Amount</th>
@@ -1138,7 +1138,7 @@ function renderTicketHTML(vm) {
         }
 
         ${
-          vm.totals.reissueFee
+          vm.totals.reissueFee != 0
             ? `
         <tr>
           <th>Reissue Fees</th>

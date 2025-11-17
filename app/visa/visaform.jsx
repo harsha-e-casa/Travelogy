@@ -7,6 +7,8 @@ const VisaForm = () => {
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
   const [isOtherSelected, setIsOtherSelected] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({
     fullName: "",
@@ -89,13 +91,23 @@ const VisaForm = () => {
       },
     };
 
+    setLoading(true);
+
     try {
       const response = await postData("/travelogy/common/save", reqData, {
         Authorization: `Bearer ${token}`,
       });
       console.log("responseresponse ==> ", response);
       if (response.success) {
-        message.success("Data saved successfully!");
+        // message.success("Data saved successfully!");
+        setSuccessMessage(
+          "Your request has been successfully submitted, we will get back to you soon."
+        );
+
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 5000);
+
         form.reset();
       } else {
         message.error("Failed to save data.");
@@ -103,225 +115,246 @@ const VisaForm = () => {
     } catch (err) {
       console.error("Save failed:", err);
     }
+
+    setLoading(false);
+  };
+
+  const handleClearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
   return (
-    <div className="visa_form max-w-2xl mx-auto relative z-10 p-9">
+    <div className="visa_form max-w-2xl mx-auto relative z-10 p-9 rounded-xl">
+      {successMessage && (
+        <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg text-center text-sm font-medium">
+          {successMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
+        {/* Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="form-item pt-8">
+          {/* Full Name */}
+          <div className="form-item">
             <label
-              className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="name"
+              className="font-semibold flex items-center gap-2 text-foreground"
             >
               Full Name
             </label>
+
             <input
               type="text"
               id="name"
               name="name"
               placeholder="Enter your full name"
               className="visa_input_fields flex text-left"
+              onFocus={() => handleClearError("fullName")}
             />
+
             {errors.fullName && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.fullName}
               </span>
             )}
           </div>
-          <div className="form-item pt-8">
+
+          {/* Mobile Number */}
+          <div className="form-item">
             <label
-              className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="mobile"
+              className="font-semibold flex items-center gap-2 text-foreground"
             >
               Mobile Number
             </label>
+
             <input
               type="text"
               id="mobile"
               name="mobile"
               placeholder="Enter your mobile number"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
               maxLength={10}
               inputMode="numeric"
               pattern="[0-9]*"
               onInput={(e) => {
                 e.target.value = e.target.value.replace(/\D/g, "");
               }}
+              onFocus={() => handleClearError("mobile")}
             />
 
             {errors.mobile && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.mobile}
               </span>
             )}
           </div>
         </div>
+
+        {/* Row 2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Email */}
           <div className="form-item pt-8">
             <label
-              className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="email"
+              className="font-semibold flex items-center gap-2 text-foreground"
             >
               Email Address
             </label>
+
             <input
               type="email"
               id="email"
               name="email"
               placeholder="Enter your email address"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("email")}
             />
+
             {errors.email && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.email}
               </span>
             )}
           </div>
+
+          {/* Traveling Destination */}
           <div className="form-item pt-8">
             <label
-              className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="travelingDestination"
+              className="font-semibold flex items-center gap-2 text-foreground"
             >
               Traveling Destination
             </label>
+
             <input
               type="text"
               id="travelingDestination"
               name="travelingDestination"
               placeholder="Where are you traveling to?"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("travelingDestination")}
             />
+
             {errors.travelingDestination && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.travelingDestination}
               </span>
             )}
           </div>
         </div>
+
+        {/* Row 3 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="form-item pt-8">
             <label
-              className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="country"
+              className="font-semibold flex items-center gap-2 text-foreground"
             >
               For Which Country
             </label>
+
             <input
               type="text"
               id="country"
               name="country"
               placeholder="Country for visa application"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("country")}
             />
+
             {errors.country && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.country}
               </span>
             )}
           </div>
         </div>
 
+        {/* Purpose of Travel */}
         <div className="form-item pt-8">
           <label
-            className="font-semibold flex items-center gap-2 text-foreground"
             htmlFor="purposeOfTravel"
+            className="font-semibold flex items-center gap-2 text-foreground"
           >
             Purpose of Travel
           </label>
 
           <div className="custom-radio-group">
             <div
-              className="pt-8 grid grid-cols-2 gap-4"
+              className="pt-2 grid grid-cols-4 gap-2"
+              style={{
+                width: "90%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+              }}
               role="radiogroup"
               aria-invalid={Boolean(errors.purposeOfTravel)}
             >
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="leisure"
-                  name="purposeOfTravel"
-                  value="leisure"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">Leisure</span>
-              </label>
-
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="business"
-                  name="purposeOfTravel"
-                  value="business"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">Business</span>
-              </label>
-
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="student"
-                  name="purposeOfTravel"
-                  value="student"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">Student</span>
-              </label>
-
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="other"
-                  name="purposeOfTravel"
-                  value="other"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">Other</span>
-              </label>
+              {["leisure", "business", "student", "other"].map((option) => (
+                <label
+                  key={option}
+                  className="custom-radio-button flex items-center gap-2"
+                >
+                  <input
+                    type="radio"
+                    id={option}
+                    name="purposeOfTravel"
+                    value={option}
+                    className="radio-input w-4 h-4"
+                    onChange={handleRadioChange}
+                    onFocus={() => handleClearError("purposeOfTravel")}
+                  />
+                  <span className="radio_label text-sm capitalize">
+                    {option}
+                  </span>
+                </label>
+              ))}
             </div>
 
             {errors.purposeOfTravel && (
-              <p className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <p className="flex items-start text-red-500 text-xs mt-1">
                 {errors.purposeOfTravel}
               </p>
             )}
           </div>
         </div>
 
-        {/* Only show this div when 'Other' is selected */}
+        {/* Other Purpose Textarea */}
         {isOtherSelected && (
           <div className="form-item pt-8">
             <label
-              className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="otherPurpose"
+              className="font-semibold flex items-center gap-2 text-foreground"
             >
               Please specify the purpose
             </label>
+
             <textarea
               id="otherPurpose"
               name="otherPurpose"
               placeholder="Please describe your purpose of travel"
-              className={`h-12 transition-all duration-300 hover:!border-primary/50 focus:!ring-2 focus:!ring-primary/20 ${
+              className={`visa_input_fields h-12 w-full p-2 rounded-lg border transition-all duration-300 hover:border-primary/50 focus:ring-2 focus:ring-primary/20 ${
                 errors.otherPurpose ? "border-red-500" : ""
               }`}
               aria-invalid={Boolean(errors.otherPurpose)}
+              onFocus={() => handleClearError("otherPurpose")}
             />
+
             {errors.otherPurpose && (
-              <p className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <p className="flex items-start text-red-500 text-xs mt-1">
                 {errors.otherPurpose}
               </p>
             )}
           </div>
         )}
 
-        <div className="form-item pt-12">
+        {/* Submit Button */}
+        <div className="form-item pt-6">
           <button type="submit" className="book-now-btn">
-            Submit Visa Application
+            {loading ? "Submitting ..." : "Submit Visa Application"}
           </button>
         </div>
       </form>

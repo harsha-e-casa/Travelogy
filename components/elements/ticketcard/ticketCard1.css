@@ -144,3 +144,7 @@
         width:135% !important;
       }
 }
+
+.br-10-imp {
+    border-radius: 10px !important;
+}
