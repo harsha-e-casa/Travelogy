@@ -93,6 +93,12 @@ export default function HomeContent(): JSX.Element {
     return Object.keys(err).length === 0;
   };
 
+  const handleClearError = (field: keyof FormErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validate()) return;
@@ -235,13 +241,251 @@ export default function HomeContent(): JSX.Element {
       </section>
 
       {showModal && (
+        // <div
+        //   style={{
+        //     position: "fixed",
+        //     top: 0,
+        //     left: 0,
+        //     right: 0,
+        //     bottom: 0,
+        //     background: "rgba(0,0,0,0.5)",
+        //     backdropFilter: "blur(10px)",
+        //     display: "flex",
+        //     alignItems: "center",
+        //     justifyContent: "center",
+        //     zIndex: 1000,
+        //     padding: 16,
+        //     paddingTop: 20,
+        //   }}
+        //   onClick={() => {
+        //     setShowModal(false);
+        //     setIsSubmitted(false);
+        //     setErrors({});
+        //   }}
+        // >
+        //   <div
+        //     style={{
+        //       background: "rgba(255,255,255,0.1)",
+        //       backdropFilter: "blur(20px)",
+        //       borderRadius: "20px",
+        //       padding: "28px",
+        //       width: "max(380px, 36vw)",
+        //       maxWidth: 640,
+        //       border: "1px solid rgba(255,255,255,0.2)",
+        //       position: "relative",
+        //     }}
+        //     onClick={(e) => e.stopPropagation()}
+        //   >
+        //     {/* Close Button */}
+        //     <button
+        //       onClick={() => {
+        //         setShowModal(false);
+        //         setIsSubmitted(false);
+        //         setErrors({});
+        //       }}
+        //       style={{
+        //         position: "absolute",
+        //         top: 12,
+        //         right: 12,
+        //         background: "none",
+        //         border: "none",
+        //         color: "white",
+        //         fontSize: "24px",
+        //         cursor: "pointer",
+        //         lineHeight: 1,
+        //       }}
+        //       aria-label="Close"
+        //     >
+        //       ×
+        //     </button>
+
+        //     {/* Modal Content */}
+        //     <div style={{ color: "white" }}>
+        //       {!isSubmitted ? (
+        //         <form onSubmit={handleSubmit}>
+        //           <h3
+        //             style={{
+        //               fontSize: 18,
+        //               fontWeight: "bold",
+        //             }}
+        //           >
+        //             Become a Partner
+        //           </h3>
+        //           <p style={{ marginBottom: 20, fontSize: 14, opacity: 0.9 }}>
+        //             Share a few details and we’ll reach out with next steps.
+        //           </p>
+
+        //           {/* Company Name */}
+        //           <div style={{ marginBottom: 14 }}>
+        //             <input
+        //               type="text"
+        //               placeholder="Company Name *"
+        //               value={form.companyName}
+        //               onChange={(e) => setField("companyName", e.target.value)}
+        //               style={inputStyle(Boolean(errors.companyName))}
+        //             />
+        //             {errors.companyName && errorText(errors.companyName)}
+        //           </div>
+
+        //           {/* Contact Person & Contact Number */}
+        //           <div
+        //             style={{
+        //               display: "grid",
+        //               gridTemplateColumns: "1fr 1fr",
+        //               gap: 12,
+        //             }}
+        //           >
+        //             <div>
+        //               <input
+        //                 type="text"
+        //                 placeholder="Contact Person *"
+        //                 value={form.contactPerson}
+        //                 onChange={(e) =>
+        //                   setField("contactPerson", e.target.value)
+        //                 }
+        //                 style={inputStyle(Boolean(errors.contactPerson))}
+        //               />
+        //               {errors.contactPerson && errorText(errors.contactPerson)}
+        //             </div>
+        //             <div>
+        //               <input
+        //                 type="tel"
+        //                 placeholder="Contact Number (10 digits) *"
+        //                 value={form.contactNumber}
+        //                 onInput={onlyDigits}
+        //                 maxLength={10}
+        //                 inputMode="numeric"
+        //                 onChange={(e) =>
+        //                   setField("contactNumber", e.target.value)
+        //                 }
+        //                 style={inputStyle(Boolean(errors.contactNumber))}
+        //               />
+        //               {errors.contactNumber && errorText(errors.contactNumber)}
+        //             </div>
+        //           </div>
+
+        //           {/* Email & Secondary Number */}
+        //           <div
+        //             style={{
+        //               display: "grid",
+        //               gridTemplateColumns: "1fr 1fr",
+        //               gap: 12,
+        //               marginTop: 14,
+        //             }}
+        //           >
+        //             <div>
+        //               <input
+        //                 type="email"
+        //                 placeholder="Official Email ID *"
+        //                 value={form.email}
+        //                 onChange={(e) => setField("email", e.target.value)}
+        //                 style={inputStyle(Boolean(errors.email))}
+        //               />
+        //               {errors.email && errorText(errors.email)}
+        //             </div>
+        //             <div>
+        //               <input
+        //                 type="tel"
+        //                 placeholder="Secondary Contact Number (optional)"
+        //                 value={form.secondaryNumber}
+        //                 onInput={onlyDigits}
+        //                 maxLength={10}
+        //                 inputMode="numeric"
+        //                 onChange={(e) =>
+        //                   setField("secondaryNumber", e.target.value)
+        //                 }
+        //                 style={inputStyle(Boolean(errors.secondaryNumber))}
+        //               />
+        //               {errors.secondaryNumber &&
+        //                 errorText(errors.secondaryNumber)}
+        //             </div>
+        //           </div>
+
+        //           {/* Address */}
+        //           {/* Description */}
+        //           <div
+        //             style={{
+        //               display: "grid",
+        //               gridTemplateColumns: "1fr 1fr",
+        //               gap: 12,
+        //             }}
+        //           >
+        //             <div style={{ marginTop: 14 }}>
+        //               <textarea
+        //                 placeholder="Company Address *"
+        //                 rows={1}
+        //                 value={form.address}
+        //                 onChange={(e) => setField("address", e.target.value)}
+        //                 style={{
+        //                   ...textareaStyle(Boolean(errors.address)),
+        //                   minHeight: "60px",
+        //                 }}
+        //               />
+        //               {errors.address && errorText(errors.address)}
+        //             </div>
+        //             <div style={{ marginTop: 14 }}>
+        //               <textarea
+        //                 placeholder="Descriptions *"
+        //                 rows={1}
+        //                 value={form.description}
+        //                 onChange={(e) =>
+        //                   setField("description", e.target.value)
+        //                 }
+        //                 style={{
+        //                   ...textareaStyle(Boolean(errors.description)),
+        //                   minHeight: "60px",
+        //                 }}
+        //               />
+        //               {errors.description && errorText(errors.description)}
+        //             </div>
+        //           </div>
+
+        //           <button
+        //             type="submit"
+        //             disabled={loading}
+        //             style={{
+        //               width: "100%",
+        //               padding: "12px",
+        //               marginTop: 18,
+        //               background: "#000",
+        //               color: "orange",
+        //               border: "none",
+        //               borderRadius: "25px",
+        //               fontSize: "16px",
+        //               cursor: loading ? "not-allowed" : "pointer",
+        //               display: "flex",
+        //               alignItems: "center",
+        //               justifyContent: "center",
+        //               gap: "8px",
+        //               opacity: loading ? 0.7 : 1,
+        //             }}
+        //           >
+        //             {loading ? "Submitting..." : "Submit Application"}
+        //           </button>
+        //         </form>
+        //       ) : (
+        //         <div style={{ textAlign: "center", padding: "40px 0" }}>
+        //           <h3
+        //             style={{
+        //               fontSize: "24px",
+        //               fontWeight: "bold",
+        //               marginBottom: "10px",
+        //             }}
+        //           >
+        //             Thanks!
+        //           </h3>
+        //           <p style={{ fontSize: "16px", opacity: 0.9 }}>
+        //             We will contact you soon.
+        //           </p>
+        //         </div>
+        //       )}
+        //     </div>
+        //   </div>
+        // </div>
         <div
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
             background: "rgba(0,0,0,0.5)",
             backdropFilter: "blur(10px)",
             display: "flex",
@@ -249,7 +493,6 @@ export default function HomeContent(): JSX.Element {
             justifyContent: "center",
             zIndex: 1000,
             padding: 16,
-            paddingTop: 20,
           }}
           onClick={() => {
             setShowModal(false);
@@ -270,7 +513,7 @@ export default function HomeContent(): JSX.Element {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close Button */}
+            {/* Close */}
             <button
               onClick={() => {
                 setShowModal(false);
@@ -284,26 +527,18 @@ export default function HomeContent(): JSX.Element {
                 background: "none",
                 border: "none",
                 color: "white",
-                fontSize: "24px",
+                fontSize: 24,
                 cursor: "pointer",
-                lineHeight: 1,
               }}
-              aria-label="Close"
             >
               ×
             </button>
 
-            {/* Modal Content */}
+            {/* CONTENT */}
             <div style={{ color: "white" }}>
               {!isSubmitted ? (
                 <form onSubmit={handleSubmit}>
-                  <h3
-                    style={{
-                      marginBottom: 8,
-                      fontSize: 18,
-                      fontWeight: "bold",
-                    }}
-                  >
+                  <h3 style={{ fontSize: 18, fontWeight: "bold" }}>
                     Become a Partner
                   </h3>
                   <p style={{ marginBottom: 20, fontSize: 14, opacity: 0.9 }}>
@@ -317,12 +552,13 @@ export default function HomeContent(): JSX.Element {
                       placeholder="Company Name *"
                       value={form.companyName}
                       onChange={(e) => setField("companyName", e.target.value)}
+                      onFocus={() => handleClearError("companyName")}
                       style={inputStyle(Boolean(errors.companyName))}
                     />
                     {errors.companyName && errorText(errors.companyName)}
                   </div>
 
-                  {/* Contact Person & Contact Number */}
+                  {/* Contact Person & Number */}
                   <div
                     style={{
                       display: "grid",
@@ -338,6 +574,7 @@ export default function HomeContent(): JSX.Element {
                         onChange={(e) =>
                           setField("contactPerson", e.target.value)
                         }
+                        onFocus={() => handleClearError("contactPerson")}
                         style={inputStyle(Boolean(errors.contactPerson))}
                       />
                       {errors.contactPerson && errorText(errors.contactPerson)}
@@ -353,6 +590,7 @@ export default function HomeContent(): JSX.Element {
                         onChange={(e) =>
                           setField("contactNumber", e.target.value)
                         }
+                        onFocus={() => handleClearError("contactNumber")}
                         style={inputStyle(Boolean(errors.contactNumber))}
                       />
                       {errors.contactNumber && errorText(errors.contactNumber)}
@@ -374,10 +612,12 @@ export default function HomeContent(): JSX.Element {
                         placeholder="Official Email ID *"
                         value={form.email}
                         onChange={(e) => setField("email", e.target.value)}
+                        onFocus={() => handleClearError("email")}
                         style={inputStyle(Boolean(errors.email))}
                       />
                       {errors.email && errorText(errors.email)}
                     </div>
+
                     <div>
                       <input
                         type="tel"
@@ -389,6 +629,7 @@ export default function HomeContent(): JSX.Element {
                         onChange={(e) =>
                           setField("secondaryNumber", e.target.value)
                         }
+                        onFocus={() => handleClearError("secondaryNumber")}
                         style={inputStyle(Boolean(errors.secondaryNumber))}
                       />
                       {errors.secondaryNumber &&
@@ -396,54 +637,59 @@ export default function HomeContent(): JSX.Element {
                     </div>
                   </div>
 
-                  {/* Address */}
-                  <div style={{ marginTop: 14 }}>
-                    <textarea
-                      placeholder="Company Address *"
-                      rows={1}
-                      value={form.address}
-                      onChange={(e) => setField("address", e.target.value)}
-                      style={{
-                        ...textareaStyle(Boolean(errors.address)),
-                        minHeight: "60px",
-                      }}
-                    />
-                    {errors.address && errorText(errors.address)}
+                  {/* Address & Description */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 12,
+                    }}
+                  >
+                    <div style={{ marginTop: 14 }}>
+                      <textarea
+                        placeholder="Company Address *"
+                        value={form.address}
+                        onChange={(e) => setField("address", e.target.value)}
+                        onFocus={() => handleClearError("address")}
+                        style={{
+                          ...textareaStyle(Boolean(errors.address)),
+                          minHeight: 60,
+                        }}
+                      />
+                      {errors.address && errorText(errors.address)}
+                    </div>
+
+                    <div style={{ marginTop: 14 }}>
+                      <textarea
+                        placeholder="Descriptions *"
+                        value={form.description}
+                        onChange={(e) =>
+                          setField("description", e.target.value)
+                        }
+                        onFocus={() => handleClearError("description")}
+                        style={{
+                          ...textareaStyle(Boolean(errors.description)),
+                          minHeight: 60,
+                        }}
+                      />
+                      {errors.description && errorText(errors.description)}
+                    </div>
                   </div>
 
-                  {/* Description */}
-                  <div style={{ marginTop: 14 }}>
-                    <textarea
-                      placeholder="Descriptions *"
-                      rows={1}
-                      value={form.description}
-                      onChange={(e) => setField("description", e.target.value)}
-                      style={{
-                        ...textareaStyle(Boolean(errors.description)),
-                        minHeight: "60px",
-                      }}
-                    />
-                    {errors.description && errorText(errors.description)}
-                  </div>
-
+                  {/* Submit */}
                   <button
                     type="submit"
                     disabled={loading}
                     style={{
                       width: "100%",
-                      padding: "12px",
+                      padding: 12,
                       marginTop: 18,
                       background: "#000",
                       color: "orange",
                       border: "none",
-                      borderRadius: "25px",
-                      fontSize: "16px",
+                      borderRadius: 25,
+                      fontSize: 16,
                       cursor: loading ? "not-allowed" : "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                      opacity: loading ? 0.7 : 1,
                     }}
                   >
                     {loading ? "Submitting..." : "Submit Application"}
@@ -453,14 +699,14 @@ export default function HomeContent(): JSX.Element {
                 <div style={{ textAlign: "center", padding: "40px 0" }}>
                   <h3
                     style={{
-                      fontSize: "24px",
+                      fontSize: 24,
                       fontWeight: "bold",
-                      marginBottom: "10px",
+                      marginBottom: 10,
                     }}
                   >
                     Thanks!
                   </h3>
-                  <p style={{ fontSize: "16px", opacity: 0.9 }}>
+                  <p style={{ fontSize: 16, opacity: 0.9 }}>
                     We will contact you soon.
                   </p>
                 </div>

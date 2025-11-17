@@ -628,7 +628,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
             bottom: "0px",
             zIndex: 10,
             background: "#1a1a2e",
-            width: "100%",
+            width: "100%"
           }}
         >
           <div className="row">

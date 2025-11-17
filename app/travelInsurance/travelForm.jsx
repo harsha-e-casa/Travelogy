@@ -6,6 +6,8 @@ const TravelForm = () => {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const [isOtherSelected, setIsOtherSelected] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [errors, setErrors] = useState({
     durationOfStay: "",
@@ -59,6 +61,8 @@ const TravelForm = () => {
     // (optional) stricter mobile rule: 10 digits only
     // if (!/^\d{10}$/.test(mobile)) newErrors.mobile = "Enter a valid 10-digit mobile number.";
 
+    console.log("errrrrrrrrrrrrrr ", newErrors);
+
     setErrors(newErrors);
     if (Object.keys(newErrors).length) return;
 
@@ -81,12 +85,20 @@ const TravelForm = () => {
       },
     };
 
+    setLoading(true);
+
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
       const resp = await postData("/travelogy/common/save", reqData, headers);
 
       if (resp?.success) {
-        message.success("Successfully submitted your query");
+        setSuccessMessage(
+          "Your request has been successfully submitted, we will get back to you soon."
+        );
+
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 5000);
         form.reset();
         setIsOtherSelected(false);
         setErrors({});
@@ -96,60 +108,86 @@ const TravelForm = () => {
     } catch (err) {
       message.error("Something went wrong while saving.");
     }
+
+    setLoading(false);
+  };
+
+  const handleClearError = (field) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
   return (
-    <div className="visa_form max-w-2xl mx-auto relative z-10 p-9">
+    <div className="visa_form max-w-2xl mx-auto relative z-10 p-9 rounded-xl">
+      {successMessage && (
+        <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg text-center text-sm font-medium">
+          {successMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
+        {/* Row 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="form-item pt-8">
+          {/* Full Name */}
+          <div className="form-item">
             <label
               className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="name"
             >
               Full Name
             </label>
+
             <input
               type="text"
               id="name"
               name="name"
               placeholder="Enter your full name"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("fullName")}
             />
+
             {errors.fullName && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.fullName}
               </span>
             )}
           </div>
-          <div className="form-item pt-8">
+
+          {/* Mobile */}
+          <div className="form-item">
             <label
               className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="mobile"
             >
               Mobile Number
             </label>
+
             <input
               type="text"
               id="mobile"
               name="mobile"
               placeholder="Enter your mobile number"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
               maxLength={10}
               inputMode="numeric"
               pattern="[0-9]*"
               onInput={(e) => {
                 e.target.value = e.target.value.replace(/\D/g, "");
               }}
+              onFocus={() => handleClearError("mobile")}
             />
+
             {errors.mobile && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.mobile}
               </span>
             )}
           </div>
         </div>
+
+        {/* Row 2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Email */}
           <div className="form-item pt-8">
             <label
               className="font-semibold flex items-center gap-2 text-foreground"
@@ -157,19 +195,24 @@ const TravelForm = () => {
             >
               Email Address
             </label>
+
             <input
               type="email"
               id="email"
               name="email"
               placeholder="Enter your email address"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("email")}
             />
+
             {errors.email && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.email}
               </span>
             )}
           </div>
+
+          {/* Duration of Stay */}
           <div className="form-item pt-8">
             <label
               className="font-semibold flex items-center gap-2 text-foreground"
@@ -177,20 +220,25 @@ const TravelForm = () => {
             >
               Duration of stay
             </label>
+
             <input
               type="text"
               id="durationOfStay"
               name="durationOfStay"
               placeholder="Enter duration of stay"
-              className="visa_input_fields flex text-left"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("durationOfStay")}
             />
+
             {errors.durationOfStay && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.durationOfStay}
               </span>
             )}
           </div>
         </div>
+
+        {/* Policy Type */}
         <div className="form-item pt-8">
           <label
             className="font-semibold flex items-center gap-2 text-foreground"
@@ -198,8 +246,10 @@ const TravelForm = () => {
           >
             Policy Type
           </label>
+
           <div className="custom-radio-group">
-            <div className="pt-2 grid grid-cols-2 gap-4">
+            <div className="pl-20 pt-2 grid grid-cols-2 gap-4">
+              {/* Group Insurance */}
               <label className="custom-radio-button flex items-center gap-2">
                 <input
                   type="radio"
@@ -208,9 +258,12 @@ const TravelForm = () => {
                   value="grpIns"
                   className="radio-input w-4 h-4"
                   onChange={handleRadioChange}
+                  onFocus={() => handleClearError("policyType")}
                 />
                 <span className="radio_label text-sm">Group Insurance</span>
               </label>
+
+              {/* Individual */}
               <label className="custom-radio-button flex items-center gap-2">
                 <input
                   type="radio"
@@ -219,20 +272,23 @@ const TravelForm = () => {
                   value="indIns"
                   className="radio-input w-4 h-4"
                   onChange={handleRadioChange}
+                  onFocus={() => handleClearError("policyType")}
                 />
                 <span className="radio_label text-sm">
                   Individual Insurance
                 </span>
               </label>
             </div>
+
             {errors.policyType && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.policyType}
               </span>
             )}
           </div>
         </div>
 
+        {/* Insurance Coverage */}
         <div className="form-item pt-8">
           <label
             className="font-semibold flex items-center gap-2 text-foreground"
@@ -240,62 +296,48 @@ const TravelForm = () => {
           >
             Insurance Coverage
           </label>
+
           <div className="custom-radio-group">
-            <div className="pt-2 grid grid-cols-2 gap-4">
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="usd50k"
-                  name="insuranceCoverage"
-                  value="usd50k"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">USD 50k</span>
-              </label>
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="usd100k"
-                  name="insuranceCoverage"
-                  value="usd100k"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">USD 100k</span>
-              </label>
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="usd250k"
-                  name="insuranceCoverage"
-                  value="usd250k"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">USD 250k</span>
-              </label>
-              <label className="custom-radio-button flex items-center gap-2">
-                <input
-                  type="radio"
-                  id="otherCoverage"
-                  name="insuranceCoverage"
-                  value="other"
-                  className="radio-input w-4 h-4"
-                  onChange={handleRadioChange}
-                />
-                <span className="radio_label text-sm">Other</span>
-              </label>
+            <div
+              className="pt-2 grid grid-cols-4 gap-2"
+              style={{
+                width: "90%",
+                display: "flex",
+                justifyContent: "space-around",
+              }}
+            >
+              {["usd50k", "usd100k", "usd250k", "other"].map((option) => (
+                <label
+                  key={option}
+                  className="custom-radio-button flex items-center gap-2"
+                >
+                  <input
+                    type="radio"
+                    id={option}
+                    name="insuranceCoverage"
+                    value={option}
+                    className="radio-input w-4 h-4"
+                    onChange={handleRadioChange}
+                    onFocus={() => handleClearError("insuranceCoverage")}
+                  />
+                  <span className="radio_label text-sm">
+                    {option === "other"
+                      ? "Other"
+                      : option.replace("usd", "USD ")}
+                  </span>
+                </label>
+              ))}
             </div>
+
             {errors.insuranceCoverage && (
-              <span className="flex item-left form-error-space text-red-500 text-xs mt-1">
+              <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.insuranceCoverage}
               </span>
             )}
           </div>
         </div>
 
-        {/* If 'Other' is selected in Insurance Coverage */}
+        {/* Other Coverage Textarea */}
         {isOtherSelected && (
           <div className="form-item pt-8">
             <label
@@ -304,19 +346,26 @@ const TravelForm = () => {
             >
               Please specify the coverage
             </label>
+
             <textarea
               id="otherCoverageDetails"
               name="otherCoverageDetails"
               placeholder="Please describe your insurance coverage"
               className="h-12 resize-none px-3 py-2 transition-all duration-300 hover:!border-primary/50 focus:!ring-2 focus:!ring-primary/20"
+              onFocus={() => handleClearError("otherCoverageDetails")}
             />
+            {errors.otherCoverageDetails && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.otherCoverageDetails}
+              </span>
+            )}
           </div>
         )}
 
-        {/* Submit Button */}
-        <div className="form-item pt-12">
+        {/* Submit */}
+        <div className="form-item pt-6">
           <button type="submit" className="book-now-btn">
-            Submit
+            {loading ? "Submitting ..." : "Submit Travell Application"}
           </button>
         </div>
       </form>
