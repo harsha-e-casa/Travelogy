@@ -166,6 +166,7 @@ export default function BookTicket() {
   const [totalpricee, setTotalpricee] = useState<string | null>(null);
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
+  const [oldBookingId, setOldBookingId] = useState<string | null>(null);
   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
   const [bookingDetailsData, setBookingDetailsData] = useState<
     Record<string, any>
@@ -202,6 +203,7 @@ export default function BookTicket() {
     "fetchRescheduleDatafetchRescheduleData == ",
     fetchRescheduleData
   );
+  setOldBookingId(fetchRescheduleData?.searchQuery?.oldBookingId)
 
   const [numAdults, setNumAdults] = useState<number>(0);
   const [numChild, setNumChild] = useState<number>(0);
@@ -477,6 +479,10 @@ export default function BookTicket() {
     // router.push(`/tickets?${queryString}`);
     window.history.back();
   };
+
+  const redirectBookDetailsPage = () => {
+    router.push(`/BookingDetails?booking_id=${oldBookingId}`);
+  }
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -1821,6 +1827,7 @@ export default function BookTicket() {
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
+                redirBookingDetails={redirectBookDetailsPage}
               />
             </div>
           )}

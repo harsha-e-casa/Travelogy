@@ -18,17 +18,16 @@ const InsurancePage = () => {
       <Layout headerStyle={1} footerStyle={1}>
         <div className="bg-white lg:overflow-hidden">
           <div className="w-full">
-            <div className="mx-auto px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:px-0 lg:text-left lg:flex lg:items-center text-center">
-              <div className="pt-20 py-10">
-                <h1 className="mt-4 mb-1 text-1x2 tracking-tight font-extrabold text-black sm:text-6xl lg:mt-6 xl:text-6xl py-2">
-                  {/* <div className="mt-10">
-                    <SearchEngHeader active_border={active_border} />
-                  </div> */}
-                  <span className="block">
-                    Get Travel Insurance, quick and easy.
-                  </span>
-                </h1>
-                <TravelForm />
+            <div className="">
+              <div className="mx-auto px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:px-0 lg:text-left lg:flex lg:items-center text-center">
+                <div className="pb-10">
+                  <h1 className="text-1x2 tracking-tight font-extrabold text-black sm:text-6xl xl:text-6xl">
+                    <span className="block p-4">
+                      Get Travel Insurance, quick and easy.
+                    </span>
+                  </h1>
+                  <TravelForm />
+                </div>
               </div>
             </div>
 

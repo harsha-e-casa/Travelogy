@@ -52,77 +52,19 @@ export default function VisaPage() {
   return (
     <>
       <Layout headerStyle={1} footerStyle={1}>
-        <div className="pt-40 bg-white sm:pt-16 lg:pt-8 lg:pb-30 lg:overflow-hidden">
-          {/*<div className="mx-auto max-w-7xl lg:px-8">*/}
+        <div className="bg-white lg:overflow-hidden">
           <div className="w-full">
             <div className="">
-              {/*<div className="lg:grid lg:grid-cols-2 lg:gap-8">*/}
               <div className="mx-auto px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:px-0 lg:text-left lg:flex lg:items-center text-center">
-                <div className="pt-20 py-10">
-                  <a
-                    href="#"
-                    className="inline-flex items-center text-black bg-black rounded-full p-1 pr-2 sm:text-base lg:text-sm xl:text-base hover:text-gray-200"
-                  >
-                    <span className="px-3 py-0.5 text-lg font-semibold leading-5 tracking-wide bg-gradient-to-r from-teal-500 to-cyan-600 rounded-full text-black bg-white rounded-full p-1">
-                      Apply for visa
-                    </span>
-                    <span className="ml-4 text-lg text-white">
-                      Track your visa status
-                    </span>
-                    {/* Heroicon name: solid/chevron-right */}
-                    <svg
-                      className="ml-2 w-10 h-10 text-gray-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </a>
-                  <h1
-                    className="mt-4 text-1x2 tracking-tight font-extrabold
-           text-black sm:mt-5 sm:text-6xl lg:mt-6 xl:text-6xl py-2"
-                  >
-                    <span className="block">
+                <div className="pb-10">
+                  <h1 className="text-1x2 tracking-tight font-extrabold text-black sm:text-6xl xl:text-6xl">
+                    <span className="block p-4">
                       Get a tourist visa, quick and easy.
                     </span>
                   </h1>
                   <VisaForm />
-                  {/* <div className="mt-40 sm:mt-12">
-                    <form action="#" className="sm:max-w-xl sm:mx-auto lg:mx-0">
-                      <div className="sm:flex">
-                        <div className="min-w-0 flex-1">
-                          <label htmlFor="text" className="sr-only">
-                            Where To.
-                          </label>
-                          <input
-                            id="text"
-                            type="text"
-                            placeholder="Where To"
-                            autocompleted="off"
-                            className="block w-full px-4 py-3 rounded-md border__custome_sl2 text-base text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-400 focus:ring-offset-gray-900"
-                          />
-                        </div>
-                      </div>
-                    </form>
-                  </div> */}
                 </div>
               </div>
-              {/* <div className="mt-12 -mb-16 sm:-mb-48 lg:m-0 lg:relative">
-        <div className="mx-auto max-w-md px-4 sm:max-w-2xl sm:px-6 lg:max-w-none lg:px-0">
-          
-          <img 
-            className="w-full lg:absolute lg:inset-y-0 lg:left-0 lg:h-full lg:w-auto lg:max-w-none"
-            src="https://tailwindui.com/img/component-images/cloud-illustration-teal-cyan.svg"
-            alt=""
-          />
-        </div>
-      </div>*/}
             </div>
 
             {/* <div className="flex flex-wrap w-1/2 mx-auto gap-2 justify-center">

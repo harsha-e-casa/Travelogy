@@ -24,8 +24,8 @@ import * as React from "react";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import dayjs from "dayjs";
-import SessionTime from "../book-ticket/SessionTime";
-import useSessionTime from "../book-ticket/useSessionTime";
+import SessionTime from "../reschedule-book-ticket/SessionTime";
+import useSessionTime from "../reschedule-book-ticket/useSessionTime";
 import { Suspense } from "react";
 
 const ReissueReviewPage = () => {
@@ -495,6 +495,18 @@ const ReissueReviewPage = () => {
 
     // router.push(`/tickets?${queryString}`);
     window.history.back();
+  };
+
+  const redirectBookDetailsPage = () => {
+    const rsData = getCookie("rs_data");
+    const rsJsonData = JSON.parse(rsData);
+    console.log("redirectBookDetailsPage rsJSONDATA == ", rsJsonData);
+    console.log(
+      "redirectBookDetailsPage rsJSONDATA == ",
+      rsJsonData?.searchQuery?.oldBookingId
+    );
+    const oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
+    router.push(`/BookingDetails?booking_id=${oldBookingId}`);
   };
 
   let date = new Date(traveldata);
@@ -1670,7 +1682,184 @@ const ReissueReviewPage = () => {
                             </div> */}
                           </div>
 
-                          <div className="mt-50 shadow rounded-md p-3 border border-black">
+                          <div
+                            style={{
+                              marginTop: "50px", // mt-50
+                              padding: "2px", // border thickness
+                              borderRadius: "10px",
+                              background:
+                                "linear-gradient(90deg, #fde047, #fb923c, #ef4444)",
+                            }}
+                          >
+                            {/* Inner card (your original content container) */}
+                            <div
+                              style={{
+                                background: "#fff",
+                                borderRadius: "8px", // slightly smaller than outer
+                                boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+                                padding: "12px", // matches p-3 approx
+                              }}
+                            >
+                              {/* 🔽 paste your existing content from the original outer div HERE (unchanged) 🔽 */}
+                              <div className="flex flex-row justify-between">
+                                <div className="text-xl-bold neutral-1000">
+                                  Cancellation and Refund
+                                </div>
+
+                                {Object.keys(fareRulesMap)?.length > 0 ? (
+                                  <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-full w-max mb-4">
+                                    {Object.keys(fareRulesMap).map((route) => (
+                                      <button
+                                        key={route}
+                                        onClick={() => setSelectedRoute(route)}
+                                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
+                                          selectedRoute === route
+                                            ? "bg-white text-black shadow"
+                                            : "text-gray-600 hover:text-black"
+                                        }`}
+                                      >
+                                        {route}
+                                      </button>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="text-gray-500 italic p-4">
+                                    No fare rule information available.
+                                  </div>
+                                )}
+
+                                <div className="pl-30 ">
+                                  <Stack>
+                                    <Button
+                                      variant="contained"
+                                      onClick={() =>
+                                        setShowMore((prev) => !prev)
+                                      }
+                                      className=" cursor-pointer"
+                                    >
+                                      {showMore ? "Show Less" : "Show More"}
+                                    </Button>
+                                  </Stack>
+                                </div>
+                              </div>
+
+                              {/* Cancellation Charges */}
+                              <div className="py-5 ">
+                                {/* Refund boxes */}
+                                <div className="flex flex-row justify-around pr-4 mt-5 flex-wrap gap-y-5">
+                                  <div className=" gap-5 justify-center">
+                                    <div className="text-center pl-6">
+                                      <p className="text-primary text-sm font-medium whitespace-normal">
+                                        {fareRulesData?.refundType}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Timeline */}
+                                <div className="space-y-3 mt-3 pl-20 pr-30">
+                                  <div className="relative flex items-center pl-5 justify-center">
+                                    {/* Left Icon */}
+                                    <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
+                                      <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
+                                        <svg
+                                          width="18"
+                                          height="18"
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
+                                        </svg>
+                                      </div>
+                                    </div>
+
+                                    {/* Right Icon */}
+                                    <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
+                                      <div
+                                        className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white"
+                                        style={{ marginRight: "-5px" }}
+                                      >
+                                        <svg
+                                          width="18"
+                                          height="18"
+                                          fill="currentColor"
+                                          viewBox="0 0 24 24"
+                                        >
+                                          <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
+                                        </svg>
+                                      </div>
+                                    </div>
+
+                                    {/* Horizontal Gradient Line */}
+                                    <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
+
+                                    {/* Vertical Dotted Line at Center */}
+                                    <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
+                                  </div>
+                                </div>
+
+                                <div className="flex flex-row justify-between align-center pt-4 pl-15 pr-15 ">
+                                  <p className="text-sm-medium neutral-1000">
+                                    {cancellation.some(
+                                      (e) => e.pp === undefined
+                                    ) ? (
+                                      "Now"
+                                    ) : (
+                                      <div>Now</div>
+                                    )}
+                                  </p>
+
+                                  <div className="flex justify-center">
+                                    <div className="flex flex-wrap flex-col items-center justify-center max-w-full">
+                                      <div className="flex items-center flex-col">
+                                        <p className="text-sm-medium neutral-500">
+                                          ₹{" "}
+                                          {fareRulesData?.fareRuleInformation
+                                            ?.tfr?.CANCELLATION?.[0]?.amount
+                                            ? fareRulesData?.fareRuleInformation
+                                                ?.tfr?.CANCELLATION?.[0]?.amount
+                                            : fareRulesData?.fareRuleInformation
+                                                ?.tfr?.CANCELLATION?.[0]
+                                                ?.additionalFee}
+                                          <span className="mx-1"></span>
+                                        </p>
+                                        <div className="text-secondary text-sm">
+                                          {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo
+                                            ?.split("__nls__")
+                                            .filter(Boolean)
+                                            .map((line, index) => (
+                                              <div key={index}>
+                                                {line.trim()}
+                                              </div>
+                                            ))}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex flex-col justify-center items-center">
+                                    <p className="text-sm-medium neutral-1000">
+                                      {getDepartureTimeForRoute(selectedRoute)}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {showMore && (
+                                <div
+                                  style={{
+                                    maxWidth: "64rem",
+                                    margin: "0 auto",
+                                    padding: "1rem",
+                                  }}
+                                >
+                                  <Tabs defaultActiveKey="2" items={itemss} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* <div className="mt-50 shadow rounded-md p-3 border border-black">
                             <div className="flex flex-row justify-between">
                               <div className="text-xl-bold neutral-1000">
                                 Cancellation and Refund
@@ -1698,30 +1887,6 @@ const ReissueReviewPage = () => {
                                 </div>
                               )}
 
-                              {/* {Object.keys(fareRulesMap)?.length > 0 ? (
-                                <div className="flex gap-4 border-b">
-                                  {Object.keys(fareRulesMap).map(
-                                    (route, index) => (
-                                      <button
-                                        key={route}
-                                        onClick={() => setSelectedRoute(route)}
-                                        className={`px-4 py-2 text-sm font-medium ${
-                                          selectedRoute === route
-                                            ? "border-b-2 border-blue-500 text-blue-600"
-                                            : "text-gray-500"
-                                        }`}
-                                      >
-                                        {route}
-                                      </button>
-                                    )
-                                  )}
-                                </div>
-                              ) : (
-                                <div className="text-gray-500 italic p-4">
-                                  No fare rule information available.
-                                </div>
-                              )} */}
-
                               <div className="pl-30 ">
                                 <Stack>
                                   <Button
@@ -1735,9 +1900,8 @@ const ReissueReviewPage = () => {
                               </div>
                             </div>
 
-                            {/* Cancellation Charges */}
                             <div className="py-5 ">
-                              {/* Refund boxes */}
+
                               <div className="flex flex-row    justify-around pr-4 mt-5 flex-wrap gap-y-5">
                                 <div className=" gap-5 justify-center">
                                   <div className="text-center pl-6">
@@ -1748,11 +1912,10 @@ const ReissueReviewPage = () => {
                                 </div>
                               </div>
 
-                              {/* Timeline */}
                               <div className="space-y-3 mt-3  pl-20 pr-30">
-                                {/* Now */}
+
                                 <div className="relative   flex items-center pl-5  justify-center">
-                                  {/* Left Icon */}
+
                                   <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
                                     <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
                                       <svg
@@ -1766,7 +1929,6 @@ const ReissueReviewPage = () => {
                                     </div>
                                   </div>
 
-                                  {/* Right Icon */}
                                   <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
                                     <div
                                       className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white"
@@ -1783,10 +1945,8 @@ const ReissueReviewPage = () => {
                                     </div>
                                   </div>
 
-                                  {/* Horizontal Gradient Line */}
                                   <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
 
-                                  {/* Vertical Dotted Line at Center */}
                                   <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
                                 </div>
                               </div>
@@ -1837,9 +1997,6 @@ const ReissueReviewPage = () => {
                               </div>
                             </div>
 
-                            {/* Show More / Show Less Button */}
-
-                            {/* Conditionally Render No Show and Date Change */}
                             {showMore && (
                               <>
                                 <div
@@ -1853,7 +2010,7 @@ const ReissueReviewPage = () => {
                                 </div>
                               </>
                             )}
-                          </div>
+                          </div> */}
 
                           {/* <div className="item-flight background-card border border-black-200 ticket-container relative flex flex-row justify-between items-center p-5">
   <div className="air_detailes border border-black-200">{flightNames }</div>
@@ -2314,6 +2471,7 @@ const ReissueReviewPage = () => {
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
+                redirBookingDetails={redirectBookDetailsPage}
               />
             </div>
           )}

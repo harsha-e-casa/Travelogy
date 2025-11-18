@@ -1,6 +1,7 @@
 import React from "react";
 import dayjs from "dayjs";
 import Link from "next/link";
+import "./TicketCard1.css";
 
 export default function SelectedFlightSummary({
   selectedFlights,
@@ -55,10 +56,10 @@ export default function SelectedFlightSummary({
         ))}
       </div>
       {isLastFlightSelected && (
-        <div className="flex justify-end" style={{ borderRadius: "10px", fontSize: "14px" }}>
+        <div className="flex justify-end" style={{ fontSize: "14px" }}>
           <Link
             href={`/book-ticket?tcs_id=${flightIds}`}
-            className="btn btn-primary"
+            className="btn btn-primary br-10-imp"
           >
             Continue
           </Link>

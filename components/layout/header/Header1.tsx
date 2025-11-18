@@ -28,6 +28,7 @@ export default function Header1(props: Header1Props) {
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
+      console.log("tokentoken ==> 11111111 ",token)
       setAuthToken(token);
       if (!token) {
         setIsVisible(false);
@@ -53,14 +54,13 @@ export default function Header1(props: Header1Props) {
 
   const handleLogout = async () => {
     window.location.href = "/login";
+    localStorage.removeItem("authToken");
     try {
       const res = await fetch("/api/logout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // credentials: "include", // ensures cookies are sent with request
       });
-
-      localStorage.removeItem("authToken");
 
       if (res.ok) {
         console.log("Logout successful");

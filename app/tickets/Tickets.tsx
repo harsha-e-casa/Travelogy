@@ -1523,7 +1523,7 @@ export default function Tickets() {
 
   if ((srx_tripType?.toLowerCase() || "") === "round-trip") {
     searchEnginewidth = {
-      width: "85%",
+      width: "90%",
     };
   }
 
