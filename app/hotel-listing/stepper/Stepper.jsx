@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import React, { useState, useRef, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { hotelBooking } from "../../../util/HotelApi";
-import { Input, Checkbox, message, Radio } from "antd";
+import { Input, Checkbox, message, Radio, Select } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { postData } from "@/services/NetworkAdapter";
@@ -537,17 +537,19 @@ export function Step1TravellerDetails({
                   </span>
                 </h4>
                 <div className="stepper-guest-row">
-                  <select
-                    className="border p-2 rounded stepper_select-Mr"
+                  <Select
+                    // className="stepper_select-Mr"
                     value={formData.guests?.[roomIndex]?.title || "Mr"}
-                    onChange={(e) =>
-                      handleGuestInputChange(roomIndex, "title", e.target.value)
+                    onChange={(value) =>
+                      handleGuestInputChange(roomIndex, "title", value)
                     }
+                    suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+                    style={{ width: 90, height:60 }}
                   >
-                    <option>Mr</option>
-                    <option>Ms</option>
-                    <option>Mrs</option>
-                  </select>
+                    <Select.Option value="Mr">Mr</Select.Option>
+                    <Select.Option value="Ms">Ms</Select.Option>
+                    <Select.Option value="Mrs">Mrs</Select.Option>
+                  </Select>
                   <div className="flex flex-col">
                     <input
                       ref={(el) =>
@@ -653,34 +655,36 @@ export function Step1TravellerDetails({
                       key={`guest-${roomIndex}-${i}`}
                       className="stepper-guest-row"
                     >
-                      <select
-                        className={`border p-2 rounded ${
-                          guest.type === "children"
-                            ? "stepper_select-Master"
-                            : "stepper_select-Mr"
-                        }`}
+                      <Select
+                        // className={
+                        //   guest.type === "children"
+                        //     ? "stepper_select-Master"
+                        //     : "stepper_select-Mr"
+                        // }
                         value={guest.title}
-                        onChange={(e) => {
+                        onChange={(value) => {
                           const updated = [
                             ...formData.guests[roomIndex].extraGuests,
                           ];
-                          updated[i].title = e.target.value;
+                          updated[i].title = value;
                           updateExtraGuests(roomIndex, updated);
                         }}
+                        suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+                        style={{ width:90, height:60 }}
                       >
                         {guest.type === "children" ? (
                           <>
-                            <option>Master</option>
-                            <option>Miss</option>
+                            <Select.Option value="Master">Master</Select.Option>
+                            <Select.Option value="Miss">Miss</Select.Option>
                           </>
                         ) : (
                           <>
-                            <option>Mr</option>
-                            <option>Ms</option>
-                            <option>Mrs</option>
+                            <Select.Option value="Mr">Mr</Select.Option>
+                            <Select.Option value="Ms">Ms</Select.Option>
+                            <Select.Option value="Mrs">Mrs</Select.Option>
                           </>
                         )}
-                      </select>
+                      </Select>
 
                       <input
                         className="border p-2 rounded stepper_input"
@@ -746,19 +750,21 @@ export function Step1TravellerDetails({
         <div className="space-y-2">
           <h3 className="font-semibold text-base">Contact Details</h3>
           <div className="stepper-guest-row">
-            <div className="flex flex-col">
-              <select
-                className="border p-2 rounded form-field stepper_select"
-                value={formData.countryCode}
-                onChange={(e) =>
-                  setFormData({ ...formData, countryCode: e.target.value })
+            {/* <div className="flex flex-col"> */}
+              <Select
+                // className="form-field"
+                value={formData.countryCode || "+91"}
+                onChange={(value) =>
+                  setFormData({ ...formData, countryCode: value })
                 }
+                suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+                style={{ width: 90, height:60 }}
               >
-                <option value="+91">India (+91)</option>
-                <option value="+1">USA (+1)</option>
-                <option value="+44">UK (+44)</option>
-              </select>
-            </div>
+                <Select.Option value="+91">India (+91)</Select.Option>
+                <Select.Option value="+1">USA (+1)</Select.Option>
+                <Select.Option value="+44">UK (+44)</Select.Option>
+              </Select>
+            {/* </div> */}
             <div className="flex flex-col">
               {" "}
               <input
