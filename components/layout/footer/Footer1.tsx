@@ -176,7 +176,7 @@ export default function Footer1() {
               </ul>
             </div>
           </div>
-          <div className="footer-bottom mt-50">
+          <div className="footer-bottom mt-20">
             <div className="row">
               <div className="col-md-6 text-md-start text-center mb-20">
                 <p className="text-sm color-white">

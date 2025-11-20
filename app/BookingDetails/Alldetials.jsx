@@ -32,6 +32,9 @@ const Alldetails = ({ totalpricee }) => {
   const bookingId = searchParams.get("booking_id");
   console.log("bookingid from alldetails", bookingId);
   const reStatus = searchParams.get("re");
+  const [paymentFailurePopup, setPaymentFailurePopup] = useState(
+    new URLSearchParams(window.location.search).get("payment") === "retry"
+  );
 
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
@@ -479,6 +482,7 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   const handleUnHold = async () => {
+    setPaymentFailurePopup(false)
     console.log("handleUnHold ==> ");
     console.log(bookingDetails);
     setModalLoading(true);
@@ -752,36 +756,120 @@ const Alldetails = ({ totalpricee }) => {
     }
   };
 
-  const handlePayNow = async () => {
-    setModalLoading(true);
-    const parameter = { bookingId: bookingId };
-    try {
-      let reqData = { action: "fareValidate", requestData: parameter };
-      const result = await postData("travelogy/one-way/fetch-data", reqData);
+  // const handlePayNow = async () => {
+  //   setModalLoading(true);
+  //   const parameter = { bookingId: bookingId };
+  //   try {
+  //     let reqData = { action: "fareValidate", requestData: parameter };
+  //     const result = await postData("travelogy/one-way/fetch-data", reqData);
 
-      if (result?.status?.success === true) {
-        const fetchBookingData = await postData(
-          "travelogy/flight/fetch-booking-data",
-          { bookingId: bookingId }
-        );
-        const airBookParameter = {
-          bookingId: bookingId,
-          paymentInfos: [
-            {
-              amount: fetchBookingData?.data?.[0]?.amount,
-            },
-          ],
-        };
-        let reqData = { action: "conformBook", requestData: airBookParameter };
-        const airBookResponse = await postData(
-          "travelogy/one-way/fetch-data",
-          reqData
-        );
-        window.location.reload();
+  //     if (result?.status?.success === true) {
+  //       const fetchBookingData = await postData(
+  //         "travelogy/flight/fetch-booking-data",
+  //         { bookingId: bookingId }
+  //       );
+  //       const airBookParameter = {
+  //         bookingId: bookingId,
+  //         paymentInfos: [
+  //           {
+  //             amount: fetchBookingData?.data?.[0]?.amount,
+  //           },
+  //         ],
+  //       };
+  //       let reqData = { action: "conformBook", requestData: airBookParameter };
+  //       const airBookResponse = await postData(
+  //         "travelogy/one-way/fetch-data",
+  //         reqData
+  //       );
+  //       window.location.reload();
+  //     }
+  //   } catch (error) {
+  //     console.log("handlePayNow error ", error);
+  //   }
+  //   setModalLoading(false);
+  // };
+
+  const handlePayNow = async () => {
+    setPaymentFailurePopup(false);
+    setModalLoading(true);
+
+    try {
+      // 1. Validate Fare
+      const reqValidate = {
+        action: "fareValidate",
+        requestData: { bookingId },
+      };
+      const validateRes = await postData(
+        "travelogy/one-way/fetch-data",
+        reqValidate
+      );
+
+      if (!validateRes?.status?.success) {
+        alert("Fare validation failed. Please try again.");
+        setModalLoading(false);
+        return;
       }
+
+      // 2. Fetch booking fare info
+      const fetchBookingData = await postData(
+        "travelogy/flight/fetch-booking-data",
+        { bookingId }
+      );
+
+      const payableAmount = fetchBookingData?.data?.[0]?.amount;
+      if (!payableAmount) {
+        alert("Amount not found.");
+        setModalLoading(false);
+        return;
+      }
+
+      // 3. Prepare payload for backend to start CCAvenue Payment
+      const frontendUrl = window.location.href; // Return URL after payment
+      const paymentRequest = {
+        booking_id: bookingId,
+        amount: payableAmount,
+        fe_url: frontendUrl, // your current page
+        data: {
+          action: "conformBook",
+          requestData: {
+            bookingId: bookingId,
+            paymentInfos: [{ amount: payableAmount }],
+          },
+        },
+      };
+
+      // 4. Call backend createPayment API
+      const paymentRes = await postData(
+        "travelogy/payment/ccavenue/create",
+        paymentRequest
+      );
+
+      if (!paymentRes?.fields?.encRequest || !paymentRes?.fields?.access_code) {
+        alert("Payment initiation failed.");
+        setModalLoading(false);
+        return;
+      }
+
+      // 5. Create and auto-submit hidden form to CCAvenue
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = paymentRes.action;
+      form.style.display = "none";
+
+      Object.entries(paymentRes.fields).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit(); // 🔥 Redirects to CCAvenue Payment Page
     } catch (error) {
       console.log("handlePayNow error ", error);
     }
+
     setModalLoading(false);
   };
 
@@ -2271,6 +2359,45 @@ const Alldetails = ({ totalpricee }) => {
             >
               Ok, Got It
             </button>
+          </div>
+        </div>
+      )}
+
+      {paymentFailurePopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative">
+            {/* ❌ CLOSE ICON (TOP RIGHT) */}
+            <button
+              onClick={() => setPaymentFailurePopup(false)}
+              className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+            >
+              ×
+            </button>
+
+            <p className="text-red-600 mb-2 font-semibold">Payment Failed</p>
+            <p>Your payment could not be completed.</p>
+            <p>You can retry the payment or un-hold this booking.</p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                paddingTop: "10px",
+              }}
+            >
+              <button
+                className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                onClick={handleUnHold}
+              >
+                Unhold
+              </button>
+              <button
+                className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                onClick={handlePayNow}
+              >
+                Pay Now
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -76,7 +76,7 @@ export default function BookTicket() {
 
   const [loading, setLoading] = useState(false);
 
-  const requestId = searchParams.get("requestId")
+  const requestId = searchParams.get("requestId");
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -166,7 +166,7 @@ export default function BookTicket() {
   const [totalpricee, setTotalpricee] = useState<string | null>(null);
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
   const [bookingId, setBookingId] = useState<string | null>(null);
-  const [oldBookingId, setOldBookingId] = useState<string | null>(null);
+  // const [oldBookingId, setOldBookingId] = useState<string | null>(null);
   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
   const [bookingDetailsData, setBookingDetailsData] = useState<
     Record<string, any>
@@ -203,7 +203,9 @@ export default function BookTicket() {
     "fetchRescheduleDatafetchRescheduleData == ",
     fetchRescheduleData
   );
-  setOldBookingId(fetchRescheduleData?.searchQuery?.oldBookingId)
+  // setOldBookingId(fetchRescheduleData?.searchQuery?.oldBookingId)
+  const oldBookingId: string | null =
+    fetchRescheduleData?.searchQuery?.oldBookingId ?? null;
 
   const [numAdults, setNumAdults] = useState<number>(0);
   const [numChild, setNumChild] = useState<number>(0);
@@ -394,7 +396,7 @@ export default function BookTicket() {
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
     if (tcs_id) fetchFlights(tcs_id);
-  }, []);
+  }, [tcs_id]);
 
   useEffect(() => {
     let mobile = getCookie("number");
@@ -481,8 +483,11 @@ export default function BookTicket() {
   };
 
   const redirectBookDetailsPage = () => {
-    router.push(`/BookingDetails?booking_id=${oldBookingId}`);
-  }
+    // router.push(`/BookingDetails?booking_id=${oldBookingId}`);
+    if (oldBookingId) {
+      router.push(`/BookingDetails?booking_id=${oldBookingId}`);
+    }
+  };
 
   const [api, contextHolder] = notification.useNotification();
 
