@@ -14,6 +14,7 @@ import Layout from "@/components/layout/Layout";
 // import rawHotelsData from "@/util/hotels.json";
 import useHotelFilter, { Hotel } from "@/util/useHotelFilter";
 import "../tickets/customeHeader_1.css";
+// import "./HotelListingPage.css";
 import { useSearchParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -951,7 +952,7 @@ export default function HotelListing() {
               </div>
 
               <div
-                className="hdt_header-item hotel_room"
+                className="hdt_header-item hotel_roomm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <label>Rooms & Guest</label>

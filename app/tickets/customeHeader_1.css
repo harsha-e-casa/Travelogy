@@ -106,7 +106,7 @@
     padding: 4px 14px;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     /* border-radius: 4px; */
     margin-bottom: 20px;
     width: 75%;
@@ -124,6 +124,7 @@
     cursor: pointer;
     color: #fff;
     font-weight: bold;
+     margin-top: 25px;
   }
 
   .hdt_value:hover{
@@ -145,6 +146,13 @@
   @media (max-width: 768px) {
     .hdt_container { flex-direction: column; }
     .hdt_sidebar { width: 100%; margin-right: 0; margin-bottom: 20px; }
+
+     /* .hdt_header .hdt_search-btn {
+      background-color: #ccc;
+     } */
+     .hdt_header-item {
+      margin-right: 5px;
+     }
   }
 
 .multicity-scrollplace {

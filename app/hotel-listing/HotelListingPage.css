@@ -1,0 +1,891 @@
+/* ============================================
+   HOTEL LISTING PAGE - RESPONSIVE STYLES
+   ============================================ */
+
+/* ============================================
+   1. HEADER SECTION - SEARCH BAR
+   ============================================ */
+
+.bg_cs_search {
+  background: #1a1a2e;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hdt_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  width: 90%;
+  max-width: 1400px;
+  margin: 0 auto;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hdt_header-item {
+  flex: 1;
+  min-width: 140px;
+  padding: 8px 12px;
+  position: relative;
+}
+
+.hdt_header-item label {
+  font-size: 0.75rem;
+  display: block;
+  color: #ddd;
+  margin-bottom: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hdt_header-item .input-field {
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  width: 100%;
+  background: #2a2a44;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hdt_header-item .input-field:hover {
+  background: #353550;
+  transform: translateY(-1px);
+}
+
+.hdt_header-item button.input-field {
+  display: block;
+  width: 100%;
+}
+
+.hdt_search-btn {
+  background: #008cff;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  min-width: 100px;
+  height: fit-content;
+  align-self: flex-end;
+  margin-bottom: 8px;
+}
+
+.hdt_search-btn:hover {
+  background: #0077dd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.3);
+}
+
+.hdt_search-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Dropdown positioning */
+.searchFfromSelect,
+.searchFfromSelect_1 {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* ============================================
+   2. MAIN CONTENT LAYOUT
+   ============================================ */
+
+.box-content-main {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 96px);
+}
+
+/* Left Sidebar - Filters */
+.content-left {
+  width: 280px;
+  min-width: 280px;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 120px;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.content-left::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-left::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.content-left::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.content-left::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Right Content - Hotel Cards */
+.content-right {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 140px);
+}
+
+.content-right::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-right::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.content-right::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.content-right::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* ============================================
+   3. FILTER SECTION (TOP BAR)
+   ============================================ */
+
+.box-filters {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.box-item-sort {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.box-item-sort .btn-gray {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.box-item-sort .btn-gray:hover {
+  background: #e0e0e0;
+  border-color: #ccc;
+}
+
+.item-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.item-sort select {
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  padding: 4px 8px;
+}
+
+.box-view-type {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.number-found {
+  font-size: 0.875rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ============================================
+   4. HOTEL CARDS GRID
+   ============================================ */
+
+.box-grid-tours .row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 0;
+}
+
+.box-grid-tours .col-xl-4,
+.box-grid-tours .col-lg-6,
+.box-grid-tours .col-md-6 {
+  padding: 0;
+  width: 100%;
+}
+
+.card-journey-small {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-journey-small:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+}
+
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card-journey-small:hover .card-image img {
+  transform: scale(1.05);
+}
+
+/* ============================================
+   5. SIDEBAR FILTERS
+   ============================================ */
+
+.sidebar-left {
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+}
+
+.block-filter {
+  padding: 12px 0;
+}
+
+.block-filter h6 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.box-filters-sidebar {
+  margin-top: 8px;
+}
+
+/* Price Range Slider */
+.price-range-container {
+  padding: 12px 0;
+}
+
+/* ============================================
+   6. PAGINATION
+   ============================================ */
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  gap: 8px;
+}
+
+.pagination-wrapper button {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.pagination-wrapper button:hover:not(:disabled) {
+  background: #008cff;
+  color: white;
+  border-color: #008cff;
+}
+
+.pagination-wrapper button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   7. LOADING & ERROR STATES
+   ============================================ */
+
+.loader {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #008cff;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   8. RESPONSIVE BREAKPOINTS
+   ============================================ */
+
+/* ============================================
+   LAPTOP VIEW (1024px - 1440px)
+   ============================================ */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .hdt_header {
+    width: 95%;
+    padding: 10px 16px;
+  }
+
+  .hdt_header-item {
+    min-width: 120px;
+    padding: 6px 10px;
+  }
+
+  .hdt_header-item label {
+    font-size: 0.7rem;
+  }
+
+  .hdt_header-item .input-field {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+  }
+
+  .hdt_search-btn {
+    padding: 8px 20px;
+    font-size: 0.875rem;
+  }
+
+  .content-left {
+    width: 260px;
+    min-width: 260px;
+  }
+
+  .box-grid-tours .row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+/* ============================================
+   TABLET VIEW (768px - 1023px)
+   ============================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hdt_header {
+    width: 95%;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .hdt_header-item {
+    min-width: 100px;
+    padding: 6px 8px;
+    flex: 1 1 calc(33.333% - 8px);
+  }
+
+  .hdt_header-item.hotel_room {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .hdt_header-item label {
+    font-size: 0.65rem;
+    margin-bottom: 3px;
+  }
+
+  .hdt_header-item .input-field {
+    font-size: 0.8rem;
+    padding: 6px 8px;
+  }
+
+  .hdt_search-btn {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 0;
+    padding: 10px 16px;
+  }
+
+  .box-content-main {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .content-left {
+    width: 100%;
+    min-width: 100%;
+    position: static;
+    max-height: none;
+    margin-bottom: 20px;
+    order: 2;
+  }
+
+  .content-right {
+    width: 100%;
+    order: 1;
+    max-height: none;
+  }
+
+  .box-grid-tours .row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .box-filters {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .box-item-sort {
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .box-view-type {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .number-found {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .sidebar-left {
+    margin-bottom: 16px;
+  }
+}
+
+/* ============================================
+   SMALL TABLET VIEW (600px - 767px)
+   ============================================ */
+@media (min-width: 600px) and (max-width: 767px) {
+  .hdt_header {
+    width: 100%;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .hdt_header-item {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+    padding: 6px 8px;
+  }
+
+  .hdt_header-item label {
+    font-size: 0.65rem;
+  }
+
+  .hdt_header-item .input-field {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+  }
+
+  .hdt_search-btn {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .box-content-main {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  .content-left {
+    width: 100%;
+    position: static;
+    max-height: none;
+    order: 2;
+  }
+
+  .content-right {
+    width: 100%;
+    order: 1;
+    max-height: none;
+  }
+
+  .box-grid-tours .row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .card-image {
+    height: 180px;
+  }
+
+  .box-item-sort {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .item-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ============================================
+   MOBILE VIEW (320px - 599px)
+   ============================================ */
+@media (max-width: 599px) {
+  .bg_cs_search {
+    position: relative;
+  }
+
+  .hdt_header {
+    width: 100%;
+    padding: 12px 8px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hdt_header-item {
+    width: 100%;
+    min-width: 100%;
+    padding: 8px;
+    flex: none;
+  }
+
+  .hdt_header-item label {
+    font-size: 0.7rem;
+    margin-bottom: 4px;
+  }
+
+  .hdt_header-item .input-field {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+  }
+
+  .hdt_search-btn {
+    width: 100%;
+    padding: 12px 16px;
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
+
+  .box-content-main {
+    flex-direction: column;
+    padding: 12px 8px;
+    gap: 16px;
+  }
+
+  .content-left {
+    width: 100%;
+    min-width: 100%;
+    position: static;
+    max-height: none;
+    padding: 16px;
+    order: 2;
+  }
+
+  .content-right {
+    width: 100%;
+    padding: 12px;
+    order: 1;
+    max-height: none;
+  }
+
+  .box-grid-tours .row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card-image {
+    height: 200px;
+  }
+
+  .box-filters {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+  }
+
+  .box-view-type {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .number-found {
+    width: 100%;
+    text-align: center;
+  }
+
+  .box-item-sort {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .box-item-sort .btn-gray {
+    width: 100%;
+    text-align: center;
+  }
+
+  .item-sort {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .sidebar-left {
+    margin-bottom: 12px;
+    padding: 12px;
+  }
+
+  .block-filter h6 {
+    font-size: 0.95rem;
+  }
+}
+
+/* ============================================
+   9. UTILITY CLASSES
+   ============================================ */
+
+.d-flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-5 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.py-4 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.mb-25 {
+  margin-bottom: 25px;
+}
+
+.pb-5 {
+  padding-bottom: 3rem;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.border-1 {
+  border: 1px solid #e0e0e0;
+}
+
+.background-body {
+  background-color: #f8f9fa;
+}
+
+.background-card {
+  background-color: white;
+}
+
+.neutral-1000 {
+  color: #1a1a1a;
+}
+
+.neutral-700 {
+  color: #666;
+}
+
+.neutral-500 {
+  color: #999;
+}
+
+/* ============================================
+   10. PRINT STYLES
+   ============================================ */
+
+@media print {
+  .hdt_header,
+  .content-left,
+  .box-filters,
+  .pagination-wrapper {
+    display: none;
+  }
+
+  .content-right {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .box-grid-tours .row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================
+   11. HIGH DPI SCREENS
+   ============================================ */
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card-image img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* ============================================
+   12. DARK MODE SUPPORT (Optional)
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  /* Add dark mode styles if needed */
+}
+
+/* ============================================
+   13. ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+
+/* Focus states for keyboard navigation */
+.hdt_header-item .input-field:focus,
+.hdt_search-btn:focus,
+.item-sort select:focus,
+.box-item-sort .btn-gray:focus {
+  outline: 2px solid #008cff;
+  outline-offset: 2px;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   14. SPECIFIC FIXES FOR SCREENSHOT ISSUES
+   ============================================ */
+
+/* Ensure header items don't wrap awkwardly on tablet */
+@media (min-width: 768px) and (max-width: 900px) {
+  .hdt_header-item {
+    font-size: 0.75rem;
+  }
+  
+  .hdt_header-item .input-field {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+  }
+}
+
+/* Fix card spacing consistency */
+.box-grid-tours .row > * {
+  margin-bottom: 0;
+}
+
+/* Ensure consistent card heights */
+.card-journey-small {
+  min-height: 380px;
+}
+
+@media (max-width: 767px) {
+  .card-journey-small {
+    min-height: 350px;
+  }
+}
+
+/* Fix filter section alignment */
+.row.align-items-center {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.row.align-items-center > [class*="col-"] {
+  display: flex;
+  align-items: center;
+}
+
+/* Ensure proper spacing in container */
+.container-fluid {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+@media (min-width: 768px) {
+  .container-fluid {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}

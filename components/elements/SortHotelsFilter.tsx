@@ -61,9 +61,9 @@ export default function SortHotelsFilter({
             {/* <div className="item-sort border-1">
               <span className="text-xs-medium neutral-500 mr-5">Show</span>
               <select value={itemsPerPage} onChange={handleItemsPerPageChange}>
-                <option value={10}>10</option>
+              removed 10 and 20 options
                 <option value={15}>15</option>
-                <option value={20}>20</option>
+                
               </select>
             </div> */}
             <div className="item-sort border-1 rounded-3">
