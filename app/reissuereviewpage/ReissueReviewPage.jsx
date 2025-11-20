@@ -31,10 +31,18 @@ import { Suspense } from "react";
 const ReissueReviewPage = () => {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
+  const payment = searchParams.get("payment");
+
+  console.log("paymentpayment ==> ", payment);
 
   const router = useRouter();
   const [loading, setloading] = useState(false);
+  const [paymentFailurePopup, setPaymentFailurePopup] = useState(
+    new URLSearchParams(window.location.search).get("payment") === "retry"
+  );
   const [bookingLoading, setBookingLoading] = useState(false);
+  const [paymentData, setPaymentData] = useState(null);
+  const iframeRef = React.useRef(null);
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -48,6 +56,35 @@ const ReissueReviewPage = () => {
       setloading(false);
     }
   }, [router]);
+
+  useEffect(() => {
+    if (!paymentData || !iframeRef.current) return;
+
+    const { action, fields } = paymentData;
+    const { encRequest, access_code } = fields;
+
+    const formHtml = `
+    <html>
+      <body>
+        <form id="paymentForm" method="POST" action="${action}">
+          <input type="hidden" name="encRequest" value="${encRequest}" />
+          <input type="hidden" name="access_code" value="${access_code}" />
+        </form>
+        <script>
+          document.getElementById('paymentForm').submit();
+        </script>
+      </body>
+    </html>
+  `;
+
+    const iframeDoc = iframeRef.current.contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write(formHtml);
+    iframeDoc.close();
+
+    // You can stop "loading" spinner now if you want
+    setBookingLoading(false);
+  }, [paymentData]);
 
   let ids = [];
   if (priceId.includes(",")) {
@@ -425,6 +462,7 @@ const ReissueReviewPage = () => {
   const seatTotal = SeatAmount && SeatAmount !== "" ? SeatAmount : 0;
   console.log("mame seatTotal cookie lendhu == ", seatTotal);
   console.log("mame seatTotal cookie lendhu == ", typeof seatTotal);
+  const currentUrl = window.location.href;
 
   const finalAmountToPay = totalprice + baggageTotal + mealTotal + seatTotal;
   //fare rule api
@@ -930,7 +968,7 @@ const ReissueReviewPage = () => {
   let oldBookingId = null;
 
   // Function to handle booking review and trigger loadDataBook
-  const bookingReview = () => {
+  const bookingReviewWithoutPaymentGateway = async () => {
     setBookingLoading(true);
     console.log("travellers (before update)", travellers);
     console.log("totalprice bookingId", totalprice, bookingId);
@@ -973,9 +1011,119 @@ const ReissueReviewPage = () => {
       console.log("travellerInfo (final):", parameter.travellerInfo);
       console.log("parameter for book:", parameter);
 
+      if (finalAmountToPay <= 0) {
+        await postData("travelogy/payment/save-refund", {
+          bookingId,
+          oldBookingId,
+          refundAmount: finalAmountToPay,
+          payload: parameter,
+        });
+      }
+
       loadDataBook(parameter);
     } else {
       console.error("Booking ID or total price is missing");
+    }
+  };
+
+  const bookingReview = () => {
+    setBookingLoading(true);
+
+    console.log("travellers (before update)", travellers);
+    console.log("totalprice bookingId", totalprice, bookingId);
+
+    const gstInfoCookies = getCookie("gst_info");
+    console.log("gstInfoCookies = ", gstInfoCookies);
+    const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
+    console.log("gstInfos = ", gstInfos);
+
+    const segmentinfo =
+      flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
+
+    const rsData = getCookie("rs_data");
+    const rsJsonData = JSON.parse(rsData);
+    console.log("rsJSONDATA == ", rsJsonData);
+    console.log("rsJSONDATA == ", rsJsonData?.searchQuery?.oldBookingId);
+    oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
+
+    if (totalprice <= 0) {
+      bookingReviewWithoutPaymentGateway();
+      return;
+    }
+
+    if (
+      (totalprice || totalprice == 0) &&
+      bookingId &&
+      rsJsonData?.searchQuery?.oldBookingId
+    ) {
+      const parameter = {
+        bookingId,
+        oldBookingId: rsJsonData?.searchQuery?.oldBookingId,
+        paymentInfos: [{ bookingId, amount: finalAmountToPay }],
+        travellerInfo: travellers,
+        deliveryInfo: {
+          emails: [email],
+          contacts: [`${number.code}${number.number}`],
+        },
+      };
+
+      if (gstInfos && Object.keys(gstInfos).length > 0) {
+        console.log("gstInfo irukan");
+        parameter.gstInfo = { ...gstInfos };
+      }
+
+      console.log("travellerInfo (final):", parameter.travellerInfo);
+      console.log("parameter for book:", parameter);
+
+      const startPayment = async () => {
+        try {
+          await saveBookingIdFn();
+
+          // 🔥 Call your CC Avenue create API
+          const paymentRes = await postData(
+            "travelogy/payment/ccavenue/create",
+            {
+              booking_id: bookingId, // using bookingId as order_id
+              amount: finalAmountToPay, // same as TripJack
+              fe_url: currentUrl,
+              data: { action: "autoReissue", requestData: parameter },
+            }
+          );
+
+          console.log("paymentRes ===>", paymentRes);
+
+          const { action, fields } = paymentRes;
+          const { encRequest, access_code } = fields;
+
+          // 🧾 Build a form and submit it (no iframe)
+          const form = document.createElement("form");
+          form.method = "POST";
+          form.action = action;
+
+          const encReqInput = document.createElement("input");
+          encReqInput.type = "hidden";
+          encReqInput.name = "encRequest";
+          encReqInput.value = encRequest;
+          form.appendChild(encReqInput);
+
+          const accessCodeInput = document.createElement("input");
+          accessCodeInput.type = "hidden";
+          accessCodeInput.name = "access_code";
+          accessCodeInput.value = access_code;
+          form.appendChild(accessCodeInput);
+
+          document.body.appendChild(form);
+          form.submit(); // 🌐 Browser now goes to CCAvenue in same tab
+        } catch (err) {
+          console.error("Error starting payment:", err);
+          setBookingLoading(false);
+        }
+      };
+
+      startPayment();
+    } else {
+      console.error("Booking ID or total price is missing");
+      setBookingLoading(false);
     }
   };
 
@@ -2461,6 +2609,95 @@ const ReissueReviewPage = () => {
                     >
                       Ok, Got It
                     </button>
+                  </div>
+                </div>
+              )}
+              {paymentFailurePopup && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                  <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative">
+                    <button
+                      onClick={() => setPaymentFailurePopup(false)}
+                      className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+                    >
+                      ×
+                    </button>
+
+                    <p className="text-red-600 mb-2 font-semibold">
+                      Payment Failed
+                    </p>
+                    <p>Your payment could not be completed.</p>
+                    <p>You can retry the payment.</p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-around",
+                        paddingTop: "10px",
+                      }}
+                    >
+                      {/* {flightData?.conditions?.isBA === true && (
+                        <div
+                          onClick={handleHoldBooking}
+                          style={{ borderRadius: "5px" }}
+                          className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
+                        >
+                          Hold Booking
+                        </div>
+                      )} */}
+
+                      <div
+                        onClick={bookingReview}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                          bookingLoading
+                            ? "bg-gray-300"
+                            : "bg-yellow-300 hover:bg-yellow-400"
+                        }`}
+                        disabled={bookingLoading}
+                      >
+                        {bookingLoading ? (
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="animate-spin h-5 w-5 text-black"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              ></path>
+                            </svg>
+                            <span>Loading...</span>
+                          </div>
+                        ) : (
+                          "Retry Payment"
+                        )}
+                      </div>
+                    </div>
+
+                    {paymentData && (
+                      <div style={{ marginTop: 24 }}>
+                        <h3>Complete your payment</h3>
+                        <iframe
+                          ref={iframeRef}
+                          title="CCAvenue Payment"
+                          style={{
+                            width: "100%",
+                            height: "700px",
+                            border: "0",
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

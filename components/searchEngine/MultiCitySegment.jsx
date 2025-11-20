@@ -127,7 +127,7 @@ const MultiCitySegment = ({
   return (
     <div
       className="flex items-start flex-wrap"
-      style={{ alignItems: "center" }}
+      style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}
     >
       {/* From */}
       <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1" onClick={() => multiCityCloseAllFieldsFn()}>

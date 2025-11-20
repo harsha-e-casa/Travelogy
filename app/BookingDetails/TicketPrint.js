@@ -391,39 +391,85 @@ function normalize(raw) {
       reissueFee: toFixedOrNull(extraFees.reissueFee),
     },
     // you likely already build vm.segments for itinerary; keep that part
-    segments: (air?.tripInfos?.[0]?.sI || []).map((s) => {
-      const airline = s?.fD?.aI || {};
-      const flightNo = `${airline.code ?? ""} ${s?.fD?.fN ?? ""}`.trim();
-      const firstTI = s?.bI?.tI?.[0]?.fd;
-      const bag = firstTI?.bI || {};
-      const cabinClass = firstTI?.cc || "";
-      const fareClass = firstTI?.cB || "";
-      return {
-        airlineName: airline.name || "",
-        airlineCode: airline.code || "",
-        flightNo,
-        equipment: s?.fD?.eT || "",
-        from: {
-          code: s?.da?.code || "",
-          name: s?.da?.name || "",
-          city: s?.da?.city || "",
-          terminal: s?.da?.terminal || "",
-        },
-        to: {
-          code: s?.aa?.code || "",
-          name: s?.aa?.name || "",
-          city: s?.aa?.city || "",
-          terminal: s?.aa?.terminal || "",
-        },
-        depTime: s?.dt || "",
-        arrTime: s?.at || "",
-        durationMins: Number(s?.duration || 0),
-        stops: Number(s?.stops || 0),
-        cabin: cabinClass,
-        fareClass: fareClass,
-        baggage: { checkin: bag?.iB || "", cabin: bag?.cB || "" },
-      };
-    }),
+    // segments: (air?.tripInfos?.[0]?.sI || []).map((s) => {
+    //   const airline = s?.fD?.aI || {};
+    //   const flightNo = `${airline.code ?? ""} ${s?.fD?.fN ?? ""}`.trim();
+    //   const firstTI = s?.bI?.tI?.[0]?.fd;
+    //   const bag = firstTI?.bI || {};
+    //   const cabinClass = firstTI?.cc || "";
+    //   const fareClass = firstTI?.cB || "";
+    //   return {
+    //     airlineName: airline.name || "",
+    //     airlineCode: airline.code || "",
+    //     flightNo,
+    //     equipment: s?.fD?.eT || "",
+    //     from: {
+    //       code: s?.da?.code || "",
+    //       name: s?.da?.name || "",
+    //       city: s?.da?.city || "",
+    //       terminal: s?.da?.terminal || "",
+    //     },
+    //     to: {
+    //       code: s?.aa?.code || "",
+    //       name: s?.aa?.name || "",
+    //       city: s?.aa?.city || "",
+    //       terminal: s?.aa?.terminal || "",
+    //     },
+    //     depTime: s?.dt || "",
+    //     arrTime: s?.at || "",
+    //     durationMins: Number(s?.duration || 0),
+    //     stops: Number(s?.stops || 0),
+    //     cabin: cabinClass,
+    //     fareClass: fareClass,
+    //     baggage: { checkin: bag?.iB || "", cabin: bag?.cB || "" },
+    //   };
+    // }),
+    segments: (() => {
+      const allSegs = [];
+
+      (air?.tripInfos || []).forEach((trip) => {
+        console.log("trippppppppppppppppppppp ==> ",trip);
+        (trip?.sI || []).forEach((s) => {
+          const airline = s?.fD?.aI || {};
+          const flightNo = `${airline.code ?? ""} ${s?.fD?.fN ?? ""}`.trim();
+
+          const firstTI = s?.bI?.tI?.[0]?.fd;
+          const bag = firstTI?.bI || {};
+          const cabinClass = firstTI?.cc || "";
+          const fareClass = firstTI?.cB || "";
+
+          allSegs.push({
+            airlineName: airline.name || "",
+            airlineCode: airline.code || "",
+            flightNo,
+            // equipment: s?.fD?.eT || "",
+            from: {
+              code: s?.da?.code || "",
+              name: s?.da?.name || "",
+              city: s?.da?.city || "",
+              terminal: s?.da?.terminal || "",
+            },
+            to: {
+              code: s?.aa?.code || "",
+              name: s?.aa?.name || "",
+              city: s?.aa?.city || "",
+              terminal: s?.aa?.terminal || "",
+            },
+            depTime: s?.dt || "",
+            arrTime: s?.at || "",
+            durationMins: Number(s?.duration || 0),
+            stops: Number(s?.stops || 0),
+            cabin: cabinClass,
+            // fareClass: fareClass,
+            baggage: { checkin: bag?.iB || "", cabin: bag?.cB || "" },
+          });
+        });
+      });
+
+      console.log("allSegsallSegs => ",allSegs);
+
+      return allSegs;
+    })(),
     passengers,
   };
 }
@@ -1223,8 +1269,8 @@ function renderTicketHTML(vm) {
                 Address: NPL Devi, 111,</br>
                 Lattice Brg Rd, Thiruvanmiyur,<br/>
                 Chennai, Tamil Nadu 600041<br/>
-                Phone: +91-XXXXXXXXXX<br/>
-                support@Travelogy.com
+                Phone: +91-9566266061<br/>
+                info@casagrandtravelogy.co.in
                 </div>
             </div>
 
