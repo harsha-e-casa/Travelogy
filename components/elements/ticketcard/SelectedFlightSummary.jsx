@@ -1,7 +1,7 @@
 import React from "react";
 import dayjs from "dayjs";
 import Link from "next/link";
-import "./TicketCard1.css";
+import "./ticketCard1.css";
 
 export default function SelectedFlightSummary({
   selectedFlights,

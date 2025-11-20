@@ -472,7 +472,7 @@ const Page = () => {
                           </div>
                           <div className="flex justify-between items-center">
                             <div className="font-bold login-value">
-                              +91 - 9360417046
+                              {!loading ? userData?.userData?.phone : null}
                             </div>
                             {/* <div className="text-green-600 flex items-center"> */}
                             {/* <span>✔️ Verified</span>
@@ -488,18 +488,18 @@ const Page = () => {
                           </div>
                           <div className="flex items-center">
                             <div className="text-blue-600 cursor-pointer login-value text-blue-500">
-                              + Add your Email ID
+                              {!loading ? userData?.userData?.e_mail : null}
                             </div>
                           </div>
 
                           {/* Password Section */}
-                          <div className="flex items-center">
+                          {/* <div className="flex items-center">
                             <div className=" login-lable">PASSWORD</div>
                           </div>
                           <div className="flex justify-between items-center">
                             <div className="font-bold login-value">******</div>
-                            {/* <div className="text-blue-600 cursor-pointer">Change Password?</div> */}
-                          </div>
+                            <div className="text-blue-600 cursor-pointer">Change Password?</div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
