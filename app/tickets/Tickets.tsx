@@ -2014,7 +2014,8 @@ export default function Tickets() {
             clickMinusinfant={clickMinusinfant}
             clickPlusinfant={clickPlusinfant}
             totalPassenderCount={totalPassenderCount}
-            specificStyle={{ top: "23%", right: "9%" }}
+            // specificStyle={{ top: "23%", right: "9%" }}
+            specificStyle={"pos-t-r"}
             selectedPassengerType={srx_fareType}
           />
 

@@ -54,3 +54,10 @@
     page-break-inside: avoid;
   }
 }
+
+.m-px-10 {
+  @media (max-width: 1300px) {
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+  }
+}
