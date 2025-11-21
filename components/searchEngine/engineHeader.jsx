@@ -814,7 +814,8 @@ const EngineTabs = ({ active_border }) => {
             handleChangeClass={handleChangeClass}
             travellerClass={travellerClass}
             totalPassenderCount={totalPassenderCount}
-            specificStyle={{ right: "0", top: "" }}
+            // specificStyle={{ right: "0", top: "" }}
+            specificStyle={"eh-tf"}
             setTravellerClass={setTravellerClass}
             selectedPassengerType={selectedPassengerType}
           />

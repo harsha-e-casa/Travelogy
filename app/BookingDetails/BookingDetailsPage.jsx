@@ -10,6 +10,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import Alldetails from "./Alldetials";
 import { postDataBookingDetails } from "@/services/NetworkAdapter";
 import { checkTokenExpiry } from "@/services/Utils";
+import "./style.css";
 
 const BookingDetailsPage = () => {
   const router = useRouter();
@@ -234,7 +235,7 @@ const BookingDetailsPage = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          <section className="box-section box-breadcrumb background-body">
+          <section className="box-section box-breadcrumb background-body m-px-10">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
@@ -304,7 +305,7 @@ const BookingDetailsPage = () => {
           {loading ? (
             <BookingSkeleton />
           ) : (
-            <section className="section-box  background-card">
+            <section className="section-box  background-card m-px-10">
               <div className="container pt-1">
                 <div className="row">
                   <div className="">

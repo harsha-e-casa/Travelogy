@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import React, { useEffect, useState, useContext } from "react";
 import { postData } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
+import "./style.css";
 
 const SeatBooking = ({
   numAdults,
@@ -495,8 +496,8 @@ const SeatBooking = ({
           onClick={() => setFlightSeat(null)}
         >
           <div
-            className="bg-white max-w-3xl overflow-y-auto p-6 rounded-lg relative"
-            style={{ maxHeight: "80vh", width: "60%" }}
+            className="bg-white max-w-3xl overflow-y-auto p-6 rounded-lg relative seat-booking-h"
+            // style={{ maxHeight: "80vh", width: "60%" }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
