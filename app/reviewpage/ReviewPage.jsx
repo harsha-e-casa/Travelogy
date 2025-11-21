@@ -17,7 +17,7 @@ import { useContext, useEffect, useState, Suspense } from "react";
 import { Tabs } from "antd";
 import { checkTokenExpiry } from "@/services/Utils";
 
-// import "./style.css"
+import "./style.css"
 
 import { format } from "date-fns";
 import * as React from "react";
@@ -1221,7 +1221,7 @@ const ReviewPage = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main relative">
-          <section className="box-section box-breadcrumb background-body">
+          <section className="box-section box-breadcrumb background-body m-px-10">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
@@ -1269,7 +1269,7 @@ const ReviewPage = () => {
             </div>
           </section>
 
-          <section className="section-box  background-card">
+          <section className="section-box  background-card m-px-10">
             <div className="container pt-1">
               <h4 className="neutral-1000">Review</h4>
               {loading ? (

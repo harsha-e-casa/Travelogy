@@ -1450,14 +1450,14 @@ const Alldetails = ({ totalpricee }) => {
                         >
                           &times;
                         </button>
-                        <h2 className="text-xl font-bold text-blue-800 mb-6">
+                        <h2 className="text-xl font-bold text-blue-800">
                           Reschedule Flight
                         </h2>
 
                         <div className="mb-4">
                           <label
                             htmlFor="pnr-select"
-                            className="block text-gray-500 mb-2"
+                            className="block text-gray-500"
                           >
                             Select PNR
                           </label>
@@ -1480,7 +1480,7 @@ const Alldetails = ({ totalpricee }) => {
 
                         {/* Display travel details after PNR selection */}
                         {selectedPNR && (
-                          <div className="mb-6 flex justify-around items-center">
+                          <div className="mb-6 flex justify-around">
                             <div>
                               <h6 className="font-bold text-gray-700">
                                 Travel Details:

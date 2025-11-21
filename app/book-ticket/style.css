@@ -1,4 +1,21 @@
 .session {
-    background-color: #f79421;
-    color: white;
+  background-color: #f79421;
+  color: white;
+}
+
+.m-px-10 {
+  @media (max-width: 1300px) {
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+  }
+}
+
+.seat-booking-h {
+  @media (max-width: 1300px) {
+    max-height: 65vh;
+  }
+  @media (min-width: 1300px) {
+    max-height: 80vh;
+  }
+  width: 60%;
 }
