@@ -2182,7 +2182,7 @@ export function Step4Payment({
       console.log("Booking success:", result);
       setTimeout(() => {
         onConfirmPayment(bookingId);
-      }, 1000);//time decreased to check the booking flow 
+      }, 1000);//time decreased to check the booking flow from 100000
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);

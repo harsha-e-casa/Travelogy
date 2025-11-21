@@ -12,7 +12,7 @@ export default function ContactContent() {
       <div className="container-fluid px-4">
         <div className="row justify-content-center">
           <div className="col-lg-10 col-xl-8">
-            <div className="card shadow-lg border-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', marginTop:'10px' }}>
+            <div className="card shadow-lg border-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', marginTop:'25px', width:'75%' }}>
               <div className="card-body p-30">
                 <div className="text-center mb-40">
                   <h1 className="heading-44-medium text-brand-1" style={{ fontSize: "32px" }}>Contact Us</h1>
@@ -26,11 +26,11 @@ export default function ContactContent() {
                     <h4 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }}>Contact Information</h4>
                     <div className="mb-15">
                       <strong className="text-brand-2">Phone:</strong>
-                      <p className="text-md neutral-700 mb-0">+91 9818739838</p>
+                      <p className="text-md neutral-700 mb-0">+91 95662 66061</p>
                     </div>
                     <div className="mb-15">
                       <strong className="text-brand-2">Email:</strong>
-                      <p className="text-md neutral-700 mb-0">support@travelogy.com</p>
+                      <p className="text-md neutral-700 mb-0">info@casagrandtravelogy.co.in</p>
                     </div>
                     <div className="mb-15">
                       <strong className="text-brand-2">Address:</strong>
@@ -56,11 +56,11 @@ export default function ContactContent() {
                   </div>
                 </div>
 
-                <div className="text-center mt-40">
+                {/* <div className="text-center mt-40">
                   <button className="btn btn-gray px-40 py-15">
                     Send Message
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
