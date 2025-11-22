@@ -6,6 +6,7 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import HotelData from "./hotelData";
 import { postData } from "@/services/NetworkAdapter";
+import "../HotelListingPage.css";
 
 const Modal = ({
   images,

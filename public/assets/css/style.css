@@ -12699,30 +12699,6 @@ h1 span {
   
 }
 
-/* Ensure images are responsive and fit within their container */
-.hotel-images-section {
-  display: flex; /* Use flexbox for alignment */
-  flex-wrap: wrap; /* Allow wrapping for smaller screens */
-  justify-content: center; /* Center images horizontally */
-  margin: 0 auto; /* Center the section */
-  max-width: 80%; /* Prevent overflow */
-}
-
-.hotel-images-section img {
-  max-width: 100%; /* Make images responsive */
-  height: auto; /* Maintain aspect ratio */
-  margin: 5px; /* Add some spacing between images */
-  border-radius: 8px; /* Optional: add rounded corners */
-}
-
-/* Media query for smaller screens */
-@media (max-width: 1025px) {
-  .hotel-images-section {
-    flex-direction: column; /* Stack images vertically on small screens */
-    align-items: center; /* Center images */
-  }
-}
-
 .box-list-tours .card-journey-small,
 .box-grid-tours .card-journey-small {
   margin-bottom: 24px;
@@ -18989,7 +18965,7 @@ h2 span {
 }
 
 
-@media screen and(max-width: 828px) {
+@media screen and (max-width: 828px) {
   .cus_mdls_pl {
     padding-left: 8px;
   }
@@ -19566,7 +19542,15 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   align-items: start !important;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
+  .stepper-guest-row {
+    /* grid-template-columns: 100px 200px 200px 100px !important; */
+    /* Title | First | Last | Action */
+    align-items: start !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1440px) {
   .stepper-guest-row {
     grid-template-columns: 100px 200px 200px 100px !important;
     /* Title | First | Last | Action */

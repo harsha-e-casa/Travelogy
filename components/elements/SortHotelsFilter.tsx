@@ -34,7 +34,7 @@ export default function SortHotelsFilter({
               href="/tour-grid"
             >
               <svg
-                width={12}
+                width={11}
                 height={22}
                 viewBox="0 0 22 22"
                 xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@ export default function SortHotelsFilter({
             </Link>
             <Link className="display-type display-list" href="/tour-list">
               <svg
-                width={21}
+                width={11}
                 height={21}
                 viewBox="0 0 21 21"
                 xmlns="http://www.w3.org/2000/svg"

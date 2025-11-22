@@ -18,6 +18,7 @@ import html2canvas from "html2canvas";
 import { postData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
+import "../../stepper/StepperPage.css";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
