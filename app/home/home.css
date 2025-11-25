@@ -232,7 +232,7 @@
     }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 426px) and (max-width: 768px) {
     .box-video-banner {
         height: 60vh;
     }
@@ -254,7 +254,7 @@
     }
     
     .home-title {
-        font-size: 2.2rem;
+        font-size: 32px;
         margin-top: 20px;
         margin-bottom: 20px;
         text-align: center;
@@ -284,13 +284,16 @@
     .box-button-home {
         text-align: center;
         margin-top: 30px;
+        margin-left: 250px;
     }
     
     .box-button-home .btn {
-        width: 100%;
+        width: 50%;
         margin-bottom: 15px;
         margin-right: 0;
         padding: 12px 20px;
+        display: block;
+        align-items: center;
     }
     
     .box-image-home {
@@ -310,6 +313,10 @@
     .service-icon img {
         width: 20px;
         height: 20px;
+    }
+    .box-image-home img {
+        width: 724px;
+        margin-left: 10px;
     }
 }
 
@@ -371,5 +378,17 @@
     
     .video-subtitle {
         font-size: 0.8rem;
+    }
+      .box-button-home .btn {
+        width: 60%;
+        margin-bottom: 15px;
+        margin-right: 0;
+        padding: 12px 20px;
+        display: block;
+        align-items: center;
+    }
+     .box-button-home {
+        text-align: center;
+        margin-top: 30px;
     }
 }

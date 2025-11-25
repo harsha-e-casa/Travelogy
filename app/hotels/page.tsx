@@ -54,7 +54,7 @@ export default function Home4() {
         <EngineTabsHotel active_border={"2"} />
 
          <TopCategory2 />
-          <section className="section-box mt-100 box-how-it-work-hotel-detail background-body">
+          <section className="section-box box-how-it-work-hotel-detail background-body">
           <div className="container">
             <div className="box-banner-left-how" />
             <div className="row">

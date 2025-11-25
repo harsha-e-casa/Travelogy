@@ -131,12 +131,24 @@ function normalizeHotelData(raw) {
     ),
   }));
 
-  // Extract pricing
-  const pricing = {
-    basePrice: ops.tp || 0,
-    taxes: ops.tpc || 0,
-    total: order?.amount || 0,
-  };
+  // Extract pricing - correctly calculate from room details
+  const pricing = (() => {
+    const roomPricing = (ops.ris || []).reduce(
+      (acc, room) => {
+        const tfcs = room.tfcs || {};
+        acc.basePrice += tfcs.BF || 0;  // Base Fare
+        acc.taxes += tfcs.TAF || 0;      // Taxes and Fees
+        return acc;
+      },
+      { basePrice: 0, taxes: 0 }
+    );
+    
+    return {
+      basePrice: roomPricing.basePrice,
+      taxes: roomPricing.taxes,
+      total: order?.amount || (roomPricing.basePrice + roomPricing.taxes),
+    };
+  })();
 
   // Cancellation policy
   const cancellationPolicy = ops.cnp?.pd || [];

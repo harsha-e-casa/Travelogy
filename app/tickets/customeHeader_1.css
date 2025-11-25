@@ -175,6 +175,16 @@
   }
 }
 
+  @media (max-width: 426px) {
+    .bg_cs_search {
+      display: none;
+    }
+    /* .hdt_header {
+      display: none;
+    } */
+  }
+  
+
 .multicity-scrollplace {
   width: 100%;
   overflow-x: auto;

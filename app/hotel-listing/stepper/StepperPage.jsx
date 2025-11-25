@@ -14,6 +14,7 @@ import {
   HotelReviewComponent,
   FareAmount,
 } from "./Stepper";
+import "./StepperPage.css";
 const Step1TravellerDetails = dynamic(
   () => import("./Stepper").then((mod) => mod.Step1TravellerDetails),
   { ssr: false }
@@ -283,7 +284,7 @@ export default function Stepper() {
       )}
       {!error && (
         <div className="bg-gray-50 flex flex-col items-center justify-center py-4">
-          <div className="w-full max-w-6xl relative flex justify-between mb-10">
+          <div className="w-full max-w-6xl relative flex justify-between mb-10 stepper-steps">
             <div className="w-full flex justify-between items-center relative mb-10">
               {steps.map((step, index) => {
                 const status =
@@ -361,7 +362,7 @@ export default function Stepper() {
               <Skeleton />
             ) : (
               <>
-                <div className="md:col-span-8 border-r-1">
+                <div className="md:col-span-8 border-r-1 stepper-content">
                   {currentStep === 1 && (
                     <Step1TravellerDetails
                       formData={formData}
@@ -406,8 +407,8 @@ export default function Stepper() {
                     />
                   )}
                 </div>
-                <div className="md:col-span-4">
-                  <div className="p-6 rounded-md text-sm space-y-4">
+                <div className="md:col-span-4 fare-summary-wrapper">
+                  <div className="p-1 rounded-md text-sm space-y-4 fare-summary">
                     <FareAmount
                       hotelReviewData={hotelReviewData}
                       Category={"bbook"}
