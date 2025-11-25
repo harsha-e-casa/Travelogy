@@ -91,6 +91,8 @@ export default function BookTicket() {
   const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
     useContext(AppContext);
 
+  const tripType = getCookie("gy_triptype");
+
   interface FlightSegment {
     id: string;
     dt: string;
@@ -1358,7 +1360,7 @@ export default function BookTicket() {
                       const segments = trip?.sI || [];
                       return (
                         <>
-                          {apiData?.tripInfos?.length <= 2 ? (
+                          {tripType != "multi-city" && apiData?.tripInfos?.length <= 2 ? (
                             idx === 0 ? (
                               <h5>Onward Journey</h5>
                             ) : idx === 1 ? (
@@ -2256,7 +2258,7 @@ export default function BookTicket() {
             </div>
           </section>
           {loading ? null : (
-            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center" style={{ zIndex: "10" }}>
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}

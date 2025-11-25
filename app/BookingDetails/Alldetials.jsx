@@ -482,7 +482,7 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   const handleUnHold = async () => {
-    setPaymentFailurePopup(false)
+    setPaymentFailurePopup(false);
     console.log("handleUnHold ==> ");
     console.log(bookingDetails);
     setModalLoading(true);
@@ -1376,45 +1376,42 @@ const Alldetails = ({ totalpricee }) => {
                     alignItems: "center",
                   }}
                 >
-                  {isNoPrintVisible && (
-                    <div className={isNoPrintVisible ? "" : "no-print"}>
-                      {bookingDetails?.order?.status === "SUCCESS" && (
-                        <div className="flex flex-row gap-3">
-                          <button
-                            className={isNoPrintVisible ? "" : "no-print"}
-                            style={{
-                              paddingTop: "5px",
-                              paddingBottom: "5px",
-                              paddingLeft: "10px",
-                              paddingRight: "10px",
-                            }}
-                            onClick={handleCancellation}
-                          >
-                            <AmendmentPopup
-                              bookingId={bookingId}
-                              bookingDetails={bookingDetails}
-                              onSubmit={(
+                  <div>
+                    {bookingDetails?.order?.status === "SUCCESS" && (
+                      <div className="flex flex-row gap-3">
+                        <button
+                          style={{
+                            paddingTop: "5px",
+                            paddingBottom: "5px",
+                            paddingLeft: "10px",
+                            paddingRight: "10px",
+                          }}
+                          onClick={handleCancellation}
+                        >
+                          <AmendmentPopup
+                            bookingId={bookingId}
+                            bookingDetails={bookingDetails}
+                            onSubmit={(
+                              bookingId,
+                              amendmentType,
+                              remarks,
+                              callback
+                            ) =>
+                              sumbitAmendmentapi(
                                 bookingId,
                                 amendmentType,
                                 remarks,
-                                callback
-                              ) =>
-                                sumbitAmendmentapi(
-                                  bookingId,
-                                  amendmentType,
-                                  remarks,
-                                  (data) => {
-                                    callback?.(data);
-                                    setShowTravellerModal(true);
-                                  }
-                                )
-                              }
-                            />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
+                                (data) => {
+                                  callback?.(data);
+                                  setShowTravellerModal(true);
+                                }
+                              )
+                            }
+                          />
+                        </button>
+                      </div>
+                    )}
+                  </div>
 
                   {!reStatus && isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>

@@ -654,7 +654,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
                             }}
                             src={`/assets/imgs/airlines/${segment[
                               "fD"
-                            ].aI.code.toLowerCase()}.png`}
+                            ].aI.code}.png`}
                           />
                         )}
                         {!isUat && (
@@ -664,7 +664,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
                               height: "35px",
                               padding: "1px",
                             }}
-                            src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                            src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
                           />
                         )}
                         <div>

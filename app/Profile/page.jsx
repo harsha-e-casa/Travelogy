@@ -492,6 +492,15 @@ const Page = () => {
                             </div>
                           </div>
 
+                          <div className="flex items-center">
+                            <div className=" login-lable">WALLET BALANCE</div>
+                          </div>
+                          <div className="flex items-center">
+                            <div className="text-blue-600 cursor-pointer login-value text-blue-500">
+                              RS. {!loading ? userData?.userData?.wallet_balance : 0.00}
+                            </div>
+                          </div>
+
                           {/* Password Section */}
                           {/* <div className="flex items-center">
                             <div className=" login-lable">PASSWORD</div>

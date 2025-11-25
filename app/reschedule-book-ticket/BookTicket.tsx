@@ -1696,7 +1696,10 @@ export default function BookTicket() {
 
                           {/* GST Number for  Business Travel (Optional) */}
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
-                            GST Number for Business Travel (Optional)
+                            GST Number for Business Travel{" "}
+                            {!apiData?.conditions?.gst?.igm && (
+                              <span>(Optional)</span>
+                            )}
                             <div>
                               <div className="px-4 py-3 border_xcolor_1px">
                                 <h2
@@ -1707,7 +1710,7 @@ export default function BookTicket() {
                                   Please enter your company's GST number
                                 </h2>
                                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                  <AppFormCompany form={form} />
+                                  <AppFormCompany form={form} manditory={apiData?.conditions?.gst?.igm}/>
                                 </p>
                               </div>
                             </div>
@@ -1828,7 +1831,7 @@ export default function BookTicket() {
             </div>
           </section>
           {loading ? null : (
-            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center" style={{ zIndex: "10" }}>
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
