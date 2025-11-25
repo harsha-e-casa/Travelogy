@@ -158,6 +158,10 @@ export default function Tickets() {
 
       // --- Track first error for scrolling/focus ---
       if (ok && (e.fromError || e.toError || e.dateError)) {
+        console.log("ok ",ok)
+        console.log("e.fromError ",e.fromError)
+        console.log("e.toError ",e.toError)
+        console.log("e.dateError ",e.dateError)
         ok = false;
         firstBadIndex = idx;
       }
@@ -767,10 +771,13 @@ export default function Tickets() {
     console.log("handlesearFlight ==> clicked ");
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       const pass = validateMultiCity({ focusFirstError: true });
+      console.log("pass ==> ",pass);
       if (!pass) return; // stop if invalid
     }
 
     if (fromError || toError) {
+      console.log("handleModifySearch fromError ",fromError)
+      console.log("handleModifySearch toError ",toError)
       return; // Do not proceed if there are city selection errors
     }
 

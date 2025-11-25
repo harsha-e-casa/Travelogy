@@ -14808,7 +14808,7 @@ a.link-black:hover svg {
   position: absolute;
   left: 40px;
   top: 10px;
-  z-index: 1;
+  /* z-index: 1; */
 }
 
 .box-timeline .item-timeline:last-child:after {

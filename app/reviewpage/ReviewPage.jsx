@@ -17,7 +17,7 @@ import { useContext, useEffect, useState, Suspense } from "react";
 import { Tabs } from "antd";
 import { checkTokenExpiry } from "@/services/Utils";
 
-import "./style.css"
+import "./style.css";
 
 import { format } from "date-fns";
 import * as React from "react";
@@ -33,6 +33,8 @@ const ReviewPage = () => {
   const payment = searchParams.get("payment");
 
   console.log("paymentpayment ==> ", payment);
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
   const [loading, setLoading] = useState(false);
   const [holdLoading, setHoldLoading] = useState(false);
@@ -77,8 +79,10 @@ const ReviewPage = () => {
   const [error, setError] = useState(null);
   const { getCookie } = useContext(AppContext);
   const [bookingLoading, setBookingLoading] = useState(false);
-  const [paymentData, setPaymentData] = useState(null);
-  const iframeRef = React.useRef(null);
+  const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
+  const [paymentModel, setPaymentModel] = useState(false);
+  const tripType = getCookie("gy_triptype");
 
   const [fareDetails, setFareDetails] = useState(null);
 
@@ -116,35 +120,6 @@ const ReviewPage = () => {
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (!paymentData || !iframeRef.current) return;
-
-    const { action, fields } = paymentData;
-    const { encRequest, access_code } = fields;
-
-    const formHtml = `
-    <html>
-      <body>
-        <form id="paymentForm" method="POST" action="${action}">
-          <input type="hidden" name="encRequest" value="${encRequest}" />
-          <input type="hidden" name="access_code" value="${access_code}" />
-        </form>
-        <script>
-          document.getElementById('paymentForm').submit();
-        </script>
-      </body>
-    </html>
-  `;
-
-    const iframeDoc = iframeRef.current.contentWindow.document;
-    iframeDoc.open();
-    iframeDoc.write(formHtml);
-    iframeDoc.close();
-
-    // You can stop "loading" spinner now if you want
-    setBookingLoading(false);
-  }, [paymentData]);
 
   useEffect(() => {
     const data = getCookie("travellerInfo");
@@ -899,7 +874,7 @@ const ReviewPage = () => {
     },
   ];
 
-  const loadDataBook = async (parameter) => {
+  const loadDataBook = async (parameter, wallet = false) => {
     try {
       console.log("final", parameter);
       // Call your API function with the properly constructed parameter
@@ -908,8 +883,13 @@ const ReviewPage = () => {
         action: "book",
         requestData: parameter,
       };
+
       const result = await postData("travelogy/one-way/fetch-data", reqData);
       console.log("loadDataBook =========== ", result);
+
+      // // test
+      // const result = { error: "Request failed with status code 400" };
+
       // const saveBookingId = async () => {
       //   const reqSaveBookingId = {
       //     booking_id: bookingId,
@@ -927,6 +907,22 @@ const ReviewPage = () => {
       if (result?.error) {
         console.log("result?.error ==> ", result?.error);
         setError(result?.error);
+        setPaymentFailurePopup(false);
+        setPaymentModel(false);
+
+        // if payed via wallet , revert amount to wallet.
+        if (wallet) {
+          await postData(
+            "travelogy/flight/refundWallet",
+            {
+              booking_id: bookingId,
+              amount: finalAmountToPay,
+            },
+            { Authorization: `Bearer ${token}` }
+          );
+
+          console.log("Wallet rollback done");
+        }
       } else {
         // setBookingLoading(false);
         router.push(
@@ -1014,8 +1010,95 @@ const ReviewPage = () => {
   //   }
   // };
 
+  const bookingReviewWIthWallet = async () => {
+    console.log("bookingReviewWIthWallet ==> ");
+    setBookingLoadingWallet(true);
+    setPaymsg("");
+
+    console.log("travellers (before update)", travellers);
+    console.log("totalprice bookingId", totalprice, bookingId);
+
+    const gstInfoCookies = getCookie("gst_info");
+    console.log("gstInfoCookies = ", gstInfoCookies);
+    const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
+    console.log("gstInfos = ", gstInfos);
+
+    const segmentinfo =
+      flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
+
+    if (totalprice && bookingId) {
+      const parameter = {
+        bookingId,
+        paymentInfos: [{ amount: finalAmountToPay }],
+        travellerInfo: travellers,
+        deliveryInfo: {
+          emails: [email],
+          contacts: [`${number.code}${number.number}`],
+        },
+      };
+
+      if (gstInfos && Object.keys(gstInfos).length > 0) {
+        console.log("gstInfo irukan");
+        parameter.gstInfo = { ...gstInfos };
+      }
+
+      console.log("travellerInfo (final):", parameter.travellerInfo);
+      console.log("parameter for book:", parameter);
+
+      const saveBookingId = async () => {
+        const reqSaveBookingId = {
+          type: "save",
+          booking_id: bookingId,
+          phone: number.number,
+          amount: finalAmountToPay,
+          status: "",
+          time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+          fareType: getCookie("gy_passender_type"),
+        };
+        const result = await postData(
+          "travelogy/flight/save-booking",
+          reqSaveBookingId
+        );
+        console.log("saveBookingId result ===>", result);
+      };
+      // saveBookingId();
+
+      // reduce amount in wallet and call the third party apis
+      const payWallet = async () => {
+        const reqpayWallet = {
+          booking_id: bookingId,
+          amount: finalAmountToPay,
+        };
+        const result = await postData(
+          "travelogy/flight/payWallet",
+          reqpayWallet,
+          { Authorization: `Bearer ${token}` }
+        );
+        console.log("saveBookingId result ===>", result);
+        return result;
+      };
+      const payWalletRes = await payWallet();
+      console.log("payWalletRes ==> ", payWalletRes);
+      console.log("payWalletRes ==> ", payWalletRes.success);
+
+      if (payWalletRes?.success && payWalletRes.success == true) {
+        saveBookingId();
+        loadDataBook(parameter, true);
+      } else {
+        // handle edge case
+        setPaymsg(payWalletRes);
+        setBookingLoadingWallet(false);
+      }
+
+      // loadDataBook(parameter);
+    } else {
+      console.error("Booking ID or total price is missing");
+    }
+  };
+
   const bookingReview = () => {
     setBookingLoading(true);
+    setPaymsg("");
 
     console.log("travellers (before update)", travellers);
     console.log("totalprice bookingId", totalprice, bookingId);
@@ -1335,12 +1418,15 @@ const ReviewPage = () => {
                             const tripInfosLength =
                               flightData?.tripInfos?.length;
 
-                            const trevellInfo =
-                              tripInfosLength > 2
+                            let trevellInfo = ""
+                            if (tripType != "multi-city") {
+                              trevellInfo =
+                              tripInfosLength >= 2
                                 ? " "
                                 : tripIndex === 0
                                 ? "Onward journey"
                                 : "Return journey";
+                            }
                             const trevellInfoStyle =
                               tripIndex === 0
                                 ? { padding: "0 0 1rem 0" }
@@ -2625,6 +2711,12 @@ const ReviewPage = () => {
                                   continue
                                 </div> */}
                                 <div
+                                  onClick={() => setPaymentModel(true)}
+                                  className="cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center bg-yellow-300 hover:bg-yellow-400"
+                                >
+                                  Continue
+                                </div>
+                                {/* <div
                                   onClick={bookingReview}
                                   className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
                                     bookingLoading
@@ -2660,21 +2752,7 @@ const ReviewPage = () => {
                                   ) : (
                                     "Continue"
                                   )}
-                                </div>
-                                {paymentData && (
-                                  <div style={{ marginTop: 24 }}>
-                                    <h3>Complete your payment</h3>
-                                    <iframe
-                                      ref={iframeRef}
-                                      title="CCAvenue Payment"
-                                      style={{
-                                        width: "100%",
-                                        height: "700px",
-                                        border: "0",
-                                      }}
-                                    />
-                                  </div>
-                                )}
+                                </div> */}
                               </div>
                             </div>
                           </form>
@@ -2774,29 +2852,22 @@ const ReviewPage = () => {
                           "Retry Payment"
                         )}
                       </div>
-                      {paymentData && (
-                        <div style={{ marginTop: 24 }}>
-                          <h3>Complete your payment</h3>
-                          <iframe
-                            ref={iframeRef}
-                            title="CCAvenue Payment"
-                            style={{
-                              width: "100%",
-                              height: "700px",
-                              border: "0",
-                            }}
-                          />
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
               )} */}
               {paymentFailurePopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative">
+                  <div
+                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
+                    style={{ width: "35%" }}
+                  >
                     <button
-                      onClick={() => setPaymentFailurePopup(false)}
+                      // onClick={() => setPaymentFailurePopup(false)}
+                      onClick={() => {
+                        setPaymentFailurePopup(false);
+                        setPaymsg("");
+                      }}
                       className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
                     >
                       ×
@@ -2827,6 +2898,44 @@ const ReviewPage = () => {
                           Hold Booking
                         </div>
                       )}
+
+                      <div
+                        onClick={bookingReviewWIthWallet}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                          bookingLoadingWallet
+                            ? "bg-gray-300"
+                            : "bg-yellow-300 hover:bg-yellow-400"
+                        }`}
+                        disabled={bookingLoadingWallet}
+                      >
+                        {bookingLoadingWallet ? (
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="animate-spin h-5 w-5 text-black"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              ></path>
+                            </svg>
+                            <span>Loading...</span>
+                          </div>
+                        ) : (
+                          "Wallet Payment"
+                        )}
+                      </div>
 
                       <div
                         onClick={bookingReview}
@@ -2866,20 +2975,128 @@ const ReviewPage = () => {
                         )}
                       </div>
                     </div>
+                    {paymsg && (
+                      <p
+                        className="text-red-600 pt-2"
+                        style={{ textAlign: "center" }}
+                      >
+                        {paymsg.message}, Balance: {paymsg.balance}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              {paymentModel && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                  <div
+                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
+                    style={{ width: "35%" }}
+                  >
+                    <button
+                      // onClick={() => setPaymentFailurePopup(false)}
+                      onClick={() => {
+                        setPaymentModel(false);
+                        setPaymsg("");
+                      }}
+                      className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+                    >
+                      ×
+                    </button>
 
-                    {paymentData && (
-                      <div style={{ marginTop: 24 }}>
-                        <h3>Complete your payment</h3>
-                        <iframe
-                          ref={iframeRef}
-                          title="CCAvenue Payment"
-                          style={{
-                            width: "100%",
-                            height: "700px",
-                            border: "0",
-                          }}
-                        />
+                    <p className="text-black-600 mb-2 font-semibold">
+                      Choose Payment Mode
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-around",
+                        paddingTop: "10px",
+                      }}
+                    >
+                      <div
+                        onClick={bookingReviewWIthWallet}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                          bookingLoadingWallet
+                            ? "bg-gray-300"
+                            : "bg-yellow-300 hover:bg-yellow-400"
+                        }`}
+                        disabled={bookingLoadingWallet}
+                      >
+                        {bookingLoadingWallet ? (
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="animate-spin h-5 w-5 text-black"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              ></path>
+                            </svg>
+                            <span>Loading...</span>
+                          </div>
+                        ) : (
+                          "Wallet Payment"
+                        )}
                       </div>
+
+                      <div
+                        onClick={bookingReview}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                          bookingLoading
+                            ? "bg-gray-300"
+                            : "bg-yellow-300 hover:bg-yellow-400"
+                        }`}
+                        disabled={bookingLoading}
+                      >
+                        {bookingLoading ? (
+                          <div className="flex items-center gap-2">
+                            <svg
+                              className="animate-spin h-5 w-5 text-black"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                            >
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              ></circle>
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                              ></path>
+                            </svg>
+                            <span>Loading...</span>
+                          </div>
+                        ) : (
+                          "Pay via Gateway"
+                        )}
+                      </div>
+                    </div>
+                    {paymsg && (
+                      <p
+                        className="text-red-600 pt-2"
+                        style={{ textAlign: "center" }}
+                      >
+                        {paymsg.message}, Balance: {paymsg.balance}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -2887,7 +3104,7 @@ const ReviewPage = () => {
             </div>
           </section>
           {loading ? null : (
-            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center" style={{ zIndex: "10" }}>
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
