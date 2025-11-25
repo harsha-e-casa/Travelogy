@@ -26,7 +26,7 @@ const Modal = ({
     if (isOpen && standardImages.length > 0) {
       setSelectedImage(
         standardImages[0]?.url ||
-          "https://via.placeholder.com/400x300.png?text=No+Image+Available"
+        "https://via.placeholder.com/400x300.png?text=No+Image+Available"
       );
     }
   }, [isOpen, standardImages, setSelectedImage]);
@@ -47,7 +47,7 @@ const Modal = ({
     if (standardImages.length > 0) {
       setSelectedImage(
         standardImages[currentIndex]?.url ||
-          "https://via.placeholder.com/400x300.png?text=No+Image+Available"
+        "https://via.placeholder.com/400x300.png?text=No+Image+Available"
       );
     }
   }, [currentIndex, standardImages, setSelectedImage]);
@@ -128,8 +128,8 @@ export default function ActivitiesDetail4() {
       childAge: Array.isArray(childAge)
         ? childAge
         : Array.isArray(childAges)
-        ? childAges
-        : [],
+          ? childAges
+          : [],
     }));
   const toggleTraveller = () => {
     setShowTraveller((prevState) => !prevState);
@@ -204,23 +204,23 @@ export default function ActivitiesDetail4() {
         setAvailabilityError(null); // Clear availability error on success
         console.log("roomInfo", response.searchQuery?.roomInfo);
       } else {
-        console.log('error',response?.error);
+        console.log('error', response?.error);
         const errorMessage = response?.error || "Error fetching hotel details";
-        
+
         // Check if it's a network/server error (status codes, request failed, etc.)
-        const isNetworkError = errorMessage.toLowerCase().includes('status code') || 
-                               errorMessage.toLowerCase().includes('request failed') ||
-                               errorMessage.toLowerCase().includes('network error') ||
-                               errorMessage.toLowerCase().includes('timeout');
-        
+        const isNetworkError = errorMessage.toLowerCase().includes('status code') ||
+          errorMessage.toLowerCase().includes('request failed') ||
+          errorMessage.toLowerCase().includes('network error') ||
+          errorMessage.toLowerCase().includes('timeout');
+
         // Check if it's an availability error (hotel not available, no rooms, etc.)
         const isAvailabilityError = !isNetworkError && (
-          errorMessage.toLowerCase().includes('no longer available') || 
+          errorMessage.toLowerCase().includes('no longer available') ||
           errorMessage.toLowerCase().includes('not available') ||
           errorMessage.toLowerCase().includes('no rooms') ||
           response?.status === undefined
         );
-        
+
         if (isAvailabilityError && hotelData) {
           // If we already have hotel data, show error in availability section (booking card)
           setAvailabilityError(errorMessage);
@@ -244,7 +244,7 @@ export default function ActivitiesDetail4() {
 
   useEffect(() => {
     if (!readyRef.current) return;
-    
+
     const normalizedRooms = normalizeRooms(roomsData);
     const roomsChanged =
       JSON.stringify(normalizedRooms) !== prevRoomsData.current;
@@ -275,7 +275,7 @@ export default function ActivitiesDetail4() {
         checkoutDate,
         roomInfo: normalizedRooms,
       });
-      
+
       fetchHotelDetails(
         {
           checkinDate,
@@ -288,7 +288,7 @@ export default function ActivitiesDetail4() {
       prevCheckinDate.current = checkinDate;
       prevCheckoutDate.current = checkoutDate;
       prevRoomsData.current = JSON.stringify(normalizedRooms);
-      
+
       // Reset trigger after fetch
       if (triggerFetch > 0) {
         setTriggerFetch(0);
@@ -299,7 +299,7 @@ export default function ActivitiesDetail4() {
       if (isCheckinChanged) {
         prevCheckinDate.current = checkinDate;
       }
-      
+
       if (isCheckoutChanged) {
         prevCheckoutDate.current = checkoutDate;
       }
@@ -425,24 +425,24 @@ export default function ActivitiesDetail4() {
   const rating = hotelData?.rt || 0;
   const filledStars = Math.round(rating);
   const { ln, lt } = hotelData?.gl || {};
-  
+
   // Create a more descriptive Google Maps URL with hotel name and address
   const hotelName = hotelData?.name || "Hotel";
   const hotelAddress = hotelData?.ad?.adr || "";
   const hotelCity = hotelData?.ad?.city?.name || "";
   const hotelCountry = hotelData?.ad?.country?.name || "";
-  
+
   // Encode the search query for Google Maps
   const searchQuery = encodeURIComponent(`${hotelName}, ${hotelAddress}, ${hotelCity}, ${hotelCountry}`);
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
-  
+
   const images = hotelData?.img || [];
-  
+
   // Filter XXL images for display
   const displayImages = images.filter((image) => !image.sz || image.sz === "XXL");
   const totalImageCount = displayImages.length;
   const hasMultipleImages = totalImageCount > 1;
-  
+
   // Debug: Log the images to see what we're working with
   console.log('Hotel images:', images);
   console.log('Display images:', displayImages);
@@ -461,9 +461,9 @@ export default function ActivitiesDetail4() {
       <main className="main">
         <section className="box-section box-content-tour-detail background-body">
           <div className="container">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-8">
-                 <div className="box-banner-activities-detail-4">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+              <div className="xl:col-span-8 order-1 px-4 md:px-6 lg:px-8 xl:px-0">
+                <div className="box-banner-activities-detail-4">
                   <div className={`image-gallery ${hasMultipleImages ? 'has-button-overlay' : ''}`}>
                     <div className="image-row">
                       <div className={`image-column ${hasMultipleImages ? 'has-overlay' : ''}`}>
@@ -544,7 +544,9 @@ export default function ActivitiesDetail4() {
                     )}
                   </div>
                 </div>
+              </div>
 
+              <div className="xl:col-span-8 order-3 px-4 md:px-6 lg:px-8 xl:px-0">
                 <div className="box-collapse-expand">
                   <div className="group-collapse-expand">
                     <button
@@ -580,9 +582,9 @@ export default function ActivitiesDetail4() {
                               const hasDoubleSpace = value.includes("  ");
                               const listItems = hasDoubleSpace
                                 ? value
-                                    .split(/ {2,}/)
-                                    .map((item) => item.trim())
-                                    .filter(Boolean)
+                                  .split(/ {2,}/)
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
                                 : [];
 
                               return (
@@ -692,8 +694,8 @@ export default function ActivitiesDetail4() {
                   />
                 </div>
               </div>
-              <div className="lg:col-span-4">
-                <div className="sticky top-4">
+              <div className="xl:col-span-4 order-2 xl:row-span-2 px-4 md:px-6 lg:px-8 xl:px-0">
+                <div className="xl:sticky xl:top-4">
                   <div className="tour-header">
                     <div className="tour-title-main">
                       <h6 className="neutral-1000">
@@ -778,7 +780,7 @@ export default function ActivitiesDetail4() {
                       showTraveller={showTraveller}
                       roomsData={roomsData}
                       setRoomsData={setRoomsData}
-                      openDateRange={openDateRange} 
+                      openDateRange={openDateRange}
                       setOpenDateRange={setOpenDateRange}
                       availabilityError={availabilityError}
                     />

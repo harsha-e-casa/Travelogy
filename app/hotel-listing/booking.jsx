@@ -26,7 +26,7 @@ export default function BookingCard({
   showTraveller,
   roomsData,
   setRoomsData,
-  openDateRange, 
+  openDateRange,
   setOpenDateRange,
   availabilityError
 }) {
@@ -110,7 +110,7 @@ export default function BookingCard({
             </svg>
           </a>
         </div>
-        
+
         {/* Display availability error if present */}
         {availabilityError && (
           <div className="mt-3 p-3 bg-red-50 border border-red-300 rounded-md">
@@ -135,7 +135,7 @@ export default function BookingCard({
           {/* Check availability */}
           Check Avaiability
         </h5>
-        <div className="grid grid-cols-3 gap-1">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-1">
           <div className="relative">
             <button
               onClick={(e) => {
@@ -166,23 +166,23 @@ export default function BookingCard({
                   setDatedep={(date) => {
                     const newDate = date ? date.format("YYYY-MM-DD") : null;
                     const dateChanged = newDate !== checkinDate;
-                    
+
                     if (dateChanged && newDate) {
                       // Store new check-in date in ref (temporary)
                       tempCheckinRef.current = newDate;
-                      
+
                       // Calculate new checkout date (check-in + 1 day) and store in ref
                       const newCheckoutDate = dayjs(newDate).add(1, "day").format("YYYY-MM-DD");
                       tempCheckoutRef.current = newCheckoutDate;
-                      
+
                       // Update check-in date in state
                       setCheckinDate(newDate);
-                      
+
                       // DON'T clear checkout or trigger fetch yet - wait for checkout confirmation
                     } else {
                       setCheckinDate(newDate);
                     }
-                    
+
                     // Always open checkout picker after selecting check-in
                     setOpenDateRange("checkout");
                   }}
@@ -222,37 +222,37 @@ export default function BookingCard({
                   }}
                   setDatedep={(date) => {
                     const newDate = date ? date.format("YYYY-MM-DD") : null;
-                    
+
                     console.log('Checkout date selected:', {
                       newDate,
                       currentCheckoutDate: checkoutDate,
                       tempCheckin: tempCheckinRef.current,
                       tempCheckout: tempCheckoutRef.current
                     });
-                    
+
                     // Check if we have a temporary check-in date from recent selection
                     const effectiveCheckinDate = tempCheckinRef.current || checkinDate;
-                    
+
                     if (newDate && effectiveCheckinDate) {
                       console.log('Triggering fetch with:', {
                         checkin: effectiveCheckinDate,
                         checkout: newDate
                       });
-                      
+
                       // If we have a temp check-in, update it
                       if (tempCheckinRef.current) {
                         setCheckinDate(tempCheckinRef.current);
                       }
-                      
+
                       // Update the checkout date
                       setCheckoutDate(newDate);
-                      
+
                       // Always trigger fetch when user selects a checkout date
                       setTriggerFetch(prev => {
                         console.log('setTriggerFetch called, prev:', prev);
                         return prev + 1;
                       });
-                      
+
                       // Clear the temp refs after processing
                       tempCheckinRef.current = null;
                       tempCheckoutRef.current = null;
@@ -260,7 +260,7 @@ export default function BookingCard({
                       // Just update checkout if no valid dates
                       setCheckoutDate(newDate);
                     }
-                    
+
                     setOpenDateRange(null);
                   }}
                 />
@@ -276,9 +276,9 @@ export default function BookingCard({
               <span className="p-2 text-xs font-semibold">
                 {checkinDate && displayCheckoutDate
                   ? Math.ceil(
-                      (new Date(displayCheckoutDate) - new Date(checkinDate)) /
-                        (1000 * 60 * 60 * 24)
-                    )
+                    (new Date(displayCheckoutDate) - new Date(checkinDate)) /
+                    (1000 * 60 * 60 * 24)
+                  )
                   : "-"}
               </span>
             </div>
