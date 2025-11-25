@@ -112,12 +112,16 @@
   }
   
   .price-container {
-    justify-content: center;
+    justify-content: left;
   }
   
   .btn-book-now {
     width: 100%;
     padding: 10px 16px;
+  }
+
+  .book-button-container {
+    width:90%;
   }
 }
 
@@ -141,6 +145,10 @@
   .btn-book-now {
     font-size: 0.8rem;
     padding: 8px 12px;
+  }
+
+  .book-button-container {
+    width:90%;
   }
 }
 

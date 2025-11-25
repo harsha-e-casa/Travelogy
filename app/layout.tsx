@@ -1,5 +1,6 @@
 import 'react-perfect-scrollbar/dist/css/styles.css'
-import "/public/assets/css/style.css"
+import "../public/assets/css/style.css"
+// import "../public/assets/css/stepper-responsive.css"
 import type { Metadata } from "next"
 import { Manrope, Merienda } from "next/font/google"
 import { AppContextProvider } from '../util/AppContext';

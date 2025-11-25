@@ -14,6 +14,7 @@ import Layout from "@/components/layout/Layout";
 // import rawHotelsData from "@/util/hotels.json";
 import useHotelFilter, { Hotel } from "@/util/useHotelFilter";
 import "../tickets/customeHeader_1.css";
+import "./HotelListingPage.css";
 import { useSearchParams, useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -51,6 +52,7 @@ type AppDateRageProps = {
 };
 export default function HotelListing() {
   const [loading, setLoading] = useState(true); // Loading state to wait for client-side rendering
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // State for mobile filter panel
   const router = useRouter();
   const searchParams = useSearchParams();
   const location = searchParams.get("location");
@@ -228,6 +230,42 @@ export default function HotelListing() {
 
   const [showTraveller, setShowTraveller] = useState(false);
   const [showPriceFilter, setShowPriceFilter] = useState(true);
+  
+  // Toggle filter panel for mobile
+  const toggleFilterPanel = () => {
+    setIsFilterOpen(!isFilterOpen);
+  };
+
+  // Close filter panel with animation
+  const closeFilterPanel = () => {
+    // Add closing class to trigger exit animation
+    const panel = document.querySelector('.mobile-filter-panel');
+    const backdrop = document.querySelector('.filter-backdrop');
+    
+    if (panel && backdrop) {
+      panel.classList.add('closing');
+      backdrop.classList.add('closing');
+      
+      // Wait for animation to complete before removing from DOM
+      setTimeout(() => {
+        setIsFilterOpen(false);
+      }, 400); // Match animation duration
+    } else {
+      setIsFilterOpen(false);
+    }
+  };
+
+  // Prevent body scroll when filter panel is open
+  useEffect(() => {
+    if (isFilterOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isFilterOpen]);
   const [selectFrom, setSelectFrom] = useState<{
     cityName: string;
     countryName: string;
@@ -951,17 +989,22 @@ export default function HotelListing() {
               </div>
 
               <div
-                className="hdt_header-item hotel_room"
+                className="hdt_header-item"
                 onClick={(e) => e.stopPropagation()}
               >
-                <label>Rooms & Guest</label>
-                <button onClick={toggleTraveller}>
-                  <div className="input-field text-base font-bold">
+                <label className="">Rooms & Guest</label>
+                <div className="input-field text-base font-bold mb-5 mt-8">
+                <button onClick={toggleTraveller} style={{
+                
+                  background: "none",
+                  border: 0,
+                  padding: "1px 10px",
+                  fontWeight: 700}}>
                     {totalAdults} Adult{totalAdults > 1 ? "s" : ""},
                     {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
                     {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
-                  </div>
                 </button>
+                </div>
                 {showTraveller && (
                   <div onClick={(e) => e.stopPropagation()}>
                     {" "}
@@ -993,9 +1036,9 @@ export default function HotelListing() {
           </div>
 
           <section className="box-section block-content-tourlist background-body min-h-screen">
-            <div className="container-fluid" style={{ width: "93%" }}>
+            <div className="container-fluid" style={{ width: "98%" }}>
               <div className="">
-                <div className="box-content-main top-24 left-0 right-0 z-10 bg-white w-[93%] mx-auto flex flex-col lg:flex-row h-[calc(100vh-6rem)]  gap-3">
+                <div className="box-content-main top-14 left-0 right-0 z-10 bg-white w-[93%] mx-auto flex flex-col lg:flex-row h-[calc(100vh-6rem)]  gap-3">
                   <div className="content-right lg:w-3/4 overflow-y-auto p-3 h-full overflow-hidden">
                     <div className="box-filters mb-25 pb-5 border-bottom border-1">
                       <SortHotelsFilter
@@ -1007,6 +1050,7 @@ export default function HotelListing() {
                         startItemIndex={startItemIndex}
                         endItemIndex={endItemIndex}
                         totalResults={sortedHotels.length}
+                        onFilterClick={toggleFilterPanel}
                       />
                     </div>
                     <div className="box-grid-tours wow fadeIn">
@@ -1091,7 +1135,8 @@ export default function HotelListing() {
                       handlePageChange={handlePageChange}
                     />
                   </div>
-                  <div className="content-left order-lg-first lg:w-1/4 min-w-[250px] overflow-y-auto bg-white p-4 h-full">
+                  {/* Desktop Filter Sidebar */}
+                  <div className="content-left order-lg-first lg:w-1/4 min-w-[250px] overflow-y-auto bg-white p-2 h-full desktop-filters">
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
                         <div className="block-filter border-1">
@@ -1185,6 +1230,117 @@ export default function HotelListing() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Mobile Filter Panel - Slides in from bottom-right */}
+                  {isFilterOpen && (
+                    <>
+                      {/* Backdrop Overlay */}
+                      <div 
+                        className="filter-backdrop"
+                        onClick={closeFilterPanel}
+                      />
+                      
+                      {/* Filter Panel */}
+                      <div className={`mobile-filter-panel ${isFilterOpen ? 'open' : ''}`}>
+                        {/* Panel Header */}
+                        <div className="filter-panel-header">
+                          <h3 className="filter-panel-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                              <path d="M3 3h18L14 12v7l-4 2v-9L3 3z" fill="black"/>
+                            </svg>
+                            Filters</h3>
+                          <button 
+                            className="filter-close-btn"
+                            onClick={closeFilterPanel}
+                            aria-label="Close Filters"
+                          >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          </button>
+                        </div>
+
+                        {/* Panel Content */}
+                        <div className="filter-panel-content">
+                          <div className="sidebar-left border-1 background-body">
+                            <div className="box-filters-sidebar">
+                              <div className="block-filter border-1">
+                                <div
+                                  className=" cursor-pointer"
+                                  onClick={() => setShowPriceFilter(!showPriceFilter)}
+                                >
+                                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                                    Price{" "}
+                                  </h6>
+                                </div>
+                                {showPriceFilter && (
+                                  <ByPrice
+                                    priceRange={priceRange}
+                                    setPriceRange={setPriceRange}
+                                    minPriceRange={minPriceRange}
+                                    maxPriceRange={maxPriceRange}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="sidebar-left border-1 background-body">
+                            <div className="box-filters-sidebar">
+                              <div className="block-filter border-1">
+                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                  Property Type
+                                </h6>
+                                <ByHotelType
+                                  uniqueHotelsType={uniqueHotelsType}
+                                  filter={filter}
+                                  handleCheckboxChange={handleCheckboxChange}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="sidebar-left border-1 background-body">
+                            <div className="box-filters-sidebar">
+                              <div className="block-filter border-1">
+                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                  Star Rating{" "}
+                                </h6>
+                                <ByRating
+                                  uniqueRatings={uniqueRatings}
+                                  filter={filter}
+                                  handleCheckboxChange={handleCheckboxChange}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="sidebar-left border-1 background-body">
+                            <div className="box-filters-sidebar">
+                              <div className="block-filter border-1">
+                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                  Location
+                                </h6>
+                                <ByLocation
+                                  uniqueLocations={uniqueLocations}
+                                  filter={filter}
+                                  handleCheckboxChange={handleCheckboxChange}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Panel Footer with Apply Button */}
+                        {/* <div className="filter-panel-footer">
+                          <button 
+                            className="filter-apply-btn"
+                            onClick={closeFilterPanel}
+                          >
+                            Apply Filters
+                          </button>
+                        </div> */}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -1232,7 +1388,7 @@ export default function HotelListing() {
               </div>
             </div>
           </section> */}
-          <div className="pb-90 background-body" />
+          <div className="pb-50 background-body" />
         </main>
       </Layout>
     </Suspense>

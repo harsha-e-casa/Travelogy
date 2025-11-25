@@ -12621,7 +12621,7 @@ h1 span {
 }
 
 .box-content-main {
-  padding: 56px 0px 90px 0px;
+  padding: 15px 0px 40px 0px;
 }
 
 .box-content-main #dropdownSort {
@@ -12640,7 +12640,7 @@ h1 span {
   align-items: center;
   border: 1px solid var(--bs-border-color);
   border-radius: 4px;
-  padding: 7px;
+  padding: 0px;
   margin-left: 4px;
 }
 
@@ -12675,7 +12675,7 @@ h1 span {
 
 .display-type {
   display: inline-block;
-  margin-right: 10px;
+  /* margin-right: 10px; */
 }
 
 .display-type svg {
@@ -12688,7 +12688,15 @@ h1 span {
 
 .number-found {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 0;
+}
+
+@media (min-width: 769px) and (max-width: 1075px) {
+  .number-found {
+    display: block;
+    margin-left: 0px;
+  }
+  
 }
 
 .box-list-tours .card-journey-small,
@@ -18957,7 +18965,7 @@ h2 span {
 }
 
 
-@media screen and(max-width: 828px) {
+@media screen and (max-width: 828px) {
   .cus_mdls_pl {
     padding-left: 8px;
   }
@@ -19139,11 +19147,19 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   display: block;
 }
 
-.hotel_room .bx_shadow_dr1 {
+ .bx_shadow_dr1 {
   width: 22%;
   right: 27%;
   top: 100px;
   min-height: 250px;
+  color: #000;
+}
+
+.hotel_room {
+  width: 22%;
+  right: 27%;
+  top: 100px;
+  min-height: 220px;
   color: #000;
 }
 
@@ -19506,6 +19522,16 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   height: 40px !important;
 }
 
+.stepper_select-Mr {
+  width: 65px !important;
+  height: 40px !important;
+}
+
+.stepper_select-Master {
+  width: 90px !important;
+  height: 40px !important;
+}
+
 /* styles.css or global.css */
 .stepper-guest-row {
   display: grid !important;
@@ -19516,7 +19542,15 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   align-items: start !important;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
+  .stepper-guest-row {
+    /* grid-template-columns: 100px 200px 200px 100px !important; */
+    /* Title | First | Last | Action */
+    align-items: start !important;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1440px) {
   .stepper-guest-row {
     grid-template-columns: 100px 200px 200px 100px !important;
     /* Title | First | Last | Action */
