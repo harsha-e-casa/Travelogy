@@ -5,6 +5,7 @@ import {
 } from "@/services/NetworkAdapter";
 import { Dayjs } from "dayjs";
 import { useState } from "react";
+import "./style.css";
 
 // import cancelAmendmentCharges1 from "./cancelAmendmentCharges1.json";
 
@@ -101,8 +102,8 @@ const TravellerDetailsModal = ({
       style={{ background: "grey" }}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl relative overflow-y-auto"
-        style={{ top: "3%" }}
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl relative overflow-y-auto traveller-modal-t"
+        // style={{ top: "3%" }}
       >
         <div>
           <div className="flex flex-row justify-between items-center pr-20 ">
@@ -646,6 +647,7 @@ const TravellerDetailsModal = ({
               onClick={() => {
                 setShowDetailsModal(false);
                 handleClose();
+                window.location.reload();
               }}
               className="absolute top-4 right-4 text-2xl text-black"
             >

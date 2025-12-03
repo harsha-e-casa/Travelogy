@@ -22,6 +22,7 @@ import { type } from "os";
 import BookingForm from "@/components/elements/BookingForm";
 import { DatePicker } from "antd";
 import { printTicket, downloadTicketPdf } from "./TicketPrint";
+import "./style.css";
 
 // import staticBookingData from "./staticBookingData.json";
 
@@ -35,6 +36,8 @@ const Alldetails = ({ totalpricee }) => {
   const [paymentFailurePopup, setPaymentFailurePopup] = useState(
     new URLSearchParams(window.location.search).get("payment") === "retry"
   );
+  const [paymentModel, setPaymentModel] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
 
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
@@ -51,6 +54,8 @@ const Alldetails = ({ totalpricee }) => {
 
   const [ticketData, setTicketData] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
 
   useEffect(() => {
     // setTicketData(...) once your parent passes it or your API completes.
@@ -108,6 +113,9 @@ const Alldetails = ({ totalpricee }) => {
     if (!ticketData) return;
     printTicket(ticketData);
   };
+
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
   const [amendmentId, setAmendmentId] = useState(null);
   const [submitAmmendmentDetails, setSumitAmendmentDetails] = useState(null);
@@ -453,7 +461,7 @@ const Alldetails = ({ totalpricee }) => {
         setRescheduleLoading(false);
       }
     } catch (error) {
-      console.log("handlePayNow error ", error);
+      console.log("handleSubmitReIssue error ", error);
     }
   };
 
@@ -791,7 +799,8 @@ const Alldetails = ({ totalpricee }) => {
 
   const handlePayNow = async () => {
     setPaymentFailurePopup(false);
-    setModalLoading(true);
+    // setModalLoading(true);
+    setBookingLoading(true);
 
     try {
       // 1. Validate Fare
@@ -870,7 +879,8 @@ const Alldetails = ({ totalpricee }) => {
       console.log("handlePayNow error ", error);
     }
 
-    setModalLoading(false);
+    // setModalLoading(false);
+    setBookingLoading(true);
   };
 
   function formatDateTime(isoString) {
@@ -1308,6 +1318,106 @@ const Alldetails = ({ totalpricee }) => {
     return { flightNumber, julianDate, flightCode };
   };
 
+  const bookingReviewWIthWallet = async () => {
+    setBookingLoadingWallet(true);
+    setPaymsg("");
+
+    const fetchBookingData = await postData(
+      "travelogy/flight/fetch-booking-data",
+      { bookingId }
+    );
+
+    const payableAmount = fetchBookingData?.data?.[0]?.amount;
+
+    if (!payableAmount) {
+      console.log("no amount found");
+    }
+
+    const payWallet = async () => {
+      const reqpayWallet = {
+        booking_id: bookingId,
+        amount: payableAmount,
+      };
+      const result = await postData(
+        "travelogy/flight/payWallet",
+        reqpayWallet,
+        { Authorization: `Bearer ${token}` }
+      );
+      console.log("saveBookingId result ===>", result);
+      return result;
+    };
+    const payWalletRes = await payWallet();
+    console.log("payWalletRes ==> ", payWalletRes);
+    console.log("payWalletRes ==> ", payWalletRes.success);
+
+    if (payWalletRes?.success && payWalletRes.success == true) {
+      const parameter = { bookingId: bookingId };
+      try {
+        let reqData = { action: "fareValidate", requestData: parameter };
+        const result = await postData("travelogy/one-way/fetch-data", reqData);
+
+        if (result?.status?.success === true) {
+          const fetchBookingData = await postData(
+            "travelogy/flight/fetch-booking-data",
+            { bookingId: bookingId }
+          );
+          const airBookParameter = {
+            bookingId: bookingId,
+            paymentInfos: [
+              {
+                amount: payableAmount,
+              },
+            ],
+          };
+          let reqData = {
+            action: "conformBook",
+            requestData: airBookParameter,
+          };
+          const airBookResponse = await postData(
+            "travelogy/one-way/fetch-data",
+            reqData
+          );
+          console.log(
+            "airBookResponseairBookResponse ==> airBookResponse ",
+            airBookResponse
+          );
+          if (airBookResponse?.status?.success === true) {
+            // payment success
+          } else {
+            await postData(
+              "travelogy/flight/refundWallet",
+              {
+                booking_id: bookingId,
+                amount: fetchBookingData?.data?.[0]?.amount,
+              },
+              { Authorization: `Bearer ${token}` }
+            );
+
+            console.log("Wallet rollback done");
+          }
+          window.location.reload();
+        } else {
+          await postData(
+            "travelogy/flight/refundWallet",
+            {
+              booking_id: bookingId,
+              amount: fetchBookingData?.data?.[0]?.amount,
+            },
+            { Authorization: `Bearer ${token}` }
+          );
+          console.log("Wallet rollback done");
+          window.location.reload();
+        }
+      } catch (error) {
+        console.log("handlePayNow error ", error);
+      }
+    } else {
+      // handle edge case
+      setPaymsg(payWalletRes);
+      setBookingLoadingWallet(false);
+    }
+  };
+
   return (
     <>
       <h4 className="neutral-1000">Booking Details</h4>
@@ -1436,7 +1546,7 @@ const Alldetails = ({ totalpricee }) => {
                   )}
 
                   {isReIssueModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="fixed inset-0 p-t-reissue z-50 flex items-center justify-center bg-black bg-opacity-50">
                       <div
                         className="bg-white rounded-lg p-6 shadow-lg relative"
                         style={{ width: "75%" }}
@@ -1462,7 +1572,7 @@ const Alldetails = ({ totalpricee }) => {
                             id="pnr-select"
                             value={selectedPNR}
                             onChange={(e) => handlePNRSelect(e.target.value)}
-                            className="w-full border-b border-gray-400 py-2 px-4"
+                            className="reschedule-opt-w border-b border-gray-400 py-2 px-4"
                           >
                             <option value="">-- Select PNR --</option>
                             {Object.keys(rescheduleData.pnrs).map(
@@ -1837,7 +1947,8 @@ const Alldetails = ({ totalpricee }) => {
                           </button>
                           <button
                             className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
-                            onClick={handlePayNow}
+                            // onClick={handlePayNow}
+                            onClick={() => setPaymentModel(true)}
                           >
                             Pay Now
                           </button>
@@ -2171,6 +2282,7 @@ const Alldetails = ({ totalpricee }) => {
                     </thead>
                     <tbody>
                       {travellerinfos?.map((traveller, travellerIndex) => {
+                        console.log("traaaaaaaaaaaaaaaaaaa ==> ", traveller);
                         const segmentKeys = Object.keys(
                           traveller.pnrDetails || { "N/A": undefined }
                         );
@@ -2321,6 +2433,7 @@ const Alldetails = ({ totalpricee }) => {
                   finalStage={true}
                   afsAmount={afsAmount}
                   rssrAmount={rssrAmount}
+                  onHold={bookingDetails?.order?.status === "PENDING"}
                 />
               </div>
             </div>
@@ -2362,10 +2475,16 @@ const Alldetails = ({ totalpricee }) => {
 
       {paymentFailurePopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative">
-            {/* ❌ CLOSE ICON (TOP RIGHT) */}
+          <div
+            className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
+            style={{ width: "35%" }}
+          >
             <button
-              onClick={() => setPaymentFailurePopup(false)}
+              // onClick={() => setPaymentFailurePopup(false)}
+              onClick={() => {
+                setPaymentFailurePopup(false);
+                setPaymsg("");
+              }}
               className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
             >
               ×
@@ -2373,7 +2492,7 @@ const Alldetails = ({ totalpricee }) => {
 
             <p className="text-red-600 mb-2 font-semibold">Payment Failed</p>
             <p>Your payment could not be completed.</p>
-            <p>You can retry the payment or un-hold this booking.</p>
+            <p>You can retry the payment or hold this booking and pay later.</p>
 
             <div
               style={{
@@ -2382,19 +2501,201 @@ const Alldetails = ({ totalpricee }) => {
                 paddingTop: "10px",
               }}
             >
-              <button
-                className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
-                onClick={handleUnHold}
+              <div
+                onClick={bookingReviewWIthWallet}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoadingWallet
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
+                disabled={bookingLoadingWallet}
               >
-                Unhold
-              </button>
-              <button
-                className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                {bookingLoadingWallet ? (
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  "Wallet Payment"
+                )}
+              </div>
+
+              <div
+                // onClick={bookingReview}
                 onClick={handlePayNow}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoading
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
+                disabled={bookingLoading}
               >
-                Pay Now
-              </button>
+                {bookingLoading ? (
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  "Retry Payment"
+                )}
+              </div>
             </div>
+            {paymsg && (
+              <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                {paymsg.message}, Balance: {paymsg.balance}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+      {paymentModel && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div
+            className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
+            style={{ width: "35%" }}
+          >
+            <button
+              // onClick={() => setPaymentFailurePopup(false)}
+              onClick={() => {
+                setPaymentModel(false);
+                setPaymsg("");
+              }}
+              className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+            >
+              ×
+            </button>
+
+            <p className="text-black-600 mb-2 font-semibold">
+              Choose Payment Mode
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                paddingTop: "10px",
+              }}
+            >
+              <div
+                onClick={bookingReviewWIthWallet}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoadingWallet
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
+                disabled={bookingLoadingWallet}
+              >
+                {bookingLoadingWallet ? (
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  "Wallet Payment"
+                )}
+              </div>
+
+              <div
+                // onClick={bookingReview}
+                onClick={handlePayNow}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoading
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
+                disabled={bookingLoading}
+              >
+                {bookingLoading ? (
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-black"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  "Pay via Gateway"
+                )}
+              </div>
+            </div>
+            {paymsg && (
+              <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                {paymsg.message}, Balance: {paymsg.balance}
+              </p>
+            )}
           </div>
         </div>
       )}

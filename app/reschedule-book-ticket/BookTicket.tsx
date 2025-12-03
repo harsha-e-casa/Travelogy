@@ -1213,12 +1213,13 @@ export default function BookTicket() {
 
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main relative">
-          <section className="box-section box-breadcrumb background-body">
+          <section className="box-section box-breadcrumb background-body m-px-10">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
                   {" "}
-                  <Link href="/">Home</Link>
+                  {/* <Link href="/">Home</Link> */}
+                  <p>Home</p>
                   <span className="arrow-right">
                     <svg
                       width={7}
@@ -1239,7 +1240,8 @@ export default function BookTicket() {
                 </li>
                 <li>
                   {" "}
-                  <Link href="/">Tickets</Link>
+                  {/* <Link href="/">Tickets</Link> */}
+                  <p>Tickets</p>
                   <span className="arrow-right">
                     <svg
                       width={7}
@@ -1260,13 +1262,13 @@ export default function BookTicket() {
                 </li>
                 <li>
                   {" "}
-                  <span className="text-breadcrumb">Booking</span>
+                  <span className="text-breadcrumb">Traveller information</span>
                 </li>
               </ul>
             </div>
           </section>
 
-          <section className="section-box block-content-book-tickets background-card">
+          <section className="section-box block-content-book-tickets background-card m-px-10">
             <div className="container pt-1">
               <h4 className="neutral-1000 mb-20">Complete your booking</h4>
 

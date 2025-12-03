@@ -1244,7 +1244,7 @@ const ReviewPage = () => {
     } else {
       console.error("Booking ID or total price is missing");
     }
-    setHoldLoading(false);
+    // setHoldLoading(false);
   };
 
   // const handleHoldBooking = () => {
@@ -1308,7 +1308,8 @@ const ReviewPage = () => {
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
-                  <Link href="/">Home</Link>
+                  {/* <Link href="/">Home</Link> */}
+                  <p>Home</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -1327,7 +1328,8 @@ const ReviewPage = () => {
                   </span>
                 </li>
                 <li>
-                  <Link href="/">Tickets</Link>
+                  {/* <Link href="/">Tickets</Link> */}
+                  <p>Tickets</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -1346,7 +1348,26 @@ const ReviewPage = () => {
                   </span>
                 </li>
                 <li>
-                  <span className="text-breadcrumb">Booking</span>
+                  <p>Traveller information</p>
+                  <span className="arrow-right">
+                    <svg
+                      width="7"
+                      height="12"
+                      viewBox="0 0 7 12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 11L6 6L1 1"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="none"
+                      />
+                    </svg>
+                  </span>
+                </li>
+                <li>
+                  <span className="text-breadcrumb">Review</span>
                 </li>
               </ul>
             </div>
@@ -1418,14 +1439,14 @@ const ReviewPage = () => {
                             const tripInfosLength =
                               flightData?.tripInfos?.length;
 
-                            let trevellInfo = ""
+                            let trevellInfo = "";
                             if (tripType != "multi-city") {
                               trevellInfo =
-                              tripInfosLength >= 2
-                                ? " "
-                                : tripIndex === 0
-                                ? "Onward journey"
-                                : "Return journey";
+                                tripInfosLength >= 2
+                                  ? " "
+                                  : tripIndex === 0
+                                  ? "Onward journey"
+                                  : "Return journey";
                             }
                             const trevellInfoStyle =
                               tripIndex === 0
@@ -2890,12 +2911,49 @@ const ReviewPage = () => {
                       }}
                     >
                       {flightData?.conditions?.isBA === true && (
+                        // <div
+                        //   onClick={handleHoldBooking}
+                        //   style={{ borderRadius: "5px" }}
+                        //   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
+                        // >
+                        //   Hold Booking
+                        // </div>
                         <div
-                          onClick={handleHoldBooking}
+                          onClick={holdLoading ? undefined : handleHoldBooking}
                           style={{ borderRadius: "5px" }}
-                          className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
+                          className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                            holdLoading
+                              ? "bg-gray-300"
+                              : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         >
-                          Hold Booking
+                          {holdLoading ? (
+                            <div className="flex items-center gap-2">
+                              <svg
+                                className="animate-spin h-5 w-5 text-black"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                ></path>
+                              </svg>
+                              <span>Loading...</span>
+                            </div>
+                          ) : (
+                            "Hold Booking"
+                          )}
                         </div>
                       )}
 
@@ -3104,7 +3162,10 @@ const ReviewPage = () => {
             </div>
           </section>
           {loading ? null : (
-            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center" style={{ zIndex: "10" }}>
+            <div
+              className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center"
+              style={{ zIndex: "10" }}
+            >
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}

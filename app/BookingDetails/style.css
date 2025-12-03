@@ -61,3 +61,25 @@
     padding-left: 2.5rem;
   }
 }
+
+.p-t-reissue {
+  @media (max-width: 1280px) {
+    top: 10%;
+  }
+}
+
+.reschedule-opt-w {
+  @media (max-width: 1280px) {
+    width: fit-content;
+  }
+  @media (min-width: 1300px) {
+    width: 100%;
+  }
+}
+
+.traveller-modal-t {
+  top: 3%;
+  @media (max-width: 1280px) {
+    top: 12%;
+  }
+}
