@@ -67,6 +67,14 @@
 }
 
 .eh-tf {
-  top: "";
-  right: "0%";
+  @media (max-width: 1300px) {
+    top: 66%;
+    right: -14%;
+    width: 43%;
+  }
+  @media (min-width: 1301px) {
+    top: 68%;
+    right: 0%;
+    width: 36%;
+  }
 }

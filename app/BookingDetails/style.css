@@ -78,8 +78,14 @@
 }
 
 .traveller-modal-t {
-  top: 3%;
+  top: 6%;
+  max-height: 80vh;
   @media (max-width: 1280px) {
-    top: 12%;
+    top: 6%;
+    max-height: 70vh;
+  }
+  @media (max-width: 1024px) {
+    top: 4%;
+    max-height: 70vh;
   }
 }
