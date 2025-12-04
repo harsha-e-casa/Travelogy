@@ -11,6 +11,7 @@ import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
 import Cookies from "js-cookie";
+import BySortPrice from "@/components/Filter/BySortPrice";
 // import TicketCard1 from "./TicketCard1";
 
 interface SelectedTicket {
@@ -40,6 +41,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
   const [onwardFareIdentifiers, setOnwardFareIdentifiers] = useState<string[]>(
     []
   );
+  const [priceSort, setPriceSort] = useState<"asc" | "desc">("asc");
   const [uniqueFareIdentifiers, setUniqueFareIdentifiers] = useState<any[]>([]);
   const [onwardFlightNumberSearch, setOnwardFlightNumberSearch] = useState("");
   const [onwardSelectedFareTypes, setOnwardSelectedFareTypes] = useState<
@@ -87,6 +89,21 @@ export default function RoundTripSelectionView({ flightData }: any) {
       setInfantCount(getCookie("gy_infant"));
     }
   }, []);
+
+  const getTicketPrice = (ticket: any) => {
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
+    const adultFare =
+      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare =
+      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare =
+      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+
+    return adultFare + childFare + infantFare;
+  };
 
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
@@ -360,6 +377,16 @@ export default function RoundTripSelectionView({ flightData }: any) {
       );
     }
 
+    if (priceSort === "asc") {
+      filteredData.sort(
+        (a: any, b: any) => getTicketPrice(a) - getTicketPrice(b)
+      );
+    } else if (priceSort === "desc") {
+      filteredData.sort(
+        (a: any, b: any) => getTicketPrice(b) - getTicketPrice(a)
+      );
+    }
+
     setCurrentTickets(filteredData);
   };
 
@@ -383,6 +410,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
     returnFlightNumberSearch,
     onwardSelectedFareTypes,
     returnSelectedFareTypes,
+    priceSort,
   ]);
 
   const handleTicketSelected = (ticket: any, selectedPriceIndex: number) => {
@@ -425,6 +453,16 @@ export default function RoundTripSelectionView({ flightData }: any) {
                       : maxReturnPriceRange
                   }
                 />
+              </div>
+            </div>
+          </div>
+          <div className="sidebar-left border-1 background-body">
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <h6 className="text-lg-bold filter-sty neutral-1000">
+                  Sort by Price
+                </h6>
+                <BySortPrice sort={priceSort} setSort={setPriceSort} />
               </div>
             </div>
           </div>
@@ -628,7 +666,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
             bottom: "0px",
             zIndex: 10,
             background: "#1a1a2e",
-            width: "100%"
+            width: "100%",
           }}
         >
           <div className="row">
@@ -652,9 +690,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
                               height: "35px",
                               padding: "1px",
                             }}
-                            src={`/assets/imgs/airlines/${segment[
-                              "fD"
-                            ].aI.code}.png`}
+                            src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
                           />
                         )}
                         {!isUat && (
@@ -664,7 +700,9 @@ export default function RoundTripSelectionView({ flightData }: any) {
                               height: "35px",
                               padding: "1px",
                             }}
-                            src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
+                            src={`/assets/imgs/airlines/${segment[
+                              "fD"
+                            ].aI.code.toLowerCase()}.png`}
                           />
                         )}
                         <div>

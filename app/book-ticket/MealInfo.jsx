@@ -153,7 +153,8 @@ const MealInfo = ({
                         placeholder="Add Meal"
                         // disabled={mealOptions.every((b) => !b.amount)}
                         disabled={mealOptions.every((b) => !("amount" in b))}
-                        style={{ width: 500 }}
+                        // style={{ width: 500 }}
+                        className="meal-w"
                         onChange={handleChange}
                         allowClear
                         onClear={handleChange}

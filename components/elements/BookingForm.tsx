@@ -12,7 +12,8 @@ interface BookingFormProps {
   mealAmount?: number;
   bookingFormKey?: number;
   afsAmount?: number;
-  rssrAmount?: number
+  rssrAmount?: number;
+  onHold?: boolean;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -27,7 +28,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
   mealAmount = 0,
   bookingFormKey,
   afsAmount = 0,
-  rssrAmount = 0
+  rssrAmount = 0,
+  onHold = false,
 }) => {
   // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
@@ -257,40 +259,46 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
         <div className="item-line-booking">
           <div className="box-tickets">
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Baggage Amount
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹{totalBaggageAmount}
-                {/* {savedBaggage
+            {!onHold && (
+              <>
+                <div className="flex flex-row justify-between">
+                  <div>
+                    <strong className="text-md-bold neutral-1000">
+                      Baggage Amount
+                    </strong>
+                  </div>
+                  <div className="text-md-bold neutral-1000">
+                    ₹{totalBaggageAmount}
+                    {/* {savedBaggage
                   .filter((item) => item.amount !== undefined) // Filter out items without the 'amount' property
                   .reduce((acc, curr) => acc + (curr.amount || 0), 0)} */}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Meal Amount
-                </strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹{totalMealAmount}
-                {/* {savedMeal
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <div>
+                    <strong className="text-md-bold neutral-1000">
+                      Meal Amount
+                    </strong>
+                  </div>
+                  <div className="text-md-bold neutral-1000">
+                    ₹{totalMealAmount}
+                    {/* {savedMeal
                   .filter((item) => item.amount !== undefined) // Filter out items without the 'amount' property
                   .reduce((acc, curr) => acc + (curr.amount || 0), 0)} */}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">Seat Fees</strong>
-              </div>
-              <div className="text-md-bold neutral-1000">
-                ₹{totalSeatAmount}
-              </div>
-            </div>
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between">
+                  <div>
+                    <strong className="text-md-bold neutral-1000">
+                      Seat Fees
+                    </strong>
+                  </div>
+                  <div className="text-md-bold neutral-1000">
+                    ₹{totalSeatAmount}
+                  </div>
+                </div>
+              </>
+            )}
             <div className="flex flex-row justify-between">
               <div>
                 <strong className="text-md-bold neutral-1000">
@@ -319,8 +327,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                   </strong>
                 </div>
                 <div className="text-md-bold neutral-1000">
-                  {rssrFees < 0 ? "- " : ""}
-                  ₹{Math.abs(rssrFees)}
+                  {rssrFees < 0 ? "- " : ""}₹{Math.abs(rssrFees)}
                 </div>
               </div>
             )}
@@ -437,7 +444,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <div className="line-booking-right">
             <p className="text-xl-bold neutral-1000">
               {" "}
-              ₹{displayAmount}
+              ₹{!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)}
               {/* {Number(totalfare) +
                 savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
                 savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +

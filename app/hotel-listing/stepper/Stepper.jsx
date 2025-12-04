@@ -509,9 +509,7 @@ export function Step1TravellerDetails({
         <>
           <h6 className="text-sm font-bold">
             Guest Details
-            <span className="text-xs text-red-600">
-              (Enter the Lead Name)
-            </span>
+            <span className="text-xs text-red-600">(Enter the Lead Name)</span>
           </h6>
           {hotelReviewData?.query?.roomInfo?.map((room, roomIndex) => {
             const roomDetails =
@@ -543,8 +541,10 @@ export function Step1TravellerDetails({
                     onChange={(value) =>
                       handleGuestInputChange(roomIndex, "title", value)
                     }
-                    suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
-                    style={{ width: 90, height:60 }}
+                    suffixIcon={
+                      <DownOutlined style={{ marginBottom: "15px" }} />
+                    }
+                    style={{ width: 90, height: 60 }}
                   >
                     <Select.Option value="Mr">Mr</Select.Option>
                     <Select.Option value="Ms">Ms</Select.Option>
@@ -669,8 +669,10 @@ export function Step1TravellerDetails({
                           updated[i].title = value;
                           updateExtraGuests(roomIndex, updated);
                         }}
-                        suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
-                        style={{ width:90, height:60 }}
+                        suffixIcon={
+                          <DownOutlined style={{ marginBottom: "15px" }} />
+                        }
+                        style={{ width: 90, height: 60 }}
                       >
                         {guest.type === "children" ? (
                           <>
@@ -751,19 +753,19 @@ export function Step1TravellerDetails({
           <h3 className="font-semibold text-base">Contact Details</h3>
           <div className="stepper-guest-row">
             {/* <div className="flex flex-col"> */}
-              <Select
-                // className="form-field"
-                value={formData.countryCode || "+91"}
-                onChange={(value) =>
-                  setFormData({ ...formData, countryCode: value })
-                }
-                suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
-                style={{ width: 90, height:60 }}
-              >
-                <Select.Option value="+91">India (+91)</Select.Option>
-                <Select.Option value="+1">USA (+1)</Select.Option>
-                <Select.Option value="+44">UK (+44)</Select.Option>
-              </Select>
+            <Select
+              // className="form-field"
+              value={formData.countryCode || "+91"}
+              onChange={(value) =>
+                setFormData({ ...formData, countryCode: value })
+              }
+              suffixIcon={<DownOutlined style={{ marginBottom: "15px" }} />}
+              style={{ width: 90, height: 60 }}
+            >
+              <Select.Option value="+91">India (+91)</Select.Option>
+              <Select.Option value="+1">USA (+1)</Select.Option>
+              <Select.Option value="+44">UK (+44)</Select.Option>
+            </Select>
             {/* </div> */}
             <div className="flex flex-col">
               {" "}
@@ -1043,14 +1045,17 @@ export function Step2Review({
 
               // Get the actual room configuration for accurate guest count
               const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
-              const totalGuestCount = (roomConfig?.numberOfAdults || 0) + (roomConfig?.numberOfChild || 0);
+              const totalGuestCount =
+                (roomConfig?.numberOfAdults || 0) +
+                (roomConfig?.numberOfChild || 0);
 
               return (
                 <div key={roomIndex} className="border-b pb-4">
                   <h4 className="font-bold text-md">
                     <div>
                       <p>
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc} -{" "}
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc}{" "}
+                        -{" "}
                         {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
                         <span className="text-gray-500">
                           {" "}
@@ -1063,19 +1068,35 @@ export function Step2Review({
                   <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
                     <thead className="bg-blue-50">
                       <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          No.
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Title
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          First Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Last Name
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {validGuests.map((validGuest, index) => (
                         <tr key={index} className="border-b">
-                          <td className="px-4 py-2 text-sm text-gray-800">{index + 1}.</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.title}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.firstName}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.lastName}</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {index + 1}.
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {validGuest.title}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {validGuest.firstName}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {validGuest.lastName}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1083,22 +1104,21 @@ export function Step2Review({
                 </div>
               );
             })
-              : hotelPassenger?.map((room, roomIndex) => {
+          : hotelPassenger?.map((room, roomIndex) => {
               // Filter valid guests (excluding TBA and empty values)
-              const validGuests = room?.ti?.filter(
-                (passenger) => {
+              const validGuests =
+                room?.ti?.filter((passenger) => {
                   const firstName = passenger?.fN?.trim() || "";
                   const lastName = passenger?.lN?.trim() || "";
-                  
+
                   // Filter out TBA, empty, or undefined values
                   return (
-                    firstName && 
-                    lastName && 
-                    firstName.toUpperCase() !== "TBA" && 
+                    firstName &&
+                    lastName &&
+                    firstName.toUpperCase() !== "TBA" &&
                     lastName.toUpperCase() !== "TBA"
                   );
-                }
-              ) || [];
+                }) || [];
 
               // Only render the room section if there are valid guests
               if (validGuests.length === 0) return null;
@@ -1122,19 +1142,35 @@ export function Step2Review({
                   <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
                     <thead className="bg-blue-50">
                       <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          No.
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Title
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          First Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Last Name
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {validGuests.map((passenger, index) => (
                         <tr key={index} className="border-b">
-                          <td className="px-4 py-2 text-sm text-gray-800">{index + 1}.</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.ti}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.fN}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.lN}</td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {index + 1}.
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {passenger?.ti}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {passenger?.fN}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {passenger?.lN}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1168,17 +1204,25 @@ export function Step2Review({
         {Category !== "abook" ? (
           formData.email?.trim() ? (
             <div className="mt-4">
-              <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
+              <h3 className="font-bold text-base text-md mb-2">
+                Contact Details
+              </h3>
               <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
                 <thead className="bg-blue-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Mobile</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Email
+                    </th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Mobile
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b">
-                    <td className="px-4 py-2 text-sm text-gray-800">{formData.email}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">
+                      {formData.email}
+                    </td>
                     <td className="px-4 py-2 text-sm text-gray-800">
                       {formData.countryCode} {formData.mobile}
                     </td>
@@ -1189,12 +1233,18 @@ export function Step2Review({
           ) : null
         ) : passengerContact?.emails?.length > 0 ? (
           <div className="mt-4">
-            <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
+            <h3 className="font-bold text-base text-md mb-2">
+              Contact Details
+            </h3>
             <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
               <thead className="bg-blue-50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Mobile</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    Email
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    Mobile
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -1202,7 +1252,8 @@ export function Step2Review({
                   <tr key={index} className="border-b">
                     <td className="px-4 py-2 text-sm text-gray-800">{email}</td>
                     <td className="px-4 py-2 text-sm text-gray-800">
-                      {passengerContact.code[0]} {passengerContact.contacts[index]}
+                      {passengerContact.code[0]}{" "}
+                      {passengerContact.contacts[index]}
                     </td>
                   </tr>
                 ))}
@@ -1297,7 +1348,9 @@ export function Step2Review({
                                   )}
                                 :
                               </span>{" "}
-                              <span className="text-sm text-grey-700">{value}</span>
+                              <span className="text-sm text-grey-700">
+                                {value}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -2159,30 +2212,72 @@ export function Step4Payment({
   // };
 
   const [loading, setLoading] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
 
   const handleConfirm = async () => {
+    setPaymsg("");
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
     setShowModal(false);
     setLoading(true);
     try {
-      const result = await hotelBooking({ formData, hotelReviewData });
-      console.log("result: ", result);
-      console.log("formdata",formData);
-      setLoading(false);
-      if (result?.error) {
-        console.error("Booking error:", result.error);
+      // pay using wallet
+      const payWallet = async () => {
+        const reqpayWallet = {
+          booking_id: hotelReviewData?.bookingId,
+          amount: hotelReviewData?.hInfo?.ops?.[0]?.tp,
+        };
+        const walletResult = await postData(
+          "travelogy/flight/payWallet",
+          reqpayWallet,
+          { Authorization: `Bearer ${token}` }
+        );
+        console.log("walletResult ===>", walletResult);
+        return walletResult;
+      };
+      const payWalletRes = await payWallet();
+      console.log("hotel payWalletRes ==> ", payWalletRes);
 
-        const errorMessage =
-          typeof result.error === "string"
-            ? result.error
-            : JSON.stringify(result.error);
+      if (payWalletRes?.success && payWalletRes.success == true) {
+        const result = await hotelBooking({ formData, hotelReviewData });
+        console.log("result: ", result);
+        console.log("formdata", formData);
+        console.log(
+          "hotelReviewData?.hInfo?.ops?.[0]?.tp ==> ",
+          hotelReviewData?.hInfo?.ops?.[0]?.tp
+        );
+        setLoading(false);
+        if (result?.error) {
+          console.error("Booking error:", result.error);
 
-        setError(errorMessage);
-        return;
+          // await postData(
+          //   "travelogy/flight/refundWallet",
+          //   {
+          //     booking_id: bookingId,
+          //     amount: finalAmountToPay,
+          //   },
+          //   { Authorization: `Bearer ${token}` }
+          // );
+
+          // console.log("Wallet rollback done");
+
+          const errorMessage =
+            typeof result.error === "string"
+              ? result.error
+              : JSON.stringify(result.error);
+
+          setError(errorMessage);
+          return;
+        }
+        console.log("Booking success:", result);
+        setTimeout(() => {
+          onConfirmPayment(bookingId);
+        }, 1000); //time decreased to check the booking flow from 100000
+      } else {
+        // handle edge case
+        setPaymsg(payWalletRes);
+        setLoading(false);
       }
-      console.log("Booking success:", result);
-      setTimeout(() => {
-        onConfirmPayment(bookingId);
-      }, 1000);//time decreased to check the booking flow from 100000
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);
@@ -2227,6 +2322,11 @@ export function Step4Payment({
               </button>
               {/* <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span> */}
             </div>
+            {paymsg && (
+              <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                {paymsg.message}, Balance: ₹{paymsg.balance}
+              </p>
+            )}
           </div>
         </div>
       </div>

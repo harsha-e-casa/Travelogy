@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 import { Tabs } from "antd";
 import { checkTokenExpiry } from "@/services/Utils";
+import "./style.css";
 
 // import "./style.css"
 
@@ -1277,11 +1278,12 @@ const ReissueReviewPage = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main relative">
-          <section className="box-section box-breadcrumb background-body">
+          <section className="box-section box-breadcrumb background-body m-px-10">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
-                  <Link href="/">Home</Link>
+                  {/* <Link href="/">Home</Link> */}
+                  <p>Home</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -1300,7 +1302,8 @@ const ReissueReviewPage = () => {
                   </span>
                 </li>
                 <li>
-                  <Link href="/">Tickets</Link>
+                  {/* <Link href="/">Tickets</Link> */}
+                  <p>Tickets</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -1319,13 +1322,32 @@ const ReissueReviewPage = () => {
                   </span>
                 </li>
                 <li>
-                  <span className="text-breadcrumb">Booking</span>
+                  <p>Traveller information</p>
+                  <span className="arrow-right">
+                    <svg
+                      width="7"
+                      height="12"
+                      viewBox="0 0 7 12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 11L6 6L1 1"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="none"
+                      />
+                    </svg>
+                  </span>
+                </li>
+                <li>
+                  <span className="text-breadcrumb">Review</span>
                 </li>
               </ul>
             </div>
           </section>
 
-          <section className="section-box  background-card">
+          <section className="section-box  background-card m-px-10">
             <div className="container pt-1">
               <h4 className="neutral-1000">Review</h4>
               {loading ? (
@@ -2916,7 +2938,10 @@ const ReissueReviewPage = () => {
             </div>
           </section>
           {loading ? null : (
-            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center" style={{ zIndex: "10" }}>
+            <div
+              className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center"
+              style={{ zIndex: "10" }}
+            >
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}

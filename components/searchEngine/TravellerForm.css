@@ -40,15 +40,41 @@
 }
 
 .pos-t-r {
-  top: 23%;
-  right: 9%;
+  top: 24%;
+  right: 12%;
   @media (max-width: 1300px) {
-    top: 32%;
-    right: 0;
+    top: 28%;
+    right: 12%;
+  }
+}
+
+.pos-t-r_o {
+  top: 24%;
+  right: 12%;
+  @media (max-width: 1300px) {
+    top: 29%;
+    right: 5%;
+  }
+}
+
+.pos-t-r_m {
+  top: 24%;
+  right: 12%;
+  @media (max-width: 1300px) {
+    top: 33%;
+    right: 13%;
   }
 }
 
 .eh-tf {
-  top: "";
-  right: "0%";
+  @media (max-width: 1300px) {
+    top: 66%;
+    right: -14%;
+    width: 43%;
+  }
+  @media (min-width: 1301px) {
+    top: 68%;
+    right: 0%;
+    width: 36%;
+  }
 }

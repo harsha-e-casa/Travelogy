@@ -714,7 +714,8 @@ export default function BookTicket() {
               <ul className="breadcrumbs">
                 <li>
                   {" "}
-                  <Link href="/">Home</Link>
+                  {/* <Link href="/">Home</Link> */}
+                  <p>Home</p>
                   <span className="arrow-right">
                     <svg
                       width={7}
@@ -735,7 +736,8 @@ export default function BookTicket() {
                 </li>
                 <li>
                   {" "}
-                  <Link href="/">Tickets</Link>
+                  {/* <Link href="/">Tickets</Link> */}
+                  <p>Tickets</p>
                   <span className="arrow-right">
                     <svg
                       width={7}
@@ -756,7 +758,7 @@ export default function BookTicket() {
                 </li>
                 <li>
                   {" "}
-                  <span className="text-breadcrumb">Booking</span>
+                  <span className="text-breadcrumb">Traveller information</span>
                 </li>
               </ul>
             </div>

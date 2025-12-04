@@ -362,7 +362,7 @@ const ExtraBaggage = ({
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: 500 }}
+                      style={{ width: 400 }}
                       onChange={handleChange}
                       allowClear
                       onClear={handleChange}
