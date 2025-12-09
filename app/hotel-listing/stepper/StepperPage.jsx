@@ -156,14 +156,14 @@ export default function Stepper() {
     { id: 2, title: "Review", subtitle: "Check info", icon: <FileTextIcon /> },
     ...(PanRequired !== false
       ? [
-    {
-      id: 3,
-      title: "Upload Document",
-      subtitle: "Attach files",
-      icon: <UploadIcon />,
-    },
+        {
+          id: 3,
+          title: "Upload Document",
+          subtitle: "Attach files",
+          icon: <UploadIcon />,
+        },
       ]
-    : []),
+      : []),
     {
       id: 4,
       title: "Payments",
@@ -193,9 +193,8 @@ export default function Stepper() {
           ...room,
           guests: [
             {
-              name: `${formData.guests?.[index]?.firstName || ""} ${
-                formData.guests?.[index]?.lastName || ""
-              }`.trim(),
+              name: `${formData.guests?.[index]?.firstName || ""} ${formData.guests?.[index]?.lastName || ""
+                }`.trim(),
             },
             ...(formData.guests?.[index]?.extraGuests || []),
           ],
@@ -246,6 +245,49 @@ export default function Stepper() {
     typeof error === "string" &&
     error.includes("Please, enter valid PAN number");
 
+  const handleBackToListing = () => {
+    if (!hotelReviewData?.query) {
+      router.back();
+      return;
+    }
+
+    const { checkinDate, checkoutDate, roomInfo, searchCriteria } =
+      hotelReviewData.query;
+    const cityId = searchCriteria?.city;
+    const nationalityId = searchCriteria?.nationality;
+    const currency = searchCriteria?.currency || "INR";
+
+    // Calculate totals
+    const totalAdults =
+      roomInfo?.reduce((sum, r) => sum + (r.numberOfAdults || 0), 0) || 0;
+    const totalChildren =
+      roomInfo?.reduce((sum, r) => sum + (r.numberOfChild || 0), 0) || 0;
+    const childAges = roomInfo?.flatMap((r) => r.childAge || []) || [];
+
+    // Construct query params
+    const params = new URLSearchParams({
+      checkinDate: checkinDate || "",
+      checkoutDate: checkoutDate || "",
+      location: hotelReviewData?.hInfo?.ad?.city?.name || "", // Fallback location name
+      city: cityId || "",
+      nationality: nationalityId || "",
+      currency: currency,
+      rooms: (roomInfo?.length || 1).toString(),
+      adults: totalAdults.toString(),
+      children: totalChildren.toString(),
+      childAges: JSON.stringify(childAges),
+      roomsData: JSON.stringify(
+        roomInfo?.map((r) => ({
+          adults: r.numberOfAdults,
+          children: r.numberOfChild,
+          childAges: r.childAge || [],
+        })) || []
+      ),
+    });
+
+    router.push(`/hotel-listing?${params.toString()}`);
+  };
+
   return (
     <Layout headerStyle={1} footerStyle={1}>
       {" "}
@@ -291,8 +333,8 @@ export default function Stepper() {
                   currentStep > step.id
                     ? "completed"
                     : currentStep === step.id
-                    ? "current"
-                    : "upcoming";
+                      ? "current"
+                      : "upcoming";
 
                 const stepLabelMap = [
                   "FIRST STEP",
@@ -311,13 +353,12 @@ export default function Stepper() {
                     <div className="flex flex-col items-center justify-center text-center">
                       <div
                         className={`w-10 h-10 flex items-center justify-center rounded-full
-                        ${
-                          status === "completed"
+                        ${status === "completed"
                             ? "bg-4aa301 text-white"
                             : status === "current"
-                            ? "bg-black text-white ring-2 ring-gray-400"
-                            : "bg-gray-200 text-gray-400"
-                        }`}
+                              ? "bg-black text-white ring-2 ring-gray-400"
+                              : "bg-gray-200 text-gray-400"
+                          }`}
                       >
                         {status === "completed" ? <CheckIcon /> : step.icon}
                       </div>
@@ -328,11 +369,10 @@ export default function Stepper() {
                         {stepLabelMap[index]}
                       </span>
                       <span
-                        className={`text-sm font-medium ${
-                          status === "completed"
-                            ? "text-4aa301"
-                            : "text-gray-700"
-                        }`}
+                        className={`text-sm font-medium ${status === "completed"
+                          ? "text-4aa301"
+                          : "text-gray-700"
+                          }`}
                       >
                         {step.title}
                       </span>
@@ -340,9 +380,8 @@ export default function Stepper() {
 
                     {index !== steps.length - 1 && (
                       <div
-                        className={`flex-1 h-px mx-4 ${
-                          currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
-                        }`}
+                        className={`flex-1 h-px mx-4 ${currentStep > step.id ? "bg-4aa301" : "bg-gray-300"
+                          }`}
                       ></div>
                     )}
                   </div>
@@ -362,7 +401,7 @@ export default function Stepper() {
               <Skeleton />
             ) : (
               <>
-                <div className="md:col-span-8 border-r-1 stepper-content">
+                <div className="md:col-span-8 border-r-1 stepper-content p-3">
                   {currentStep === 1 && (
                     <Step1TravellerDetails
                       formData={formData}
@@ -381,16 +420,16 @@ export default function Stepper() {
                       hotelReviewData={hotelReviewData}
                     />
                   )}
-                  {currentStep === 3 && 
-                  PanRequired !== false &&
-                   (
-                    <Step3PersonalDocuments
-                      formData={formData}
-                      setFormData={setFormData}
-                      hotelReviewData={hotelReviewData}
-                      onNext={goNext}
-                    />
-                  )}
+                  {currentStep === 3 &&
+                    PanRequired !== false &&
+                    (
+                      <Step3PersonalDocuments
+                        formData={formData}
+                        setFormData={setFormData}
+                        hotelReviewData={hotelReviewData}
+                        onNext={goNext}
+                      />
+                    )}
 
                   {currentStep === 4 && (
                     <Step4Payment
@@ -407,13 +446,8 @@ export default function Stepper() {
                     />
                   )}
                 </div>
-                <div className="md:col-span-4 fare-summary-wrapper">
-                  <div className="p-1 rounded-md text-sm space-y-4 fare-summary">
-                    <FareAmount
-                      hotelReviewData={hotelReviewData}
-                      Category={"bbook"}
-                    />
-                  </div>
+                <div className="hidden md:block md:col-span-4 desktop-fare-summary">
+                  <FareAmount hotelReviewData={hotelReviewData} Category="bbook" />
                 </div>
               </>
             )}
@@ -425,8 +459,8 @@ export default function Stepper() {
           <SessionTimerWithModal
             active={!loading && !error && !!hotelReviewData}
             startTime={Number(hotelReviewData?.conditions?.st ?? 0)}
-            // onBack omitted → defaults to router.back()
-            // onContinue={() => setOpen(false)}
+            onBack={handleBackToListing}
+          // onContinue={() => setOpen(false)}
           />
         )}
       </>

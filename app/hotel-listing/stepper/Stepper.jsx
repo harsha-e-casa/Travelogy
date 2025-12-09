@@ -544,7 +544,7 @@ export function Step1TravellerDetails({
                       handleGuestInputChange(roomIndex, "title", value)
                     }
                     suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
-                    style={{ width: 90, height:60 }}
+                    style={{ width: 90, height: 60 }}
                   >
                     <Select.Option value="Mr">Mr</Select.Option>
                     <Select.Option value="Ms">Ms</Select.Option>
@@ -595,8 +595,8 @@ export function Step1TravellerDetails({
                       <div className="flex flex-col">
                         <input
                           ref={(el) =>
-                            (errorRefs.current[`passportNumber_r${roomIndex}`] =
-                              el)
+                          (errorRefs.current[`passportNumber_r${roomIndex}`] =
+                            el)
                           }
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Number"
@@ -670,7 +670,7 @@ export function Step1TravellerDetails({
                           updateExtraGuests(roomIndex, updated);
                         }}
                         suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
-                        style={{ width:90, height:60 }}
+                        style={{ width: 90, height: 60 }}
                       >
                         {guest.type === "children" ? (
                           <>
@@ -727,7 +727,7 @@ export function Step1TravellerDetails({
                 )}
                 <div className="mt-2 text-sm font-semibold text-orange-600">
                   {currentAdults.length + 1 < room.numberOfAdults ||
-                  currentChildren.length < room.numberOfChild ? (
+                    currentChildren.length < room.numberOfChild ? (
                     <button
                       onClick={() => {
                         if (currentAdults.length + 1 < room.numberOfAdults) {
@@ -751,19 +751,19 @@ export function Step1TravellerDetails({
           <h3 className="font-semibold text-base">Contact Details</h3>
           <div className="stepper-guest-row">
             {/* <div className="flex flex-col"> */}
-              <Select
-                // className="form-field"
-                value={formData.countryCode || "+91"}
-                onChange={(value) =>
-                  setFormData({ ...formData, countryCode: value })
-                }
-                suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
-                style={{ width: 90, height:60 }}
-              >
-                <Select.Option value="+91">India (+91)</Select.Option>
-                <Select.Option value="+1">USA (+1)</Select.Option>
-                <Select.Option value="+44">UK (+44)</Select.Option>
-              </Select>
+            <Select
+              // className="form-field"
+              value={formData.countryCode || "+91"}
+              onChange={(value) =>
+                setFormData({ ...formData, countryCode: value })
+              }
+              suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+              style={{ width: 90, height: 60 }}
+            >
+              <Select.Option value="+91">India (+91)</Select.Option>
+              <Select.Option value="+1">USA (+1)</Select.Option>
+              <Select.Option value="+44">UK (+44)</Select.Option>
+            </Select>
             {/* </div> */}
             <div className="flex flex-col">
               {" "}
@@ -797,6 +797,9 @@ export function Step1TravellerDetails({
                 {errors.email || ""}
               </span>
             </div>
+          </div>
+          <div className="mobile-fare-summary mt-4 mb-4 screen-only">
+            <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
           </div>
         </div>
 
@@ -1030,36 +1033,37 @@ export function Step2Review({
         <h3 className="font-bold text-base">Guest Details:</h3>
         {Category !== "abook"
           ? Object.values(formData.guests || {}).map((guest, roomIndex) => {
-              // Filter valid guests (lead + extra guests with valid data)
-              const allGuests = [guest, ...(guest.extraGuests || [])];
-              const validGuests = allGuests.filter((g) => {
-                const firstName = g?.firstName?.trim() || "";
-                const lastName = g?.lastName?.trim() || "";
-                return firstName && lastName;
-              });
+            // Filter valid guests (lead + extra guests with valid data)
+            const allGuests = [guest, ...(guest.extraGuests || [])];
+            const validGuests = allGuests.filter((g) => {
+              const firstName = g?.firstName?.trim() || "";
+              const lastName = g?.lastName?.trim() || "";
+              return firstName && lastName;
+            });
 
-              // Only render if there are valid guests
-              if (validGuests.length === 0) return null;
+            // Only render if there are valid guests
+            if (validGuests.length === 0) return null;
 
-              // Get the actual room configuration for accurate guest count
-              const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
-              const totalGuestCount = (roomConfig?.numberOfAdults || 0) + (roomConfig?.numberOfChild || 0);
+            // Get the actual room configuration for accurate guest count
+            const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
+            const totalGuestCount = (roomConfig?.numberOfAdults || 0) + (roomConfig?.numberOfChild || 0);
 
-              return (
-                <div key={roomIndex} className="border-b pb-4">
-                  <h4 className="font-bold text-md">
-                    <div>
-                      <p>
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc} -{" "}
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
-                        <span className="text-gray-500">
-                          {" "}
-                          ({totalGuestCount}{" "}
-                          {totalGuestCount === 1 ? "Guest" : "Guests"})
-                        </span>
-                      </p>
-                    </div>
-                  </h4>
+            return (
+              <div key={roomIndex} className="border-b pb-4">
+                <h4 className="font-bold text-md">
+                  <div>
+                    <p>
+                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc} -{" "}
+                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
+                      <span className="text-gray-500">
+                        {" "}
+                        ({totalGuestCount}{" "}
+                        {totalGuestCount === 1 ? "Guest" : "Guests"})
+                      </span>
+                    </p>
+                  </div>
+                </h4>
+                <div className="guest-details-table-wrapper desktop-only-table">
                   <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
                     <thead className="bg-blue-50">
                       <tr>
@@ -1081,44 +1085,54 @@ export function Step2Review({
                     </tbody>
                   </table>
                 </div>
-              );
-            })
-              : hotelPassenger?.map((room, roomIndex) => {
-              // Filter valid guests (excluding TBA and empty values)
-              const validGuests = room?.ti?.filter(
-                (passenger) => {
-                  const firstName = passenger?.fN?.trim() || "";
-                  const lastName = passenger?.lN?.trim() || "";
-                  
-                  // Filter out TBA, empty, or undefined values
-                  return (
-                    firstName && 
-                    lastName && 
-                    firstName.toUpperCase() !== "TBA" && 
-                    lastName.toUpperCase() !== "TBA"
-                  );
-                }
-              ) || [];
+                <div className="mobile-guest-details">
+                  {validGuests.map((validGuest, index) => (
+                    <div key={index} className="mobile-guest-row border-b py-2">
+                      <span className="font-semibold mr-2">{index + 1}.</span>
+                      <span>{validGuest.title}. {validGuest.firstName}&nbsp; {validGuest.lastName}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+          : hotelPassenger?.map((room, roomIndex) => {
+            // Filter valid guests (excluding TBA and empty values)
+            const validGuests = room?.ti?.filter(
+              (passenger) => {
+                const firstName = passenger?.fN?.trim() || "";
+                const lastName = passenger?.lN?.trim() || "";
 
-              // Only render the room section if there are valid guests
-              if (validGuests.length === 0) return null;
+                // Filter out TBA, empty, or undefined values
+                return (
+                  firstName &&
+                  lastName &&
+                  firstName.toUpperCase() !== "TBA" &&
+                  lastName.toUpperCase() !== "TBA"
+                );
+              }
+            ) || [];
 
-              // Total guest count includes all guests (for display purposes)
-              const totalGuestCount = room?.ti?.length || 0;
+            // Only render the room section if there are valid guests
+            if (validGuests.length === 0) return null;
 
-              return (
-                <div key={roomIndex} className="border-b space-y-2">
-                  <h4 className="font-bold text-md">
-                    <p>
-                      {room?.rc} <span className="text-md">( {room?.mb})</span>
-                      <span className="text-gray-500">
-                        {" "}
-                        ({totalGuestCount}{" "}
-                        {totalGuestCount === 1 ? "Guest" : "Guests"})
-                      </span>
-                    </p>
-                  </h4>
+            // Total guest count includes all guests (for display purposes)
+            const totalGuestCount = room?.ti?.length || 0;
 
+            return (
+              <div key={roomIndex} className="border-b space-y-2">
+                <h4 className="font-bold text-md">
+                  <p>
+                    {room?.rc} <span className="text-md">( {room?.mb})</span>
+                    <span className="text-gray-500">
+                      {" "}
+                      ({totalGuestCount}{" "}
+                      {totalGuestCount === 1 ? "Guest" : "Guests"})
+                    </span>
+                  </p>
+                </h4>
+
+                <div className="guest-details-table-wrapper desktop-only-table">
                   <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
                     <thead className="bg-blue-50">
                       <tr>
@@ -1140,8 +1154,17 @@ export function Step2Review({
                     </tbody>
                   </table>
                 </div>
-              );
-            })}
+                <div className="mobile-guest-details">
+                  {validGuests.map((passenger, index) => (
+                    <div key={index} className="mobile-guest-row border-b py-2">
+                      <span className="font-semibold mr-2">{index + 1}.</span>
+                      <span>{passenger?.ti}. {passenger?.fN}&nbsp; {passenger?.lN}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
 
         {Category !== "abook" ? (
           formData.specialRequest?.trim() ? (
@@ -1169,7 +1192,7 @@ export function Step2Review({
           formData.email?.trim() ? (
             <div className="mt-4">
               <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
-              <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+              <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3 desktop-only-table">
                 <thead className="bg-blue-50">
                   <tr>
                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
@@ -1185,12 +1208,22 @@ export function Step2Review({
                   </tr>
                 </tbody>
               </table>
+              <div className="mobile-contact-details mt-2">
+                <div className="mobile-guest-row">
+                  <span className="font-semibold mr-2">Email:</span>
+                  <span>{formData.email}</span>
+                </div>
+                <div className="mobile-guest-row">
+                  <span className="font-semibold mr-2">Mobile:</span>
+                  <span>{formData.countryCode} {formData.mobile}</span>
+                </div>
+              </div>
             </div>
           ) : null
         ) : passengerContact?.emails?.length > 0 ? (
           <div className="mt-4">
             <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
-            <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+            <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3 desktop-only-table">
               <thead className="bg-blue-50">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
@@ -1208,11 +1241,30 @@ export function Step2Review({
                 ))}
               </tbody>
             </table>
+            <div className="mobile-contact-details mt-2">
+              {passengerContact.emails.map((email, index) => (
+                <div key={index}>
+                  <div className="mobile-guest-row">
+                    <span className="font-semibold mr-2">Email:</span>
+                    <span>{email}</span>
+                  </div>
+                  <div className="mobile-guest-row">
+                    <span className="font-semibold mr-2">Mobile:</span>
+                    <span>{passengerContact.code[0]} {passengerContact.contacts[index]}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
 
+        <div className="mobile-fare-summary mt-4 mb-4 screen-only">
+          <FareAmount hotelReviewData={hotelReviewData} Category={Category} />
+        </div>
+
         <div className="border-t pt-3">
           <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
+
           <table className="w-full border text-center text-sm">
             <thead className="bg-gray-100">
               <tr>
@@ -1436,11 +1488,10 @@ export function Step2Review({
               <button
                 type="button"
                 // disabled={!accepted}
-                className={`book-now-btn ${
-                  accepted
-                    ? "bg-orange-500 hover:bg-orange-600"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
+                className={`book-now-btn ${accepted
+                  ? "bg-orange-500 hover:bg-orange-600"
+                  : "bg-gray-400 cursor-not-allowed"
+                  }`}
                 onClick={handleNext}
               >
                 CONTINUE
@@ -1449,7 +1500,7 @@ export function Step2Review({
           </div>
         )}
       </div>
-    </Suspense>
+    </Suspense >
   );
 }
 
@@ -1682,38 +1733,38 @@ export function Step3PersonalDocuments({
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
-          mode: "custom",
-          rooms: (hotelReviewData?.query?.roomInfo || []).map(
-            (room, rIdx) =>
-              guardianMode[rIdx]
-                ? {
-                    useGuardian: true,
-                    guardian: {
-                      first: (guardianPANs[rIdx]?.first || "").trim(),
-                      last: (guardianPANs[rIdx]?.last || "").trim(),
-                      pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-                    },
-                  }
-                : {
-                    useGuardian: false,
-                    guests: getUiGuests(rIdx).map((guest, gIdx) => ({
-                      pan: isMaster(guest?.title)
-                        ? ""
-                        : (individualPANs[`${rIdx}-${gIdx}`] || "")
-                            .toUpperCase()
-                            .trim(),
-                    })),
-                  }
-            // : {
-            //     useGuardian: false,
-            //     guests: (room?.guests || []).map((_, gIdx) => ({
-            //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-            //         .toUpperCase()
-            //         .trim(),
-            //     })),
-            //   }
-          ),
-        };
+        mode: "custom",
+        rooms: (hotelReviewData?.query?.roomInfo || []).map(
+          (room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                useGuardian: true,
+                guardian: {
+                  first: (guardianPANs[rIdx]?.first || "").trim(),
+                  last: (guardianPANs[rIdx]?.last || "").trim(),
+                  pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                },
+              }
+              : {
+                useGuardian: false,
+                guests: getUiGuests(rIdx).map((guest, gIdx) => ({
+                  pan: isMaster(guest?.title)
+                    ? ""
+                    : (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                })),
+              }
+          // : {
+          //     useGuardian: false,
+          //     guests: (room?.guests || []).map((_, gIdx) => ({
+          //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+          //         .toUpperCase()
+          //         .trim(),
+          //     })),
+          //   }
+        ),
+      };
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
@@ -1731,27 +1782,27 @@ export function Step3PersonalDocuments({
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
-          mode: "custom",
-          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
-            guardianMode[rIdx]
-              ? {
-                  useGuardian: true,
-                  guardian: {
-                    first: (guardianPANs[rIdx]?.first || "").trim(),
-                    last: (guardianPANs[rIdx]?.last || "").trim(),
-                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-                  },
-                }
-              : {
-                  useGuardian: false,
-                  guests: (room?.guests || []).map((_, gIdx) => ({
-                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-                      .toUpperCase()
-                      .trim(),
-                  })),
-                }
-          ),
-        };
+        mode: "custom",
+        rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+          guardianMode[rIdx]
+            ? {
+              useGuardian: true,
+              guardian: {
+                first: (guardianPANs[rIdx]?.first || "").trim(),
+                last: (guardianPANs[rIdx]?.last || "").trim(),
+                pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+              },
+            }
+            : {
+              useGuardian: false,
+              guests: (room?.guests || []).map((_, gIdx) => ({
+                pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                  .toUpperCase()
+                  .trim(),
+              })),
+            }
+        ),
+      };
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
@@ -1818,9 +1869,8 @@ export function Step3PersonalDocuments({
                   <div className="flex gap-2 mb-2">
                     {/* First */}
                     <Input
-                      className={`w-60 stepper_input ${
-                        errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
-                      }`}
+                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
+                        }`}
                       placeholder="First Name"
                       value={guardianPANs[rIdx]?.first || ""}
                       onChange={(e) => {
@@ -1854,9 +1904,8 @@ export function Step3PersonalDocuments({
                     )}
 
                     <Input
-                      className={`w-60 stepper_input ${
-                        errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
-                      }`}
+                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
+                        }`}
                       placeholder="Last Name"
                       value={guardianPANs[rIdx]?.last || ""}
                       onChange={(e) => {
@@ -1891,9 +1940,8 @@ export function Step3PersonalDocuments({
 
                     {/* PAN */}
                     <Input
-                      className={`w-60 stepper_input ${
-                        errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
-                      }`}
+                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
+                        }`}
                       placeholder="PAN Number"
                       value={guardianPANs[rIdx]?.pan || ""}
                       onChange={(e) => {
@@ -1969,19 +2017,17 @@ export function Step3PersonalDocuments({
                         className="flex items-center justify-between mb-3 space-x-3"
                       >
                         <p className="text-sm font-medium text-gray-700 w-2/6">
-                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${
-                            guest?.lastName || ""
-                          }`.trim()}
+                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${guest?.lastName || ""
+                            }`.trim()}
                         </p>
 
                         {!guest?.title?.toLowerCase().includes("master") && (
                           <div className="flex-1">
                             <Input
-                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${
-                                errors.individual?.[`${rIdx}-${gIdx}`]
-                                  ? "border-red-500"
-                                  : ""
-                              }`}
+                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${errors.individual?.[`${rIdx}-${gIdx}`]
+                                ? "border-red-500"
+                                : ""
+                                }`}
                               placeholder="Enter PAN Individual"
                               value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                               onChange={(e) =>
@@ -2008,9 +2054,8 @@ export function Step3PersonalDocuments({
         ) : (
           <div className="flex gap-2 mb-4">
             <Input
-              className={`w-60 stepper_input ${
-                errors.samePAN ? "border-red-500" : ""
-              }`}
+              className={`w-60 stepper_input ${errors.samePAN ? "border-red-500" : ""
+                }`}
               placeholder="Enter PAN"
               value={samePANValue}
               onChange={(e) => {
@@ -2141,7 +2186,7 @@ export function Step4Payment({
   // const handleConfirm = async () => {
   //   setShowModal(false);
   //   try {
-  //     const result = await hotelBooking({ formData, hotelReviewData });
+  //     const result = await hotelBooking({formData, hotelReviewData});
   //     if (result?.error) {
   //       console.error("Booking error:", result.error);
   //       setError(result.error);
@@ -2166,7 +2211,7 @@ export function Step4Payment({
     try {
       const result = await hotelBooking({ formData, hotelReviewData });
       console.log("result: ", result);
-      console.log("formdata",formData);
+      console.log("formdata", formData);
       setLoading(false);
       if (result?.error) {
         console.error("Booking error:", result.error);

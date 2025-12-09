@@ -150,6 +150,7 @@ export default function SessionTimerWithModal({
               >
                 {continueText}
               </button>
+              {/* remove continue button after testing */}
             </div>
           </div>
         </div>

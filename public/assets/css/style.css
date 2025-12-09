@@ -12696,7 +12696,7 @@ h1 span {
     display: block;
     margin-left: 0px;
   }
-  
+
 }
 
 .box-list-tours .card-journey-small,
@@ -19147,7 +19147,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   display: block;
 }
 
- .bx_shadow_dr1 {
+.bx_shadow_dr1 {
   width: 22%;
   right: 27%;
   top: 100px;
@@ -19527,48 +19527,13 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   height: 40px !important;
 }
 
-.stepper_select-Master {
-  width: 90px !important;
-  height: 40px !important;
-}
-
-/* styles.css or global.css */
-.stepper-guest-row {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  /* Default for mobile */
-  gap: 0.5rem !important;
-  /* Tailwind's gap-2 = 0.5rem */
-  align-items: start !important;
-}
-
-@media (max-width: 768px) {
-  .stepper-guest-row {
-    /* grid-template-columns: 100px 200px 200px 100px !important; */
-    /* Title | First | Last | Action */
-    align-items: start !important;
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1440px) {
-  .stepper-guest-row {
-    grid-template-columns: 100px 200px 200px 100px !important;
-    /* Title | First | Last | Action */
-    align-items: start !important;
-  }
-}
-
-.stepper_input::placeholder {
-  font-size: 13px;
-}
-
 /* Fix for error message alignment - prevents layout shift */
-.stepper-guest-row > div {
+.stepper-guest-row>div {
   position: relative;
   padding-bottom: 20px;
 }
 
-.stepper-guest-row > div > span {
+.stepper-guest-row>div>span {
   position: absolute;
   bottom: 0;
   left: 0;
