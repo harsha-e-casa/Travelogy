@@ -2,6 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Select } from "antd";
 import citiesData from "../../util/cities.json";
 
+const getDisplayCityName = (city) => {
+  if (city.type === "MULTI_CITY_VICINITY") {
+    return `${city.cityName} AND VICINITY`;
+  }
+  return city.cityName;
+};
+
 const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
   const [filteredOptions, setFilteredOptions] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -14,7 +21,9 @@ const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
     const selectedCity = filteredOptions.find((item) => item.id === id);
     if (selectedCity) {
       setSelectFrom({
-        cityName: selectedCity.cityName,
+        // cityName: selectedCity.cityName,
+        cityName: getDisplayCityName(selectedCity),
+
         countryName: selectedCity.countryName,
         id: selectedCity.id,
       });
@@ -69,7 +78,11 @@ const CityListSearch = ({ setSelectFrom, operEngLocation }) => {
   const mappedOptions = filteredOptions.map((item) => ({
     label: (
       <div>
-        <div className="font-semibold text-gray-800">{item.cityName}</div>
+        {/* <div className="font-semibold text-gray-800">{item.cityName}</div> */}
+        <div className="font-semibold text-gray-800">
+          {getDisplayCityName(item)}
+        </div>
+
         <div className="text-xs text-gray-500">{item.fullRegionName}</div>
       </div>
     ),

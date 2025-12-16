@@ -152,7 +152,7 @@
 .nav-mobile-menu {
   position: fixed;
   top: 70px;
-  left: -100%;
+  right: -100%;
   width: 100%;
   max-height: calc(100vh - 70px);
   background: white;
@@ -162,7 +162,7 @@
 }
 
 .nav-mobile-menu.show {
-  left: 0;
+  right: 0;
 }
 
 .mobile-menu {

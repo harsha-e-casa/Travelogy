@@ -65,6 +65,7 @@ export default function HotelListing() {
   const rooms = Number(searchParams.get("rooms"));
   const adults = Number(searchParams.get("adults"));
   const children = Number(searchParams.get("children"));
+  const [openSearchModal, setOpenSearchModal] = useState(false);
 
   const childAgesRaw = searchParams.get("childAges");
 
@@ -230,7 +231,10 @@ export default function HotelListing() {
 
   const [showTraveller, setShowTraveller] = useState(false);
   const [showPriceFilter, setShowPriceFilter] = useState(true);
-  
+  const [showMobilePropertyType, setShowMobilePropertyType] = useState(true);
+  const [showMobileStarRating, setShowMobileStarRating] = useState(true);
+  const [showMobileLocation, setShowMobileLocation] = useState(true);
+
   // Toggle filter panel for mobile
   const toggleFilterPanel = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -888,9 +892,7 @@ export default function HotelListing() {
     >
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">
-            {/* Location */}
-            {/* <HotelListingSearch /> */}
+          <div className="d-block h-24 w-full z-20 sticky top-0 bg_cs_search search_header_list_lg">
             <div className="hdt_header">
               <div
                 className="hdt_header-item"
@@ -904,7 +906,9 @@ export default function HotelListing() {
 
                 {showSearchState && (
                   <div
-                    className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                    // className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                    className="left-auto searchFfromSelect searchFromSelect"
+
                     onClick={(e) => e.stopPropagation()}
                   >
                     <CityListSearch
@@ -974,12 +978,12 @@ export default function HotelListing() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <label>Total Nights</label>
-                <div className="input-field font-bold">
+                <div className="input-field font-bold nights_width">
                   {checkinDate && checkoutDate ? (
                     <>
-                      <div className="text-base font-bold">
-                        {" "}
-                        {nights} {nights === 1 ? "Night" : "Nights"}
+                      <div className="text-base font-bold text-center">
+                        {" "}{nights}
+                        {/* {nights} {nights === 1 ? "Night" : "Nights"} */}
                       </div>
                     </>
                   ) : (
@@ -998,10 +1002,16 @@ export default function HotelListing() {
                 
                   background: "none",
                   border: 0,
-                  padding: "1px 10px",
+                    padding: "1px 0px",
                   fontWeight: 700}}>
                     {totalAdults} Adult{totalAdults > 1 ? "s" : ""},
-                    {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                    {/* {totalChildren} Child{totalChildren > 1 ? "ren" : ""}, */}
+                    {totalChildren > 0 && (
+                      <>
+                        {" "} {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                      </>
+                    )}
+                    {" "}
                     {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
                 </button>
                 </div>
@@ -1032,6 +1042,18 @@ export default function HotelListing() {
                   Searching...
                 </button>
               )}
+            </div>
+          </div>
+          <div
+            className="sticky top-0 z-20 search_header_list h-16 flex items-center px-4 cursor-pointer"
+            onClick={() => setOpenSearchModal(true)}
+          >
+            <div className="text-sm font-bold search_header_list_truncate w-full">
+              {selectFrom?.cityName || "Location"} |{" "}
+              {checkinDate} – {checkoutDate} |{" "}
+              {nights} Night{nights > 1 ? "s" : ""} |{" "}
+              {totalAdults} Adult{totalAdults > 1 ? "s" : ""},{" "}
+              {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
             </div>
           </div>
 
@@ -1266,14 +1288,19 @@ export default function HotelListing() {
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <div
+                                {/* <div
                                   className=" cursor-pointer"
                                   onClick={() => setShowPriceFilter(!showPriceFilter)}
+                                > */}
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showPriceFilter ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowPriceFilter(prev => !prev)}
                                 >
-                                  <h6 className="text-lg-bold item-collapse neutral-1000">
+                                  {/* <h6 className="text-lg-bold item-collapse neutral-1000"> */}
                                     Price{" "}
                                   </h6>
-                                </div>
+                                {/* </div> */}
                                 {showPriceFilter && (
                                   <ByPrice
                                     priceRange={priceRange}
@@ -1288,42 +1315,68 @@ export default function HotelListing() {
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showMobilePropertyType ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowMobilePropertyType(prev => !prev)}
+                                >
                                   Property Type
                                 </h6>
-                                <ByHotelType
-                                  uniqueHotelsType={uniqueHotelsType}
-                                  filter={filter}
-                                  handleCheckboxChange={handleCheckboxChange}
-                                />
+
+                                {showMobilePropertyType && (
+                                  <ByHotelType
+                                    uniqueHotelsType={uniqueHotelsType}
+                                    filter={filter}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                  />
+                                )}
                               </div>
+
                             </div>
                           </div>
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <h6 className="text-lg-bold item-collapse neutral-1000">
-                                  Star Rating{" "}
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showMobileStarRating ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowMobileStarRating(prev => !prev)}
+                                >
+                                  Star Rating
                                 </h6>
-                                <ByRating
-                                  uniqueRatings={uniqueRatings}
-                                  filter={filter}
-                                  handleCheckboxChange={handleCheckboxChange}
-                                />
+
+
+                                {showMobileStarRating && (
+                                  <ByRating
+                                    uniqueRatings={uniqueRatings}
+                                    filter={filter}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                  />
+                                )}
+
                               </div>
                             </div>
                           </div>
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showMobileLocation ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowMobileLocation(prev => !prev)}
+                                >
                                   Location
                                 </h6>
-                                <ByLocation
-                                  uniqueLocations={uniqueLocations}
-                                  filter={filter}
-                                  handleCheckboxChange={handleCheckboxChange}
-                                />
+
+
+                                {showMobileLocation && (
+                                  <ByLocation
+                                    uniqueLocations={uniqueLocations}
+                                    filter={filter}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                  />
+                                )}
+
                               </div>
                             </div>
                           </div>
@@ -1389,6 +1442,173 @@ export default function HotelListing() {
             </div>
           </section> */}
           <div className="pb-50 background-body" />
+          {openSearchModal && (
+            <div className="fixed inset-0 z-50 bg-black/50 flex items-end">
+              <div className="bg-white w-full rounded-t-2xl p-4 max-h-[90vh] overflow-y-auto">
+                <button
+                  className="mb-3 font-bold"
+                  onClick={() => setOpenSearchModal(false)}
+                >
+                  Close
+                </button>
+
+                <div className=" d-block h-24 w-full z-20 sticky top-0 bg_cs_search">
+                  <div className="hdt_header">
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Location</label>
+
+                      <span className="input-field font-bold" onClick={openfrom}>
+                        {selectFrom?.cityName || location}
+                      </span>
+
+                      {showSearchState && (
+                        <div
+                          // className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                          className="left-auto searchFfromSelect searchFromSelect"
+
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <CityListSearch
+                            operEngLocation={openfrom}
+                            setSelectFrom={setSelectFrom}
+                          // categoryType={undefined}
+                          // setSelectFromSub={setSelectFromSub}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Check-in</label>
+                      {checkinDate && (
+                        <button
+                          onClick={toggleCheckin}
+                          className="input-field font-bold"
+                        >
+                          {checkinDate}
+                        </button>
+                      )}
+
+                      {openCheckin && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <AppDateRange
+                            minDate={dayjs() || null}
+                            openToDateRange={() => setOpenCheckin(false)}
+                            setDatedep={onPickCheckin}
+                            valueDate={dayjs(checkinDate)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Check-out</label>
+                      <button
+                        onClick={toggleCheckout}
+                        className="input-field font-bold"
+                      >
+                        {checkoutDate}
+                      </button>
+                      {openCheckout && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <AppDateRange
+                            minDate={
+                              checkinDate
+                                ? dayjs(checkinDate).add(1, "day")
+                                : dayjs().add(1, "day")
+                            }
+                            openToDateRange={() => setOpenCheckout(false)}
+                            setDatedep={(date: any) =>
+                              setCheckoutDate(dayjs(date).format("YYYY-MM-DD"))
+                            }
+                            valueDate={dayjs(checkoutDate)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Total Nights</label>
+                      <div className="input-field font-bold nights_width">
+                        {checkinDate && checkoutDate ? (
+                          <>
+                            <div className="text-base font-bold text-center">
+                              {" "}{nights}
+                              {/* {nights} {nights === 1 ? "Night" : "Nights"} */}
+                            </div>
+                          </>
+                        ) : (
+                          "--"
+                        )}
+                      </div>
+                    </div>
+
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label className="">Rooms & Guest</label>
+                      <div className="input-field text-base font-bold mb-5 mt-8">
+                        <button onClick={toggleTraveller} style={{
+
+                          background: "none",
+                          border: 0,
+                          padding: "1px 0px",
+                          fontWeight: 700
+                        }}>
+                          {totalAdults} Adult{totalAdults > 1 ? "s" : ""},
+                          {/* {totalChildren} Child{totalChildren > 1 ? "ren" : ""}, */}
+                          {totalChildren > 0 && (
+                            <>
+                              {" "} {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                            </>
+                          )}
+                          {" "}
+                          {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
+                        </button>
+                      </div>
+                      {showTraveller && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          {" "}
+                          <AppTravellerHotel
+                            roomsData={roomsData}
+                            onClose={(updatedRooms) => {
+                              setRoomsData(updatedRooms);
+                              setShowTraveller(false); // Close the form
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {!loading && (
+                      <button className="hdt_search-btn" onClick={handleSearch}>
+                        Search
+                      </button>
+                    )}
+
+                    {loading && (
+                      <button
+                        className="hdt_search-btn opacity-70 cursor-not-allowed"
+                        disabled
+                      >
+                        Searching...
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
         </main>
       </Layout>
     </Suspense>

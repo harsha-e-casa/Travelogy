@@ -265,11 +265,11 @@
         flex: 0 0 100px;
     }
 
-    .stepper-guest-row input,
+        /* .stepper-guest-row input,
     .stepper-guest-row>div {
         flex: 1 1 45%;
         min-width: 180px;
-    }
+    */
 
     .mobile-guest-row {
         justify-content: flex-start;
@@ -304,9 +304,9 @@
         align-items: flex-start;
     }
 
-    .stepper-guest-row>* {
+        /* .stepper-guest-row>* {
         flex: 1;
-    }
+    */
 
     /* Prevent Select from stretching too much or being too small */
     .stepper-guest-row .ant-select {

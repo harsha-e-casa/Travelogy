@@ -618,7 +618,7 @@ export default function ByPrice({
 
       {/* Actions */}
       <div className="d-flex" style={{ gap: 8, flexDirection: "row-reverse" }}>
-        <button
+        {/* <button
           type="button"
           style={{
             background: "orange",
@@ -629,12 +629,12 @@ export default function ByPrice({
           onClick={applyInputs}
         >
           Apply
-        </button>
+        </button> */}
         <button
           type="button"
           style={{
-            padding: "1px 10px ",
-            height: "2rem",
+            padding: "1px 10px",
+            height: "1.8rem",
             border: "1px solid #80808063",
             borderRadius: 10,
           }}

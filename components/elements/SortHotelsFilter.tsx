@@ -29,7 +29,7 @@ export default function SortHotelsFilter({
       <div className="row align-items-center sort-filter-row">
         <div className="col-xl-4 col-md-4 col-12 mb-10 text-lg-start text-center">
           <div className="box-view-type">
-            <Link
+            {/* <Link
               className="display-type display-grid active"
               href="/tour-grid"
             >
@@ -40,7 +40,6 @@ export default function SortHotelsFilter({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path d="M20 8V2.75...Z" />
-                {/* Truncated SVG paths for brevity */}
               </svg>
             </Link>
             <Link className="display-type display-list" href="/tour-list">
@@ -51,9 +50,8 @@ export default function SortHotelsFilter({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path d="M4.788 0H1.09497...Z" />
-                {/* Truncated SVG paths for brevity */}
               </svg>
-            </Link>
+            </Link> */}
             <span className="text-sm-bold neutral-500 number-found">
               {startItemIndex} - {endItemIndex} of {totalResults} hotels found
             </span>

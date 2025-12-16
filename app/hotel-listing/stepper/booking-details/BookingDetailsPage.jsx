@@ -323,7 +323,10 @@ const BookingDetailsPage = () => {
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <div className="print-container" ref={printRef}>
-            <div className="print-logo print-only" style={{ textAlign: "center", marginBottom: 20 }}>
+            <div
+              className="print-logo print-only"
+              style={{ textAlign: "center", marginBottom: 20 }}
+            >
               <img
                 src="/assets/imgs/logo-print.png"
                 alt="Travelogy Logo"
@@ -347,7 +350,8 @@ const BookingDetailsPage = () => {
                     {confirming ? "Processing…" : "Pay Now"}
                   </button>
                 </div>
-              ) : status === "CANCELLED" || status === "CANCELLATION_PENDING" ? (
+              ) : status === "CANCELLED" ||
+                status === "CANCELLATION_PENDING" ? (
                 <div className="booking-status-container p-6 flex justify-between items-center w-full">
                   <div className="flex items-center">
                     <img
@@ -462,7 +466,7 @@ const BookingDetailsPage = () => {
                     />
                   ) : null}
                 </div>
-                {/* <div className="mt-2 print-only">
+                <div className="mt-2 print-only">
                   <h3 className="text-lg font-semibold mb-2">
                     Total Fare Summary
                   </h3>
@@ -472,11 +476,11 @@ const BookingDetailsPage = () => {
                       Category={"abook"}
                     />
                   </div>
-                </div> */}
+                </div>
               </div>
 
               {/* Remove md:col-span-4 for PDF */}
-              <div className="print_pdf4 lg:col-span-4 fare-summary-wrapper hidden lg:block">
+              <div className="print_pdf4 lg:col-span-4 fare-summary-wrapper lg:block">
                 <div className="p-6 rounded-md text-sm space-y-4">
                   <FareAmount
                     hotelReviewData={bookingDetails?.itemInfos?.HOTEL}

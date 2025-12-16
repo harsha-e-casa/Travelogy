@@ -443,7 +443,7 @@ export function Step1TravellerDetails({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
             <p className="text-gray-700">
@@ -466,12 +466,12 @@ export function Step1TravellerDetails({
 
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Total Rooms</strong>
-            <p className="text-gray-700 text-xs">
+            <p className="text-gray-700 text-sm">
               {hotelReviewData?.query?.roomInfo?.length || 0}
             </p>
           </div>
 
-          <div className="border-l-1 pl-4 md:col-span-2">
+          <div className="border-l-1 pl-4 ">
             <strong className="block text-gray-900 text-base">
               Total Guests
             </strong>
@@ -509,9 +509,7 @@ export function Step1TravellerDetails({
         <>
           <h6 className="text-sm font-bold">
             Guest Details
-            <span className="text-xs text-red-600">
-              (Enter the Lead Name)
-            </span>
+            <span className="text-xs text-red-600">(Enter the Lead Name)</span>
           </h6>
           {hotelReviewData?.query?.roomInfo?.map((room, roomIndex) => {
             const roomDetails =
@@ -543,7 +541,9 @@ export function Step1TravellerDetails({
                     onChange={(value) =>
                       handleGuestInputChange(roomIndex, "title", value)
                     }
-                    suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+                    suffixIcon={
+                      <DownOutlined style={{ marginBottom: "15px" }} />
+                    }
                     style={{ width: 90, height: 60 }}
                   >
                     <Select.Option value="Mr">Mr</Select.Option>
@@ -595,8 +595,8 @@ export function Step1TravellerDetails({
                       <div className="flex flex-col">
                         <input
                           ref={(el) =>
-                          (errorRefs.current[`passportNumber_r${roomIndex}`] =
-                            el)
+                            (errorRefs.current[`passportNumber_r${roomIndex}`] =
+                              el)
                           }
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Number"
@@ -669,7 +669,9 @@ export function Step1TravellerDetails({
                           updated[i].title = value;
                           updateExtraGuests(roomIndex, updated);
                         }}
-                        suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+                        suffixIcon={
+                          <DownOutlined style={{ marginBottom: "15px" }} />
+                        }
                         style={{ width: 90, height: 60 }}
                       >
                         {guest.type === "children" ? (
@@ -727,7 +729,7 @@ export function Step1TravellerDetails({
                 )}
                 <div className="mt-2 text-sm font-semibold text-orange-600">
                   {currentAdults.length + 1 < room.numberOfAdults ||
-                    currentChildren.length < room.numberOfChild ? (
+                  currentChildren.length < room.numberOfChild ? (
                     <button
                       onClick={() => {
                         if (currentAdults.length + 1 < room.numberOfAdults) {
@@ -757,7 +759,7 @@ export function Step1TravellerDetails({
               onChange={(value) =>
                 setFormData({ ...formData, countryCode: value })
               }
-              suffixIcon={<DownOutlined style={{ marginBottom: '15px' }} />}
+              suffixIcon={<DownOutlined style={{ marginBottom: "15px" }} />}
               style={{ width: 90, height: 60 }}
             >
               <Select.Option value="+91">India (+91)</Select.Option>
@@ -798,7 +800,7 @@ export function Step1TravellerDetails({
               </span>
             </div>
           </div>
-          <div className="mobile-fare-summary mt-4 mb-4 screen-only">
+          <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
             <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
           </div>
         </div>
@@ -874,9 +876,9 @@ export function Step2Review({
         throw new Error(response.error);
       }
       //work with ai for fixing this to next routing
-      setTimeout(() => {
-        window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
-      }, 100000);
+      // setTimeout(() => {
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      // }, 100000);
     } catch (error) {
       console.error("Error during block:", error.message);
     } finally {
@@ -990,7 +992,7 @@ export function Step2Review({
 
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Total Rooms</strong>
-            <p className="text-gray-700 text-xs">
+            <p className="text-gray-700 text-sm">
               {hotelReviewData?.query?.roomInfo?.length || 0}
             </p>
           </div>
@@ -1033,138 +1035,183 @@ export function Step2Review({
         <h3 className="font-bold text-base">Guest Details:</h3>
         {Category !== "abook"
           ? Object.values(formData.guests || {}).map((guest, roomIndex) => {
-            // Filter valid guests (lead + extra guests with valid data)
-            const allGuests = [guest, ...(guest.extraGuests || [])];
-            const validGuests = allGuests.filter((g) => {
-              const firstName = g?.firstName?.trim() || "";
-              const lastName = g?.lastName?.trim() || "";
-              return firstName && lastName;
-            });
+              // Filter valid guests (lead + extra guests with valid data)
+              const allGuests = [guest, ...(guest.extraGuests || [])];
+              const validGuests = allGuests.filter((g) => {
+                const firstName = g?.firstName?.trim() || "";
+                const lastName = g?.lastName?.trim() || "";
+                return firstName && lastName;
+              });
 
-            // Only render if there are valid guests
-            if (validGuests.length === 0) return null;
+              // Only render if there are valid guests
+              if (validGuests.length === 0) return null;
 
-            // Get the actual room configuration for accurate guest count
-            const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
-            const totalGuestCount = (roomConfig?.numberOfAdults || 0) + (roomConfig?.numberOfChild || 0);
+              // Get the actual room configuration for accurate guest count
+              const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
+              const totalGuestCount =
+                (roomConfig?.numberOfAdults || 0) +
+                (roomConfig?.numberOfChild || 0);
 
-            return (
-              <div key={roomIndex} className="border-b pb-4">
-                <h4 className="font-bold text-md">
-                  <div>
+              return (
+                <div key={roomIndex} className="border-b pb-4">
+                  <h4 className="font-bold text-md">
+                    <div>
+                      <p>
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc}{" "}
+                        -{" "}
+                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
+                        <span className="text-gray-500">
+                          {" "}
+                          ({totalGuestCount}{" "}
+                          {totalGuestCount === 1 ? "Guest" : "Guests"})
+                        </span>
+                      </p>
+                    </div>
+                  </h4>
+                  <div className="guest-details-table-wrapper desktop-only-table">
+                    <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                      <thead className="bg-blue-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            No.
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Title
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            First Name
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Last Name
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {validGuests.map((validGuest, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {index + 1}.
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {validGuest.title}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {validGuest.firstName}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {validGuest.lastName}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mobile-guest-details">
+                    {validGuests.map((validGuest, index) => (
+                      <div
+                        key={index}
+                        className="mobile-guest-row border-b py-2"
+                      >
+                        <span className="font-semibold mr-2">{index + 1}.</span>
+                        <span>
+                          {validGuest.title}. {validGuest.firstName}&nbsp;{" "}
+                          {validGuest.lastName}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })
+          : hotelPassenger?.map((room, roomIndex) => {
+              // Filter valid guests (excluding TBA and empty values)
+              const validGuests =
+                room?.ti?.filter((passenger) => {
+                  const firstName = passenger?.fN?.trim() || "";
+                  const lastName = passenger?.lN?.trim() || "";
+
+                  // Filter out TBA, empty, or undefined values
+                  return (
+                    firstName &&
+                    lastName &&
+                    firstName.toUpperCase() !== "TBA" &&
+                    lastName.toUpperCase() !== "TBA"
+                  );
+                }) || [];
+
+              // Only render the room section if there are valid guests
+              if (validGuests.length === 0) return null;
+
+              // Total guest count includes all guests (for display purposes)
+              const totalGuestCount = room?.ti?.length || 0;
+
+              return (
+                <div key={roomIndex} className="border-b space-y-2">
+                  <h4 className="font-bold text-md">
                     <p>
-                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc} -{" "}
-                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
+                      {room?.rc} <span className="text-md">( {room?.mb})</span>
                       <span className="text-gray-500">
                         {" "}
                         ({totalGuestCount}{" "}
                         {totalGuestCount === 1 ? "Guest" : "Guests"})
                       </span>
                     </p>
+                  </h4>
+
+                  <div className="guest-details-table-wrapper desktop-only-table">
+                    <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                      <thead className="bg-blue-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            No.
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Title
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            First Name
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Last Name
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {validGuests.map((passenger, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {index + 1}.
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {passenger?.ti}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {passenger?.fN}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {passenger?.lN}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                </h4>
-                <div className="guest-details-table-wrapper desktop-only-table">
-                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                    <thead className="bg-blue-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {validGuests.map((validGuest, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="px-4 py-2 text-sm text-gray-800">{index + 1}.</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.title}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.firstName}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{validGuest.lastName}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                  <div className="mobile-guest-details">
+                    {validGuests.map((passenger, index) => (
+                      <div
+                        key={index}
+                        className="mobile-guest-row border-b py-2"
+                      >
+                        <span className="font-semibold mr-2">{index + 1}.</span>
+                        <span>
+                          {passenger?.ti}. {passenger?.fN}&nbsp; {passenger?.lN}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="mobile-guest-details">
-                  {validGuests.map((validGuest, index) => (
-                    <div key={index} className="mobile-guest-row border-b py-2">
-                      <span className="font-semibold mr-2">{index + 1}.</span>
-                      <span>{validGuest.title}. {validGuest.firstName}&nbsp; {validGuest.lastName}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })
-          : hotelPassenger?.map((room, roomIndex) => {
-            // Filter valid guests (excluding TBA and empty values)
-            const validGuests = room?.ti?.filter(
-              (passenger) => {
-                const firstName = passenger?.fN?.trim() || "";
-                const lastName = passenger?.lN?.trim() || "";
-
-                // Filter out TBA, empty, or undefined values
-                return (
-                  firstName &&
-                  lastName &&
-                  firstName.toUpperCase() !== "TBA" &&
-                  lastName.toUpperCase() !== "TBA"
-                );
-              }
-            ) || [];
-
-            // Only render the room section if there are valid guests
-            if (validGuests.length === 0) return null;
-
-            // Total guest count includes all guests (for display purposes)
-            const totalGuestCount = room?.ti?.length || 0;
-
-            return (
-              <div key={roomIndex} className="border-b space-y-2">
-                <h4 className="font-bold text-md">
-                  <p>
-                    {room?.rc} <span className="text-md">( {room?.mb})</span>
-                    <span className="text-gray-500">
-                      {" "}
-                      ({totalGuestCount}{" "}
-                      {totalGuestCount === 1 ? "Guest" : "Guests"})
-                    </span>
-                  </p>
-                </h4>
-
-                <div className="guest-details-table-wrapper desktop-only-table">
-                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                    <thead className="bg-blue-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">No.</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Title</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">First Name</th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">Last Name</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {validGuests.map((passenger, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="px-4 py-2 text-sm text-gray-800">{index + 1}.</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.ti}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.fN}</td>
-                          <td className="px-4 py-2 text-sm text-gray-800">{passenger?.lN}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <div className="mobile-guest-details">
-                  {validGuests.map((passenger, index) => (
-                    <div key={index} className="mobile-guest-row border-b py-2">
-                      <span className="font-semibold mr-2">{index + 1}.</span>
-                      <span>{passenger?.ti}. {passenger?.fN}&nbsp; {passenger?.lN}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
 
         {Category !== "abook" ? (
           formData.specialRequest?.trim() ? (
@@ -1191,17 +1238,25 @@ export function Step2Review({
         {Category !== "abook" ? (
           formData.email?.trim() ? (
             <div className="mt-4">
-              <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
+              <h3 className="font-bold text-base text-md mb-2">
+                Contact Details
+              </h3>
               <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3 desktop-only-table">
                 <thead className="bg-blue-50">
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Mobile</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Email
+                    </th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Mobile
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b">
-                    <td className="px-4 py-2 text-sm text-gray-800">{formData.email}</td>
+                    <td className="px-4 py-2 text-sm text-gray-800">
+                      {formData.email}
+                    </td>
                     <td className="px-4 py-2 text-sm text-gray-800">
                       {formData.countryCode} {formData.mobile}
                     </td>
@@ -1215,19 +1270,27 @@ export function Step2Review({
                 </div>
                 <div className="mobile-guest-row">
                   <span className="font-semibold mr-2">Mobile:</span>
-                  <span>{formData.countryCode} {formData.mobile}</span>
+                  <span>
+                    {formData.countryCode} {formData.mobile}
+                  </span>
                 </div>
               </div>
             </div>
           ) : null
         ) : passengerContact?.emails?.length > 0 ? (
           <div className="mt-4">
-            <h3 className="font-bold text-base text-md mb-2">Contact Details</h3>
+            <h3 className="font-bold text-base text-md mb-2">
+              Contact Details
+            </h3>
             <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3 desktop-only-table">
               <thead className="bg-blue-50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Email</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">Mobile</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    Email
+                  </th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    Mobile
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -1235,7 +1298,8 @@ export function Step2Review({
                   <tr key={index} className="border-b">
                     <td className="px-4 py-2 text-sm text-gray-800">{email}</td>
                     <td className="px-4 py-2 text-sm text-gray-800">
-                      {passengerContact.code[0]} {passengerContact.contacts[index]}
+                      {passengerContact.code[0]}{" "}
+                      {passengerContact.contacts[index]}
                     </td>
                   </tr>
                 ))}
@@ -1250,7 +1314,10 @@ export function Step2Review({
                   </div>
                   <div className="mobile-guest-row">
                     <span className="font-semibold mr-2">Mobile:</span>
-                    <span>{passengerContact.code[0]} {passengerContact.contacts[index]}</span>
+                    <span>
+                      {passengerContact.code[0]}{" "}
+                      {passengerContact.contacts[index]}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -1258,7 +1325,7 @@ export function Step2Review({
           </div>
         ) : null}
 
-        <div className="mobile-fare-summary mt-4 mb-4 screen-only">
+        <div className="mobile-fare-summary mt-40 mb-4 screen-only p-0">
           <FareAmount hotelReviewData={hotelReviewData} Category={Category} />
         </div>
 
@@ -1266,7 +1333,7 @@ export function Step2Review({
           <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
 
           <table className="w-full border text-center text-sm">
-            <thead className="bg-gray-100">
+            <thead className="bg-blue-50">
               <tr>
                 <th className="border p-2">Cancellation on or After</th>
                 <th className="border p-2">Cancellation on or Before</th>
@@ -1290,7 +1357,7 @@ export function Step2Review({
             </tbody>
           </table>
 
-          <ul className="text-md text-gray-600 mt-2">
+          <ul className="policy_content text-sm text-gray-600 mt-2">
             <li>
               * Each booking is applicable for ₹20 per room/night non-refundable
               service fee.
@@ -1338,7 +1405,7 @@ export function Step2Review({
                       </strong>
 
                       {typeof parsedMsg === "object" ? (
-                        <ul className="text-md text-grey-700 space-y-1">
+                        <ul className="policy_content text-sm text-grey-700 space-y-1">
                           {Object.entries(parsedMsg).map(([key, value]) => (
                             <li className="text-sm" key={key}>
                               <span className="text-sm">
@@ -1349,7 +1416,9 @@ export function Step2Review({
                                   )}
                                 :
                               </span>{" "}
-                              <span className="text-sm text-grey-700">{value}</span>
+                              <span className="text-sm text-grey-700">
+                                {value}
+                              </span>
                             </li>
                           ))}
                         </ul>
@@ -1366,7 +1435,7 @@ export function Step2Review({
           <h3 className="font-semibold text-base mb-2">
             General Terms & Conditions:
           </h3>
-          <ul className="text-md text-gray-700 list-decimal ml-6 space-y-1">
+          <ul className="policy_content text-sm text-gray-700 list-decimal ml-6 space-y-1">
             <li>
               Each country/state may have its own set of COVID-19 guidelines and
               restrictions. Please check with the hotel or visit the
@@ -1436,7 +1505,7 @@ export function Step2Review({
             </li>
           </ul>
           <div className="mt-2">
-            <span className="text-md">
+            <span className="text-sm">
               <a
                 href={hotelReviewData?.hInfo?.tac?.sc?.[0]?.info}
                 className="text-red-600"
@@ -1447,7 +1516,7 @@ export function Step2Review({
               </a>
             </span>
             <br />
-            <span className="text-md">
+            <span className="text-sm">
               <a
                 href={hotelReviewData?.hInfo?.tac?.sc?.[1]?.info}
                 className="text-red-600"
@@ -1470,7 +1539,7 @@ export function Step2Review({
 
               <label
                 htmlFor="acceptTerms"
-                className="mb-0 text-md text-gray-700"
+                className="mb-0 text-sm text-gray-700"
               >
                 Accept Terms & Conditions
               </label>
@@ -1488,10 +1557,11 @@ export function Step2Review({
               <button
                 type="button"
                 // disabled={!accepted}
-                className={`book-now-btn ${accepted
-                  ? "bg-orange-500 hover:bg-orange-600"
-                  : "bg-gray-400 cursor-not-allowed"
-                  }`}
+                className={`book-now-btn ${
+                  accepted
+                    ? "bg-orange-500 hover:bg-orange-600"
+                    : "bg-gray-400 cursor-not-allowed"
+                }`}
                 onClick={handleNext}
               >
                 CONTINUE
@@ -1500,7 +1570,7 @@ export function Step2Review({
           </div>
         )}
       </div>
-    </Suspense >
+    </Suspense>
   );
 }
 
@@ -1733,38 +1803,38 @@ export function Step3PersonalDocuments({
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
-        mode: "custom",
-        rooms: (hotelReviewData?.query?.roomInfo || []).map(
-          (room, rIdx) =>
-            guardianMode[rIdx]
-              ? {
-                useGuardian: true,
-                guardian: {
-                  first: (guardianPANs[rIdx]?.first || "").trim(),
-                  last: (guardianPANs[rIdx]?.last || "").trim(),
-                  pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-                },
-              }
-              : {
-                useGuardian: false,
-                guests: getUiGuests(rIdx).map((guest, gIdx) => ({
-                  pan: isMaster(guest?.title)
-                    ? ""
-                    : (individualPANs[`${rIdx}-${gIdx}`] || "")
-                      .toUpperCase()
-                      .trim(),
-                })),
-              }
-          // : {
-          //     useGuardian: false,
-          //     guests: (room?.guests || []).map((_, gIdx) => ({
-          //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-          //         .toUpperCase()
-          //         .trim(),
-          //     })),
-          //   }
-        ),
-      };
+          mode: "custom",
+          rooms: (hotelReviewData?.query?.roomInfo || []).map(
+            (room, rIdx) =>
+              guardianMode[rIdx]
+                ? {
+                    useGuardian: true,
+                    guardian: {
+                      first: (guardianPANs[rIdx]?.first || "").trim(),
+                      last: (guardianPANs[rIdx]?.last || "").trim(),
+                      pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                    },
+                  }
+                : {
+                    useGuardian: false,
+                    guests: getUiGuests(rIdx).map((guest, gIdx) => ({
+                      pan: isMaster(guest?.title)
+                        ? ""
+                        : (individualPANs[`${rIdx}-${gIdx}`] || "")
+                            .toUpperCase()
+                            .trim(),
+                    })),
+                  }
+            // : {
+            //     useGuardian: false,
+            //     guests: (room?.guests || []).map((_, gIdx) => ({
+            //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+            //         .toUpperCase()
+            //         .trim(),
+            //     })),
+            //   }
+          ),
+        };
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
@@ -1782,27 +1852,27 @@ export function Step3PersonalDocuments({
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
-        mode: "custom",
-        rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
-          guardianMode[rIdx]
-            ? {
-              useGuardian: true,
-              guardian: {
-                first: (guardianPANs[rIdx]?.first || "").trim(),
-                last: (guardianPANs[rIdx]?.last || "").trim(),
-                pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-              },
-            }
-            : {
-              useGuardian: false,
-              guests: (room?.guests || []).map((_, gIdx) => ({
-                pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-                  .toUpperCase()
-                  .trim(),
-              })),
-            }
-        ),
-      };
+          mode: "custom",
+          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                  useGuardian: true,
+                  guardian: {
+                    first: (guardianPANs[rIdx]?.first || "").trim(),
+                    last: (guardianPANs[rIdx]?.last || "").trim(),
+                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                  },
+                }
+              : {
+                  useGuardian: false,
+                  guests: (room?.guests || []).map((_, gIdx) => ({
+                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                  })),
+                }
+          ),
+        };
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
@@ -1869,8 +1939,9 @@ export function Step3PersonalDocuments({
                   <div className="flex gap-2 mb-2">
                     {/* First */}
                     <Input
-                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
-                        }`}
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
+                      }`}
                       placeholder="First Name"
                       value={guardianPANs[rIdx]?.first || ""}
                       onChange={(e) => {
@@ -1904,8 +1975,9 @@ export function Step3PersonalDocuments({
                     )}
 
                     <Input
-                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
-                        }`}
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
+                      }`}
                       placeholder="Last Name"
                       value={guardianPANs[rIdx]?.last || ""}
                       onChange={(e) => {
@@ -1940,8 +2012,9 @@ export function Step3PersonalDocuments({
 
                     {/* PAN */}
                     <Input
-                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
-                        }`}
+                      className={`w-60 stepper_input ${
+                        errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
+                      }`}
                       placeholder="PAN Number"
                       value={guardianPANs[rIdx]?.pan || ""}
                       onChange={(e) => {
@@ -2017,17 +2090,19 @@ export function Step3PersonalDocuments({
                         className="flex items-center justify-between mb-3 space-x-3"
                       >
                         <p className="text-sm font-medium text-gray-700 w-2/6">
-                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${guest?.lastName || ""
-                            }`.trim()}
+                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${
+                            guest?.lastName || ""
+                          }`.trim()}
                         </p>
 
                         {!guest?.title?.toLowerCase().includes("master") && (
                           <div className="flex-1">
                             <Input
-                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${errors.individual?.[`${rIdx}-${gIdx}`]
-                                ? "border-red-500"
-                                : ""
-                                }`}
+                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${
+                                errors.individual?.[`${rIdx}-${gIdx}`]
+                                  ? "border-red-500"
+                                  : ""
+                              }`}
                               placeholder="Enter PAN Individual"
                               value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                               onChange={(e) =>
@@ -2054,8 +2129,9 @@ export function Step3PersonalDocuments({
         ) : (
           <div className="flex gap-2 mb-4">
             <Input
-              className={`w-60 stepper_input ${errors.samePAN ? "border-red-500" : ""
-                }`}
+              className={`w-60 stepper_input ${
+                errors.samePAN ? "border-red-500" : ""
+              }`}
               placeholder="Enter PAN"
               value={samePANValue}
               onChange={(e) => {
@@ -2139,6 +2215,9 @@ export function Step3PersonalDocuments({
           customers. We further confirm that we have read and understood the
           detailed terms and conditions w.r.t the TCS regulations under Section
           206C(1G) of the Income Tax Act, 1961
+        </div>
+        <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
+          <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
         </div>
         {/* {Category === "bbook" && ( */}
         <div className="flex justify-between items-center mt-6">
