@@ -15,6 +15,7 @@ import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
 import SelectedFlightSummary from "./SelectedFlightSummary";
 import Cookies from "js-cookie";
+import BySortPrice from "@/components/Filter/BySortPrice";
 
 export default function MulticitySelectionView({ flightData }) {
   const isUat = process.env.UAT_ENV === "true";
@@ -27,6 +28,8 @@ export default function MulticitySelectionView({ flightData }) {
   const [uniqueFareTypes, setUniqueFareTypes] = useState([]);
   const [selectedFares, setSelectedFares] = useState([]);
   const [showAllFares, setShowAllFares] = useState(false);
+  const [priceSort, setPriceSort] = useState("asc");
+
 
   useEffect(() => {
     if (flightData && activeTabKey) {
@@ -52,6 +55,21 @@ export default function MulticitySelectionView({ flightData }) {
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
     }
   }, [flightData, activeTabKey]);
+
+  const getTicketPrice = (ticket) => {
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
+    const adultFare =
+      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare =
+      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare =
+      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+
+    return adultFare + childFare + infantFare;
+  };
 
   useEffect(() => {
     if (flightData && activeTabKey) {
@@ -94,18 +112,26 @@ export default function MulticitySelectionView({ flightData }) {
     let filteredData = flights;
 
     // Price Range Filter
-    filteredData = filteredData.filter((ticket) => {
-      const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-      const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-      const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-      const adultFare =
-        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-      const childFare =
-        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-      const infantFare =
-        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+    // filteredData = filteredData.filter((ticket) => {
+    //   const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    //   const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    //   const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+    //   const adultFare =
+    //     (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
+    //   const childFare =
+    //     (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
+    //   const infantFare =
+    //     (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
 
-      const price = adultFare + childFare + infantFare;
+    //   const price = adultFare + childFare + infantFare;
+    //   return (
+    //     price !== undefined &&
+    //     price >= filter.priceRange[0] &&
+    //     price <= filter.priceRange[1]
+    //   );
+    // });
+    filteredData = filteredData.filter((ticket) => {
+      const price = getTicketPrice(ticket);
       return (
         price !== undefined &&
         price >= filter.priceRange[0] &&
@@ -205,6 +231,12 @@ export default function MulticitySelectionView({ flightData }) {
           })
         )
       );
+    }
+
+    if (priceSort === "asc") {
+      filteredData.sort((a, b) => getTicketPrice(a) - getTicketPrice(b));
+    } else if (priceSort === "desc") {
+      filteredData.sort((a, b) => getTicketPrice(b) - getTicketPrice(a));
     }
 
     return filteredData;
@@ -451,6 +483,16 @@ export default function MulticitySelectionView({ flightData }) {
               <div className="box-filters-sidebar">
                 <div className="block-filter border-1">
                   <h6 className="text-lg-bold filter-sty neutral-1000">
+                    Sort by Price
+                  </h6>
+                  <BySortPrice sort={priceSort} setSort={setPriceSort} />
+                </div>
+              </div>
+            </div>
+            <div className="sidebar-left border-1 background-body">
+              <div className="box-filters-sidebar">
+                <div className="block-filter border-1">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">
                     Stops
                   </h6>
                   <ByStops
@@ -633,7 +675,7 @@ export default function MulticitySelectionView({ flightData }) {
                             {ticket.sI.map((segment, index) => (
                               <div
                                 key={index}
-                                className="relative flex flex-col rounded-md p-5"
+                                className="relative flex flex-col rounded-md p-1 xl:p-5"
                               >
                                 {/* <div
                                   className="air_detailes  "

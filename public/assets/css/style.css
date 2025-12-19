@@ -12850,6 +12850,14 @@ h1 span {
   text-decoration: none;
 }
 
+.breadcrumbs li p {
+  font-size: 16px;
+  line-height: 26px;
+  color: var(--bs-neutral-700);
+  font-weight: 500;
+  text-decoration: none;
+}
+
 .breadcrumbs li a:hover {
   color: var(--bs-neutral-1000);
 }
@@ -14815,7 +14823,7 @@ a.link-black:hover svg {
   position: absolute;
   left: 40px;
   top: 10px;
-  z-index: 1;
+  /* z-index: 1; */
 }
 
 .box-timeline .item-timeline:last-child:after {

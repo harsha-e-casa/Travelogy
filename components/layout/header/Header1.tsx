@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import "./style.css";
+import { checkTokenExpiry } from "@/services/Utils";
 
 interface Header1Props {
   isMobileMenu?: boolean;
@@ -26,18 +27,26 @@ export default function Header1(props: Header1Props) {
   const pathname = usePathname();
 
   useEffect(() => {
+    const tokenValid = checkTokenExpiry();
+
+    console.log("tokenValid ==> ", tokenValid);
+
+    if (!tokenValid) localStorage.removeItem("authToken");
+  }, []);
+
+  useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
-      console.log("tokentoken ==> 11111111 ",token)
+      console.log("tokentoken ==> 11111111 ", token);
       setAuthToken(token);
       if (!token) {
         setIsVisible(false);
         return;
       }
       const decoded = jwtDecode<{ travelogy_admin?: boolean | number }>(token);
-      console.log("decodeddecoded ==> ",decoded)
-      console.log("decodeddecoded ==> ",decoded?.travelogy_admin)
-      console.log("decodeddecoded ==> ",!!decoded?.travelogy_admin)
+      console.log("decodeddecoded ==> ", decoded);
+      console.log("decodeddecoded ==> ", decoded?.travelogy_admin);
+      console.log("decodeddecoded ==> ", !!decoded?.travelogy_admin);
       setIsVisible(!!decoded?.travelogy_admin);
     } catch {
       setIsVisible(false);

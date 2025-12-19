@@ -19,3 +19,12 @@
   }
   width: 60%;
 }
+
+.baggage-w, .meal-w {
+  @media (max-width: 1300px) {
+    width: 400px;
+  }
+  @media (min-width: 1300px) {
+    width: 500px;
+  }
+}

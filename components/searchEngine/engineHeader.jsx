@@ -566,7 +566,7 @@ const EngineTabs = ({ active_border }) => {
       >
         <SearchEngHeader active_border={active_border} />
 
-        <div style={{ marginTop: "7%" }}>
+        <div style={{ marginTop: "9%" }}>
           <TripPlans
             selectedPlan={selectedPlan}
             setSelectedPlan={setSelectedPlan}

@@ -239,7 +239,8 @@ const BookingDetailsPage = () => {
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
-                  <Link href="/">Home</Link>
+                  {/* <Link href="/">Home</Link> */}
+                  <p>Home</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -258,7 +259,8 @@ const BookingDetailsPage = () => {
                   </span>
                 </li>
                 <li>
-                  <Link href="/">Tickets</Link>
+                  {/* <Link href="/">Tickets</Link> */}
+                  <p>Tickets</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -277,7 +279,8 @@ const BookingDetailsPage = () => {
                   </span>
                 </li>
                 <li>
-                  <Link href="/">Booking</Link>
+                  {/* <Link href="/">Booking</Link> */}
+                  <p>Traveller information</p>
                   <span className="arrow-right">
                     <svg
                       width="7"
@@ -296,7 +299,27 @@ const BookingDetailsPage = () => {
                   </span>
                 </li>
                 <li>
-                  <span className="text-breadcrumb">Review</span>
+                  {/* <Link href="/">Booking</Link> */}
+                  <p>Review</p>
+                  <span className="arrow-right">
+                    <svg
+                      width="7"
+                      height="12"
+                      viewBox="0 0 7 12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1 11L6 6L1 1"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="none"
+                      />
+                    </svg>
+                  </span>
+                </li>
+                <li>
+                  <span className="text-breadcrumb">Booking Details</span>
                 </li>
               </ul>
             </div>

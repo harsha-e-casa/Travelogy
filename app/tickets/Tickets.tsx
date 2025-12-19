@@ -6,6 +6,7 @@ import React, {
   useContext,
   useRef,
   Suspense,
+  useMemo,
 } from "react";
 import ByAirline from "@/components/Filter/ByAirline";
 import ByClass from "@/components/Filter/ByClass";
@@ -48,6 +49,7 @@ import { checkTokenExpiry } from "@/services/Utils";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
+import BySortPrice from "@/components/Filter/BySortPrice";
 
 // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -158,6 +160,10 @@ export default function Tickets() {
 
       // --- Track first error for scrolling/focus ---
       if (ok && (e.fromError || e.toError || e.dateError)) {
+        console.log("ok ", ok);
+        console.log("e.fromError ", e.fromError);
+        console.log("e.toError ", e.toError);
+        console.log("e.dateError ", e.dateError);
         ok = false;
         firstBadIndex = idx;
       }
@@ -222,6 +228,7 @@ export default function Tickets() {
   const [minPriceRange, setMinPriceRange] = useState<any>(null);
   const [maxPriceRange, setMaxPriceRange] = useState<any>(null);
   const [stops, setStops] = useState("all");
+  const [priceSort, setPriceSort] = useState<"asc" | "desc">("asc");
   const [departureTime, setDepartureTime] = useState("all");
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [arrivalTime, setArrivalTime] = useState("all");
@@ -269,6 +276,50 @@ export default function Tickets() {
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
     }
   }, [flightData]);
+
+  const getTicketPrice = (ticket: any) => {
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
+    const adultFare =
+      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare =
+      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare =
+      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+
+    return adultFare + childFare + infantFare;
+  };
+
+  const sortedFlightData = useMemo(() => {
+    if (!filteredFlightData) return [];
+
+    const arr = [...filteredFlightData];
+
+    if (priceSort === "asc") {
+      arr.sort((a, b) => getTicketPrice(a) - getTicketPrice(b));
+    } else if (priceSort === "desc") {
+      arr.sort((a, b) => getTicketPrice(b) - getTicketPrice(a));
+    }
+
+    return arr;
+  }, [filteredFlightData, priceSort]);
+
+  useEffect(() => {
+    if (!filteredFlightData) return;
+
+    let sorted = [...filteredFlightData];
+
+    if (priceSort === "asc") {
+      sorted.sort((a, b) => getTicketPrice(a) - getTicketPrice(b));
+    }
+    if (priceSort === "desc") {
+      sorted.sort((a, b) => getTicketPrice(b) - getTicketPrice(a));
+    }
+
+    setFilteredFlightData(sorted);
+  }, [priceSort]);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
@@ -767,10 +818,13 @@ export default function Tickets() {
     console.log("handlesearFlight ==> clicked ");
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       const pass = validateMultiCity({ focusFirstError: true });
+      console.log("pass ==> ", pass);
       if (!pass) return; // stop if invalid
     }
 
     if (fromError || toError) {
+      console.log("handleModifySearch fromError ", fromError);
+      console.log("handleModifySearch toError ", toError);
       return; // Do not proceed if there are city selection errors
     }
 
@@ -1514,18 +1568,50 @@ export default function Tickets() {
     handleModifySearch();
   };
 
-  let searchEnginewidth = {};
-  if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
-    searchEnginewidth = {
-      width: "65%",
-    };
-  }
+  // let searchEnginewidth = {};
+  // if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
+  //   searchEnginewidth = {
+  //     width: "65%",
+  //   };
+  // }
 
-  if ((srx_tripType?.toLowerCase() || "") === "round-trip") {
-    searchEnginewidth = {
-      width: "90%",
-    };
-  }
+  // if ((srx_tripType?.toLowerCase() || "") === "round-trip") {
+  //   searchEnginewidth = {
+  //     width: "90%",
+  //   };
+  // }
+
+  const getHeaderClass = () => {
+    const t = srx_tripType?.toLowerCase();
+    console.log("daiiiiiiiiiiiiiiiiiiii ", t);
+    if (t === "one-way") {
+      return "hdt_header-fligt-w-o";
+    }
+    if (t === "multi-city") {
+      return "hdt_header-fligt-w-m";
+    }
+    if (t === "round-trip") {
+      return "hdt_header-fligt-w-r";
+    }
+
+    return "";
+  };
+
+  const getTravellerClass = () => {
+    const t = srx_tripType?.toLowerCase();
+    console.log("daiiiiiiiiiiiiiiiiiiii ", t);
+    if (t === "one-way") {
+      return "pos-t-r";
+    }
+    if (t === "multi-city") {
+      return "pos-t-r_m";
+    }
+    if (t === "round-trip") {
+      return "pos-t-r_o";
+    }
+
+    return "";
+  };
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -1536,7 +1622,8 @@ export default function Tickets() {
           <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
             {/* Header Section */}
 
-            <div className="hdt_header" style={{ ...searchEnginewidth }}>
+            {/* <div className="hdt_header" style={{ ...searchEnginewidth }}> */}
+            <div className={`hdt_header ${getHeaderClass()}`}>
               <div className="hdt_header-item">
                 <label>Fare Types</label>
                 <Dropdown
@@ -2015,7 +2102,8 @@ export default function Tickets() {
             clickPlusinfant={clickPlusinfant}
             totalPassenderCount={totalPassenderCount}
             // specificStyle={{ top: "23%", right: "9%" }}
-            specificStyle={"pos-t-r"}
+            // specificStyle={"pos-t-r"}
+            specificStyle={`${getTravellerClass()}`}
             selectedPassengerType={srx_fareType}
           />
 
@@ -2117,7 +2205,8 @@ export default function Tickets() {
                     (srx_tripType?.trim().toLowerCase() === "multi-city" &&
                       flightData?.COMBO?.length > 0)) &&
                     (() => {
-                      const tripInfo = filteredFlightData;
+                      // const tripInfo = filteredFlightData;
+                      const tripInfo = sortedFlightData;
                       console.log("mameeeeeeeeee ", tripInfo);
                       console.log("mameeeeeeeeee ", tripInfo?.length);
 
@@ -2219,7 +2308,9 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "round-trip" && srx_tripType.trim().toLowerCase() !== "one-way" && srx_tripType.trim().toLowerCase() !== "multi-city" ? (
+                  srx_tripType.trim().toLowerCase() === "round-trip" &&
+                  srx_tripType.trim().toLowerCase() !== "one-way" &&
+                  srx_tripType.trim().toLowerCase() !== "multi-city" ? (
                     <>
                       {flightData &&
                       flightData.ONWARD &&
@@ -2377,6 +2468,20 @@ export default function Tickets() {
                             Stops
                           </h6>
                           <ByStops stops={stops} setStops={setStops} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        {/* <div className="block-filter border-1"> */}
+                        <div className="border-1">
+                          <h6 className="text-lg-bold filter-sty neutral-1000">
+                            Price
+                          </h6>
+                          <BySortPrice
+                            sort={priceSort}
+                            setSort={setPriceSort}
+                          />
                         </div>
                       </div>
                     </div>
