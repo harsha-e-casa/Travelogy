@@ -253,7 +253,12 @@ const BookingDetailsPage = () => {
     try {
       const reqBody = {
         action: "cancelBooking",
-        requestData: { bookingId: bookingId },
+        requestData: {
+          bookingId: bookingId,
+          remarks: "User Requested Cancellation",
+          requestType: "CANCEL",
+          type: "HOTEL"
+        },
       };
 
       const response = await postData("travelogy/hotel/fetch-data", reqBody);
@@ -559,7 +564,7 @@ const BookingDetailsPage = () => {
 
           {cancelling && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center m-3">
                 <div className="flex items-center justify-center gap-2">
                   <Spin size="medium" />
                   <span>Cancelling your booking…</span>
@@ -570,7 +575,7 @@ const BookingDetailsPage = () => {
 
           {confirming && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center m-3">
                 <div className="flex items-center justify-center gap-2">
                   <Spin size="medium" />
                   <span>Processing your payment…</span>

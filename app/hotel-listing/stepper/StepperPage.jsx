@@ -1,5 +1,4 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -124,6 +123,23 @@ export default function Stepper() {
   });
   const router = useRouter();
   const apiOk = !loading && !error && Boolean(hotelReviewData);
+
+  const stepperRef = useRef(null);
+
+  useEffect(() => {
+    if (stepperRef.current) {
+      const activeStepElement = stepperRef.current.querySelector(
+        `[data-step="${currentStep}"]`
+      );
+      if (activeStepElement) {
+        activeStepElement.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      }
+    }
+  }, [currentStep]);
 
   useEffect(() => {
     const saved = localStorage.getItem(stepKey);
@@ -327,7 +343,10 @@ export default function Stepper() {
       {!error && (
         <div className="bg-gray-50 flex flex-col items-center justify-center py-4">
           <div className="w-full max-w-6xl relative flex justify-between mb-10 stepper-steps">
-            <div className="w-full flex justify-between items-center relative mb-10">
+            <div
+              ref={stepperRef}
+              className="w-full flex justify-between items-center relative mb-10 overflow-x-auto no-scrollbar"
+            >
               {steps.map((step, index) => {
                 const status =
                   currentStep > step.id
@@ -347,6 +366,7 @@ export default function Stepper() {
                 return (
                   <div
                     key={step.id}
+                    data-step={step.id}
                     onClick={() => handleStepClick(step.id)}
                     className="flex items-center gap-2 w-full group cursor-pointer"
                   >
@@ -370,8 +390,8 @@ export default function Stepper() {
                       </span>
                       <span
                         className={`text-sm font-medium ${status === "completed"
-                          ? "text-4aa301"
-                          : "text-gray-700"
+                            ? "text-4aa301"
+                            : "text-gray-700"
                           }`}
                       >
                         {step.title}
@@ -420,16 +440,14 @@ export default function Stepper() {
                       hotelReviewData={hotelReviewData}
                     />
                   )}
-                  {currentStep === 3 &&
-                    PanRequired !== false &&
-                    (
-                      <Step3PersonalDocuments
-                        formData={formData}
-                        setFormData={setFormData}
-                        hotelReviewData={hotelReviewData}
-                        onNext={goNext}
-                      />
-                    )}
+                  {currentStep === 3 && PanRequired !== false && (
+                    <Step3PersonalDocuments
+                      formData={formData}
+                      setFormData={setFormData}
+                      hotelReviewData={hotelReviewData}
+                      onNext={goNext}
+                    />
+                  )}
 
                   {currentStep === 4 && (
                     <Step4Payment
@@ -447,7 +465,10 @@ export default function Stepper() {
                   )}
                 </div>
                 <div className="hidden md:block md:col-span-4 desktop-fare-summary">
-                  <FareAmount hotelReviewData={hotelReviewData} Category="bbook" />
+                  <FareAmount
+                    hotelReviewData={hotelReviewData}
+                    Category="bbook"
+                  />
                 </div>
               </>
             )}

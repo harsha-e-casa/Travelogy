@@ -67,6 +67,8 @@ const EngineHeaderHotel = ({ active_border }) => {
     }
   }, [selectFrom, nationalities]);
 
+  const [openEnv, setOpenEnv] = useState("desktop"); // 'desktop' | 'mobile'
+
   const classLabels = {
     a: "Economy/Premium Economy",
     b: "Premium Economy",
@@ -84,11 +86,16 @@ const EngineHeaderHotel = ({ active_border }) => {
   const openTraveller = () => {
     setShowYTraveller((prevState) => !prevState); // Correct way to toggle the state
   };
-  const openfrom = () => {
-    if (showSearchState) {
+  const openfrom = (env) => {
+    if (!env) {
+      closeAllFields();
+      return;
+    }
+    if (showSearchState && openEnv === env) {
       closeAllFields();
     } else {
       closeAllFields();
+      if (env) setOpenEnv(env);
       setShowSearchState(true);
     }
   };
@@ -124,19 +131,21 @@ const EngineHeaderHotel = ({ active_border }) => {
     }
   }, [datedepr, selectedPlan]);
 
-  const openToDateRange = () => {
+  const openToDateRange = (env) => {
     if (openDateRage) {
       closeallform();
     } else {
       closeallform();
+      if (env) setOpenEnv(env);
       setOpenDateRage(true);
     }
   };
-  const openToDateRangeR = () => {
+  const openToDateRangeR = (env) => {
     if (openDateRageR) {
       closeallform();
     } else {
       closeallform();
+      if (env) setOpenEnv(env);
       setOpenDateRageR(true);
     }
   };
@@ -276,7 +285,7 @@ const EngineHeaderHotel = ({ active_border }) => {
         <div className="plans mt-35 mb_8 ml_10"></div>
         <div className="desktop_view custom-grid justify-center">
           <div className="text_start b_right_2px tab_grid_w_1 grid_w_1 box_left_ddr1 css_pointer relative p-2">
-            <div className="" onClick={openfrom}>
+            <div className="" onClick={() => openfrom("desktop")}>
               <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
                 Location/City
               </div>
@@ -293,7 +302,7 @@ const EngineHeaderHotel = ({ active_border }) => {
               </div>
             </div>
 
-            {showSearchState ? (
+            {showSearchState && openEnv === "desktop" ? (
               <div className="searchFfromSelect searchFfromSelect_1">
                 <CityListSearch
                   operEngLocation={openfrom}
@@ -308,7 +317,7 @@ const EngineHeaderHotel = ({ active_border }) => {
             className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer"
             onClick={(e) => {
               e.stopPropagation();
-              openToDateRange();
+              openToDateRange("desktop");
             }}
           >
             <div className="flex cus_mdls_pl md:pl-4 md:pl-6 lg:pl-6 justify_content_space">
@@ -340,7 +349,7 @@ const EngineHeaderHotel = ({ active_border }) => {
               </div>
             </div>
 
-            {openDateRage && (
+            {openDateRage && openEnv === "desktop" && (
               <div onClick={(e) => e.stopPropagation()}>
                 <AppDateRage
                   openToDateRange={openToDateRange}
@@ -356,7 +365,7 @@ const EngineHeaderHotel = ({ active_border }) => {
               className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                openToDateRangeR();
+                openToDateRangeR("desktop");
               }}
             >
               <div className="flex cus_mdls_pl md:pl-4 md:pl-6 lg:pl-6 justify_content_space">
@@ -385,7 +394,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                 </div>
               </div>
 
-              {openDateRageR && (
+              {openDateRageR && openEnv === "desktop" && (
                 <div onClick={(e) => e.stopPropagation()}>
                   <AppDateRage
                     key={datedep.format("YYYY-MM-DD")}
@@ -465,16 +474,16 @@ const EngineHeaderHotel = ({ active_border }) => {
             </div>
           </div>
         </div>
-        <div className="mobile_view">
+        <div className="mobile_view p-3">
           <div className="text_start b_right_2px tab_grid_w_1 grid_w_1 css_pointer relative">
-            <div onClick={openfrom} className="mobile-row">
-              <span className="mobile-label">Location/City</span>
+            <div onClick={() => openfrom("mobile")} className="mobile-row">
+              <span className="mobile-label">Location</span>
               <span className="mobile-value">
                 {selectFrom?.cityName || "Select City"}
               </span>
             </div>
 
-            {showSearchState && (
+            {showSearchState && openEnv === "mobile" && (
               <div className="searchFfromSelect searchFfromSelect_1">
                 <CityListSearch
                   operEngLocation={openfrom}
@@ -487,7 +496,7 @@ const EngineHeaderHotel = ({ active_border }) => {
             className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer"
             onClick={(e) => {
               e.stopPropagation();
-              openToDateRange();
+              openToDateRange("mobile");
             }}
           >
             <div className="mobile-row">
@@ -497,7 +506,7 @@ const EngineHeaderHotel = ({ active_border }) => {
               </span>
             </div>
 
-            {openDateRage ? (
+            {openDateRage && openEnv === "mobile" ? (
               <div onClick={(e) => e.stopPropagation()}>
                 <AppDateRage
                   openToDateRange={openToDateRange}
@@ -512,7 +521,7 @@ const EngineHeaderHotel = ({ active_border }) => {
               className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                openToDateRangeR();
+                openToDateRangeR("mobile");
               }}
             >
               <div className="mobile-row">
@@ -522,7 +531,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                 </span>
               </div>
 
-              {openDateRageR && (
+              {openDateRageR && openEnv === "mobile" && (
                 <div onClick={(e) => e.stopPropagation()}>
                   {" "}
                   <AppDateRage

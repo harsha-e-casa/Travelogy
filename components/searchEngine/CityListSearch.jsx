@@ -4,7 +4,7 @@ import citiesData from "../../util/cities.json";
 
 const getDisplayCityName = (city) => {
   if (city.type === "MULTI_CITY_VICINITY") {
-    return `${city.cityName} AND VICINITY`;
+    return `${city.cityName}`;
   }
   return city.cityName;
 };

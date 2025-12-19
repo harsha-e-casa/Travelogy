@@ -16,11 +16,11 @@ export default function CancellationModal({
       className="fixed inset-0 z-[9999] flex items-center justify-center"
       aria-live="assertive"
     >
-      <div className="absolute inset-0 bg-black/50 z-0" onClick={onClose} />
+      <div className="absolute inset-0 bg-black-30 z-0" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
-        className="relative z-10 w-[92%] max-w-2xl rounded-md bg-white shadow-xl"
+        className="relative z-10 w-[92%] max-w-2xl rounded-md bg-white shadow-xl cancel_modal"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-6 py-4 border-b">
@@ -28,14 +28,14 @@ export default function CancellationModal({
             CANCELLATION POLICY
           </h2>
         </div>
-        
+
         <div className="px-6 py-6 max-h-[70vh] overflow-y-auto">
           {cancellationPolicy && cancellationPolicy.length > 0 ? (
             <div className="space-y-4">
               <p className="text-gray-700 text-sm mb-4">
                 Please review the cancellation policy before proceeding:
               </p>
-              
+
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
                   <thead>
@@ -74,7 +74,9 @@ export default function CancellationModal({
                       return (
                         <tr
                           key={index}
-                          className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                          className={
+                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                          }
                         >
                           <td className="border border-gray-300 px-4 py-3 text-sm text-gray-800">
                             Period {index + 1}

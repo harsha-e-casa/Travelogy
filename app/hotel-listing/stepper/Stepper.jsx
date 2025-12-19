@@ -398,6 +398,7 @@ export function Step1TravellerDetails({
         <div className="border-b pb-4">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}
+            {""}
             <span className="text-star ml-2">
               {[...Array(filledStars)].map((_, index) => (
                 <svg
@@ -908,8 +909,8 @@ export function Step2Review({
   const filledStars = Math.round(rating);
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
-        <div className="border-b">
+      <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
+        <div className="border-b pb-4">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}{" "}
             <span className="text-star ml-2">
@@ -927,7 +928,7 @@ export function Step2Review({
               ))}
             </span>
           </h2>
-          <p className="text-md text-gray-600">
+          <p className="text-xs text-gray-600">
             {hotelReviewData?.hInfo?.ad?.adr && (
               <>{hotelReviewData.hInfo.ad.adr} </>
             )}
@@ -945,11 +946,10 @@ export function Step2Review({
               <> Postal code: {hotelReviewData.hInfo.ad.postalCode}</>
             )}
           </p>
-          <br />
           <p className="text-blue-700 text-sm">
             <span className="text-blue-700 font-semibold">
               {freeCancellationDate && (
-                <div className="text-sm mb-1 font-bold">
+                <div className="text-xs mb-1">
                   Last Cancellation Date:
                   {freeCancellationDate}
                 </div>
@@ -957,7 +957,7 @@ export function Step2Review({
             </span>
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
             {Category === "abook" ? (
@@ -997,7 +997,7 @@ export function Step2Review({
             </p>
           </div>
 
-          <div className="border-l-1 pl-4 md:col-span-2">
+          <div className="border-l-1 pl-4">
             <strong className="block text-gray-900 text-base">
               Total Guests
             </strong>
@@ -1882,10 +1882,10 @@ export function Step3PersonalDocuments({
         hotelReviewData,
         isBlock: true,
       });
-      setTimeout(() => {
-        window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
-      }, 100000);
-      // window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      // setTimeout(() => {
+      //   window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      // }, 100000);
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
       message.error("There was an error with the booking process.");
     } finally {
@@ -1936,7 +1936,7 @@ export function Step3PersonalDocuments({
                 </div>
 
                 {guardianMode[rIdx] ? (
-                  <div className="flex gap-2 mb-2">
+                  <div className="flex gap-2 mb-2 pan_type_2">
                     {/* First */}
                     <Input
                       className={`w-60 stepper_input ${
@@ -2087,7 +2087,7 @@ export function Step3PersonalDocuments({
                     {[leadGuest, ...extraGuests].map((guest, gIdx) => (
                       <div
                         key={`guest-${rIdx}-${gIdx}`}
-                        className="flex items-center justify-between mb-3 space-x-3"
+                        className="flex items-center justify-between mb-3 space-x-3 pan_type_1"
                       >
                         <p className="text-sm font-medium text-gray-700 w-2/6">
                           {`${guest?.title || ""}. ${guest?.firstName || ""} ${
@@ -2127,7 +2127,7 @@ export function Step3PersonalDocuments({
             );
           })
         ) : (
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 ">
             <Input
               className={`w-60 stepper_input ${
                 errors.samePAN ? "border-red-500" : ""
@@ -2306,7 +2306,7 @@ export function Step4Payment({
       console.log("Booking success:", result);
       setTimeout(() => {
         onConfirmPayment(bookingId);
-      }, 1000);//time decreased to check the booking flow from 100000
+      }, 1000); //time decreased to check the booking flow from 100000
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);
@@ -2324,7 +2324,7 @@ export function Step4Payment({
     <div className="max-w-5xl mx-auto gap-6 p-6 text-sm relative">
       <div className="p-4">
         <h3 className="font-lightbold mb-2">Deposit</h3>
-        <div className="flex p-6">
+        <div className="flex p-6 depo_content">
           <div className="mb-6">
             <div className="text-orange-800 px-4 py-3 text-sm">
               <p>
@@ -2357,7 +2357,7 @@ export function Step4Payment({
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
+          <div className="bg-white rounded shadow-lg w-full max-w-md p-6 confirm_modal">
             <h2 className="text-center text-lg font-bold text-orange-600 mb-4">
               CONFIRM TRANSACTION
             </h2>
