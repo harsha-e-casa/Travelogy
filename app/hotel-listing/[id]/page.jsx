@@ -11,6 +11,8 @@ import "../HotelListingPage.css";
 const Modal = ({
   images,
   isOpen,
+  filledStars,
+  hotelName,
   onClose,
   selectedImage,
   setSelectedImage,
@@ -26,7 +28,7 @@ const Modal = ({
     if (isOpen && standardImages.length > 0) {
       setSelectedImage(
         standardImages[0]?.url ||
-        "https://via.placeholder.com/400x300.png?text=No+Image+Available"
+          "https://via.placeholder.com/400x300.png?text=No+Image+Available"
       );
     }
   }, [isOpen, standardImages, setSelectedImage]);
@@ -47,7 +49,7 @@ const Modal = ({
     if (standardImages.length > 0) {
       setSelectedImage(
         standardImages[currentIndex]?.url ||
-        "https://via.placeholder.com/400x300.png?text=No+Image+Available"
+          "https://via.placeholder.com/400x300.png?text=No+Image+Available"
       );
     }
   }, [currentIndex, standardImages, setSelectedImage]);
@@ -56,13 +58,42 @@ const Modal = ({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="close-modal-btn" onClick={onClose}>
-          x
-        </button>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-center gap-3 flex-1">
+            <h1 className="text-xl font-bold">{hotelName}</h1>
+            <span className="rating flex gap-1 -mt-2">
+              {[...Array(filledStars)].map((_, index) => (
+                <svg
+                  key={`filled-${index}`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="gold"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M8 .25l1.8 5.8h6.2l-5 3.6 1.9 5.8-5-3.6-5 3.6 1.9-5.8-5-3.6h6.2L8 .25z" />
+                </svg>
+              ))}
+            </span>
+          </div>
+          <button className="close-modal-btn" onClick={onClose}>
+            x
+          </button>
+        </div>
         <div className="modal-slider">
           <button className="prev" onClick={handlePrev}>
-            {" "}
-            &#60;{" "}
+            {/* {" "}
+            &#60;{" "} */}
+            <svg
+              height="60"
+              width="60"
+              viewBox="0 0 128 128"
+              role="presentation"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M73.7 96a4 4 0 0 1-2.9-1.2L40 64l30.8-30.8a4 4 0 0 1 5.7 5.6L51.3 64l25.2 25.2a4 4 0 0 1-2.8 6.8z"></path>
+            </svg>
           </button>
           <img
             src={selectedImage}
@@ -70,8 +101,18 @@ const Modal = ({
             className="slider-image"
           />
           <button className="next" onClick={handleNext}>
-            {" "}
-            &#62;{" "}
+            {/* {" "}
+            &#62;{" "} */}
+            <svg
+              height="60"
+              width="60"
+              viewBox="0 0 128 128"
+              role="presentation"
+              aria-hidden="true"
+              focusable="false"
+            >
+              <path d="M54.3 96a4 4 0 0 1-2.8-6.8L76.7 64 51.5 38.8a4 4 0 0 1 5.7-5.6L88 64 57.2 94.8a4 4 0 0 1-2.9 1.2z"></path>
+            </svg>
           </button>
         </div>
       </div>
@@ -128,8 +169,8 @@ export default function ActivitiesDetail4() {
       childAge: Array.isArray(childAge)
         ? childAge
         : Array.isArray(childAges)
-          ? childAges
-          : [],
+        ? childAges
+        : [],
     }));
   const toggleTraveller = () => {
     setShowTraveller((prevState) => !prevState);
@@ -156,7 +197,6 @@ export default function ActivitiesDetail4() {
 
   const [openDateRange, setOpenDateRange] = useState(null);
   const [triggerFetch, setTriggerFetch] = useState(0); // Counter to force fetch
-
 
   // useEffect(() => {
   //   if (dynamicId !== id) {
@@ -193,7 +233,7 @@ export default function ActivitiesDetail4() {
       };
       const response = await postData("travelogy/hotel/fetch-data", reqData);
 
-      console.log('karthik', response.status)
+      console.log("karthik", response.status);
       if (response?.status?.success) {
         setHotelData(response.hotel);
         setSearchQueryData(response.searchQuery);
@@ -204,22 +244,23 @@ export default function ActivitiesDetail4() {
         setAvailabilityError(null); // Clear availability error on success
         console.log("roomInfo", response.searchQuery?.roomInfo);
       } else {
-        console.log('error', response?.error);
+        console.log("error", response?.error);
         const errorMessage = response?.error || "Error fetching hotel details";
 
         // Check if it's a network/server error (status codes, request failed, etc.)
-        const isNetworkError = errorMessage.toLowerCase().includes('status code') ||
-          errorMessage.toLowerCase().includes('request failed') ||
-          errorMessage.toLowerCase().includes('network error') ||
-          errorMessage.toLowerCase().includes('timeout');
+        const isNetworkError =
+          errorMessage.toLowerCase().includes("status code") ||
+          errorMessage.toLowerCase().includes("request failed") ||
+          errorMessage.toLowerCase().includes("network error") ||
+          errorMessage.toLowerCase().includes("timeout");
 
         // Check if it's an availability error (hotel not available, no rooms, etc.)
-        const isAvailabilityError = !isNetworkError && (
-          errorMessage.toLowerCase().includes('no longer available') ||
-          errorMessage.toLowerCase().includes('not available') ||
-          errorMessage.toLowerCase().includes('no rooms') ||
-          response?.status === undefined
-        );
+        const isAvailabilityError =
+          !isNetworkError &&
+          (errorMessage.toLowerCase().includes("no longer available") ||
+            errorMessage.toLowerCase().includes("not available") ||
+            errorMessage.toLowerCase().includes("no rooms") ||
+            response?.status === undefined);
 
         if (isAvailabilityError && hotelData) {
           // If we already have hotel data, show error in availability section (booking card)
@@ -255,9 +296,12 @@ export default function ActivitiesDetail4() {
     // 3. Manual trigger (when user re-selects same date)
     const bothDatesComplete = checkinDate && checkoutDate;
     const isCheckoutChanged = checkoutDate !== prevCheckoutDate.current;
-    const shouldFetch = (isCheckoutChanged && bothDatesComplete) || (roomsChanged && bothDatesComplete) || (triggerFetch > 0 && bothDatesComplete);
+    const shouldFetch =
+      (isCheckoutChanged && bothDatesComplete) ||
+      (roomsChanged && bothDatesComplete) ||
+      (triggerFetch > 0 && bothDatesComplete);
 
-    console.log('Fetch Debug:', {
+    console.log("Fetch Debug:", {
       bothDatesComplete,
       isCheckoutChanged,
       roomsChanged,
@@ -266,11 +310,11 @@ export default function ActivitiesDetail4() {
       checkinDate,
       checkoutDate,
       prevCheckinDate: prevCheckinDate.current,
-      prevCheckoutDate: prevCheckoutDate.current
+      prevCheckoutDate: prevCheckoutDate.current,
     });
 
     if (shouldFetch) {
-      console.log('Triggering fetch with:', {
+      console.log("Triggering fetch with:", {
         checkinDate,
         checkoutDate,
         roomInfo: normalizedRooms,
@@ -433,21 +477,24 @@ export default function ActivitiesDetail4() {
   const hotelCountry = hotelData?.ad?.country?.name || "";
 
   // Encode the search query for Google Maps
-  const searchQuery = encodeURIComponent(`${hotelName}, ${hotelAddress}, ${hotelCity}, ${hotelCountry}`);
+  const searchQuery = encodeURIComponent(
+    `${hotelName}, ${hotelAddress}, ${hotelCity}, ${hotelCountry}`
+  );
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${searchQuery}`;
 
   const images = hotelData?.img || [];
-
   // Filter XXL images for display
-  const displayImages = images.filter((image) => !image.sz || image.sz === "XXL");
+  const displayImages = images.filter(
+    (image) => !image.sz || image.sz === "XXL"
+  );
   const totalImageCount = displayImages.length;
   const hasMultipleImages = totalImageCount > 1;
 
   // Debug: Log the images to see what we're working with
-  console.log('Hotel images:', images);
-  console.log('Display images:', displayImages);
-  console.log('Total image count:', totalImageCount);
-  console.log('Has multiple images:', hasMultipleImages);
+  console.log("Hotel images:", images);
+  console.log("Display images:", displayImages);
+  console.log("Total image count:", totalImageCount);
+  console.log("Has multiple images:", hasMultipleImages);
 
   let hotelDescription = {};
   try {
@@ -464,9 +511,17 @@ export default function ActivitiesDetail4() {
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
               <div className="xl:col-span-8 order-1 px-4 md:px-6 lg:px-8 xl:px-0">
                 <div className="box-banner-activities-detail-4">
-                  <div className={`image-gallery ${hasMultipleImages ? 'has-button-overlay' : ''}`}>
+                  <div
+                    className={`image-gallery ${
+                      hasMultipleImages ? "has-button-overlay" : ""
+                    }`}
+                  >
                     <div className="image-row">
-                      <div className={`image-column ${hasMultipleImages ? 'has-overlay' : ''}`}>
+                      <div
+                        className={`image-column ${
+                          hasMultipleImages ? "has-overlay" : ""
+                        }`}
+                      >
                         <img
                           className="main-banner-img"
                           src={
@@ -480,37 +535,41 @@ export default function ActivitiesDetail4() {
                       {hasMultipleImages && (
                         <div className="image-column">
                           <div className="image-row-3">
-                            {displayImages
-                              .slice(1, 4)
-                              .map((image, index) => (
-                                <div key={index} className="image-item">
-                                  <img
-                                    src={image.url}
-                                    alt={`Thumbnail ${index + 1}`}
-                                  />
-                                </div>
-                              ))}
+                            {displayImages.slice(1, 4).map((image, index) => (
+                              <div key={index} className="image-item">
+                                <img
+                                  src={image.url}
+                                  alt={`Thumbnail ${index + 1}`}
+                                />
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
                     </div>
                     {hasMultipleImages && (
-                      <div className={`image-row ${hasMultipleImages ? 'has-button-overlay' : ''}`}>
-                        {displayImages
-                          .slice(4, 8)
-                          .map((image, index) => (
-                            <div key={index} className="image-item">
-                              <img
-                                src={image.url}
-                                alt={`Thumbnail ${index + 4}`}
-                              />
-                            </div>
-                          ))}
+                      <div
+                        className={`image-row ${
+                          hasMultipleImages ? "has-button-overlay" : ""
+                        }`}
+                      >
+                        {displayImages.slice(4, 8).map((image, index) => (
+                          <div key={index} className="image-item">
+                            <img
+                              src={image.url}
+                              alt={`Thumbnail ${index + 4}`}
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
 
-                  <div className={`container-banner-activities ${!hasMultipleImages ? 'single-image-mode' : ''}`}>
+                  <div
+                    className={`container-banner-activities ${
+                      !hasMultipleImages ? "single-image-mode" : ""
+                    }`}
+                  >
                     {hasMultipleImages && (
                       <div className="box-button-abs box-button-abs-right">
                         <Link
@@ -535,6 +594,8 @@ export default function ActivitiesDetail4() {
 
                         <Modal
                           images={images}
+                          hotelName={hotelName}
+                          filledStars={filledStars}
                           isOpen={isModalOpen}
                           onClose={() => setIsModalOpen(false)}
                           setSelectedImage={setSelectedImage}
@@ -582,9 +643,9 @@ export default function ActivitiesDetail4() {
                               const hasDoubleSpace = value.includes("  ");
                               const listItems = hasDoubleSpace
                                 ? value
-                                  .split(/ {2,}/)
-                                  .map((item) => item.trim())
-                                  .filter(Boolean)
+                                    .split(/ {2,}/)
+                                    .map((item) => item.trim())
+                                    .filter(Boolean)
                                 : [];
 
                               return (
@@ -671,7 +732,11 @@ export default function ActivitiesDetail4() {
                     >
                       <div className="cards card-body">
                         <iframe
-                          src={`https://www.google.com/maps?q=${encodeURIComponent(`${hotelName}, ${hotelAddress}, ${hotelCity}`)}&ll=${hotelData?.gl?.lt},${hotelData?.gl?.ln}&z=15&output=embed`}
+                          src={`https://www.google.com/maps?q=${encodeURIComponent(
+                            `${hotelName}, ${hotelAddress}, ${hotelCity}`
+                          )}&ll=${hotelData?.gl?.lt},${
+                            hotelData?.gl?.ln
+                          }&z=15&output=embed`}
                           width="100%"
                           height={290}
                           style={{ border: 0 }}

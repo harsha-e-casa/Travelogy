@@ -635,7 +635,18 @@ function renderHotelHTML(vm) {
       })
       .join('')}
   `;
-
+  const specialRequest = `
+    <h3 class="section-title">Special Request</h3>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div class="contact-label">Email</div>
+        <div class="contact-value">${
+          vm.contact.emails?.[0] ? sanitize(vm.contact.emails[0]) : "-"
+        }</div>
+      </div>
+     
+    </div>
+  `;
   // Contact Details
   const contactDetails = `
     <h3 class="section-title">Contact Details</h3>

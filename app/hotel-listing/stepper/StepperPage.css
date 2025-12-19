@@ -1,30 +1,118 @@
-@media (max-width:1025px){
-    .stepper-steps{
+@media (max-width:1025px) {
+    .stepper-steps {
         padding: 15px;
     }
-}
 
-@media (max-width:767px)and (min-width:319px){
-    .stepper-steps{
-      display: none;
+    /* Make stepper tabs more compact on tablet */
+    .stepper-steps .flex.items-center.gap-2 {
+        gap: 8px;
+    }
+
+    .stepper-steps .w-10.h-10 {
+        width: 36px;
+        height: 36px;
+    }
+
+    .stepper-steps .text-sm {
+        font-size: 12px;
+    }
+
+    .stepper-steps .mx-4 {
+        margin-left: 8px;
+        margin-right: 8px;
     }
 }
 
-@media (max-width:768px)and (min-width:319px){
-    
-    .stepper-content{
+@media (max-width:767px) {
+    .stepper-steps {
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    /* Ensure the inner flex container doesn't overflow */
+    .stepper-steps .w-full.flex.justify-between {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Make stepper tabs fit on mobile screens */
+    .stepper-steps .flex.items-center.gap-2 {
+        gap: 4px;
+        min-width: fit-content;
+    }
+
+    .stepper-steps .w-10.h-10 {
+        width: 32px;
+        height: 32px;
+    }
+
+    .stepper-steps .text-sm {
+        font-size: 10px;
+    }
+
+    .stepper-steps .text-\[10px\] {
+        font-size: 8px;
+    }
+
+    .stepper-steps .mx-4 {
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+
+    .stepper-steps .leading-tight {
+        line-height: 1.2;
+    }
+
+    /* Make step text more compact */
+    .stepper-steps .flex.flex-col.leading-tight {
+        max-width: 70px;
+    }
+}
+
+/* Default: Hide mobile details on desktop */
+.mobile-guest-details,
+.mobile-contact-details,
+.mobile-fare-summary {
+    display: none;
+}
+
+/* Hide desktop sidebar fare summary on tablet and mobile */
+@media (max-width:768px) {
+    .fare-summary-wrapper {
+        display: none !important;
+    }
+}
+
+/* Hide desktop tables on mobile only */
+@media (max-width:767px) {
+    .desktop-only-table {
+        display: none !important;
+    }
+
+    /* Show mobile card views on mobile only */
+    .mobile-guest-details,
+    .mobile-contact-details {
+        display: block;
+    }
+}
+
+@media (max-width:426px)and (min-width:319px) {
+
+    .stepper-content {
         order: 1;
         padding: 0 15px;
     }
-    .fare-summary-wrapper{
-        order: 2;
-    }
-    .fare-summary{
+
+
+
+    /* Mobile fare summary styling - full width for better mobile display */
+    .fare-summary {
         margin-top: 0;
         margin-bottom: 20px;
         padding: 0px 10px 15px 0px;
-        width: 80%;
+        width: 100%;
     }
+
     /* .bg-blue-50-tables{
         display:inline-table;
         background: #eff6ff !important;
@@ -32,37 +120,84 @@
         padding: 0;
     } */
     .bg-blue-50 {
-         display:inline-table;
+        /* display: inline-table; */
         background: #eff6ff !important;
         border: 1px solid #d1d5db;
         padding: 0;
-        width:100%;
-    }
-    .bg-blue-50 > div{
         width: 100%;
-        font-size: 13px;
+    }
+
+    .bg-blue-50>div {
+        width: 100%;
+        /* font-size: 13px; */
         padding: 12px 16px;
         border-bottom: 1px solid #d1d5db;
     }
-    .bg-blue-50 > div:last-child{
+
+    .bg-blue-50>div:last-child {
         border-bottom: none;
     }
-    .bg-blue-50 strong{
+
+    .bg-blue-50 strong {
         display: block;
         color: #374151;
-        font-weight: 600;
-        font-size: 13px;
+        font-weight: 800;
+            font-size: 16px;
         margin-bottom: 4px;
     }
-    .bg-blue-50 p{
+
+    .bg-blue-50 p {
         color: #1f2937;
         font-size: 13px;
     }
-    .border-l-1{
+
+    .border-l-1 {
         border-left: none;
         padding-left: 0;
     }
-    table{
+
+    /* Mobile-specific styling below (desktop tables already hidden via @media (max-width:768px)) */
+
+    /* Styling for mobile guest details - card style with centered text */
+    .mobile-guest-row {
+        background-color: #eff6ff !important;
+        /* Light blue bg matching the screenshot */
+        padding: 16px 20px;
+        border: 1px solid #e0f2fe;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .mobile-guest-row span.font-semibold {
+        color: #1f2937;
+        min-width: 24px;
+        font-weight: 400;
+    }
+
+    /* Styling for mobile contact details - card style */
+    .mobile-contact-details .mobile-guest-row {
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .mobile-contact-details .mobile-guest-row span.font-semibold {
+        font-weight: 600;
+        color: #4b5563;
+    }
+
+    .mobile-contact-details .mobile-guest-row span:not(.font-semibold) {
+        color: #1f2937;
+    }
+
+    /* Cancellation policy table - keep scrollable on mobile */
+    .border-t table {
         width: 100%;
         border-collapse: collapse;
         border: 1px solid #d1d5db;
@@ -70,16 +205,19 @@
         overflow-x: auto;
         display: block;
     }
-    table thead,
-    table tbody{
+
+    .border-t table thead,
+    .border-t table tbody {
         display: table;
         width: 100%;
         table-layout: fixed;
     }
-    table thead{
+
+    /* .border-t table thead {
         background-color: #e0e7ff;
-    }
-    table th{
+    } */
+
+    .border-t table th {
         padding: 10px 8px;
         text-align: left;
         font-weight: 400;
@@ -88,16 +226,113 @@
         word-wrap: break-word;
         margin-left: 10px;
         position: relative;
-        width:55%;
+        width: 55%;
     }
-    table tbody{
+
+    .border-t table tbody {
         background-color: #ffffff;
     }
-    table td{
+
+    .border-t table td {
         padding: 10px 8px;
         text-align: left;
         color: #111827;
         font-size: 14px;
         background-color: #ffffff;
+    }
+}
+
+/* Mobile Fare Summary - Show on mobile and tablet (≤1023px) */
+@media (max-width: 1023px) {
+    .mobile-fare-summary {
+        display: block;
+    }
+}
+
+/* Tablet-specific responsiveness for alignment of cards, inputs, and fare summary (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .stepper-content {
+        padding: 0 20px;
+    }
+
+    .stepper-guest-row {
+        flex-wrap: wrap;
+        gap: 15px;
+        max-width: 100%;
+    }
+
+    .stepper-guest-row .ant-select {
+        flex: 0 0 100px;
+    }
+
+        /* .stepper-guest-row input,
+    .stepper-guest-row>div {
+        flex: 1 1 45%;
+        min-width: 180px;
+    */
+
+    .mobile-guest-row {
+        justify-content: flex-start;
+        gap: 15px;
+        flex-direction: row;
+        max-width: 100%;
+    }
+
+    .mobile-contact-details .mobile-guest-row {
+        gap: 20px;
+    }
+
+    .mobile-fare-summary {
+        margin-top: 30px;
+        padding: 0 15px 15px;
+        width: 100%;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .fare-summary {
+        padding: 10px 0;
+    }
+}
+
+/* Alignment for guest and contact details on tablet/desktop */
+@media (min-width: 550px) {
+    .stepper-guest-row {
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+        /* .stepper-guest-row>* {
+        flex: 1;
+    */
+
+    /* Prevent Select from stretching too much or being too small */
+    .stepper-guest-row .ant-select {
+        flex: 0 0 auto;
+        min-width: 90px;
+    }
+
+    /* Ensure inputs take remaining space */
+    .stepper-guest-row input {
+        width: 100%;
+    }
+}
+
+/* Desktop fare summary sidebar - hidden on mobile, visible on desktop */
+.desktop-fare-summary {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .desktop-fare-summary {
+        display: block;
+        /* background: white; */
+        /* border: 1px solid #e5e7eb; */
+        /* border-radius: 8px; */
+        /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+        padding: 1rem;
+        height: fit-content;
     }
 }

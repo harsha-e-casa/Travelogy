@@ -1,0 +1,112 @@
+@media (max-width: 480px) {
+    .booking-status-container {
+        /* flex-direction: column !important; */
+        align-items: flex-start !important;
+        gap: 10px;
+        padding: 1rem !important;
+    }
+
+    .booking-status-container .status_text1,
+    .booking-status-container .status_text2,
+    .booking-status-container .status_text3 {
+        font-size: 16px !important;
+    }
+
+    .booking-status-container #more-options {
+        width: 50%;
+        margin-bottom: 10px;
+        margin-left: 170px;
+    }
+
+    .booking-status-container #more-options button {
+        width: 100%;
+        /* justify-content: center; */
+    }
+
+    /* Adjust the tick image size if needed */
+    .booking-status-container img {
+        width: 30px !important;
+        margin-right: 8px !important;
+    }
+
+    /* Table Responsiveness (for 426px - 480px) */
+    .guest-details-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+    }
+
+    .guest-details-table-wrapper table {
+        min-width: 500px;
+        /* Ensure table is wide enough to not squash columns */
+        width: 100%;
+    }
+}
+
+@media (max-width: 320px) {
+    .booking-status-container #more-options {
+        width: 50% !important;
+        margin-bottom: 10px;
+        margin-left: 120px;
+    }
+}
+
+
+@media (max-width: 380px) and (min-width: 321px) {
+    .booking-status-container #more-options {
+        width: 50% !important;
+        margin-bottom: 10px;
+        margin-left: 150px;
+    }
+}
+
+/* Mobile View for Guest & Contact Details (≤ 768px - tablet and mobile) */
+.mobile-guest-details,
+.mobile-contact-details,
+.mobile-fare-summary {
+    display: none;
+}
+
+@media (max-width: 767px) {
+
+    /* Hide desktop tables on mobile */
+    .desktop-only-table {
+        display: none !important;
+    }
+
+    /* Show mobile card views on mobile */
+    .mobile-guest-details,
+    .mobile-contact-details {
+        display: block;
+    }
+
+    /* Styling for mobile guest details */
+    .mobile-guest-row {
+        background-color: #f0f9ff;
+        /* Light blue bg like table header */
+        padding: 12px;
+        border: 1px solid #e0f2fe;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 17px;
+    }
+
+    .mobile-guest-row span.font-semibold {
+        color: #4b5563;
+        min-width: 24px;
+    }
+
+    /* Styling for mobile contact details */
+    /* Reusing .mobile-guest-row for consistent look */
+}
+
+/* Mobile Fare Summary - Show on mobile and tablet (≤1023px) */
+@media (max-width: 1023px) {
+    .mobile-fare-summary {
+        display: block;
+    }
+}

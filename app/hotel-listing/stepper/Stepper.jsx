@@ -398,6 +398,7 @@ export function Step1TravellerDetails({
         <div className="border-b pb-4">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}
+            {""}
             <span className="text-star ml-2">
               {[...Array(filledStars)].map((_, index) => (
                 <svg
@@ -443,7 +444,7 @@ export function Step1TravellerDetails({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
             <p className="text-gray-700">
@@ -466,12 +467,12 @@ export function Step1TravellerDetails({
 
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Total Rooms</strong>
-            <p className="text-gray-700 text-xs">
+            <p className="text-gray-700 text-sm">
               {hotelReviewData?.query?.roomInfo?.length || 0}
             </p>
           </div>
 
-          <div className="border-l-1 pl-4 md:col-span-2">
+          <div className="border-l-1 pl-4 ">
             <strong className="block text-gray-900 text-base">
               Total Guests
             </strong>
@@ -800,6 +801,9 @@ export function Step1TravellerDetails({
               </span>
             </div>
           </div>
+          <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
+            <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
+          </div>
         </div>
 
         <div>
@@ -873,9 +877,9 @@ export function Step2Review({
         throw new Error(response.error);
       }
       //work with ai for fixing this to next routing
-      setTimeout(() => {
-        window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
-      }, 100000);
+      // setTimeout(() => {
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      // }, 100000);
     } catch (error) {
       console.error("Error during block:", error.message);
     } finally {
@@ -905,8 +909,8 @@ export function Step2Review({
   const filledStars = Math.round(rating);
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div className="max-w-5xl mx-auto p-6 rounded-md text-sm space-y-6">
-        <div className="border-b">
+      <div className="max-w-4xl p-6 rounded-md text-sm space-y-6">
+        <div className="border-b pb-4">
           <h2 className="text-base font-semibold">
             {hotelReviewData?.hInfo?.name}{" "}
             <span className="text-star ml-2">
@@ -924,7 +928,7 @@ export function Step2Review({
               ))}
             </span>
           </h2>
-          <p className="text-md text-gray-600">
+          <p className="text-xs text-gray-600">
             {hotelReviewData?.hInfo?.ad?.adr && (
               <>{hotelReviewData.hInfo.ad.adr} </>
             )}
@@ -942,11 +946,10 @@ export function Step2Review({
               <> Postal code: {hotelReviewData.hInfo.ad.postalCode}</>
             )}
           </p>
-          <br />
           <p className="text-blue-700 text-sm">
             <span className="text-blue-700 font-semibold">
               {freeCancellationDate && (
-                <div className="text-sm mb-1 font-bold">
+                <div className="text-xs mb-1">
                   Last Cancellation Date:
                   {freeCancellationDate}
                 </div>
@@ -954,7 +957,7 @@ export function Step2Review({
             </span>
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
             {Category === "abook" ? (
@@ -989,12 +992,12 @@ export function Step2Review({
 
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Total Rooms</strong>
-            <p className="text-gray-700 text-xs">
+            <p className="text-gray-700 text-sm">
               {hotelReviewData?.query?.roomInfo?.length || 0}
             </p>
           </div>
 
-          <div className="border-l-1 pl-4 md:col-span-2">
+          <div className="border-l-1 pl-4">
             <strong className="block text-gray-900 text-base">
               Total Guests
             </strong>
@@ -1065,42 +1068,58 @@ export function Step2Review({
                       </p>
                     </div>
                   </h4>
-                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                    <thead className="bg-blue-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          No.
-                        </th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          Title
-                        </th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          First Name
-                        </th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          Last Name
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {validGuests.map((validGuest, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {index + 1}.
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {validGuest.title}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {validGuest.firstName}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {validGuest.lastName}
-                          </td>
+                  <div className="guest-details-table-wrapper desktop-only-table">
+                    <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                      <thead className="bg-blue-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            No.
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Title
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            First Name
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Last Name
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {validGuests.map((validGuest, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {index + 1}.
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {validGuest.title}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {validGuest.firstName}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {validGuest.lastName}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mobile-guest-details">
+                    {validGuests.map((validGuest, index) => (
+                      <div
+                        key={index}
+                        className="mobile-guest-row border-b py-2"
+                      >
+                        <span className="font-semibold mr-2">{index + 1}.</span>
+                        <span>
+                          {validGuest.title}. {validGuest.firstName}&nbsp;{" "}
+                          {validGuest.lastName}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })
@@ -1139,42 +1158,57 @@ export function Step2Review({
                     </p>
                   </h4>
 
-                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                    <thead className="bg-blue-50">
-                      <tr>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          No.
-                        </th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          Title
-                        </th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          First Name
-                        </th>
-                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                          Last Name
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {validGuests.map((passenger, index) => (
-                        <tr key={index} className="border-b">
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {index + 1}.
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {passenger?.ti}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {passenger?.fN}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-800">
-                            {passenger?.lN}
-                          </td>
+                  <div className="guest-details-table-wrapper desktop-only-table">
+                    <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                      <thead className="bg-blue-50">
+                        <tr>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            No.
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Title
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            First Name
+                          </th>
+                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                            Last Name
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {validGuests.map((passenger, index) => (
+                          <tr key={index} className="border-b">
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {index + 1}.
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {passenger?.ti}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {passenger?.fN}
+                            </td>
+                            <td className="px-4 py-2 text-sm text-gray-800">
+                              {passenger?.lN}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mobile-guest-details">
+                    {validGuests.map((passenger, index) => (
+                      <div
+                        key={index}
+                        className="mobile-guest-row border-b py-2"
+                      >
+                        <span className="font-semibold mr-2">{index + 1}.</span>
+                        <span>
+                          {passenger?.ti}. {passenger?.fN}&nbsp; {passenger?.lN}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               );
             })}
@@ -1207,7 +1241,7 @@ export function Step2Review({
               <h3 className="font-bold text-base text-md mb-2">
                 Contact Details
               </h3>
-              <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+              <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3 desktop-only-table">
                 <thead className="bg-blue-50">
                   <tr>
                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
@@ -1229,6 +1263,18 @@ export function Step2Review({
                   </tr>
                 </tbody>
               </table>
+              <div className="mobile-contact-details mt-2">
+                <div className="mobile-guest-row">
+                  <span className="font-semibold mr-2">Email:</span>
+                  <span>{formData.email}</span>
+                </div>
+                <div className="mobile-guest-row">
+                  <span className="font-semibold mr-2">Mobile:</span>
+                  <span>
+                    {formData.countryCode} {formData.mobile}
+                  </span>
+                </div>
+              </div>
             </div>
           ) : null
         ) : passengerContact?.emails?.length > 0 ? (
@@ -1236,7 +1282,7 @@ export function Step2Review({
             <h3 className="font-bold text-base text-md mb-2">
               Contact Details
             </h3>
-            <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+            <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3 desktop-only-table">
               <thead className="bg-blue-50">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
@@ -1259,13 +1305,35 @@ export function Step2Review({
                 ))}
               </tbody>
             </table>
+            <div className="mobile-contact-details mt-2">
+              {passengerContact.emails.map((email, index) => (
+                <div key={index}>
+                  <div className="mobile-guest-row">
+                    <span className="font-semibold mr-2">Email:</span>
+                    <span>{email}</span>
+                  </div>
+                  <div className="mobile-guest-row">
+                    <span className="font-semibold mr-2">Mobile:</span>
+                    <span>
+                      {passengerContact.code[0]}{" "}
+                      {passengerContact.contacts[index]}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         ) : null}
 
+        <div className="mobile-fare-summary mt-40 mb-4 screen-only p-0">
+          <FareAmount hotelReviewData={hotelReviewData} Category={Category} />
+        </div>
+
         <div className="border-t pt-3">
           <h3 className="font-semibold text-base mb-2">Cancellation Policy:</h3>
+
           <table className="w-full border text-center text-sm">
-            <thead className="bg-gray-100">
+            <thead className="bg-blue-50">
               <tr>
                 <th className="border p-2">Cancellation on or After</th>
                 <th className="border p-2">Cancellation on or Before</th>
@@ -1289,7 +1357,7 @@ export function Step2Review({
             </tbody>
           </table>
 
-          <ul className="text-md text-gray-600 mt-2">
+          <ul className="policy_content text-sm text-gray-600 mt-2">
             <li>
               * Each booking is applicable for ₹20 per room/night non-refundable
               service fee.
@@ -1337,7 +1405,7 @@ export function Step2Review({
                       </strong>
 
                       {typeof parsedMsg === "object" ? (
-                        <ul className="text-md text-grey-700 space-y-1">
+                        <ul className="policy_content text-sm text-grey-700 space-y-1">
                           {Object.entries(parsedMsg).map(([key, value]) => (
                             <li className="text-sm" key={key}>
                               <span className="text-sm">
@@ -1367,7 +1435,7 @@ export function Step2Review({
           <h3 className="font-semibold text-base mb-2">
             General Terms & Conditions:
           </h3>
-          <ul className="text-md text-gray-700 list-decimal ml-6 space-y-1">
+          <ul className="policy_content text-sm text-gray-700 list-decimal ml-6 space-y-1">
             <li>
               Each country/state may have its own set of COVID-19 guidelines and
               restrictions. Please check with the hotel or visit the
@@ -1437,7 +1505,7 @@ export function Step2Review({
             </li>
           </ul>
           <div className="mt-2">
-            <span className="text-md">
+            <span className="text-sm">
               <a
                 href={hotelReviewData?.hInfo?.tac?.sc?.[0]?.info}
                 className="text-red-600"
@@ -1448,7 +1516,7 @@ export function Step2Review({
               </a>
             </span>
             <br />
-            <span className="text-md">
+            <span className="text-sm">
               <a
                 href={hotelReviewData?.hInfo?.tac?.sc?.[1]?.info}
                 className="text-red-600"
@@ -1471,7 +1539,7 @@ export function Step2Review({
 
               <label
                 htmlFor="acceptTerms"
-                className="mb-0 text-md text-gray-700"
+                className="mb-0 text-sm text-gray-700"
               >
                 Accept Terms & Conditions
               </label>
@@ -1814,10 +1882,10 @@ export function Step3PersonalDocuments({
         hotelReviewData,
         isBlock: true,
       });
-      setTimeout(() => {
-        window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
-      }, 100000);
-      // window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      // setTimeout(() => {
+      //   window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
+      // }, 100000);
+      window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${hotelReviewData?.bookingId}`;
     } catch (error) {
       message.error("There was an error with the booking process.");
     } finally {
@@ -1868,7 +1936,7 @@ export function Step3PersonalDocuments({
                 </div>
 
                 {guardianMode[rIdx] ? (
-                  <div className="flex gap-2 mb-2">
+                  <div className="flex gap-2 mb-2 pan_type_2">
                     {/* First */}
                     <Input
                       className={`w-60 stepper_input ${
@@ -2019,7 +2087,7 @@ export function Step3PersonalDocuments({
                     {[leadGuest, ...extraGuests].map((guest, gIdx) => (
                       <div
                         key={`guest-${rIdx}-${gIdx}`}
-                        className="flex items-center justify-between mb-3 space-x-3"
+                        className="flex items-center justify-between mb-3 space-x-3 pan_type_1"
                       >
                         <p className="text-sm font-medium text-gray-700 w-2/6">
                           {`${guest?.title || ""}. ${guest?.firstName || ""} ${
@@ -2059,7 +2127,7 @@ export function Step3PersonalDocuments({
             );
           })
         ) : (
-          <div className="flex gap-2 mb-4">
+          <div className="flex gap-2 mb-4 ">
             <Input
               className={`w-60 stepper_input ${
                 errors.samePAN ? "border-red-500" : ""
@@ -2148,6 +2216,9 @@ export function Step3PersonalDocuments({
           detailed terms and conditions w.r.t the TCS regulations under Section
           206C(1G) of the Income Tax Act, 1961
         </div>
+        <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
+          <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
+        </div>
         {/* {Category === "bbook" && ( */}
         <div className="flex justify-between items-center mt-6">
           <div className="flex gap-4">
@@ -2194,7 +2265,7 @@ export function Step4Payment({
   // const handleConfirm = async () => {
   //   setShowModal(false);
   //   try {
-  //     const result = await hotelBooking({ formData, hotelReviewData });
+  //     const result = await hotelBooking({formData, hotelReviewData});
   //     if (result?.error) {
   //       console.error("Booking error:", result.error);
   //       setError(result.error);
@@ -2221,63 +2292,25 @@ export function Step4Payment({
     setShowModal(false);
     setLoading(true);
     try {
-      // pay using wallet
-      const payWallet = async () => {
-        const reqpayWallet = {
-          booking_id: hotelReviewData?.bookingId,
-          amount: hotelReviewData?.hInfo?.ops?.[0]?.tp,
-        };
-        const walletResult = await postData(
-          "travelogy/flight/payWallet",
-          reqpayWallet,
-          { Authorization: `Bearer ${token}` }
-        );
-        console.log("walletResult ===>", walletResult);
-        return walletResult;
-      };
-      const payWalletRes = await payWallet();
-      console.log("hotel payWalletRes ==> ", payWalletRes);
+      const result = await hotelBooking({ formData, hotelReviewData });
+      console.log("result: ", result);
+      console.log("formdata", formData);
+      setLoading(false);
+      if (result?.error) {
+        console.error("Booking error:", result.error);
 
-      if (payWalletRes?.success && payWalletRes.success == true) {
-        const result = await hotelBooking({ formData, hotelReviewData });
-        console.log("result: ", result);
-        console.log("formdata", formData);
-        console.log(
-          "hotelReviewData?.hInfo?.ops?.[0]?.tp ==> ",
-          hotelReviewData?.hInfo?.ops?.[0]?.tp
-        );
-        setLoading(false);
-        if (result?.error) {
-          console.error("Booking error:", result.error);
+        const errorMessage =
+          typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error);
 
-          // await postData(
-          //   "travelogy/flight/refundWallet",
-          //   {
-          //     booking_id: bookingId,
-          //     amount: finalAmountToPay,
-          //   },
-          //   { Authorization: `Bearer ${token}` }
-          // );
-
-          // console.log("Wallet rollback done");
-
-          const errorMessage =
-            typeof result.error === "string"
-              ? result.error
-              : JSON.stringify(result.error);
-
-          setError(errorMessage);
-          return;
-        }
-        console.log("Booking success:", result);
-        setTimeout(() => {
-          onConfirmPayment(bookingId);
-        }, 1000); //time decreased to check the booking flow from 100000
-      } else {
-        // handle edge case
-        setPaymsg(payWalletRes);
-        setLoading(false);
+        setError(errorMessage);
+        return;
       }
+      console.log("Booking success:", result);
+      setTimeout(() => {
+        onConfirmPayment(bookingId);
+      }, 1000); //time decreased to check the booking flow from 100000
     } catch (error) {
       setLoading(false);
       console.error("Booking failed:", error);
@@ -2295,7 +2328,7 @@ export function Step4Payment({
     <div className="max-w-5xl mx-auto gap-6 p-6 text-sm relative">
       <div className="p-4">
         <h3 className="font-lightbold mb-2">Deposit</h3>
-        <div className="flex p-6">
+        <div className="flex p-6 depo_content">
           <div className="mb-6">
             <div className="text-orange-800 px-4 py-3 text-sm">
               <p>
@@ -2333,7 +2366,7 @@ export function Step4Payment({
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
+          <div className="bg-white rounded shadow-lg w-full max-w-md p-6 confirm_modal">
             <h2 className="text-center text-lg font-bold text-orange-600 mb-4">
               CONFIRM TRANSACTION
             </h2>

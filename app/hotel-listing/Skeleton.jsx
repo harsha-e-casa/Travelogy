@@ -1,6 +1,6 @@
 export default function Skeleton() {
   return (
-    <div className="mt-20 col-span-12 w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6 animate-pulse">
+    <div className="p-12 mt-20 col-span-12 w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6 animate-pulse">
       <div className="md:col-span-8 space-y-6">
         {/* Header block */}
         <div className="h-6 w-1/3 bg-gray-300 rounded" />
