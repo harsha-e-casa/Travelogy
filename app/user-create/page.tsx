@@ -1,15 +1,43 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Card, Alert, Table, Modal, message } from "antd";
-import { MailOutlined, LockOutlined, PhoneOutlined, ReloadOutlined, SafetyOutlined } from "@ant-design/icons";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Alert,
+  Table,
+  Modal,
+  message,
+  Space,
+  Switch,
+  InputNumber,
+  Radio,
+} from "antd";
+import {
+  MailOutlined,
+  LockOutlined,
+  PhoneOutlined,
+  ReloadOutlined,
+  SafetyOutlined,
+} from "@ant-design/icons";
 import { postData, getData } from "@/services/NetworkAdapter";
 import CryptoJS from "crypto-js";
 import Layout from "@/components/layout/Layout";
 import "../dashboard/style.css";
 // import "../dashboard/responsive.css";
 
-type CreateVendorResponse = { success?: boolean; message?: string; [k: string]: any };
-type Vendor = { id: number; e_mail: string; phone: string; created_at?: string };
+type CreateVendorResponse = {
+  success?: boolean;
+  message?: string;
+  [k: string]: any;
+};
+type Vendor = {
+  id: number;
+  e_mail: string;
+  phone: string;
+  created_at?: string;
+};
 
 const CREATE_ENDPOINT = "/travelogy/flight/create-vendor";
 const LIST_ENDPOINT = "/travelogy/flight/list-vendors";
@@ -29,7 +57,15 @@ export default function VendorCreate(): JSX.Element {
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const [resetForm] = Form.useForm();
 
-  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [activeVendor, setActiveVendor] = useState<Vendor | null>(null);
+  const [walletAmount, setWalletAmount] = useState<number>(0);
+  const [walletOperation, setWalletOperation] = useState<"ADD" | "DEDUCT">(
+    "ADD"
+  );
+
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const authHeader = { Authorization: token ? `Bearer ${token}` : "" };
 
   const fetchVendors = async () => {
@@ -44,17 +80,34 @@ export default function VendorCreate(): JSX.Element {
     }
   };
 
-  useEffect(() => { fetchVendors(); }, []);
+  useEffect(() => {
+    fetchVendors();
+  }, []);
 
-  const onFinish = async (vals: { email: string; password: string; phone: string }) => {
+  const onFinish = async (vals: {
+    email: string;
+    password: string;
+    phone: string;
+  }) => {
     setSubmitting(true);
     setSuccessMsg(null);
     setErrorMsg(null);
     try {
-      const encryptedPassword = CryptoJS.AES.encrypt(vals.password, "yourSecretKey").toString();
-      const reqData = { email: vals.email, phone: vals.phone, password: encryptedPassword };
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        vals.password,
+        "yourSecretKey"
+      ).toString();
+      const reqData = {
+        email: vals.email,
+        phone: vals.phone,
+        password: encryptedPassword,
+      };
 
-      const res = (await postData(CREATE_ENDPOINT, reqData, authHeader)) as CreateVendorResponse;
+      const res = (await postData(
+        CREATE_ENDPOINT,
+        reqData,
+        authHeader
+      )) as CreateVendorResponse;
 
       if (res?.success !== false) {
         const msg = res?.message || "Vendor created successfully.";
@@ -86,7 +139,10 @@ export default function VendorCreate(): JSX.Element {
     try {
       const { newPassword } = await resetForm.validateFields();
       setResetSubmitting(true);
-      const encrypted = CryptoJS.AES.encrypt(newPassword, "yourSecretKey").toString();
+      const encrypted = CryptoJS.AES.encrypt(
+        newPassword,
+        "yourSecretKey"
+      ).toString();
       await postData(
         RESET_ENDPOINT,
         { email: resetTarget?.e_mail, newPasswordEncrypted: encrypted },
@@ -102,17 +158,49 @@ export default function VendorCreate(): JSX.Element {
     }
   };
 
+  const openWalletModal = (vendor: Vendor) => {
+    setActiveVendor(vendor);
+    setWalletAmount(0);
+    setWalletOperation("ADD");
+    setWalletModalOpen(true);
+  };
+
+  const submitWalletChange = async () => {
+    if (!activeVendor) return;
+
+    const req = {
+      vendor_id: activeVendor.id,
+      amount: walletAmount,
+      type: walletOperation, // ADD or DEDUCT
+    };
+
+    await postData("/travelogy/flight/vendor/update-wallet", req, authHeader);
+
+    message.success("Wallet updated successfully!");
+    await fetchVendors(); // refresh the table
+
+    setWalletModalOpen(false);
+  };
+
+  const toggleActive = async (vendor: any, isActive: boolean) => {
+    const req = {
+      vendor_id: vendor.id,
+      is_active: isActive ? 1 : 0,
+    };
+
+    await postData("/travelogy/flight/vendor/update-status", req, authHeader);
+    message.success(`Vendor ${isActive ? "activated" : "deactivated"}!`);
+    await fetchVendors();
+  };
+
   return (
     <Layout headerStyle={1} footerStyle={7}>
       <main className="modern-dashboard">
         <section className="section_main_book_dash_01 relative_MainBanner">
-          
           <div className="hero-section">
             <div className="hero-content">
               <div className="hero-text">
-                <h1 className="hero-title">
-                  Vendor Management
-                </h1>
+                <h1 className="hero-title">Vendor Management</h1>
                 <p className="hero-subtitle">
                   Create and manage travel vendors with ease
                 </p>
@@ -121,137 +209,308 @@ export default function VendorCreate(): JSX.Element {
           </div>
 
           <div className="main-content">
-            <div className="bookings-container" style={{
-              maxWidth: "1400px",
-              margin: "0 auto",
-              padding: "10px",
-              minHeight: "70vh"
-            }}>
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-                gap: "20px",
-                alignItems: "start",
-                minHeight: "600px"
-              }}>
-                <Card style={{
-                  borderRadius: "16px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-                }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-                        <img src="/assets/imgs/airplane_1604953.svg" alt="Flights" style={{ width:"20px", height:"20px" }}/>
-                        <span style={{ color: "#333", fontWeight: 600, fontSize: "16px" }}>Create Vendor</span>
-                      </div>
+            <div
+              className="bookings-container"
+              style={{
+                maxWidth: "1400px",
+                margin: "0 auto",
+                padding: "10px",
+                minHeight: "70vh",
+              }}
+            >
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+                  gap: "20px",
+                  alignItems: "start",
+                  minHeight: "600px",
+                }}
+              >
+                <Card
+                  style={{
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginBottom: 20,
+                    }}
+                  >
+                    <img
+                      src="/assets/imgs/airplane_1604953.svg"
+                      alt="Flights"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                    <span
+                      style={{
+                        color: "#333",
+                        fontWeight: 600,
+                        fontSize: "16px",
+                      }}
+                    >
+                      Create Vendor
+                    </span>
+                  </div>
 
-                      {successMsg && <Alert style={{ marginBottom: 16 }} type="success" showIcon message={successMsg} />}
-                      {errorMsg && <Alert style={{ marginBottom: 16 }} type="error" showIcon message={errorMsg} />}
+                  {successMsg && (
+                    <Alert
+                      style={{ marginBottom: 16 }}
+                      type="success"
+                      showIcon
+                      message={successMsg}
+                    />
+                  )}
+                  {errorMsg && (
+                    <Alert
+                      style={{ marginBottom: 16 }}
+                      type="error"
+                      showIcon
+                      message={errorMsg}
+                    />
+                  )}
 
-                      <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off" requiredMark={false}>
-                        <Form.Item
-                          label="Email"
-                          name="email"
-                          rules={[
-                            { required: true, message: "Please enter vendor email" },
-                            { type: "email", message: "Please enter a valid email" },
-                          ]}
-                        >
-                          <Input size="large" prefix={<MailOutlined />} placeholder="vendor@example.com" autoComplete="email" />
-                        </Form.Item>
+                  <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={onFinish}
+                    autoComplete="off"
+                    requiredMark={false}
+                  >
+                    <Form.Item
+                      label="Email"
+                      name="email"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter vendor email",
+                        },
+                        {
+                          type: "email",
+                          message: "Please enter a valid email",
+                        },
+                      ]}
+                    >
+                      <Input
+                        size="large"
+                        prefix={<MailOutlined />}
+                        placeholder="vendor@example.com"
+                        autoComplete="email"
+                      />
+                    </Form.Item>
 
-                        <Form.Item
-                          label="Phone"
-                          name="phone"
-                          rules={[
-                            { required: true, message: "Please enter phone number" },
-                            { pattern: /^[0-9]{10}$/, message: "Phone must be 10 digits" },
-                          ]}
-                        >
-                          <Input
-                            size="large"
-                            prefix={<PhoneOutlined />}
-                            placeholder="10-digit phone"
-                            inputMode="numeric"
-                            maxLength={10}
-                            onKeyDown={(e) => {
-                              const ok = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"];
-                              if (ok.includes(e.key)) return;
-                              if (!/^\d$/.test(e.key)) e.preventDefault();
-                            }}
-                          />
-                        </Form.Item>
+                    <Form.Item
+                      label="Phone"
+                      name="phone"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter phone number",
+                        },
+                        {
+                          pattern: /^[0-9]{10}$/,
+                          message: "Phone must be 10 digits",
+                        },
+                      ]}
+                    >
+                      <Input
+                        size="large"
+                        prefix={<PhoneOutlined />}
+                        placeholder="10-digit phone"
+                        inputMode="numeric"
+                        maxLength={10}
+                        onKeyDown={(e) => {
+                          const ok = [
+                            "Backspace",
+                            "Delete",
+                            "Tab",
+                            "ArrowLeft",
+                            "ArrowRight",
+                            "Home",
+                            "End",
+                          ];
+                          if (ok.includes(e.key)) return;
+                          if (!/^\d$/.test(e.key)) e.preventDefault();
+                        }}
+                      />
+                    </Form.Item>
 
-                        <Form.Item
-                          label="Password"
-                          name="password"
-                          rules={[
-                            { required: true, message: "Please enter a password" },
-                            { min: 6, message: "Password must be at least 6 characters" },
-                          ]}
-                        >
-                          <Input.Password size="large" prefix={<LockOutlined />} placeholder="Enter a secure password" autoComplete="new-password" />
-                        </Form.Item>
+                    <Form.Item
+                      label="Password"
+                      name="password"
+                      rules={[
+                        { required: true, message: "Please enter a password" },
+                        {
+                          min: 6,
+                          message: "Password must be at least 6 characters",
+                        },
+                      ]}
+                    >
+                      <Input.Password
+                        size="large"
+                        prefix={<LockOutlined />}
+                        placeholder="Enter a secure password"
+                        autoComplete="new-password"
+                      />
+                    </Form.Item>
 
-                        <Button
-                          block
-                          size="large"
-                          type="primary"
-                          htmlType="submit"
-                          loading={submitting}
-                          style={{ fontWeight: 700, letterSpacing: 0.2, background: "linear-gradient(90deg,#ff8a00,#ff6a00)", border: "none" }}
-                        >
-                          Create Vendor
-                        </Button>
-                      </Form>
+                    <Button
+                      block
+                      size="large"
+                      type="primary"
+                      htmlType="submit"
+                      loading={submitting}
+                      style={{
+                        fontWeight: 700,
+                        letterSpacing: 0.2,
+                        background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                        border: "none",
+                      }}
+                    >
+                      Create Vendor
+                    </Button>
+                  </Form>
                 </Card>
 
-                <Card style={{
-                  borderRadius: "16px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  height: "600px",
-                  display: "flex",
-                  flexDirection: "column"
-                }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
-                        <SafetyOutlined style={{ color: "#ff8a00" }} />
-                        <span style={{ color: "#333", fontWeight: 600, fontSize: "16px" }}>Vendors</span>
-                        <Button 
-                          icon={<ReloadOutlined />} 
-                          size="small" 
-                          onClick={fetchVendors} 
-                          loading={loadingList} 
-                          style={{ 
-                            marginLeft: "auto",
-                            background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
-                            border: "none",
-                            color: "white"
-                          }}>
-                          Refresh
-                        </Button>
-                      </div>
+                <Card
+                  style={{
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    height: "600px",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginBottom: 20,
+                    }}
+                  >
+                    <SafetyOutlined style={{ color: "#ff8a00" }} />
+                    <span
+                      style={{
+                        color: "#333",
+                        fontWeight: 600,
+                        fontSize: "16px",
+                      }}
+                    >
+                      Vendors
+                    </span>
+                    <Button
+                      icon={<ReloadOutlined />}
+                      size="small"
+                      onClick={fetchVendors}
+                      loading={loadingList}
+                      style={{
+                        marginLeft: "auto",
+                        background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                        border: "none",
+                        color: "white",
+                      }}
+                    >
+                      Refresh
+                    </Button>
+                  </div>
 
-                      <div style={{ flex: 1, overflow: "auto" }}>
-                        <Table<Vendor>
-                          rowKey="id"
-                          size="small"
-                          loading={loadingList}
-                          dataSource={vendors}
-                          pagination={{ pageSize: 10, showSizeChanger: false }}
-                          columns={[
-                            { title: "Email", dataIndex: "e_mail", ellipsis: true },
-                            { title: "Phone", dataIndex: "phone", width: 130 },
-                            {
-                              title: "Actions",
-                              key: "actions",
-                              width: 120,
-                              render: (_, rec) => (
-                                <Button type="link" onClick={() => openReset(rec)}>
-                                  Reset
-                                </Button>
-                              ),
-                            },
-                          ]}
-                        />
-                      </div>
+                  <div style={{ flex: 1, overflow: "auto" }}>
+                    <Table<Vendor>
+                      rowKey="id"
+                      size="small"
+                      loading={loadingList}
+                      dataSource={vendors}
+                      pagination={{ pageSize: 10, showSizeChanger: false }}
+                      columns={[
+                        { title: "Email", dataIndex: "e_mail", ellipsis: true, width: 150 },
+                        { title: "Phone", dataIndex: "phone", width: 130 },
+                        { title: "Wallet", dataIndex: "balance", width: 130 },
+
+                        // 🟦 WALLET ACTIONS
+                        {
+                          title: "Wallet Actions",
+                          key: "walletActions",
+                          width: 160,
+                          render: (_, rec) => (
+                            <Space>
+                              <Button
+                                size="small"
+                                onClick={() => openWalletModal(rec)}
+                              >
+                                Add / Deduct
+                              </Button>
+                            </Space>
+                          ),
+                        },
+
+                        // 🟩 ACTIVE / INACTIVE TOGGLE
+                        {
+                          title: "Status",
+                          dataIndex: "is_active",
+                          width: 120,
+                          render: (_, rec: any) => {
+                            console.log("recrec => ",rec);
+                            const isActive =
+                              rec.is_active === 1 ||
+                              rec.is_active === true ||
+                              (typeof rec.status === "string" &&
+                                rec.status.toLowerCase() === "active");
+
+                            console.log("isActive ==> ",isActive);
+
+                            return (
+                              <Switch
+                                checked={isActive}
+                                onChange={(v) => toggleActive(rec, v)}
+                              />
+                            );
+                          },
+                        },
+
+                        {
+                          title: "Password Reset",
+                          key: "actions",
+                          width: 120,
+                          render: (_, rec) => (
+                            <Button type="link" onClick={() => openReset(rec)}>
+                              Reset
+                            </Button>
+                          ),
+                        },
+                      ]}
+                    />
+                  </div>
+                  {/* <div style={{ flex: 1, overflow: "auto" }}>
+                    {" "}
+                    <Table<Vendor>
+                      rowKey="id"
+                      size="small"
+                      loading={loadingList}
+                      dataSource={vendors}
+                      pagination={{ pageSize: 10, showSizeChanger: false }}
+                      columns={[
+                        { title: "Email", dataIndex: "e_mail", ellipsis: true },
+                        { title: "Phone", dataIndex: "phone", width: 130 },
+                        { title: "Wallet", dataIndex: "balance", width: 130 },
+                        {
+                          title: "Password Reset",
+                          key: "actions",
+                          width: 120,
+                          render: (_, rec) => (
+                            <Button type="link" onClick={() => openReset(rec)}>
+                              {" "}
+                              Reset{" "}
+                            </Button>
+                          ),
+                        },
+                      ]}
+                    />{" "}
+                  </div> */}
                 </Card>
               </div>
             </div>
@@ -279,6 +538,29 @@ export default function VendorCreate(): JSX.Element {
             <Input.Password placeholder="New password" />
           </Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title={`Update Wallet – ${activeVendor?.e_mail}`}
+        open={walletModalOpen}
+        onCancel={() => setWalletModalOpen(false)}
+        onOk={submitWalletChange}
+      >
+        <div style={{ marginBottom: 12 }}>Amount</div>
+        <InputNumber
+          value={walletAmount}
+          onChange={(v) => setWalletAmount(Number(v))}
+          min={1}
+          style={{ width: "100%", marginBottom: 20 }}
+        />
+
+        <Radio.Group
+          value={walletOperation}
+          onChange={(e) => setWalletOperation(e.target.value)}
+        >
+          <Radio value="ADD">Add Amount</Radio>
+          <Radio value="DEDUCT">Deduct Amount</Radio>
+        </Radio.Group>
       </Modal>
     </Layout>
   );

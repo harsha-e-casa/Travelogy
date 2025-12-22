@@ -30,12 +30,12 @@ export default function Footer1() {
               </div>
               <div className="col-md-8 text-center text-md-end">
                 <div className="d-flex align-items-center justify-content-center justify-content-md-end">
-                  <Link className="text-md-medium need-help" href="#">
+                  <p className="text-md-medium need-help">
                     Need help? Call us
-                  </Link>
-                  <Link className="heading-6 phone-support" href="#">
+                  </p>
+                  <p className="heading-6 phone-support">
                     +91 95662 66061
-                  </Link>
+                  </p>
                 </div>
               </div>
             </div>

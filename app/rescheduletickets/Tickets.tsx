@@ -45,6 +45,7 @@ import ByDepartureTime from "@/components/Filter/ByDepartureTime";
 import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByFareType from "@/components/Filter/ByFareType";
+import BySortPrice from "@/components/Filter/BySortPrice";
 
 // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -107,6 +108,7 @@ export default function Tickets() {
   const [selectedFareTypes, setSelectedFareTypes] = useState<string[]>([]);
   const [uniqueFareTypes, setUniqueFareTypes] = useState<any[]>([]);
   const [uniqueAirlines, setUniqueAirlines] = useState<any[]>([]);
+  const [priceSort, setPriceSort] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     removeCookie("travellerInfo");
@@ -218,6 +220,21 @@ export default function Tickets() {
     }
   }, [flightData]);
 
+  const getTicketPrice = (ticket: any) => {
+    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
+    const adultFare =
+      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare =
+      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare =
+      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+
+    return adultFare + childFare + infantFare;
+  };
+
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
     setSelectedAirlines((prevSelectedAirlines) =>
@@ -254,17 +271,7 @@ export default function Tickets() {
 
       // Price Range Filter
       let filteredData = dataToFilter.filter((ticket: any) => {
-        const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-        const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-        const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-        const adultFare =
-          (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-        const childFare =
-          (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-        const infantFare =
-          (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
-
-        const price = adultFare + childFare + infantFare;
+        const price = getTicketPrice(ticket);
         return price >= priceRange[0] && price <= priceRange[1];
       });
 
@@ -350,6 +357,16 @@ export default function Tickets() {
         });
       }
 
+      if (priceSort === "asc") {
+        filteredData.sort(
+          (a: any, b: any) => getTicketPrice(a) - getTicketPrice(b)
+        );
+      } else if (priceSort === "desc") {
+        filteredData.sort(
+          (a: any, b: any) => getTicketPrice(b) - getTicketPrice(a)
+        );
+      }
+
       setFilteredFlightData({ ONWARD: filteredData });
     }
   };
@@ -392,6 +409,7 @@ export default function Tickets() {
     fareIdentifiers,
     selectedFareTypes,
     flightData,
+    priceSort,
   ]);
 
   const router = useRouter();
@@ -698,7 +716,8 @@ export default function Tickets() {
           <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
             {/* Header Section */}
 
-            <div className="hdt_header" 
+            <div
+              className="hdt_header"
               // style={{ ...searchEnginewidth }}
               style={{ width: "60%" }}
             >
@@ -901,6 +920,17 @@ export default function Tickets() {
                           minPriceRange={minPriceRange}
                           maxPriceRange={maxPriceRange}
                         />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sidebar-left border-1 background-body">
+                    <div className="box-filters-sidebar">
+                      <div className="block-filter border-1">
+                        <h6 className="text-lg-bold filter-sty neutral-1000">
+                          Sort by Price
+                        </h6>
+                        <BySortPrice sort={priceSort} setSort={setPriceSort} />
                       </div>
                     </div>
                   </div>

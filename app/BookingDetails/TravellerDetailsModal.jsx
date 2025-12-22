@@ -5,6 +5,7 @@ import {
 } from "@/services/NetworkAdapter";
 import { Dayjs } from "dayjs";
 import { useState } from "react";
+import "./style.css";
 
 // import cancelAmendmentCharges1 from "./cancelAmendmentCharges1.json";
 
@@ -14,8 +15,10 @@ const TravellerDetailsModal = ({
   onClose,
   bookingDetails,
   tripKey,
-  setmodalClose
+  setmodalClose,
 }) => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const isUat = process.env.UAT_ENV === "true";
   console.log("ddddddddddddddddddddddd ", bookingId);
   console.log("ddddddddddddddddddddddd ", amendmentType);
@@ -24,7 +27,7 @@ const TravellerDetailsModal = ({
     {}
   );
 
-  const [submitAmendmentapiError, setSubmitAmendmentapiError] = useState("")
+  const [submitAmendmentapiError, setSubmitAmendmentapiError] = useState("");
 
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
@@ -41,14 +44,14 @@ const TravellerDetailsModal = ({
   const [amendmentId, setAmendmentId] = useState(null);
 
   const handleClose = () => {
-    setmodalClose()
-    onClose()
-  }
+    setmodalClose();
+    onClose();
+  };
 
   const handleAmendmentResClose = () => {
-    setShowDetailsModal(false)
-    handleClose()
-  }
+    setShowDetailsModal(false);
+    handleClose();
+  };
 
   // Debug logs
   console.log("📦 travellerInfos:", travellerInfos);
@@ -99,8 +102,8 @@ const TravellerDetailsModal = ({
       style={{ background: "grey" }}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl relative overflow-y-auto"
-        style={{ top: "3%" }}
+        className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl relative overflow-y-auto traveller-modal-t"
+        // style={{ top: "3%" }}
       >
         <div>
           <div className="flex flex-row justify-between items-center pr-20 ">
@@ -355,13 +358,23 @@ const TravellerDetailsModal = ({
                   };
                   console.log("📤 Sending parameters to API:", reqData);
 
-                  const req = await postData("travelogy/one-way/fetch-data", reqData);
+                  const req = await postData(
+                    "travelogy/one-way/fetch-data",
+                    reqData
+                  );
                   console.log("rrrrrrrrrrr ", req);
-                  setReqAmendmentCharges(req);
-                  setReqAmendmentChargesPopUp(true);
+
+                  if (req?.errCode) {
+                    setSubmitAmendmentapiError(req?.error || req?.message);
+                  } else {
+                    setReqAmendmentCharges(req);
+                    setReqAmendmentChargesPopUp(true);
+                  }
                 } catch (error) {
                   console.log("Error while requesting Amendment: ", error);
-                  setError("Error requesting amendment charges. Please try again.");
+                  setError(
+                    "Error requesting amendment charges. Please try again."
+                  );
                 } finally {
                   setLoading(false);
                 }
@@ -394,54 +407,94 @@ const TravellerDetailsModal = ({
 
                   console.log("📌 amendmentId received:", data);
                   console.log("📌 amendmentId received id:", data?.amendmentId);
-                  if(data?.error) {
-                    setSubmitAmendmentapiError(data?.error)
+                  if (data?.error || data?.errCode) {
+                    setSubmitAmendmentapiError(data?.error || data?.message);
                   }
 
                   setAmendmentDetailData(data);
                   setAmendmentId(data?.amendmentId);
 
-                  // onClose();
                   if (data?.amendmentId) {
                     try {
-                      console.log("📨 Sending amendmentId to details API:", {
-                        amendmentId: data.amendmentId,
-                      });
+                      const amendmentId = data.amendmentId;
+                      const maxAttempts = 5;
+                      const delayMs = 10000;
+                      let amendmentDetails = null;
 
-                      // const amendmentDetails = await postAmendmentDetails({
-                      //   amendmentId: data.amendmentId,
-                      // });
-                      let reqData = {
-                        action: "pollAmendment",
-                        requestData: { amendmentId: data.amendmentId },
-                      };
-                      const amendmentDetails = await postData(
-                        "travelogy/one-way/fetch-data",
-                        reqData
-                      );
+                      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                        console.log(
+                          "📨 Sending amendmentId to details API (poll attempt)",
+                          {
+                            amendmentId,
+                            attempt,
+                            maxAttempts,
+                          }
+                        );
 
-                      // save the ammendment details
+                        const reqData = {
+                          action: "pollAmendment",
+                          requestData: { amendmentId },
+                        };
+
+                        amendmentDetails = await postData(
+                          "travelogy/one-way/fetch-data",
+                          reqData
+                        );
+
+                        console.log(
+                          "📋 Amendment Details (poll result):",
+                          amendmentDetails
+                        );
+
+                        const status = amendmentDetails?.amendmentStatus;
+
+                        if (status && status !== "REQUESTED") {
+                          console.log(
+                            "Amendment reached final status: ",
+                            status
+                          );
+                          break;
+                        }
+
+                        if (attempt < maxAttempts) {
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, delayMs)
+                          );
+                        }
+                      }
+
                       const saveAmendmentID = async () => {
                         const req = {
-                          phone: "9677179866",
                           booking_id: bookingDetails?.order?.bookingId,
-                          amendment_id: data.amendmentId,
+                          amendment_id: amendmentId,
                           amendment_status: amendmentDetails?.amendmentStatus,
                           type_of_amendment: amendmentType,
                           refundable_amount: amendmentDetails?.refundableAmount,
-                          is_active: 1,
                           // time: dayjs().format()
                         };
 
                         const result = await postData(
                           "travelogy/flight/save-amendment",
-                          req
+                          req,
+                          { Authorization: `Bearer ${token}` }
                         );
                         console.log("saveAmendmentID result ===> ", result);
                       };
-                      saveAmendmentID();
 
-                      console.log("📋 Amendment Details:", amendmentDetails);
+                      await saveAmendmentID();
+                      // call refund
+                      if (amendmentDetails?.refundableAmount > 0) {
+                        const refundApiCall = await postData(
+                          "travelogy/flight/process-refunds",
+                          {
+                            booking_id: bookingDetails?.order?.bookingId,
+                            amendment_id: amendmentId,
+                          },
+                          { Authorization: `Bearer ${token}` }
+                        );
+                        console.log("refundApiCall ==> ", refundApiCall);
+                      }
+
                       setAmendmentDetailData(amendmentDetails);
                       setShowDetailsModal(true);
                     } catch (err) {
@@ -467,6 +520,73 @@ const TravellerDetailsModal = ({
                       }
                     }
                   }
+
+                  // onClose();
+                  // if (data?.amendmentId) {
+                  //   try {
+                  //     console.log("📨 Sending amendmentId to details API:", {
+                  //       amendmentId: data.amendmentId,
+                  //     });
+
+                  //     // const amendmentDetails = await postAmendmentDetails({
+                  //     //   amendmentId: data.amendmentId,
+                  //     // });
+                  //     let reqData = {
+                  //       action: "pollAmendment",
+                  //       requestData: { amendmentId: data.amendmentId },
+                  //     };
+                  //     const amendmentDetails = await postData(
+                  //       "travelogy/one-way/fetch-data",
+                  //       reqData
+                  //     );
+
+                  //     // save the ammendment details
+                  //     const saveAmendmentID = async () => {
+                  //       const req = {
+                  //         // phone: "9677179866",
+                  //         booking_id: bookingDetails?.order?.bookingId,
+                  //         amendment_id: data.amendmentId,
+                  //         amendment_status: amendmentDetails?.amendmentStatus,
+                  //         type_of_amendment: amendmentType,
+                  //         refundable_amount: amendmentDetails?.refundableAmount,
+                  //         is_active: 1,
+                  //         // time: dayjs().format()
+                  //       };
+
+                  //       const result = await postData(
+                  //         "travelogy/flight/save-amendment",
+                  //         req
+                  //       );
+                  //       console.log("saveAmendmentID result ===> ", result);
+                  //     };
+                  //     saveAmendmentID();
+
+                  //     console.log("📋 Amendment Details:", amendmentDetails);
+                  //     setAmendmentDetailData(amendmentDetails);
+                  //     setShowDetailsModal(true);
+                  //   } catch (err) {
+                  //     console.error("error caused", err);
+
+                  //     if (err?.response?.data?.errors?.length) {
+                  //       const firstError = err.response.data.errors[0];
+                  //       const message =
+                  //         firstError?.message || "An unknown error occurred.";
+                  //       const details = firstError?.details
+                  //         ? ` - ${firstError.details}`
+                  //         : "";
+                  //       setError(`${message}`);
+
+                  //       console.log("API error message:", message);
+                  //       console.log("Error details:", details);
+                  //       console.log("Error status code:", err.response.status);
+                  //     } else if (err?.message) {
+                  //       setError(err.message);
+                  //       console.log("Generic error message:", err.message);
+                  //     } else {
+                  //       setError("Something went wrong. Please try again.");
+                  //     }
+                  //   }
+                  // }
                 } catch (err) {
                   console.error("error caused", err);
 
@@ -498,7 +618,9 @@ const TravellerDetailsModal = ({
             }
           }}
           disabled={loading}
-          className={`btn btn-gray ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`btn btn-gray ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           {loading ? (
             <>
@@ -506,12 +628,14 @@ const TravellerDetailsModal = ({
               Confirming...
             </>
           ) : (
-            'Confirm Traveller'
+            "Confirm Traveller"
           )}
         </button>
         {submitAmendmentapiError && (
           <div style={{ padding: "10px" }}>
-            <p className="text-red-600 font-semibold">{submitAmendmentapiError}</p>
+            <p className="text-red-600 font-semibold">
+              {submitAmendmentapiError}
+            </p>
           </div>
         )}
       </div>
@@ -521,8 +645,9 @@ const TravellerDetailsModal = ({
             <button
               // onClick={handleAmendmentResClose}
               onClick={() => {
-                setShowDetailsModal(false)
-                handleClose()
+                setShowDetailsModal(false);
+                handleClose();
+                window.location.reload();
               }}
               className="absolute top-4 right-4 text-2xl text-black"
             >
@@ -575,67 +700,67 @@ const TravellerDetailsModal = ({
       {reqAmendmentChargesPopUp &&
         reqAmendmentCharges &&
         reqAmendmentCharges.trips && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
-            <button
-              onClick={() => {
-                setReqAmendmentChargesPopUp(false);
-                setShowDetailsModal(false);
-              }}
-              className="absolute top-4 right-4 text-2xl text-black"
-            >
-              &times;
-            </button>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg p-6 shadow-lg w-full max-w-md relative">
+              <button
+                onClick={() => {
+                  setReqAmendmentChargesPopUp(false);
+                  setShowDetailsModal(false);
+                }}
+                className="absolute top-4 right-4 text-2xl text-black"
+              >
+                &times;
+              </button>
 
-                  <h3 className="text-xl font-bold text-green-700 mb-4">
-                    Requested Amendment
-                  </h3>
+              <h3 className="text-xl font-bold text-green-700 mb-4">
+                Requested Amendment
+              </h3>
 
-                  <div className="space-y-3 text-gray-700">
-                    {reqAmendmentCharges.trips.map((trip, index) => {
-                      return (
-                        <div key={index} className="space-y-2">
-                          <p className="font-semibold text-gray-900">
-                            <strong>Route:</strong> {trip.src} → {trip.dest}
+              <div className="space-y-3 text-gray-700">
+                {reqAmendmentCharges.trips.map((trip, index) => {
+                  return (
+                    <div key={index} className="space-y-2">
+                      <p className="font-semibold text-gray-900">
+                        <strong>Route:</strong> {trip.src} → {trip.dest}
+                      </p>
+                      <p>
+                        <strong>Departure Date:</strong>{" "}
+                        {new Date(trip.departureDate).toLocaleString()}
+                      </p>
+                      <p>
+                        <strong>Flight Numbers:</strong>{" "}
+                        {trip.flightNumbers.join(", ")}
+                      </p>
+                      <p>
+                        <strong>Airlines:</strong> {trip.airlines.join(", ")}
+                      </p>
+
+                      <div className="mt-3">
+                        <h4 className="font-medium text-lg">
+                          Amendment Charges
+                        </h4>
+                        <div className="space-y-2">
+                          <p>
+                            <strong>Charges:</strong> ₹
+                            {trip.amendmentInfo.ADULT.amendmentCharges}
                           </p>
                           <p>
-                            <strong>Departure Date:</strong>{" "}
-                            {new Date(trip.departureDate).toLocaleString()}
+                            <strong>Refund Amount:</strong> ₹
+                            {trip.amendmentInfo.ADULT.refundAmount}
                           </p>
                           <p>
-                            <strong>Flight Numbers:</strong>{" "}
-                            {trip.flightNumbers.join(", ")}
+                            <strong>Total Fare:</strong> ₹
+                            {trip.amendmentInfo.ADULT.totalFare}
                           </p>
-                          <p>
-                            <strong>Airlines:</strong> {trip.airlines.join(", ")}
-                          </p>
-
-                          <div className="mt-3">
-                            <h4 className="font-medium text-lg">
-                              Amendment Charges
-                            </h4>
-                            <div className="space-y-2">
-                              <p>
-                                <strong>Charges:</strong> ₹
-                                {trip.amendmentInfo.ADULT.amendmentCharges}
-                              </p>
-                              <p>
-                                <strong>Refund Amount:</strong> ₹
-                                {trip.amendmentInfo.ADULT.refundAmount}
-                              </p>
-                              <p>
-                                <strong>Total Fare:</strong> ₹
-                                {trip.amendmentInfo.ADULT.totalFare}
-                              </p>
-                            </div>
-                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {error && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

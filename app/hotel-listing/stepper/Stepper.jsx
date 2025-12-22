@@ -2283,8 +2283,12 @@ export function Step4Payment({
   // };
 
   const [loading, setLoading] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
 
   const handleConfirm = async () => {
+    setPaymsg("");
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
     setShowModal(false);
     setLoading(true);
     try {
@@ -2351,6 +2355,11 @@ export function Step4Payment({
               </button>
               {/* <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span> */}
             </div>
+            {paymsg && (
+              <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                {paymsg.message}, Balance: ₹{paymsg.balance}
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -1213,12 +1213,13 @@ export default function BookTicket() {
 
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main relative">
-          <section className="box-section box-breadcrumb background-body">
+          <section className="box-section box-breadcrumb background-body m-px-10">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
                   {" "}
-                  <Link href="/">Home</Link>
+                  {/* <Link href="/">Home</Link> */}
+                  <p>Home</p>
                   <span className="arrow-right">
                     <svg
                       width={7}
@@ -1239,7 +1240,8 @@ export default function BookTicket() {
                 </li>
                 <li>
                   {" "}
-                  <Link href="/">Tickets</Link>
+                  {/* <Link href="/">Tickets</Link> */}
+                  <p>Tickets</p>
                   <span className="arrow-right">
                     <svg
                       width={7}
@@ -1260,13 +1262,13 @@ export default function BookTicket() {
                 </li>
                 <li>
                   {" "}
-                  <span className="text-breadcrumb">Booking</span>
+                  <span className="text-breadcrumb">Traveller information</span>
                 </li>
               </ul>
             </div>
           </section>
 
-          <section className="section-box block-content-book-tickets background-card">
+          <section className="section-box block-content-book-tickets background-card m-px-10">
             <div className="container pt-1">
               <h4 className="neutral-1000 mb-20">Complete your booking</h4>
 
@@ -1696,7 +1698,10 @@ export default function BookTicket() {
 
                           {/* GST Number for  Business Travel (Optional) */}
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
-                            GST Number for Business Travel (Optional)
+                            GST Number for Business Travel{" "}
+                            {!apiData?.conditions?.gst?.igm && (
+                              <span>(Optional)</span>
+                            )}
                             <div>
                               <div className="px-4 py-3 border_xcolor_1px">
                                 <h2
@@ -1707,7 +1712,7 @@ export default function BookTicket() {
                                   Please enter your company's GST number
                                 </h2>
                                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                  <AppFormCompany form={form} />
+                                  <AppFormCompany form={form} manditory={apiData?.conditions?.gst?.igm}/>
                                 </p>
                               </div>
                             </div>
@@ -1828,7 +1833,7 @@ export default function BookTicket() {
             </div>
           </section>
           {loading ? null : (
-            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-50 mt-5 p-2 text-center">
+            <div className="session shadow sm:rounded-sm text-md sticky bottom-0 mt-5 p-2 text-center" style={{ zIndex: "10" }}>
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
