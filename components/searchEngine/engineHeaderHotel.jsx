@@ -109,7 +109,7 @@ const EngineHeaderHotel = ({ active_border }) => {
   useEffect(() => {
     if (datedep) {
       const formattedDate = dayjs(datedep);
-      setDd_strdate(formattedDate.format("dddd")); // Format as string
+      setDd_strdate(formattedDate.format("ddd")); // Format as string
       setDd_monthStr(formattedDate.format("MMM")); // Format as string
       setDd_date(formattedDate.format("DD")); // Format as string
       setDd_year(formattedDate.format("YYYY")); // Format as string
@@ -124,7 +124,7 @@ const EngineHeaderHotel = ({ active_border }) => {
   useEffect(() => {
     if (datedepr && selectedPlan === "round-trip") {
       const formattedDateR = dayjs(datedepr);
-      setDdr_strdate(formattedDateR.format("dddd")); // Format as string
+      setDdr_strdate(formattedDateR.format("ddd")); // Format as string
       setDdr_monthStr(formattedDateR.format("MMM")); // Format as string
       setDdr_date(formattedDateR.format("DD")); // Format as string
       setDdr_year(formattedDateR.format("YYYY")); // Format as string
@@ -328,19 +328,20 @@ const EngineHeaderHotel = ({ active_border }) => {
                   </div>
                   <div className="flex">
                     <div>
-                      <span className="cus-text-5xl text-5xl font-bold text-gray-900">
+                      <span className="cus-text-5xl text-5xl font-bold text-gray-900 mr-1">
                         {" "}
                         {dd_date}
                       </span>{" "}
                     </div>
-                    <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
-                      <div className="w-full font-bold cust_text_res">
-                        {" "}
-                        {dd_monthStr} {dd_year}
-                      </div>
+                    <div className="flex flex-wrap content-center cus_margin_frm line_height">
                       <div className="w-full font-bold cust_text_res">
                         {" "}
                         {dd_strdate}
+                        {dd_monthStr && `/${dd_monthStr}`}
+                      </div>
+                      <div className="w-full font-bold cust_text_res">
+                        {" "}
+                        {dd_year}
                       </div>
                     </div>
                   </div>
@@ -375,19 +376,20 @@ const EngineHeaderHotel = ({ active_border }) => {
                   </div>
                   <div className="flex">
                     <div>
-                      <span className="cus-text-5xl text-5xl font-bold text-gray-900">
+                      <span className="cus-text-5xl text-5xl font-bold text-gray-900 mr-1">
                         {" "}
                         {ddr_date}{" "}
                       </span>{" "}
                     </div>
-                    <div className="flex flex-wrap content-center cus_margin_frm mt-2 line_height">
-                      <div className="w-full font-bold cust_text_res">
-                        {" "}
-                        {ddr_monthStr} {ddr_year}
-                      </div>
+                    <div className="flex flex-wrap content-center cus_margin_frm line_height">
                       <div className="w-full font-bold cust_text_res">
                         {" "}
                         {ddr_strdate}
+                        {ddr_monthStr && `/${ddr_monthStr}`}
+                      </div>
+                      <div className="w-full font-bold cust_text_res">
+                        {" "}
+                        {ddr_year}
                       </div>
                     </div>
                   </div>
