@@ -69,6 +69,7 @@ export default function BookingCard({
   // Use ref to store temporary check-in date and calculated checkout
   const tempCheckinRef = useRef(null);
   const tempCheckoutRef = useRef(null);
+  const isSelectionRef = useRef(false);
 
   // Calculate display checkout date (either temp or actual)
   const displayCheckoutDate = tempCheckoutRef.current || checkoutDate;
@@ -140,6 +141,7 @@ export default function BookingCard({
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                isSelectionRef.current = false;
                 setOpenDateRange("checkin");
               }}
               className="w-full border px-3 py-2 rounded text-left bg-white"
@@ -160,14 +162,18 @@ export default function BookingCard({
                   minDate={dayjs()}
                   valueDate={checkinDate ? dayjs(checkinDate) : null}
                   openToDateRange={() => {
-                    // Always open checkout picker after closing check-in
-                    setOpenDateRange("checkout");
+                    // Only open checkout if a selection was made (handled by setDatedep logic setting state)
+                    // If not selecting (just closing/cancelling), close the picker by setting null
+                    if (!isSelectionRef.current) {
+                      setOpenDateRange(null);
+                    }
                   }}
                   setDatedep={(date) => {
                     const newDate = date ? date.format("YYYY-MM-DD") : null;
                     const dateChanged = newDate !== checkinDate;
 
                     if (dateChanged && newDate) {
+                      isSelectionRef.current = true;
                       // Store new check-in date in ref (temporary)
                       tempCheckinRef.current = newDate;
 
@@ -179,12 +185,21 @@ export default function BookingCard({
                       setCheckinDate(newDate);
 
                       // DON'T clear checkout or trigger fetch yet - wait for checkout confirmation
+
+                      // Open checkout picker after changing date
+                      setOpenDateRange("checkout");
                     } else {
                       setCheckinDate(newDate);
+                      // If date didn't change, we still might want to open checkout if they re-clicked same date?
+                      // User said "checkout data should open when the checkin data is changed."
+                      // If it's NOT changed, maybe we shouldn't open checkout?
+                      // But usually selecting *any* date implies moving forward.
+                      // Let's assume selecting (even same date) should move forward, 
+                      // but closing without any action should not.
+                      // So we treat 'clicking a date' as a selection event.
+                      isSelectionRef.current = true;
+                      setOpenDateRange("checkout");
                     }
-
-                    // Always open checkout picker after selecting check-in
-                    setOpenDateRange("checkout");
                   }}
                 />
               </div>

@@ -11,7 +11,7 @@ export default function HotelCard1({ hotel, nights }: any) {
   const hasHalfStar = rating % 1 >= 0.5;
 
   const id = hotel?.rawData?.id || "unknown-id";
-  console.log("Hotel ID:", hotel); // Debugging line to check the id value
+  // console.log("Hotel ID:", hotel); // Debugging line to check the id value
   const image = hotel?.image;
   const pricePerNight = hotel?.price ?? 0;
   // const totalPrice = nights && nights > 0 ? (pricePerNight * nights).toFixed(2) : pricePerNight;
