@@ -1426,11 +1426,41 @@ const Alldetails = ({ totalpricee }) => {
       ) : (
         <>
           <div
-            className="mt-20 bg-white shadow rounded-lg p-2 sm:p-6 mb-20 print-area"
+            className="mt-20 bg-white shadow rounded-lg p-6 mb-20 print-area"
             ref={printRef}
           >
+            {!isNoPrintVisible && (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    className="light-mode header_logo"
+                    alt="Travelogy"
+                    src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
+                  ></img>
+                  <div>
+                    <p>
+                      <span className="font-bold">Address:</span>
+                      <span> NPL Devi, 111, Lattice Brg Rd,</span>
+                    </p>
+                    <p>Thiruvanmiyur, Chennai, </p>
+                    <p>Tamil Nadu 600041</p>
+                    <p>
+                      <span className="font-bold">Email:</span>
+                      <span> support@Travelogy.com</span>
+                    </p>
+                  </div>
+                </div>
+                <hr className="border-t border-black-300 mt-3 mb-3" />
+              </div>
+            )}
             <div className="mb-10 shadow-md p-3 rounded">
-              <div className="flex flex-col sm:flex-row justify-between gap-2">
+              <div className="flex flex-row justify-between gap-2">
                 <div className="flex flex-col justify-start">
                   <p className="text-md-medium neutral-1000">
                     Booking status:{" "}
@@ -1505,7 +1535,7 @@ const Alldetails = ({ totalpricee }) => {
                           }}
                         >
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2"
                             onClick={openReIssueModal}
                           >
                             Reschedule
@@ -1555,6 +1585,7 @@ const Alldetails = ({ totalpricee }) => {
                           </select>
                         </div>
 
+                        {/* Display travel details after PNR selection */}
                         {selectedPNR && (
                           <div className="mb-6 flex justify-around">
                             <div>
@@ -1598,6 +1629,42 @@ const Alldetails = ({ totalpricee }) => {
                               >
                                 Select New Travel Date:
                               </label>
+                              {/* <DatePicker
+                                id="reschedule-date"
+                                format="MM/DD/YYYY"
+                                value={
+                                  rescheduleDate ? dayjs(rescheduleDate) : null
+                                }
+                                onChange={(d) =>
+                                  setRescheduleDate(
+                                    d ? d.format("YYYY-MM-DD") : ""
+                                  )
+                                }
+                                disabled={!selectedPNR}
+                                disabledDate={(current) =>
+                                  current && current < dayjs().startOf("day")
+                                }
+                                className="border border-gray-400 px-2 py-2 rounded w-full"
+                                onKeyDown={(e) => {
+                                  const okKeys = [
+                                    "Backspace",
+                                    "Tab",
+                                    "ArrowLeft",
+                                    "ArrowRight",
+                                    "Delete",
+                                    "Enter",
+                                  ];
+                                  if (okKeys.includes(e.key)) return;
+                                  if (!/[\d/]/.test(e.key)) e.preventDefault(); // only 0-9 and slash
+                                }}
+                                onPaste={(e) => {
+                                  const text = (
+                                    e.clipboardData.getData("text") || ""
+                                  ).trim();
+                                  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
+                                    e.preventDefault();
+                                }}
+                              /> */}
                               <DatePicker
                                 id="reschedule-date"
                                 format="MM/DD/YYYY"
@@ -1615,7 +1682,9 @@ const Alldetails = ({ totalpricee }) => {
                                 }
                                 className="border border-gray-400 px-2 py-2 rounded w-full"
                                 popupClassName="z-[9999]"
+                                /* Render popup at body level to avoid clipping */
                                 getPopupContainer={() => document.body}
+                                /* Optional: force it to appear below the input */
                                 placement="bottomLeft"
                                 onKeyDown={(e) => {
                                   const okKeys = [
@@ -1667,16 +1736,18 @@ const Alldetails = ({ totalpricee }) => {
                                           p.title === passenger.title &&
                                           p.passengerType ===
                                             passenger.passengerType &&
-                                          p.index === index
+                                          p.index === index // compare index also!
                                       )}
                                       onChange={(e) => {
                                         let updated;
                                         if (e.target.checked) {
+                                          // Add index to the selected passenger object
                                           updated = [
                                             ...selectedTravellers,
                                             { ...passenger, index },
                                           ];
                                         } else {
+                                          // Remove by comparing all fields including index
                                           updated = selectedTravellers.filter(
                                             (p) =>
                                               !(
@@ -1691,6 +1762,10 @@ const Alldetails = ({ totalpricee }) => {
                                               )
                                           );
                                         }
+                                        console.log(
+                                          "updatedupdated ======== ",
+                                          updated
+                                        );
                                         setSelectedTravellers(updated);
                                       }}
                                     />
@@ -1712,7 +1787,7 @@ const Alldetails = ({ totalpricee }) => {
                           disabled={
                             !rescheduleDate ||
                             selectedTravellers.length === 0 ||
-                            rescheduleLoading
+                            rescheduleLoading // Disable while loading!
                           }
                         >
                           {rescheduleLoading ? (
@@ -1764,8 +1839,40 @@ const Alldetails = ({ totalpricee }) => {
                             paddingRight: "10px",
                           }}
                         >
+                          {/* <button
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className="border border-grey rounded px-4 py-2"
+                          >
+                            More
+                          </button>
+                          {showDropdown && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                disabled={!ticketData}
+                                onClick={() => {
+                                  // handlePrint(printRef);
+                                  // setShowDropdown(false);
+                                  // handlePrintv1();
+                                  printTicket(bookingDetails)
+                                }}
+                              >
+                                Print Ticket
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  // handleDownload(printRef);
+                                  // setShowDropdown(false);
+                                  downloadTicketPdf(bookingDetails)
+                                }}
+                              >
+                                Download Ticket
+                              </button>
+                            </div>
+                          )} */}
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                             disabled={!ticketData}
                             onClick={() => {
                               printTicket(bookingDetails);
@@ -1788,8 +1895,36 @@ const Alldetails = ({ totalpricee }) => {
                               paddingRight: "10px",
                             }}
                           >
+                            {/* <button
+                              onClick={() => setShowDropdown(!showDropdown)}
+                              className="border border-grey rounded px-4 py-2"
+                            >
+                              More
+                            </button>
+                            {showDropdown && (
+                              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handlePrint(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Print Ticket
+                                </button>
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handleDownload(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Download Ticket
+                                </button>
+                              </div>
+                            )} */}
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                              className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                               disabled={!ticketData}
                               onClick={() => {
                                 printTicket(bookingDetails);
@@ -1805,13 +1940,14 @@ const Alldetails = ({ totalpricee }) => {
                           style={{ alignItems: "center" }}
                         >
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                             onClick={handleUnHold}
                           >
                             Unhold
                           </button>
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                            // onClick={handlePayNow}
                             onClick={() => setPaymentModel(true)}
                           >
                             Pay Now
@@ -1825,9 +1961,36 @@ const Alldetails = ({ totalpricee }) => {
                               paddingRight: "10px",
                             }}
                           >
-
+                            {/* <button
+                              onClick={() => setShowDropdown(!showDropdown)}
+                              className="border border-grey rounded px-4 py-2"
+                            >
+                              More
+                            </button>
+                            {showDropdown && (
+                              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handlePrint(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Print Ticket
+                                </button>
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handleDownload(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Download Ticket
+                                </button>
+                              </div>
+                            )} */}
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                              className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                               disabled={!ticketData}
                               onClick={() => {
                                 printTicket(bookingDetails);
@@ -1843,48 +2006,65 @@ const Alldetails = ({ totalpricee }) => {
                 </div>
               </div>
             </div>
-
             <div className="mt-20">
-              <div className="mt-20">
-                {bookingDetails?.itemInfos?.AIR?.tripInfos.map(
-                  (trip, tripIndex) => {
-                    return trip?.sI.map((seg, segIndex) => {
-                      const segDt = seg?.dt;
-                      const date = new Date(segDt);
-                      const formattedDate = date.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      });
+              {bookingDetails?.itemInfos?.AIR?.tripInfos.map(
+                (trip, tripIndex) => {
+                  console.log("alldetails trip == ", trip);
+                  return trip?.sI.map((seg, segIndex) => {
+                    console.log("alldetails seg == ", seg);
+                    const segDt = seg?.dt;
 
-                      const dT = segDt.split("T")[1];
-                      const segAt = seg?.at;
-                      const aT = segAt.split("T")[1];
-                      const [startHour, startMin] = dT.split(":").map(Number);
-                      const [endHour, endMin] = aT.split(":").map(Number);
+                    const date = new Date(segDt);
 
-                      let startMinutes = startHour * 60 + startMin;
-                      let endMinutes = endHour * 60 + endMin;
+                    const formattedDate = date.toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    });
 
-                      if (endMinutes < startMinutes) {
-                        endMinutes += 24 * 60;
-                      }
+                    const dT = segDt.split("T")[1];
 
-                      const diffMinutes = endMinutes - startMinutes;
-                      const hours = Math.floor(diffMinutes / 60);
-                      const minutes = diffMinutes % 60;
-                      let fareIdentifier = seg?.bI?.tI?.[0]?.fd?.cc;
+                    const segAt = seg?.at;
+                    const aT = segAt.split("T")[1];
 
-                      return (
+                    const [startHour, startMin] = dT.split(":").map(Number);
+                    const [endHour, endMin] = aT.split(":").map(Number);
+
+                    let startMinutes = startHour * 60 + startMin;
+                    let endMinutes = endHour * 60 + endMin;
+
+                    if (endMinutes < startMinutes) {
+                      endMinutes += 24 * 60;
+                    }
+
+                    const diffMinutes = endMinutes - startMinutes;
+                    const hours = Math.floor(diffMinutes / 60);
+                    const minutes = diffMinutes % 60;
+
+                    let fareIdentifier = seg?.bI?.tI?.[0]?.fd?.cc;
+
+                    return (
+                      <>
                         <div
                           key={`${tripIndex}-${segIndex}`}
-                          className="shadow rounded-md p-3 mb-5"
+                          className="shadow rounded-md p-3 mb-5 "
                         >
-                          <div className="citydetails flex flex-col justify-start items-start">
-                            <div className="flex flex-row gap-3 items-center mb-2">
+                          {/* header */}
+                          <div className=" citydetails flex flex-col justify-start  items-start">
+                            {/* City and direction row */}
+                            {/* <li className="text-sm-medium neutral-500 ">
+                            {segments.map((segment) =>
+                              segment.stops === 0
+                                ? "Non Stop"
+                                : `${segment.stops} Stop${
+                                    segment.stops > 1 ? "s" : ""
+                                  }`
+                            ) || "No stop info"}
+                          </li> */}
+                            <div className="  flex flex-row gap-3 items-center mb-2">
                               <p className="text-xl-bold neutral-1000 citynames">
-                                {seg?.da?.city || "DELHI"}{" "}
-                                <span>({seg?.da?.code})</span>
+                                {seg?.da?.city || "DELHI"}
+                                <span> ({seg?.da?.code})</span>
                               </p>
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1900,16 +2080,18 @@ const Alldetails = ({ totalpricee }) => {
                                 />
                               </svg>
                               <p className="text-xl-bold neutral-1000 citynames">
-                                {seg?.aa?.city} <span>({seg?.aa?.code})</span>
+                                {seg?.aa?.city}
+                                <span>({seg?.aa?.code})</span>
                               </p>
                             </div>
 
                             <div className="flex flex-row gap-2 timediv">
-                              <p className="text-sm-bold neutral-500">
+                              <p className="text-sm-bold neutral-500 ">
                                 {formattedDate || "Date not available"}
                               </p>
+                              {/* Info list below the cities */}
                               <ul className="flex timeduration flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc timeul">
-                                <li className="text-sm-medium neutral-500">
+                                <li className="text-sm-medium neutral-500 ">
                                   {`${hours}h ${minutes}m` ||
                                     "Duration not available"}
                                 </li>
@@ -1918,7 +2100,7 @@ const Alldetails = ({ totalpricee }) => {
 
                             <div className="w-full">
                               <div className="flex flex-row justify-between">
-                                <div className="logo-flight flex flex-row gap-3 items-center mb-10 md:mb-20">
+                                <div className="logo-flight flex flex-row gap-3 items-center mb-20">
                                   <div className="text-md-bold neutral-900">
                                     {seg?.fD?.aI?.name}
                                   </div>
@@ -1957,10 +2139,11 @@ const Alldetails = ({ totalpricee }) => {
                                 </div>
                               </div>
 
-                              <div className="flex border w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md">
+                              {/* flightdetails    */}
+                              <div className=" flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
                                 <div className="text-left space-y-1">
                                   <h4
-                                    className="text-xl font-normal"
+                                    className=""
                                     style={{
                                       fontSize: "28px",
                                       fontWeight: "normal",
@@ -1968,19 +2151,19 @@ const Alldetails = ({ totalpricee }) => {
                                   >
                                     {seg?.dt.split("T")[1]}
                                   </h4>
-                                  <p className="text-sm-medium neutral-500">
+                                  <p className="text-sm-medium neutral-500 ">
                                     {seg?.da?.city} {seg?.da?.country}
                                   </p>
-                                  <p className="text-sm-medium neutral-500">
+                                  <p className="text-sm-medium neutral-500 ">
                                     {seg?.da?.name}
                                   </p>
-                                  <p className="text-sm-medium neutral-1000">
+                                  <p className="text-sm-medium neutral-1000 ">
                                     {seg?.da?.terminal}
                                   </p>
                                 </div>
 
                                 <div className="text-center space-y-1">
-                                  <p className="text-sm-medium neutral-500">
+                                  <p className="text-sm-medium neutral-500 ">
                                     {`${hours}h ${minutes}m` ||
                                       "Duration not available"}
                                   </p>
@@ -1992,8 +2175,9 @@ const Alldetails = ({ totalpricee }) => {
                                 </div>
 
                                 <div className="text-right space-y-1">
+                                  {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
                                   <h4
-                                    className="text-xl font-normal"
+                                    className=""
                                     style={{
                                       fontSize: "28px",
                                       fontWeight: "normal",
@@ -2001,13 +2185,13 @@ const Alldetails = ({ totalpricee }) => {
                                   >
                                     {seg?.at?.split("T")[1]}
                                   </h4>
-                                  <p className="text-sm-medium neutral-500">
+                                  <p className="text-sm-medium neutral-500 ">
                                     {seg?.aa?.city} {seg?.aa?.country}
                                   </p>
-                                  <p className="text-sm-medium neutral-500">
+                                  <p className="text-sm-medium neutral-500 ">
                                     {seg?.aa?.name}
                                   </p>
-                                  <p className="text-sm-medium neutral-1000">
+                                  <p className="text-sm-medium neutral-1000 ">
                                     {seg?.aa?.terminal}
                                   </p>
                                 </div>
@@ -2020,7 +2204,7 @@ const Alldetails = ({ totalpricee }) => {
                                       width="16"
                                       height="16"
                                       fill="currentColor"
-                                      className="bi bi-suitcase-lg-fill"
+                                      class="bi bi-suitcase-lg-fill"
                                       viewBox="0 0 16 16"
                                     >
                                       <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
@@ -2028,6 +2212,7 @@ const Alldetails = ({ totalpricee }) => {
                                     <p className="text-sm-bold neutral-900">
                                       Cabin:{" "}
                                       <span className="text-sm-medium neutral-500">
+                                        {" "}
                                         {baggageInfo.cabinBaggage || "N/A"}
                                       </span>
                                     </p>
@@ -2038,14 +2223,14 @@ const Alldetails = ({ totalpricee }) => {
                                       width="16"
                                       height="16"
                                       fill="currentColor"
-                                      className="bi bi-suitcase2-fill"
+                                      class="bi bi-suitcase2-fill"
                                       viewBox="0 0 16 16"
                                     >
                                       <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
                                     </svg>
-                                    <p className="text-sm-bold neutral-900">
+                                    <p className="text-sm-bold neutral-900 ">
                                       Check-in:{" "}
-                                      <span className="text-sm-medium neutral-500">
+                                      <span className="text-sm-medium neutral-500 ">
                                         {baggageInfo.checkinBaggage || "N/A"}
                                       </span>
                                     </p>
@@ -2055,18 +2240,21 @@ const Alldetails = ({ totalpricee }) => {
                             </div>
                           </div>
                         </div>
-                      );
-                    });
-                  }
-                )}
-              </div>
+                      </>
+                    );
+                  });
+                }
+              )}
 
+              {/* //table */}
               <div className="shadow rounded-md mt-50 p-3 bg-white">
-                <p className="text-xl-bold neutral-1000 mb-10">
-                  Passenger Information
-                </p>
-                <div className="overflow-x-auto table-container">
-                  <table className="min-w-full border-collapse mb-20">
+                {/* Passenger Information */}
+
+                <div className="shadow rounded-md mt-50 p-3 bg-white">
+                  <p className="text-xl-bold neutral-1000 mb-10">
+                    Passenger Information
+                  </p>
+                  <table className="w-full border-collapse mb-20">
                     <thead style={{ borderBottom: "1px solid grey" }}>
                       <tr>
                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
@@ -2094,9 +2282,11 @@ const Alldetails = ({ totalpricee }) => {
                     </thead>
                     <tbody>
                       {travellerinfos?.map((traveller, travellerIndex) => {
+                        console.log("traaaaaaaaaaaaaaaaaaa ==> ", traveller);
                         const segmentKeys = Object.keys(
                           traveller.pnrDetails || { "N/A": undefined }
                         );
+
                         return segmentKeys.map((segmentKey, segmentIndex) => {
                           const pnr =
                             traveller.pnrDetails?.[segmentKey] ?? "N/A";
@@ -2123,14 +2313,19 @@ const Alldetails = ({ totalpricee }) => {
                           }
 
                           let passengerDetailsData = [];
+
                           if (pnr !== "N/A") {
+                            console.log("ulleeeeeeeeeeeeeeee");
                             const [fromCitySplit, toCitySplit] =
                               segmentKey.split("-");
+
+                            // Get flightNumber and julianDate for each traveller's segment
                             const { flightNumber, julianDate, flightCode } =
                               processTravellerInfo(
                                 traveller,
                                 bookingDetails?.itemInfos
                               );
+
                             passengerDetailsData = [
                               {
                                 passengerName: `${traveller.lN}/${traveller.fN}`
@@ -2145,6 +2340,11 @@ const Alldetails = ({ totalpricee }) => {
                                 julianDate: julianDate,
                               },
                             ];
+
+                            console.log(
+                              "passengerDetailsData =========> ",
+                              passengerDetailsData
+                            );
                           }
 
                           return (
@@ -2158,7 +2358,7 @@ const Alldetails = ({ totalpricee }) => {
                                   {traveller &&
                                     traveller.di &&
                                     traveller.di !== "undefined" && (
-                                      <span>ID: {traveller.di}</span>
+                                      <span>{`ID: ${traveller.di}`}</span>
                                     )}
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
@@ -2178,6 +2378,7 @@ const Alldetails = ({ totalpricee }) => {
                                   {seat}
                                 </td>
                               </tr>
+
                               {pnr !== "N/A" && (
                                 <tr>
                                   <td
@@ -2196,27 +2397,27 @@ const Alldetails = ({ totalpricee }) => {
                       })}
                     </tbody>
                   </table>
-                </div>
 
-                <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
-                  Contact Information
-                </p>
-                <div className="ant-form-item">
-                  <div className="text-md neutral-1000 mb-2">
-                    Email:{" "}
-                    <strong>
-                      {bookingDetails?.order?.deliveryInfo?.emails?.join(
-                        ", "
-                      ) || "N/A"}
-                    </strong>
-                  </div>
-                  <div className="text-md neutral-1000">
-                    Phone Number:{" "}
-                    <strong>
-                      {bookingDetails?.order?.deliveryInfo?.contacts?.join(
-                        ", "
-                      ) || "N/A"}
-                    </strong>
+                  <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
+                    Contact Information
+                  </p>
+                  <div className="ant-form-item">
+                    <div className="text-md neutral-1000 mb-2">
+                      Email:{" "}
+                      <strong>
+                        {bookingDetails?.order?.deliveryInfo?.emails?.join(
+                          ", "
+                        ) || "N/A"}
+                      </strong>
+                    </div>
+                    <div className="text-md neutral-1000">
+                      Phone Number:{" "}
+                      <strong>
+                        {bookingDetails?.order?.deliveryInfo?.contacts?.join(
+                          ", "
+                        ) || "N/A"}
+                      </strong>
+                    </div>
                   </div>
                 </div>
               </div>

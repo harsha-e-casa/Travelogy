@@ -22,7 +22,7 @@ export default function Login() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const nextUrl = searchParams.get("next") || "/flights";
-  console.log("nextUrlnextUrl login page ==> ",nextUrl)
+  console.log("nextUrlnextUrl login page ==> ", nextUrl)
 
   // useEffect(() => {
   //   const tokenValid = checkTokenExpiry();
@@ -106,7 +106,7 @@ export default function Login() {
         return;
       }
 
-      console.log("resres ==> ",res)
+      console.log("resres ==> ", res)
       const data = await res.json();
       console.log("data from /api/login => ", data);
 
@@ -115,7 +115,7 @@ export default function Login() {
       }
 
       message.success("Login successful");
-      console.log("nextUrlnextUrl ==> ",nextUrl)
+      console.log("nextUrlnextUrl ==> ", nextUrl)
       // router.push(nextUrl);
       window.location.href = nextUrl;
     } catch (e) {
@@ -128,145 +128,32 @@ export default function Login() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <div
-        style={{
-          backgroundImage: `url(/assets/imgs/bg_login.png)`,
-          height: "100vh",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center center",
-          backgroundSize: "cover",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
+      <div className="login-page-container">
+        <div className="login-flex-wrapper">
           {/* left side */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "15px",
-              paddingLeft: "60px",
-            }}
-          >
-            <div className="p-20">
+          <div className="login-left-section">
+            <div className="p-20 flex justify-center">
               <img
                 src="/assets/imgs/logo_login.png"
-                width={594}
-                // height={195}
+                className="login-logo"
+                alt="Logo"
               />
             </div>
-            <div className="p-20">
+            <div className="p-20 flex justify-center">
               <img
                 src="/assets/imgs/login_bg.png"
-                width={694}
-                // height={259}
+                className="login-illustration"
+                alt="Illustration"
               />
             </div>
-            <div
-              style={{
-                textAlign: "center",
-                color: "white",
-                fontFamily: "Puritan",
-              }}
-              className="p-20"
-            >
-              <h2 style={{ color: "white", fontFamily: "Puritan" }}>
-                Login & Let Your
-              </h2>
-              <h2 style={{ color: "white", fontFamily: "Puritan" }}>
-                Dreams Take Your Flight
-              </h2>
+            <div className="login-text-content p-20">
+              <h2>Login & Let Your</h2>
+              <h2>Dreams Take Your Flight</h2>
             </div>
           </div>
 
           {/* right side */}
-          <div style={{ padding: "35px", width: "38%", margin: "40px" }}>
-            {/* <div
-              style={{
-                display: "flex",
-                background: "linear-gradient(180deg, white, transparent)",
-                borderRadius: 20,
-                overflow: "hidden",
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)"
-              }}
-            >
-              <div style={{ flex: 1.2, padding: 40 }}>
-                <h2
-                  style={{
-                    fontSize: 32,
-                    color: "#00aaff",
-                    textAlign: "center",
-                  }}
-                >
-                  Welcome
-                </h2>
-                <p
-                  style={{
-                    textAlign: "center",
-                    marginBottom: 30,
-                    color: "#888",
-                  }}
-                >
-                  Login with Email
-                </p>
-
-                <Form layout="vertical" onFinish={onFinish}>
-                  <Form.Item
-                    name="email"
-                    label="Email Id"
-                    rules={[
-                      { required: true, message: "Please enter your email" },
-                      { type: "email", message: "Please enter a valid email" },
-                    ]}
-                  >
-                    <Input
-                      size="large"
-                      prefix={<MailOutlined />}
-                      placeholder="Enter your email"
-                    />
-                  </Form.Item>
-
-                  <Form.Item
-                    name="password"
-                    label="Password"
-                    rules={[
-                      { required: true, message: "Please enter your password" },
-                    ]}
-                  >
-                    <Input.Password
-                      size="large"
-                      prefix={<LockOutlined />}
-                      placeholder="Enter your password"
-                    />
-                  </Form.Item>
-
-                  <Form.Item>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      block
-                      size="large"
-                      loading={loading} // Show loading indicator while logging in
-                      style={{
-                        backgroundColor: "#00aaff",
-                        borderColor: "#00aaff",
-                      }}
-                    >
-                      LOGIN
-                    </Button>
-                  </Form.Item>
-                </Form>
-              </div>
-            </div> */}
-
+          <div className="login-right-section">
             <div className="glass-card">
               <h1 className="title">Welcome</h1>
 
@@ -281,9 +168,8 @@ export default function Login() {
                 >
                   <Input
                     size="large"
-                    prefix={<MailOutlined style={{ paddingRight: "10px" }}/>}
+                    prefix={<MailOutlined style={{ paddingRight: "10px" }} />}
                     placeholder="Enter your email"
-                    // style={{ paddingLeft: "10px" }}
                   />
                 </Form.Item>
 
