@@ -27,7 +27,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
       data-name={`infantForm-${index}`}
     >
       <Row gutter={16}>
-        <Col span={4}>
+        <Col xs={24} sm={4}>
           {" "}
           <Form.Item
             name={`infantselect-${index}`}
@@ -46,7 +46,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
         </Col>
 
         {/* Col for Infant's First Name */}
-        <Col span={7}>
+        <Col xs={24} sm={7}>
           <Form.Item
             name={`infantName-${index}`}
             label="First Name"
@@ -111,8 +111,8 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
 
                   return dup
                     ? Promise.reject(
-                        new Error("This traveler name is already entered")
-                      )
+                      new Error("This traveler name is already entered")
+                    )
                     : Promise.resolve();
                 },
               },
@@ -127,7 +127,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
         </Col>
 
         {/* Col for Infant's Last Name */}
-        <Col span={7}>
+        <Col xs={24} sm={7}>
           <Form.Item
             name={`infantLast-${index}`}
             label="Last Name"
@@ -192,8 +192,8 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
 
                   return dup
                     ? Promise.reject(
-                        new Error("This traveler name is already entered")
-                      )
+                      new Error("This traveler name is already entered")
+                    )
                     : Promise.resolve();
                 },
               },
@@ -208,7 +208,7 @@ const AppFormInfant = ({ form, index, travellerParsedData }) => {
         </Col>
 
         {/* Col for Date of Birth (DOB) */}
-        <Col span={6}>
+        <Col xs={24} sm={6}>
           <Form.Item
             name={`infantDOB-${index}`}
             label="Date of Birth"

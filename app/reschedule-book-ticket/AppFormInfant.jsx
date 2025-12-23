@@ -92,7 +92,7 @@ const AppFormInfant = ({ form, index, fieldData = {}, disabled = false }) => {
     <Form form={form} name={`infantForm-${index}`} layout="vertical" autoComplete="off">
       <Row gutter={16}>
         {/* Select Title */}
-        <Col span={4}>
+        <Col xs={24} sm={4}>
           <Form.Item
             name={`infantselect-${index}`}
             label="Select"
@@ -111,7 +111,7 @@ const AppFormInfant = ({ form, index, fieldData = {}, disabled = false }) => {
         </Col>
 
         {/* First Name */}
-        <Col span={7}>
+        <Col xs={24} sm={7}>
           <Form.Item
             name={`infantName-${index}`}
             label="First Name"
@@ -127,7 +127,7 @@ const AppFormInfant = ({ form, index, fieldData = {}, disabled = false }) => {
         </Col>
 
         {/* Last Name */}
-        <Col span={7}>
+        <Col xs={24} sm={7}>
           <Form.Item
             name={`infantLast-${index}`}
             label="Last Name"
@@ -143,7 +143,7 @@ const AppFormInfant = ({ form, index, fieldData = {}, disabled = false }) => {
         </Col>
 
         {/* Date of Birth */}
-        <Col span={6}>
+        <Col xs={24} sm={6}>
           <Form.Item
             name={`infantDOB-${index}`}
             label="Date of Birth"
@@ -155,7 +155,7 @@ const AppFormInfant = ({ form, index, fieldData = {}, disabled = false }) => {
               format="YYYY-MM-DD"
               placeholder="Select Date of Birth"
               disabled={disabled}
-              // No need for defaultValue; form.setFieldsValue handles value
+            // No need for defaultValue; form.setFieldsValue handles value
             />
           </Form.Item>
         </Col>

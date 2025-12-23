@@ -343,10 +343,10 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
             const seatStyle = booked
               ? "bg-gray-400 text-gray-300 cursor-not-allowed"
               : isSelectable && isSelected
-              ? "bg-green-500"
-              : isSelectable
-              ? `cursor-pointer text-white` // Apply dynamic color for selectable
-              : "bg-gray-300 text-gray-500 cursor-not-allowed";
+                ? "bg-green-500"
+                : isSelectable
+                  ? `cursor-pointer text-white` // Apply dynamic color for selectable
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed";
 
             return (
               <div
@@ -419,7 +419,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                       <button
                         onClick={() => handleViewSeat({ id: seg.id, seg, fromCode: seg.da.code, toCode: seg.aa.code })}
                         className="border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black"
-                        style={{ borderRadius: "5px"}}
+                        style={{ borderRadius: "5px" }}
                       >
                         View Seats
                       </button>
@@ -467,8 +467,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
           onClick={() => setFlightSeat(null)}
         >
           <div
-            className="bg-white max-w-3xl overflow-y-auto p-6 rounded-lg relative"
-            style={{ maxHeight: "80vh", width: "60%" }}
+            className="bg-white max-w-3xl overflow-y-auto p-6 rounded-lg relative seat-booking-h"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -554,12 +553,11 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                           <td className="px-2 py-2 text-gray-700">
                             {seatSelections[flightSeat?.seg?.id]?.[index]
                               ?.cost ||
-                            seatSelections[flightSeat?.seg?.id]?.[index]
-                              ?.cost == "0"
-                              ? `₹ ${
-                                  seatSelections[flightSeat?.seg?.id]?.[index]
-                                    ?.cost
-                                }`
+                              seatSelections[flightSeat?.seg?.id]?.[index]
+                                ?.cost == "0"
+                              ? `₹ ${seatSelections[flightSeat?.seg?.id]?.[index]
+                                ?.cost
+                              }`
                               : "—"}
                           </td>
                         </tr>
@@ -591,14 +589,13 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                                 {seatSelections[flightSeat?.seg?.id]?.[
                                   passengerIndex
                                 ]?.cost ||
-                                seatSelections[flightSeat?.seg?.id]?.[
-                                  passengerIndex
-                                ]?.cost == "0"
-                                  ? `₹${
-                                      seatSelections[flightSeat?.seg?.id]?.[
-                                        passengerIndex
-                                      ].cost
-                                    }`
+                                  seatSelections[flightSeat?.seg?.id]?.[
+                                    passengerIndex
+                                  ]?.cost == "0"
+                                  ? `₹${seatSelections[flightSeat?.seg?.id]?.[
+                                    passengerIndex
+                                  ].cost
+                                  }`
                                   : "—"}
                               </td>
                             </tr>

@@ -565,7 +565,7 @@ const Alldetails = ({ totalpricee }) => {
           cnv.style.display = "";
           img.remove();
         });
-      } catch {}
+      } catch { }
     });
 
     // 2) SVG -> PNG <img>
@@ -587,7 +587,7 @@ const Alldetails = ({ totalpricee }) => {
           svg.style.display = "";
           img.remove();
         });
-      } catch {}
+      } catch { }
     });
 
     return () => swaps.forEach((undo) => undo());
@@ -992,7 +992,7 @@ const Alldetails = ({ totalpricee }) => {
 
       setSegmentPrices(
         data?.AIR?.tripInfos?.map((trip) => trip.sI.map((seg) => seg.price)) ??
-          []
+        []
       );
     } catch (err) {
       console.error("error caused", err);
@@ -1666,7 +1666,7 @@ const Alldetails = ({ totalpricee }) => {
                                           p.lastName === passenger.lastName &&
                                           p.title === passenger.title &&
                                           p.passengerType ===
-                                            passenger.passengerType &&
+                                          passenger.passengerType &&
                                           p.index === index
                                       )}
                                       onChange={(e) => {
@@ -1681,12 +1681,12 @@ const Alldetails = ({ totalpricee }) => {
                                             (p) =>
                                               !(
                                                 p.firstName ===
-                                                  passenger.firstName &&
+                                                passenger.firstName &&
                                                 p.lastName ===
-                                                  passenger.lastName &&
+                                                passenger.lastName &&
                                                 p.title === passenger.title &&
                                                 p.passengerType ===
-                                                  passenger.passengerType &&
+                                                passenger.passengerType &&
                                                 p.index === index
                                               )
                                           );
@@ -1878,178 +1878,121 @@ const Alldetails = ({ totalpricee }) => {
                       return (
                         <div
                           key={`${tripIndex}-${segIndex}`}
-                          className="shadow rounded-md p-3 mb-5"
+                          className="premium-flight-card mb-8 shadow-sm"
                         >
-                          <div className="citydetails flex flex-col justify-start items-start">
-                            <div className="flex flex-row gap-3 items-center mb-2">
-                              <p className="text-xl-bold neutral-1000 citynames">
-                                {seg?.da?.city || "DELHI"}{" "}
-                                <span>({seg?.da?.code})</span>
-                              </p>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                fill="currentColor"
-                                className="bi bi-arrow-right"
-                                viewBox="0 0 16 16"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                                />
-                              </svg>
-                              <p className="text-xl-bold neutral-1000 citynames">
-                                {seg?.aa?.city} <span>({seg?.aa?.code})</span>
-                              </p>
+                          {/* Card Header: Airline Info & Badges */}
+                          <div className="bg-slate-50 px-6 py-4 flex flex-wrap justify-between items-center border-b border-slate-100 gap-4">
+                            <div className="flex items-center gap-4">
+                              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex items-center justify-center min-w-[100px]">
+                                <span className="font-extrabold text-slate-800 tracking-tight text-sm">
+                                  {seg?.fD?.aI?.name}
+                                </span>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+                                  {seg?.fD?.fN}
+                                </span>
+                                <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded self-start">
+                                  {seg?.fD?.eT}
+                                </span>
+                              </div>
                             </div>
-
-                            <div className="flex flex-row gap-2 timediv">
-                              <p className="text-sm-bold neutral-500">
-                                {formattedDate || "Date not available"}
-                              </p>
-                              <ul className="flex timeduration flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc timeul">
-                                <li className="text-sm-medium neutral-500">
-                                  {`${hours}h ${minutes}m` ||
-                                    "Duration not available"}
-                                </li>
-                              </ul>
+                            <div className="flex items-center gap-2">
+                              {fareType && (
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${fareType.toLowerCase().includes('non') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
+                                  {fareType}
+                                </span>
+                              )}
+                              {fareIdentifier && (
+                                <span className="bg-amber-50 text-amber-600 border border-amber-100 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                                  {fareIdentifier}
+                                </span>
+                              )}
                             </div>
+                          </div>
 
-                            <div className="w-full">
-                              <div className="flex flex-row justify-between">
-                                <div className="logo-flight flex flex-row gap-3 items-center mb-10 md:mb-20">
-                                  <div className="text-md-bold neutral-900">
-                                    {seg?.fD?.aI?.name}
+                          {/* Card Body: Departure -> Timeline -> Arrival */}
+                          <div className="p-6 md:p-10">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+                              {/* Departure */}
+                              <div className="flex-1 text-center md:text-left">
+                                <div className="airport-info-label mb-3">Departure</div>
+                                <div className="time-display mb-1">{seg?.dt.split("T")[1]}</div>
+                                <div className="text-sm font-bold text-slate-500 mb-4">{formattedDate}</div>
+                                <div className="city-display mb-1">
+                                  {seg?.da?.city} <span className="text-slate-400 ml-1">({seg?.da?.code})</span>
+                                </div>
+                                <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] mx-auto md:mx-0">
+                                  {seg?.da?.name}
+                                </div>
+                                {seg?.da?.terminal && (
+                                  <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                                    Terminal {seg?.da?.terminal}
                                   </div>
-                                  <div className="text-md-medium neutral-500">
-                                    {seg?.fD?.fN}
-                                  </div>
-                                  <div className="text-md-medium neutral-500 border border-black-200 rounded-lg pl-10 pr-10">
-                                    {seg?.fD?.eT}
+                                )}
+                              </div>
+
+                              {/* Timeline Connector */}
+                              <div className="flex-[1.4] w-full flex flex-col items-center py-6">
+                                <div className="duration-badge mb-5 shadow-sm">
+                                  {hours}h {minutes}m
+                                </div>
+                                <div className="w-full relative flex items-center px-6">
+                                  <div className="connector-line"></div>
+                                  <div className="plane-icon-mid">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z" />
+                                    </svg>
                                   </div>
                                 </div>
-                                <div className="flex flex-row items-center gap-3">
-                                  <p
-                                    className="text-sm-medium"
-                                    style={{
-                                      background: "#9090f3",
-                                      padding: "1px 10px",
-                                      color: "white",
-                                      borderRadius: "10px",
-                                      fontSize: "12px",
-                                      lineHeight: "18px",
-                                      fontWeight: 700,
-                                    }}
-                                  >
-                                    {fareType}
-                                  </p>
-                                  <span
-                                    className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
-                                    style={{
-                                      backgroundColor: "rgb(245, 222, 179)",
-                                      color: "rgb(92, 64, 51)",
-                                      padding: "1px 2px",
-                                    }}
-                                  >
-                                    {fareIdentifier}
-                                  </span>
+                                <div className="mt-5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">
+                                  Non-Stop Flight
                                 </div>
                               </div>
 
-                              <div className="flex border w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md">
-                                <div className="text-left space-y-1">
-                                  <h4
-                                    className="text-xl font-normal"
-                                    style={{
-                                      fontSize: "28px",
-                                      fontWeight: "normal",
-                                    }}
-                                  >
-                                    {seg?.dt.split("T")[1]}
-                                  </h4>
-                                  <p className="text-sm-medium neutral-500">
-                                    {seg?.da?.city} {seg?.da?.country}
-                                  </p>
-                                  <p className="text-sm-medium neutral-500">
-                                    {seg?.da?.name}
-                                  </p>
-                                  <p className="text-sm-medium neutral-1000">
-                                    {seg?.da?.terminal}
-                                  </p>
+                              {/* Arrival */}
+                              <div className="flex-1 text-center md:text-right">
+                                <div className="airport-info-label mb-3">Arrival</div>
+                                <div className="time-display mb-1">{seg?.at?.split("T")[1]}</div>
+                                <div className="text-sm font-bold text-slate-500 mb-4">
+                                  {new Date(seg?.at).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}
                                 </div>
-
-                                <div className="text-center space-y-1">
-                                  <p className="text-sm-medium neutral-500">
-                                    {`${hours}h ${minutes}m` ||
-                                      "Duration not available"}
-                                  </p>
-                                  <img
-                                    src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
-                                    alt="flight line"
-                                    className="mx-auto w-20"
-                                  />
+                                <div className="city-display mb-1">
+                                  {seg?.aa?.city} <span className="text-slate-400 ml-1">({seg?.aa?.code})</span>
                                 </div>
-
-                                <div className="text-right space-y-1">
-                                  <h4
-                                    className="text-xl font-normal"
-                                    style={{
-                                      fontSize: "28px",
-                                      fontWeight: "normal",
-                                    }}
-                                  >
-                                    {seg?.at?.split("T")[1]}
-                                  </h4>
-                                  <p className="text-sm-medium neutral-500">
-                                    {seg?.aa?.city} {seg?.aa?.country}
-                                  </p>
-                                  <p className="text-sm-medium neutral-500">
-                                    {seg?.aa?.name}
-                                  </p>
-                                  <p className="text-sm-medium neutral-1000">
-                                    {seg?.aa?.terminal}
-                                  </p>
+                                <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] mx-auto md:ml-auto md:mr-0">
+                                  {seg?.aa?.name}
                                 </div>
-
-                                {/* Baggage Info */}
-                                <div className="flex flex-col items-start justify-start gap-3">
-                                  <div className="flex items-center space-x-2">
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      className="bi bi-suitcase-lg-fill"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
-                                    </svg>
-                                    <p className="text-sm-bold neutral-900">
-                                      Cabin:{" "}
-                                      <span className="text-sm-medium neutral-500">
-                                        {baggageInfo.cabinBaggage || "N/A"}
-                                      </span>
-                                    </p>
+                                {seg?.aa?.terminal && (
+                                  <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                                    Terminal {seg?.aa?.terminal}
                                   </div>
-                                  <div className="flex items-center space-x-2">
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      className="bi bi-suitcase2-fill"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
-                                    </svg>
-                                    <p className="text-sm-bold neutral-900">
-                                      Check-in:{" "}
-                                      <span className="text-sm-medium neutral-500">
-                                        {baggageInfo.checkinBaggage || "N/A"}
-                                      </span>
-                                    </p>
-                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Baggage Information Footer */}
+                            <div className="mt-10 pt-8 border-t border-slate-50 flex flex-wrap gap-6 justify-center md:justify-start">
+                              <div className="baggage-tag shadow-sm border border-slate-100">
+                                <div className="bg-blue-50 p-1.5 rounded-md">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />
+                                  </svg>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="baggage-label">Cabin</span>
+                                  <span className="baggage-value">{baggageInfo.cabinBaggage || "7 KG"}</span>
+                                </div>
+                              </div>
+                              <div className="baggage-tag shadow-sm border border-slate-100">
+                                <div className="bg-blue-50 p-1.5 rounded-md">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" />
+                                  </svg>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="baggage-label">Check-in</span>
+                                  <span className="baggage-value">{baggageInfo.checkinBaggage || "15 KG"}</span>
                                 </div>
                               </div>
                             </div>
@@ -2302,11 +2245,10 @@ const Alldetails = ({ totalpricee }) => {
             >
               <div
                 onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoadingWallet
-                    ? "bg-gray-300"
-                    : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                  ? "bg-gray-300"
+                  : "bg-yellow-300 hover:bg-yellow-400"
+                  }`}
                 disabled={bookingLoadingWallet}
               >
                 {bookingLoadingWallet ? (
@@ -2341,11 +2283,10 @@ const Alldetails = ({ totalpricee }) => {
               <div
                 // onClick={bookingReview}
                 onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoading
-                    ? "bg-gray-300"
-                    : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                  ? "bg-gray-300"
+                  : "bg-yellow-300 hover:bg-yellow-400"
+                  }`}
                 disabled={bookingLoading}
               >
                 {bookingLoading ? (
@@ -2415,11 +2356,10 @@ const Alldetails = ({ totalpricee }) => {
             >
               <div
                 onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoadingWallet
-                    ? "bg-gray-300"
-                    : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                  ? "bg-gray-300"
+                  : "bg-yellow-300 hover:bg-yellow-400"
+                  }`}
                 disabled={bookingLoadingWallet}
               >
                 {bookingLoadingWallet ? (
@@ -2454,11 +2394,10 @@ const Alldetails = ({ totalpricee }) => {
               <div
                 // onClick={bookingReview}
                 onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoading
-                    ? "bg-gray-300"
-                    : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                  ? "bg-gray-300"
+                  : "bg-yellow-300 hover:bg-yellow-400"
+                  }`}
                 disabled={bookingLoading}
               >
                 {bookingLoading ? (

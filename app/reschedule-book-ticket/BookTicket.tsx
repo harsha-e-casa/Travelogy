@@ -284,9 +284,8 @@ export default function BookTicket() {
             ? data.errors?.[0]?.message
             : data.error) || "Unknown API error";
         const apiErrorDetails = data.errors?.[0]?.details || "";
-        const fullErrorMessage = `${apiErrorMessage}${
-          apiErrorDetails ? ` - ${apiErrorDetails}` : ""
-        }`;
+        const fullErrorMessage = `${apiErrorMessage}${apiErrorDetails ? ` - ${apiErrorDetails}` : ""
+          }`;
 
         throw new Error(fullErrorMessage);
       }
@@ -1122,7 +1121,7 @@ export default function BookTicket() {
 
   const BookingSkeleton = () => {
     return (
-      <section className="section-box block-content-book-tickets background-card">
+      <section className="section-box block-content-book-tickets background-card m-px-10">
         <div className="container pt-60">
           <div className="h-6 bg-gray-300 rounded w-1/4 mb-4 animate-pulse"></div>
 
@@ -1444,8 +1443,8 @@ export default function BookTicket() {
                         bookingFormKey={bookingFormKey}
                         afsAmount={afsAmount}
                         rssrAmount={rssrAmount}
-                        // segmentsPrice={segmentsPrice}
-                        // baggageinfo={baggageinfo}
+                      // segmentsPrice={segmentsPrice}
+                      // baggageinfo={baggageinfo}
                       />
                     </div>
                   </div>
@@ -1712,7 +1711,7 @@ export default function BookTicket() {
                                   Please enter your company's GST number
                                 </h2>
                                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                  <AppFormCompany form={form} manditory={apiData?.conditions?.gst?.igm}/>
+                                  <AppFormCompany form={form} manditory={apiData?.conditions?.gst?.igm} />
                                 </p>
                               </div>
                             </div>
@@ -1745,11 +1744,10 @@ export default function BookTicket() {
                                 onClick={handleNextClick}
                                 disabled={loadingBtn}
                                 style={{ borderRadius: "5px" }}
-                                className={`cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-flex items-center justify-center gap-2 ${
-                                  loadingBtn
+                                className={`cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-flex items-center justify-center gap-2 ${loadingBtn
                                     ? "opacity-75 cursor-not-allowed"
                                     : ""
-                                }`}
+                                  }`}
                               >
                                 {loadingBtn ? (
                                   <>

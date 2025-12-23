@@ -96,7 +96,7 @@ const AppFormChild = ({ form, index, fieldData = {}, disabled = false }) => {
     >
       <Row gutter={16}>
         {/* Title Field */}
-        <Col span={6}>
+        <Col xs={24} sm={6}>
           <Form.Item
             name={`childselect-${index}`}
             label="Select"
@@ -115,7 +115,7 @@ const AppFormChild = ({ form, index, fieldData = {}, disabled = false }) => {
         </Col>
 
         {/* First Name Field */}
-        <Col span={9}>
+        <Col xs={24} sm={9}>
           <Form.Item
             name={`childName-${index}`}
             label="First Name"
@@ -131,7 +131,7 @@ const AppFormChild = ({ form, index, fieldData = {}, disabled = false }) => {
         </Col>
 
         {/* Last Name Field */}
-        <Col span={9}>
+        <Col xs={24} sm={9}>
           <Form.Item
             name={`childlast-${index}`}
             label="Last Name"
@@ -150,131 +150,131 @@ const AppFormChild = ({ form, index, fieldData = {}, disabled = false }) => {
           fieldData?.pid ||
           fieldData?.pm ||
           fieldData?.dob) && (
-          <>
-            <p
-              className="text-sm leading-5 font-bold text-gray-900"
-              style={{ paddingLeft: "0.5rem" }}
-            >
-              Add passport information
-            </p>
-            <Row gutter={16} className="p-2">
-              {fieldData?.pNat && (
-                <Col span={9}>
-                  <Form.Item
-                    name={`childnationality-${index}`}
-                    label="Nationality"
-                    rules={[
-                      { required: true, message: "Please enter nationality" },
-                    ]}
-                  >
-                    <Input
-                      className="h-10 flex flex-row justify-between items-center"
-                      placeholder="e.g., Indian"
-                      disabled={disabled}
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {fieldData?.pm && (
-                <Col span={6}>
-                  <Form.Item
-                    name={`childpassportno-${index}`}
-                    label="Passport Number"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter passport number",
-                      },
-                      {
-                        pattern: /^[A-Za-z0-9\- ]+$/,
-                        message:
-                          "Only letters, numbers, spaces, and dashes allowed",
-                      },
-                    ]}
-                  >
-                    <Input
-                      className="h-10 flex flex-row justify-between items-center"
-                      placeholder="Passport No."
-                      disabled={disabled}
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {fieldData?.pid && (
-                <Col span={9}>
-                  <Form.Item
-                    name={`childpassportIssueDate-${index}`}
-                    label="Passport Issue Date"
-                    hasFeedback
-                    rules={[{ required: true, message: "Select issue date" }]}
-                  >
-                    <DatePicker
-                      className="h-10 w-full"
-                      format="YYYY-MM-DD"
-                      placeholder="YYYY-MM-DD"
-                      disabled={disabled}
-                      allowClear
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {fieldData?.eD && (
-                <Col span={9}>
-                  <Form.Item
-                    name={`childpassportExpiryDate-${index}`}
-                    label="Passport Expiry Date"
-                    hasFeedback
-                    dependencies={[`childpassportIssueDate-${index}`]}
-                    rules={[
-                      { required: true, message: "Select expiry date" },
-                      ({ getFieldValue }) => ({
-                        validator(_, value) {
-                          const issue = getFieldValue(
-                            `childpassportIssueDate-${index}`
-                          );
-                          if (!value || !issue) return Promise.resolve();
-                          if (value.isAfter(issue)) return Promise.resolve();
-                          return Promise.reject(
-                            new Error("Expiry date must be after issue date")
-                          );
+            <>
+              <p
+                className="text-sm leading-5 font-bold text-gray-900"
+                style={{ paddingLeft: "0.5rem" }}
+              >
+                Add passport information
+              </p>
+              <Row gutter={16} className="p-2">
+                {fieldData?.pNat && (
+                  <Col xs={24} sm={12} md={8}>
+                    <Form.Item
+                      name={`childnationality-${index}`}
+                      label="Nationality"
+                      rules={[
+                        { required: true, message: "Please enter nationality" },
+                      ]}
+                    >
+                      <Input
+                        className="h-10 flex flex-row justify-between items-center"
+                        placeholder="e.g., Indian"
+                        disabled={disabled}
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {fieldData?.pm && (
+                  <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                      name={`childpassportno-${index}`}
+                      label="Passport Number"
+                      hasFeedback
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter passport number",
                         },
-                      }),
-                    ]}
-                  >
-                    <DatePicker
-                      className="h-10 w-full"
-                      format="YYYY-MM-DD"
-                      placeholder="YYYY-MM-DD"
-                      disabled={disabled}
-                      allowClear
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {fieldData?.dob && (
-                <Col span={6}>
-                  <Form.Item
-                    name={`childdob-${index}`}
-                    label="Date of Birth"
-                    hasFeedback
-                    rules={[
-                      { required: true, message: "Select date of birth" },
-                    ]}
-                  >
-                    <DatePicker
-                      className="h-10 w-full"
-                      format="YYYY-MM-DD"
-                      placeholder="YYYY-MM-DD"
-                      disabled={disabled}
-                      allowClear
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-            </Row>
-          </>
-        )}
+                        {
+                          pattern: /^[A-Za-z0-9\- ]+$/,
+                          message:
+                            "Only letters, numbers, spaces, and dashes allowed",
+                        },
+                      ]}
+                    >
+                      <Input
+                        className="h-10 flex flex-row justify-between items-center"
+                        placeholder="Passport No."
+                        disabled={disabled}
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {fieldData?.pid && (
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      name={`childpassportIssueDate-${index}`}
+                      label="Passport Issue Date"
+                      hasFeedback
+                      rules={[{ required: true, message: "Select issue date" }]}
+                    >
+                      <DatePicker
+                        className="h-10 w-full"
+                        format="YYYY-MM-DD"
+                        placeholder="YYYY-MM-DD"
+                        disabled={disabled}
+                        allowClear
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {fieldData?.eD && (
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      name={`childpassportExpiryDate-${index}`}
+                      label="Passport Expiry Date"
+                      hasFeedback
+                      dependencies={[`childpassportIssueDate-${index}`]}
+                      rules={[
+                        { required: true, message: "Select expiry date" },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            const issue = getFieldValue(
+                              `childpassportIssueDate-${index}`
+                            );
+                            if (!value || !issue) return Promise.resolve();
+                            if (value.isAfter(issue)) return Promise.resolve();
+                            return Promise.reject(
+                              new Error("Expiry date must be after issue date")
+                            );
+                          },
+                        }),
+                      ]}
+                    >
+                      <DatePicker
+                        className="h-10 w-full"
+                        format="YYYY-MM-DD"
+                        placeholder="YYYY-MM-DD"
+                        disabled={disabled}
+                        allowClear
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {fieldData?.dob && (
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      name={`childdob-${index}`}
+                      label="Date of Birth"
+                      hasFeedback
+                      rules={[
+                        { required: true, message: "Select date of birth" },
+                      ]}
+                    >
+                      <DatePicker
+                        className="h-10 w-full"
+                        format="YYYY-MM-DD"
+                        placeholder="YYYY-MM-DD"
+                        disabled={disabled}
+                        allowClear
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+              </Row>
+            </>
+          )}
       </Row>
     </Form>
   );
