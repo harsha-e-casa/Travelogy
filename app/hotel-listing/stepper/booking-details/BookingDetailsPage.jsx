@@ -19,6 +19,7 @@ import { postData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
 import "../../stepper/StepperPage.css";
+import "../../booking-mobile.css";
 
 const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
@@ -99,7 +100,7 @@ const BookingDetailsPage = () => {
 
       if (typeof onConfirmPayment === "function") {
         setTimeout(() => {
-        onConfirmPayment(bookingId);
+          onConfirmPayment(bookingId);
         }, 20000);
       }
     } catch (error) {
@@ -236,7 +237,7 @@ const BookingDetailsPage = () => {
       alert("Unable to generate PDF. Booking details are not available.");
       return;
     }
-    
+
     try {
       await downloadHotelBookingAsPDF(bookingDetails);
     } catch (error) {
@@ -248,18 +249,23 @@ const BookingDetailsPage = () => {
   const cancelBooking = async () => {
     setShowCancellationModal(false);
     setCancelling(true);
-    
+
     try {
       const reqBody = {
         action: "cancelBooking",
-        requestData: { bookingId: bookingId },
+        requestData: {
+          bookingId: bookingId,
+          remarks: "User Requested Cancellation",
+          requestType: "CANCEL",
+          type: "HOTEL"
+        },
       };
 
       const response = await postData("travelogy/hotel/fetch-data", reqBody);
 
       if (response) {
         console.log("Booking cancelled successfully:", response);
-        
+
         try {
           const fresh = await getBookingDetails(bookingId);
           if (fresh?.error) {
@@ -288,7 +294,7 @@ const BookingDetailsPage = () => {
       console.error("No booking details available for printing");
       return;
     }
-    
+
     try {
       printHotelBooking(bookingDetails);
     } catch (error) {
@@ -322,7 +328,10 @@ const BookingDetailsPage = () => {
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
           <div className="print-container" ref={printRef}>
-           <div className="print-logo print-only" style={{ textAlign: "center", marginBottom: 20 }}>
+            <div
+              className="print-logo print-only"
+              style={{ textAlign: "center", marginBottom: 20 }}
+            >
               <img
                 src="/assets/imgs/logo-print.png"
                 alt="Travelogy Logo"
@@ -331,7 +340,7 @@ const BookingDetailsPage = () => {
             </div>
             <div className="container w-full max-w-7xl">
               {status === "ON_HOLD" ? (
-                <div className="p-6 flex justify-start items-center w-full">
+                <div className="booking-status-container p-6 flex justify-start items-center w-full">
                   <img
                     style={{ width: "50px", marginRight: "10px" }}
                     src="/assets/imgs/tick.png"
@@ -346,8 +355,9 @@ const BookingDetailsPage = () => {
                     {confirming ? "Processing…" : "Pay Now"}
                   </button>
                 </div>
-              ) : status === "CANCELLED" || status === "CANCELLATION_PENDING" ? (
-                <div className="p-6 flex justify-between items-center w-full">
+              ) : status === "CANCELLED" ||
+                status === "CANCELLATION_PENDING" ? (
+                <div className="booking-status-container p-6 flex justify-between items-center w-full">
                   <div className="flex items-center">
                     <img
                       style={{ width: "50px", marginRight: "10px" }}
@@ -392,7 +402,7 @@ const BookingDetailsPage = () => {
                   </div>
                 </div>
               ) : (
-                <div className="p-6 flex justify-between items-center w-full">
+                <div className="booking-status-container p-6 flex justify-between items-center w-full">
                   <div className="flex items-center">
                     <img
                       style={{ width: "50px", marginRight: "10px" }}
@@ -448,8 +458,8 @@ const BookingDetailsPage = () => {
               </h2>
             </div>
 
-            <div className="container w-full max-w-7xl grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="md:col-span-8 border-r border-gray-200 screen-only">
+            <div className="container w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-8 lg:border-r border-gray-200">
                 <div className="print_pdf3 text-base font-semibold">
                   {bookingDetails ? (
                     <Step2Review
@@ -461,7 +471,7 @@ const BookingDetailsPage = () => {
                     />
                   ) : null}
                 </div>
-                {/* <div className="mt-2 print-only">
+                <div className="mt-2 print-only">
                   <h3 className="text-lg font-semibold mb-2">
                     Total Fare Summary
                   </h3>
@@ -471,11 +481,11 @@ const BookingDetailsPage = () => {
                       Category={"abook"}
                     />
                   </div>
-                </div> */}
+                </div>
               </div>
 
               {/* Remove md:col-span-4 for PDF */}
-              <div className="print_pdf4 md:col-span-4 screen-only">
+              <div className="print_pdf4 lg:col-span-4 fare-summary-wrapper lg:block">
                 <div className="p-6 rounded-md text-sm space-y-4">
                   <FareAmount
                     hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
@@ -554,7 +564,7 @@ const BookingDetailsPage = () => {
 
           {cancelling && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center m-3">
                 <div className="flex items-center justify-center gap-2">
                   <Spin size="medium" />
                   <span>Cancelling your booking…</span>
@@ -565,7 +575,7 @@ const BookingDetailsPage = () => {
 
           {confirming && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center">
+              <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center m-3">
                 <div className="flex items-center justify-center gap-2">
                   <Spin size="medium" />
                   <span>Processing your payment…</span>

@@ -139,7 +139,7 @@ export default function SessionTimerWithModal({
               >
                 {backText}
               </button>
-              <button
+              {/* <button
                 type="button"
                 onClick={
                   typeof onContinue === "function"
@@ -149,7 +149,8 @@ export default function SessionTimerWithModal({
                 className="rounded-none book-now-btn"
               >
                 {continueText}
-              </button>
+              </button> */}
+              {/* remove continue button after testing */}
             </div>
           </div>
         </div>

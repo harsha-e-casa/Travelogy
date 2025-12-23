@@ -47,7 +47,7 @@ const SearchEngHeader = ({ active_border }) => {
             </div>
 
             <div className="">
-              <span className="text-sm-medium text-black card-link">
+              <span className="text-sm-medium text-black card-link main_header_text">
                 {" "}
                 Flights
               </span>
@@ -95,7 +95,7 @@ const SearchEngHeader = ({ active_border }) => {
               </svg>
             </div>
             <div className="text-sm-medium text-black card-link">
-              <span> Hotels</span>
+              <span className="main_header_text"> Hotels</span>
             </div>
           </Link>
         </div>
@@ -135,7 +135,7 @@ const SearchEngHeader = ({ active_border }) => {
               </svg>
             </div>
             <div className="text-sm-medium text-black card-link line_height">
-              <span>
+              <span className="main_header_text">
                 {" "}
                 Holiday <br /> package{" "}
               </span>
@@ -191,7 +191,7 @@ const SearchEngHeader = ({ active_border }) => {
                 </g>
               </svg>
             </div>
-            <div className="text-sm-medium text-black card-link line_height">
+            <div className="text-sm-medium text-black card-link line_height main_header_text">
               Travel <br /> Insurance
             </div>
           </Link>
@@ -236,7 +236,9 @@ const SearchEngHeader = ({ active_border }) => {
                 </g>
               </svg>
             </div>
-            <div className="text-sm-medium text-black card-link">Visa</div>
+            <div className="text-sm-medium text-black card-link main_header_text">
+              Visa
+            </div>
           </Link>
         </div>
         {/* <div className="w-32 css_pointer mr-8">

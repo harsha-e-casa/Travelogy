@@ -65,6 +65,7 @@ export default function HotelListing() {
   const rooms = Number(searchParams.get("rooms"));
   const adults = Number(searchParams.get("adults"));
   const children = Number(searchParams.get("children"));
+  const [openSearchModal, setOpenSearchModal] = useState(false);
 
   const childAgesRaw = searchParams.get("childAges");
 
@@ -104,7 +105,7 @@ export default function HotelListing() {
   );
   const [checkoutDate, setCheckoutDate] = useState<string>(
     searchParams.get("checkoutDate") ||
-      dayjs().add(1, "day").format("YYYY-MM-DD")
+    dayjs().add(1, "day").format("YYYY-MM-DD")
   );
   const rawRoomsData = searchParams.get("roomsData");
   let initialRoomsData = [{ adults: 1, children: 0, childAges: [] }];
@@ -148,9 +149,8 @@ export default function HotelListing() {
       const address = hotel.ad?.adr || "";
       const address1 = hotel.ad?.adr2 || "";
       const city = hotel.ad?.city?.name || "";
-      const fullAddress = `${address}${address1 ? `, ${address1}` : ""}${
-        city ? `, ${city}` : ""
-      }`;
+      const fullAddress = `${address}${address1 ? `, ${address1}` : ""}${city ? `, ${city}` : ""
+        }`;
       return {
         id: Number(hotel.uid || 0),
         name: hotel.name || "",
@@ -178,7 +178,7 @@ export default function HotelListing() {
   // Calculate price range from hotel data (following flights pattern)
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
-    
+
     data.forEach((hotel) => {
       const totalPrice = hotel.price * nights; // multiply by nights like flights multiply by passengers
       if (totalPrice > 0 && totalPrice < 99999) { // exclude invalid/placeholder prices
@@ -199,10 +199,10 @@ export default function HotelListing() {
   useEffect(() => {
     if (transformedHotels.length > 0) {
       const [minPrice, maxPrice] = getPriceRangeFromData(transformedHotels);
-      
+
       setMinPriceRange(minPrice);
       setMaxPriceRange(maxPrice);
-      
+
       if (priceRange[0] !== minPrice || priceRange[1] !== maxPrice) {
         setPriceRange([minPrice, maxPrice]);
       }
@@ -230,7 +230,10 @@ export default function HotelListing() {
 
   const [showTraveller, setShowTraveller] = useState(false);
   const [showPriceFilter, setShowPriceFilter] = useState(true);
-  
+  const [showMobilePropertyType, setShowMobilePropertyType] = useState(true);
+  const [showMobileStarRating, setShowMobileStarRating] = useState(true);
+  const [showMobileLocation, setShowMobileLocation] = useState(true);
+
   // Toggle filter panel for mobile
   const toggleFilterPanel = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -241,11 +244,11 @@ export default function HotelListing() {
     // Add closing class to trigger exit animation
     const panel = document.querySelector('.mobile-filter-panel');
     const backdrop = document.querySelector('.filter-backdrop');
-    
+
     if (panel && backdrop) {
       panel.classList.add('closing');
       backdrop.classList.add('closing');
-      
+
       // Wait for animation to complete before removing from DOM
       setTimeout(() => {
         setIsFilterOpen(false);
@@ -354,8 +357,8 @@ export default function HotelListing() {
     isTopDestination && location
       ? { ratings: [4, 5], locations: [location] }
       : isTopDestination
-      ? { ratings: [4, 5] }
-      : undefined
+        ? { ratings: [4, 5] }
+        : undefined
   );
 
   // Apply star rating filter from query params if present and not top destination
@@ -405,24 +408,24 @@ export default function HotelListing() {
     if (e?.response?.status && typeof e.response.status === "number") {
       return e.response.status;
     }
-    
+
     // Check direct status property
     if (typeof e?.status === "number") {
       return e.status;
     }
-    
+
     // Check error code for timeout
     if (e?.code === "ECONNABORTED" || e?.code === "ETIMEDOUT") {
       return 504;
     }
-    
+
     // Parse error message for status codes
     if (e?.message) {
       const statusMatch = e.message.match(/status code (\d+)/i);
       if (statusMatch) {
         return parseInt(statusMatch[1], 10);
       }
-      
+
       // Check for specific error patterns
       if (/504|gateway timeout/i.test(e.message)) {
         return 504;
@@ -437,7 +440,7 @@ export default function HotelListing() {
         return 500;
       }
     }
-    
+
     return undefined;
   };
 
@@ -461,16 +464,16 @@ export default function HotelListing() {
         console.log("Request aborted");
         return null;
       }
-      
+
       console.error("API Call Error:", e);
-      
+
       const err = new Error(e?.message || "Network error") as Error & {
         status?: number;
       };
       err.status = extractStatusCode(e);
-      
+
       console.error("Extracted status code:", err.status);
-      
+
       throw err;
     }
   };
@@ -544,19 +547,19 @@ export default function HotelListing() {
         err.status = 200;
         throw err;
       }
-      
+
       // Update data and URL
       setApiHotelData(data.searchResult?.his || []);
       router.push(`/hotel-listing?${queryParams}`);
-      console.log('data1',data);
+      console.log('data1', data);
     } catch (e: any) {
       console.error("Error in handleSearch:", e);
-      
+
       const statusCode = extractStatusCode(e);
       const errorMessage = e?.message || "Something went wrong. Please try again.";
-      
+
       console.error("Setting error state - Status:", statusCode, "Message:", errorMessage);
-      
+
       setError(errorMessage);
       setErrorStatus(statusCode ?? null);
     } finally {
@@ -568,11 +571,11 @@ export default function HotelListing() {
     const loadInitialData = async () => {
       // Only fetch if we have URL params and no existing data
       if (apiHotelData.length > 0) return;
-      
+
       // Check if we have location (from TopHotels) or full search params
       const hasLocation = location || city;
       const hasDateParams = searchParams.get("checkinDate") && searchParams.get("checkoutDate");
-      
+
       // If no location at all, don't fetch
       if (!hasLocation) return;
 
@@ -636,12 +639,12 @@ export default function HotelListing() {
         console.log('data2', data);
       } catch (e: any) {
         console.error("Error in loadInitialData:", e);
-        
+
         const statusCode = extractStatusCode(e);
         const errorMessage = e?.message || "Failed to load hotels. Please try again.";
-        
+
         console.error("Setting error state - Status:", statusCode, "Message:", errorMessage);
-        
+
         setError(errorMessage);
         setErrorStatus(statusCode ?? null);
       } finally {
@@ -817,7 +820,7 @@ export default function HotelListing() {
     if (!checkinDate || !checkoutDate) return 0;
     return Math.max(dayjs(checkoutDate).diff(dayjs(checkinDate), "day"), 0);
   }, [checkinDate, checkoutDate]);
-  
+
   console.log("DEBUG - error:", error)
   console.log("DEBUG - apiHotelData length:", apiHotelData.length)
   console.log("DEBUG - transformedHotels length:", transformedHotels.length)
@@ -827,7 +830,7 @@ export default function HotelListing() {
   console.log("DEBUG - minPriceRange:", minPriceRange)
   console.log("DEBUG - maxPriceRange:", maxPriceRange)
   console.log("DEBUG - nights:", nights)
-  
+
   // Debug first few hotels
   if (transformedHotels.length > 0) {
     console.log("DEBUG - First 3 transformed hotels:", transformedHotels.slice(0, 3).map(h => ({
@@ -838,11 +841,11 @@ export default function HotelListing() {
       location: h.location
     })))
   }
-  
+
   // Check for errors FIRST before rendering anything else
   if (error) {
-    const isRetryable = 
-      !errorStatus || [408, 429, 500, 502, 503, 504 ].includes(errorStatus) || 
+    const isRetryable =
+      !errorStatus || [408, 429, 500, 502, 503, 504].includes(errorStatus) ||
       error.includes("Request failed with status code 504");
     return (
       <Layout headerStyle={1} footerStyle={1}>
@@ -874,7 +877,7 @@ export default function HotelListing() {
       </Layout>
     );
   }
-  
+
 
   return (
     <Suspense
@@ -888,9 +891,7 @@ export default function HotelListing() {
     >
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          <div className="h-24 w-full z-20 sticky top-0 bg_cs_search">
-            {/* Location */}
-            {/* <HotelListingSearch /> */}
+          <div className="h-24 w-full z-20 sticky top-0 bg_cs_search search_header_list_lg">
             <div className="hdt_header">
               <div
                 className="hdt_header-item"
@@ -904,14 +905,16 @@ export default function HotelListing() {
 
                 {showSearchState && (
                   <div
-                    className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                    // className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                    className="left-auto searchFfromSelect searchFromSelect"
+
                     onClick={(e) => e.stopPropagation()}
                   >
                     <CityListSearch
                       operEngLocation={openfrom}
                       setSelectFrom={setSelectFrom}
-                      // categoryType={undefined}
-                      // setSelectFromSub={setSelectFromSub}
+                    // categoryType={undefined}
+                    // setSelectFromSub={setSelectFromSub}
                     />
                   </div>
                 )}
@@ -974,12 +977,12 @@ export default function HotelListing() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <label>Total Nights</label>
-                <div className="input-field font-bold">
+                <div className="input-field font-bold nights_width">
                   {checkinDate && checkoutDate ? (
                     <>
-                      <div className="text-base font-bold">
-                        {" "}
-                        {nights} {nights === 1 ? "Night" : "Nights"}
+                      <div className="text-base font-bold text-center">
+                        {" "}{nights}
+                        {/* {nights} {nights === 1 ? "Night" : "Nights"} */}
                       </div>
                     </>
                   ) : (
@@ -994,16 +997,23 @@ export default function HotelListing() {
               >
                 <label className="">Rooms & Guest</label>
                 <div className="input-field text-base font-bold mb-5 mt-8">
-                <button onClick={toggleTraveller} style={{
-                
-                  background: "none",
-                  border: 0,
-                  padding: "1px 10px",
-                  fontWeight: 700}}>
+                  <button onClick={toggleTraveller} style={{
+
+                    background: "none",
+                    border: 0,
+                    padding: "1px 0px",
+                    fontWeight: 700
+                  }}>
                     {totalAdults} Adult{totalAdults > 1 ? "s" : ""},
-                    {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                    {/* {totalChildren} Child{totalChildren > 1 ? "ren" : ""}, */}
+                    {totalChildren > 0 && (
+                      <>
+                        {" "} {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                      </>
+                    )}
+                    {" "}
                     {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
-                </button>
+                  </button>
                 </div>
                 {showTraveller && (
                   <div onClick={(e) => e.stopPropagation()}>
@@ -1033,6 +1043,29 @@ export default function HotelListing() {
                 </button>
               )}
             </div>
+          </div>
+          <div
+            className="sticky top-0 z-20 search_header_list h-16 flex items-center px-4 cursor-pointer"
+            onClick={() => setOpenSearchModal(true)}
+          >
+            <div className="text-sm search_header_list_truncate w-full flex flex-col items-center justify-center text-center">
+
+              {/* Row 1: Location + Date */}
+              <div className="font-medium">
+                {selectFrom?.cityName} | {checkinDate} – {checkoutDate}
+              </div>
+
+              {/* Row 2: Guests + Rooms */}
+              <div className="flex items-center gap-1 text-xs mt-1">
+                {totalAdults} Adult{totalAdults > 1 ? "s" : ""}
+                {totalChildren > 0 && (
+                  <> , {totalChildren} Child{totalChildren > 1 ? "ren" : ""}</>
+                )}
+                , {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
+              </div>
+
+            </div>
+
           </div>
 
           <section className="box-section block-content-tourlist background-body min-h-screen">
@@ -1082,7 +1115,7 @@ export default function HotelListing() {
                           </div>
                         ))
                       )} */}
-                        <div className="row" style={{rowGap:'18px'}}>
+                        <div className="row" style={{ rowGap: '18px' }}>
                           {loading ? (
                             <div className="col-12 d-flex justify-center py-5">
                               <div className="loader"></div>
@@ -1235,21 +1268,21 @@ export default function HotelListing() {
                   {isFilterOpen && (
                     <>
                       {/* Backdrop Overlay */}
-                      <div 
+                      <div
                         className="filter-backdrop"
                         onClick={closeFilterPanel}
                       />
-                      
+
                       {/* Filter Panel */}
                       <div className={`mobile-filter-panel ${isFilterOpen ? 'open' : ''}`}>
                         {/* Panel Header */}
                         <div className="filter-panel-header">
                           <h3 className="filter-panel-title">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                              <path d="M3 3h18L14 12v7l-4 2v-9L3 3z" fill="black"/>
+                              <path d="M3 3h18L14 12v7l-4 2v-9L3 3z" fill="black" />
                             </svg>
                             Filters</h3>
-                          <button 
+                          <button
                             className="filter-close-btn"
                             onClick={closeFilterPanel}
                             aria-label="Close Filters"
@@ -1266,14 +1299,19 @@ export default function HotelListing() {
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <div
+                                {/* <div
                                   className=" cursor-pointer"
                                   onClick={() => setShowPriceFilter(!showPriceFilter)}
+                                > */}
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showPriceFilter ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowPriceFilter(prev => !prev)}
                                 >
-                                  <h6 className="text-lg-bold item-collapse neutral-1000">
-                                    Price{" "}
-                                  </h6>
-                                </div>
+                                  {/* <h6 className="text-lg-bold item-collapse neutral-1000"> */}
+                                  Price{" "}
+                                </h6>
+                                {/* </div> */}
                                 {showPriceFilter && (
                                   <ByPrice
                                     priceRange={priceRange}
@@ -1288,42 +1326,68 @@ export default function HotelListing() {
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showMobilePropertyType ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowMobilePropertyType(prev => !prev)}
+                                >
                                   Property Type
                                 </h6>
-                                <ByHotelType
-                                  uniqueHotelsType={uniqueHotelsType}
-                                  filter={filter}
-                                  handleCheckboxChange={handleCheckboxChange}
-                                />
+
+                                {showMobilePropertyType && (
+                                  <ByHotelType
+                                    uniqueHotelsType={uniqueHotelsType}
+                                    filter={filter}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                  />
+                                )}
                               </div>
+
                             </div>
                           </div>
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <h6 className="text-lg-bold item-collapse neutral-1000">
-                                  Star Rating{" "}
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showMobileStarRating ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowMobileStarRating(prev => !prev)}
+                                >
+                                  Star Rating
                                 </h6>
-                                <ByRating
-                                  uniqueRatings={uniqueRatings}
-                                  filter={filter}
-                                  handleCheckboxChange={handleCheckboxChange}
-                                />
+
+
+                                {showMobileStarRating && (
+                                  <ByRating
+                                    uniqueRatings={uniqueRatings}
+                                    filter={filter}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                  />
+                                )}
+
                               </div>
                             </div>
                           </div>
                           <div className="sidebar-left border-1 background-body">
                             <div className="box-filters-sidebar">
                               <div className="block-filter border-1">
-                                <h6 className="text-lg-bold item-collapse neutral-1000">
+                                <h6
+                                  className={`text-lg-bold item-collapse neutral-1000 ${showMobileLocation ? "" : "collapsed-item"
+                                    }`}
+                                  onClick={() => setShowMobileLocation(prev => !prev)}
+                                >
                                   Location
                                 </h6>
-                                <ByLocation
-                                  uniqueLocations={uniqueLocations}
-                                  filter={filter}
-                                  handleCheckboxChange={handleCheckboxChange}
-                                />
+
+
+                                {showMobileLocation && (
+                                  <ByLocation
+                                    uniqueLocations={uniqueLocations}
+                                    filter={filter}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                  />
+                                )}
+
                               </div>
                             </div>
                           </div>
@@ -1389,6 +1453,179 @@ export default function HotelListing() {
             </div>
           </section> */}
           <div className="pb-50 background-body" />
+          {openSearchModal && (
+            <div className="modal_search fixed top-9 z-50 bg-black/50 flex items-end">
+              <div className="bg_white_opacity w-full rounded-t-2xl p-4 max-h-71vh overflow-y-auto">
+                <button
+                  className="w-full text-right text-white mb-3 font-bold text-xl"
+                  onClick={() => setOpenSearchModal(false)}
+                >
+                  X
+                </button>
+
+                <div className=" d-block w-full z-20 sticky top-0 bg_cs_search">
+                  <div className="hdt_header">
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Location</label>
+
+                      <span className="input-field font-bold" onClick={openfrom}>
+                        {selectFrom?.cityName || location}
+                      </span>
+
+                      {showSearchState && (
+                        <div
+                          // className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
+                          className="left-auto searchFfromSelect searchFromSelect"
+
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <CityListSearch
+                            operEngLocation={openfrom}
+                            setSelectFrom={setSelectFrom}
+                          // categoryType={undefined}
+                          // setSelectFromSub={setSelectFromSub}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Check-in</label>
+                      {checkinDate && (
+                        <button
+                          onClick={toggleCheckin}
+                          className="input-field font-bold"
+                        >
+                          {checkinDate}
+                        </button>
+                      )}
+
+                      {openCheckin && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <AppDateRange
+                            minDate={dayjs() || null}
+                            openToDateRange={() => setOpenCheckin(false)}
+                            setDatedep={onPickCheckin}
+                            valueDate={dayjs(checkinDate)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Check-out</label>
+                      <button
+                        onClick={toggleCheckout}
+                        className="input-field font-bold"
+                      >
+                        {checkoutDate}
+                      </button>
+                      {openCheckout && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <AppDateRange
+                            minDate={
+                              checkinDate
+                                ? dayjs(checkinDate).add(1, "day")
+                                : dayjs().add(1, "day")
+                            }
+                            openToDateRange={() => setOpenCheckout(false)}
+                            setDatedep={(date: any) =>
+                              setCheckoutDate(dayjs(date).format("YYYY-MM-DD"))
+                            }
+                            valueDate={dayjs(checkoutDate)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label>Total Nights</label>
+                      <div className="input-field font-bold nights_width">
+                        {checkinDate && checkoutDate ? (
+                          <>
+                            <div className="text-base font-bold ">
+                              {" "}{nights}
+                              {/* {nights} {nights === 1 ? "Night" : "Nights"} */}
+                            </div>
+                          </>
+                        ) : (
+                          "--"
+                        )}
+                      </div>
+                    </div>
+
+                    <div
+                      className="hdt_header-item"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <label className="">Rooms & Guest</label>
+                      <div className="input-field text-base font-bold mb-5 mt-8">
+                        <button onClick={toggleTraveller} style={{
+
+                          background: "none",
+                          border: 0,
+                          padding: "1px 0px",
+                          fontWeight: 700
+                        }}>
+                          {totalAdults} Adult{totalAdults > 1 ? "s" : ""},
+                          {/* {totalChildren} Child{totalChildren > 1 ? "ren" : ""}, */}
+                          {totalChildren > 0 && (
+                            <>
+                              {" "} {totalChildren} Child{totalChildren > 1 ? "ren" : ""},
+                            </>
+                          )}
+                          {" "}
+                          {roomsData.length} Room{roomsData.length > 1 ? "s" : ""}
+                        </button>
+                      </div>
+                      {showTraveller && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          {" "}
+                          <AppTravellerHotel
+                            roomsData={roomsData}
+                            onClose={(updatedRooms) => {
+                              setRoomsData(updatedRooms);
+                              setShowTraveller(false); // Close the form
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {!loading && (
+                      <button
+                        className="hdt_search-btn"
+                        onClick={() => {
+                          handleSearch();
+                          setOpenSearchModal(false);
+                        }}
+                      >
+                        Search
+                      </button>
+                    )}
+
+                    {loading && (
+                      <button
+                        className="hdt_search-btn opacity-70 cursor-not-allowed"
+                        disabled
+                      >
+                        Searching...
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
         </main>
       </Layout>
     </Suspense>

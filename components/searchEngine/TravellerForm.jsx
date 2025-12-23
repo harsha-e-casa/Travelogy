@@ -29,9 +29,9 @@ export const TravellerForm = ({
   opentrvForm,
   totalPassenderCount,
   specificStyle,
-  selectedPassengerType
+  selectedPassengerType,
 }) => {
-  console.log("mame ule maruda ah da ? ",selectedPassengerType);
+  console.log("mame ule maruda ah da ? ", selectedPassengerType);
   return (
     <>
       {showTraveller ? (
@@ -81,7 +81,11 @@ export const TravellerForm = ({
               </div>
             </div>
             <div
-              className={selectedPassengerType !== "REGULAR" ? "greyed-out form_dr1 flex justify-between items-center pb-[5px]" : "form_dr1 flex justify-between items-center pb-[5px]"}
+              className={
+                selectedPassengerType !== "REGULAR"
+                  ? "greyed-out form_dr1 flex justify-between items-center pb-[5px]"
+                  : "form_dr1 flex justify-between items-center pb-[5px]"
+              }
               style={{ marginBottom: "5px" }}
             >
               <div className="text-base font-bold">Children</div>
@@ -124,7 +128,11 @@ export const TravellerForm = ({
             </div>
             {/* infants */}
             <div
-              className={selectedPassengerType !== "REGULAR" ? "greyed-out form_dr1 flex justify-between items-center pb-[5px]" : "form_dr1 flex justify-between items-center pb-[5px]"}
+              className={
+                selectedPassengerType !== "REGULAR"
+                  ? "greyed-out form_dr1 flex justify-between items-center pb-[5px]"
+                  : "form_dr1 flex justify-between items-center pb-[5px]"
+              }
               style={{ marginBottom: "5px" }}
             >
               <div className="text-base font-bold">Infant</div>
@@ -588,7 +596,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   return (
-    <div className="p-2 w-1-6 md:w-2/5w-full absolute bg-white right-5 -mt-5 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden mt-5">
+    <div className="md:-mr-11 p-2 w-1-6 md:w-2/5w-full absolute bg-white right-14 -mt-4 -ml-8 bx_shadow_dr1 z-50 max-h-full overflow-y-scroll overflow-x-hidden tab_view_hdr">
       {Array.isArray(rooms) &&
         rooms.map((room, roomIndex) => (
           <div key={roomIndex} className="border px-2 mb-2 rounded-lg relative">
@@ -606,7 +614,9 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
 
             <div className="mb-3">
               <div className="flex justify-between items-center mb-2">
-                <div className="font-semibold">{room.adults} - Adults</div>
+                <div className="text-black font-semibold">
+                  {room.adults} - Adults
+                </div>
                 <div className="flex gap-2">
                   <Button
                     size="small"
@@ -626,12 +636,13 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="font-semibold">
+                <div className="text-black font-semibold children_wrap">
                   {room.children} - Children
                   <span className="text-gray-500 text-xs ml-2">
                     0 - 11 Years Old
                   </span>
                 </div>
+
                 <div className="flex gap-2">
                   <Button
                     size="small"
