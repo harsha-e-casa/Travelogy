@@ -160,7 +160,7 @@ export default function BookTicket() {
   }, []);
 
   const [loadingBtn, setLoadingBtn] = useState<any>(false);
-  console.log("loadingBtnloadingBtn ==> ",loadingBtn);
+  console.log("loadingBtnloadingBtn ==> ", loadingBtn);
   const [apiData, setApiData] = useState<any>(null);
   const [bookingFormKey, setBookingFormKey] = useState<any>(1);
   const [segments, setSegments] = useState<FlightSegment[]>([]);
@@ -238,9 +238,8 @@ export default function BookTicket() {
           const apiErrorMessage =
             data.errors?.[0]?.message || data.error || "Unknown API error";
           const apiErrorDetails = data.errors?.[0]?.details || "";
-          const fullErrorMessage = `${apiErrorMessage}${
-            apiErrorDetails ? ` - ${apiErrorDetails}` : ""
-          }`;
+          const fullErrorMessage = `${apiErrorMessage}${apiErrorDetails ? ` - ${apiErrorDetails}` : ""
+            }`;
 
           throw new Error(fullErrorMessage);
         }
@@ -1598,8 +1597,8 @@ export default function BookTicket() {
                         baggageAmount={baggageAmount}
                         mealAmount={mealAmount}
                         bookingFormKey={bookingFormKey}
-                        // segmentsPrice={segmentsPrice}
-                        // baggageinfo={baggageinfo}
+                      // segmentsPrice={segmentsPrice}
+                      // baggageinfo={baggageinfo}
                       />
                     </div>
                   </div>
@@ -1854,7 +1853,7 @@ export default function BookTicket() {
                                               ).includes(true)}
                                               travellerParsedData={
                                                 travellerPrsedData?.ADULT?.[
-                                                  index
+                                                index
                                                 ]
                                               }
                                               showPassport={
@@ -1930,7 +1929,7 @@ export default function BookTicket() {
                                               index={index}
                                               travellerParsedData={
                                                 travellerPrsedData?.CHILD?.[
-                                                  index
+                                                index
                                                 ]
                                               }
                                               showPassport={
@@ -1983,7 +1982,7 @@ export default function BookTicket() {
                                               index={index}
                                               travellerParsedData={
                                                 travellerPrsedData?.INFANT?.[
-                                                  index
+                                                index
                                                 ]
                                               }
                                             />
@@ -2126,9 +2125,8 @@ export default function BookTicket() {
                                 onClick={handleNextClick}
                                 disabled={loadingBtn}
                                 style={{ borderRadius: "5px" }}
-                                className={`cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-flex items-center justify-center gap-2 ${
-                                  loadingBtn ? "opacity-75 cursor-not-allowed" : ""
-                                }`}
+                                className={`cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-flex items-center justify-center gap-2 ${loadingBtn ? "opacity-75 cursor-not-allowed" : ""
+                                  }`}
                               >
                                 {loadingBtn ? (
                                   <>

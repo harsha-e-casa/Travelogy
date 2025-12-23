@@ -565,7 +565,7 @@ const Alldetails = ({ totalpricee }) => {
           cnv.style.display = "";
           img.remove();
         });
-      } catch { }
+      } catch {}
     });
 
     // 2) SVG -> PNG <img>
@@ -587,7 +587,7 @@ const Alldetails = ({ totalpricee }) => {
           svg.style.display = "";
           img.remove();
         });
-      } catch { }
+      } catch {}
     });
 
     return () => swaps.forEach((undo) => undo());
@@ -992,7 +992,7 @@ const Alldetails = ({ totalpricee }) => {
 
       setSegmentPrices(
         data?.AIR?.tripInfos?.map((trip) => trip.sI.map((seg) => seg.price)) ??
-        []
+          []
       );
     } catch (err) {
       console.error("error caused", err);
@@ -1426,11 +1426,41 @@ const Alldetails = ({ totalpricee }) => {
       ) : (
         <>
           <div
-            className="mt-20 bg-white shadow rounded-lg p-2 sm:p-6 mb-20 print-area"
+            className="mt-20 bg-white shadow rounded-lg p-6 mb-20 print-area"
             ref={printRef}
           >
+            {!isNoPrintVisible && (
+              <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    className="light-mode header_logo"
+                    alt="Travelogy"
+                    src="https://travelogy.digilogy.co/Travelogy%20logoNew.png"
+                  ></img>
+                  <div>
+                    <p>
+                      <span className="font-bold">Address:</span>
+                      <span> NPL Devi, 111, Lattice Brg Rd,</span>
+                    </p>
+                    <p>Thiruvanmiyur, Chennai, </p>
+                    <p>Tamil Nadu 600041</p>
+                    <p>
+                      <span className="font-bold">Email:</span>
+                      <span> support@Travelogy.com</span>
+                    </p>
+                  </div>
+                </div>
+                <hr className="border-t border-black-300 mt-3 mb-3" />
+              </div>
+            )}
             <div className="mb-10 shadow-md p-3 rounded">
-              <div className="flex flex-col sm:flex-row justify-between gap-2">
+              <div className="flex flex-row justify-between gap-2">
                 <div className="flex flex-col justify-start">
                   <p className="text-md-medium neutral-1000">
                     Booking status:{" "}
@@ -1505,7 +1535,7 @@ const Alldetails = ({ totalpricee }) => {
                           }}
                         >
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2"
                             onClick={openReIssueModal}
                           >
                             Reschedule
@@ -1555,6 +1585,7 @@ const Alldetails = ({ totalpricee }) => {
                           </select>
                         </div>
 
+                        {/* Display travel details after PNR selection */}
                         {selectedPNR && (
                           <div className="mb-6 flex justify-around">
                             <div>
@@ -1598,6 +1629,42 @@ const Alldetails = ({ totalpricee }) => {
                               >
                                 Select New Travel Date:
                               </label>
+                              {/* <DatePicker
+                                id="reschedule-date"
+                                format="MM/DD/YYYY"
+                                value={
+                                  rescheduleDate ? dayjs(rescheduleDate) : null
+                                }
+                                onChange={(d) =>
+                                  setRescheduleDate(
+                                    d ? d.format("YYYY-MM-DD") : ""
+                                  )
+                                }
+                                disabled={!selectedPNR}
+                                disabledDate={(current) =>
+                                  current && current < dayjs().startOf("day")
+                                }
+                                className="border border-gray-400 px-2 py-2 rounded w-full"
+                                onKeyDown={(e) => {
+                                  const okKeys = [
+                                    "Backspace",
+                                    "Tab",
+                                    "ArrowLeft",
+                                    "ArrowRight",
+                                    "Delete",
+                                    "Enter",
+                                  ];
+                                  if (okKeys.includes(e.key)) return;
+                                  if (!/[\d/]/.test(e.key)) e.preventDefault(); // only 0-9 and slash
+                                }}
+                                onPaste={(e) => {
+                                  const text = (
+                                    e.clipboardData.getData("text") || ""
+                                  ).trim();
+                                  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
+                                    e.preventDefault();
+                                }}
+                              /> */}
                               <DatePicker
                                 id="reschedule-date"
                                 format="MM/DD/YYYY"
@@ -1615,7 +1682,9 @@ const Alldetails = ({ totalpricee }) => {
                                 }
                                 className="border border-gray-400 px-2 py-2 rounded w-full"
                                 popupClassName="z-[9999]"
+                                /* Render popup at body level to avoid clipping */
                                 getPopupContainer={() => document.body}
+                                /* Optional: force it to appear below the input */
                                 placement="bottomLeft"
                                 onKeyDown={(e) => {
                                   const okKeys = [
@@ -1666,31 +1735,37 @@ const Alldetails = ({ totalpricee }) => {
                                           p.lastName === passenger.lastName &&
                                           p.title === passenger.title &&
                                           p.passengerType ===
-                                          passenger.passengerType &&
-                                          p.index === index
+                                            passenger.passengerType &&
+                                          p.index === index // compare index also!
                                       )}
                                       onChange={(e) => {
                                         let updated;
                                         if (e.target.checked) {
+                                          // Add index to the selected passenger object
                                           updated = [
                                             ...selectedTravellers,
                                             { ...passenger, index },
                                           ];
                                         } else {
+                                          // Remove by comparing all fields including index
                                           updated = selectedTravellers.filter(
                                             (p) =>
                                               !(
                                                 p.firstName ===
-                                                passenger.firstName &&
+                                                  passenger.firstName &&
                                                 p.lastName ===
-                                                passenger.lastName &&
+                                                  passenger.lastName &&
                                                 p.title === passenger.title &&
                                                 p.passengerType ===
-                                                passenger.passengerType &&
+                                                  passenger.passengerType &&
                                                 p.index === index
                                               )
                                           );
                                         }
+                                        console.log(
+                                          "updatedupdated ======== ",
+                                          updated
+                                        );
                                         setSelectedTravellers(updated);
                                       }}
                                     />
@@ -1712,7 +1787,7 @@ const Alldetails = ({ totalpricee }) => {
                           disabled={
                             !rescheduleDate ||
                             selectedTravellers.length === 0 ||
-                            rescheduleLoading
+                            rescheduleLoading // Disable while loading!
                           }
                         >
                           {rescheduleLoading ? (
@@ -1764,8 +1839,40 @@ const Alldetails = ({ totalpricee }) => {
                             paddingRight: "10px",
                           }}
                         >
+                          {/* <button
+                            onClick={() => setShowDropdown(!showDropdown)}
+                            className="border border-grey rounded px-4 py-2"
+                          >
+                            More
+                          </button>
+                          {showDropdown && (
+                            <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                disabled={!ticketData}
+                                onClick={() => {
+                                  // handlePrint(printRef);
+                                  // setShowDropdown(false);
+                                  // handlePrintv1();
+                                  printTicket(bookingDetails)
+                                }}
+                              >
+                                Print Ticket
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                onClick={() => {
+                                  // handleDownload(printRef);
+                                  // setShowDropdown(false);
+                                  downloadTicketPdf(bookingDetails)
+                                }}
+                              >
+                                Download Ticket
+                              </button>
+                            </div>
+                          )} */}
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                             disabled={!ticketData}
                             onClick={() => {
                               printTicket(bookingDetails);
@@ -1788,8 +1895,36 @@ const Alldetails = ({ totalpricee }) => {
                               paddingRight: "10px",
                             }}
                           >
+                            {/* <button
+                              onClick={() => setShowDropdown(!showDropdown)}
+                              className="border border-grey rounded px-4 py-2"
+                            >
+                              More
+                            </button>
+                            {showDropdown && (
+                              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handlePrint(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Print Ticket
+                                </button>
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handleDownload(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Download Ticket
+                                </button>
+                              </div>
+                            )} */}
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                              className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                               disabled={!ticketData}
                               onClick={() => {
                                 printTicket(bookingDetails);
@@ -1805,13 +1940,14 @@ const Alldetails = ({ totalpricee }) => {
                           style={{ alignItems: "center" }}
                         >
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                             onClick={handleUnHold}
                           >
                             Unhold
                           </button>
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
+                            // onClick={handlePayNow}
                             onClick={() => setPaymentModel(true)}
                           >
                             Pay Now
@@ -1825,9 +1961,36 @@ const Alldetails = ({ totalpricee }) => {
                               paddingRight: "10px",
                             }}
                           >
-
+                            {/* <button
+                              onClick={() => setShowDropdown(!showDropdown)}
+                              className="border border-grey rounded px-4 py-2"
+                            >
+                              More
+                            </button>
+                            {showDropdown && (
+                              <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow z-10">
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handlePrint(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Print Ticket
+                                </button>
+                                <button
+                                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => {
+                                    handleDownload(printRef);
+                                    setShowDropdown(false);
+                                  }}
+                                >
+                                  Download Ticket
+                                </button>
+                              </div>
+                            )} */}
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                              className="border border-grey rounded px-4 py-2 hover:bg-gray-100"
                               disabled={!ticketData}
                               onClick={() => {
                                 printTicket(bookingDetails);
@@ -1843,173 +2006,255 @@ const Alldetails = ({ totalpricee }) => {
                 </div>
               </div>
             </div>
-
             <div className="mt-20">
-              <div className="mt-20">
-                {bookingDetails?.itemInfos?.AIR?.tripInfos.map(
-                  (trip, tripIndex) => {
-                    return trip?.sI.map((seg, segIndex) => {
-                      const segDt = seg?.dt;
-                      const date = new Date(segDt);
-                      const formattedDate = date.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      });
+              {bookingDetails?.itemInfos?.AIR?.tripInfos.map(
+                (trip, tripIndex) => {
+                  console.log("alldetails trip == ", trip);
+                  return trip?.sI.map((seg, segIndex) => {
+                    console.log("alldetails seg == ", seg);
+                    const segDt = seg?.dt;
 
-                      const dT = segDt.split("T")[1];
-                      const segAt = seg?.at;
-                      const aT = segAt.split("T")[1];
-                      const [startHour, startMin] = dT.split(":").map(Number);
-                      const [endHour, endMin] = aT.split(":").map(Number);
+                    const date = new Date(segDt);
 
-                      let startMinutes = startHour * 60 + startMin;
-                      let endMinutes = endHour * 60 + endMin;
+                    const formattedDate = date.toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    });
 
-                      if (endMinutes < startMinutes) {
-                        endMinutes += 24 * 60;
-                      }
+                    const dT = segDt.split("T")[1];
 
-                      const diffMinutes = endMinutes - startMinutes;
-                      const hours = Math.floor(diffMinutes / 60);
-                      const minutes = diffMinutes % 60;
-                      let fareIdentifier = seg?.bI?.tI?.[0]?.fd?.cc;
+                    const segAt = seg?.at;
+                    const aT = segAt.split("T")[1];
 
-                      return (
+                    const [startHour, startMin] = dT.split(":").map(Number);
+                    const [endHour, endMin] = aT.split(":").map(Number);
+
+                    let startMinutes = startHour * 60 + startMin;
+                    let endMinutes = endHour * 60 + endMin;
+
+                    if (endMinutes < startMinutes) {
+                      endMinutes += 24 * 60;
+                    }
+
+                    const diffMinutes = endMinutes - startMinutes;
+                    const hours = Math.floor(diffMinutes / 60);
+                    const minutes = diffMinutes % 60;
+
+                    let fareIdentifier = seg?.bI?.tI?.[0]?.fd?.cc;
+
+                    return (
+                      <>
                         <div
                           key={`${tripIndex}-${segIndex}`}
-                          className="premium-flight-card mb-8 shadow-sm"
+                          className="shadow rounded-md p-3 mb-5 "
                         >
-                          {/* Card Header: Airline Info & Badges */}
-                          <div className="bg-slate-50 px-6 py-4 flex flex-wrap justify-between items-center border-b border-slate-100 gap-4">
-                            <div className="flex items-center gap-4">
-                              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex items-center justify-center min-w-[100px]">
-                                <span className="font-extrabold text-slate-800 tracking-tight text-sm">
-                                  {seg?.fD?.aI?.name}
-                                </span>
-                              </div>
-                              <div className="flex flex-col">
-                                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
-                                  {seg?.fD?.fN}
-                                </span>
-                                <span className="text-[10px] font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded self-start">
-                                  {seg?.fD?.eT}
-                                </span>
-                              </div>
+                          {/* header */}
+                          <div className=" citydetails flex flex-col justify-start  items-start">
+                            {/* City and direction row */}
+                            {/* <li className="text-sm-medium neutral-500 ">
+                            {segments.map((segment) =>
+                              segment.stops === 0
+                                ? "Non Stop"
+                                : `${segment.stops} Stop${
+                                    segment.stops > 1 ? "s" : ""
+                                  }`
+                            ) || "No stop info"}
+                          </li> */}
+                            <div className="  flex flex-row gap-3 items-center mb-2">
+                              <p className="text-xl-bold neutral-1000 citynames">
+                                {seg?.da?.city || "DELHI"}
+                                <span> ({seg?.da?.code})</span>
+                              </p>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                fill="currentColor"
+                                className="bi bi-arrow-right"
+                                viewBox="0 0 16 16"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                                />
+                              </svg>
+                              <p className="text-xl-bold neutral-1000 citynames">
+                                {seg?.aa?.city}
+                                <span>({seg?.aa?.code})</span>
+                              </p>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {fareType && (
-                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${fareType.toLowerCase().includes('non') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
-                                  {fareType}
-                                </span>
-                              )}
-                              {fareIdentifier && (
-                                <span className="bg-amber-50 text-amber-600 border border-amber-100 text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                                  {fareIdentifier}
-                                </span>
-                              )}
-                            </div>
-                          </div>
 
-                          {/* Card Body: Departure -> Timeline -> Arrival */}
-                          <div className="p-6 md:p-10">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-                              {/* Departure */}
-                              <div className="flex-1 text-center md:text-left">
-                                <div className="airport-info-label mb-3">Departure</div>
-                                <div className="time-display mb-1">{seg?.dt.split("T")[1]}</div>
-                                <div className="text-sm font-bold text-slate-500 mb-4">{formattedDate}</div>
-                                <div className="city-display mb-1">
-                                  {seg?.da?.city} <span className="text-slate-400 ml-1">({seg?.da?.code})</span>
-                                </div>
-                                <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] mx-auto md:mx-0">
-                                  {seg?.da?.name}
-                                </div>
-                                {seg?.da?.terminal && (
-                                  <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                                    Terminal {seg?.da?.terminal}
+                            <div className="flex flex-row gap-2 timediv">
+                              <p className="text-sm-bold neutral-500 ">
+                                {formattedDate || "Date not available"}
+                              </p>
+                              {/* Info list below the cities */}
+                              <ul className="flex timeduration flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc timeul">
+                                <li className="text-sm-medium neutral-500 ">
+                                  {`${hours}h ${minutes}m` ||
+                                    "Duration not available"}
+                                </li>
+                              </ul>
+                            </div>
+
+                            <div className="w-full">
+                              <div className="flex flex-row justify-between">
+                                <div className="logo-flight flex flex-row gap-3 items-center mb-20">
+                                  <div className="text-md-bold neutral-900">
+                                    {seg?.fD?.aI?.name}
                                   </div>
-                                )}
+                                  <div className="text-md-medium neutral-500">
+                                    {seg?.fD?.fN}
+                                  </div>
+                                  <div className="text-md-medium neutral-500 border border-black-200 rounded-lg pl-10 pr-10">
+                                    {seg?.fD?.eT}
+                                  </div>
+                                </div>
+                                <div className="flex flex-row items-center gap-3">
+                                  <p
+                                    className="text-sm-medium"
+                                    style={{
+                                      background: "#9090f3",
+                                      padding: "1px 10px",
+                                      color: "white",
+                                      borderRadius: "10px",
+                                      fontSize: "12px",
+                                      lineHeight: "18px",
+                                      fontWeight: 700,
+                                    }}
+                                  >
+                                    {fareType}
+                                  </p>
+                                  <span
+                                    className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
+                                    style={{
+                                      backgroundColor: "rgb(245, 222, 179)",
+                                      color: "rgb(92, 64, 51)",
+                                      padding: "1px 2px",
+                                    }}
+                                  >
+                                    {fareIdentifier}
+                                  </span>
+                                </div>
                               </div>
 
-                              {/* Timeline Connector */}
-                              <div className="flex-[1.4] w-full flex flex-col items-center py-6">
-                                <div className="duration-badge mb-5 shadow-sm">
-                                  {hours}h {minutes}m
+                              {/* flightdetails    */}
+                              <div className=" flex border   w-full justify-between items-center bg-gray-100 pl-50 pr-50 pt-10 pb-10 rounded-md  ">
+                                <div className="text-left space-y-1">
+                                  <h4
+                                    className=""
+                                    style={{
+                                      fontSize: "28px",
+                                      fontWeight: "normal",
+                                    }}
+                                  >
+                                    {seg?.dt.split("T")[1]}
+                                  </h4>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.da?.city} {seg?.da?.country}
+                                  </p>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.da?.name}
+                                  </p>
+                                  <p className="text-sm-medium neutral-1000 ">
+                                    {seg?.da?.terminal}
+                                  </p>
                                 </div>
-                                <div className="w-full relative flex items-center px-6">
-                                  <div className="connector-line"></div>
-                                  <div className="plane-icon-mid">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                      <path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z" />
+
+                                <div className="text-center space-y-1">
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {`${hours}h ${minutes}m` ||
+                                      "Duration not available"}
+                                  </p>
+                                  <img
+                                    src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
+                                    alt="flight line"
+                                    className="mx-auto w-20"
+                                  />
+                                </div>
+
+                                <div className="text-right space-y-1">
+                                  {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
+                                  <h4
+                                    className=""
+                                    style={{
+                                      fontSize: "28px",
+                                      fontWeight: "normal",
+                                    }}
+                                  >
+                                    {seg?.at?.split("T")[1]}
+                                  </h4>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.aa?.city} {seg?.aa?.country}
+                                  </p>
+                                  <p className="text-sm-medium neutral-500 ">
+                                    {seg?.aa?.name}
+                                  </p>
+                                  <p className="text-sm-medium neutral-1000 ">
+                                    {seg?.aa?.terminal}
+                                  </p>
+                                </div>
+
+                                {/* Baggage Info */}
+                                <div className="flex flex-col items-start justify-start gap-3">
+                                  <div className="flex items-center space-x-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      fill="currentColor"
+                                      class="bi bi-suitcase-lg-fill"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
                                     </svg>
+                                    <p className="text-sm-bold neutral-900">
+                                      Cabin:{" "}
+                                      <span className="text-sm-medium neutral-500">
+                                        {" "}
+                                        {baggageInfo.cabinBaggage || "N/A"}
+                                      </span>
+                                    </p>
                                   </div>
-                                </div>
-                                <div className="mt-5 text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em]">
-                                  Non-Stop Flight
-                                </div>
-                              </div>
-
-                              {/* Arrival */}
-                              <div className="flex-1 text-center md:text-right">
-                                <div className="airport-info-label mb-3">Arrival</div>
-                                <div className="time-display mb-1">{seg?.at?.split("T")[1]}</div>
-                                <div className="text-sm font-bold text-slate-500 mb-4">
-                                  {new Date(seg?.at).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}
-                                </div>
-                                <div className="city-display mb-1">
-                                  {seg?.aa?.city} <span className="text-slate-400 ml-1">({seg?.aa?.code})</span>
-                                </div>
-                                <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] mx-auto md:ml-auto md:mr-0">
-                                  {seg?.aa?.name}
-                                </div>
-                                {seg?.aa?.terminal && (
-                                  <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                                    Terminal {seg?.aa?.terminal}
+                                  <div className="flex items-center space-x-2">
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      fill="currentColor"
+                                      class="bi bi-suitcase2-fill"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
+                                    </svg>
+                                    <p className="text-sm-bold neutral-900 ">
+                                      Check-in:{" "}
+                                      <span className="text-sm-medium neutral-500 ">
+                                        {baggageInfo.checkinBaggage || "N/A"}
+                                      </span>
+                                    </p>
                                   </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Baggage Information Footer */}
-                            <div className="mt-10 pt-8 border-t border-slate-50 flex flex-wrap gap-6 justify-center md:justify-start">
-                              <div className="baggage-tag shadow-sm border border-slate-100">
-                                <div className="bg-blue-50 p-1.5 rounded-md">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" />
-                                  </svg>
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="baggage-label">Cabin</span>
-                                  <span className="baggage-value">{baggageInfo.cabinBaggage || "7 KG"}</span>
-                                </div>
-                              </div>
-                              <div className="baggage-tag shadow-sm border border-slate-100">
-                                <div className="bg-blue-50 p-1.5 rounded-md">
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" />
-                                  </svg>
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="baggage-label">Check-in</span>
-                                  <span className="baggage-value">{baggageInfo.checkinBaggage || "15 KG"}</span>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      );
-                    });
-                  }
-                )}
-              </div>
+                      </>
+                    );
+                  });
+                }
+              )}
 
+              {/* //table */}
               <div className="shadow rounded-md mt-50 p-3 bg-white">
-                <p className="text-xl-bold neutral-1000 mb-10">
-                  Passenger Information
-                </p>
-                <div className="overflow-x-auto table-container">
-                  <table className="min-w-full border-collapse mb-20">
+                {/* Passenger Information */}
+
+                <div className="shadow rounded-md mt-50 p-3 bg-white">
+                  <p className="text-xl-bold neutral-1000 mb-10">
+                    Passenger Information
+                  </p>
+                  <table className="w-full border-collapse mb-20">
                     <thead style={{ borderBottom: "1px solid grey" }}>
                       <tr>
                         <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
@@ -2037,9 +2282,11 @@ const Alldetails = ({ totalpricee }) => {
                     </thead>
                     <tbody>
                       {travellerinfos?.map((traveller, travellerIndex) => {
+                        console.log("traaaaaaaaaaaaaaaaaaa ==> ", traveller);
                         const segmentKeys = Object.keys(
                           traveller.pnrDetails || { "N/A": undefined }
                         );
+
                         return segmentKeys.map((segmentKey, segmentIndex) => {
                           const pnr =
                             traveller.pnrDetails?.[segmentKey] ?? "N/A";
@@ -2066,14 +2313,19 @@ const Alldetails = ({ totalpricee }) => {
                           }
 
                           let passengerDetailsData = [];
+
                           if (pnr !== "N/A") {
+                            console.log("ulleeeeeeeeeeeeeeee");
                             const [fromCitySplit, toCitySplit] =
                               segmentKey.split("-");
+
+                            // Get flightNumber and julianDate for each traveller's segment
                             const { flightNumber, julianDate, flightCode } =
                               processTravellerInfo(
                                 traveller,
                                 bookingDetails?.itemInfos
                               );
+
                             passengerDetailsData = [
                               {
                                 passengerName: `${traveller.lN}/${traveller.fN}`
@@ -2088,6 +2340,11 @@ const Alldetails = ({ totalpricee }) => {
                                 julianDate: julianDate,
                               },
                             ];
+
+                            console.log(
+                              "passengerDetailsData =========> ",
+                              passengerDetailsData
+                            );
                           }
 
                           return (
@@ -2101,7 +2358,7 @@ const Alldetails = ({ totalpricee }) => {
                                   {traveller &&
                                     traveller.di &&
                                     traveller.di !== "undefined" && (
-                                      <span>ID: {traveller.di}</span>
+                                      <span>{`ID: ${traveller.di}`}</span>
                                     )}
                                 </td>
                                 <td className="px-4 py-3 border-b border-gray-200 text-black">
@@ -2121,6 +2378,7 @@ const Alldetails = ({ totalpricee }) => {
                                   {seat}
                                 </td>
                               </tr>
+
                               {pnr !== "N/A" && (
                                 <tr>
                                   <td
@@ -2139,27 +2397,27 @@ const Alldetails = ({ totalpricee }) => {
                       })}
                     </tbody>
                   </table>
-                </div>
 
-                <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
-                  Contact Information
-                </p>
-                <div className="ant-form-item">
-                  <div className="text-md neutral-1000 mb-2">
-                    Email:{" "}
-                    <strong>
-                      {bookingDetails?.order?.deliveryInfo?.emails?.join(
-                        ", "
-                      ) || "N/A"}
-                    </strong>
-                  </div>
-                  <div className="text-md neutral-1000">
-                    Phone Number:{" "}
-                    <strong>
-                      {bookingDetails?.order?.deliveryInfo?.contacts?.join(
-                        ", "
-                      ) || "N/A"}
-                    </strong>
+                  <p className="text-lg-bold neutral-1000 mb-10 mt-20 mytestCas">
+                    Contact Information
+                  </p>
+                  <div className="ant-form-item">
+                    <div className="text-md neutral-1000 mb-2">
+                      Email:{" "}
+                      <strong>
+                        {bookingDetails?.order?.deliveryInfo?.emails?.join(
+                          ", "
+                        ) || "N/A"}
+                      </strong>
+                    </div>
+                    <div className="text-md neutral-1000">
+                      Phone Number:{" "}
+                      <strong>
+                        {bookingDetails?.order?.deliveryInfo?.contacts?.join(
+                          ", "
+                        ) || "N/A"}
+                      </strong>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -2245,10 +2503,11 @@ const Alldetails = ({ totalpricee }) => {
             >
               <div
                 onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoadingWallet
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
                 disabled={bookingLoadingWallet}
               >
                 {bookingLoadingWallet ? (
@@ -2283,10 +2542,11 @@ const Alldetails = ({ totalpricee }) => {
               <div
                 // onClick={bookingReview}
                 onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoading
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
                 disabled={bookingLoading}
               >
                 {bookingLoading ? (
@@ -2356,10 +2616,11 @@ const Alldetails = ({ totalpricee }) => {
             >
               <div
                 onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoadingWallet
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
                 disabled={bookingLoadingWallet}
               >
                 {bookingLoadingWallet ? (
@@ -2394,10 +2655,11 @@ const Alldetails = ({ totalpricee }) => {
               <div
                 // onClick={bookingReview}
                 onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
+                  bookingLoading
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                }`}
                 disabled={bookingLoading}
               >
                 {bookingLoading ? (

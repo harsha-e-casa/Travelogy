@@ -323,7 +323,7 @@ const ExtraBaggage = ({
       if (!val) return;
 
       if (typeof val !== "string" || !val.includes("|")) return;
-      
+
       const [segmentId, code] = val.split("|");
       const segment = segmentinfo.find(
         (s) => String(s.id) === String(segmentId)
@@ -351,10 +351,10 @@ const ExtraBaggage = ({
             {Array.from({ length: numAdults }).map((_, idx) => {
               const field = `adultBaggage-${flightIndex}-${idx}`;
               return (
-                <div key={field} className="p-2 flex gap-4 items-center">
+                <div key={field} className="p-2 flex gap-4 items-center baggage-row">
                   <span
                     style={{ width: "100px" }}
-                    className="text-sm font-bold text-gray-900"
+                    className="text-sm font-bold text-gray-900 passenger-label"
                   >
                     ADULT {idx + 1}
                   </span>
@@ -362,7 +362,7 @@ const ExtraBaggage = ({
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: 400 }}
+                      style={{ width: "100%", maxWidth: "400px" }}
                       onChange={handleChange}
                       allowClear
                       onClear={handleChange}
@@ -397,10 +397,10 @@ const ExtraBaggage = ({
             {Array.from({ length: numChild }).map((_, idx) => {
               const field = `childBaggage-${flightIndex}-${idx}`;
               return (
-                <div key={field} className="p-2 flex gap-4 items-center">
+                <div key={field} className="p-2 flex gap-4 items-center baggage-row">
                   <span
                     style={{ width: "100px" }}
-                    className="text-sm font-bold text-gray-900"
+                    className="text-sm font-bold text-gray-900 passenger-label"
                   >
                     CHILD {idx + 1}
                   </span>
@@ -424,7 +424,7 @@ const ExtraBaggage = ({
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: 500 }}
+                      style={{ width: "100%", maxWidth: "500px" }}
                       onChange={handleChange}
                       allowClear
                       onClear={handleChange}

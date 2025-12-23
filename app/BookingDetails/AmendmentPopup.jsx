@@ -67,7 +67,7 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
     <div>
       <button
         onClick={handleOpen}
-        className="border border-gray-400 rounded px-4 py-2"
+        className="border border-gray-400 rounded px-2 sm:px-4 py-2"
       >
         Cancellation
       </button>

@@ -3,4 +3,128 @@
     padding-right: 2.5rem;
     padding-left: 2.5rem;
   }
+
+  @media (max-width: 430px) {
+    padding-right: 0rem;
+    padding-left: 0rem;
+  }
+}
+
+.review-info-row {
+  @media (max-width: 426px) {
+    flex-direction: column !important;
+    padding-bottom: 5px;
+  }
+}
+
+.flight-timings-wrapper {
+  @media (max-width: 426px) {
+    padding: 1rem !important;
+  }
+}
+
+.flight-timings-inner {
+  @media (max-width: 426px) {
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 1.5rem !important;
+  }
+}
+
+.flight-timing-item {
+  @media (max-width: 426px) {
+    text-align: center !important;
+    width: 100% !important;
+  }
+}
+
+.hide-on-mobile {
+  @media (max-width: 426px) {
+    display: none !important;
+  }
+}
+
+.refund-header-row {
+  @media (max-width: 426px) {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: flex-start !important;
+  }
+}
+
+.refund-charges-row {
+  @media (max-width: 426px) {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    align-items: center !important;
+  }
+}
+
+.route-selection-wrapper {
+  @media (max-width: 426px) {
+    width: 100% !important;
+    overflow-x: auto !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+.passenger-details-col {
+  @media (max-width: 426px) {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+.responsive-table-wrapper {
+  @media (max-width: 426px) {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.contact-info-col {
+  @media (max-width: 426px) {
+    width: 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-top: 20px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+.action-buttons-row {
+  @media (max-width: 426px) {
+    flex-direction: column !important;
+    gap: 1rem !important;
+    margin-top: 30px !important;
+  }
+
+  @media (max-width: 426px) {
+    &>* {
+      width: 100% !important;
+      text-align: center !important;
+    }
+  }
+}
+
+.payment-modal-content {
+  width: 35% !important;
+
+  @media (max-width: 426px) {
+    width: 90% !important;
+  }
+}
+
+.payment-modal-buttons-row {
+  display: flex !important;
+  justify-content: space-around !important;
+  padding-top: 10px !important;
+
+  @media (max-width: 426px) {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
 }

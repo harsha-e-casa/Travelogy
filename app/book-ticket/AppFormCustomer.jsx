@@ -151,7 +151,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
       {/* Row for Layout */}
       <Row gutter={16}>
         {/* Col for Select Field */}
-        <Col span={6}>
+        <Col xs={24} sm={6}>
           <Form.Item
             name="select_code"
             label="Country Code"
@@ -193,7 +193,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
         </Col>
 
         {/* Col for Mobile Number */}
-        <Col span={9}>
+        <Col xs={24} sm={9}>
           <Form.Item
             name="mNumber"
             label="Mobile Number"
@@ -219,7 +219,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
         </Col>
 
         {/* Col for Email Field */}
-        <Col span={9}>
+        <Col xs={24} sm={9}>
           <Form.Item
             name="mEmail"
             label="Email ID"

@@ -625,15 +625,14 @@ const ReissueReviewPage = () => {
                 {" "}
                 {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                   ?.st &&
-                fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                  ?.et ? (
-                  <div>{`${
-                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.st
-                  } hrs to ${Math.floor(
-                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.et / 24
-                  )} days`}</div>
+                  fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                    ?.et ? (
+                  <div>{`${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                    ?.st
+                    } hrs to ${Math.floor(
+                      fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                        ?.et / 24
+                    )} days`}</div>
                 ) : (
                   <p>
                     {
@@ -665,9 +664,9 @@ const ReissueReviewPage = () => {
                         {fareRulesData?.fareRuleInformation?.tfr
                           ?.CANCELLATION?.[0]?.amount
                           ? fareRulesData?.fareRuleInformation?.tfr
-                              ?.CANCELLATION?.[0]?.amount
+                            ?.CANCELLATION?.[0]?.amount
                           : fareRulesData?.fareRuleInformation?.tfr
-                              ?.CANCELLATION?.[0]?.additionalFee}
+                            ?.CANCELLATION?.[0]?.additionalFee}
                       </div>
                     </div>
                   </>
@@ -678,9 +677,9 @@ const ReissueReviewPage = () => {
                     {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                       ?.amount
                       ? fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.amount
+                        ?.CANCELLATION?.[0]?.amount
                       : fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.additionalFee}{" "}
+                        ?.CANCELLATION?.[0]?.additionalFee}{" "}
                   </div>
                 )}
               </div>
@@ -717,9 +716,8 @@ const ReissueReviewPage = () => {
                 if (st && et) {
                   return (
                     <div>
-                      {`${st} hrs to ${
-                        et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
-                      }`}
+                      {`${st} hrs to ${et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
+                        }`}
                     </div>
                   );
                 } else {
@@ -792,11 +790,10 @@ const ReissueReviewPage = () => {
                 if (noShow?.et && noShow?.st) {
                   return (
                     <div>
-                      {`${noShow?.st} hrs to ${
-                        noShow?.et > 24
-                          ? noShow?.et / 24 + " days"
-                          : noShow?.et + " hrs"
-                      }`}
+                      {`${noShow?.st} hrs to ${noShow?.et > 24
+                        ? noShow?.et / 24 + " days"
+                        : noShow?.et + " hrs"
+                        }`}
                     </div>
                   );
                 } else {
@@ -851,11 +848,10 @@ const ReissueReviewPage = () => {
                   if (seatChangable?.st && seatChangable?.et) {
                     return (
                       <div>
-                        {`${seatChangable?.st} hrs to ${
-                          seatChangable?.et > 24
-                            ? seatChangable?.et / 24 + " days"
-                            : seatChangable?.et + " hrs"
-                        }`}
+                        {`${seatChangable?.st} hrs to ${seatChangable?.et > 24
+                          ? seatChangable?.et / 24 + " days"
+                          : seatChangable?.et + " hrs"
+                          }`}
                       </div>
                     );
                   } else {
@@ -1417,8 +1413,8 @@ const ReissueReviewPage = () => {
                               tripInfosLength > 2
                                 ? " "
                                 : tripIndex === 0
-                                ? "Onward journey"
-                                : "Return journey";
+                                  ? "Onward journey"
+                                  : "Return journey";
                             const trevellInfoStyle =
                               tripIndex === 0
                                 ? { padding: "0 0 1rem 0" }
@@ -1520,7 +1516,7 @@ const ReissueReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    <div className="flex flex-row justify-between">
+                                    <div className="flex flex-row justify-between review-info-row">
                                       <div className="logo-flight flex flex-row gap-3 items-center mb-20">
                                         <div className="text-md-bold neutral-900">
                                           {seg?.fD?.aI?.name}
@@ -1551,13 +1547,12 @@ const ReissueReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    <div className="flex justify-center items-center bg-gray-100 p-2 rounded-md space-y-6">
+                                    <div className="flex justify-center items-center bg-gray-100 p-2 rounded-md space-y-6 flight-timings-wrapper">
                                       {/* Flight Timings */}
                                       <div
-                                        className="flex justify-between items-center gap-5"
-                                        style={{ width: "85%" }}
+                                        className="flex justify-between items-center gap-5 flight-timings-inner"
                                       >
-                                        <div className="text-left space-y-1">
+                                        <div className="text-left space-y-1 flight-timing-item">
                                           {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
                                           <h4
                                             className=""
@@ -1590,7 +1585,7 @@ const ReissueReviewPage = () => {
                                           />
                                         </div>
 
-                                        <div className="text-right space-y-1">
+                                        <div className="text-right space-y-1 flight-timing-item">
                                           {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
                                           <h4
                                             className=""
@@ -1958,11 +1953,10 @@ const ReissueReviewPage = () => {
                                       <button
                                         key={route}
                                         onClick={() => setSelectedRoute(route)}
-                                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
-                                          selectedRoute === route
-                                            ? "bg-white text-black shadow"
-                                            : "text-gray-600 hover:text-black"
-                                        }`}
+                                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${selectedRoute === route
+                                          ? "bg-white text-black shadow"
+                                          : "text-gray-600 hover:text-black"
+                                          }`}
                                       >
                                         {route}
                                       </button>
@@ -2063,10 +2057,10 @@ const ReissueReviewPage = () => {
                                           {fareRulesData?.fareRuleInformation
                                             ?.tfr?.CANCELLATION?.[0]?.amount
                                             ? fareRulesData?.fareRuleInformation
-                                                ?.tfr?.CANCELLATION?.[0]?.amount
+                                              ?.tfr?.CANCELLATION?.[0]?.amount
                                             : fareRulesData?.fareRuleInformation
-                                                ?.tfr?.CANCELLATION?.[0]
-                                                ?.additionalFee}
+                                              ?.tfr?.CANCELLATION?.[0]
+                                              ?.additionalFee}
                                           <span className="mx-1"></span>
                                         </p>
                                         <div className="text-secondary text-sm">
@@ -2406,11 +2400,9 @@ const ReissueReviewPage = () => {
                                             "cccccccfffffff ",
                                             traveller
                                           );
-                                          const fullName = `${
-                                            traveller?.ti || ""
-                                          } ${traveller?.fN || ""} ${
-                                            traveller?.lN || ""
-                                          }`.trim();
+                                          const fullName = `${traveller?.ti || ""
+                                            } ${traveller?.fN || ""} ${traveller?.lN || ""
+                                            }`.trim();
 
                                           const addOns = [];
 
@@ -2511,39 +2503,39 @@ const ReissueReviewPage = () => {
                                                   traveller?.eD ||
                                                   traveller?.pid ||
                                                   traveller?.dob) && (
-                                                  <>
-                                                    {traveller?.pNat && (
-                                                      <span>
-                                                        Nationality:{" "}
-                                                        {traveller.pNat}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.pNum && (
-                                                      <span>
-                                                        Passport Number:{" "}
-                                                        {traveller.pNum}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.eD && (
-                                                      <span>
-                                                        Expiry Date:{" "}
-                                                        {traveller.eD}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.pid && (
-                                                      <span>
-                                                        Issue Date:{" "}
-                                                        {traveller.pid}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.dob && (
-                                                      <span>
-                                                        Date Of Birth:{" "}
-                                                        {traveller.dob}
-                                                      </span>
-                                                    )}
-                                                  </>
-                                                )}
+                                                    <>
+                                                      {traveller?.pNat && (
+                                                        <span>
+                                                          Nationality:{" "}
+                                                          {traveller.pNat}
+                                                        </span>
+                                                      )}
+                                                      {traveller?.pNum && (
+                                                        <span>
+                                                          Passport Number:{" "}
+                                                          {traveller.pNum}
+                                                        </span>
+                                                      )}
+                                                      {traveller?.eD && (
+                                                        <span>
+                                                          Expiry Date:{" "}
+                                                          {traveller.eD}
+                                                        </span>
+                                                      )}
+                                                      {traveller?.pid && (
+                                                        <span>
+                                                          Issue Date:{" "}
+                                                          {traveller.pid}
+                                                        </span>
+                                                      )}
+                                                      {traveller?.dob && (
+                                                        <span>
+                                                          Date Of Birth:{" "}
+                                                          {traveller.dob}
+                                                        </span>
+                                                      )}
+                                                    </>
+                                                  )}
                                               </td>
                                               <td className="px-4 py-3 border-b border-gray-200 text-black">
                                                 {addOns && addOns.length > 0 ? (
@@ -2636,11 +2628,10 @@ const ReissueReviewPage = () => {
                                 </div> */}
                                 <div
                                   onClick={handleReissuePayment}
-                                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                                    bookingLoading
-                                      ? "bg-gray-300"
-                                      : "bg-yellow-300 hover:bg-yellow-400"
-                                  }`}
+                                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                                    ? "bg-gray-300"
+                                    : "bg-yellow-300 hover:bg-yellow-400"
+                                    }`}
                                   disabled={bookingLoading}
                                 >
                                   {bookingLoading ? (
@@ -2749,7 +2740,7 @@ const ReissueReviewPage = () => {
               )}
               {paymentFailurePopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative">
+                  <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative payment-modal-content">
                     <button
                       onClick={() => setPaymentFailurePopup(false)}
                       className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
@@ -2763,13 +2754,7 @@ const ReissueReviewPage = () => {
                     <p>Your payment could not be completed.</p>
                     <p>You can retry the payment.</p>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        paddingTop: "10px",
-                      }}
-                    >
+                    <div className="payment-modal-buttons-row">
                       {/* {flightData?.conditions?.isBA === true && (
                         <div
                           onClick={handleHoldBooking}
@@ -2782,11 +2767,10 @@ const ReissueReviewPage = () => {
 
                       <div
                         onClick={bookingReview}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoading
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoading}
                       >
                         {bookingLoading ? (
@@ -2824,8 +2808,7 @@ const ReissueReviewPage = () => {
               {paymentModel && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                   <div
-                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
-                    style={{ width: "35%" }}
+                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative payment-modal-content"
                   >
                     <button
                       onClick={() => {
@@ -2841,20 +2824,13 @@ const ReissueReviewPage = () => {
                       Choose Payment Mode
                     </p>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        paddingTop: "10px",
-                      }}
-                    >
+                    <div className="payment-modal-buttons-row">
                       <div
                         onClick={bookingReviewWIthWallet}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoadingWallet
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoadingWallet}
                       >
                         {bookingLoadingWallet ? (
@@ -2888,11 +2864,10 @@ const ReissueReviewPage = () => {
 
                       <div
                         onClick={bookingReview}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoading
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoading}
                       >
                         {bookingLoading ? (
