@@ -65,7 +65,7 @@ export default function DomesticRoundTripTicketCard({
       <div>
         <div className="item-flight background-card border-1 ticket-container relative">
           {/* need to render dynamic city if layover */}
-          <div style={{ width: "55%" }}>
+          <div className="flex-1 w-full" style={{ minWidth: 0 }}>
             {ticket.sI.map((segment: any, index: number) => (
               <div className="flex justify-evenly" key={segment.id || index}>
 
@@ -168,8 +168,8 @@ export default function DomesticRoundTripTicketCard({
           </div>
 
           <div
-            className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center    "
-            style={{ width: "245px", paddingLeft: "20px" }}
+            className="flight-price-1 border-1 price-div flex justify-center items-center flex-col"
+            style={{ width: "auto", minWidth: "220px", paddingLeft: "10px" }}
           >
             <Radio.Group
               onChange={onChange}
@@ -247,8 +247,8 @@ export default function DomesticRoundTripTicketCard({
                             {e.fd.ADULT.rT === 1
                               ? "Refundable"
                               : e.fd.ADULT.rT === 2
-                              ? "Partial Refundable"
-                              : "Non Refundable"}
+                                ? "Partial Refundable"
+                                : "Non Refundable"}
                           </span>
                         </span>
                       </div>
@@ -282,11 +282,10 @@ export default function DomesticRoundTripTicketCard({
               ) : (
                 selectedOnwardTicket && (
                   <Link
-                    href={`book-ticket?tcs_id=${
-                      selectedOnwardTicket.ticket.totalPriceList[
-                        selectedOnwardTicket.selectedPriceIndex
-                      ]?.id
-                    },${ticket.totalPriceList[value]?.id}`}
+                    href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
+                      selectedOnwardTicket.selectedPriceIndex
+                    ]?.id
+                      },${ticket.totalPriceList[value]?.id}`}
                     className="btn-book-now"
                   >
                     Book Now

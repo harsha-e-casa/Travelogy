@@ -12,6 +12,8 @@ import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
 import Cookies from "js-cookie";
 import BySortPrice from "@/components/Filter/BySortPrice";
+import { Drawer, Button } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 // import TicketCard1 from "./TicketCard1";
 
 interface SelectedTicket {
@@ -47,6 +49,17 @@ export default function RoundTripSelectionView({ flightData }: any) {
   const [onwardSelectedFareTypes, setOnwardSelectedFareTypes] = useState<
     string[]
   >([]);
+
+  // Drawer state for mobile filters
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+
+  const showFilterDrawer = () => {
+    setFilterDrawerOpen(true);
+  };
+
+  const onCloseFilterDrawer = () => {
+    setFilterDrawerOpen(false);
+  };
   const [uniqueFareTypes, setUniqueFareTypes] = useState<any[]>([]);
 
   const [returnPriceRange, setReturnPriceRange] = useState([0, 10000000]);
@@ -422,206 +435,240 @@ export default function RoundTripSelectionView({ flightData }: any) {
     }
   };
 
-  return (
+  const renderFilters = () => (
     <>
-      {/* render onward and return ticket */}
-      <div className="row">
-        <div className="content-left p-10">
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Filter Price{" "}
-                </h6>
-                <ByPrice
-                  priceRange={
-                    tripPhase === "ONWARD" ? onwardPriceRange : returnPriceRange
-                  }
-                  setPriceRange={
-                    tripPhase === "ONWARD"
-                      ? setOnwardPriceRange
-                      : setReturnPriceRange
-                  }
-                  minPriceRange={
-                    tripPhase === "ONWARD"
-                      ? minOnwardPriceRange
-                      : minReturnPriceRange
-                  }
-                  maxPriceRange={
-                    tripPhase === "ONWARD"
-                      ? maxOnwardPriceRange
-                      : maxReturnPriceRange
-                  }
-                />
-              </div>
-            </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Filter Price{" "}
+            </h6>
+            <ByPrice
+              priceRange={
+                tripPhase === "ONWARD" ? onwardPriceRange : returnPriceRange
+              }
+              setPriceRange={
+                tripPhase === "ONWARD"
+                  ? setOnwardPriceRange
+                  : setReturnPriceRange
+              }
+              minPriceRange={
+                tripPhase === "ONWARD"
+                  ? minOnwardPriceRange
+                  : minReturnPriceRange
+              }
+              maxPriceRange={
+                tripPhase === "ONWARD"
+                  ? maxOnwardPriceRange
+                  : maxReturnPriceRange
+              }
+            />
           </div>
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Sort by Price
-                </h6>
-                <BySortPrice sort={priceSort} setSort={setPriceSort} />
-              </div>
-            </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Sort by Price
+            </h6>
+            <BySortPrice sort={priceSort} setSort={setPriceSort} />
           </div>
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Stops</h6>
-                <ByStops
-                  stops={tripPhase === "ONWARD" ? onwardStops : returnStops}
-                  setStops={
-                    tripPhase === "ONWARD" ? setOnwardStops : setReturnStops
-                  }
-                />
-              </div>
-            </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Stops</h6>
+            <ByStops
+              stops={tripPhase === "ONWARD" ? onwardStops : returnStops}
+              setStops={
+                tripPhase === "ONWARD" ? setOnwardStops : setReturnStops
+              }
+            />
           </div>
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Departure Time
-                </h6>
-                <ByDepartureTime
-                  departureTime={
-                    tripPhase === "ONWARD"
-                      ? onwardDepartureTime
-                      : returnDepartureTime
-                  }
-                  setDepartureTime={
-                    tripPhase === "ONWARD"
-                      ? setOnwardDepartureTime
-                      : setReturnDepartureTime
-                  }
-                />
-              </div>
-            </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Departure Time
+            </h6>
+            <ByDepartureTime
+              departureTime={
+                tripPhase === "ONWARD"
+                  ? onwardDepartureTime
+                  : returnDepartureTime
+              }
+              setDepartureTime={
+                tripPhase === "ONWARD"
+                  ? setOnwardDepartureTime
+                  : setReturnDepartureTime
+              }
+            />
           </div>
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Arrival Time
-                </h6>
-                <ByArrivalTime
-                  arrivalTime={
-                    tripPhase === "ONWARD"
-                      ? onwardArrivalTime
-                      : returnArrivalTime
-                  }
-                  setArrivalTime={
-                    tripPhase === "ONWARD"
-                      ? setOnwardArrivalTime
-                      : setReturnArrivalTime
-                  }
-                />
-              </div>
-            </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Arrival Time
+            </h6>
+            <ByArrivalTime
+              arrivalTime={
+                tripPhase === "ONWARD"
+                  ? onwardArrivalTime
+                  : returnArrivalTime
+              }
+              setArrivalTime={
+                tripPhase === "ONWARD"
+                  ? setOnwardArrivalTime
+                  : setReturnArrivalTime
+              }
+            />
           </div>
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Airlines
-                </h6>
-                <div className="box-collapse scrollFilter">
-                  <ByAirline
-                    uniqueAirlines={[
-                      ...new Set(
-                        (tripPhase === "ONWARD"
-                          ? flightData.ONWARD
-                          : flightData.RETURN
-                        )?.map((ticket: any) => ticket.sI[0].fD.aI.name) || []
-                      ),
-                    ]}
-                    selectedAirlines={
-                      tripPhase === "ONWARD"
-                        ? onwardSelectedAirlines
-                        : returnSelectedAirlines
-                    }
-                    setSelectedAirlines={
-                      tripPhase === "ONWARD"
-                        ? setOnwardSelectedAirlines
-                        : setReturnSelectedAirlines
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Fare Identifier
-                </h6>
-                <ByFareIdentifier
-                  key={`fare-${tripPhase}`}
-                  fareIdentifiers={
-                    tripPhase == "ONWARD"
-                      ? onwardFareIdentifiers
-                      : returnFareIdentifiers
-                  }
-                  setFareIdentifiers={
-                    tripPhase == "ONWARD"
-                      ? setOnwardFareIdentifiers
-                      : setReturnFareIdentifiers
-                  }
-                  options={uniqueFareIdentifiers}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Flight Number
-                </h6>
-                <ByAirlineSearch
-                  flightNumberSearch={
-                    tripPhase == "ONWARD"
-                      ? onwardFlightNumberSearch
-                      : returnFlightNumberSearch
-                  }
-                  setFlightNumberSearch={
-                    tripPhase == "ONWARD"
-                      ? setOnwardFlightNumberSearch
-                      : setReturnFlightNumberSearch
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="sidebar-left border-1 background-body">
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <h6 className="text-lg-bold filter-sty neutral-1000">
-                  Fare Type
-                </h6>
-                <ByFareType
-                  selectedFareTypes={
-                    tripPhase === "ONWARD"
-                      ? onwardSelectedFareTypes
-                      : returnSelectedFareTypes
-                  }
-                  setSelectedFareTypes={
-                    tripPhase === "ONWARD"
-                      ? setOnwardSelectedFareTypes
-                      : setReturnSelectedFareTypes
-                  }
-                  options={uniqueFareTypes}
-                />
-              </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Airlines
+            </h6>
+            <div className="box-collapse scrollFilter">
+              <ByAirline
+                uniqueAirlines={[
+                  ...new Set(
+                    (tripPhase === "ONWARD"
+                      ? flightData.ONWARD
+                      : flightData.RETURN
+                    )?.map((ticket: any) => ticket.sI[0].fD.aI.name) || []
+                  ),
+                ]}
+                selectedAirlines={
+                  tripPhase === "ONWARD"
+                    ? onwardSelectedAirlines
+                    : returnSelectedAirlines
+                }
+                setSelectedAirlines={
+                  tripPhase === "ONWARD"
+                    ? setOnwardSelectedAirlines
+                    : setReturnSelectedAirlines
+                }
+              />
             </div>
           </div>
         </div>
-        <div className="col-lg-9">
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Fare Identifier
+            </h6>
+            <ByFareIdentifier
+              key={`fare-${tripPhase}`}
+              fareIdentifiers={
+                tripPhase == "ONWARD"
+                  ? onwardFareIdentifiers
+                  : returnFareIdentifiers
+              }
+              setFareIdentifiers={
+                tripPhase == "ONWARD"
+                  ? setOnwardFareIdentifiers
+                  : setReturnFareIdentifiers
+              }
+              options={uniqueFareIdentifiers}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Flight Number
+            </h6>
+            <ByAirlineSearch
+              flightNumberSearch={
+                tripPhase == "ONWARD"
+                  ? onwardFlightNumberSearch
+                  : returnFlightNumberSearch
+              }
+              setFlightNumberSearch={
+                tripPhase == "ONWARD"
+                  ? setOnwardFlightNumberSearch
+                  : setReturnFlightNumberSearch
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Fare Type
+            </h6>
+            <ByFareType
+              selectedFareTypes={
+                tripPhase === "ONWARD"
+                  ? onwardSelectedFareTypes
+                  : returnSelectedFareTypes
+              }
+              setSelectedFareTypes={
+                tripPhase === "ONWARD"
+                  ? setOnwardSelectedFareTypes
+                  : setReturnSelectedFareTypes
+              }
+              options={uniqueFareTypes}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile Filter Button (Visible < 1200px) */}
+      <div className="d-xl-none d-block p-2" style={{ textAlign: 'right' }}>
+        <Button
+          type="primary"
+          icon={<FilterOutlined />}
+          onClick={showFilterDrawer}
+          style={{ marginBottom: '10px' }}
+        >
+          Filters
+        </Button>
+      </div>
+
+      {/* Drawer for Mobile Filters */}
+      <Drawer
+        title="Filter Flights"
+        placement="left"
+        onClose={onCloseFilterDrawer}
+        open={filterDrawerOpen}
+        width={300}
+      >
+        <div className="content-left">
+          {renderFilters()}
+        </div>
+      </Drawer>
+
+      {/* Main Content */}
+      <div className="row">
+        {/* Desktop Sidebar (Visible >= 1200px) */}
+        <div className="col-xl-3 d-none d-xl-block content-left p-10">
+          {renderFilters()}
+        </div>
+
+        {/* Ticket List (Full width < 1200px, 9 cols >= 1200px) */}
+        <div className="col-xl-9 col-12">
           {currentTickets && currentTickets.length > 0 ? (
             <>
               <div>
