@@ -380,7 +380,11 @@ const Page = () => {
                     </div>
 
                     <div className="profile-box">
-                      <div className="profile-avatar">N</div>
+                      <div className="profile-avatar">
+                        {!loading && userData?.userData?.user_name
+                          ? userData.userData.user_name.charAt(0).toUpperCase()
+                          : ""}
+                      </div>{" "}
                       <div className="profile-info">
                         <div className="profile-name">
                           {!loading ? userData?.userData?.user_name : null}
@@ -391,19 +395,20 @@ const Page = () => {
                       </div>
                     </div>
 
-                    <div className="info-section">
+                    {/* <div className="info-section">
                       <div className="info-header">
                         <h6 className="headings">Personal Information</h6>
                         <button className="edit-button">Edit</button>
                       </div>
 
                       <div className="info-grid">
-                        {/* Column 1 */}
                         <div className="info-column">
                           <div className="info-row">
                             <span className="label text-sm">NAME</span>
                             <span className="value">
-                              {!loading ? userData?.userData?.user_name : null}
+                              {!loading
+                                ? userData?.userData?.user_name || "NA"
+                                : "NA"}
                             </span>
                           </div>
                           <div className="info-row">
@@ -416,7 +421,6 @@ const Page = () => {
                           </div>
                         </div>
 
-                        {/* Column 2 */}
                         <div className="info-column">
                           <div className="info-row">
                             <span className="label">DOB</span>
@@ -434,7 +438,6 @@ const Page = () => {
                           </div>
                         </div>
 
-                        {/* Column 3 */}
                         <div className="info-column">
                           <div className="info-row">
                             <span className="label">GENDER</span>
@@ -442,13 +445,9 @@ const Page = () => {
                               {!loading ? userData?.userData?.gender : null}
                             </span>
                           </div>
-                          {/* <div className="info-row">
-                          <span className="label">STATE</span>
-                          <span className="value">Jakarta, Indonesia</span>
-                        </div> */}
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -497,7 +496,10 @@ const Page = () => {
                           </div>
                           <div className="flex items-center">
                             <div className="text-blue-600 cursor-pointer login-value text-blue-500">
-                              RS. {!loading ? userData?.userData?.wallet_balance : 0.00}
+                              RS.{" "}
+                              {!loading
+                                ? userData?.userData?.wallet_balance
+                                : 0.0}
                             </div>
                           </div>
 
