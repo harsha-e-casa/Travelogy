@@ -36,6 +36,7 @@ type Vendor = {
   id: number;
   e_mail: string;
   phone: string;
+  user_id: any;
   created_at?: string;
 };
 
@@ -63,6 +64,7 @@ export default function VendorCreate(): JSX.Element {
   const [walletOperation, setWalletOperation] = useState<"ADD" | "DEDUCT">(
     "ADD"
   );
+  const [walletDescription, setWalletDescription] = useState("");
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
@@ -162,17 +164,25 @@ export default function VendorCreate(): JSX.Element {
     setActiveVendor(vendor);
     setWalletAmount(0);
     setWalletOperation("ADD");
+    setWalletDescription("");
     setWalletModalOpen(true);
   };
 
   const submitWalletChange = async () => {
     if (!activeVendor) return;
 
-    const req = {
-      vendor_id: activeVendor.id,
+    if (!walletDescription.trim()) {
+      message.error("Description is required");
+      return;
+    }
+
+    const req: any = {
+      vendor_id: activeVendor.user_id,
       amount: walletAmount,
       type: walletOperation, // ADD or DEDUCT
+      description: walletDescription,
     };
+    console.log("activeVendor => ", activeVendor);
 
     await postData("/travelogy/flight/vendor/update-wallet", req, authHeader);
 
@@ -184,7 +194,7 @@ export default function VendorCreate(): JSX.Element {
 
   const toggleActive = async (vendor: any, isActive: boolean) => {
     const req = {
-      vendor_id: vendor.id,
+      vendor_id: vendor.user_id,
       is_active: isActive ? 1 : 0,
     };
 
@@ -454,14 +464,14 @@ export default function VendorCreate(): JSX.Element {
                           dataIndex: "is_active",
                           width: 120,
                           render: (_, rec: any) => {
-                            console.log("recrec => ",rec);
+                            console.log("recrec => ", rec);
                             const isActive =
                               rec.is_active === 1 ||
                               rec.is_active === true ||
                               (typeof rec.status === "string" &&
                                 rec.status.toLowerCase() === "active");
 
-                            console.log("isActive ==> ",isActive);
+                            console.log("isActive ==> ", isActive);
 
                             return (
                               <Switch
@@ -557,10 +567,19 @@ export default function VendorCreate(): JSX.Element {
         <Radio.Group
           value={walletOperation}
           onChange={(e) => setWalletOperation(e.target.value)}
+          style={{ marginBottom: 20 }}
         >
           <Radio value="ADD">Add Amount</Radio>
           <Radio value="DEDUCT">Deduct Amount</Radio>
         </Radio.Group>
+
+        <div style={{ marginBottom: 12 }}>Description <span style={{ color: 'red' }}>*</span></div>
+        <Input.TextArea
+          value={walletDescription}
+          onChange={(e) => setWalletDescription(e.target.value)}
+          placeholder="Enter reason for update (e.g. Manual Topup, Correction)"
+          rows={3}
+        />
       </Modal>
     </Layout>
   );
