@@ -17,13 +17,13 @@ const AppFormCompany = ({ form, manditory = false }) => {
     <Form form={form} name="companyForm" layout="vertical" autoComplete="off">
       <Row gutter={16}>
         {/* Registration Number */}
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="gstNumber"
             label="GST Number"
             hasFeedback
             rules={getRequiredRules()}
-            // getValueFromEvent={(e) => e?.target?.value?.replace(/\D/g, "").slice(0, 10)}
+          // getValueFromEvent={(e) => e?.target?.value?.replace(/\D/g, "").slice(0, 10)}
           >
             <Input
               className="h-10 flex flex-row justify-between items-center"
@@ -33,7 +33,7 @@ const AppFormCompany = ({ form, manditory = false }) => {
         </Col>
 
         {/* Registered Company Name */}
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="registeredName"
             label="Registered Name"
@@ -48,7 +48,7 @@ const AppFormCompany = ({ form, manditory = false }) => {
         </Col>
 
         {/* Registered Email */}
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="companyEmail"
             label="Registered Email"
@@ -63,7 +63,7 @@ const AppFormCompany = ({ form, manditory = false }) => {
         </Col>
 
         {/* Registered Phone */}
-        <Col span={12}>
+        <Col xs={24} sm={12}>
           <Form.Item
             name="companyPhone"
             label="Registered Phone"
@@ -80,7 +80,7 @@ const AppFormCompany = ({ form, manditory = false }) => {
         </Col>
 
         {/* Registered Address */}
-        <Col span={24}>
+        <Col xs={24}>
           <Form.Item
             name="companyAddress"
             label="Registered Address"

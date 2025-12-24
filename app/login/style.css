@@ -2,19 +2,16 @@
 .glass-card {
   /* layout */
   width: 100%;
-  max-width: 760px;               /* adjust to your design */
+  max-width: 760px;
+  /* adjust to your design */
   padding: 28px 32px;
   border-radius: 18px;
 
   /* glass look */
-  /* background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.14),
-    rgba(255, 255, 255, 0.06)
-  ); */
   background: #ffffff82;
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px); /* Safari */
+  -webkit-backdrop-filter: blur(14px);
+  /* Safari */
 
   /* subtle border + glow */
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -31,8 +28,9 @@
   font-size: clamp(24px, 3vw, 36px);
   font-weight: 800;
   letter-spacing: 0.3px;
-  color: #ffffff;                 /* bright on dark bg */
-  text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  color: #ffffff;
+  /* bright on dark bg */
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   margin: 8px 0 20px;
 }
 
@@ -41,14 +39,15 @@
   width: 100%;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.35);
-  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.75);
   outline: none;
   transition: border-color .2s, box-shadow .2s;
 }
+
 .glass-input:focus {
   border-color: rgba(255, 165, 0, 0.9);
-  box-shadow: 0 0 0 3px rgba(255,165,0,0.25);
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.25);
 }
 
 /* Base (keeps your current look if you already set .btn-orange) */
@@ -75,6 +74,7 @@
     0 0 0 2px rgba(255, 165, 0, 0.25) inset !important;
   transform: translateY(-1px) !important;
   filter: saturate(1.15) !important;
+  background-color: #f29900;
 }
 
 /* Pressed */
@@ -88,6 +88,198 @@
   outline: 3px solid rgba(255, 165, 0, 0.55);
   outline-offset: 2px;
 }
+
+/* Responsive Styles */
+.login-page-container {
+  min-height: 100vh;
+  background-image: url(/assets/imgs/bg_login.png);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+}
+
+.login-flex-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.login-left-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  flex: 1.2;
+}
+
+.login-right-section {
+  padding: 35px;
+  width: 38%;
+  margin: 40px;
+  flex: 0.8;
+  display: flex;
+  justify-content: center;
+}
+
+.login-logo {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.login-illustration {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.login-text-content {
+  text-align: center;
+  color: white;
+  font-family: "Puritan", sans-serif;
+}
+
+.login-text-content h2 {
+  color: white;
+  font-family: "Puritan", sans-serif;
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* Mid-size Screens (768px to 1440px) */
+@media (min-width: 768px) and (max-width: 1440px) {
+  .login-page-container {
+    overflow: hidden;
+    /* Prevent scrolling */
+    height: 100vh;
+  }
+
+  .login-flex-wrapper {
+    height: 100vh;
+    padding: 20px;
+  }
+
+  .login-left-section {
+    padding: 30px;
+  }
+
+  .login-right-section {
+    padding: 20px;
+    margin: 20px;
+  }
+
+  .login-logo {
+    max-width: 70%;
+    /* Scale down logo */
+  }
+
+  .login-illustration {
+    max-width: 70%;
+    /* Scale down illustration */
+  }
+
+  .glass-card {
+    padding: 20px 24px;
+    max-width: 450px;
+    /* Reduce card width to fit better */
+  }
+
+  .glass-card .title {
+    margin-bottom: 12px;
+  }
+}
+
+/* Mobile Devices and Tablet Layout Change */
+@media (max-width: 767px) {
+  .login-page-container {
+    overflow-y: auto;
+    /* Allow scrolling on mobile */
+  }
+
+  .login-flex-wrapper {
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 20px;
+  }
+
+  .login-left-section {
+    padding: 20px;
+    margin-bottom: 20px;
+    flex: none;
+  }
+
+  .login-right-section {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    flex: none;
+  }
+
+  .login-left-section img {
+    max-width: 90%;
+  }
+
+  .login-text-content h2 {
+    font-size: 1.5rem;
+  }
+
+  .glass-card {
+    padding: 20px;
+  }
+}
+
+/* Height-based adjustments for short viewports (e.g. 1024x498) */
+@media (max-height: 600px) {
+  .login-flex-wrapper {
+    padding: 10px;
+  }
+
+  .login-left-section {
+    padding: 15px;
+  }
+
+  .login-right-section {
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .login-logo {
+    max-width: 50%;
+    margin-bottom: 10px;
+  }
+
+  .login-illustration {
+    max-width: 50%;
+    margin-bottom: 10px;
+  }
+
+  .login-text-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .glass-card {
+    padding: 15px 20px;
+  }
+
+  .glass-card .title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 8px !important;
+    /* Reduce spacing between fields */
+  }
+
+  .btn-orange.ant-btn {
+    margin-top: 8px !important;
+  }
+}
+
+
 
 
 /* Fallback for browsers without backdrop-filter */

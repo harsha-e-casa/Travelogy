@@ -82,9 +82,9 @@ const MealInfo = ({
 
     allMeals.forEach((value) => {
       if (!value) return;
-      
+
       if (typeof value !== "string" || !value.includes("|")) return;
-      
+
       const [segmentId, mealCode] = value.split("|");
       const segment = segmentinfo.find(
         (s) => String(s.id) === String(segmentId)
@@ -153,8 +153,8 @@ const MealInfo = ({
                         placeholder="Add Meal"
                         // disabled={mealOptions.every((b) => !b.amount)}
                         disabled={mealOptions.every((b) => !("amount" in b))}
-                        // style={{ width: 500 }}
-                        className="meal-w"
+                        // className="meal-w"
+                        style={{ width: "100%", maxWidth: "400px" }}
                         onChange={handleChange}
                         allowClear
                         onClear={handleChange}
@@ -176,7 +176,7 @@ const MealInfo = ({
                           <Option
                             key={meal.code}
                             value={`${segment.id}|${meal.code}`}
-                            // disabled={!meal.amount}
+                          // disabled={!meal.amount}
                           >
                             {meal.desc} - ₹{meal.amount}
                           </Option>
@@ -244,7 +244,7 @@ const MealInfo = ({
                           <Option
                             key={meal.code}
                             value={`${segment.id}|${meal.code}`}
-                            // disabled={!meal.amount}
+                          // disabled={!meal.amount}
                           >
                             {meal.desc} - ₹{meal.amount}
                           </Option>

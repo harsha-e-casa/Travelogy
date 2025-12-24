@@ -101,7 +101,7 @@ const AppFormAdult = ({
     >
       <Row gutter={16}>
         {/* Col for Select Field */}
-        <Col span={6}>
+        <Col xs={24} sm={6}>
           <Form.Item
             name={`select-${index}`}
             label="Title"
@@ -117,7 +117,7 @@ const AppFormAdult = ({
           </Form.Item>
         </Col>
         {/* Col for First Name */}
-        <Col span={9}>
+        <Col xs={24} sm={9}>
           <Form.Item
             name={`fname-${index}`}
             label="First Name"
@@ -159,8 +159,8 @@ const AppFormAdult = ({
 
                   return dup
                     ? Promise.reject(
-                        new Error("This traveler name is already entered")
-                      )
+                      new Error("This traveler name is already entered")
+                    )
                     : Promise.resolve();
                 },
               },
@@ -177,7 +177,7 @@ const AppFormAdult = ({
           </Form.Item>
         </Col>
         {/* Col for Last Name */}
-        <Col span={9}>
+        <Col xs={24} sm={9}>
           <Form.Item
             name={`lname-${index}`}
             label="Last Name"
@@ -219,8 +219,8 @@ const AppFormAdult = ({
 
                   return dup
                     ? Promise.reject(
-                        new Error("This traveler name is already entered")
-                      )
+                      new Error("This traveler name is already entered")
+                    )
                     : Promise.resolve();
                 },
               },
@@ -237,7 +237,7 @@ const AppFormAdult = ({
           </Form.Item>
         </Col>
         {showDocumentField && (
-          <Col span={9}>
+          <Col xs={24} sm={9}>
             <Form.Item
               name={`documentId-${index}`}
               label="Document ID"
@@ -268,235 +268,236 @@ const AppFormAdult = ({
           showPassport?.pid === true ||
           showPassport?.pm === true ||
           showPassport?.dobe === true) && (
-          <>
-            <p
-              className="text-sm leading-5 font-bold text-gray-900"
-              style={{ paddingLeft: "0.5rem" }}
-            >
-              Add passport information
-            </p>
-            <Row gutter={16} className="p-2">
-              {/* nationality */}
-              <Form.Item
-                name={`adultnationality-${index}`}
-                label="Nationality"
-                hasFeedback
-                rules={[
-                  { required: true, message: "Please select a nationality" },
-                ]}
-                data-name={`select-${index}`}
+            <>
+              <p
+                className="text-sm leading-5 font-bold text-gray-900"
+                style={{ paddingLeft: "0.5rem" }}
               >
-                <Select
-                  className="h-10"
-                  showSearch
-                  filterOption={
-                    (input, option) =>
-                      option.children
-                        .toLowerCase()
-                        .includes(input.toLowerCase()) // Filter based on country name
-                  }
-                  placeholder="Please select a nationality"
-                >
-                  {Object.entries(countries).map(([country, code]) => (
-                    <Option key={code} value={code}>
-                      {country}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              {/* passport number */}
-              {showPassport.pm === true && (
-                <Col span={6}>
+                Add passport information
+              </p>
+              <Row gutter={16} className="p-2">
+                {/* nationality */}
+                <Col xs={24} sm={12} md={8}>
                   <Form.Item
-                    name={`adultpassportno-${index}`}
-                    label="Passport Number"
+                    name={`adultnationality-${index}`}
+                    label="Nationality"
                     hasFeedback
                     rules={[
-                      {
-                        required: true,
-                        message: "Please enter your passport number",
-                      },
-                      {
-                        pattern: /^[A-Za-z0-9]+$/,
-                        message:
-                          "Passport number can only contain letters and numbers",
-                      },
+                      { required: true, message: "Please select a nationality" },
                     ]}
-                    data-name={`passportno-${index}`}
+                    data-name={`select-${index}`}
                   >
-                    <Input
-                      className="h-10 flex flex-row justify-between items-center"
-                      placeholder="Passport Number"
-                    />
+                    <Select
+                      className="h-10"
+                      showSearch
+                      filterOption={(input, option) =>
+                        option.children
+                          .toLowerCase()
+                          .includes(input.toLowerCase())
+                      }
+                      placeholder="Please select a nationality"
+                    >
+                      {Object.entries(countries).map(([country, code]) => (
+                        <Option key={code} value={code}>
+                          {country}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
                 </Col>
-              )}
-              {/* passportIssueDate */}
-              {showPassport.pid === true && (
-                <Col span={12}>
-                  <Form.Item
-                    name={`adultpassportIssueDate-${index}`}
-                    label="Passport Issue Date"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select passport issue date",
-                      },
-                      {
-                        validator: (_, value) => {
-                          if (!value) return Promise.resolve();
-                          if (!bookDate.isValid()) return Promise.resolve();
-                          return value.isAfter(bookDate)
-                            ? Promise.reject(
+                {/* passport number */}
+                {showPassport.pm === true && (
+                  <Col xs={24} sm={12} md={6}>
+                    <Form.Item
+                      name={`adultpassportno-${index}`}
+                      label="Passport Number"
+                      hasFeedback
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please enter your passport number",
+                        },
+                        {
+                          pattern: /^[A-Za-z0-9]+$/,
+                          message:
+                            "Passport number can only contain letters and numbers",
+                        },
+                      ]}
+                      data-name={`passportno-${index}`}
+                    >
+                      <Input
+                        className="h-10 flex flex-row justify-between items-center"
+                        placeholder="Passport Number"
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {/* passportIssueDate */}
+                {showPassport.pid === true && (
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      name={`adultpassportIssueDate-${index}`}
+                      label="Passport Issue Date"
+                      hasFeedback
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select passport issue date",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (!value) return Promise.resolve();
+                            if (!bookDate.isValid()) return Promise.resolve();
+                            return value.isAfter(bookDate)
+                              ? Promise.reject(
                                 new Error(
                                   "Issue date cannot be after the booking date"
                                 )
                               )
-                            : Promise.resolve();
+                              : Promise.resolve();
+                          },
                         },
-                      },
-                    ]}
-                    data-name={`passportIssueDate-${index}`}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      className="h-10 w-full"
-                      placeholder="Select Passport Issue Date"
-                      onKeyDown={(e) => {
-                        const ok = [
-                          "Backspace",
-                          "Tab",
-                          "ArrowLeft",
-                          "ArrowRight",
-                          "Delete",
-                          "Enter",
-                        ];
-                        if (ok.includes(e.key)) return;
-                        if (!/[\d-]/.test(e.key)) e.preventDefault();
-                      }}
-                      onPaste={(e) => {
-                        const t = (
-                          e.clipboardData.getData("text") || ""
-                        ).trim();
-                        if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {/* passportExpiryDate */}
-              {showPassport?.pped === true && (
-                <Col span={12}>
-                  <Form.Item
-                    name={`adultpassportExpiryDate-${index}`}
-                    label="Passport Expiry Date"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select passport expiry date",
-                      },
-                      {
-                        validator: (_, value) => {
-                          // let "required" rule handle empty
-                          if (!value) return Promise.resolve();
-                          // if we don't have a valid travel date, don't block
-                          if (!minExpiry) return Promise.resolve();
+                      ]}
+                      data-name={`passportIssueDate-${index}`}
+                    >
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        className="h-10 w-full"
+                        placeholder="Select Passport Issue Date"
+                        onKeyDown={(e) => {
+                          const ok = [
+                            "Backspace",
+                            "Tab",
+                            "ArrowLeft",
+                            "ArrowRight",
+                            "Delete",
+                            "Enter",
+                          ];
+                          if (ok.includes(e.key)) return;
+                          if (!/[\d-]/.test(e.key)) e.preventDefault();
+                        }}
+                        onPaste={(e) => {
+                          const t = (
+                            e.clipboardData.getData("text") || ""
+                          ).trim();
+                          if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {/* passportExpiryDate */}
+                {showPassport?.pped === true && (
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      name={`adultpassportExpiryDate-${index}`}
+                      label="Passport Expiry Date"
+                      hasFeedback
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select passport expiry date",
+                        },
+                        {
+                          validator: (_, value) => {
+                            // let "required" rule handle empty
+                            if (!value) return Promise.resolve();
+                            // if we don't have a valid travel date, don't block
+                            if (!minExpiry) return Promise.resolve();
 
-                          if (value.isBefore(minExpiry, "day")) {
-                            return Promise.reject(
-                              new Error(
-                                `Passport must be valid for at least 6 months from travel date (${bookDate.format(
-                                  "YYYY-MM-DD"
-                                )}). Earliest allowed expiry: ${minExpiry.format(
-                                  "YYYY-MM-DD"
-                                )}`
-                              )
-                            );
-                          }
-                          return Promise.resolve();
+                            if (value.isBefore(minExpiry, "day")) {
+                              return Promise.reject(
+                                new Error(
+                                  `Passport must be valid for at least 6 months from travel date (${bookDate.format(
+                                    "YYYY-MM-DD"
+                                  )}). Earliest allowed expiry: ${minExpiry.format(
+                                    "YYYY-MM-DD"
+                                  )}`
+                                )
+                              );
+                            }
+                            return Promise.resolve();
+                          },
                         },
-                      },
-                    ]}
-                    data-name={`passportExpiryDate-${index}`}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      className="h-10 w-full"
-                      placeholder="Select Passport Expiry Date"
-                      onKeyDown={(e) => {
-                        const ok = [
-                          "Backspace",
-                          "Tab",
-                          "ArrowLeft",
-                          "ArrowRight",
-                          "Delete",
-                          "Enter",
-                        ];
-                        if (ok.includes(e.key)) return;
-                        if (!/[\d-]/.test(e.key)) e.preventDefault();
-                      }}
-                      onPaste={(e) => {
-                        const t = (
-                          e.clipboardData.getData("text") || ""
-                        ).trim();
-                        if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-              {/* Date of Birth */}
-              {showPassport.dobe === true && (
-                <Col span={12}>
-                  <Form.Item
-                    name={`adultdob-${index}`}
-                    label="Date of Birth"
-                    hasFeedback
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please select date of birth",
-                      },
-                      {
-                        validator: (_, value) =>
-                          value
-                            ? Promise.resolve()
-                            : Promise.reject("Invalid date of birth"),
-                      },
-                    ]}
-                    data-name={`dob-${index}`}
-                  >
-                    <DatePicker
-                      format="YYYY-MM-DD"
-                      className="h-10 w-full"
-                      placeholder="Select Date of Birth"
-                      onKeyDown={(e) => {
-                        const ok = [
-                          "Backspace",
-                          "Tab",
-                          "ArrowLeft",
-                          "ArrowRight",
-                          "Delete",
-                          "Enter",
-                        ];
-                        if (ok.includes(e.key)) return;
-                        if (!/[\d-]/.test(e.key)) e.preventDefault();
-                      }}
-                      onPaste={(e) => {
-                        const t = (
-                          e.clipboardData.getData("text") || ""
-                        ).trim();
-                        if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
-                      }}
-                    />
-                  </Form.Item>
-                </Col>
-              )}
-            </Row>
-          </>
-        )}
+                      ]}
+                      data-name={`passportExpiryDate-${index}`}
+                    >
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        className="h-10 w-full"
+                        placeholder="Select Passport Expiry Date"
+                        onKeyDown={(e) => {
+                          const ok = [
+                            "Backspace",
+                            "Tab",
+                            "ArrowLeft",
+                            "ArrowRight",
+                            "Delete",
+                            "Enter",
+                          ];
+                          if (ok.includes(e.key)) return;
+                          if (!/[\d-]/.test(e.key)) e.preventDefault();
+                        }}
+                        onPaste={(e) => {
+                          const t = (
+                            e.clipboardData.getData("text") || ""
+                          ).trim();
+                          if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+                {/* Date of Birth */}
+                {showPassport.dobe === true && (
+                  <Col xs={24} sm={12}>
+                    <Form.Item
+                      name={`adultdob-${index}`}
+                      label="Date of Birth"
+                      hasFeedback
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select date of birth",
+                        },
+                        {
+                          validator: (_, value) =>
+                            value
+                              ? Promise.resolve()
+                              : Promise.reject("Invalid date of birth"),
+                        },
+                      ]}
+                      data-name={`dob-${index}`}
+                    >
+                      <DatePicker
+                        format="YYYY-MM-DD"
+                        className="h-10 w-full"
+                        placeholder="Select Date of Birth"
+                        onKeyDown={(e) => {
+                          const ok = [
+                            "Backspace",
+                            "Tab",
+                            "ArrowLeft",
+                            "ArrowRight",
+                            "Delete",
+                            "Enter",
+                          ];
+                          if (ok.includes(e.key)) return;
+                          if (!/[\d-]/.test(e.key)) e.preventDefault();
+                        }}
+                        onPaste={(e) => {
+                          const t = (
+                            e.clipboardData.getData("text") || ""
+                          ).trim();
+                          if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) e.preventDefault();
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                )}
+              </Row>
+            </>
+          )}
       </Row>
     </Form>
   );

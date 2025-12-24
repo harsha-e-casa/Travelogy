@@ -82,7 +82,7 @@ const MealInfo = ({
 
     allMeals.forEach((value) => {
       if (!value) return;
-      
+
       if (typeof value !== "string" || !value.includes("|")) return;
 
       const [segmentId, mealCode] = value.split("|");
@@ -121,24 +121,23 @@ const MealInfo = ({
                 {/* Adult Meals */}
                 {Array.from({ length: numAdults }).map((_, index) => (
                   <div
-                    className="p-2 flex gap-4 items-center"
+                    className="p-2 flex gap-4 items-center baggage-row"
                     key={`adult-${flightIndex}-${index}`}
                   >
                     <span
-                      className="text-sm font-bold text-gray-900"
-                      style={{ width: "100px" }}
+                      className="text-sm font-bold text-gray-900 passenger-label"
                     >
                       ADULT {index + 1}
                     </span>
                     <Form.Item
                       name={`adultMeal-${flightIndex}-${index}`}
-                      style={{ marginBottom: 0, width: "500px" }}
+                      style={{ marginBottom: 0, width: "100%", maxWidth: "500px" }}
                     >
                       <Select
                         placeholder="Add Meal"
                         // disabled={mealOptions.every((b) => !b.amount)}
                         disabled={mealOptions.every((b) => !("amount" in b))}
-                        style={{ width: 500 }}
+                        style={{ width: "100%", maxWidth: "500px" }}
                         onChange={handleChange}
                         allowClear
                         onClear={handleChange}
@@ -159,7 +158,7 @@ const MealInfo = ({
                           <Option
                             key={meal.code}
                             value={`${segment.id}|${meal.code}`}
-                            // disabled={!meal.amount}
+                          // disabled={!meal.amount}
                           >
                             {meal.desc} - ₹{meal.amount}
                           </Option>
@@ -172,24 +171,23 @@ const MealInfo = ({
                 {/* Child Meals */}
                 {Array.from({ length: numChild }).map((_, index) => (
                   <div
-                    className="p-2 flex gap-4 items-center"
+                    className="p-2 flex gap-4 items-center baggage-row"
                     key={`child-${flightIndex}-${index}`}
                   >
                     <span
-                      className="text-sm font-bold text-gray-900"
-                      style={{ width: "100px" }}
+                      className="text-sm font-bold text-gray-900 passenger-label"
                     >
                       CHILD {index + 1}
                     </span>
                     <Form.Item
                       name={`childMeal-${flightIndex}-${index}`}
-                      style={{ marginBottom: 0, width: "500px" }}
+                      style={{ marginBottom: 0, width: "100%", maxWidth: "500px" }}
                     >
                       <Select
                         placeholder="Add Meal"
                         // disabled={mealOptions.every((b) => !b.amount)}
                         disabled={mealOptions.every((b) => !("amount" in b))}
-                        style={{ width: 500 }}
+                        style={{ width: "100%", maxWidth: "500px" }}
                         onChange={handleChange}
                         allowClear
                         onClear={handleChange}
@@ -210,7 +208,7 @@ const MealInfo = ({
                           <Option
                             key={meal.code}
                             value={`${segment.id}|${meal.code}`}
-                            // disabled={!meal.amount}
+                          // disabled={!meal.amount}
                           >
                             {meal.desc} - ₹{meal.amount}
                           </Option>

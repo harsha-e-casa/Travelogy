@@ -249,7 +249,7 @@ const MultiCitySegment = ({
       
       <div
         className="text_start b_right_2px g_w_3 css_pointer"
-        style={{ paddingBottom: "13px" }}
+        style={{ paddingBottom: "13px", position: "relative" }}
         onClick={() => multiCityCloseAllFieldsFn()}
       >
         <div
@@ -285,38 +285,33 @@ const MultiCitySegment = ({
                 departureDate: dayjs(date),
               })
             }
-            minDate={minDate ? dayjs(minDate) : null} // Ensure dayjs object or null
-            value={segment.departureDate ? dayjs(segment.departureDate) : null} // Ensure dayjs object or null
+            minDate={minDate ? dayjs(minDate) : null}
+            value={segment.departureDate ? dayjs(segment.departureDate) : null}
           />
         )}
-      </div>
-
-      {/* Actions */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-around",
-          width: "20%",
-        }}
-      >
         {showRemove && (
           <div
             onClick={() => removeSegment(index)}
-            className="text-red-600 font-bold text-lg px-2 py-1 border border-red-500 rounded-full css_pointer"
-            style={{ fontSize: "30px" }}
+            className="text-red-600 font-bold text-lg css_pointer"
+            style={{ position: "absolute", top: "0px", right: "0px", fontSize: "35px", cursor: "pointer" }}
           >
             ×
           </div>
         )}
-        {showAdd && (
+      </div>
+
+      {/* Actions */}
+      {showAdd && (
+        <div style={{ width: "65%", display: "flex", justifyContent: "center", marginTop: "10px" }}>
           <div
             onClick={addSegment}
             className="text-blue-600 font-semibold text-sm px-3 py-1 border border-blue-600 rounded css_pointer"
+            style={{ width: "100%", textAlign: "center" }}
           >
             + Add City
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

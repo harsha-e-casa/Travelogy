@@ -605,15 +605,14 @@ const ReviewPage = () => {
                 {" "}
                 {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                   ?.st &&
-                fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                  ?.et ? (
-                  <div>{`${
-                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.st
-                  } hrs to ${Math.floor(
-                    fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.et / 24
-                  )} days`}</div>
+                  fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                    ?.et ? (
+                  <div>{`${fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                    ?.st
+                    } hrs to ${Math.floor(
+                      fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
+                        ?.et / 24
+                    )} days`}</div>
                 ) : (
                   <p>
                     {
@@ -645,9 +644,9 @@ const ReviewPage = () => {
                         {fareRulesData?.fareRuleInformation?.tfr
                           ?.CANCELLATION?.[0]?.amount
                           ? fareRulesData?.fareRuleInformation?.tfr
-                              ?.CANCELLATION?.[0]?.amount
+                            ?.CANCELLATION?.[0]?.amount
                           : fareRulesData?.fareRuleInformation?.tfr
-                              ?.CANCELLATION?.[0]?.additionalFee}
+                            ?.CANCELLATION?.[0]?.additionalFee}
                       </div>
                     </div>
                   </>
@@ -658,9 +657,9 @@ const ReviewPage = () => {
                     {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
                       ?.amount
                       ? fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.amount
+                        ?.CANCELLATION?.[0]?.amount
                       : fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.additionalFee}{" "}
+                        ?.CANCELLATION?.[0]?.additionalFee}{" "}
                   </div>
                 )}
               </div>
@@ -697,9 +696,8 @@ const ReviewPage = () => {
                 if (st && et) {
                   return (
                     <div>
-                      {`${st} hrs to ${
-                        et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
-                      }`}
+                      {`${st} hrs to ${et > 24 ? Math.floor(et / 24) + " days" : et + " hrs"
+                        }`}
                     </div>
                   );
                 } else {
@@ -772,11 +770,10 @@ const ReviewPage = () => {
                 if (noShow?.et && noShow?.st) {
                   return (
                     <div>
-                      {`${noShow?.st} hrs to ${
-                        noShow?.et > 24
-                          ? noShow?.et / 24 + " days"
-                          : noShow?.et + " hrs"
-                      }`}
+                      {`${noShow?.st} hrs to ${noShow?.et > 24
+                        ? noShow?.et / 24 + " days"
+                        : noShow?.et + " hrs"
+                        }`}
                     </div>
                   );
                 } else {
@@ -831,11 +828,10 @@ const ReviewPage = () => {
                   if (seatChangable?.st && seatChangable?.et) {
                     return (
                       <div>
-                        {`${seatChangable?.st} hrs to ${
-                          seatChangable?.et > 24
-                            ? seatChangable?.et / 24 + " days"
-                            : seatChangable?.et + " hrs"
-                        }`}
+                        {`${seatChangable?.st} hrs to ${seatChangable?.et > 24
+                          ? seatChangable?.et / 24 + " days"
+                          : seatChangable?.et + " hrs"
+                          }`}
                       </div>
                     );
                   } else {
@@ -1445,8 +1441,8 @@ const ReviewPage = () => {
                                 tripInfosLength >= 2
                                   ? " "
                                   : tripIndex === 0
-                                  ? "Onward journey"
-                                  : "Return journey";
+                                    ? "Onward journey"
+                                    : "Return journey";
                             }
                             const trevellInfoStyle =
                               tripIndex === 0
@@ -1549,7 +1545,7 @@ const ReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    <div className="flex flex-row justify-between">
+                                    <div className="flex flex-row justify-between review-info-row">
                                       <div className="logo-flight flex flex-row gap-3 items-center mb-20">
                                         <div className="text-md-bold neutral-900">
                                           {seg?.fD?.aI?.name}
@@ -1580,14 +1576,12 @@ const ReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    <div className="flex justify-center items-center bg-gray-100 p-2 rounded-md space-y-6">
+                                    <div className="flex justify-center items-center bg-gray-100 p-2 rounded-md space-y-6 flight-timings-wrapper">
                                       {/* Flight Timings */}
                                       <div
-                                        className="flex justify-between items-center gap-5"
-                                        style={{ width: "85%" }}
+                                        className="flex justify-between items-center gap-5 flight-timings-inner"
                                       >
-                                        <div className="text-left space-y-1">
-                                          {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
+                                        <div className="text-left space-y-1 flight-timing-item">
                                           <h4
                                             className=""
                                             style={{
@@ -1615,12 +1609,11 @@ const ReviewPage = () => {
                                           <img
                                             src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
                                             alt="flight line"
-                                            className="mx-auto w-20"
+                                            className="mx-auto w-20 hide-on-mobile"
                                           />
                                         </div>
 
-                                        <div className="text-right space-y-1">
-                                          {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
+                                        <div className="text-right space-y-1 flight-timing-item">
                                           <h4
                                             className=""
                                             style={{
@@ -1641,46 +1634,6 @@ const ReviewPage = () => {
                                           </p>
                                         </div>
                                       </div>
-
-                                      {/* Baggage Info */}
-                                      {/* <div className="flex flex-col items-center justify-center gap-3  space-x-10">
-                                        <div className="flex items-center space-x-2">
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            fill="currentColor"
-                                            class="bi bi-suitcase2-fill"
-                                            viewBox="0 0 16 16"
-                                          >
-                                            <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
-                                          </svg>
-                                          <p className="text-sm-bold neutral-900 ">
-                                            Check-in:{" "}
-                                            <span className="text-sm-medium neutral-500 ">
-                                              {baggageObj?.iB}
-                                            </span>
-                                          </p>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            fill="currentColor"
-                                            class="bi bi-suitcase-lg-fill"
-                                            viewBox="0 0 16 16"
-                                          >
-                                            <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
-                                          </svg>
-                                          <p className="text-sm-bold neutral-900">
-                                            Cabin:{" "}
-                                            <span className="text-sm-medium neutral-500">
-                                              {baggageObj?.cB} per adult
-                                            </span>
-                                          </p>
-                                        </div>
-                                      </div> */}
                                     </div>
                                     <div className="flex items-center justify-center gap-3  space-x-10 bg-gray-100 pb-5">
                                       <div className="flex items-center space-x-2">
@@ -1731,232 +1684,6 @@ const ReviewPage = () => {
                           })}
                           {/* </div> */}
 
-                          {/* <div className="shadow rounded-md p-3"> */}
-                          {/* header */}
-                          <div className="flex flex-col justify-start  items-start">
-                            {/* City and direction row */}
-                            {/* <div className="flex flex-row gap-3 items-center mb-2">
-                                <p className="text-xl-bold neutral-1000">
-                                  {fromCity || "DELHI"}{" "}
-                                  <span>({dcitycode})</span>
-                                </p>
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="16"
-                                  height="16"
-                                  fill="currentColor"
-                                  className="bi bi-arrow-right"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
-        .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
-        8.5H1.5A.5.5 0 0 1 1 8"
-                                  />
-                                </svg>
-                                <p className="text-xl-bold neutral-1000">
-                                  {toCity || "DELHI"} <span>({acitycode})</span>
-                                </p>
-                              </div>
-
-                              <div className="flex flex-row gap-2">
-                                <p className="text-sm-bold neutral-500 ">
-                                  {formattedDate || "Date not available"}
-                                </p> */}
-                            {/* Info list below the cities */}
-                            {/* <ul className="flex flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc">
-                                  <li className="text-sm-medium neutral-500 ">
-                                    {stops || "No stop info"}
-                                  </li>
-                                  <li className="text-sm-medium neutral-500 ">
-                                    {duration || "Duration not available"}
-                                  </li>
-                                </ul> */}
-                            {/* </div>
-                            </div> */}
-
-                            {/* //flight information */}
-                            {/* <div className="flex flex-row mt-3 items-center gap-3 mb-3">
-
-<div className=" flex flex-row justify-between items-center">
-                        
-                        <div className="flex flex-row gap-2">
-                         [<p className="text-sm-medium neutral-500">{dcountry},{dcity}</p>|
-                          <p className="text-sm-medium neutral-500">{dairportname}</p>|
-                          <p className="text-sm-medium neutral-500">{terminal}</p>]
-                        </div>
-                        
-                      </div>
-    
-
-<div>
-<svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          className="bi bi-arrow-right"
-          viewBox="0 0 16 16"
-        > 
-          <path
-            fillRule="evenodd"
-            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
-            .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
-            8.5H1.5A.5.5 0 0 1 1 8"
-          />
-        </svg>
-</div>
-
-    
-<div className=" flex flex-row justify-between items-center">
-                        
-<div className="flex flex-row gap-2 ">
-                         [ <p className="text-sm-medium neutral-500">{acountry},{acity}</p>|
-                          <p className="text-sm-medium neutral-500">{aairportname}</p>|
-                          <p className="text-sm-medium neutral-500">{aterminal}</p>]
-                        </div>
-                        
-                      </div>
-    
-
-</div> */}
-                            {/* //flightname and code
-                             */}
-                            {/* <div className="flex flex-row justify-between">
-                              <div className="logo-flight flex flex-row gap-3 items-center mb-20"> */}
-                            {/* <img
-                                                                            src={`/assets/imgs/airlines/${flightcode}.png`}
-                                                                            
-                                                                        /> */}
-                            {/* <div className="text-md-bold neutral-900">
-                                  {flightNames}
-                                </div>
-                                <div className="text-md-medium neutral-500">
-                                  {flightnumber}
-                                </div>
-                                <div className="text-md-medium neutral-500 border border-black-200 rounded-lg pl-10 pr-10">
-                                  {flighteT}
-                                </div>
-                              </div>
-
-                              <div className="flex flex-row items-center gap-3">
-                                <p className="text-sm-medium neutral-500 ">
-                                  {cabinclass}
-                                </p>
-                                <span
-                                  className="fareidentifier text-xs font-bold pl-10 pr-10 rounded-full"
-                                  style={{
-                                    backgroundColor: "rgb(245, 222, 179)",
-                                    color: "rgb(92, 64, 51)",
-                                    padding: "1px 2px",
-                                  }}
-                                >
-                                  {fareIdentifier}
-                                </span>
-                              </div>
-                            </div> */}
-
-                            {/* <div className=" flex flex-row justify-between  bg-gray-100 p-2 rounded-md  space-y-6 "> */}
-                            {/* Flight Timings */}
-                            {/* <div className="flex justify-between items-center gap-5 ">
-                                <div className="text-left space-y-1"> */}
-                            {/* <p className="text-sm text-gray-500">{formatDepartureDate(departureDate)}</p> */}
-                            {/* <h4
-                                    className=""
-                                    style={{
-                                      fontSize: "28px",
-                                      fontWeight: "normal",
-                                    }}
-                                  >
-                                    {dt}
-                                  </h4>
-                                  <p className="text-sm-medium neutral-500 ">{`${dcity},${dcountry}`}</p>
-                                  <p className="text-sm-medium neutral-500 ">
-                                    {dairportname}
-                                  </p>
-                                  <p className="text-sm-medium neutral-1000 ">
-                                    {terminal}
-                                  </p>
-                                </div>
-
-                                <div className="text-center space-y-1">
-                                  <p className="text-sm-medium neutral-500 ">
-                                    {duration}
-                                  </p>
-                                  <img
-                                    src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg"
-                                    alt="flight line"
-                                    className="mx-auto w-20"
-                                  />
-                                </div>
-
-                                <div className="text-right space-y-1"> */}
-                            {/* <p className="text-sm text-gray-500">{formatArrivalDate(arrivalDate)}</p> */}
-                            {/* <h4
-                                    className=""
-                                    style={{
-                                      fontSize: "28px",
-                                      fontWeight: "normal",
-                                    }}
-                                  >
-                                    {at}
-                                  </h4>
-                                  <p className="text-sm-medium neutral-500 ">{`${acity},${acountry}`}</p>
-                                  <p className="text-sm-medium neutral-500 ">
-                                    {aairportname}
-                                  </p>
-                                  <p className="text-sm-medium neutral-1000 ">
-                                    {aterminal}
-                                  </p>
-                                </div>
-                              </div> */}
-
-                            {/* Baggage Info */}
-                            {/* <div className="flex flex-col items-center justify-center gap-3  space-x-10">
-                                <div className="flex items-center space-x-2">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    fill="currentColor"
-                                    class="bi bi-suitcase-lg-fill"
-                                    viewBox="0 0 16 16"
-                                  >
-                                    <path d="M7 0a2 2 0 0 0-2 2H1.5A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14H2a.5.5 0 0 0 1 0h10a.5.5 0 0 0 1 0h.5a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2H11a2 2 0 0 0-2-2zM6 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1zM3 13V3h1v10zm9 0V3h1v10z" />
-                                  </svg>
-                                  <p className="text-sm-bold neutral-900">
-                                    Cabin:{" "}
-                                    <span className="text-sm-medium neutral-500">
-                                      {cabinBaggage} per adult
-                                    </span>
-                                  </p>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    fill="currentColor"
-                                    class="bi bi-suitcase2-fill"
-                                    viewBox="0 0 16 16"
-                                  >
-                                    <path d="M6.5 0a.5.5 0 0 0-.5.5V3H4.5A1.5 1.5 0 0 0 3 4.5v9a1.5 1.5 0 0 0 1.003 1.416A1 1 0 1 0 6 15h4a1 1 0 1 0 1.996-.084A1.5 1.5 0 0 0 13 13.5v-9A1.5 1.5 0 0 0 11.5 3H10V.5a.5.5 0 0 0-.5-.5zM9 3H7V1h2zM4 7V6h8v1z" />
-                                  </svg>
-                                  <p className="text-sm-bold neutral-900 ">
-                                    Check-in:{" "}
-                                    <span className="text-sm-medium neutral-500 ">
-                                      {checkinBaggage}, 1 piece/adult
-                                    </span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="mt-30 text-sm-medium neutral-1000 p-3 bg-blue-100">
-                              {`Got excess baggage? Don’t stress, buy extra check-in baggage allowance for ${dcitycode}-${acitycode} at fab rates!`}
-                            </div> */}
-                          </div>
-
                           {/* Gradient BORDER wrapper */}
                           <div
                             style={{
@@ -1971,28 +1698,26 @@ const ReviewPage = () => {
                             <div
                               style={{
                                 background: "#fff",
-                                borderRadius: "8px", // slightly smaller than outer
+                                borderRadius: "8px",
                                 boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
-                                padding: "12px", // matches p-3 approx
+                                padding: "12px",
                               }}
                             >
-                              {/* 🔽 paste your existing content from the original outer div HERE (unchanged) 🔽 */}
-                              <div className="flex flex-row justify-between">
+                              <div className="flex flex-row justify-between refund-header-row">
                                 <div className="text-xl-bold neutral-1000">
                                   Cancellation and Refund
                                 </div>
 
                                 {Object.keys(fareRulesMap)?.length > 0 ? (
-                                  <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-full w-max mb-4">
+                                  <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-full w-max mb-4 route-selection-wrapper">
                                     {Object.keys(fareRulesMap).map((route) => (
                                       <button
                                         key={route}
                                         onClick={() => setSelectedRoute(route)}
-                                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
-                                          selectedRoute === route
-                                            ? "bg-white text-black shadow"
-                                            : "text-gray-600 hover:text-black"
-                                        }`}
+                                        className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${selectedRoute === route
+                                          ? "bg-white text-black shadow"
+                                          : "text-gray-600 hover:text-black"
+                                          }`}
                                       >
                                         {route}
                                       </button>
@@ -2074,7 +1799,7 @@ const ReviewPage = () => {
                                   </div>
                                 </div>
 
-                                <div className="flex flex-row justify-between align-center pt-4 pl-15 pr-15 ">
+                                <div className="flex flex-row justify-between align-center pt-4 pl-15 pr-15 refund-charges-row">
                                   <p className="text-sm-medium neutral-1000">
                                     {cancellation.some(
                                       (e) => e.pp === undefined
@@ -2093,10 +1818,10 @@ const ReviewPage = () => {
                                           {fareRulesData?.fareRuleInformation
                                             ?.tfr?.CANCELLATION?.[0]?.amount
                                             ? fareRulesData?.fareRuleInformation
-                                                ?.tfr?.CANCELLATION?.[0]?.amount
+                                              ?.tfr?.CANCELLATION?.[0]?.amount
                                             : fareRulesData?.fareRuleInformation
-                                                ?.tfr?.CANCELLATION?.[0]
-                                                ?.additionalFee}
+                                              ?.tfr?.CANCELLATION?.[0]
+                                              ?.additionalFee}
                                           <span className="mx-1"></span>
                                         </p>
                                         <div className="text-secondary text-sm">
@@ -2135,249 +1860,6 @@ const ReviewPage = () => {
                             </div>
                           </div>
 
-                          {/* <div className="mt-50 shadow rounded-md p-3 border border-black">
-                            <div className="flex flex-row justify-between">
-                              <div className="text-xl-bold neutral-1000">
-                                Cancellation and Refund
-                              </div>
-
-                              {Object.keys(fareRulesMap)?.length > 0 ? (
-                                <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-full w-max mb-4">
-                                  {Object.keys(fareRulesMap).map((route) => (
-                                    <button
-                                      key={route}
-                                      onClick={() => setSelectedRoute(route)}
-                                      className={`px-4 py-1.5 text-sm font-medium rounded-full transition-colors duration-200 ${
-                                        selectedRoute === route
-                                          ? "bg-white text-black shadow"
-                                          : "text-gray-600 hover:text-black"
-                                      }`}
-                                    >
-                                      {route}
-                                    </button>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="text-gray-500 italic p-4">
-                                  No fare rule information available.
-                                </div>
-                              )}
-
-                              <div className="pl-30 ">
-                                <Stack>
-                                  <Button
-                                    variant="contained"
-                                    onClick={() => setShowMore((prev) => !prev)}
-                                    className=" cursor-pointer"
-                                  >
-                                    {showMore ? "Show Less" : "Show More"}
-                                  </Button>
-                                </Stack>
-                              </div>
-                            </div>
-
-                            <div className="py-5 ">
-                              <div className="flex flex-row    justify-around pr-4 mt-5 flex-wrap gap-y-5">
-                                <div className=" gap-5 justify-center">
-                                  <div className="text-center pl-6">
-                                    <p className="text-primary text-sm font-medium whitespace-normal">
-                                      {fareRulesData?.refundType}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="space-y-3 mt-3  pl-20 pr-30">
-                                <div className="relative   flex items-center pl-5  justify-center">
-                                  <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
-                                    <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
-                                      <svg
-                                        width="18"
-                                        height="18"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
-                                      </svg>
-                                    </div>
-                                  </div>
-
-                                  <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
-                                    <div
-                                      className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white"
-                                      style={{ marginRight: "-5px" }}
-                                    >
-                                      <svg
-                                        width="18"
-                                        height="18"
-                                        fill="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path d="M20.85 9.8 9.8 20.85c-.19.19-.49.2-.67.02l-1.6-1.6c-.15-.16-.18-.4-.08-.61.69-1.41-.69-2.77-2.11-2.1-.22.1-.46.06-.62-.1l-1.6-1.6c-.17-.18-.16-.47.03-.66L14.2 3.15c.19-.19.49-.2.66-.02l1.6 1.6c.15.15.19.39.09.6-.67 1.42.67 2.83 2.07 2.12.21-.11.48-.08.64.08l1.6 1.6c.18.18.17.47-.02.67Z" />
-                                      </svg>
-                                    </div>
-                                  </div>
-
-                                  <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
-
-                                  <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
-                                </div>
-                              </div>
-
-                              <div className="flex flex-row justify-between align-center pt-4 pl-15 pr-15 ">
-                                <p className="text-sm-medium neutral-1000">
-                                  {cancellation.some(
-                                    (e) => e.pp === undefined
-                                  ) ? (
-                                    "Now"
-                                  ) : (
-                                    <>
-                                      <div>Now</div>
-                                    </>
-                                  )}
-                                </p>
-                                <div className="flex  justify-center">
-                                  <div className="flex flex-wrap flex-col items-center justify-center max-w-full">
-                                    <div className="flex items-center flex-col">
-                                      <p className="text-sm-medium neutral-500">
-                                        ₹{" "}
-                                        {fareRulesData?.fareRuleInformation?.tfr
-                                          ?.CANCELLATION?.[0]?.amount
-                                          ? fareRulesData?.fareRuleInformation
-                                              ?.tfr?.CANCELLATION?.[0]?.amount
-                                          : fareRulesData?.fareRuleInformation
-                                              ?.tfr?.CANCELLATION?.[0]
-                                              ?.additionalFee}
-                                        <span className="mx-1"></span>
-                                      </p>
-                                      <div className="text-secondary text-sm">
-                                        {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]?.policyInfo
-                                          ?.split("__nls__")
-                                          .filter(Boolean)
-                                          .map((line, index) => (
-                                            <div key={index}>{line.trim()}</div>
-                                          ))}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="flex flex-col justify-center items-center">
-                                  <p className="text-sm-medium neutral-1000">
-                                    {getDepartureTimeForRoute(selectedRoute)}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                            {showMore && (
-                              <>
-                                <div
-                                  style={{
-                                    maxWidth: "64rem",
-                                    margin: "0 auto",
-                                    padding: "1rem",
-                                  }}
-                                >
-                                  <Tabs defaultActiveKey="2" items={itemss} />
-                                </div>
-                              </>
-                            )}
-                          </div> */}
-
-                          {/* <div className="item-flight background-card border border-black-200 ticket-container relative flex flex-row justify-between items-center p-5">
-  <div className="air_detailes border border-black-200">{flightNames }</div>
-
-  <div className="flight-route flight-route-type-2 city1">
-    <div className="flight-route-1">
-      <div className="flight-name">
-        <div className="flight-info flex flex-col justify-center items-center  ">
-          <p className="text-md-bold neutral-1000 city1name">
-            {dcity}
-             <span className="text-md-bold neutral-1000"> {`(${dcitycode})`}</span>
-          </p>
-          <p className="text-sm-medium time-flight timelogo">
-            <span className="neutral-1000 time">{dt}</span>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div className="flight-route flight-route-type-2 city1">
-    <div className="flight-route-1">
-      <div className="flight-name duration flex flex-col items-center align-center">
-        <p className="text-sm-medium neutral-500 totalduration">{duration}</p>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          className="bi bi-arrow-right"
-          viewBox="0 0 16 16"
-        >
-          <path
-            fillRule="evenodd"
-            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 
-            .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 
-            8.5H1.5A.5.5 0 0 1 1 8"
-          />
-        </svg>
-        <p className="text-sm-medium neutral-500 totalduration">{stops}</p>
-      </div>
-    </div>
-  </div>
-
-  <div className="flight-route flight-route-type-2 city1">
-    <div className="flight-route-1">
-      <div className="flight-name">
-        <div className="flight-info flex flex-col items-center align-center">
-          <p className="text-md-bold neutral-1000 align-center city1name">
-            {acity} <span className="text-md-bold neutral-1000 citycode">{`(${acitycode})`}</span>
-          </p>
-          <p className="text-sm-medium time-flight timelogo">
-            <span className="neutral-1000 time">{at}</span>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div
-    className="flight-price-1 border-1 price-div flex justify-center items-center flex-col"
-    style={{ width: '245px', paddingLeft: '20px' }}
-  >
-    <div className="ant-radio-group ant-radio-group-outline fare-options flex flex-col gap-2 w-full css-dev-only-do-not-override-1261szd">
-      <label className="ant-radio-wrapper ant-radio-wrapper-checked w-full radiocomp css-dev-only-do-not-override-1261szd">
-       
-        <span className="ant-radio-label">
-          <div className="p-0 rounded-lg border-2 transition-all duration-200 radiodiv border-gray-300 hover:border-gray-500">
-            <div className="flex flex-row gap-2 items-center">
-              <div className="text-lg font-bold text-gray-800 price">₹{totalprice}</div>
-              <span
-                className="fareidentifier text-xs font-bold"
-                style={{
-                  backgroundColor: 'rgb(245, 222, 179)',
-                  color: 'rgb(92, 64, 51)',
-                  padding: '1px 2px',
-                }} 
-              >
-                {fareIdentifier}
-              </span>
-            </div>
-            <div className="text-xs text-gray-600">
-              <span className="ml-2 cabinclass">
-               {cabinclass} | <span className="refundable">{refundabletype}</span>
-              </span>
-            </div>
-          </div>
-        </span>
-      </label>
-    </div>
-  </div>
-
- 
-</div> */}
-
                           {/* Form */}
                           <form
                             id="validateOnly"
@@ -2393,7 +1875,7 @@ const ReviewPage = () => {
                             >
                               {/* Country Code */}
                               <div
-                                className="ant-col ant-col-6"
+                                className="ant-col ant-col-6 passenger-details-col"
                                 style={{
                                   paddingLeft: "8px",
                                   paddingRight: "8px",
@@ -2403,238 +1885,238 @@ const ReviewPage = () => {
                                   <p className="text-xl-bold neutral-1000 mb-10 ">
                                     Passenger information
                                   </p>
-                                  <table className="w-full border-collapse mb-20">
-                                    <thead
-                                      style={{ borderBottom: "grey 1px solid" }}
-                                    >
-                                      <tr>
-                                        <th
-                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
-                                          style={{ width: "1rem" }}
-                                        >
-                                          S.No
-                                        </th>
-                                        <th
-                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
-                                          style={{ width: "20rem" }}
-                                        >
-                                          Full Name
-                                        </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          Add-ons
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {travellers.length > 0 ? (
-                                        travellers.map((traveller, index) => {
-                                          const fullName = `${
-                                            traveller?.ti + "." || ""
-                                          } ${traveller?.fN || ""} ${
-                                            traveller?.lN || ""
-                                          }`.trim();
-
-                                          const addOns = [];
-
-                                          if (
-                                            traveller.ssrBaggageInfos &&
-                                            traveller.ssrBaggageInfos.length > 0
-                                          ) {
-                                            console.log(
-                                              "traveller.ssrBaggageInfos ==> ",
-                                              traveller.ssrBaggageInfos
-                                            );
-                                            const baggageDetails =
-                                              traveller.ssrBaggageInfos
-                                                .map((b) => {
-                                                  const baggageFromCookie =
-                                                    cookieBaggageData.find(
-                                                      (c) => c.code === b.code
-                                                    );
-                                                  console.log(
-                                                    "baggageFromCookiebaggageFromCookie =",
-                                                    baggageFromCookie
-                                                  );
-                                                  return baggageFromCookie
-                                                    ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
-                                                    : b.code;
-                                                })
-                                                .filter(Boolean)
-                                                .join(", ");
-                                            console.log(
-                                              "baggageDetailsbaggageDetails ==> ",
-                                              baggageDetails
-                                            );
-                                            if (baggageDetails) {
-                                              addOns.push(
-                                                `Baggage: ${baggageDetails}`
-                                              );
-                                            }
-                                          }
-
-                                          if (
-                                            traveller.ssrMealInfos &&
-                                            traveller.ssrMealInfos.length > 0
-                                          ) {
-                                            const mealDetails =
-                                              traveller.ssrMealInfos
-                                                .map((m) => {
-                                                  const mealFromCookie =
-                                                    cookieMealData.find(
-                                                      (c) => c.code === m.code
-                                                    );
-                                                  return mealFromCookie
-                                                    ? `${mealFromCookie.desc} [${mealFromCookie.fromToCode}]`
-                                                    : m.code;
-                                                })
-                                                .filter(Boolean)
-                                                .join(", ");
-                                            if (mealDetails)
-                                              addOns.push(
-                                                `Meals: ${mealDetails}`
-                                              );
-                                          }
-
-                                          // cookieMappedSeatData
-                                          if (
-                                            traveller.ssrSeatInfos &&
-                                            traveller.ssrSeatInfos.length > 0
-                                          ) {
-                                            const seatDetails =
-                                              traveller.ssrSeatInfos
-                                                .map((s) => {
-                                                  const mealFromCookie =
-                                                    cookieMappedSeatData.find(
-                                                      (c) => c.code === s.code
-                                                    );
-                                                  return mealFromCookie
-                                                    ? `${mealFromCookie.code} [${mealFromCookie.fromToCode}]`
-                                                    : s.code;
-                                                })
-                                                .filter(Boolean)
-                                                .join(", ");
-                                            if (seatDetails)
-                                              addOns.push(
-                                                `Seat: ${seatDetails}`
-                                              );
-                                          }
-
-                                          // if (
-                                          //   traveller.ssrSeatInfos &&
-                                          //   traveller.ssrSeatInfos.length > 0
-                                          // ) {
-                                          //   console.log("traveller.ssrSeatInfos ==> ",traveller.ssrSeatInfos)
-                                          //   const seatDetails =
-                                          //     traveller.ssrSeatInfos
-                                          //       .map((s) => s.code)
-                                          //       .filter(Boolean)
-                                          //       .join(", ");
-                                          //   if (seatDetails) {
-                                          //     addOns.push(
-                                          //       `Seat: ${seatDetails}`
-                                          //     );
-                                          //   }
-                                          // }
-
-                                          return (
-                                            <tr key={index}>
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {index + 1}
-                                              </td>
-                                              <td
-                                                className="px-4 py-3 border-b border-gray-200 text-black"
-                                                style={{
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                {fullName || "N/A"}
-                                                {traveller?.di && (
-                                                  <span>
-                                                    ID: {traveller.di}
-                                                  </span>
-                                                )}
-                                                {(traveller?.pNat ||
-                                                  traveller?.pNum ||
-                                                  traveller?.eD ||
-                                                  traveller?.pid ||
-                                                  traveller?.dob) && (
-                                                  <>
-                                                    {traveller?.pNat && (
-                                                      <span>
-                                                        Nationality:{" "}
-                                                        {traveller.pNat}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.pNum && (
-                                                      <span>
-                                                        Passport Number:{" "}
-                                                        {traveller.pNum}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.eD && (
-                                                      <span>
-                                                        Expiry Date:{" "}
-                                                        {traveller.eD}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.pid && (
-                                                      <span>
-                                                        Issue Date:{" "}
-                                                        {traveller.pid}
-                                                      </span>
-                                                    )}
-                                                    {traveller?.dob && (
-                                                      <span>
-                                                        Date Of Birth:{" "}
-                                                        {traveller.dob}
-                                                      </span>
-                                                    )}
-                                                  </>
-                                                )}
-                                              </td>
-                                              {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {addOns.length > 0
-                                                  ? addOns.join(" | ")
-                                                  : "None"}
-                                              </td> */}
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {addOns && addOns.length > 0 ? (
-                                                  <div className="flex flex-col gap-1">
-                                                    {addOns.map((item, i) => (
-                                                      <span
-                                                        key={i}
-                                                        className="text-sm"
-                                                      >
-                                                        {item}
-                                                      </span>
-                                                    ))}
-                                                  </div>
-                                                ) : (
-                                                  "None"
-                                                )}
-                                              </td>
-                                            </tr>
-                                          );
-                                        })
-                                      ) : (
+                                  <div className="responsive-table-wrapper">
+                                    <table className="w-full border-collapse mb-20">
+                                      <thead
+                                        style={{ borderBottom: "grey 1px solid" }}
+                                      >
                                         <tr>
-                                          <td
-                                            colSpan="3"
-                                            className="px-4 py-3 text-center border-b border-gray-200 text-black"
+                                          <th
+                                            className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                            style={{ width: "1rem" }}
                                           >
-                                            No passenger information available.
-                                          </td>
+                                            S.No
+                                          </th>
+                                          <th
+                                            className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                            style={{ width: "20rem" }}
+                                          >
+                                            Full Name
+                                          </th>
+                                          <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                            Add-ons
+                                          </th>
                                         </tr>
-                                      )}
-                                    </tbody>
-                                  </table>
+                                      </thead>
+                                      <tbody>
+                                        {travellers.length > 0 ? (
+                                          travellers.map((traveller, index) => {
+                                            const fullName = `${traveller?.ti + "." || ""
+                                              } ${traveller?.fN || ""} ${traveller?.lN || ""
+                                              }`.trim();
+
+                                            const addOns = [];
+
+                                            if (
+                                              traveller.ssrBaggageInfos &&
+                                              traveller.ssrBaggageInfos.length > 0
+                                            ) {
+                                              console.log(
+                                                "traveller.ssrBaggageInfos ==> ",
+                                                traveller.ssrBaggageInfos
+                                              );
+                                              const baggageDetails =
+                                                traveller.ssrBaggageInfos
+                                                  .map((b) => {
+                                                    const baggageFromCookie =
+                                                      cookieBaggageData.find(
+                                                        (c) => c.code === b.code
+                                                      );
+                                                    console.log(
+                                                      "baggageFromCookiebaggageFromCookie =",
+                                                      baggageFromCookie
+                                                    );
+                                                    return baggageFromCookie
+                                                      ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
+                                                      : b.code;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join(", ");
+                                              console.log(
+                                                "baggageDetailsbaggageDetails ==> ",
+                                                baggageDetails
+                                              );
+                                              if (baggageDetails) {
+                                                addOns.push(
+                                                  `Baggage: ${baggageDetails}`
+                                                );
+                                              }
+                                            }
+
+                                            if (
+                                              traveller.ssrMealInfos &&
+                                              traveller.ssrMealInfos.length > 0
+                                            ) {
+                                              const mealDetails =
+                                                traveller.ssrMealInfos
+                                                  .map((m) => {
+                                                    const mealFromCookie =
+                                                      cookieMealData.find(
+                                                        (c) => c.code === m.code
+                                                      );
+                                                    return mealFromCookie
+                                                      ? `${mealFromCookie.desc} [${mealFromCookie.fromToCode}]`
+                                                      : m.code;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join(", ");
+                                              if (mealDetails)
+                                                addOns.push(
+                                                  `Meals: ${mealDetails}`
+                                                );
+                                            }
+
+                                            // cookieMappedSeatData
+                                            if (
+                                              traveller.ssrSeatInfos &&
+                                              traveller.ssrSeatInfos.length > 0
+                                            ) {
+                                              const seatDetails =
+                                                traveller.ssrSeatInfos
+                                                  .map((s) => {
+                                                    const mealFromCookie =
+                                                      cookieMappedSeatData.find(
+                                                        (c) => c.code === s.code
+                                                      );
+                                                    return mealFromCookie
+                                                      ? `${mealFromCookie.code} [${mealFromCookie.fromToCode}]`
+                                                      : s.code;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join(", ");
+                                              if (seatDetails)
+                                                addOns.push(
+                                                  `Seat: ${seatDetails}`
+                                                );
+                                            }
+
+                                            // if (
+                                            //   traveller.ssrSeatInfos &&
+                                            //   traveller.ssrSeatInfos.length > 0
+                                            // ) {
+                                            //   console.log("traveller.ssrSeatInfos ==> ",traveller.ssrSeatInfos)
+                                            //   const seatDetails =
+                                            //     traveller.ssrSeatInfos
+                                            //       .map((s) => s.code)
+                                            //       .filter(Boolean)
+                                            //       .join(", ");
+                                            //   if (seatDetails) {
+                                            //     addOns.push(
+                                            //       `Seat: ${seatDetails}`
+                                            //     );
+                                            //   }
+                                            // }
+
+                                            return (
+                                              <tr key={index}>
+                                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                  {index + 1}
+                                                </td>
+                                                <td
+                                                  className="px-4 py-3 border-b border-gray-200 text-black"
+                                                  style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                  }}
+                                                >
+                                                  {fullName || "N/A"}
+                                                  {traveller?.di && (
+                                                    <span>
+                                                      ID: {traveller.di}
+                                                    </span>
+                                                  )}
+                                                  {(traveller?.pNat ||
+                                                    traveller?.pNum ||
+                                                    traveller?.eD ||
+                                                    traveller?.pid ||
+                                                    traveller?.dob) && (
+                                                      <>
+                                                        {traveller?.pNat && (
+                                                          <span>
+                                                            Nationality:{" "}
+                                                            {traveller.pNat}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.pNum && (
+                                                          <span>
+                                                            Passport Number:{" "}
+                                                            {traveller.pNum}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.eD && (
+                                                          <span>
+                                                            Expiry Date:{" "}
+                                                            {traveller.eD}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.pid && (
+                                                          <span>
+                                                            Issue Date:{" "}
+                                                            {traveller.pid}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.dob && (
+                                                          <span>
+                                                            Date Of Birth:{" "}
+                                                            {traveller.dob}
+                                                          </span>
+                                                        )}
+                                                      </>
+                                                    )}
+                                                </td>
+                                                {/* <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                  {addOns.length > 0
+                                                    ? addOns.join(" | ")
+                                                    : "None"}
+                                                </td> */}
+                                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                  {addOns && addOns.length > 0 ? (
+                                                    <div className="flex flex-col gap-1">
+                                                      {addOns.map((item, i) => (
+                                                        <span
+                                                          key={i}
+                                                          className="text-sm"
+                                                        >
+                                                          {item}
+                                                        </span>
+                                                      ))}
+                                                    </div>
+                                                  ) : (
+                                                    "None"
+                                                  )}
+                                                </td>
+                                              </tr>
+                                            );
+                                          })
+                                        ) : (
+                                          <tr>
+                                            <td
+                                              colSpan="3"
+                                              className="px-4 py-3 text-center border-b border-gray-200 text-black"
+                                            >
+                                              No passenger information available.
+                                            </td>
+                                          </tr>
+                                        )}
+                                      </tbody>
+                                    </table>
+                                  </div>
                                 </div>
                               </div>
 
                               {/* Email and Phone Number */}
                               <div
-                                className="ant-col ant-col-6 mt-30 mb-30"
+                                className="ant-col ant-col-6 mt-30 mb-30 contact-info-col"
                                 style={{
                                   paddingLeft: "8px",
                                   paddingRight: "8px",
@@ -2665,7 +2147,7 @@ const ReviewPage = () => {
                             </div>
                             {/* Buttons */}
                             <div className="bg-white relative flex justify-between  flex-col">
-                              <div className="mt-60 flex justify-between">
+                              <div className="mt-60 flex justify-between action-buttons-row">
                                 <Link
                                   href={`/book-ticket?tcs_id=${priceId}`}
                                   style={{ borderRadius: "5px" }}
@@ -2690,11 +2172,10 @@ const ReviewPage = () => {
                                         : handleHoldBooking
                                     }
                                     style={{ borderRadius: "5px" }}
-                                    className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                                      holdLoading
-                                        ? "bg-gray-300"
-                                        : "bg-yellow-300 hover:bg-yellow-400"
-                                    }`}
+                                    className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${holdLoading
+                                      ? "bg-gray-300"
+                                      : "bg-yellow-300 hover:bg-yellow-400"
+                                      }`}
                                   >
                                     {holdLoading ? (
                                       <div className="flex items-center gap-2">
@@ -2880,8 +2361,7 @@ const ReviewPage = () => {
               {paymentFailurePopup && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                   <div
-                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
-                    style={{ width: "35%" }}
+                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative payment-modal-content"
                   >
                     <button
                       // onClick={() => setPaymentFailurePopup(false)}
@@ -2903,13 +2383,7 @@ const ReviewPage = () => {
                       later.
                     </p>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        paddingTop: "10px",
-                      }}
-                    >
+                    <div className="payment-modal-buttons-row">
                       {flightData?.conditions?.isBA === true && (
                         // <div
                         //   onClick={handleHoldBooking}
@@ -2921,11 +2395,10 @@ const ReviewPage = () => {
                         <div
                           onClick={holdLoading ? undefined : handleHoldBooking}
                           style={{ borderRadius: "5px" }}
-                          className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                            holdLoading
-                              ? "bg-gray-300"
-                              : "bg-yellow-300 hover:bg-yellow-400"
-                          }`}
+                          className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${holdLoading
+                            ? "bg-gray-300"
+                            : "bg-yellow-300 hover:bg-yellow-400"
+                            }`}
                         >
                           {holdLoading ? (
                             <div className="flex items-center gap-2">
@@ -2959,11 +2432,10 @@ const ReviewPage = () => {
 
                       <div
                         onClick={bookingReviewWIthWallet}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoadingWallet
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoadingWallet}
                       >
                         {bookingLoadingWallet ? (
@@ -2997,11 +2469,10 @@ const ReviewPage = () => {
 
                       <div
                         onClick={bookingReview}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoading
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoading}
                       >
                         {bookingLoading ? (
@@ -3047,8 +2518,7 @@ const ReviewPage = () => {
               {paymentModel && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                   <div
-                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
-                    style={{ width: "35%" }}
+                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative payment-modal-content"
                   >
                     <button
                       // onClick={() => setPaymentFailurePopup(false)}
@@ -3065,20 +2535,13 @@ const ReviewPage = () => {
                       Choose Payment Mode
                     </p>
 
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-around",
-                        paddingTop: "10px",
-                      }}
-                    >
+                    <div className="payment-modal-buttons-row">
                       <div
                         onClick={bookingReviewWIthWallet}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoadingWallet
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoadingWallet}
                       >
                         {bookingLoadingWallet ? (
@@ -3112,11 +2575,10 @@ const ReviewPage = () => {
 
                       <div
                         onClick={bookingReview}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                          bookingLoading
-                            ? "bg-gray-300"
-                            : "bg-yellow-300 hover:bg-yellow-400"
-                        }`}
+                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                          ? "bg-gray-300"
+                          : "bg-yellow-300 hover:bg-yellow-400"
+                          }`}
                         disabled={bookingLoading}
                       >
                         {bookingLoading ? (
