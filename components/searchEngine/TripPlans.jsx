@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './TripPlans.css';
 
 export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
   // Set initial selected plan to 'Round Trip'
@@ -9,7 +10,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
   };
 
   return (
-    <div className="plans mt-35 mb_8 ml_10">
+    <div className="plans mt-35 mb_8 ml_10 trip_radio">
       {/* One Way Plan */}
       <label className="plan basic-plan" htmlFor="basic">
         <input

@@ -22,6 +22,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import "./DirectFlight.jsx";
 import DirectFlight from "./DirectFlight.jsx";
 import MultiCityContainer from "./MultiCityContainer.jsx";
+import "./engineHeader.css";
 
 import { PlusOutlined, MinusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
@@ -576,8 +577,8 @@ const EngineTabs = ({ active_border }) => {
             className="custom-grid justify-center"
             style={{ flexDirection: "column" }}
           >
-            <div className="flex">
-              <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1">
+            <div className="flex country">
+              <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1 country_from">
                 <div className="" onClick={openfrom}>
                   <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
                     From
@@ -620,7 +621,7 @@ const EngineTabs = ({ active_border }) => {
                 ></Tooltip>
               </div>
 
-              <div className="searchReplaceLocation">
+              <div className="searchReplaceLocation country_symbol">
                 <svg
                   onClick={locationSwap}
                   xmlns="http://www.w3.org/2000/svg"
@@ -635,7 +636,7 @@ const EngineTabs = ({ active_border }) => {
                 </svg>
               </div>
 
-              <div className="text_start b_right_2px g_w_2 css_pointer relative ">
+              <div className="text_start b_right_2px g_w_2 css_pointer relative country_to">
                 <div className="" onClick={openTo}>
                   <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">
                     To
@@ -742,6 +743,15 @@ const EngineTabs = ({ active_border }) => {
                       value={returnDate}
                     />
                   ) : null}
+                </div>
+              ) : selectedPlan === "one-way" ? (
+                <div className="text_start b_right_2px g_w_4 css_pointer" onClick={() => setSelectedPlan("round-trip")}>
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div style={{color: "#e88400"}} className="font-semibold text-lg">+ ADD RETURN DATE</div>
+                      <div className="text-sm text-gray-500 mt-1">Save more on round trips!</div>
+                    </div>
+                  </div>
                 </div>
               ) : null}
 

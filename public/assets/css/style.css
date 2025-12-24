@@ -17968,7 +17968,7 @@ h2 span {
   box-sizing: border-box;
   border: 2px solid #e1e2e7;
   border-radius: 10px;
-
+  width: 100%;
   transition: box-shadow 0.4s;
   position: relative;
 }
@@ -18035,6 +18035,7 @@ h2 span {
   -webkit-transition: ease-in 0.3s;
   -o-transition: ease-in 0.3s;
   transition: ease-in 0.3s;
+  width:100%;
 }
 
 .search_btn {
