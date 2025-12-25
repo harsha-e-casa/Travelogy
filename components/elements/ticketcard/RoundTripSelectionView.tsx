@@ -23,6 +23,7 @@ interface SelectedTicket {
 
 export default function RoundTripSelectionView({ flightData }: any) {
   const isUat = process.env.UAT_ENV === "true";
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const { getCookie } = useContext(AppContext);
   const departureFrom = getCookie("gy_da_str");
   const arrivalTo = getCookie("gy_aa_str");
@@ -52,6 +53,29 @@ export default function RoundTripSelectionView({ flightData }: any) {
 
   // Drawer state for mobile filters
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
+  useEffect(() => {
+    // Detecting the window size to set `isMobile`
+    const handleResize = () => {
+      if (window.innerWidth <= 770) {
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
+      }
+    };
+
+    // Set initial value on mount
+    handleResize();
+
+    // Listen for window resize
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup event listener on unmount
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const showFilterDrawer = () => {
     setFilterDrawerOpen(true);
@@ -716,7 +740,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
             width: "100%",
           }}
         >
-          <div className="row">
+          {/* <div className="row">
             <div className="col-lg-11">
               <div>
                 <p className="text-sm font-semibold text-white mb-2">
@@ -867,7 +891,205 @@ export default function RoundTripSelectionView({ flightData }: any) {
                 Cancel
               </button>
             </div>
-          </div>
+          </div> */}
+          {isMobile ? (
+            <>
+              <div
+                className="mobile-view p-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] cursor-pointer"
+                style={{
+                  position: "sticky",
+                  bottom: 0,
+                  zIndex: 100,
+                  backgroundColor: "#fff",
+                  borderTop: "1px solid #e0e0e0",
+                  width: "100%",
+                }}
+                onClick={() => setShowDetails(true)}
+              >
+                <div className="flex justify-between items-center">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
+                      Selected Departure
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-bold text-gray-800">
+                        {selectedOnwardTicket.ticket.sI[0].da.code} &rarr; {selectedOnwardTicket.ticket.sI[selectedOnwardTicket.ticket.sI.length - 1].aa.code}
+                      </span>
+                      <span className="text-xs text-blue-600 font-medium ml-2">(View Details)</span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-lg font-bold text-blue-600">
+                      ₹{(() => {
+                        let adultCost = 0;
+                        let childCost = 0;
+                        let infantCost = 0;
+                        const selectedFare =
+                          selectedOnwardTicket.ticket.totalPriceList[
+                          selectedOnwardTicket.selectedPriceIndex
+                          ];
+
+                        if (selectedFare?.fd?.ADULT) {
+                          adultCost = adultCount * selectedFare.fd.ADULT.fC.NF;
+                        }
+                        if (selectedFare?.fd?.CHILD) {
+                          childCost = childCount * selectedFare.fd.CHILD.fC.NF;
+                        }
+                        if (selectedFare?.fd?.INFANT) {
+                          infantCost = infantCount * selectedFare.fd.INFANT.fC.NF;
+                        }
+
+                        return new Intl.NumberFormat("en-IN").format(
+                          adultCost + childCost + infantCost
+                        );
+                      })()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <Drawer
+                title="Selected Departure Flight"
+                placement="bottom"
+                onClose={() => setShowDetails(false)}
+                open={showDetails}
+                height="auto"
+                className="mobile-flight-details-drawer"
+                styles={{
+                  body: { padding: '16px' },
+                  header: { padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }
+                }}
+              >
+                <div className="flex flex-col gap-4">
+                  {selectedOnwardTicket?.ticket?.sI?.map(
+                    (segment: any, index: number) => (
+                      <div
+                        key={index}
+                        className={`flex flex-col gap-3 ${index > 0 ? "pt-4 border-t border-gray-100" : ""
+                          }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={
+                              isUat
+                                ? `/assets/imgs/airlines/${segment["fD"].aI.code}.png`
+                                : `/assets/imgs/airlines/${segment[
+                                  "fD"
+                                ].aI.code.toLowerCase()}.png`
+                            }
+                            alt={segment["fD"].aI.name}
+                            className="w-10 h-10 object-contain p-1 bg-gray-50 rounded"
+                            onError={(e: any) => {
+                              e.target.src = "/assets/imgs/page/homepage1/flight.png";
+                            }}
+                          />
+                          <div>
+                            <p className="font-bold text-gray-800 text-sm">{segment["fD"].aI.name}</p>
+                            <p className="text-xs text-gray-500">{segment["fD"].fN} • {segment.stops === 0 ? "Non-stop" : `${segment.stops} Stop(s)`}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-800">{dayjs(segment.dt).format("HH:mm")}</p>
+                            <p className="text-xs font-bold text-gray-500">{segment.da.code}</p>
+                            <p className="text-[10px] text-gray-400">{dayjs(segment.dt).format("MMM DD")}</p>
+                          </div>
+
+                          <div className="flex flex-col items-center gap-1 w-1/3">
+                            <span className="text-[10px] text-gray-400">{Math.floor(segment.duration / 60)}h {segment.duration % 60}m</span>
+                            <div className="w-full h-[1px] bg-gray-300 relative">
+                              <div className="absolute right-0 top-[-3px] w-0 h-0 border-t-[3px] border-t-transparent border-l-[4px] border-l-gray-300 border-b-[3px] border-b-transparent"></div>
+                            </div>
+                          </div>
+
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-gray-800">{dayjs(segment.at).format("HH:mm")}</p>
+                            <p className="text-xs font-bold text-gray-500">{segment.aa.code}</p>
+                            <p className="text-[10px] text-gray-400">{dayjs(segment.at).format("MMM DD")}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  )}
+
+                  <div className="mt-4">
+                    <button
+                      onClick={() => {
+                        setSelectedOnwardTicket(null);
+                        setTripPhase("ONWARD");
+                        setCurrentTickets(flightData.ONWARD);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        setShowDetails(false);
+                      }}
+                      className="w-full py-3 rounded-lg border border-red-500 text-red-500 font-bold text-sm uppercase hover:bg-red-50 transition-colors"
+                    >
+                      Change Flight
+                    </button>
+                  </div>
+                </div>
+              </Drawer>
+            </>
+          ) : (
+            // Desktop View Layout for Selected Onward Ticket (existing layout)
+            <div className="row">
+              <div className="col-lg-11">
+                <p className="text-sm font-semibold text-white mb-2">Selected Departure Flight</p>
+                <div className="flex justify-evenly">
+                  {selectedOnwardTicket?.ticket?.sI?.map((segment: any, index: number) => (
+                    <div key={index} className="mb-2 w-[50%] justify-around items-center border border-white rounded px-2 py-0.5 flex" style={{ margin: "2px", width: "50%" }}>
+                      {isUat && (
+                        <img
+                          style={{
+                            width: "35px",
+                            height: "35px",
+                            padding: "1px",
+                          }}
+                          src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                        />
+                      )}
+                      {!isUat && (
+                        <img
+                          style={{
+                            width: "35px",
+                            height: "35px",
+                            padding: "1px",
+                          }}
+                          src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
+                        />
+                      )}
+                      <div>
+                        <p className="text-sm font-semibold text-white">{segment.da.city}</p>
+                        <p className="text-sm font-semibold text-white">{dayjs(segment.dt).format("hh:mm A")}</p>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <p className="text-sm font-semibold text-white">{Math.floor(segment.duration / 60)}h {segment.duration % 60}m</p>
+                        <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg" alt="" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">{segment.aa.city}</p>
+                        <p className="text-sm font-semibold text-white">{dayjs(segment.at).format("hh:mm A")}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="col-lg-1">
+                <button
+                  onClick={() => {
+                    setSelectedOnwardTicket(null);
+                    setTripPhase("ONWARD");
+                    setCurrentTickets(flightData.ONWARD);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="text-sm text-red-500 underline hover:text-red-600"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </>
