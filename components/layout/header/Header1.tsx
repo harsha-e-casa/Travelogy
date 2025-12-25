@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import "./style.css";
 import { checkTokenExpiry } from "@/services/Utils";
+import { getData, postData } from "@/services/NetworkAdapter";
+
 
 interface Header1Props {
   isMobileMenu?: boolean;
@@ -24,7 +26,10 @@ export default function Header1(props: Header1Props) {
   const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [authToken, setAuthToken] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const pathname = usePathname();
+
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -43,15 +48,42 @@ export default function Header1(props: Header1Props) {
         setIsVisible(false);
         return;
       }
-      const decoded = jwtDecode<{ travelogy_admin?: boolean | number }>(token);
+      const decoded = jwtDecode<{ travelogy_admin?: boolean | number; id?: number; userId?: number }>(token);
       console.log("decodeddecoded ==> ", decoded);
-      console.log("decodeddecoded ==> ", decoded?.travelogy_admin);
-      console.log("decodeddecoded ==> ", !!decoded?.travelogy_admin);
       setIsVisible(!!decoded?.travelogy_admin);
+
+      if (decoded?.id || decoded?.userId) {
+        setCurrentUserId(decoded?.id || (decoded?.userId as number));
+      }
     } catch {
       setIsVisible(false);
     }
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (authToken) {
+        try {
+          const res: any = await postData(
+            "/travelogy/flight/fetch-user",
+            { phone: "", e_mail: "" },
+            { Authorization: `Bearer ${authToken}` }
+          );
+          if (res?.userData) {
+            if (res.userData.id) {
+              setCurrentUserId(res.userData.id);
+            }
+            if (res.userData.wallet_balance !== undefined) {
+              setWalletBalance(parseFloat(res.userData.wallet_balance));
+            }
+          }
+        } catch (e) {
+          console.error("Failed to fetch user info in header", e);
+        }
+      }
+    };
+    fetchUserData();
+  }, [authToken]);
 
   useEffect(() => {
     const handleClickOutside = () => setAdminDropdownOpen(false);
@@ -60,6 +92,9 @@ export default function Header1(props: Header1Props) {
     }
     return () => document.removeEventListener("click", handleClickOutside);
   }, [adminDropdownOpen]);
+
+
+
 
   const handleLogout = async () => {
     window.location.href = "/login";
@@ -144,16 +179,29 @@ export default function Header1(props: Header1Props) {
                     <Link href="/profile">Profile</Link>
                   </li>
                 )}
+                {!isVisible && authToken && (<li
+                  className={`${pathname === "/wallet" ? "active" : ""
+                    }`}
+                >
+                  <Link href="/wallet">
+                    Wallet
+                    {walletBalance !== null && (
+                      <span className="wallet-balance-badge">
+                        ₹{walletBalance.toLocaleString()}
+                      </span>
+                    )}
+                  </Link>
+                </li>)}
 
                 {isVisible && authToken && (
                   <li
-                    className={`dropdown ${
-                      pathname.startsWith("/profile") &&
+                    className={`dropdown ${pathname.startsWith("/profile") &&
                       pathname.startsWith("/dashboard") &&
-                      pathname.startsWith("/user-create")
-                        ? "active"
-                        : ""
-                    }`}
+                      pathname.startsWith("/user-create") &&
+                      pathname.startsWith("/wallet")
+                      ? "active"
+                      : ""
+                      }`}
                   >
                     <button
                       className="dropdown-toggle"
@@ -165,9 +213,8 @@ export default function Header1(props: Header1Props) {
                       Admin
                     </button>
                     <ul
-                      className={`dropdown-menu ${
-                        adminDropdownOpen ? "show" : ""
-                      }`}
+                      className={`dropdown-menu ${adminDropdownOpen ? "show" : ""
+                        }`}
                     >
                       <li
                         className={`${pathname === "/profile" ? "active" : ""}`}
@@ -177,19 +224,31 @@ export default function Header1(props: Header1Props) {
                       {isVisible && (
                         <>
                           <li
-                            className={`${
-                              pathname === "/dashboard" ? "active" : ""
-                            }`}
+                            className={`${pathname === "/dashboard" ? "active" : ""
+                              }`}
                           >
                             <Link href="/dashboard">Dashboard</Link>
                           </li>
                           <li
-                            className={`${
-                              pathname === "/user-create" ? "active" : ""
-                            }`}
+                            className={`${pathname === "/user-create" ? "active" : ""
+                              }`}
                           >
                             <Link href="/user-create">Vendor Creation</Link>
                           </li>
+                          <li
+                            className={`${pathname === "/wallet" ? "active" : ""
+                              }`}
+                          >
+                            <Link href="/wallet">
+                              Wallet
+                              {walletBalance !== null && (
+                                <span className="wallet-balance-badge">
+                                  ₹{walletBalance.toLocaleString()}
+                                </span>
+                              )}
+                            </Link>
+                          </li>
+
                         </>
                       )}
                     </ul>
@@ -266,6 +325,24 @@ export default function Header1(props: Header1Props) {
                   Profile
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/wallet"
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span>Wallet</span>
+                  {walletBalance !== null && (
+                    <span className="wallet-balance-badge" style={{ margin: 0 }}>
+                      ₹{walletBalance.toLocaleString()}
+                    </span>
+                  )}
+                </Link>
+              </li>
               {isVisible && (
                 <>
                   <li>
@@ -284,6 +361,7 @@ export default function Header1(props: Header1Props) {
                       Vendor Creation
                     </Link>
                   </li>
+
                 </>
               )}
             </>
