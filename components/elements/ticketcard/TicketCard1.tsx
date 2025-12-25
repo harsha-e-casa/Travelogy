@@ -77,7 +77,7 @@ export default function TicketCard1({
         >
           <div style={{ width: "55%" }}>
             {ticket.sI.map((segment: any, index: number) => (
-              <>
+              <React.Fragment key={index}>
                 {/* <div
                   className="air_detailes"
                   // style={{ top: index === 0 ? "0" : "49%", ...flightLogo }}
@@ -206,7 +206,7 @@ export default function TicketCard1({
                     </div>
                   </div>
                 </div>
-              </>
+              </React.Fragment>
             ))}
           </div>
 
@@ -288,8 +288,8 @@ export default function TicketCard1({
                               {e.fd.ADULT.rT === 1
                                 ? "Refundable"
                                 : e.fd.ADULT.rT === 2
-                                ? "Partial Refundable"
-                                : "Non Refundable"}
+                                  ? "Partial Refundable"
+                                  : "Non Refundable"}
                             </span>
                           </span>
                         </div>

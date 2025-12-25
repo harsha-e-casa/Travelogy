@@ -20,6 +20,7 @@ import ByRating from "@/components/Filter/ByRating";
 import SearchFilterBottom from "@/components/elements/SearchFilterBottom";
 import SortTicketsFilter from "@/components/elements/SortTicketsFilter";
 import TicketCard1 from "@/components/elements/ticketcard/TicketCard1";
+import TicketCardMobile from "@/components/elements/ticketcard/TicketCardMobile";
 import DomesticRoundTripTicketCard from "@/components/elements/ticketcard/DomesticRoundTripTicketCard";
 import RoundTripSelectionView from "@/components/elements/ticketcard/RoundTripSelectionView";
 import MulticitySelectionView from "@/components/elements/ticketcard/MulticitySelectionView.jsx";
@@ -39,9 +40,9 @@ import "./customeHeader_1.css";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
-import { DownOutlined } from "@ant-design/icons";
+import { DownOutlined, FilterOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Dropdown, Space } from "antd";
+import { Dropdown, Space, Drawer, Button } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
 import { AppContext } from "../../util/AppContext";
 import { TravellerForm } from "@/components/searchEngine/TravellerForm";
@@ -94,6 +95,139 @@ export default function Tickets() {
   } = useTicketFilter(ticketsData);
 
   const { setCookie, getCookie, removeCookie } = useContext(AppContext);
+
+  // State for mobile/tablet filter drawer
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+
+  const showFilterDrawer = () => {
+    setFilterDrawerOpen(true);
+  };
+
+  const onCloseFilterDrawer = () => {
+    setFilterDrawerOpen(false);
+  };
+
+  const [modifySearchOpen, setModifySearchOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const renderFilters = () => (
+    <>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Filter Price </h6>
+            <ByPrice
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              minPriceRange={minPriceRange}
+              maxPriceRange={maxPriceRange}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Sort by Price</h6>
+            <BySortPrice sort={priceSort} setSort={setPriceSort} />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Stops</h6>
+            <ByStops stops={stops} setStops={setStops} />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Departure Time</h6>
+            <ByDepartureTime
+              departureTime={departureTime}
+              setDepartureTime={setDepartureTime}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Arrival Time</h6>
+            <ByArrivalTime
+              arrivalTime={arrivalTime}
+              setArrivalTime={setArrivalTime}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Airlines</h6>
+            <div className="box-collapse scrollFilter">
+              <ByAirline
+                uniqueAirlines={[
+                  ...new Set(
+                    (flightData?.ONWARD || flightData?.COMBO || [])
+                      ?.map((ticket: any) => ticket.sI[0].fD.aI.name) || []
+                  ),
+                ]}
+                selectedAirlines={selectedAirlines}
+                setSelectedAirlines={setSelectedAirlines}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Fare Identifier</h6>
+            <ByFareIdentifier
+              fareIdentifiers={fareIdentifiers}
+              setFareIdentifiers={setFareIdentifiers}
+              options={uniqueFareIdentifiers}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Flight Number</h6>
+            <ByAirlineSearch
+              flightNumberSearch={flightNumberSearch}
+              setFlightNumberSearch={setFlightNumberSearch}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">Fare Type</h6>
+            <ByFareType
+              selectedFareTypes={selectedFareTypes}
+              setSelectedFareTypes={setSelectedFareTypes}
+              options={uniqueFareTypes}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
 
   type MultiSeg = {
     from: string;
@@ -1025,8 +1159,8 @@ export default function Tickets() {
         },
         travelDate:
           item?.departureDate &&
-          typeof item.departureDate === "string" &&
-          item.departureDate.includes("T")
+            typeof item.departureDate === "string" &&
+            item.departureDate.includes("T")
             ? item.departureDate.split("T")[0]
             : item?.departureDate,
       }));
@@ -1620,290 +1754,655 @@ export default function Tickets() {
           {/* <EngineTabs active_border={'1'} /> */}
 
           <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
-            {/* Header Section */}
-
-            {/* <div className="hdt_header" style={{ ...searchEnginewidth }}> */}
-            <div className={`hdt_header ${getHeaderClass()}`}>
-              <div className="hdt_header-item">
-                <label>Fare Types</label>
-                <Dropdown
-                  menu={{ items: fareItems, onClick: handleFareMenuClick }}
-                  open={fareOpen}
-                  trigger={[]}
-                  placement="bottomLeft"
-                >
-                  <div
-                    className="hdt_value"
-                    onClick={() => {
-                      if (
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          modifySearchRef) ||
-                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                      ) {
-                        handleFareOpen();
-                      }
-                    }}
-                    style={{ cursor: "pointer", display: "inline-block" }}
-                  >
-                    {srx_fareType}
-                  </div>
-                </Dropdown>
-              </div>
-              <div className="hdt_header-item">
-                <label>Trip Type</label>
-                <Dropdown
-                  menu={{ items, onClick: handleMenuClick }}
-                  open={open}
-                  trigger={[]} // ← disable all built‑in open/close triggers
-                  placement="bottomLeft" // or wherever you like
-                >
-                  <div
-                    className="hdt_value"
-                    // onClick={() => setOpen(prev => !prev)}  // ← your toggle
-                    onClick={() => {
-                      if (
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          modifySearchRef) ||
-                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                      ) {
-                        handleOpen();
-                      }
-                    }}
-                    style={{ cursor: "pointer", display: "inline-block" }}
-                  >
-                    {srx_tripType}
-                  </div>
-                </Dropdown>
-              </div>
-              {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                !modifySearchRef && (
-                  <div className="hdt_header-item" style={{ width: "25%" }}>
-                    <label>Trip Info</label>
-                    <div className="multicity-scrollplace">
-                      {combinedMulticitySegment.map((segment, idx) => (
-                        <div key={idx} className="place-flights hdt_value">
-                          <ul className="al-selist al-selist-positionHandle">
-                            <li className="whitecolor">
-                              {segment.fromCode}
-                              <br />
-                            </li>
-                            <li>
-                              <div className="right-arrow"></div>
-                            </li>
-                            <li className="whitecolor">
-                              {segment.toCode}
-                              <br />
-                            </li>
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                modifySearchRef) ||
-                (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                <>
-                  <div className="hdt_header-item relative">
-                    <label>From</label>
-                    <div onClick={openfrom} className="hdt_value">
-                      {srx_departureFrom}
-                    </div>
-
-                    {showSearchState ? (
-                      <div className="searchFfromSelect searchFfromSelect_2">
-                        <AppListSearch
-                          operEngLocation={openfrom}
-                          setSelectFrom={handleFromCityChange}
-                          setSelectFromSub={setDepartureToCode}
-                        />
-                      </div>
-                    ) : null}
-                    <Tooltip
-                      className="flex shadow-md z-10"
-                      placement="bottom"
-                      title={fromError}
-                      open={!!fromError}
-                      arrow={{ pointAtCenter: true }}
-                      overlayInnerStyle={{
-                        backgroundColor: "#ffeaea",
-                        color: "#ff4d4f",
-                        fontWeight: 500,
-                      }}
-                    ></Tooltip>
-                  </div>
-
-                  <div className="hdt_header-item relative">
-                    <label>To</label>
-                    <div onClick={openTo} className="hdt_value">
-                      {srx_arrivalTo}
-                    </div>
-
-                    {showSearchStateTo ? (
-                      <div className="searchFfromSelect searchFfromSelect_2">
-                        <AppListSearch
-                          operEngLocation={openTo}
-                          setSelectFrom={handleToCityChange}
-                          setSelectFromSub={setArrivalToCode}
-                        />
-                      </div>
-                    ) : null}
-                    <Tooltip
-                      className="flex shadow-md z-50"
-                      placement="bottom"
-                      title={toError}
-                      open={!!toError}
-                      arrow={{ pointAtCenter: true }}
-                      overlayInnerStyle={{
-                        backgroundColor: "#ffeaea",
-                        color: "#ff4d4f",
-                        fontWeight: 500,
-                      }}
-                    ></Tooltip>
-                  </div>
-                </>
-              )}
-
-              {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                modifySearchRef) ||
-                (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
-                <div className="hdt_header-item">
-                  <label>Depart</label>
-                  <div
-                    onClick={() => {
-                      if (
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          modifySearchRef) ||
-                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                      ) {
-                        openToDateRange();
-                      }
-                    }}
-                    className="hdt_value"
-                  >
-                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                  </div>
-
-                  {openDateRage ? (
-                    <AppDateRangeFlight
-                      openToDateRange={openToDateRange}
-                      setDate={setDatedep}
-                      minDate={null}
-                      value={datedep}
-                    />
-                  ) : null}
-                </div>
-              )}
-
-              {(srx_tripType?.toLowerCase() || "") === "round-trip" ? (
-                <>
+            {/* Desktop Header */}
+            {!isMobile && (
+              <>
+                <div className={`hdt_header ${getHeaderClass()}`}>
                   <div className="hdt_header-item">
-                    <label>Return</label>
-                    <div onClick={openToDateRangeR} className="hdt_value">
-                      {ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}
-                    </div>
-                    {openDateRageR ? (
-                      <AppDateRangeFlight
-                        openToDateRange={openToDateRangeR}
-                        setDate={setDatedepr}
-                        minDate={datedep}
-                        value={datedepr}
-                      />
-                    ) : null}
+                    <label>Fare Types</label>
+                    <Dropdown
+                      menu={{ items: fareItems, onClick: handleFareMenuClick }}
+                      open={fareOpen}
+                      trigger={[]}
+                      placement="bottomLeft"
+                    >
+                      <div
+                        className="hdt_value"
+                        onClick={() => {
+                          if (
+                            ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                              modifySearchRef) ||
+                            (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                          ) {
+                            handleFareOpen();
+                          }
+                        }}
+                        style={{ cursor: "pointer", display: "inline-block" }}
+                      >
+                        {srx_fareType}
+                      </div>
+                    </Dropdown>
                   </div>
-                </>
-              ) : null}
+                  <div className="hdt_header-item">
+                    <label>Trip Type</label>
+                    <Dropdown
+                      menu={{ items, onClick: handleMenuClick }}
+                      open={open}
+                      trigger={[]} // ← disable all built‑in open/close triggers
+                      placement="bottomLeft" // or wherever you like
+                    >
+                      <div
+                        className="hdt_value"
+                        // onClick={() => setOpen(prev => !prev)}  // ← your toggle
+                        onClick={() => {
+                          if (
+                            ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                              modifySearchRef) ||
+                            (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                          ) {
+                            handleOpen();
+                          }
+                        }}
+                        style={{ cursor: "pointer", display: "inline-block" }}
+                      >
+                        {srx_tripType}
+                      </div>
+                    </Dropdown>
+                  </div>
+                  {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                    !modifySearchRef && (
+                      <div className="hdt_header-item" style={{ width: "25%" }}>
+                        <label>Trip Info</label>
+                        <div className="multicity-scrollplace">
+                          {combinedMulticitySegment.map((segment, idx) => (
+                            <div key={idx} className="place-flights hdt_value">
+                              <ul className="al-selist al-selist-positionHandle">
+                                <li className="whitecolor">
+                                  {segment.fromCode}
+                                  <br />
+                                </li>
+                                <li>
+                                  <div className="right-arrow"></div>
+                                </li>
+                                <li className="whitecolor">
+                                  {segment.toCode}
+                                  <br />
+                                </li>
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
-              <div
-                className="hdt_header-item"
-                onClick={() => {
-                  if (
-                    ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                      modifySearchRef) ||
-                    (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                  ) {
-                    openTraveller();
-                  }
-                }}
-              >
-                <label>Passengers &amp; Class</label>
-                <div className="hdt_value">
-                  <span>
-                    {srx_traveller}{" "}
-                    {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
-                    <span className="text-sm">
-                      {classLabels[srx_cabinType]}
-                    </span>
-                  </span>
-                </div>
-              </div>
-              {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
-              !modifySearchRef ? (
-                <>
-                  <button
-                    onClick={handleModifySearch}
-                    className="hdt_search-btn"
-                  >
-                    Modify Search
-                  </button>
-                </>
-              ) : (
-                <>
+                  {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                    modifySearchRef) ||
+                    (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
+                      <>
+                        <div className="hdt_header-item relative">
+                          <label>From</label>
+                          <div onClick={openfrom} className="hdt_value">
+                            {srx_departureFrom}
+                          </div>
+
+                          {showSearchState ? (
+                            <div className="searchFfromSelect searchFfromSelect_2">
+                              <AppListSearch
+                                operEngLocation={openfrom}
+                                setSelectFrom={handleFromCityChange}
+                                setSelectFromSub={setDepartureToCode}
+                              />
+                            </div>
+                          ) : null}
+                          <Tooltip
+                            className="flex shadow-md z-10"
+                            placement="bottom"
+                            title={fromError}
+                            open={!!fromError}
+                            arrow={{ pointAtCenter: true }}
+                            overlayInnerStyle={{
+                              backgroundColor: "#ffeaea",
+                              color: "#ff4d4f",
+                              fontWeight: 500,
+                            }}
+                          ></Tooltip>
+                        </div>
+
+                        <div className="hdt_header-item relative">
+                          <label>To</label>
+                          <div onClick={openTo} className="hdt_value">
+                            {srx_arrivalTo}
+                          </div>
+
+                          {showSearchStateTo ? (
+                            <div className="searchFfromSelect searchFfromSelect_2">
+                              <AppListSearch
+                                operEngLocation={openTo}
+                                setSelectFrom={handleToCityChange}
+                                setSelectFromSub={setArrivalToCode}
+                              />
+                            </div>
+                          ) : null}
+                          <Tooltip
+                            className="flex shadow-md z-50"
+                            placement="bottom"
+                            title={toError}
+                            open={!!toError}
+                            arrow={{ pointAtCenter: true }}
+                            overlayInnerStyle={{
+                              backgroundColor: "#ffeaea",
+                              color: "#ff4d4f",
+                              fontWeight: 500,
+                            }}
+                          ></Tooltip>
+                        </div>
+                      </>
+                    )}
+
+                  {(((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                    modifySearchRef) ||
+                    (srx_tripType?.toLowerCase() || "") !== "multi-city") && (
+                      <div className="hdt_header-item">
+                        <label>Depart</label>
+                        <div
+                          onClick={() => {
+                            if (
+                              ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                                modifySearchRef) ||
+                              (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                            ) {
+                              openToDateRange();
+                            }
+                          }}
+                          className="hdt_value"
+                        >
+                          {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
+                        </div>
+
+                        {openDateRage ? (
+                          <AppDateRangeFlight
+                            openToDateRange={openToDateRange}
+                            setDate={setDatedep}
+                            minDate={null}
+                            value={datedep}
+                          />
+                        ) : null}
+                      </div>
+                    )}
+
+                  {(srx_tripType?.toLowerCase() || "") === "round-trip" ? (
+                    <>
+                      <div className="hdt_header-item">
+                        <label>Return</label>
+                        <div onClick={openToDateRangeR} className="hdt_value">
+                          {ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}
+                        </div>
+                        {openDateRageR ? (
+                          <AppDateRangeFlight
+                            openToDateRange={openToDateRangeR}
+                            setDate={setDatedepr}
+                            minDate={datedep}
+                            value={datedepr}
+                          />
+                        ) : null}
+                      </div>
+                    </>
+                  ) : null}
+
                   <div
-                    onClick={
-                      fromError ||
-                      toError ||
-                      errorMsg ||
-                      dateError ||
-                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                        multicitySegments.some(
-                          (s) => s.fromError || s.toError || s.dateError
-                        ))
-                        ? () => {}
-                        : handlesearFlight
-                      // onClickSearch
-                    }
-                    className={`hdt_search-btn ${
-                      fromError ||
-                      toError ||
-                      errorMsg ||
-                      dateError ||
-                      ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                        multicitySegments.some(
-                          (s) => s.fromError || s.toError || s.dateError
-                        ))
-                        ? "cursor-not-allowed opacity-50"
-                        : ""
-                    }`}
+                    className="hdt_header-item"
+                    onClick={() => {
+                      if (
+                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                          modifySearchRef) ||
+                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                      ) {
+                        openTraveller();
+                      }
+                    }}
                   >
-                    Search
+                    <label>Passengers &amp; Class</label>
+                    <div className="hdt_value">
+                      <span>
+                        {srx_traveller}{" "}
+                        {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
+                        <span className="text-sm">
+                          {classLabels[srx_cabinType]}
+                        </span>
+                      </span>
+                    </div>
                   </div>
+                  {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                    !modifySearchRef ? (
+                    <>
+                      <button
+                        onClick={handleModifySearch}
+                        className="hdt_search-btn"
+                      >
+                        Modify Search
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <div
+                        onClick={
+                          fromError ||
+                            toError ||
+                            errorMsg ||
+                            dateError ||
+                            ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                              multicitySegments.some(
+                                (s) => s.fromError || s.toError || s.dateError
+                              ))
+                            ? () => { }
+                            : handlesearFlight
+                          // onClickSearch
+                        }
+                        className={`hdt_search-btn ${fromError ||
+                          toError ||
+                          errorMsg ||
+                          dateError ||
+                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                            multicitySegments.some(
+                              (s) => s.fromError || s.toError || s.dateError
+                            ))
+                          ? "cursor-not-allowed opacity-50"
+                          : ""
+                          }`}
+                      >
+                        Search
+                      </div>
+                    </>
+                  )}
+                </div>
+                {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                  modifySearchRef && (
+                    <>
+                      <div style={{ width: "48%", margin: "0 auto" }}>
+                        {multicitySegments.map((segment: any, idx: any) => (
+                          <div key={idx} className="flex justify-left items-center">
+                            <div
+                              className="hdt_header-item relative"
+                              style={{ width: "20%" }}
+                            >
+                              <div>
+                                <label>From</label>
+                                <div
+                                  onClick={() => multiOpenfrom(idx)}
+                                  className="hdt_value"
+                                >
+                                  {segment.from}
+                                </div>
+                                {/* {segment.fromError && <span className="error">{segment.fromError}</span>} */}
+                              </div>
+                              {openFromMultiIndex === idx && (
+                                <div className="searchFfromSelect searchFfromSelect_2">
+                                  <AppListSearch
+                                    operEngLocation={() => multiOpenfrom(idx)}
+                                    setSelectFrom={(val: any) => {
+                                      const newSegs = [...multicitySegments];
+                                      newSegs[idx].from = val;
+                                      newSegs[idx].lastEditedField = "from";
+                                      setMulticitySegments(newSegs);
+                                    }}
+                                    setSelectFromSub={(val: any) => {
+                                      const newSegs = [...multicitySegments];
+                                      newSegs[idx].fromCode = val;
+                                      setMulticitySegments(newSegs);
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              <Tooltip
+                                className="flex shadow-md z-10"
+                                placement="bottom"
+                                title={segment.fromError}
+                                open={!!segment.fromError}
+                                arrow={{ pointAtCenter: true }}
+                                overlayInnerStyle={{
+                                  backgroundColor: "#ffeaea",
+                                  color: "#ff4d4f",
+                                  fontWeight: 500,
+                                }}
+                              ></Tooltip>
+                            </div>
+
+                            <div
+                              className="hdt_header-item relative"
+                              style={{ width: "20%" }}
+                            >
+                              <div>
+                                <label>To</label>
+                                <div
+                                  onClick={() => multiOpenToSecond(idx)}
+                                  className="hdt_value"
+                                >
+                                  {segment.to}
+                                </div>
+                                {/* {segment.toError && <span className="error">{segment.toError}</span>} */}
+                              </div>
+                              {openToMultiIndex === idx && (
+                                <div className="searchFfromSelect searchFfromSelect_2">
+                                  <AppListSearch
+                                    operEngLocation={() => multiOpenToSecond(idx)}
+                                    setSelectFrom={(val: any) => {
+                                      const newSegs = [...multicitySegments];
+                                      newSegs[idx].to = val;
+                                      newSegs[idx].lastEditedField = "to";
+                                      setMulticitySegments(newSegs);
+                                    }}
+                                    setSelectFromSub={(val: any) => {
+                                      const newSegs = [...multicitySegments];
+                                      newSegs[idx].toCode = val;
+                                      setMulticitySegments(newSegs);
+                                    }}
+                                  />
+                                </div>
+                              )}
+                              <Tooltip
+                                className="flex shadow-md z-50"
+                                placement="bottom"
+                                title={segment.toError}
+                                open={!!segment.toError}
+                                arrow={{ pointAtCenter: true }}
+                                overlayInnerStyle={{
+                                  backgroundColor: "#ffeaea",
+                                  color: "#ff4d4f",
+                                  fontWeight: 500,
+                                }}
+                              ></Tooltip>
+                            </div>
+
+                            <div className="hdt_header-item">
+                              <div>
+                                <label>Depart</label>
+                                <div
+                                  onClick={() => multiOpenToDateRange(idx)}
+                                  className="hdt_value"
+                                >
+                                  {segment.departureDate
+                                    ? dayjs(segment.departureDate).format(
+                                      "ddd, MMM D YYYY"
+                                    )
+                                    : "Select Date"}
+                                </div>
+                              </div>
+                              {/* {segment.dateError && <span className="error">{segment.dateError}</span>} */}
+                              {openDepartMultiIndex === idx && (
+                                <AppDateRangeFlight
+                                  openToDateRange={() => multiOpenToDateRange(idx)}
+                                  setDate={(val: any) => {
+                                    const newSegs = [...multicitySegments];
+                                    newSegs[idx].departureDate = val;
+                                    setMulticitySegments(newSegs);
+                                  }}
+                                  minDate={
+                                    idx > 0
+                                      ? multicitySegments[idx - 1].departureDate
+                                      : datedep
+                                  } // Use datedep for the first segment
+                                  value={multicitySegments[idx].departureDate}
+                                />
+                              )}
+                              <Tooltip
+                                className="flex shadow-md z-50"
+                                placement="bottom"
+                                title={segment.dateError}
+                                open={!!segment.dateError}
+                                arrow={{ pointAtCenter: true }}
+                                overlayInnerStyle={{
+                                  backgroundColor: "#ffeaea",
+                                  color: "#ff4d4f",
+                                  fontWeight: 500,
+                                }}
+                              ></Tooltip>
+                            </div>
+
+                            {/* Add/Remove buttons */}
+                            <div
+                              className="hdt_segment-controls"
+                              style={{ paddingTop: "10px" }}
+                            >
+                              {idx === multicitySegments.length - 1 && (
+                                <>
+                                  {multicitySegments.length > 1 && (
+                                    <button
+                                      style={{
+                                        background: "grey",
+                                        borderRadius: "10px",
+                                        margin: "10px",
+                                      }}
+                                      onClick={() => removeSegment(idx)}
+                                      className="remove-segment text-white"
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
+
+                                  {multicitySegments.length < 5 && (
+                                    <button
+                                      style={{
+                                        background: "grey",
+                                        borderRadius: "10px",
+                                        margin: "10px",
+                                      }}
+                                      onClick={addSegment}
+                                      className="add-segment text-white"
+                                    >
+                                      Add
+                                    </button>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {errorMsg && (
+                        <div
+                          className="text-red-500 mt-2 text-sm font-medium"
+                          style={{ textAlign: "center", padding: "10px" }}
+                        >
+                          {errorMsg}
+                        </div>
+                      )}
+                      {dateError && (
+                        <div
+                          className="text-red-500 mt-2 text-sm font-medium"
+                          style={{ textAlign: "center", padding: "10px" }}
+                        >
+                          {dateError}
+                        </div>
+                      )}
+                    </>
+                  )}
+              </>
+            )}
+          </div>
+
+          {/* Mobile Header Summary */}
+          {isMobile && (
+            <div className="mobile-search-summary py-2 px-3 flex justify-between items-center text-white" style={{ background: "#1a1a2e" }}>
+              <div className="flex flex-col">
+                <span className="text-sm font-bold">
+                  {srx_departureFrom} → {srx_arrivalTo}
+                </span>
+                <span className="text-xs opacity-80">
+                  {dayjs(datedep).format("DD MMM")} | {srx_traveller} {srx_traveller > 1 ? "Travellers" : "Traveller"}
+                </span>
+              </div>
+              <Button
+                size="small"
+                ghost
+                onClick={() => setModifySearchOpen(true)}
+                style={{ color: "white", borderColor: "rgba(255,255,255,0.3)" }}
+              >
+                Modify
+              </Button>
+            </div>
+          )}
+
+          {/* Modify Search Drawer for Mobile */}
+          <Drawer
+            title="Modify Search"
+            placement="bottom"
+            onClose={() => setModifySearchOpen(false)}
+            open={isMobile && modifySearchOpen}
+            height="100%"
+            className="modify-search-drawer"
+          >
+            <div className="flex flex-col gap-4 p-2">
+              <div className="modify-field">
+                <label className="text-xs font-bold text-gray-500 uppercase">Fare Type</label>
+                <Dropdown menu={{ items: fareItems, onClick: handleFareMenuClick }}>
+                  <div className="border p-2 rounded cursor-pointer">{srx_fareType}</div>
+                </Dropdown>
+              </div>
+              <div className="modify-field">
+                <label className="text-xs font-bold text-gray-500 uppercase">Trip Type</label>
+                <Dropdown menu={{ items, onClick: handleMenuClick }}>
+                  <div className="border p-2 rounded cursor-pointer">{srx_tripType}</div>
+                </Dropdown>
+              </div>
+
+              {/* One-Way and Round-Trip Fields */}
+              {(srx_tripType?.toLowerCase() || "") !== "multi-city" && (
+                <>
+                  <div className="flex gap-2">
+                    <div className="modify-field flex-1">
+                      <label className="text-xs font-bold text-gray-500 uppercase">From</label>
+                      <div onClick={openfrom} className="border p-2 rounded cursor-pointer truncate">{srx_departureFrom}</div>
+                      {showSearchState && (
+                        <div className="absolute z-50 bg-white border w-full max-h-60 overflow-y-auto">
+                          <AppListSearch
+                            operEngLocation={openfrom}
+                            setSelectFrom={handleFromCityChange}
+                            setSelectFromSub={setDepartureToCode}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="modify-field flex-1">
+                      <label className="text-xs font-bold text-gray-500 uppercase">To</label>
+                      <div onClick={openTo} className="border p-2 rounded cursor-pointer truncate">{srx_arrivalTo}</div>
+                      {showSearchStateTo && (
+                        <div className="absolute z-50 bg-white border w-full max-h-60 overflow-y-auto">
+                          <AppListSearch
+                            operEngLocation={openTo}
+                            setSelectFrom={handleToCityChange}
+                            setSelectFromSub={setArrivalToCode}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="modify-field">
+                    <label className="text-xs font-bold text-gray-500 uppercase">Depart</label>
+                    <div onClick={openToDateRange} className="border p-2 rounded cursor-pointer">
+                      {dayjs(datedep).format("ddd, DD MMM YYYY")}
+                    </div>
+                    {openDateRage && (
+                      <AppDateRangeFlight
+                        openToDateRange={openToDateRange}
+                        setDate={setDatedep}
+                        minDate={null}
+                        value={datedep}
+                      />
+                    )}
+                  </div>
+
+                  {/* Round-Trip Return Date */}
+                  {(srx_tripType?.toLowerCase() || "") === "round-trip" && (
+                    <div className="modify-field">
+                      <label className="text-xs font-bold text-gray-500 uppercase">Return</label>
+                      <div onClick={openToDateRangeR} className="border p-2 rounded cursor-pointer">
+                        {dayjs(datedepr).format("ddd, DD MMM YYYY")}
+                      </div>
+                      {openDateRageR && (
+                        <AppDateRangeFlight
+                          openToDateRange={openToDateRangeR}
+                          setDate={setDatedepr}
+                          minDate={datedep}
+                          value={datedepr}
+                        />
+                      )}
+                    </div>
+                  )}
                 </>
               )}
-            </div>
-            {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
-              modifySearchRef && (
-                <>
-                  <div style={{ width: "48%", margin: "0 auto" }}>
-                    {multicitySegments.map((segment: any, idx: any) => (
-                      <div key={idx} className="flex justify-left items-center">
-                        <div
-                          className="hdt_header-item relative"
-                          style={{ width: "20%" }}
-                        >
-                          <div>
-                            <label>From</label>
-                            <div
-                              onClick={() => multiOpenfrom(idx)}
-                              className="hdt_value"
-                            >
-                              {segment.from}
-                            </div>
-                            {/* {segment.fromError && <span className="error">{segment.fromError}</span>} */}
+
+              {/* Multi-City Segments */}
+              {(srx_tripType?.toLowerCase() || "") === "multi-city" && (
+                <div className="flex flex-col gap-3">
+                  {/* First Segment (Original From/To/Depart) */}
+                  <div className="border rounded p-3 bg-blue-50">
+                    <div className="text-xs font-bold text-gray-600 mb-2">Segment 1 (Main Route)</div>
+                    <div className="flex gap-2 mb-2">
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase">From</label>
+                        <div onClick={openfrom} className="border p-2 rounded cursor-pointer bg-white truncate text-sm">
+                          {srx_departureFrom}
+                        </div>
+                        {showSearchState && (
+                          <div className="absolute z-50 bg-white border w-full max-h-60 overflow-y-auto">
+                            <AppListSearch
+                              operEngLocation={openfrom}
+                              setSelectFrom={handleFromCityChange}
+                              setSelectFromSub={setDepartureToCode}
+                            />
+                          </div>
+                        )}
+                        {fromError && (
+                          <div className="text-xs text-red-500 mt-1">{fromError}</div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase">To</label>
+                        <div onClick={openTo} className="border p-2 rounded cursor-pointer bg-white truncate text-sm">
+                          {srx_arrivalTo}
+                        </div>
+                        {showSearchStateTo && (
+                          <div className="absolute z-50 bg-white border w-full max-h-60 overflow-y-auto">
+                            <AppListSearch
+                              operEngLocation={openTo}
+                              setSelectFrom={handleToCityChange}
+                              setSelectFromSub={setArrivalToCode}
+                            />
+                          </div>
+                        )}
+                        {toError && (
+                          <div className="text-xs text-red-500 mt-1">{toError}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase">Depart</label>
+                      <div onClick={openToDateRange} className="border p-2 rounded cursor-pointer bg-white text-sm">
+                        {dayjs(datedep).format("ddd, MMM D YYYY")}
+                      </div>
+                      {openDateRage && (
+                        <AppDateRangeFlight
+                          openToDateRange={openToDateRange}
+                          setDate={setDatedep}
+                          minDate={null}
+                          value={datedep}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Additional Multi-City Segments */}
+                  {multicitySegments.map((segment: any, idx: any) => (
+                    <div key={idx} className="border rounded p-3 bg-gray-50">
+                      <div className="text-xs font-bold text-gray-600 mb-2">Segment {idx + 2}</div>
+                      <div className="flex gap-2 mb-2">
+                        <div className="flex-1">
+                          <label className="text-xs font-bold text-gray-500 uppercase">From</label>
+                          <div onClick={() => multiOpenfrom(idx)} className="border p-2 rounded cursor-pointer bg-white truncate text-sm">
+                            {segment.from}
                           </div>
                           {openFromMultiIndex === idx && (
-                            <div className="searchFfromSelect searchFfromSelect_2">
+                            <div className="absolute z-50 bg-white border w-full max-h-60 overflow-y-auto">
                               <AppListSearch
                                 operEngLocation={() => multiOpenfrom(idx)}
                                 setSelectFrom={(val: any) => {
@@ -1920,36 +2419,17 @@ export default function Tickets() {
                               />
                             </div>
                           )}
-                          <Tooltip
-                            className="flex shadow-md z-10"
-                            placement="bottom"
-                            title={segment.fromError}
-                            open={!!segment.fromError}
-                            arrow={{ pointAtCenter: true }}
-                            overlayInnerStyle={{
-                              backgroundColor: "#ffeaea",
-                              color: "#ff4d4f",
-                              fontWeight: 500,
-                            }}
-                          ></Tooltip>
+                          {segment.fromError && (
+                            <div className="text-xs text-red-500 mt-1">{segment.fromError}</div>
+                          )}
                         </div>
-
-                        <div
-                          className="hdt_header-item relative"
-                          style={{ width: "20%" }}
-                        >
-                          <div>
-                            <label>To</label>
-                            <div
-                              onClick={() => multiOpenToSecond(idx)}
-                              className="hdt_value"
-                            >
-                              {segment.to}
-                            </div>
-                            {/* {segment.toError && <span className="error">{segment.toError}</span>} */}
+                        <div className="flex-1">
+                          <label className="text-xs font-bold text-gray-500 uppercase">To</label>
+                          <div onClick={() => multiOpenToSecond(idx)} className="border p-2 rounded cursor-pointer bg-white truncate text-sm">
+                            {segment.to}
                           </div>
                           {openToMultiIndex === idx && (
-                            <div className="searchFfromSelect searchFfromSelect_2">
+                            <div className="absolute z-50 bg-white border w-full max-h-60 overflow-y-auto">
                               <AppListSearch
                                 operEngLocation={() => multiOpenToSecond(idx)}
                                 setSelectFrom={(val: any) => {
@@ -1966,126 +2446,217 @@ export default function Tickets() {
                               />
                             </div>
                           )}
-                          <Tooltip
-                            className="flex shadow-md z-50"
-                            placement="bottom"
-                            title={segment.toError}
-                            open={!!segment.toError}
-                            arrow={{ pointAtCenter: true }}
-                            overlayInnerStyle={{
-                              backgroundColor: "#ffeaea",
-                              color: "#ff4d4f",
-                              fontWeight: 500,
-                            }}
-                          ></Tooltip>
-                        </div>
-
-                        <div className="hdt_header-item">
-                          <div>
-                            <label>Depart</label>
-                            <div
-                              onClick={() => multiOpenToDateRange(idx)}
-                              className="hdt_value"
-                            >
-                              {segment.departureDate
-                                ? dayjs(segment.departureDate).format(
-                                    "ddd, MMM D YYYY"
-                                  )
-                                : "Select Date"}
-                            </div>
-                          </div>
-                          {/* {segment.dateError && <span className="error">{segment.dateError}</span>} */}
-                          {openDepartMultiIndex === idx && (
-                            <AppDateRangeFlight
-                              openToDateRange={() => multiOpenToDateRange(idx)}
-                              setDate={(val: any) => {
-                                const newSegs = [...multicitySegments];
-                                newSegs[idx].departureDate = val;
-                                setMulticitySegments(newSegs);
-                              }}
-                              minDate={
-                                idx > 0
-                                  ? multicitySegments[idx - 1].departureDate
-                                  : datedep
-                              } // Use datedep for the first segment
-                              value={multicitySegments[idx].departureDate}
-                            />
-                          )}
-                          <Tooltip
-                            className="flex shadow-md z-50"
-                            placement="bottom"
-                            title={segment.dateError}
-                            open={!!segment.dateError}
-                            arrow={{ pointAtCenter: true }}
-                            overlayInnerStyle={{
-                              backgroundColor: "#ffeaea",
-                              color: "#ff4d4f",
-                              fontWeight: 500,
-                            }}
-                          ></Tooltip>
-                        </div>
-
-                        {/* Add/Remove buttons */}
-                        <div
-                          className="hdt_segment-controls"
-                          style={{ paddingTop: "10px" }}
-                        >
-                          {idx === multicitySegments.length - 1 && (
-                            <>
-                              {multicitySegments.length > 1 && (
-                                <button
-                                  style={{
-                                    background: "grey",
-                                    borderRadius: "10px",
-                                    margin: "10px",
-                                  }}
-                                  onClick={() => removeSegment(idx)}
-                                  className="remove-segment text-white"
-                                >
-                                  Remove
-                                </button>
-                              )}
-
-                              {multicitySegments.length < 5 && (
-                                <button
-                                  style={{
-                                    background: "grey",
-                                    borderRadius: "10px",
-                                    margin: "10px",
-                                  }}
-                                  onClick={addSegment}
-                                  className="add-segment text-white"
-                                >
-                                  Add
-                                </button>
-                              )}
-                            </>
+                          {segment.toError && (
+                            <div className="text-xs text-red-500 mt-1">{segment.toError}</div>
                           )}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      <div>
+                        <label className="text-xs font-bold text-gray-500 uppercase">Depart</label>
+                        <div onClick={() => multiOpenToDateRange(idx)} className="border p-2 rounded cursor-pointer bg-white text-sm">
+                          {segment.departureDate ? dayjs(segment.departureDate).format("ddd, MMM D YYYY") : "Select Date"}
+                        </div>
+                        {openDepartMultiIndex === idx && (
+                          <AppDateRangeFlight
+                            openToDateRange={() => multiOpenToDateRange(idx)}
+                            setDate={(val: any) => {
+                              const newSegs = [...multicitySegments];
+                              newSegs[idx].departureDate = val;
+                              setMulticitySegments(newSegs);
+                            }}
+                            minDate={idx > 0 ? multicitySegments[idx - 1].departureDate : datedep}
+                            value={multicitySegments[idx].departureDate}
+                          />
+                        )}
+                        {segment.dateError && (
+                          <div className="text-xs text-red-500 mt-1">{segment.dateError}</div>
+                        )}
+                      </div>
+                      {idx === multicitySegments.length - 1 && (
+                        <div className="flex gap-2 mt-3">
+                          {multicitySegments.length > 1 && (
+                            <button
+                              onClick={() => removeSegment(idx)}
+                              className="flex-1 bg-red-500 text-white py-2 px-3 rounded text-sm"
+                            >
+                              Remove
+                            </button>
+                          )}
+                          {multicitySegments.length < 5 && (
+                            <button
+                              onClick={addSegment}
+                              className="flex-1 bg-blue-500 text-white py-2 px-3 rounded text-sm"
+                            >
+                              Add Segment
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Global Error Messages */}
                   {errorMsg && (
-                    <div
-                      className="text-red-500 mt-2 text-sm font-medium"
-                      style={{ textAlign: "center", padding: "10px" }}
-                    >
+                    <div className="text-red-500 text-sm font-medium text-center p-2 bg-red-50 rounded">
                       {errorMsg}
                     </div>
                   )}
                   {dateError && (
-                    <div
-                      className="text-red-500 mt-2 text-sm font-medium"
-                      style={{ textAlign: "center", padding: "10px" }}
-                    >
+                    <div className="text-red-500 text-sm font-medium text-center p-2 bg-red-50 rounded">
                       {dateError}
                     </div>
                   )}
-                </>
+                </div>
               )}
 
-            {/* <AppListSearch operEngLocation={openTo} setSelectFrom={setSelectFromTo} setSelectFromSub={setSelectFromSubTo} /> */}
-          </div>
+              <div className="modify-field">
+                <label className="text-xs font-bold text-gray-500 uppercase">Travellers & Class</label>
+                <div onClick={openTraveller} className="border p-2 rounded cursor-pointer">
+                  {srx_traveller} {srx_traveller > 1 ? "Travellers" : "Traveller"} | {classLabels[srx_cabinType]}
+                </div>
+
+                {/* Traveller Form Popup - Mobile Optimized */}
+                {showTraveller && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end" onClick={openTraveller}>
+                    <div className="bg-white w-full rounded-t-2xl p-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-bold">Select Travellers & Class</h3>
+                        <button onClick={openTraveller} className="text-2xl">&times;</button>
+                      </div>
+
+                      {/* Adults */}
+                      <div className="flex justify-between items-center mb-4 pb-3 border-b">
+                        <div className="text-base font-bold">Adults</div>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={adultCount > 1 ? clickMinus : undefined}
+                            disabled={adultCount <= 1}
+                            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-xl font-bold disabled:opacity-30"
+                            style={{ borderColor: "#EB5B00", color: "#EB5B00" }}
+                          >
+                            −
+                          </button>
+                          <span className="w-8 text-center font-bold text-lg">{adultCount}</span>
+                          <button
+                            onClick={adultCount < 9 && totalPassenderCount < 9 ? clickPlus : undefined}
+                            disabled={adultCount >= 9 || totalPassenderCount >= 9}
+                            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-xl font-bold disabled:opacity-30"
+                            style={{ borderColor: "#EB5B00", color: "#EB5B00" }}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Children */}
+                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""}`}>
+                        <div className="text-base font-bold">Children</div>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={countChildren > 0 ? clickMinusChildren : undefined}
+                            disabled={countChildren <= 0}
+                            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-xl font-bold disabled:opacity-30"
+                            style={{ borderColor: "#EB5B00", color: "#EB5B00" }}
+                          >
+                            −
+                          </button>
+                          <span className="w-8 text-center font-bold text-lg">{countChildren}</span>
+                          <button
+                            onClick={countChildren < 9 && totalPassenderCount < 9 ? clickPlusChildren : undefined}
+                            disabled={countChildren >= 9 || totalPassenderCount >= 9}
+                            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-xl font-bold disabled:opacity-30"
+                            style={{ borderColor: "#EB5B00", color: "#EB5B00" }}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Infants */}
+                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""}`}>
+                        <div className="text-base font-bold">Infant</div>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={countInfant > 0 ? clickMinusinfant : undefined}
+                            disabled={countInfant <= 0}
+                            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-xl font-bold disabled:opacity-30"
+                            style={{ borderColor: "#EB5B00", color: "#EB5B00" }}
+                          >
+                            −
+                          </button>
+                          <span className="w-8 text-center font-bold text-lg">{countInfant}</span>
+                          <button
+                            onClick={countInfant < adultCount ? clickPlusinfant : undefined}
+                            disabled={countInfant >= adultCount}
+                            className="w-10 h-10 rounded-full border-2 flex items-center justify-center text-xl font-bold disabled:opacity-30"
+                            style={{ borderColor: "#EB5B00", color: "#EB5B00" }}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Travel Class */}
+                      <div className="mt-6">
+                        <div className="text-sm font-bold mb-3 uppercase">Choose Travel Class</div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => handleChangeClass({ target: { value: "b" } })}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                          >
+                            Economy
+                          </button>
+                          <button
+                            onClick={() => handleChangeClass({ target: { value: "a" } })}
+                            className={`p-3 rounded border-2 font-semibold text-sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                          >
+                            Premium Economy
+                          </button>
+                          <button
+                            onClick={() => handleChangeClass({ target: { value: "c" } })}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                          >
+                            Business
+                          </button>
+                          <button
+                            onClick={() => handleChangeClass({ target: { value: "d" } })}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                          >
+                            First
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Apply Button */}
+                      <Button
+                        type="primary"
+                        onClick={openTraveller}
+                        block
+                        size="large"
+                        className="mt-6"
+                        style={{ background: "#008cff" }}
+                      >
+                        APPLY
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <Button
+                type="primary"
+                block
+                size="large"
+                style={{ background: "#008cff", marginTop: "20px" }}
+                onClick={() => {
+                  handlesearFlight();
+                  setModifySearchOpen(false);
+                }}
+              >
+                Search Flights
+              </Button>
+            </div>
+          </Drawer>
+
           <TravellerForm
             showTraveller={showTraveller}
             adult={adultCount}
@@ -2121,7 +2692,7 @@ export default function Tickets() {
           {/* Ticket List Section */}
 
           <section className="box-section block-content-tourlist background-body">
-            <div className="container-fluid" style={{ width: "93%" }}>
+            <div className="container-fluid" style={{ width: "100%" }}>
               <div className="box-content-main">
                 <div className="content-right border ">
                   {/* <div className="box-filters mb-25 pb-5 border-bottom border-1">
@@ -2215,19 +2786,58 @@ export default function Tickets() {
                           {tripInfo?.length > 0 ? (
                             <>
                               <div className="box-grid-tours">
-                                <div className="row">
-                                  <div
-                                    className="box-list-flights box-list-flights-2"
-                                    style={{ padding: "10px" }}
+                                {/* Mobile Filter Button */}
+                                <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
+                                  <Button
+                                    type="primary"
+                                    icon={<FilterOutlined />}
+                                    onClick={showFilterDrawer}
+                                    style={{ marginBottom: "10px" }}
                                   >
-                                    {tripInfo.map((ticket: any) => (
-                                      <React.Fragment key={ticket.id}>
-                                        <TicketCard1
-                                          ticket={ticket}
-                                          flightData={flightData}
-                                        />
-                                      </React.Fragment>
-                                    ))}
+                                    Filters
+                                  </Button>
+                                </div>
+
+                                {/* Drawer */}
+                                <Drawer
+                                  title="Filter Flights"
+                                  placement="left"
+                                  onClose={onCloseFilterDrawer}
+                                  open={filterDrawerOpen}
+                                  width={300}
+                                >
+                                  <div className="content-left">
+                                    {renderFilters()}
+                                  </div>
+                                </Drawer>
+
+                                <div className="row">
+                                  {/* Sidebar Desktop */}
+                                  <div className="col-xl-3 d-none d-xl-block content-left">
+                                    {renderFilters()}
+                                  </div>
+
+                                  <div className="col-xl-9 col-12">
+                                    <div
+                                      className="box-list-flights box-list-flights-2"
+                                      style={{ padding: isMobile ? "0" : "10px" }}
+                                    >
+                                      {tripInfo.map((ticket: any) => (
+                                        <React.Fragment key={ticket.id}>
+                                          {isMobile ? (
+                                            <TicketCardMobile
+                                              ticket={ticket}
+                                              flightData={flightData}
+                                            />
+                                          ) : (
+                                            <TicketCard1
+                                              ticket={ticket}
+                                              flightData={flightData}
+                                            />
+                                          )}
+                                        </React.Fragment>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
@@ -2308,15 +2918,15 @@ export default function Tickets() {
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "round-trip" &&
-                  srx_tripType.trim().toLowerCase() !== "one-way" &&
-                  srx_tripType.trim().toLowerCase() !== "multi-city" ? (
+                    srx_tripType.trim().toLowerCase() === "round-trip" &&
+                    srx_tripType.trim().toLowerCase() !== "one-way" &&
+                    srx_tripType.trim().toLowerCase() !== "multi-city" ? (
                     <>
                       {flightData &&
-                      flightData.ONWARD &&
-                      flightData.ONWARD.length > 0 &&
-                      flightData.RETURN &&
-                      flightData.RETURN.length > 0 ? (
+                        flightData.ONWARD &&
+                        flightData.ONWARD.length > 0 &&
+                        flightData.RETURN &&
+                        flightData.RETURN.length > 0 ? (
                         <RoundTripSelectionView
                           flightData={flightData}
                           departureFrom={departureFrom}
@@ -2340,14 +2950,14 @@ export default function Tickets() {
                     </>
                   ) : null}
                   {srx_tripType &&
-                  srx_tripType.trim().toLowerCase() === "multi-city" &&
-                  !flightData?.COMBO ? (
+                    srx_tripType.trim().toLowerCase() === "multi-city" &&
+                    !flightData?.COMBO ? (
                     <>
                       {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
-                          // departureFrom={departureFrom}
-                          // arrivalTo={arrivalTo}
+                        // departureFrom={departureFrom}
+                        // arrivalTo={arrivalTo}
                         />
                       ) : (
                         <>
@@ -2437,158 +3047,154 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                {((srx_tripType?.trim().toLowerCase() === "one-way" &&
-                  flightData?.ONWARD?.length > 0) ||
-                  (srx_tripType?.trim().toLowerCase() === "round-trip" &&
-                    flightData?.COMBO?.length > 0) ||
-                  (srx_tripType?.trim().toLowerCase() === "multi-city" &&
-                    flightData?.COMBO?.length > 0)) && (
-                  <div className="content-left order-lg-first">
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Filter Price{" "}
-                          </h6>
-                          <ByPrice
-                            priceRange={priceRange}
-                            setPriceRange={setPriceRange}
-                            minPriceRange={minPriceRange}
-                            maxPriceRange={maxPriceRange}
-                          />
+                {((srx_tripType?.trim().toLowerCase() === "round-trip" && flightData?.COMBO?.length > 0) ||
+                  (srx_tripType?.trim().toLowerCase() === "multi-city" && flightData?.COMBO?.length > 0)) && (
+                    <div className="content-left order-lg-first">
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Filter Price{" "}
+                            </h6>
+                            <ByPrice
+                              priceRange={priceRange}
+                              setPriceRange={setPriceRange}
+                              minPriceRange={minPriceRange}
+                              maxPriceRange={maxPriceRange}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Stops
-                          </h6>
-                          <ByStops stops={stops} setStops={setStops} />
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Stops
+                            </h6>
+                            <ByStops stops={stops} setStops={setStops} />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Price
-                          </h6>
-                          <BySortPrice
-                            sort={priceSort}
-                            setSort={setPriceSort}
-                          />
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Price
+                            </h6>
+                            <BySortPrice
+                              sort={priceSort}
+                              setSort={setPriceSort}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Departure Time
-                          </h6>
-                          <ByDepartureTime
-                            departureTime={departureTime}
-                            setDepartureTime={setDepartureTime}
-                          />
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Departure Time
+                            </h6>
+                            <ByDepartureTime
+                              departureTime={departureTime}
+                              setDepartureTime={setDepartureTime}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Arrival Time
-                          </h6>
-                          <ByArrivalTime
-                            arrivalTime={arrivalTime}
-                            setArrivalTime={setArrivalTime}
-                          />
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Arrival Time
+                            </h6>
+                            <ByArrivalTime
+                              arrivalTime={arrivalTime}
+                              setArrivalTime={setArrivalTime}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Airlines
-                          </h6>
-                          <div className="box-collapse scrollFilter">
-                            <ByAirline
-                              uniqueAirlines={[
-                                ...new Set(
-                                  (
-                                    flightData?.ONWARD ||
-                                    flightData?.COMBO ||
-                                    []
-                                  ).map(
-                                    (ticket: any) => ticket.sI[0].fD.aI.name
-                                  )
-                                ),
-                              ]}
-                              selectedAirlines={selectedAirlines}
-                              setSelectedAirlines={setSelectedAirlines}
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Airlines
+                            </h6>
+                            <div className="box-collapse scrollFilter">
+                              <ByAirline
+                                uniqueAirlines={[
+                                  ...new Set(
+                                    (
+                                      flightData?.ONWARD ||
+                                      flightData?.COMBO ||
+                                      []
+                                    ).map(
+                                      (ticket: any) => ticket.sI[0].fD.aI.name
+                                    )
+                                  ),
+                                ]}
+                                selectedAirlines={selectedAirlines}
+                                setSelectedAirlines={setSelectedAirlines}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Fare Identifier
+                            </h6>
+                            <ByFareIdentifier
+                              fareIdentifiers={fareIdentifiers}
+                              setFareIdentifiers={setFareIdentifiers}
+                              options={uniqueFareIdentifiers}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Flight Number
+                            </h6>
+                            <ByAirlineSearch
+                              flightNumberSearch={flightNumberSearch}
+                              setFlightNumberSearch={setFlightNumberSearch}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="sidebar-left border-1 background-body">
+                        <div className="box-filters-sidebar">
+                          {/* <div className="block-filter border-1"> */}
+                          <div className="border-1">
+                            <h6 className="text-lg-bold filter-sty neutral-1000">
+                              Fare Type
+                            </h6>
+                            <ByFareType
+                              selectedFareTypes={selectedFareTypes}
+                              setSelectedFareTypes={setSelectedFareTypes}
+                              options={uniqueFareTypes}
                             />
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Fare Identifier
-                          </h6>
-                          <ByFareIdentifier
-                            fareIdentifiers={fareIdentifiers}
-                            setFareIdentifiers={setFareIdentifiers}
-                            options={uniqueFareIdentifiers}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Flight Number
-                          </h6>
-                          <ByAirlineSearch
-                            flightNumberSearch={flightNumberSearch}
-                            setFlightNumberSearch={setFlightNumberSearch}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="sidebar-left border-1 background-body">
-                      <div className="box-filters-sidebar">
-                        {/* <div className="block-filter border-1"> */}
-                        <div className="border-1">
-                          <h6 className="text-lg-bold filter-sty neutral-1000">
-                            Fare Type
-                          </h6>
-                          <ByFareType
-                            selectedFareTypes={selectedFareTypes}
-                            setSelectedFareTypes={setSelectedFareTypes}
-                            options={uniqueFareTypes}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           </section>
