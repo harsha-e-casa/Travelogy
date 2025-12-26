@@ -766,7 +766,7 @@ const EngineTabs = ({ active_border }) => {
                       {adult + countchildren + countinfant}{" "}
                     </span>
                   </div>
-                  <div className="mt-3">
+                  <div className="">
                     <div className="txt_travelSelect">Traveller</div>
                     <p className="txt_travelSelect2">
                       {classLabels[travellerClass]}
