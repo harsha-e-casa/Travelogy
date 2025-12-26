@@ -148,6 +148,7 @@
         padding: 16px;
         margin-bottom: 16px;
         border-radius: 10px;
+        max-width: 100%;
     }
 
     .mobile-card-header {

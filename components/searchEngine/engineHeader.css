@@ -1,4 +1,9 @@
 @media (max-width: 768px) {
+
+  .grid_main_section_1 {
+    height: 6.5rem !important;
+  }
+
   .country {
     display: grid !important;
     grid-template-columns: 1fr 1fr;
