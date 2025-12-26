@@ -555,7 +555,7 @@ const EngineTabs = ({ active_border }) => {
       style={{ padding: "3% 7% 7% 7%" }}
     >
       <div
-        className="rounded-md"
+        className="rounded-md engine_layer"
         style={{
           background: "#ffffffcc",
           borderRadius: "14px",
@@ -766,7 +766,7 @@ const EngineTabs = ({ active_border }) => {
                       {adult + countchildren + countinfant}{" "}
                     </span>
                   </div>
-                  <div className="mt-3">
+                  <div className="">
                     <div className="txt_travelSelect">Traveller</div>
                     <p className="txt_travelSelect2">
                       {classLabels[travellerClass]}

@@ -40,7 +40,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
         />
         <div className="plan-content">
           <div className="plan-details">
-            <span>Round Trip</span>
+            <span>Roundtrip</span>
           </div>
         </div>
       </label>
