@@ -1,0 +1,541 @@
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Alert,
+  Table,
+  Modal,
+  message,
+  Space,
+  Switch,
+  InputNumber,
+  Radio,
+  Statistic,
+  Tag,
+  Select,
+  Skeleton,
+  Row,
+  Col,
+} from "antd";
+import {
+  LockOutlined,
+  PhoneOutlined,
+  ReloadOutlined,
+  SafetyOutlined,
+  HistoryOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { postData, getData } from "@/services/NetworkAdapter";
+import { jwtDecode } from "jwt-decode";
+import CryptoJS from "crypto-js";
+import Layout from "@/components/layout/Layout";
+import "../dashboard/style.css";
+// import "../dashboard/responsive.css";
+
+type CreateVendorResponse = {
+  success?: boolean;
+  message?: string;
+  [k: string]: any;
+};
+type Vendor = {
+  id: number;
+  user_id?: number;
+  e_mail: string;
+  phone: string;
+  is_admin?: number;
+  created_at?: string;
+};
+
+type WalletTx = {
+  id: number;
+  booking_id: string;
+  amount: number;
+  description: string;
+  type: "CREDIT" | "DEBIT";
+  created_at: string;
+};
+
+type WalletStats = {
+  totalTopup: number;
+  pendingAmount: number;
+  totalUsage: number;
+};
+
+const CREATE_ENDPOINT = "/travelogy/flight/create-vendor";
+const LIST_ENDPOINT = "/travelogy/flight/list-vendors";
+const RESET_ENDPOINT = "/travelogy/flight/reset-vendor-password";
+const Wallet_Transactions = "/travelogy/flight/wallet";
+
+export default function WalletOption(): JSX.Element {
+  const [form] = Form.useForm();
+  const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetTarget, setResetTarget] = useState<Vendor | null>(null);
+  const [resetSubmitting, setResetSubmitting] = useState(false);
+  const [resetForm] = Form.useForm();
+
+  const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [activeVendor, setActiveVendor] = useState<Vendor | null>(null);
+  const [walletAmount, setWalletAmount] = useState<number>(0);
+  const [walletOperation, setWalletOperation] = useState<"ADD" | "DEDUCT">(
+    "ADD"
+  );
+
+  // Wallet History State
+  const [history, setHistory] = useState<WalletTx[]>([]);
+  const [stats, setStats] = useState<WalletStats>({
+    totalTopup: 0,
+    pendingAmount: 0,
+    totalUsage: 0,
+  });
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedVendorId, setSelectedVendorId] = useState<number | null>(null);
+  const [adminInfo, setAdminInfo] = useState<{ id: number; e_mail: string } | null>(
+    null
+  );
+
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  const authHeader = { Authorization: token ? `Bearer ${token}` : "" };
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        setIsAdmin(!!decoded?.travelogy_admin);
+
+        // Try to get admin ID and email from token if available
+        if (decoded?.id || decoded?.userId) {
+          setAdminInfo({
+            id: decoded?.id || decoded?.userId,
+            e_mail: decoded?.e_mail || decoded?.email || "Admin",
+          });
+        }
+      } catch (e) {
+        console.error("Token decode error", e);
+      }
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const fetchAdminData = async () => {
+      if (isAdmin && !adminInfo && token) {
+        try {
+          const res: any = await postData(
+            "/travelogy/flight/fetch-user",
+            { phone: "", e_mail: "" },
+            authHeader
+          );
+          if (res?.user) {
+            setAdminInfo({
+              id: res.user.id,
+              e_mail: res.user.e_mail || res.user.email || "Admin",
+            });
+          }
+        } catch (e) {
+          console.error("Failed to fetch admin info", e);
+        }
+      }
+    };
+    fetchAdminData();
+  }, [isAdmin, adminInfo, token]);
+
+  const fetchVendors = async () => {
+    try {
+      setLoadingList(true);
+      const res = await getData(LIST_ENDPOINT, {}, authHeader);
+      setVendors(Array.isArray(res?.vendors) ? res.vendors : []);
+    } catch (e: any) {
+      message.error(e?.message || "Failed to load vendors");
+    } finally {
+      setLoadingList(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchVendors();
+    }
+  }, [isAdmin]);
+
+  const fetchWalletHistory = async (vendorId?: number | null) => {
+    setLoadingHistory(true);
+    try {
+      const params: any = {};
+      if (vendorId) {
+        params.vendor_id = vendorId;
+        params.user_id = vendorId; // Some endpoints might use user_id
+      }
+      const res = await getData(Wallet_Transactions, params, { Authorization: `Bearer ${token}` });
+      console.log("Wallet_Transactions:", res);
+
+      if (res.success && Array.isArray(res.transactions)) {
+        let transactions = res.transactions.map((t: any) => ({
+          id: t.id,
+          user_id: t.user_id,
+          vendor_id: t.vendor_id,
+          booking_id: t.booking_id || "-",
+          amount: parseFloat(t.amount),
+          type: t.type,
+          description: t.description,
+          created_at: new Date(t.created_at).toLocaleString(),
+        }));
+
+        // Frontend filter fallback: if backend didn't filter, we do it here
+        if (vendorId) {
+          transactions = transactions.filter(
+            (t: any) =>
+              Number(t.user_id) === Number(vendorId) ||
+              Number(t.vendor_id) === Number(vendorId)
+          );
+        }
+
+        setHistory(transactions);
+
+        // Calculate stats based on transactions (already filtered if vendorId exists)
+        const totalTopup = transactions
+          .filter((t: any) => t.type === "CREDIT")
+          .reduce((sum: number, t: any) => sum + (parseFloat(t.amount) || 0), 0);
+
+        const totalUsage = transactions
+          .filter((t: any) => t.type === "DEBIT")
+          .reduce((sum: number, t: any) => sum + (parseFloat(t.amount) || 0), 0);
+
+        setStats({
+          totalTopup,
+          totalUsage,
+          pendingAmount: totalTopup - totalUsage,
+        });
+      } else {
+        setHistory([]);
+        setStats({ totalTopup: 0, totalUsage: 0, pendingAmount: 0 });
+      }
+    } catch (e: any) {
+      console.error(e);
+      message.error(e?.message || "Failed to load wallet history");
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWalletHistory(selectedVendorId);
+  }, [selectedVendorId]);
+
+  const onFinish = async (vals: {
+    email: string;
+    password: string;
+    phone: string;
+  }) => {
+    setSubmitting(true);
+    setSuccessMsg(null);
+    setErrorMsg(null);
+    try {
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        vals.password,
+        "yourSecretKey"
+      ).toString();
+      const reqData = {
+        email: vals.email,
+        phone: vals.phone,
+        password: encryptedPassword,
+      };
+
+      const res = (await postData(
+        CREATE_ENDPOINT,
+        reqData,
+        authHeader
+      )) as CreateVendorResponse;
+
+      if (res?.success !== false) {
+        const msg = res?.message || "Vendor created successfully.";
+        setSuccessMsg(msg);
+        message.success(msg);
+        form.resetFields();
+        fetchWalletHistory();
+      } else {
+        const msg = res?.message || "Failed to create vendor.";
+        setErrorMsg(msg);
+        message.error(msg);
+      }
+    } catch (err: any) {
+      const msg = err?.message || "Something went wrong while creating vendor.";
+      setErrorMsg(msg);
+      message.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openReset = (vendor: Vendor) => {
+    setResetTarget(vendor);
+    resetForm.resetFields();
+    setResetOpen(true);
+  };
+
+  const submitReset = async () => {
+    try {
+      const { newPassword } = await resetForm.validateFields();
+      setResetSubmitting(true);
+      const encrypted = CryptoJS.AES.encrypt(
+        newPassword,
+        "yourSecretKey"
+      ).toString();
+      await postData(
+        RESET_ENDPOINT,
+        { email: resetTarget?.e_mail, newPasswordEncrypted: encrypted },
+        authHeader
+      );
+      message.success("Password reset successfully");
+      setResetOpen(false);
+    } catch (e: any) {
+      if (e?.errorFields) return;
+      message.error(e?.message || "Failed to reset password");
+    } finally {
+      setResetSubmitting(false);
+    }
+  };
+
+  const openWalletModal = (vendor: Vendor) => {
+    setActiveVendor(vendor);
+    setWalletAmount(0);
+    setWalletOperation("ADD");
+    setWalletModalOpen(true);
+  };
+
+  const submitWalletChange = async () => {
+    if (!activeVendor) return;
+
+    const req = {
+      vendor_id: activeVendor.user_id,
+      amount: walletAmount,
+      type: walletOperation, // ADD or DEDUCT
+    };
+
+    await postData("/travelogy/flight/vendor/update-wallet", req, authHeader);
+
+    message.success("Wallet updated successfully!");
+    await fetchWalletHistory(); // refresh the table
+
+    setWalletModalOpen(false);
+  };
+
+  // const toggleActive = async (vendor: any, isActive: boolean) => {
+  //   const req = {
+  //     vendor_id: vendor.id,
+  //     is_active: isActive ? 1 : 0,
+  //   };
+
+  //   await postData("/travelogy/flight/vendor/update-status", req, authHeader);
+  //   message.success(`Vendor ${isActive ? "activated" : "deactivated"}!`);
+  //   await fetchVendors();
+  // };
+
+  return (
+    <Layout headerStyle={1} footerStyle={7}>
+      <main className="modern-dashboard">
+        <section className="section_main_book_dash_01 relative_MainBanner">
+
+          <div className="main-content">
+            <div
+              className="bookings-container wallet_container"
+            >
+              {/* Wallet History Section */}
+              <div style={{ marginTop: "40px", padding: "0 10px" }}>
+                <div className="wallet-header">
+                  <h2 className="wallet-title">
+                    Wallet History Overview
+                  </h2>
+
+                  {isAdmin && (
+                    <div className="wallet-filter">
+                      <span className="wallet-filter-label">Filter by Vendor:</span>
+                      <Select
+                        placeholder="Select Vendor"
+                        className="wallet-filter-select"
+                        allowClear
+                        loading={loadingList}
+                        onChange={(val) => setSelectedVendorId(val)}
+                        value={selectedVendorId}
+                        showSearch
+                        optionFilterProp="children"
+                      >
+                        {isAdmin && adminInfo && (
+                          <Select.Option key="admin-self" value={adminInfo.id}>
+                            {adminInfo.e_mail} (Admin)
+                          </Select.Option>
+                        )}
+                        {vendors
+                          // .filter((v) => v.is_admin !== 1)
+                          .map((v) => (
+                            <Select.Option key={v.id} value={v.user_id || v.id}>
+                              {v.e_mail}
+                            </Select.Option>
+                          ))}
+                      </Select>
+                    </div>
+                  )}
+                </div>
+
+
+                {/* Stats Cards */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: "20px",
+                    marginBottom: "30px",
+                  }}
+                >
+                  {[1, 2, 3].map((i) => (
+                    <Card
+                      key={i}
+                      bordered={false}
+                      style={{
+                        borderRadius: "16px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                        border: "1px solid #f0f0f0",
+                      }}
+                    >
+                      <Skeleton loading={loadingHistory} active avatar={false} paragraph={{ rows: 1 }}>
+                        <Statistic
+                          title={
+                            <span style={{ fontWeight: 600, color: i === 1 ? "#389e0d" : i === 2 ? "#d46b08" : "#cf1322" }}>
+                              {i === 1 ? "Total Top-up Amount" : i === 2 ? "Pending Amount" : "Total Usage Amount"}
+                            </span>
+                          }
+                          value={i === 1 ? stats.totalTopup : i === 2 ? stats.pendingAmount : stats.totalUsage}
+                          precision={2}
+                          prefix="₹"
+                          valueStyle={{
+                            color: i === 1 ? "#389e0d" : i === 2 ? "#d46b08" : "#cf1322",
+                            fontWeight: "700",
+                            fontSize: "28px",
+                          }}
+                        />
+                      </Skeleton>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Transactions Table */}
+                <Card
+                  style={{
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <Skeleton loading={loadingHistory} active paragraph={{ rows: 10 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 20,
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: "#333",
+                          fontWeight: 600,
+                          fontSize: "18px",
+                        }}
+                      >
+                        Recent Transactions
+                      </span>
+                      <Button
+                        icon={<ReloadOutlined />}
+                        size="small"
+                        onClick={() => fetchWalletHistory(selectedVendorId)}
+                        loading={loadingHistory}
+                        style={{
+                          marginLeft: "auto",
+                          background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                          border: "none",
+                          color: "white",
+                        }}
+                      >
+                        Refresh
+                      </Button>
+                    </div>
+
+                    <Table<WalletTx>
+                      rowKey="id"
+                      loading={loadingHistory}
+                      dataSource={history}
+                      pagination={{ pageSize: 10 }}
+                      scroll={{ x: 'max-content' }}
+                      columns={[
+                        { title: "#ID", dataIndex: "id", width: 80 },
+                        {
+                          title: "Booking ID",
+                          dataIndex: "booking_id",
+                          render: (text) =>
+                            text === "-" ? (
+                              <span style={{ color: "#aaa" }}>-</span>
+                            ) : (
+                              <span
+                                style={{
+                                  fontWeight: 600,
+                                  fontFamily: "monospace",
+                                  color: "#1890ff",
+                                }}
+                              >
+                                {text}
+                              </span>
+                            ),
+                        },
+
+                        { title: "Description", dataIndex: "description" },
+                        {
+                          title: "Date & Time",
+                          dataIndex: "created_at",
+                          width: 200,
+                          render: (text) => (
+                            <span style={{ color: "#666" }}>{text}</span>
+                          ),
+                        },
+                        {
+                          title: "Amount",
+                          dataIndex: "amount",
+                          align: "right",
+                          render: (amount, record) => (
+                            <span
+                              style={{
+                                color:
+                                  record.type === "CREDIT" ? "#389e0d" : "#cf1322",
+                                fontWeight: "bold",
+                                fontSize: "16px",
+                              }}
+                            >
+                              {record.type === "CREDIT" ? "+" : "-"} ₹
+                              {amount.toLocaleString()}
+                            </span>
+                          ),
+                        },
+                      ]}
+                    />
+                  </Skeleton>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+
+
+
+    </Layout>
+  );
+}

@@ -7,14 +7,17 @@
   border: 1px solid #e0e0e0;
   margin-right: 20px;
 }
+
 .hdt_sidebar h2 {
   font-size: 1.1rem;
   margin-bottom: 10px;
   color: #444;
 }
+
 .hdt_filter-group {
   margin-bottom: 20px;
 }
+
 .hdt_filter-group label {
   display: flex;
   align-items: center;
@@ -22,15 +25,18 @@
   font-size: 0.9rem;
   cursor: pointer;
 }
+
 .hdt_filter-group input[type="checkbox"] {
   margin-right: 8px;
 }
+
 .hdt_price-range {
   display: flex;
   justify-content: space-between;
   font-size: 0.9rem;
   margin-bottom: 6px;
 }
+
 .hdt_price-range input[type="range"] {
   width: 100%;
 }
@@ -39,6 +45,7 @@
 .hdt_main-content {
   flex: 1;
 }
+
 .hdt_flight-card {
   display: flex;
   justify-content: space-between;
@@ -49,11 +56,13 @@
   margin-bottom: 16px;
   align-items: center;
 }
+
 .hdt_flight-info {
   flex: 1;
   display: flex;
   align-items: center;
 }
+
 .hdt_flight-logo {
   width: 60px;
   height: 40px;
@@ -61,35 +70,43 @@
   border-radius: 4px;
   margin-right: 16px;
 }
+
 .hdt_flight-times {
   margin-right: 24px;
   text-align: center;
 }
+
 .hdt_flight-times .time {
   font-size: 1.2rem;
   font-weight: bold;
 }
+
 .hdt_flight-times .duration {
   font-size: 0.85rem;
   color: #777;
 }
+
 .hdt_flight-destination {
   text-align: center;
   margin-right: 24px;
 }
+
 .hdt_flight-destination .code {
   font-size: 1rem;
   font-weight: bold;
 }
+
 .hdt_flight-price {
   text-align: right;
   margin-right: 24px;
 }
+
 .hdt_flight-price .amount {
   font-size: 1.4rem;
   font-weight: bold;
   color: #008cff;
 }
+
 .hdt_view-btn {
   background: #008cff;
   color: #fff;
@@ -103,6 +120,7 @@
 .bg_cs_search {
   background: #1a1a2e;
 }
+
 /* Header */
 .hdt_header {
   /* background: #1a1a2e; */
@@ -126,6 +144,7 @@
   @media (max-width: 1280px) {
     width: 80%;
   }
+
   @media (min-width: 1300px) {
     width: 75%;
   }
@@ -135,6 +154,7 @@
   @media (max-width: 1280px) {
     width: 95%;
   }
+
   @media (min-width: 1300px) {
     width: 85%;
   }
@@ -144,6 +164,7 @@
   @media (max-width: 1280px) {
     width: 75%;
   }
+
   @media (min-width: 1300px) {
     width: 66%;
   }
@@ -153,19 +174,23 @@
   margin-right: 24px;
   padding: 10px 0px;
 }
+
 .hdt_header-item:last-child {
   margin-right: 0;
 }
+
 .hdt_header-item label {
   font-size: 0.85rem;
   display: block;
   color: #ddd;
   padding-left: 8px;
 }
+
 .hdt_header-item .hdt_value {
   font-size: 1rem;
   font-weight: bold;
 }
+
 .hdt_header .hdt_search-btn {
   background: #008cff;
   padding: 8px 16px;
@@ -179,6 +204,7 @@
 .hdt_value:hover {
   background: #202035;
 }
+
 .hdt_value {
   cursor: pointer;
   font-size: 1rem;
@@ -196,6 +222,7 @@
   .hdt_container {
     flex-direction: column;
   }
+
   .hdt_sidebar {
     width: 100%;
     margin-right: 0;
@@ -207,6 +234,7 @@
   .bg_cs_search {
     display: none;
   }
+
   /* .hdt_header {
       display: none;
     } */
@@ -220,7 +248,8 @@
 }
 
 .multicity-scrollplace::-webkit-scrollbar {
-  height: 1px; /* since it's horizontal */
+  height: 1px;
+  /* since it's horizontal */
 }
 
 .multicity-scrollplace::-webkit-scrollbar-track {
@@ -274,11 +303,34 @@
   border-top: 2px solid white;
   border-right: 2px solid white;
   transform: rotate(45deg);
-  margin-left: 5px; /* optional spacing */
+  margin-left: 5px;
+  /* optional spacing */
 }
 
 .vertical-line {
   width: 2px;
-  height: 20px; /* adjust height */
-  background-color: white; /* or any color */
+  height: 20px;
+  /* adjust height */
+  background-color: white;
+  /* or any color */
+}
+
+/* Tablet optimizations for mobile search summary (425px - 1024px) */
+@media (min-width: 425px) and (max-width: 1024px) {
+  .mobile-search-summary {
+    padding: 12px 16px !important;
+  }
+
+  .mobile-search-summary span:first-child {
+    font-size: 16px !important;
+  }
+
+  .mobile-search-summary span:last-child {
+    font-size: 14px !important;
+  }
+
+  .mobile-search-summary button {
+    padding: 8px 20px !important;
+    font-size: 14px !important;
+  }
 }

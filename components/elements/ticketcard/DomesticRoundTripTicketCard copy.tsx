@@ -17,11 +17,6 @@ export default function DomesticRoundTripTicketCard({
   const tripType = getCookie("gy_triptype");
   const [showAllFares, setShowAllFares] = useState(false);
 
-  // State for mobile detection
-  const [isMobile, setIsMobile] = useState(false);
-
-  console.log("isMobileisMobile ==> ", isMobile)
-
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -44,7 +39,6 @@ export default function DomesticRoundTripTicketCard({
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [infantCount, setInfantCount] = useState(0);
-
   useEffect(() => {
     if (
       getCookie("gy_adult") !== undefined &&
@@ -64,131 +58,10 @@ export default function DomesticRoundTripTicketCard({
     ) {
       setInfantCount(getCookie("gy_infant"));
     }
-
-    // Add event listener for resizing the window and update isMobile state
-    const handleResize = () => {
-      if (window.innerWidth <= 770) {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
-    };
-
-    // Set initial value on mount
-    handleResize();
-
-    // Listen for window resize
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup event listener on unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
   }, []);
 
-  // Calculate fare price
-  const calculateTotalPrice = (fare: any) => {
-    let total = 0;
-    if (fare?.fd?.ADULT) total += adultCount * fare.fd.ADULT.fC.NF;
-    if (fare?.fd?.CHILD) total += childCount * fare.fd.CHILD.fC.NF;
-    if (fare?.fd?.INFANT) total += infantCount * fare.fd.INFANT.fC.NF;
-    return new Intl.NumberFormat("en-IN").format(total);
-  };
-
-  // Mobile View UI layout
-  const mobileView = (
-    <div className="ticket-card-mobile card-flight">
-      <div className="mobile-card-header">
-        <img
-          className="mobile-airline-logo"
-          src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
-          alt={ticket.sI[0].fD.aI.name}
-          onError={(e: any) => {
-            e.target.src = "/assets/imgs/page/homepage1/flight.png";
-          }}
-        />
-        <span className="mobile-airline-name">{ticket.sI[0].fD.aI.name}</span>
-      </div>
-
-      <div className="mobile-flight-segments">
-        {ticket.sI.map((segment: any, index: number) => (
-          <div key={index} className="mobile-segment-row">
-            <div className="mobile-city-block">
-              <span className="mobile-time">{dayjs(segment.dt).format("HH:mm")}</span>
-              <span className="mobile-city-code">{segment.da.code}</span>
-            </div>
-
-            <div className="mobile-duration-block">
-              <span className="mobile-duration">{formatTime(segment.duration)}</span>
-              <div className="mobile-arrow-icon"></div>
-              <span className="mobile-stops">
-                {segment.stops > 0
-                  ? `${segment.stops} Stop${segment.stops > 1 ? 's' : ''}`
-                  : "Non-stop"}
-              </span>
-            </div>
-
-            <div className="mobile-city-block" style={{ textAlign: "right" }}>
-              <span className="mobile-time">{dayjs(segment.at).format("HH:mm")}</span>
-              <span className="mobile-city-code">{segment.aa.code}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mobile-card-footer">
-        <div className="mobile-price-section">
-          <span className="mobile-price">₹{calculateTotalPrice(ticket.totalPriceList[value])}</span>
-          <span className="mobile-fare-type">{ticket.totalPriceList[value].fareIdentifier}</span>
-        </div>
-        {tripPhase === "ONWARD" ? (
-            <button
-              className="mobile-book-btn"
-              onClick={() => handleTicketSelected(ticket, value)}
-            >
-              Select
-            </button>
-          ) : (
-            selectedOnwardTicket && (
-              <Link
-                href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
-                  selectedOnwardTicket.selectedPriceIndex
-                ]?.id
-                  },${ticket.totalPriceList[value]?.id}`}
-                className="mobile-book-btn"
-              >
-                Book Now
-              </Link>
-            )
-          )}
-      </div>
-
-      {ticket.totalPriceList.length > 1 && (
-        <div className="mobile-view-more" onClick={() => setShowAllFares(!showAllFares)}>
-          {showAllFares ? "Hide additional fares" : "View more fares"}
-        </div>
-      )}
-
-      {showAllFares && (
-        <div className="mt-3">
-          <Radio.Group onChange={(e) => setValue(e.target.value)} value={value} className="w-full flex flex-col gap-2">
-            {ticket.totalPriceList.map((fare: any, idx: number) => (
-              <Radio key={idx} value={idx} className="w-full border p-2 rounded">
-                <div className="flex justify-between items-center w-full">
-                  <span className="text-sm font-bold">₹{calculateTotalPrice(fare)}</span>
-                  <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
-                </div>
-              </Radio>
-            ))}
-          </Radio.Group>
-        </div>
-      )}
-    </div>
-  );
-
-  // Desktop View UI layout (if needed, you can keep the current structure)
-  const desktopView = (
-    <div>
+  return (
+    <>
       <div>
         <div className="item-flight background-card border-1 ticket-container relative">
           {/* need to render dynamic city if layover */}
@@ -423,8 +296,6 @@ export default function DomesticRoundTripTicketCard({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
-
-  return isMobile ? mobileView : desktopView;
 }

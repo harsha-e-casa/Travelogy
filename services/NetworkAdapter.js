@@ -125,9 +125,9 @@ export const postDatav1 = async (endpoint, payload) => {
   }
 };
 
-export const getData = async (endpoint, params = {}) => {
+export const getData = async (endpoint, params = {}, headers = {}) => {
   try {
-    const { data } = await apiInstance.get(endpoint, { params }); // use 'params'
+    const { data } = await apiInstance.get(endpoint, { params, headers }); // use 'params'
     console.log("[getData] Response data:", data);
     return data;
   } catch (error) {

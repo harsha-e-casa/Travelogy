@@ -1,9 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/util/AppContext";
-import { Segmented, Tabs } from "antd";
+import { Segmented, Tabs, Drawer, Button } from "antd";
 import dayjs from "dayjs";
 import "./Multicity.css";
+import "./ticketCardMobile.css";
 import { Input, Radio } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import ByPrice from "@/components/Filter/ByPrice";
 import ByStops from "@/components/Filter/ByStops";
@@ -29,6 +31,29 @@ export default function MulticitySelectionView({ flightData }) {
   const [selectedFares, setSelectedFares] = useState([]);
   const [showAllFares, setShowAllFares] = useState(false);
   const [priceSort, setPriceSort] = useState("asc");
+
+  // Drawer state
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const showFilterDrawer = () => setFilterDrawerOpen(true);
+  const onCloseFilterDrawer = () => setFilterDrawerOpen(false);
+
+
+
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 770;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 
   useEffect(() => {
@@ -403,10 +428,10 @@ export default function MulticitySelectionView({ flightData }) {
   const tabItems = matchedFlights.map((pair, tabIndex) => {
     const firstFlight = pair.flights[0];
     let travelDate = "";
-
     if (firstFlight?.sI?.[0]?.dt) {
       travelDate = dayjs(firstFlight.sI[0].dt).format("ddd, DD MMM YYYY");
     }
+
     const calculateTotalFare = (
       fd,
       adultCount,
@@ -422,6 +447,231 @@ export default function MulticitySelectionView({ flightData }) {
       );
     };
 
+    const renderFilters = (tabIndex) => (
+      <>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Filter Price{" "}
+              </h6>
+              <ByPrice
+                key={`price-${tabIndex}`}
+                priceRange={
+                  Array.isArray(filters[tabIndex]?.priceRange)
+                    ? filters[tabIndex].priceRange
+                    : [0, 100000000]
+                }
+                setPriceRange={(newRange) => {
+                  setFilters((prev) => {
+                    const next = [...prev];
+                    next[tabIndex] = {
+                      ...next[tabIndex],
+                      priceRange: newRange,
+                    };
+                    return next;
+                  });
+                }}
+                minPriceRange={
+                  Number.isFinite(filters[tabIndex]?.minPriceRange)
+                    ? filters[tabIndex].minPriceRange
+                    : 0
+                }
+                maxPriceRange={
+                  Number.isFinite(filters[tabIndex]?.maxPriceRange)
+                    ? filters[tabIndex].maxPriceRange
+                    : 100000000
+                }
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Sort by Price
+              </h6>
+              <BySortPrice sort={priceSort} setSort={setPriceSort} />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Stops
+              </h6>
+              <ByStops
+                key={`stops-${tabIndex}`}
+                stops={filters[tabIndex]?.stops}
+                setStops={(newStops) => {
+                  setFilters((prevFilters) => {
+                    const newFilters = [...prevFilters];
+                    newFilters[tabIndex] = {
+                      ...newFilters[tabIndex],
+                      stops: newStops,
+                    };
+                    return newFilters;
+                  });
+                }}
+                tabIndex={tabIndex}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Departure Time
+              </h6>
+              <ByDepartureTime
+                key={`departureTime-${tabIndex}`}
+                departureTime={filters[tabIndex]?.departureTime}
+                setDepartureTime={(newDepartureTime) => {
+                  setFilters((prevFilters) => {
+                    const newFilters = [...prevFilters];
+                    newFilters[tabIndex] = {
+                      ...newFilters[tabIndex],
+                      departureTime: newDepartureTime,
+                    };
+                    return newFilters;
+                  });
+                }}
+                tabIndex={tabIndex}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Arrival Time
+              </h6>
+              <ByArrivalTime
+                key={`arrivalTime-${tabIndex}`}
+                arrivalTime={filters[tabIndex]?.arrivalTime}
+                setArrivalTime={(newArrivalTime) => {
+                  setFilters((prevFilters) => {
+                    const newFilters = [...prevFilters];
+                    newFilters[tabIndex] = {
+                      ...newFilters[tabIndex],
+                      arrivalTime: newArrivalTime,
+                    };
+                    return newFilters;
+                  });
+                }}
+                tabIndex={tabIndex}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Airlines
+              </h6>
+              <div className="box-collapse scrollFilter">
+                <ByAirline
+                  key={`airline-${tabIndex}`}
+                  uniqueAirlines={[
+                    ...new Set(
+                      pair.flights.map(
+                        (ticket) => ticket.sI[0].fD.aI.name
+                      ) || []
+                    ),
+                  ]}
+                  selectedAirlines={filters[tabIndex]?.selectedAirlines}
+                  setSelectedAirlines={(newAirlines) => {
+                    setFilters((prevFilters) => {
+                      const newFilters = [...prevFilters];
+                      newFilters[tabIndex] = {
+                        ...newFilters[tabIndex],
+                        selectedAirlines: newAirlines,
+                      };
+                      return newFilters;
+                    });
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Fare Identifier
+              </h6>
+              <ByFareIdentifier
+                key={`fare-${tabIndex}`}
+                fareIdentifiers={filters[tabIndex]?.fareIdentifiers}
+                setFareIdentifiers={(newFareIdentifiers) => {
+                  setFilters((prevFilters) => {
+                    const newFilters = [...prevFilters];
+                    newFilters[tabIndex] = {
+                      ...newFilters[tabIndex],
+                      fareIdentifiers: newFareIdentifiers,
+                    };
+                    return newFilters;
+                  });
+                }}
+                options={uniqueFareIdentifiers}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Flight Number
+              </h6>
+              <ByAirlineSearch
+                flightNumberSearch={filters[tabIndex]?.flightNumberSearch}
+                setFlightNumberSearch={(newFlightNumberSearch) => {
+                  setFilters((prevFilters) => {
+                    const newFilters = [...prevFilters];
+                    newFilters[tabIndex] = {
+                      ...newFilters[tabIndex],
+                      flightNumberSearch: newFlightNumberSearch,
+                    };
+                    return newFilters;
+                  });
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="sidebar-left border-1 background-body">
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <h6 className="text-lg-bold filter-sty neutral-1000">
+                Fare Type
+              </h6>
+              <ByFareType
+                selectedFareTypes={filters[tabIndex]?.selectedFareTypes}
+                setSelectedFareTypes={(newFareTypes) => {
+                  setFilters((prevFilters) => {
+                    const newFilters = [...prevFilters];
+                    newFilters[tabIndex] = {
+                      ...newFilters[tabIndex],
+                      selectedFareTypes: newFareTypes,
+                    };
+                    return newFilters;
+                  });
+                }}
+                options={uniqueFareTypes}
+              />
+            </div>
+          </div>
+        </div>
+      </>
+    );
+
     return {
       key: String(tabIndex + 1),
       label: (
@@ -435,509 +685,461 @@ export default function MulticitySelectionView({ flightData }) {
         </div>
       ),
       children: (
-        <div className="row">
-          <div className="content-left">
-            {!currentFilter && (
-              <div className="p-3 text-sm text-gray-500">Loading filters…</div>
-            )}
-            {currentFilter && (
-              <div className="sidebar-left border-1 background-body">
-                <div className="box-filters-sidebar">
-                  <div className="block-filter border-1">
-                    <h6 className="text-lg-bold filter-sty neutral-1000">
-                      Filter Price{" "}
-                    </h6>
-                    <ByPrice
-                      key={`price-${tabIndex}`}
-                      priceRange={
-                        Array.isArray(filters[tabIndex]?.priceRange)
-                          ? filters[tabIndex].priceRange
-                          : [0, 100000000]
-                      }
-                      setPriceRange={(newRange) => {
-                        setFilters((prev) => {
-                          const next = [...prev];
-                          next[tabIndex] = {
-                            ...next[tabIndex],
-                            priceRange: newRange,
-                          };
-                          return next;
-                        });
-                      }}
-                      minPriceRange={
-                        Number.isFinite(filters[tabIndex]?.minPriceRange)
-                          ? filters[tabIndex].minPriceRange
-                          : 0
-                      }
-                      maxPriceRange={
-                        Number.isFinite(filters[tabIndex]?.maxPriceRange)
-                          ? filters[tabIndex].maxPriceRange
-                          : 100000000
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Sort by Price
-                  </h6>
-                  <BySortPrice sort={priceSort} setSort={setPriceSort} />
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Stops
-                  </h6>
-                  <ByStops
-                    key={`stops-${tabIndex}`}
-                    stops={filters[tabIndex]?.stops}
-                    setStops={(newStops) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          stops: newStops,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                    tabIndex={tabIndex}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Departure Time
-                  </h6>
-                  <ByDepartureTime
-                    key={`departureTime-${tabIndex}`}
-                    departureTime={filters[tabIndex]?.departureTime}
-                    setDepartureTime={(newDepartureTime) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          departureTime: newDepartureTime,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                    tabIndex={tabIndex}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Arrival Time
-                  </h6>
-                  <ByArrivalTime
-                    key={`arrivalTime-${tabIndex}`}
-                    arrivalTime={filters[tabIndex]?.arrivalTime}
-                    setArrivalTime={(newArrivalTime) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          arrivalTime: newArrivalTime,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                    tabIndex={tabIndex}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Airlines
-                  </h6>
-                  <div className="box-collapse scrollFilter">
-                    <ByAirline
-                      key={`airline-${tabIndex}`}
-                      uniqueAirlines={[
-                        ...new Set(
-                          pair.flights.map(
-                            (ticket) => ticket.sI[0].fD.aI.name
-                          ) || []
-                        ),
-                      ]}
-                      selectedAirlines={filters[tabIndex]?.selectedAirlines}
-                      setSelectedAirlines={(newAirlines) => {
-                        setFilters((prevFilters) => {
-                          const newFilters = [...prevFilters];
-                          newFilters[tabIndex] = {
-                            ...newFilters[tabIndex],
-                            selectedAirlines: newAirlines,
-                          };
-                          return newFilters;
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Fare Identifier
-                  </h6>
-                  <ByFareIdentifier
-                    key={`fare-${tabIndex}`}
-                    fareIdentifiers={filters[tabIndex]?.fareIdentifiers}
-                    setFareIdentifiers={(newFareIdentifiers) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          fareIdentifiers: newFareIdentifiers,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                    options={uniqueFareIdentifiers}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Flight Number
-                  </h6>
-                  <ByAirlineSearch
-                    flightNumberSearch={filters[tabIndex]?.flightNumberSearch}
-                    setFlightNumberSearch={(newFlightNumberSearch) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          flightNumberSearch: newFlightNumberSearch,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="sidebar-left border-1 background-body">
-              <div className="box-filters-sidebar">
-                <div className="block-filter border-1">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">
-                    Fare Type
-                  </h6>
-                  <ByFareType
-                    selectedFareTypes={filters[tabIndex]?.selectedFareTypes}
-                    setSelectedFareTypes={(newFareTypes) => {
-                      setFilters((prevFilters) => {
-                        const newFilters = [...prevFilters];
-                        newFilters[tabIndex] = {
-                          ...newFilters[tabIndex],
-                          selectedFareTypes: newFareTypes,
-                        };
-                        return newFilters;
-                      });
-                    }}
-                    options={uniqueFareTypes}
-                  />
-                </div>
-              </div>
-            </div>
+        <>
+          {/* Filter Button for Mobile/Tablet (< 1200px) */}
+          <div className="d-xl-none d-block p-2" style={{ textAlign: 'right' }}>
+            <Button
+              type="primary"
+              icon={<FilterOutlined />}
+              onClick={showFilterDrawer}
+              style={{ marginBottom: '10px' }}
+            >
+              Filters
+            </Button>
           </div>
-          <div className="col-lg-9">
-            {pair.flights.length > 0 ? (
-              applyFilters(pair.flights, filters[tabIndex]).map((ticket, i) => (
-                <div key={i}>
-                  <div className="" style={{ paddingBottom: "10px" }}>
-                    {ticket.sI.length >= 1 ? (
-                      <div className="combined-connecting-flight">
-                        <div className="flex gap-4 border rounded-md justify-around items-center pr-20 ">
-                          <div className="flex flex-col">
-                            {ticket.sI.map((segment, index) => (
-                              <div
-                                key={index}
-                                className="relative flex flex-col rounded-md p-1 xl:p-5"
-                              >
-                                {/* <div
-                                  className="air_detailes  "
-                                  style={{
-                                    width: "unset",
-                                    top: index === 0 ? "0" : "0%",
-                                    marginBottom: "00px",
-                                    display: "block",
-                                  }}
-                                >
-                                  <div className="flex items-center justify-center  ">
-                                    {isUat && (
-                                      <img
-                                        style={{
-                                          width: "35px",
-                                          height: "35px",
-                                          padding: "5px",
-                                        }}
-                                        src={`/assets/imgs/airlines/${segment.fD.aI.code}.png`}
-                                      />
-                                    )}
-                                    {!isUat && (
-                                      <img
-                                        style={{
-                                          width: "35px",
-                                          height: "35px",
-                                          padding: "5px",
-                                        }}
-                                        src={`/assets/imgs/airlines/${segment.fD.aI.code.toLowerCase()}.png`}
-                                      />
-                                    )}
-                                    <div className="text-[10px]">
-                                      {segment.fD.aI.name}
-                                    </div>
-                                  </div>
-                                </div> */}
-                                <div
-                                  className="flex justify-between"
-                                  style={{ width: "500px" }}
-                                >
-                                  <div className="flex flex-col items-center justify-center w-max">
-                                    {isUat && (
-                                      <img
-                                        style={{ width: "50%", margin: "5px" }}
-                                        src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
-                                      />
-                                    )}
-                                    {!isUat && (
-                                      <img
-                                        style={{ width: "50%", margin: "5px" }}
-                                        src={`/assets/imgs/airlines/${segment[
-                                          "fD"
-                                        ].aI.code.toLowerCase()}.png`}
-                                      />
-                                    )}
-                                    <div className="text-sm-medium">
-                                      {segment["fD"].aI.name}
-                                    </div>
-                                  </div>
-                                  <div
-                                    className="text-sm  flex flex-col justify-center items-center "
-                                    style={{ width: "150px" }}
-                                  >
-                                    <p className="text-md-bold neutral-1000 city1name">
-                                      {segment.da.city} ({segment.da.code})
-                                    </p>
-                                    <p className="neutral-1000 time">
-                                      {dayjs(segment.dt).format("HH:mm")}
-                                    </p>
-                                  </div>
-                                  <div
-                                    className="text-xs text-center  "
-                                    style={{ width: "100px" }}
-                                  >
-                                    <p className="text-sm-medium neutral-500">
-                                      {formatTime(segment.duration)}
-                                    </p>
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width="16"
-                                      height="16"
-                                      fill="currentColor"
-                                      className="bi bi-arrow-right"
-                                      viewBox="0 0 16 16"
-                                    >
-                                      <path
-                                        fill-rule="evenodd"
-                                        d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                                      />
-                                    </svg>
-                                    <p className="text-sm-medium neutral-500">
-                                      {" "}
-                                      {segment.stops > 0
-                                        ? `${segment.stops} stops`
-                                        : "non-stop"}
-                                    </p>
-                                  </div>
-                                  <div
-                                    className="text-sm  flex flex-col justify-center items-center gap-1 "
-                                    style={{ width: "200px" }}
-                                  >
-                                    <p className="text-md-bold neutral-1000 city1name">
-                                      {segment.aa.city} ({segment.aa.code})
-                                    </p>
-                                    <p className="neutral-1000 time">
-                                      {dayjs(segment.at).format("HH:mm")}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
 
-                          <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
-                            <Radio.Group
-                              onChange={(e) =>
-                                setSelectedFare(tabIndex, i, e.target.value)
-                              }
-                              value={selectedFares[tabIndex]?.[i] ?? 0}
-                              className="fare-options flex flex-col gap-2 w-full"
-                            >
-                              {(showAllFares
-                                ? ticket.totalPriceList
-                                : ticket.totalPriceList.slice(0, 2)
-                              ).map((e, j) => {
-                                const fareValue = calculateTotalFare(
-                                  e.fd,
-                                  adultCount,
-                                  childCount,
-                                  infantCount,
-                                  getCookie
-                                );
-                                return (
-                                  <Radio
-                                    key={j}
-                                    value={j}
-                                    className="w-full radiocomp"
-                                  >
-                                    <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
-                                      <div className="flex flex-row gap-2 items-center">
-                                        <div className="text-lg font-bold text-gray-800 price">
-                                          ₹{fareValue}
-                                        </div>
-                                        <span
-                                          className="fareidentifier text-xs font-bold"
-                                          style={{
-                                            backgroundColor: "#f5deb3",
-                                            color: "#5c4033",
-                                            padding: "1px 2px",
-                                          }}
-                                        >
-                                          {e.fareIdentifier}
-                                        </span>
-                                      </div>
-                                      <div className="text-xs text-gray-600">
-                                        <span className="ml-2 cabinclass">
-                                          {e.fd.ADULT.cc} |{" "}
-                                          <span className="refundable">
-                                            {e.fd.ADULT.rT === 1
-                                              ? "Refundable"
-                                              : e.fd.ADULT.rT === 2
-                                              ? "Partial Refundable"
-                                              : "Non Refundable"}
-                                          </span>
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </Radio>
-                                );
-                              })}
-                              {ticket.totalPriceList.length > 2 && (
-                                <button
-                                  className="view-more-txt"
-                                  style={{
-                                    textAlign: "right",
-                                    fontSize: "10px",
-                                  }}
-                                  onClick={() =>
-                                    setShowAllFares((prev) => !prev)
-                                  }
-                                >
-                                  {showAllFares
-                                    ? "(-) View Less"
-                                    : "(+) View More"}
-                                </button>
+          {/* Drawer for Mobile Filters */}
+          <Drawer
+            title="Filter Flights"
+            placement="left"
+            onClose={onCloseFilterDrawer}
+            open={filterDrawerOpen}
+            width={300}
+          >
+            <div className="content-left">
+              {currentFilter ? renderFilters(tabIndex) : <div className="p-3 text-sm text-gray-500">Loading filters…</div>}
+            </div>
+          </Drawer>
+
+          <div className="row">
+            <div className="col-xl-3 d-none d-xl-block content-left">
+              {!currentFilter && (
+                <div className="p-3 text-sm text-gray-500">Loading filters…</div>
+              )}
+              {currentFilter && renderFilters(tabIndex)}
+            </div>
+            <div className="col-xl-9 col-12">
+              {/* Mobile Section Header */}
+              {isMobile && (
+                <div style={{
+                  fontSize: '18px',
+                  fontWeight: '600',
+                  color: '#1a1a2e',
+                  marginBottom: '16px',
+                  padding: '0 4px'
+                }}>
+                  Departure to {pair.to}
+                </div>
+              )}
+
+              {pair.flights.length > 0 ? (
+                applyFilters(pair.flights, filters[tabIndex]).map((ticket, i) => (
+                  <div key={i}>
+                    {isMobile ? (
+                      <div className="ticket-card-mobile card-flight">
+                        <div className="mobile-card-header">
+                          {isUat ? (
+                            <img
+                              className="mobile-airline-logo"
+                              src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code}.png`}
+                              alt={ticket.sI[0].fD.aI.name}
+                              onError={(e) => {
+                                e.target.src = "/assets/imgs/page/homepage1/flight.png";
+                              }}
+                            />
+                          ) : (
+                            <img
+                              className="mobile-airline-logo"
+                              src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
+                              alt={ticket.sI[0].fD.aI.name}
+                              onError={(e) => {
+                                e.target.src = "/assets/imgs/page/homepage1/flight.png";
+                              }}
+                            />
+                          )}
+                          <span className="mobile-airline-name">{ticket.sI[0].fD.aI.name}</span>
+                        </div>
+
+                        <div className="mobile-flight-segments">
+                          {ticket.sI.map((segment, idx) => (
+                            <div key={idx} className="mobile-segment-row">
+                              <div className="mobile-city-block">
+                                <span className="mobile-time">{dayjs(segment.dt).format("HH:mm")}</span>
+                                <span className="mobile-city-code">{segment.da.code}</span>
+                              </div>
+                              <div className="mobile-duration-block">
+                                <span className="mobile-duration">{formatTime(segment.duration)}</span>
+                                <div className="mobile-arrow-icon"></div>
+                                <span className="mobile-stops">
+                                  {segment.stops > 0
+                                    ? `${segment.stops} Stop${segment.stops > 1 ? "s" : ""}`
+                                    : "Non-stop"}
+                                </span>
+                              </div>
+                              <div className="mobile-city-block" style={{ textAlign: "right" }}>
+                                <span className="mobile-time">{dayjs(segment.at).format("HH:mm")}</span>
+                                <span className="mobile-city-code">{segment.aa.code}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mobile-card-footer">
+                          <div className="mobile-price-section">
+                            <span className="mobile-price">
+                              ₹{calculateTotalFare(
+                                ticket.totalPriceList[selectedFares[tabIndex]?.[i] ?? 0].fd,
+                                adultCount,
+                                childCount,
+                                infantCount,
+                                getCookie
                               )}
+                            </span>
+                            <span className="mobile-fare-type">
+                              {ticket.totalPriceList[selectedFares[tabIndex]?.[i] ?? 0].fareIdentifier}
+                            </span>
+                          </div>
+                          <button
+                            className="mobile-book-btn"
+                            onClick={() => {
+                              const selectedFareIndex = selectedFares[tabIndex]?.[i] ?? 0;
+                              const selectedFare = ticket.totalPriceList[selectedFareIndex];
+                              const fareFD = selectedFare.fd;
+
+                              const totalPrice = calculateTotalFare(
+                                fareFD,
+                                adultCount,
+                                childCount,
+                                infantCount,
+                                getCookie
+                              );
+                              const firstSegment = ticket.sI[0];
+                              const lastSegment = ticket.sI[ticket.sI.length - 1];
+
+                              const isUatAirlineLogo = isUat
+                                ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
+                                : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
+                              const updatedFlight = {
+                                priceId: selectedFare.id,
+                                flightName: firstSegment.fD.aI.name,
+                                depCityCode: firstSegment.da.code,
+                                arrCityCode: lastSegment.aa.code,
+                                airlineCode: firstSegment.fD.aI.code,
+                                flightNumber: firstSegment.fD.fN,
+                                depCity: firstSegment.da.city,
+                                arrCity: lastSegment.aa.city,
+                                depTime: dayjs(firstSegment.dt).format("HH:mm"),
+                                arrTime: dayjs(lastSegment.at).format("HH:mm"),
+                                airlineLogo: isUatAirlineLogo,
+                                price: totalPrice,
+                                adultFare: new Intl.NumberFormat("en-IN").format(
+                                  fareFD.ADULT?.fC?.NF || 0
+                                ),
+                              };
+
+                              setSelectedFlights((prev) => {
+                                const newFlights = {
+                                  ...prev,
+                                  [tabIndex]: updatedFlight,
+                                };
+                                const nextTabIndex = tabIndex + 1;
+                                if (nextTabIndex < matchedFlights.length) {
+                                  setActiveTabKey(String(nextTabIndex + 1));
+                                }
+
+                                return newFlights;
+                              });
+                            }}
+                          >
+                            Select
+                          </button>
+                        </div>
+
+                        {ticket.totalPriceList.length > 1 && (
+                          <div
+                            className="mobile-view-more"
+                            onClick={() => setShowAllFares((prev) => !prev)}
+                          >
+                            {showAllFares ? "Hide additional fares" : "View more fares"}
+                          </div>
+                        )}
+
+                        {showAllFares && (
+                          <div className="mt-3">
+                            <Radio.Group
+                              onChange={(e) => setSelectedFare(tabIndex, i, e.target.value)}
+                              value={selectedFares[tabIndex]?.[i] ?? 0}
+                              className="w-full flex flex-col gap-2"
+                            >
+                              {ticket.totalPriceList.map((fare, fareIdx) => (
+                                <Radio
+                                  key={fareIdx}
+                                  value={fareIdx}
+                                  className="w-full border p-2 rounded"
+                                >
+                                  <div className="flex justify-between items-center w-full">
+                                    <span className="text-sm font-bold">
+                                      ₹{calculateTotalFare(
+                                        fare.fd,
+                                        adultCount,
+                                        childCount,
+                                        infantCount,
+                                        getCookie
+                                      )}
+                                    </span>
+                                    <span className="text-xs opacity-70">
+                                      {fare.fareIdentifier}
+                                    </span>
+                                  </div>
+                                </Radio>
+                              ))}
                             </Radio.Group>
                           </div>
-                          <div>
-                            <button
-                              className="btn-book-now"
-                              onClick={() => {
-                                const selectedFareIndex =
-                                  selectedFares[tabIndex]?.[i] ?? 0;
-                                const selectedFare =
-                                  ticket.totalPriceList[selectedFareIndex];
-                                const fareFD = selectedFare.fd;
-
-                                const totalPrice = calculateTotalFare(
-                                  fareFD,
-                                  adultCount,
-                                  childCount,
-                                  infantCount,
-                                  getCookie
-                                );
-                                const firstSegment = ticket.sI[0];
-                                const lastSegment =
-                                  ticket.sI[ticket.sI.length - 1];
-
-                                const isUatAirlineLogo = isUat
-                                  ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
-                                  : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
-                                const updatedFlight = {
-                                  priceId: selectedFare.id,
-                                  flightName: firstSegment.fD.aI.name,
-                                  depCityCode: firstSegment.da.code,
-                                  arrCityCode: lastSegment.aa.code,
-                                  airlineCode: firstSegment.fD.aI.code,
-                                  flightNumber: firstSegment.fD.fN,
-                                  depCity: firstSegment.da.city,
-                                  arrCity: lastSegment.aa.city,
-                                  depTime: dayjs(firstSegment.dt).format(
-                                    "HH:mm"
-                                  ),
-                                  arrTime: dayjs(lastSegment.at).format(
-                                    "HH:mm"
-                                  ),
-                                  airlineLogo: isUatAirlineLogo,
-                                  price: totalPrice,
-                                  adultFare: new Intl.NumberFormat(
-                                    "en-IN"
-                                  ).format(fareFD.ADULT?.fC?.NF || 0),
-                                };
-
-                                setSelectedFlights((prev) => {
-                                  const newFlights = {
-                                    ...prev,
-                                    [tabIndex]: updatedFlight,
-                                  };
-                                  const nextTabIndex = tabIndex + 1;
-                                  if (nextTabIndex < matchedFlights.length) {
-                                    setActiveTabKey(String(nextTabIndex + 1)); // Because tab keys are 1-based
-                                  }
-
-                                  return newFlights;
-                                });
-                              }}
-                            >
-                              Select
-                            </button>
-                          </div>
-                        </div>
+                        )}
                       </div>
-                    ) : null}
+                    ) : (
+                      <div className="" style={{ paddingBottom: "10px" }}>
+                        {ticket.sI.length >= 1 ? (
+                          <div className="combined-connecting-flight">
+                            <div className="flex gap-4 border rounded-md justify-around items-center pr-20 ">
+                              <div className="flex flex-col">
+                                {ticket.sI.map((segment, index) => (
+                                  <div
+                                    key={index}
+                                    className="relative flex flex-col rounded-md p-1 xl:p-5"
+                                  >
+                                    <div
+                                      className="flex justify-between"
+                                      style={{ width: "500px" }}
+                                    >
+                                      <div className="flex flex-col items-center justify-center w-max">
+                                        {isUat && (
+                                          <img
+                                            style={{ width: "50%", margin: "5px" }}
+                                            src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                                          />
+                                        )}
+                                        {!isUat && (
+                                          <img
+                                            style={{ width: "50%", margin: "5px" }}
+                                            src={`/assets/imgs/airlines/${segment[
+                                              "fD"
+                                            ].aI.code.toLowerCase()}.png`}
+                                          />
+                                        )}
+                                        <div className="text-sm-medium">
+                                          {segment["fD"].aI.name}
+                                        </div>
+                                      </div>
+                                      <div
+                                        className="text-sm  flex flex-col justify-center items-center "
+                                        style={{ width: "150px" }}
+                                      >
+                                        <p className="text-md-bold neutral-1000 city1name">
+                                          {segment.da.city} ({segment.da.code})
+                                        </p>
+                                        <p className="neutral-1000 time">
+                                          {dayjs(segment.dt).format("HH:mm")}
+                                        </p>
+                                      </div>
+                                      <div
+                                        className="text-xs text-center  "
+                                        style={{ width: "100px" }}
+                                      >
+                                        <p className="text-sm-medium neutral-500">
+                                          {formatTime(segment.duration)}
+                                        </p>
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="16"
+                                          height="16"
+                                          fill="currentColor"
+                                          className="bi bi-arrow-right"
+                                          viewBox="0 0 16 16"
+                                        >
+                                          <path
+                                            fill-rule="evenodd"
+                                            d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                                          />
+                                        </svg>
+                                        <p className="text-sm-medium neutral-500">
+                                          {" "}
+                                          {segment.stops > 0
+                                            ? `${segment.stops} stops`
+                                            : "non-stop"}
+                                        </p>
+                                      </div>
+                                      <div
+                                        className="text-sm  flex flex-col justify-center items-center gap-1 "
+                                        style={{ width: "200px" }}
+                                      >
+                                        <p className="text-md-bold neutral-1000 city1name">
+                                          {segment.aa.city} ({segment.aa.code})
+                                        </p>
+                                        <p className="neutral-1000 time">
+                                          {dayjs(segment.at).format("HH:mm")}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
+                                <Radio.Group
+                                  onChange={(e) =>
+                                    setSelectedFare(tabIndex, i, e.target.value)
+                                  }
+                                  value={selectedFares[tabIndex]?.[i] ?? 0}
+                                  className="fare-options flex flex-col gap-2 w-full"
+                                >
+                                  {(showAllFares
+                                    ? ticket.totalPriceList
+                                    : ticket.totalPriceList.slice(0, 2)
+                                  ).map((e, j) => {
+                                    const fareValue = calculateTotalFare(
+                                      e.fd,
+                                      adultCount,
+                                      childCount,
+                                      infantCount,
+                                      getCookie
+                                    );
+                                    return (
+                                      <Radio
+                                        key={j}
+                                        value={j}
+                                        className="w-full radiocomp"
+                                      >
+                                        <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
+                                          <div className="flex flex-row gap-2 items-center">
+                                            <div className="text-lg font-bold text-gray-800 price">
+                                              ₹{fareValue}
+                                            </div>
+                                            <span
+                                              className="fareidentifier text-xs font-bold"
+                                              style={{
+                                                backgroundColor: "#f5deb3",
+                                                color: "#5c4033",
+                                                padding: "1px 2px",
+                                              }}
+                                            >
+                                              {e.fareIdentifier}
+                                            </span>
+                                          </div>
+                                          <div className="text-xs text-gray-600">
+                                            <span className="ml-2 cabinclass">
+                                              {e.fd.ADULT.cc} |{" "}
+                                              <span className="refundable">
+                                                {e.fd.ADULT.rT === 1
+                                                  ? "Refundable"
+                                                  : e.fd.ADULT.rT === 2
+                                                    ? "Partial Refundable"
+                                                    : "Non Refundable"}
+                                              </span>
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </Radio>
+                                    );
+                                  })}
+                                  {ticket.totalPriceList.length > 2 && (
+                                    <button
+                                      className="view-more-txt"
+                                      style={{
+                                        textAlign: "right",
+                                        fontSize: "10px",
+                                      }}
+                                      onClick={() =>
+                                        setShowAllFares((prev) => !prev)
+                                      }
+                                    >
+                                      {showAllFares
+                                        ? "(-) View Less"
+                                        : "(+) View More"}
+                                    </button>
+                                  )}
+                                </Radio.Group>
+                              </div>
+                              <div>
+                                <button
+                                  className="btn-book-now"
+                                  onClick={() => {
+                                    const selectedFareIndex =
+                                      selectedFares[tabIndex]?.[i] ?? 0;
+                                    const selectedFare =
+                                      ticket.totalPriceList[selectedFareIndex];
+                                    const fareFD = selectedFare.fd;
+
+                                    const totalPrice = calculateTotalFare(
+                                      fareFD,
+                                      adultCount,
+                                      childCount,
+                                      infantCount,
+                                      getCookie
+                                    );
+                                    const firstSegment = ticket.sI[0];
+                                    const lastSegment =
+                                      ticket.sI[ticket.sI.length - 1];
+
+                                    const isUatAirlineLogo = isUat
+                                      ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
+                                      : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
+                                    const updatedFlight = {
+                                      priceId: selectedFare.id,
+                                      flightName: firstSegment.fD.aI.name,
+                                      depCityCode: firstSegment.da.code,
+                                      arrCityCode: lastSegment.aa.code,
+                                      airlineCode: firstSegment.fD.aI.code,
+                                      flightNumber: firstSegment.fD.fN,
+                                      depCity: firstSegment.da.city,
+                                      arrCity: lastSegment.aa.city,
+                                      depTime: dayjs(firstSegment.dt).format(
+                                        "HH:mm"
+                                      ),
+                                      arrTime: dayjs(lastSegment.at).format(
+                                        "HH:mm"
+                                      ),
+                                      airlineLogo: isUatAirlineLogo,
+                                      price: totalPrice,
+                                      adultFare: new Intl.NumberFormat(
+                                        "en-IN"
+                                      ).format(fareFD.ADULT?.fC?.NF || 0),
+                                    };
+
+                                    setSelectedFlights((prev) => {
+                                      const newFlights = {
+                                        ...prev,
+                                        [tabIndex]: updatedFlight,
+                                      };
+                                      const nextTabIndex = tabIndex + 1;
+                                      if (
+                                        nextTabIndex < matchedFlights.length
+                                      ) {
+                                        setActiveTabKey(
+                                          String(nextTabIndex + 1)
+                                        ); // Because tab keys are 1-based
+                                      }
+
+                                      return newFlights;
+                                    });
+                                  }}
+                                >
+                                  Select
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))
-            ) : (
-              <p>No matching flights found for this route.</p>
-            )}
+                ))
+              ) : (
+                <p>No matching flights found for this route.</p>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       ),
     };
   });
@@ -958,6 +1160,7 @@ export default function MulticitySelectionView({ flightData }) {
           selectedFlights={selectedFlights}
           cities={cities}
           isLastFlightSelected={isLastFlightSelected}
+          isMobile={isMobile}
         />
       )}
     </>
