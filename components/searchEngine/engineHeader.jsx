@@ -284,6 +284,19 @@ const EngineTabs = ({ active_border }) => {
   };
 
   useEffect(() => {
+
+    if ((selectedPassengerType === 'STUDENT') || (selectedPassengerType === 'SENIOR CITIZEN')) {
+      const childtCnt = 0;
+      const infantCnt = 0;
+      setCookie("gy_child", childtCnt);
+      setcountChildren(childtCnt);
+      setCookie("gy_infant", infantCnt);
+      setcountInfant(infantCnt);
+    }
+
+  }, [selectedPassengerType])
+
+  useEffect(() => {
     setShowSearchStateTo(false);
   }, [selectFromTo]);
   useEffect(() => {

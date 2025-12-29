@@ -50,14 +50,33 @@ export default function TicketCardMobile({
     return (
         <div className="ticket-card-mobile card-flight">
             <div className="mobile-card-header">
-                <img
+                {isUat ? (
+                    <img
+                        className="mobile-airline-logo"
+                        src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code}.png`}
+                        alt={ticket.sI[0].fD.aI.name}
+                        onError={(e: any) => {
+                            e.target.src = "/assets/imgs/page/homepage1/flight.png";
+                        }}
+                    />
+                ) : (
+                    <img
+                        className="mobile-airline-logo"
+                        src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
+                        alt={ticket.sI[0].fD.aI.name}
+                        onError={(e: any) => {
+                            e.target.src = "/assets/imgs/page/homepage1/flight.png";
+                        }}
+                    />
+                )}
+                {/* <img
                     className="mobile-airline-logo"
                     src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
                     alt={ticket.sI[0].fD.aI.name}
                     onError={(e: any) => {
                         e.target.src = "/assets/imgs/page/homepage1/flight.png";
                     }}
-                />
+                /> */}
                 <span className="mobile-airline-name">{ticket.sI[0].fD.aI.name}</span>
             </div>
 
