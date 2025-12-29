@@ -18543,7 +18543,7 @@ h2 span {
 }
 
 .truncate-text {
-  width: 200px;
+  width: 140px;
   /* Set a specific width */
   white-space: nowrap;
   /* Prevent wrapping to a new line */
