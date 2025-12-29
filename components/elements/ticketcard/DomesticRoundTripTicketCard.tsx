@@ -99,14 +99,33 @@ export default function DomesticRoundTripTicketCard({
   const mobileView = (
     <div className="ticket-card-mobile card-flight">
       <div className="mobile-card-header">
-        <img
+        {isUat ? (
+          <img
+            className="mobile-airline-logo"
+            src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code}.png`}
+            alt={ticket.sI[0].fD.aI.name}
+            onError={(e: any) => {
+              e.target.src = "/assets/imgs/page/homepage1/flight.png";
+            }}
+          />
+        ) : (
+          <img
+            className="mobile-airline-logo"
+            src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
+            alt={ticket.sI[0].fD.aI.name}
+            onError={(e: any) => {
+              e.target.src = "/assets/imgs/page/homepage1/flight.png";
+            }}
+          />
+        )}
+        {/* <img
           className="mobile-airline-logo"
           src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
           alt={ticket.sI[0].fD.aI.name}
           onError={(e: any) => {
             e.target.src = "/assets/imgs/page/homepage1/flight.png";
           }}
-        />
+        /> */}
         <span className="mobile-airline-name">{ticket.sI[0].fD.aI.name}</span>
       </div>
 
@@ -142,25 +161,25 @@ export default function DomesticRoundTripTicketCard({
           <span className="mobile-fare-type">{ticket.totalPriceList[value].fareIdentifier}</span>
         </div>
         {tripPhase === "ONWARD" ? (
-            <button
+          <button
+            className="mobile-book-btn"
+            onClick={() => handleTicketSelected(ticket, value)}
+          >
+            Select
+          </button>
+        ) : (
+          selectedOnwardTicket && (
+            <Link
+              href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
+                selectedOnwardTicket.selectedPriceIndex
+              ]?.id
+                },${ticket.totalPriceList[value]?.id}`}
               className="mobile-book-btn"
-              onClick={() => handleTicketSelected(ticket, value)}
             >
-              Select
-            </button>
-          ) : (
-            selectedOnwardTicket && (
-              <Link
-                href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
-                  selectedOnwardTicket.selectedPriceIndex
-                ]?.id
-                  },${ticket.totalPriceList[value]?.id}`}
-                className="mobile-book-btn"
-              >
-                Book Now
-              </Link>
-            )
-          )}
+              Book Now
+            </Link>
+          )
+        )}
       </div>
 
       {ticket.totalPriceList.length > 1 && (

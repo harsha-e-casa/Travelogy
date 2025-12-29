@@ -2866,7 +2866,7 @@ export default function Tickets() {
                       );
                     })()}
 
-                  {flightData === null &&
+                  {flightData === null && srx_tripType?.trim().toLowerCase() === "one-way" &&
                     (() => {
                       return (
                         <>
@@ -3047,12 +3047,12 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                {((srx_tripType?.trim().toLowerCase() === "round-trip" && flightData?.COMBO?.length > 0) ||
+                {/* {(
+                  (srx_tripType?.trim().toLowerCase() === "round-trip" && flightData?.COMBO?.length > 0) ||
                   (srx_tripType?.trim().toLowerCase() === "multi-city" && flightData?.COMBO?.length > 0)) && (
-                    <div className="content-left order-lg-first">
+                    <div className="content-left order-lg-first d1-class">
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Filter Price{" "}
@@ -3068,7 +3068,6 @@ export default function Tickets() {
                       </div>
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Stops
@@ -3079,7 +3078,6 @@ export default function Tickets() {
                       </div>
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Price
@@ -3093,7 +3091,6 @@ export default function Tickets() {
                       </div>
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Departure Time
@@ -3107,7 +3104,6 @@ export default function Tickets() {
                       </div>
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Arrival Time
@@ -3121,7 +3117,6 @@ export default function Tickets() {
                       </div>
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Airlines
@@ -3149,7 +3144,6 @@ export default function Tickets() {
 
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Fare Identifier
@@ -3165,7 +3159,6 @@ export default function Tickets() {
 
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Flight Number
@@ -3180,7 +3173,6 @@ export default function Tickets() {
 
                       <div className="sidebar-left border-1 background-body">
                         <div className="box-filters-sidebar">
-                          {/* <div className="block-filter border-1"> */}
                           <div className="border-1">
                             <h6 className="text-lg-bold filter-sty neutral-1000">
                               Fare Type
@@ -3194,7 +3186,7 @@ export default function Tickets() {
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
               </div>
             </div>
           </section>
