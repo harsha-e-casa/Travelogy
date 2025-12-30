@@ -1283,6 +1283,7 @@ export default function Tickets() {
         setActiveFlight(false);
         SetSearchFlight(false); // reset trigger
         hasFetchedRef.current = false; // allow next fetch
+        setIsSearchPerformed(true);
       }
     };
 
@@ -1391,6 +1392,7 @@ export default function Tickets() {
   const [srx_arrivalTo, setArrivalTo] = useState<string>("");
   const [srx_arrivalCode, setArrivalToCode] = useState<string>("");
   const [lastEditedField, setLastEditedField] = useState<string | null>(null);
+  const [isSearchPerformed, setIsSearchPerformed] = useState<boolean>(false);
 
   const handleFromCityChange = (city: string) => {
     setdepartureFrom(city);
@@ -1486,6 +1488,8 @@ export default function Tickets() {
     setTripType(key);
     setCookie("gy_triptype", key);
     setOpen((prev) => !prev);
+    setIsSearchPerformed(false);
+    setFlightData(null);
   };
 
   const handleFareMenuClick: MenuProps["onClick"] = ({ key }) => {
@@ -2906,18 +2910,17 @@ export default function Tickets() {
                       );
                     })()}
 
-                  {flightData === null && srx_tripType?.trim().toLowerCase() === "one-way" &&
+                  {(!flightData || (flightData && (!flightData.ONWARD || flightData.ONWARD.length === 0))) && srx_tripType?.trim().toLowerCase() === "one-way" &&
                     (() => {
                       return (
                         <>
-                          {!loading && (
+                          {!loading && isSearchPerformed && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                Request flight is not longer available. Please
-                                try different flight
+                                No flights found for your search criteria.
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
-                                Try adjusting your filters or search criteria.
+                                Please try adjusting your travel dates, airports, or filters.
                               </p>
                             </div>
                           )}
@@ -2974,14 +2977,13 @@ export default function Tickets() {
                         />
                       ) : (
                         <>
-                          {loading === false && (
+                          {loading === false && isSearchPerformed && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                Request flight is not longer available. Please
-                                try different flight
+                                No flights found for your search criteria.
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
-                                Try adjusting your filters or search criteria.
+                                Please try adjusting your travel dates, airports, or filters.
                               </p>
                             </div>
                           )}
@@ -3001,14 +3003,13 @@ export default function Tickets() {
                         />
                       ) : (
                         <>
-                          {loading === false && (
+                          {loading === false && isSearchPerformed && (
                             <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
                               <p className="text-xl font-semibold">
-                                Request flight is not longer available. Please
-                                try different flight
+                                No flights found for your search criteria.
                               </p>
                               <p className="text-sm mt-2 text-gray-400">
-                                Try adjusting your filters or search criteria.
+                                Please try adjusting your travel dates, airports, or filters.
                               </p>
                             </div>
                           )}
