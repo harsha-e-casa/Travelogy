@@ -24,6 +24,7 @@ import TicketCardMobile from "@/components/elements/ticketcard/TicketCardMobile"
 import DomesticRoundTripTicketCard from "@/components/elements/ticketcard/DomesticRoundTripTicketCard";
 import RoundTripSelectionView from "@/components/elements/ticketcard/RoundTripSelectionView";
 import MulticitySelectionView from "@/components/elements/ticketcard/MulticitySelectionView.jsx";
+import DirectFlight from "@/components/searchEngine/DirectFlight.jsx";
 import Layout from "@/components/layout/Layout";
 import SwiperGroupPayment10Slider from "@/components/slider/SwiperGroupPayment10Slider";
 // import rawticketsData from "@/util/tickets.json";
@@ -109,6 +110,16 @@ export default function Tickets() {
 
   const [modifySearchOpen, setModifySearchOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isDirectFlight, setIsDirectFlight] = useState(false);
+
+  useEffect(() => {
+    const directFlightCookie = Cookies.get("gy_direct_flight");
+    setIsDirectFlight(directFlightCookie === "true");
+  }, []);
+
+  useEffect(() => {
+    setCookie("gy_direct_flight", isDirectFlight ? "true" : "false");
+  }, [isDirectFlight]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -707,7 +718,7 @@ export default function Tickets() {
   const tripType = getCookie("gy_triptype");
   const fareType = getCookie("gy_passender_type");
   const passengerType = getCookie("gy_passender_type");
-  const isDirectFlight =
+  const isDirectFlightCookie =
     String(getCookie("gy_direct_flight") || "false").toLowerCase() === "true";
   const infant = getCookie("gy_infant");
 
@@ -1447,6 +1458,17 @@ export default function Tickets() {
     useState(adultChildCount);
 
   useEffect(() => {
+    if ((fareType === "STUDENT") || (fareType === "SENIOR CITIZEN")) {
+      const childtCnt = 0;
+      const infantCnt = 0;
+      setCookie("gy_child", childtCnt);
+      setCountChildren(childtCnt);
+      setCookie("gy_infant", infantCnt);
+      setcountInfant(infantCnt);
+    }
+  }, [fareType]);
+
+  useEffect(() => {
     const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
     const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
     const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
@@ -1734,15 +1756,15 @@ export default function Tickets() {
   const getTravellerClass = () => {
     const t = srx_tripType?.toLowerCase();
     console.log("daiiiiiiiiiiiiiiiiiiii ", t);
-    if (t === "one-way") {
-      return "pos-t-r";
-    }
-    if (t === "multi-city") {
-      return "pos-t-r_m";
-    }
-    if (t === "round-trip") {
-      return "pos-t-r_o";
-    }
+    // if (t === "one-way") {
+    //   return "pos-t-r";
+    // }
+    // if (t === "multi-city") {
+    //   return "pos-t-r_m";
+    // }
+    // if (t === "round-trip") {
+    //   return "pos-t-r_o";
+    // }
 
     return "";
   };
@@ -1782,6 +1804,13 @@ export default function Tickets() {
                         {srx_fareType}
                       </div>
                     </Dropdown>
+                    <div className="mt-2">
+                      <DirectFlight
+                        isDirectFlight={isDirectFlight}
+                        setIsDirectFlight={setIsDirectFlight}
+                        isHeader={true}
+                      />
+                    </div>
                   </div>
                   <div className="hdt_header-item">
                     <label>Trip Type</label>
@@ -1972,18 +2001,21 @@ export default function Tickets() {
                       </span>
                     </div>
                   </div>
+
                   {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
                     !modifySearchRef ? (
-                    <>
+                    <div className="hdt_header-item">
+                      <label style={{ visibility: "hidden" }}>Search</label>
                       <button
                         onClick={handleModifySearch}
                         className="hdt_search-btn"
                       >
                         Modify Search
                       </button>
-                    </>
+                    </div>
                   ) : (
-                    <>
+                    <div className="hdt_header-item">
+                      <label style={{ visibility: "hidden" }}>Search</label>
                       <div
                         onClick={
                           fromError ||
@@ -2012,7 +2044,7 @@ export default function Tickets() {
                       >
                         Search
                       </div>
-                    </>
+                    </div>
                   )}
                 </div>
                 {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
@@ -2510,6 +2542,14 @@ export default function Tickets() {
               )}
 
               <div className="modify-field">
+                <DirectFlight
+                  isDirectFlight={isDirectFlight}
+                  setIsDirectFlight={setIsDirectFlight}
+                  isHeader={false}
+                />
+              </div>
+
+              <div className="modify-field">
                 <label className="text-xs font-bold text-gray-500 uppercase">Travellers & Class</label>
                 <div onClick={openTraveller} className="border p-2 rounded cursor-pointer">
                   {srx_traveller} {srx_traveller > 1 ? "Travellers" : "Traveller"} | {classLabels[srx_cabinType]}
@@ -2813,7 +2853,7 @@ export default function Tickets() {
 
                                 <div className="row">
                                   {/* Sidebar Desktop */}
-                                  <div className="col-xl-3 d-none d-xl-block content-left">
+                                  <div className="col-xl-3 d-none d-xl-block content-left" style={{ paddingTop: "10px" }}>
                                     {renderFilters()}
                                   </div>
 
@@ -3270,6 +3310,6 @@ export default function Tickets() {
           <div className="pb-90 background-body" />
         </main>
       </Layout>
-    </Suspense>
+    </Suspense >
   );
 }

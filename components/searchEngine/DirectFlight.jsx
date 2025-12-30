@@ -1,16 +1,16 @@
 import "./DirectFlight.css";
 
-const DirectFlight = ({ isDirectFlight, setIsDirectFlight }) => {
+const DirectFlight = ({ isDirectFlight, setIsDirectFlight, isHeader }) => {
   const handleChange = (e) => {
     setIsDirectFlight(e.target.checked);
   };
 
   return (
-    <div className="direct-flight-options flex flex-row pl-50">
+    <div className={`direct-flight-options ${isHeader ? "" : "flex flex-row pl-50"}`}>
       <label
-        className="plan flex flex-row items-center gap-2 bg-white text-black rounded-md pl-5 pr-5"
+        className={`plan flex items-center ${isHeader ? "text-white gap-4" : "flex-row bg-white text-black rounded-md pl-5 pr-5 py-1 gap-2"}`}
         htmlFor="direct-yes"
-        style={{ width: "max-content", border: "2px solid #d3d3d3" }}
+        style={isHeader ? { cursor: "pointer" } : { width: "max-content", border: "2px solid #d3d3d3" }}
       >
         <input
           type="checkbox"
@@ -20,8 +20,9 @@ const DirectFlight = ({ isDirectFlight, setIsDirectFlight }) => {
           value="Direct"
           checked={isDirectFlight === true}
           onChange={handleChange}
+          style={{ verticalAlign: "middle" }}
         />
-        <span>Direct Flight</span>
+        <span className={isHeader ? "pl-2" : ""} style={{ verticalAlign: "middle", lineHeight: "1" }}>{isHeader ? "is direct" : "Direct Flight"}</span>
       </label>
     </div>
   );
