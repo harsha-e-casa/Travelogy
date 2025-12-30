@@ -1878,10 +1878,10 @@ const Alldetails = ({ totalpricee }) => {
                       return (
                         <div
                           key={`${tripIndex}-${segIndex}`}
-                          className="premium-flight-card mb-8 shadow-sm"
+                          className="premium-flight-card mb-4 shadow-sm"
                         >
                           {/* Card Header: Airline Info & Badges */}
-                          <div className="bg-slate-50 px-6 py-4 flex flex-wrap justify-between items-center border-b border-slate-100 gap-4">
+                          <div className="bg-slate-50 px-4 py-3 flex flex-wrap justify-between items-center border-b border-slate-100 gap-3">
                             <div className="flex items-center gap-4">
                               <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex items-center justify-center min-w-[100px]">
                                 <span className="font-extrabold text-slate-800 tracking-tight text-sm">
@@ -1912,8 +1912,8 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
 
                           {/* Card Body: Departure -> Timeline -> Arrival */}
-                          <div className="p-6 md:p-10">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+                          <div className="p-4 md:p-6">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                               {/* Departure */}
                               <div className="flex-1 text-center md:text-left">
                                 <div className="airport-info-label mb-3">Departure</div>
@@ -1927,13 +1927,13 @@ const Alldetails = ({ totalpricee }) => {
                                 </div>
                                 {seg?.da?.terminal && (
                                   <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                                    Terminal {seg?.da?.terminal}
+                                    {seg?.da?.terminal}
                                   </div>
                                 )}
                               </div>
 
                               {/* Timeline Connector */}
-                              <div className="flex-[1.4] w-full flex flex-col items-center py-6">
+                              <div className="flex-[1.4] w-full flex flex-col items-center py-4">
                                 <div className="duration-badge mb-5 shadow-sm">
                                   {hours}h {minutes}m
                                 </div>
@@ -1965,14 +1965,14 @@ const Alldetails = ({ totalpricee }) => {
                                 </div>
                                 {seg?.aa?.terminal && (
                                   <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                                    Terminal {seg?.aa?.terminal}
+                                    {seg?.aa?.terminal}
                                   </div>
                                 )}
                               </div>
                             </div>
 
                             {/* Baggage Information Footer */}
-                            <div className="mt-10 pt-8 border-t border-slate-50 flex flex-wrap gap-6 justify-center md:justify-start">
+                            <div className="mt-6 pt-5 border-t border-slate-50 flex flex-wrap gap-4 justify-center md:justify-start">
                               <div className="baggage-tag shadow-sm border border-slate-100">
                                 <div className="bg-blue-50 p-1.5 rounded-md">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
