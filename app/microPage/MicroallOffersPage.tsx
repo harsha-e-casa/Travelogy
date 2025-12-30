@@ -24,6 +24,7 @@ const hotelsData = rawHotelsData.map(hotel => ({
   checkInTime: null,
   checkOutTime: null,
   rawData: hotel,
+  freeCancellation: false,
 }))
 
 const SortHotelsFilterApp = () => {
