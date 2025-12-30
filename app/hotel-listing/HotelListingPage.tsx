@@ -8,6 +8,7 @@ import ByPagination from "@/components/Filter/ByPagination";
 import ByPrice from "@/components/Filter/ByPrice";
 import ByRating from "@/components/Filter/ByRating";
 import ByRoom from "@/components/Filter/ByRoom";
+import HotelSearchFilter from "@/components/Filter/HotelSearchFilter";
 import SortHotelsFilter from "@/components/elements/SortHotelsFilter";
 import HotelCard1 from "@/components/elements/hotelcard/HotelCard1";
 import Layout from "@/components/layout/Layout";
@@ -164,6 +165,7 @@ export default function HotelListing() {
         fullAddress,
         checkInTime: hotel.checkInTime,
         checkOutTime: hotel.checkOutTime,
+        freeCancellation: Boolean(hotel.ops?.[0]?.ris?.[0]?.fsc ?? false),
         rawData: hotel,
       };
     });
@@ -342,6 +344,8 @@ export default function HotelListing() {
     totalPages,
     paginatedHotels,
     handleCheckboxChange,
+    handleSearchNameChange,
+    handleFreeCancellationChange,
     handleSortChange,
     handlePriceRangeChange,
     handleItemsPerPageChange,
@@ -1170,6 +1174,18 @@ export default function HotelListing() {
                   </div>
                   {/* Desktop Filter Sidebar */}
                   <div className="content-left order-lg-first lg:w-1/4 min-w-[250px] overflow-y-auto bg-white p-2 h-full desktop-filters">
+                    <div className="sidebar-left border-1 background-body">
+                      <div className="box-filters-sidebar">
+                        <div className="block-filter border-1">
+                          <HotelSearchFilter
+                            searchName={filter.searchName}
+                            onSearchNameChange={handleSearchNameChange}
+                            freeCancellation={filter.freeCancellation}
+                            onFreeCancellationChange={handleFreeCancellationChange}
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div className="sidebar-left border-1 background-body">
                       <div className="box-filters-sidebar">
                         <div className="block-filter border-1">
