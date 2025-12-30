@@ -1,5 +1,5 @@
 import { postData } from "@/services/NetworkAdapter";
-import { message } from "antd";
+import { message, DatePicker } from "antd";
 import React, { useState } from "react";
 
 const VisaForm = () => {
@@ -9,6 +9,10 @@ const VisaForm = () => {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [dates, setDates] = useState({
+      startDate: null,
+      endDate: null,
+    });
 
   const [errors, setErrors] = useState({
     fullName: "",
@@ -247,6 +251,7 @@ const VisaForm = () => {
 
         {/* Row 3 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+           
           <div className="form-item pt-8">
             <label
               htmlFor="country"
@@ -267,6 +272,88 @@ const VisaForm = () => {
             {errors.country && (
               <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.country}
+              </span>
+            )}
+          </div>
+         <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="age"
+            >
+              Age
+            </label>
+
+            <input
+              type="text"
+              id="number"
+              name="age"
+              placeholder="Enter your Age"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("age")}
+            />
+
+            {errors.age && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.age}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Row New: Dates */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Start Date */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="startDate"
+            >
+              Start Date
+            </label>
+
+            <DatePicker
+              id="startDate"
+              name="startDate"
+              className="visa_input_fields w-full"
+              placeholder="Select Start Date"
+              value={dates.startDate}
+              onChange={(date) => {
+                setDates((prev) => ({ ...prev, startDate: date }));
+                handleClearError("startDate");
+              }}
+            />
+
+            {errors.startDate && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.startDate}
+              </span>
+            )}
+          </div>
+
+          {/* End Date */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="endDate"
+            >
+              End Date
+            </label>
+
+            <DatePicker
+              id="endDate"
+              name="endDate"
+              className="visa_input_fields pl-3 w-full"
+              placeholder="Select End Date"
+              value={dates.endDate}
+              onChange={(date) => {
+                setDates((prev) => ({ ...prev, endDate: date }));
+                handleClearError("endDate");
+              }}
+            />
+
+            {errors.endDate && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.endDate}
               </span>
             )}
           </div>

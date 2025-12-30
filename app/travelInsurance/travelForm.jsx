@@ -1,5 +1,5 @@
 import { postData } from "@/services/NetworkAdapter";
-import { message } from "antd";
+import { message, DatePicker } from "antd";
 import React, { useState } from "react";
 
 const TravelForm = () => {
@@ -8,12 +8,18 @@ const TravelForm = () => {
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [dates, setDates] = useState({
+    startDate: null,
+    endDate: null,
+  });
 
   const [errors, setErrors] = useState({
     durationOfStay: "",
     country: "",
     policyType: "",
     insuranceCoverage: "",
+    startDate: "",
+    endDate: "",
   });
 
   const handleRadioChange = (event) => {
@@ -36,23 +42,35 @@ const TravelForm = () => {
     // read values
     const fullName = trim(form.name?.value);
     const mobile = trim(form.mobile?.value);
+    const age = trim(form.age?.value);
+    const packs = trim(form.packs?.value);
     const email = trim(form.email?.value).toLowerCase();
     const durationOfStay = trim(formData.get("durationOfStay"));
     const policyType = trim(formData.get("policyType"));
     const insuranceCoverage = trim(formData.get("insuranceCoverage")); // leisure | business | student | other
     const otherCoverageDetails = trim(formData.get("otherCoverageDetails"));
+    const startDate = dates.startDate;
+    const endDate = dates.endDate;
 
     // validations
     const newErrors = {};
 
     if (!fullName) newErrors.fullName = "Full name is required.";
     if (!mobile) newErrors.mobile = "Mobile number is required.";
+    if (!age) newErrors.age = "Age is required.";
+    if (!packs) newErrors.numberOfPacks = "Number of packs is required.";
+    if (!country) newErrors.country = "Country is required.";
     if (!email) newErrors.email = "Email address is required.";
     if (!durationOfStay)
       newErrors.durationOfStay = "Duration of stay is required.";
     if (!policyType) newErrors.policyType = "Policy type is required.";
     if (!insuranceCoverage)
       newErrors.insuranceCoverage = "Insurance coverage is required.";
+    if (!startDate) newErrors.startDate = "Start Date is required.";
+    if (!endDate) newErrors.endDate = "End Date is required.";
+    if (startDate && endDate && startDate > endDate) {
+      newErrors.endDate = "End Date cannot be before Start Date.";
+    }
     if (insuranceCoverage === "other" && !otherCoverageDetails) {
       newErrors.otherCoverageDetails =
         "Please specify your insurance coverage.";
@@ -76,10 +94,15 @@ const TravelForm = () => {
         fullName,
         mobile,
         email,
+        age,
+        packs,
+        country,
         durationOfStay,
         policyType,
         insuranceCoverage: resolvedCoverage,
         rawCoverage: insuranceCoverage,
+        startDate: startDate ? startDate.toISOString() : "",
+        endDate: endDate ? endDate.toISOString() : "",
         ...(insuranceCoverage === "other" ? { otherCoverageDetails } : {}),
         submittedAt: new Date().toISOString(),
       },
@@ -233,6 +256,145 @@ const TravelForm = () => {
             {errors.durationOfStay && (
               <span className="flex items-start text-red-500 text-xs mt-1">
                 {errors.durationOfStay}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Row New: Dates */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Start Date */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="startDate"
+            >
+              Start Date
+            </label>
+
+            <DatePicker
+              id="startDate"
+              name="startDate"
+              className="visa_input_fields w-full"
+              placeholder="Select Start Date"
+              value={dates.startDate}
+              onChange={(date) => {
+                setDates((prev) => ({ ...prev, startDate: date }));
+                handleClearError("startDate");
+              }}
+            />
+
+            {errors.startDate && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.startDate}
+              </span>
+            )}
+          </div>
+
+          {/* End Date */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="endDate"
+            >
+              End Date
+            </label>
+
+            <DatePicker
+              id="endDate"
+              name="endDate"
+              className="visa_input_fields pl-3 w-full"
+              placeholder="Select End Date"
+              value={dates.endDate}
+              onChange={(date) => {
+                setDates((prev) => ({ ...prev, endDate: date }));
+                handleClearError("endDate");
+              }}
+            />
+
+            {errors.endDate && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.endDate}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Row 3 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* age */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="age"
+            >
+              Age
+            </label>
+
+            <input
+              type="text"
+              id="number"
+              name="age"
+              placeholder="Enter your Age"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("age")}
+            />
+
+            {errors.age && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.age}
+              </span>
+            )}
+          </div>
+
+          {/* Number of pacs */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="numberOfPacks"
+            >
+              Number of packs
+            </label>
+
+            <input
+              type="number"
+              id="numberOfPacks"
+              name="numberOfPacks"
+              placeholder="Enter Number of packs"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("numberOfPacks")}
+            />
+
+            {errors.numberOfPacks && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.numberOfPacks}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Email */}
+          <div className="form-item pt-8">
+            <label
+              className="font-semibold flex items-center gap-2 text-foreground"
+              htmlFor="country"
+            >
+              Country
+            </label>
+
+            <input
+              type="text"
+              id="country"
+              name="country"
+              placeholder="Enter the Country"
+              className="visa_input_fields pl-3"
+              onFocus={() => handleClearError("country")}
+            />
+
+            {errors.country && (
+              <span className="flex items-start text-red-500 text-xs mt-1">
+                {errors.country}
               </span>
             )}
           </div>
