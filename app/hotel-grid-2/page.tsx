@@ -16,6 +16,7 @@ const hotelsData = rawHotelsData.map((hotel) => ({
   checkInTime: null,
   checkOutTime: null,
   rawData: hotel,
+  freeCancellation: false,
 }));
 export default function HotelGrid2() {
   const {

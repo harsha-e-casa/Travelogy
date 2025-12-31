@@ -16,6 +16,7 @@ export interface Hotel {
 	checkInTime: any
 	checkOutTime: any
 	rawData: any
+	freeCancellation: boolean
 }
 
 export interface Filter {
@@ -27,6 +28,8 @@ export interface Filter {
 	// durationRange: [number, number]
 	ratings: number[]
 	hotelType: string[]
+	searchName: string
+	freeCancellation: boolean
 }
 
 type SortCriteria = "name" | "price" | "rating"
@@ -52,6 +55,8 @@ interface UseHotelFilterReturn {
 	endIndex: number
 	paginatedHotels: Hotel[]
 	handleCheckboxChange: (e: ChangeEvent<HTMLInputElement>, category: string) => void
+	handleSearchNameChange: (value: string) => void
+	handleFreeCancellationChange: (value: boolean) => void
 	handleSortChange: (e: ChangeEvent<HTMLSelectElement>) => void
 	handlePriceRangeChange: (values: [number, number]) => void
 	handleItemsPerPageChange: (e: ChangeEvent<HTMLSelectElement>) => void
@@ -74,6 +79,8 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>, mi
 		// durationRange: [0, 30],
 		ratings: [],
 		hotelType: [],
+		searchName: "",
+		freeCancellation: false,
 		...initialFilter,
 	})
 	const [priceRangeInitialized, setPriceRangeInitialized] = useState(false)
@@ -105,7 +112,13 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>, mi
 			console.warn(`Invalid price for hotel ${hotel.name}: ${hotel.price}`);
 			return false;
 		}
+
+		const matchesSearchName = filter.searchName === "" || hotel.name.toLowerCase().includes(filter.searchName.toLowerCase());
+		const matchesFreeCancellation = !filter.freeCancellation || hotel.freeCancellation;
+
 		return (
+			matchesSearchName &&
+			matchesFreeCancellation &&
 			(filter.names.length === 0 || filter.names.includes(hotel.name)) &&
 			(filter.roomStyle.length === 0 || filter.roomStyle.includes(hotel.roomStyle)) &&
 			(filter.amenities.length === 0 || filter.amenities.includes(hotel.amenities)) &&
@@ -143,6 +156,16 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>, mi
 				: currentValues.filter((item) => item !== parsedValue);
 			return { ...prevFilter, [category]: newValues };
 		});
+	};
+
+	const handleSearchNameChange = (value: string) => {
+		setFilter((prev) => ({ ...prev, searchName: value }));
+		setCurrentPage(1);
+	};
+
+	const handleFreeCancellationChange = (value: boolean) => {
+		setFilter((prev) => ({ ...prev, freeCancellation: value }));
+		setCurrentPage(1);
 	};
 
 	const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -190,6 +213,8 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>, mi
 			// durationRange: [0, 30],
 			ratings: [],
 			hotelType: [],
+			searchName: "",
+			freeCancellation: false,
 		};
 		setFilter(defaultFilter);
 		setSortCriteria("name")
@@ -222,6 +247,8 @@ const useHotelFilter = (hotelsData: Hotel[], initialFilter?: Partial<Filter>, mi
 		endIndex,
 		paginatedHotels,
 		handleCheckboxChange,
+		handleSearchNameChange,
+		handleFreeCancellationChange,
 		handleSortChange,
 		handlePriceRangeChange,
 		// handleDurationRangeChange,
