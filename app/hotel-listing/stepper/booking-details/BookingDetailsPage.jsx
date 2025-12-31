@@ -25,6 +25,14 @@ const BookingDetailsPage = () => {
   const [bookingDetails, setBookingDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [markup, setMarkup] = useState(0);
+
+  useEffect(() => {
+    const savedMarkup = localStorage.getItem("hotelMarkup");
+    if (savedMarkup) {
+      setMarkup(Number(savedMarkup));
+    }
+  }, []);
 
   const [formData, setFormData] = useState({});
   const [showOptions, setShowOptions] = useState(false);
@@ -239,7 +247,7 @@ const BookingDetailsPage = () => {
     }
 
     try {
-      await downloadHotelBookingAsPDF(bookingDetails);
+      await downloadHotelBookingAsPDF(bookingDetails, markup);
     } catch (error) {
       console.error("Failed to generate PDF:", error);
       alert("Failed to generate PDF. Please try again.");
@@ -296,7 +304,7 @@ const BookingDetailsPage = () => {
     }
 
     try {
-      printHotelBooking(bookingDetails);
+      printHotelBooking(bookingDetails, markup);
     } catch (error) {
       console.error("Print failed:", error);
       alert("Failed to print booking details. Please try again.");
@@ -490,6 +498,7 @@ const BookingDetailsPage = () => {
                   <FareAmount
                     hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                     Category={"abook"}
+                    markup={markup}
                   />
                 </div>
               </div>
@@ -516,6 +525,7 @@ const BookingDetailsPage = () => {
                   <FareAmount
                     hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                     Category={"abook"}
+                    markup={markup}
                   />
                 </div>
               </div>

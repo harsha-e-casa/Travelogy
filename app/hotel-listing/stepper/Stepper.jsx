@@ -52,8 +52,24 @@ export function Step1TravellerDetails({
   formData,
   setFormData,
   onNext,
+  markup = 0,
+  setMarkup = () => {},
 }) {
   console.log("CheckinDate", hotelReviewData?.query?.checkinDate);
+
+  // Markup State handled by parent (StepperPage)
+  // const [markup, setMarkup] = useState(0);
+  // const [showMarkupPopup, setShowMarkupPopup] = useState(false);
+  // const [tempMarkup, setTempMarkup] = useState("0");
+  // const [showTaxDetails, setShowTaxDetails] = useState(false);
+  
+  // const handleUpdateMarkup = () => {
+  //   setMarkup(Number(tempMarkup));
+  //   setShowMarkupPopup(false);
+  // };
+
+  const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
+
   const hasDigit = (s = "") => /\d/.test(s);
   const isValidFirstName = (v = "") =>
     v.trim() && v.trim().length >= 2 && !hasDigit(v);
@@ -802,7 +818,7 @@ export function Step1TravellerDetails({
             </div>
           </div>
           <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
-            <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
+             <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} markup={markup} setMarkup={setMarkup} />
           </div>
         </div>
 
@@ -2249,6 +2265,7 @@ export function Step4Payment({
   bookingId,
   setCurrentStep,
   onConfirmPayment,
+  markup = 0,
 }) {
   const [showModal, setShowModal] = useState(false);
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
@@ -2351,7 +2368,7 @@ export function Step4Payment({
                 className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white"
                 onClick={handlePayClick}
               >
-                PAY NOW ₹{(totalBaseFare + totalTax).toFixed(2)}
+                PAY NOW ₹{(totalBaseFare + totalTax + markup).toFixed(2)}
               </button>
               {/* <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span> */}
             </div>
@@ -2375,7 +2392,7 @@ export function Step4Payment({
               proceed.
             </p>
             <p className="text-center text-xl font-semibold mb-6">
-              ₹{(totalBaseFare + totalTax).toFixed(2)}
+              ₹{(totalBaseFare + totalTax + markup).toFixed(2)}
             </p>
 
             <div className="flex justify-center gap-4">
@@ -2428,7 +2445,7 @@ export function useFareBreakdown(hotelReviewData) {
   return { totalBaseFare, totalTax };
 }
 
-export function FareAmount({ hotelReviewData, Category }) {
+export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = () => {} }) {
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
   const totalBaseFareSum = hotelPassenger.reduce((sum, room) => {
@@ -2443,6 +2460,16 @@ export function FareAmount({ hotelReviewData, Category }) {
   const toggleDetails = () => {
     setIsDetailsVisible((prevState) => !prevState);
   };
+  
+  // Markup Logic
+  const [showMarkupPopup, setShowMarkupPopup] = useState(false);
+  const [tempMarkup, setTempMarkup] = useState("0");
+  const [showTaxDetails, setShowTaxDetails] = useState(false);
+
+  const handleUpdateMarkup = () => {
+    setMarkup(Number(tempMarkup));
+    setShowMarkupPopup(false);
+  };
 
   return (
     <>
@@ -2455,13 +2482,103 @@ export function FareAmount({ hotelReviewData, Category }) {
             <span>Base Fare</span>
             <span>₹{totalBaseFare.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between border-b pb-2">
-            <span>Taxes and Fees</span>
-            <span>₹{totalTax.toFixed(2)}</span>
+          
+          <div className="flex flex-col border-b pb-2">
+            <div className="flex justify-between items-center">
+                <div className="flex items-center cursor-pointer gap-2" onClick={() => setShowTaxDetails(!showTaxDetails)}>
+                    <span>Taxes and Fees</span>
+                    <DownOutlined className={`transform transition-transform ${showTaxDetails ? "rotate-180" : ""}`} />
+                </div>
+                
+                <div className="flex items-center gap-2 relative">
+                    <span>₹{(totalTax + markup).toFixed(2)}</span>
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setTempMarkup(markup.toString());
+                        setShowMarkupPopup(!showMarkupPopup);
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </div>
+
+                    {showMarkupPopup && (
+                        <div className="absolute top-8 right-0 bg-white shadow-xl rounded-lg p-3 border border-gray-200 z-50 w-60">
+                          <button
+                            onClick={() => setShowMarkupPopup(false)}
+                            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          </button>
+
+                          <div className="mt-5 mb-3 bg-gray-50 border border-gray-100 rounded p-2">
+                            <label className="block text-xs text-gray-400 font-medium mb-0.5">
+                              Markup Price
+                            </label>
+                            <input
+                              type="number"
+                              value={tempMarkup}
+                              onChange={(e) => setTempMarkup(e.target.value)}
+                              className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
+                              placeholder="0"
+                            />
+                          </div>
+                          <div className="flex justify-end">
+                            <button
+                              onClick={handleUpdateMarkup}
+                              className="btn-logout text-white rounded px-4 py-1.5 text-sm font-bold hover:bg-orange-600 transition shadow-sm"
+                            >
+                              Update
+                            </button>
+                          </div>
+                        </div>
+                     )}
+                </div>
+            </div>
+            
+            {showTaxDetails && (
+                <div className="mt-2 pl-4 flex flex-col gap-1 text-gray-500 text-xs">
+                    <div className="flex justify-between">
+                        <span>Taxes and Fees</span>
+                        <span>₹{totalTax.toFixed(2)}</span>
+                    </div>
+                    {markup > 0 && (
+                        <div className="flex justify-between">
+                            <span>Markup</span>
+                            <span>₹{markup.toFixed(2)}</span>
+                        </div>
+                    )}
+                </div>
+            )}
           </div>
+
           <div className="flex justify-between font-semibold text-gray-800">
             <span>Total Amount Payable</span>
-            <span>₹{(totalBaseFare + totalTax).toFixed(2)}</span>
+            <span>₹{(totalBaseFare + totalTax + markup).toFixed(2)}</span>
           </div>
         </>
       ) : (
@@ -2507,9 +2624,15 @@ export function FareAmount({ hotelReviewData, Category }) {
             <span>Taxes and Fees</span>
             <span>₹{totalTaxSum.toFixed(2)}</span>
           </div>
+          {markup > 0 && (
+            <div className="flex justify-between pb-4">
+              <span>Markup</span>
+              <span>₹{Number(markup).toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between font-semibold text-gray-800">
             <span>Total Amount Payable</span>
-            <span>₹{(totalBaseFareSum + totalTaxSum).toFixed(2)}</span>
+            <span>₹{(totalBaseFareSum + totalTaxSum + markup).toFixed(2)}</span>
           </div>
         </div>
       )}

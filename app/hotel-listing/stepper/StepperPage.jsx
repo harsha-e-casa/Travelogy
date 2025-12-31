@@ -121,6 +121,19 @@ export default function Stepper() {
     const savedFormData = localStorage.getItem("formData");
     return savedFormData ? JSON.parse(savedFormData) : {};
   });
+  
+  // Markup State
+  const [markup, setMarkup] = useState(() => {
+     if (typeof window !== 'undefined') {
+        return Number(localStorage.getItem("hotelMarkup")) || 0;
+     }
+     return 0;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("hotelMarkup", markup);
+  }, [markup]);
+
   const router = useRouter();
   const apiOk = !loading && !error && Boolean(hotelReviewData);
 
@@ -428,6 +441,8 @@ export default function Stepper() {
                       setFormData={setFormData}
                       onNext={goNext}
                       hotelReviewData={hotelReviewData}
+                      markup={markup}
+                      setMarkup={setMarkup}
                     />
                   )}
                   {currentStep === 2 && (
@@ -461,6 +476,7 @@ export default function Stepper() {
                       onConfirmPayment={handlePayment}
                       setError={setError}
                       setCurrentStep={setCurrentStep}
+                      markup={markup}
                     />
                   )}
                 </div>
@@ -468,6 +484,8 @@ export default function Stepper() {
                   <FareAmount
                     hotelReviewData={hotelReviewData}
                     Category="bbook"
+                    markup={markup}
+                    setMarkup={setMarkup}
                   />
                 </div>
               </>

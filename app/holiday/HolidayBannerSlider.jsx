@@ -109,34 +109,28 @@ const Slider = () => {
       });
       
       if (cardsRef.current[active]) {
-        gsap.from(
+        gsap.fromTo(
           cardsRef.current[active].querySelectorAll('.card_sub'),
-          { y: 50, opacity: 1, top: '50%', left: '50px', transform: 'translateY(-50%)', marginTop:'0px', fontSize:'100px'}
+          { y: 50, opacity: 0, top: '50%', left: '30px', transform: 'translateY(-50%)' },
+          { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }
         );
 
         gsap.fromTo(
-          cardsRef.current[active].querySelectorAll('.card_sub > div'),
-          { y: 50, opacity: 0},
-          { y: 0, opacity: 1, stagger: 0.2, duration: 0.8, ease: 'power2.out' }
-        );
-
-        gsap.from(
           cardsRef.current[active].querySelectorAll('.content-place'),
-          {  fontSize: '2.5em', marginTop: '5px'}
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, fontSize: '2rem', marginTop: '30px', marginBottom: '10px', duration: 0.8, ease: 'power2.out', delay: 0.1 }
         );
 
-        gsap.from(
-          cardsRef.current[active].querySelectorAll('.pt_set'),
-          {  fontSize: '8em', marginTop: '60px'}
-        );
-
-        gsap.from(
+        gsap.fromTo(
           cardsRef.current[active].querySelectorAll('.pt_set1'),
-           {marginTop: '10px', fontSize: '6em', marginBottom:'20px',lineHeight: '0.5'}
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, fontSize: '5rem', marginTop: '0', marginBottom: '0', lineHeight: 1.1, duration: 0.8, ease: 'power2.out', delay: 0.2 }
         );
-        gsap.from(
+
+        gsap.fromTo(
           cardsRef.current[active].querySelectorAll('.pt_set2'),
-         { marginTop: '40px', fontSize: '9em'}
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, fontSize: '5rem', marginTop: '0', lineHeight: 1.1, duration: 0.8, ease: 'power2.out', delay: 0.3 }
         );
       }
 

@@ -239,6 +239,49 @@ export default function Holidaymood() {
         },
       ],
     },
+      nightlife: {
+      title: "Nightlife",
+      bannerImage:
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+      mood_destinations: [
+        "Dubai",
+        "Monaco",
+        "Switzerland",
+        "Maldives",
+        "Singapore",
+        "Japan",
+        "France",
+        "Italy",
+        "Qatar",
+        "Bahrain",
+      ],
+      packages: [
+        {
+          image:
+            "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "5-Star Resort",
+          location: "Dubai",
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "Private Villa",
+          location: "Bali",
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "Luxury Cruise",
+          location: "Mediterranean",
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "Spa Retreat",
+          location: "Thailand",
+        },
+      ],
+    },
   };
 
     const locations = [
@@ -703,6 +746,7 @@ export default function Holidaymood() {
                     <option value="beaches" style={{ background: "#333", color: "white" }}>Beaches</option>
                     <option value="wildlife" style={{ background: "#333", color: "white" }}>Wildlife</option>
                     <option value="luxury" style={{ background: "#333", color: "white" }}>Luxury</option>
+                    <option value="nightlife" style={{ background: "#333", color: "white" }}>NightLife</option>
                   </select>
                   <button
                     type="submit"

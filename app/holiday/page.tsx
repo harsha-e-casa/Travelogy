@@ -202,7 +202,7 @@ const Slider: React.FC = () => {
         </h5>*/}
 
         <h2 className="container neutral-1000 mt-20">Destination Dreams</h2>
-        <section className="section__category container mb-30 box-top-category">
+        <section className="section__category container box-top-category">
           {locations.map((loc, index) => (
             <div className="dgfry_card" key={index}>
               <div className="card__img">
@@ -257,7 +257,7 @@ const Slider: React.FC = () => {
 
 
         <section>
-          <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
+          <div className="class_main_slider_de1 container shadow-700 mb-80  box-top-category">
             <div className="main_d2l_section p-8 pt-4">
               <h2 className="text-xl font-bold text-gray-900 tracking-wide">
                 Best Destinations

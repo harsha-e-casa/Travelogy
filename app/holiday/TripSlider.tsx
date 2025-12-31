@@ -36,7 +36,7 @@ export default function YourJourney() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: cardStyles }} />
-      <section className="section-box box-your-journey background-body">
+      <section className="section-box box-your-journey background-body mb-40">
         <div className="container">
           <div className="row align-items-center mt-20">
             {/* Left side - Catchy content */}
@@ -73,7 +73,7 @@ export default function YourJourney() {
             </div>
             
             {/* Right side - Holiday cards */}
-            <div className="col-lg-6 col-md-6">
+            <div className="col-lg-6 col-md-6 mt-60">
               <div className="row">
                 <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
                   <Link href="/holiday/holiday_mood?mood=romantic">
@@ -151,7 +151,7 @@ export default function YourJourney() {
                     </div>
                   </Link>
                 </div>
-                <div className="col-lg-12 col-md-12 mb-30">
+                <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
                   <Link href="/holiday/holiday_mood?mood=luxury">
                     <div className="holiday-card">
                       <div className="card-image" style={{
@@ -165,6 +165,25 @@ export default function YourJourney() {
                       }}>
                         <div className="card-overlay">
                           <h3 className="destination-name" style={{fontSize: '20px'}}>Luxury</h3>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+                <div className="col-lg-6 col-md-6 col-sm-6 mb-30">
+                  <Link href="/holiday/holiday_mood?mood=nightlife">
+                    <div className="holiday-card">
+                      <div className="card-image" style={{
+                        backgroundImage: 'url(/assets/imgs/page/homepage4/spot5.png)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        height: '200px',
+                        borderRadius: '20px',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}>
+                        <div className="card-overlay">
+                          <h3 className="destination-name" style={{fontSize: '20px'}}>Night Life</h3>
                         </div>
                       </div>
                     </div>

@@ -31,6 +31,7 @@ export default function BookingCard({
   availabilityError
 }) {
   const basefare = totalpricee?.fC?.BF;
+  const taxAndFees = totalpricee?.fC?.TAF || 0;
   const RoomType = totalpricee?.fC?.MB;
   const RoomCategory = totalpricee?.fC?.RC;
 
@@ -44,6 +45,29 @@ export default function BookingCard({
   const roomCount = searchData?.roomInfo?.length;
   const netprice = totalpricee?.fC?.NF;
   const { getCookie } = useContext(AppContext);
+
+  // Markup & Breakdown States
+  const [markup, setMarkup] = useState(0);
+  const [showMarkupPopup, setShowMarkupPopup] = useState(false);
+  const [tempMarkup, setTempMarkup] = useState("0");
+  const [showTaxDetails, setShowTaxDetails] = useState(false);
+
+  useEffect(() => {
+    const savedMarkup = localStorage.getItem("hotelMarkup");
+    if (savedMarkup) {
+      setMarkup(Number(savedMarkup));
+    }
+  }, []);
+
+  const handleUpdateMarkup = () => {
+    const newMarkup = Number(tempMarkup);
+    setMarkup(newMarkup);
+    localStorage.setItem("hotelMarkup", newMarkup);
+    setShowMarkupPopup(false);
+  };
+  
+  const displayAmount = (Number(totalfare) || 0) + markup;
+
   const totalAdults = roomsData.reduce(
     (sum, room) => sum + room.numberOfAdults,
     0
@@ -78,21 +102,95 @@ export default function BookingCard({
     <div className="p-0 bg-white space-y-4">
       <div className="item-line-booking">
         <div className="">
-          <p className="text-2xl font-bold text-neutral-900">
-            ₹{totalfare?.toLocaleString()}
-          </p>
-          <span className="line-booking-tickets">{RoomCategory}</span>
+          
+           {/* Total Price + Markup Edit Icon */}
+           <div className="flex flex-row items-center gap-2 mb-1 relative">
+             <p className="text-2xl font-bold text-neutral-900">
+               ₹{displayAmount?.toLocaleString()}
+             </p>
+             <div
+                  className="cursor-pointer"
+                  onClick={() => {
+                    setTempMarkup(markup.toString());
+                    setShowMarkupPopup(!showMarkupPopup);
+                  }}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+             </div>
+
+             {/* Markup Popup */}
+             {showMarkupPopup && (
+                  <div className="absolute top-8 left-0 bg-white shadow-xl rounded-lg p-3 border border-gray-200 z-50 w-60">
+                    <button
+                      onClick={() => setShowMarkupPopup(false)}
+                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+
+                    <div className="mt-5 mb-3 bg-gray-50 border border-gray-100 rounded p-2">
+                      <label className="block text-xs text-gray-400 font-medium mb-0.5">
+                        Markup Price
+                      </label>
+                      <input
+                        type="number"
+                        value={tempMarkup}
+                        onChange={(e) => setTempMarkup(e.target.value)}
+                        className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
+                        placeholder="0"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        onClick={handleUpdateMarkup}
+                        className="btn-logout text-white rounded px-4 py-1.5 text-sm font-bold hover:bg-orange-600 transition shadow-sm"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  </div>
+                )}
+           </div>
+
+           {/* Room Info */}
+          <span className="line-booking-tickets block mb-1">{RoomCategory}</span>
         </div>
-        <div className=" line-booking-tickets text-sm text-neutral-700">
+        <div className="line-booking-tickets text-sm text-neutral-700 uppercase mb-2">
           {RoomType}
         </div>
-        <div className="line-booking-tickets py-2">
+        
+        {/* Select Other Room */}
+        <div className="line-booking-tickets py-2 border-b border-dashed border-gray-200 mb-2">
           <a
             onClick={(e) => {
               e.preventDefault();
               onSelectOtherRoom?.();
             }}
-            className="room_fac flex items-center gap-1 text-md cursor-pointer"
+            className="room_fac flex items-center gap-1 text-md cursor-pointer text-orange-600 font-medium"
           >
             Select Other Room
             <svg
@@ -111,6 +209,31 @@ export default function BookingCard({
             </svg>
           </a>
         </div>
+
+        {/* Collapsible Tax Breakdown (Optional/Subtle) */}
+         <div className="flex flex-col mb-2">
+            <div className="flex flex-row items-center cursor-pointer gap-2" onClick={() => setShowTaxDetails(!showTaxDetails)}>
+                <span className="text-xs text-gray-400 underline">View Price Breakdown</span>
+            </div>
+            {showTaxDetails && (
+              <div className="mt-2 pl-2 flex flex-col gap-1 border-l-2 border-gray-100">
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>Base Fare</span>
+                  <span>₹{Number(basefare)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>Taxes and Fees</span>
+                  <span>₹{taxAndFees}</span>
+                </div>
+                {markup > 0 && (
+                  <div className="flex justify-between text-xs text-gray-500">
+                    <span>Markup</span>
+                    <span>₹{Number(markup).toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+            )}
+         </div>
 
         {/* Display availability error if present */}
         {availabilityError && (

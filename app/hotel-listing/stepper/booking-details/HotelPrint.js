@@ -4,10 +4,10 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-export function printHotelBooking(bookingDetails) {
+export function printHotelBooking(bookingDetails, markup = 0) {
   if (!bookingDetails) return;
 
-  const vm = normalizeHotelData(bookingDetails);
+  const vm = normalizeHotelData(bookingDetails, markup);
   
   // Debug logging
   console.log("=== HOTEL PRINT DEBUG ===");
@@ -94,7 +94,7 @@ export function printHotelBooking(bookingDetails) {
   timeoutId = setTimeout(triggerOnce, 1500);
 }
 
-function normalizeHotelData(raw) {
+function normalizeHotelData(raw, markup = 0) {
   const order = raw?.order || {};
   const hotelInfo = raw?.itemInfos?.HOTEL?.hInfo || {};
   const deliveryInfo = order?.deliveryInfo || {};
@@ -146,7 +146,8 @@ function normalizeHotelData(raw) {
     return {
       basePrice: roomPricing.basePrice,
       taxes: roomPricing.taxes,
-      total: order?.amount || (roomPricing.basePrice + roomPricing.taxes),
+      markup: markup,
+      total: (order?.amount || (roomPricing.basePrice + roomPricing.taxes)) + markup,
     };
   })();
 
@@ -676,6 +677,12 @@ function renderHotelHTML(vm) {
             <th>Taxes and Fees</th>
             <td style="text-align: right;">₹${fmtIN(vm.pricing.taxes)}</td>
           </tr>
+          ${vm.pricing.markup > 0 ? `
+          <tr>
+            <th>Markup</th>
+            <td style="text-align: right;">₹${fmtIN(vm.pricing.markup)}</td>
+          </tr>
+          ` : ''}
           <tr>
             <th style="border-top: 1px solid #000; font-weight: 700;">Total Amount Payable</th>
             <td style="border-top: 1px solid #000; text-align: right; font-weight: 700; font-size: 14px;">₹${fmtIN(vm.pricing.total)}</td>
@@ -823,7 +830,7 @@ function renderHotelHTML(vm) {
  * Uses browser's native print-to-PDF for proper page breaks
  * @param {Object} bookingDetails - The booking details object
  */
-export async function downloadHotelBookingAsPDF(bookingDetails) {
+export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0) {
   if (!bookingDetails) {
     console.error("No booking details provided for PDF generation");
     return;
@@ -831,7 +838,7 @@ export async function downloadHotelBookingAsPDF(bookingDetails) {
 
   try {
     // Normalize data and render HTML using the same functions as print
-    const vm = normalizeHotelData(bookingDetails);
+    const vm = normalizeHotelData(bookingDetails, markup);
     const html = renderHotelHTML(vm);
 
     // Create a new window for printing
