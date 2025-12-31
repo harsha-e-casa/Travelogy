@@ -9,6 +9,7 @@ import { postData } from "@/services/NetworkAdapter";
 import { AppContext } from "@/util/AppContext";
 import "swiper/css";
 import "swiper/css/navigation";
+import { Spin } from "antd";
 
 export default function Flights4() {
   const { setCookie } = useContext(AppContext);
@@ -365,8 +366,8 @@ export default function Flights4() {
                                       {/* Seats left not in response; show duration instead */}
                                       {sI.length > 0
                                         ? `${Math.floor(
-                                            (first?.duration ?? 0) / 60
-                                          )}h ${(first?.duration ?? 0) % 60}m`
+                                          (first?.duration ?? 0) / 60
+                                        )}h ${(first?.duration ?? 0) % 60}m`
                                         : ""}
                                     </p>
                                   </div>
@@ -394,7 +395,11 @@ export default function Flights4() {
         </>
       )}
 
-      {loading && <p className="text-center py-6">Fetching best flights…</p>}
+      {loading && (
+        <div className="text-center py-12">
+          <Spin size="large" tip="Fetching best flights..." />
+        </div>
+      )}
       {/* {loading && <img src="/assets/imgs/flight_loading_gif.gif" alt="" />} */}
     </>
   );

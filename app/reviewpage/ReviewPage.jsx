@@ -2516,108 +2516,127 @@ const ReviewPage = () => {
                 </div>
               )}
               {paymentModel && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div
-                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative payment-modal-content"
-                  >
-                    <button
-                      // onClick={() => setPaymentFailurePopup(false)}
-                      onClick={() => {
-                        setPaymentModel(false);
-                        setPaymsg("");
-                      }}
-                      className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
-                    >
-                      ×
-                    </button>
-
-                    <p className="text-black-600 mb-2 font-semibold">
-                      Choose Payment Mode
-                    </p>
-
-                    <div className="payment-modal-buttons-row">
-                      <div
-                        onClick={bookingReviewWIthWallet}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                          ? "bg-gray-300"
-                          : "bg-yellow-300 hover:bg-yellow-400"
-                          }`}
-                        disabled={bookingLoadingWallet}
+                <div className="fixed inset-0 z-50 bg-white overflow-y-auto w-full h-full">
+                  <div className="w-full min-h-screen max-w-4xl mx-auto p-6 relative">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-8 border-b pb-4">
+                      <h2 className="text-2xl font-bold text-gray-800">
+                        Choose Payment Mode
+                      </h2>
+                      <button
+                        onClick={() => {
+                          setPaymentModel(false);
+                          setPaymsg("");
+                        }}
+                        className="text-gray-500 hover:text-black text-3xl font-light px-4"
                       >
-                        {bookingLoadingWallet ? (
-                          <div className="flex items-center gap-2">
-                            <svg
-                              className="animate-spin h-5 w-5 text-black"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                              ></path>
-                            </svg>
-                            <span>Loading...</span>
-                          </div>
-                        ) : (
-                          "Wallet Payment"
-                        )}
-                      </div>
-
-                      <div
-                        onClick={bookingReview}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                          ? "bg-gray-300"
-                          : "bg-yellow-300 hover:bg-yellow-400"
-                          }`}
-                        disabled={bookingLoading}
-                      >
-                        {bookingLoading ? (
-                          <div className="flex items-center gap-2">
-                            <svg
-                              className="animate-spin h-5 w-5 text-black"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                              ></path>
-                            </svg>
-                            <span>Loading...</span>
-                          </div>
-                        ) : (
-                          "Pay via Gateway"
-                        )}
-                      </div>
+                        ×
+                      </button>
                     </div>
-                    {paymsg && (
-                      <p
-                        className="text-red-600 pt-2"
-                        style={{ textAlign: "center" }}
-                      >
-                        {paymsg.message}, Balance: {paymsg.balance}
+
+                    {/* Content Container */}
+                    <div className="max-w-xl mx-auto mt-12 p-8 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+                      <p className="text-gray-700 mb-8 font-medium text-center text-lg">
+                        Please select a payment method to proceed
                       </p>
-                    )}
+
+                      <div className="flex flex-col gap-4">
+                        <div
+                          onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReviewWIthWallet : undefined}
+                          className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoadingWallet
+                              ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                              : bookingLoading
+                                ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
+                                : "bg-white hover:border-yellow-400 cursor-pointer"
+                            }`}
+                          aria-disabled={bookingLoadingWallet || bookingLoading}
+                        >
+                          <span className="font-semibold text-lg">Wallet Payment</span>
+                          {bookingLoadingWallet ? (
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <svg
+                                className="animate-spin h-5 w-5"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                              </svg>
+                              Processing...
+                            </div>
+                          ) : (
+                            <span className="p-2 bg-yellow-100 rounded-full text-yellow-700">
+                              ➜
+                            </span>
+                          )}
+                        </div>
+
+                        <div
+                          onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReview : undefined}
+                          className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoading
+                              ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                              : bookingLoadingWallet
+                                ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
+                                : "bg-white hover:border-yellow-400 cursor-pointer"
+                            }`}
+                          aria-disabled={bookingLoading || bookingLoadingWallet}
+                        >
+                          <span className="font-semibold text-lg">
+                            Pay via Gateway
+                          </span>
+                          {bookingLoading ? (
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <svg
+                                className="animate-spin h-5 w-5"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                              </svg>
+                              Processing...
+                            </div>
+                          ) : (
+                            <span className="p-2 bg-yellow-100 rounded-full text-yellow-700">
+                              ➜
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {paymsg && (
+                        <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-lg text-center">
+                          <p className="text-red-600 font-medium">
+                            {paymsg.message}
+                          </p>
+                          <p className="text-red-500 text-sm mt-1">
+                            Balance: {paymsg.balance}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

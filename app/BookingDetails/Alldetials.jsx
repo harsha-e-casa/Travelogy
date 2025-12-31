@@ -360,6 +360,7 @@ const Alldetails = ({ totalpricee }) => {
 
   const [rescheduleData, setRescheduleData] = useState(null);
   const [selectedPNR, setSelectedPNR] = useState(null);
+  const [reissueApiError, setReissueApiError] = useState("");
 
   const handlePNRSelect = (pnr) => {
     console.log("ssssssssssssssssss 11111111111 ", pnr);
@@ -398,6 +399,8 @@ const Alldetails = ({ totalpricee }) => {
     console.log("rescheduleData == > ", rescheduleData);
 
     setRescheduleLoading(true);
+    setRescheduleError("");
+    setReissueApiError("");
 
     const pnr = rescheduleData.pnrs[selectedPNR] || "";
     const pnrKey = Object.keys(rescheduleData.pnrs).find(
@@ -454,14 +457,18 @@ const Alldetails = ({ totalpricee }) => {
         // router.push(`/tickets?${queryString}`);
         setRescheduleLoading(false);
         router.push(`/rescheduletickets?${queryString}`);
-      }
-      if (result?.errors?.[0]?.message) {
+      } else if (result?.errCode === "810" || result?.message) {
+        setReissueApiError(result?.message);
+        setRescheduleLoading(false);
+      } else if (result?.errors?.[0]?.message) {
         console.log("errorrrrrrrrrrrrrrrr ", result?.errors?.[0]?.message);
         setRescheduleError(result?.errors?.[0]?.message);
         setRescheduleLoading(false);
       }
     } catch (error) {
       console.log("handleSubmitReIssue error ", error);
+      setRescheduleLoading(false);
+      setReissueApiError("Something went wrong with the request.");
     }
   };
 
@@ -1746,6 +1753,11 @@ const Alldetails = ({ totalpricee }) => {
                         {rescheduleError !== "" && (
                           <p className="text-sm-medium text-red-400">
                             {rescheduleError}
+                          </p>
+                        )}
+                        {reissueApiError !== "" && (
+                          <p className="text-sm-medium text-red-400 mt-2">
+                            {reissueApiError}
                           </p>
                         )}
                       </div>

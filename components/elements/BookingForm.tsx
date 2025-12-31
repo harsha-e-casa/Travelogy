@@ -1,5 +1,6 @@
 import { AppContext } from "@/util/AppContext";
 import { useContext, useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 interface BookingFormProps {
   totalpricee: any;
@@ -70,6 +71,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   // const netprice = totalpricee?.fC?.NF;
   const { getCookie, removeCookie } = useContext(AppContext);
   // const initLoaded = useRef(false);
+  const pathname = usePathname();
 
   let computedAmount = 0;
 
@@ -80,6 +82,18 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [netprice, setNetprice] = useState(totalpricee?.fC?.NF || 0);
   const [ammendmentFees, setAmmendmentFees] = useState(afsAmount);
   const [rssrFees, setRssrFees] = useState(rssrAmount);
+
+  // Markup & Breakdown States
+  const [markup, setMarkup] = useState(0);
+  const [showMarkupPopup, setShowMarkupPopup] = useState(false);
+  const [tempMarkup, setTempMarkup] = useState("0");
+  const [showTaxDetails, setShowTaxDetails] = useState(false);
+  const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+
+  const handleUpdateMarkup = () => {
+    setMarkup(Number(tempMarkup));
+    setShowMarkupPopup(false);
+  };
 
   useEffect(() => {
     if (afsAmount != 0) {
@@ -139,9 +153,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
         }
         setNetprice(
           computedAmount -
-            savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
-            savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
-            Number(ssrSeatAmount ?? 0)
+          savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
+          savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
+          Number(ssrSeatAmount ?? 0)
         );
       } else {
         console.log("else varaliay ??");
@@ -225,12 +239,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
       setDisplayAmount(
         Number(totalfare) +
-          Number(seatinfo) +
-          Number(baggageAmount) +
-          Number(mealAmount)
+        Number(seatinfo) +
+        Number(baggageAmount) +
+        Number(mealAmount) +
+        Number(markup)
       );
     }
-  }, [totalpricee, seatinfo, baggageAmount, mealAmount]);
+  }, [totalpricee, seatinfo, baggageAmount, mealAmount, markup]);
 
   // useEffect(() => {
   //   if (Object.keys(seatinfo).length === 0) {
@@ -299,13 +314,116 @@ const BookingForm: React.FC<BookingFormProps> = ({
                 </div>
               </>
             )}
-            <div className="flex flex-row justify-between">
-              <div>
-                <strong className="text-md-bold neutral-1000">
-                  Taxes and fees
-                </strong>
+            {/* Taxes and Fees with Breakdown and Markup Edit */}
+            <div className="flex flex-col">
+              <div className="flex flex-row justify-between items-center">
+                <div
+                  className="flex items-center cursor-pointer gap-2"
+                  onClick={() => setShowTaxDetails(!showTaxDetails)}
+                >
+                  <strong className="text-md-bold neutral-1000">
+                    Taxes and fees
+                  </strong>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={`transition-transform ${showTaxDetails ? "rotate-180" : ""
+                      }`}
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+                <div className="flex items-center gap-2 relative">
+                  <div className="text-md-bold neutral-1000">₹{Number(taxAndFees) + Number(markup)}</div>
+                  {pathname?.includes("/book-ticket") && (
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setTempMarkup(markup.toString());
+                        setShowMarkupPopup(!showMarkupPopup);
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                    </div>
+                  )}
+                  {/* Markup Popup */}
+                  {showMarkupPopup && pathname?.includes("/book-ticket") && (
+                    <div className="absolute top-8 right-0 bg-white shadow-xl rounded-lg p-3 border border-gray-200 z-50 w-60">
+                      <button
+                        onClick={() => setShowMarkupPopup(false)}
+                        className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+
+                      <div className="mt-5 mb-3 bg-gray-50 border border-gray-100 rounded p-2">
+                        <label className="block text-xs text-gray-400 font-medium mb-0.5">
+                          Markup Price
+                        </label>
+                        <input
+                          type="number"
+                          value={tempMarkup}
+                          onChange={(e) => setTempMarkup(e.target.value)}
+                          className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
+                          placeholder="0"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleUpdateMarkup}
+                        className="btn-logout text-white rounded px-4 py-1.5 text-sm font-bold hover:bg-orange-600 transition shadow-sm"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="text-md-bold neutral-1000">₹{taxAndFees}</div>
+
+              {showTaxDetails && (
+                <div className="mt-2 pl-4 flex flex-col gap-2">
+                  <div className="flex justify-between text-sm neutral-500">
+                    <span>Taxes and Fees</span>
+                    <span>₹{taxAndFees}</span>
+                  </div>
+                  {markup > 0 && (
+                    <div className="flex justify-between text-sm neutral-500">
+                      <span>Total Airline Tax</span>
+                      <span>₹{Number(markup).toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             {ammendmentFees != 0 && (
               <div className="flex flex-row justify-between">
@@ -435,22 +553,56 @@ const BookingForm: React.FC<BookingFormProps> = ({
 					</div>
 				</div>
 			</div> */}
-        <div
-          // className="item-line-booking last-item"
-          className="flex flex-row justify-between"
-        >
-          {" "}
-          <strong className="text-md-bold neutral-1000">Total Amount:</strong>
-          <div className="line-booking-right">
-            <p className="text-xl-bold neutral-1000">
-              {" "}
-              ₹{!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)}
-              {/* {Number(totalfare) +
-                savedBaggage.reduce((acc, curr) => acc + curr.amount, 0) +
-                savedMeal.reduce((acc, curr) => acc + curr.amount, 0) +
-                (ssrSeatAmount ? Number(ssrSeatAmount) : 0)} */}
-            </p>
+        {/* Amount to Pay Section with Breakdown */}
+        <div className="flex flex-col mt-4 pt-4 border-t border-gray-200">
+          <div
+            className="flex flex-row justify-between items-center cursor-pointer"
+            onClick={() => setShowPaymentDetails(!showPaymentDetails)}
+          >
+            <div className="flex items-center gap-2">
+              <strong className="text-xl-bold neutral-1000">Amount to Pay</strong>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`transition-transform ${showPaymentDetails ? "rotate-180" : ""
+                  }`}
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div className="line-booking-right">
+              <p className="text-xl-bold neutral-1000">
+                ₹{!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)}
+              </p>
+            </div>
           </div>
+
+          {showPaymentDetails && (
+            <div className="mt-3 pl-0 flex flex-col gap-2">
+              <div className="flex justify-between text-md font-medium text-gray-500">
+                <span>Commission</span>
+                <span>-₹0.00</span>
+              </div>
+              <div className="flex justify-between text-md font-medium text-gray-500">
+                <span>Markup</span>
+                <span>-₹{Number(markup).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-md font-medium text-gray-500">
+                <span>TDS</span>
+                <span>+₹0.00</span>
+              </div>
+              <div className="flex justify-between text-md font-bold text-gray-700">
+                <span>Net Price</span>
+                <span>₹{(!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)) - Number(markup)}</span>
+              </div>
+            </div>
+          )}
         </div>
         {/* <div className="box-button-book"> <a className="btn btn-book" href="#">Book Now
 				<svg width={16} height={16} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
