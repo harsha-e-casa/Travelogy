@@ -132,7 +132,7 @@ const MealInfo = ({
                     </span>
                     <Form.Item
                       name={`adultMeal-${flightIndex}-${index}`}
-                      style={{ marginBottom: 0, width: "500px" }}
+                      style={{ marginBottom: 0, width: "100%" }}
                     >
                       {/* <Select
                         className="h-10 "
@@ -154,7 +154,7 @@ const MealInfo = ({
                         // disabled={mealOptions.every((b) => !b.amount)}
                         disabled={mealOptions.every((b) => !("amount" in b))}
                         // className="meal-w"
-                        style={{ width: "100%", maxWidth: "400px" }}
+                        style={{ width: "100%" }}
                         onChange={handleChange}
                         allowClear
                         onClear={handleChange}
@@ -200,7 +200,7 @@ const MealInfo = ({
                     </span>
                     <Form.Item
                       name={`childMeal-${flightIndex}-${index}`}
-                      style={{ marginBottom: 0, width: "500px" }}
+                      style={{ marginBottom: 0, width: "100%" }}
                     >
                       {/* <Select
                         className="h-10 w-100"
@@ -222,7 +222,7 @@ const MealInfo = ({
                         placeholder="Add Meal"
                         // disabled={mealOptions.every((b) => !b.amount)}
                         disabled={mealOptions.every((b) => !("amount" in b))}
-                        style={{ width: 500 }}
+                        style={{ width: "100%" }}
                         onChange={handleChange}
                         allowClear
                         onClear={handleChange}

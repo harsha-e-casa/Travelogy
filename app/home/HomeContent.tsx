@@ -539,7 +539,7 @@ export default function HomeContent(): JSX.Element {
               {!isSubmitted ? (
                 <form onSubmit={handleSubmit}>
                   <h3 style={{ fontSize: 18, fontWeight: "bold" }}>
-                    Become a Partner
+                    Become a Partner.
                   </h3>
                   <p style={{ marginBottom: 20, fontSize: 14, opacity: 0.9 }}>
                     Share a few details and we’ll reach out with next steps.
