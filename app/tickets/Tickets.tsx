@@ -43,7 +43,7 @@ import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
 import { DownOutlined, FilterOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Dropdown, Space, Drawer, Button } from "antd";
+import { Dropdown, Space, Drawer, Button, Modal, Input, message } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
 import { AppContext } from "../../util/AppContext";
 import { TravellerForm } from "@/components/searchEngine/TravellerForm";
@@ -60,6 +60,23 @@ import BySortPrice from "@/components/Filter/BySortPrice";
 // }));
 
 const ticketsData: any = [];
+
+const generateStableId = (ticket: any) => {
+  if (!ticket || !ticket.sI) return Math.random().toString(36).substr(2, 9);
+
+  // Create a stable ID based on flight segments (Airlines, Flight Numbers, Times, Codes)
+  const segments = ticket.sI.map((seg: any) => {
+    const flightNo = seg.fD?.fN || '000';
+    const airline = seg.fD?.aI?.code || 'XX';
+    const depTime = seg.dt || '0000';
+    const fromCode = seg.da?.code || 'AAA';
+    const toCode = seg.aa?.code || 'BBB';
+    return `${airline}${flightNo}_${depTime}_${fromCode}${toCode}`;
+  });
+
+  const basePrice = ticket.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0;
+  return `${segments.join("|")}_${basePrice}`;
+};
 
 export default function Tickets() {
   // Using custom hook for ticket filter logic
@@ -106,6 +123,264 @@ export default function Tickets() {
 
   const onCloseFilterDrawer = () => {
     setFilterDrawerOpen(false);
+  };
+
+  // Markup and Share State
+  const searchParams = useSearchParams();
+  const [markup, setMarkup] = useState<number>(0);
+  const [isMarkupModalOpen, setIsMarkupModalOpen] = useState(false);
+  const [markupInput, setMarkupInput] = useState<string>("");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+
+
+
+  const [ticketMarkups, setTicketMarkups] = useState<Record<string, number>>({});
+  const [currentTicketId, setCurrentTicketId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const markupParam = searchParams.get("markup");
+    if (markupParam) {
+      const parsedMarkup = Number(markupParam);
+      if (!isNaN(parsedMarkup)) {
+        setMarkup(parsedMarkup);
+      }
+    }
+  }, [searchParams]);
+
+  const [currentTicket, setCurrentTicket] = useState<any>(null);
+  const [selectedFareIndex, setSelectedFareIndex] = useState<number>(0);
+  const [shareStatus, setShareStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+
+  const openMarkupModal = (ticketId: string, currentVal: number, ticket: any = null, fareIndex: number = 0) => {
+    setCurrentTicketId(ticketId);
+    setCurrentTicket(ticket);
+    setMarkupInput(currentVal.toString());
+    setSelectedFareIndex(fareIndex);
+    setIsMarkupModalOpen(true);
+  };
+
+  const handleApplyToTicket = () => {
+    const newMarkup = Number(markupInput);
+    if (isNaN(newMarkup) || newMarkup < 0) {
+      message.error("Please enter a valid non-negative markup amount.");
+      return;
+    }
+    if (currentTicketId) {
+      setTicketMarkups((prev) => ({ ...prev, [currentTicketId]: newMarkup }));
+      message.success("Markup applied to this ticket.");
+    }
+    setIsMarkupModalOpen(false);
+  };
+
+  const handleApplyToAll = () => {
+    const newMarkup = Number(markupInput);
+    if (isNaN(newMarkup) || newMarkup < 0) {
+      message.error("Please enter a valid non-negative markup amount.");
+      return;
+    }
+    setMarkup(newMarkup);
+    setTicketMarkups({}); // Clear individual overrides
+    setIsMarkupModalOpen(false);
+
+    // Update URL with markup
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set("markup", newMarkup.toString());
+    router.push(currentUrl.toString());
+    message.success("Markup applied to all tickets.");
+  };
+
+  const handleShareQuote = async () => {
+    if (!shareEmail) {
+      message.error("Please enter a valid email.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(shareEmail)) {
+      message.error("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      const shareMarkup = Number(markupInput);
+      const ticketHTML = generateTicketHTML(currentTicket, isNaN(shareMarkup) ? 0 : shareMarkup, selectedFareIndex);
+
+      const payload = {
+        email: shareEmail,
+        link: `${window.location.origin}${window.location.pathname}?${searchParams.toString()}&markup=${markupInput}`, // Keep link for reference
+        htmlContent: ticketHTML,
+      };
+
+      setShareStatus("sending");
+      const response: any = await postData("/travelogy/common/send-quote", payload);
+      if (response && (response.success || response.status)) {
+        setShareStatus("success");
+        message.success("Quote sent successfully!");
+
+        // Wait 3 seconds before closing automatically
+        setTimeout(() => {
+          setIsShareModalOpen(false);
+          setIsMarkupModalOpen(false);
+          setShareEmail("");
+          setShareStatus("idle");
+        }, 3000);
+      } else {
+        setShareStatus("error");
+        message.error(response?.message || "Failed to send quote.");
+        setTimeout(() => setShareStatus("idle"), 3000);
+      }
+    } catch (error) {
+      console.error("Error sharing quote:", error);
+      message.error("An error occurred while sharing the quote.");
+    }
+  };
+
+  const generateTicketHTML = (ticket: any, appliedMarkup: number, fareIndex: number) => {
+    if (!ticket) return "<p>Details unavailable.</p>";
+
+    // Very basic HTML generation for now - replicating structure would require copying all styles inline or structurally.
+    // For now, let's create a clean table-based layout suitable for email.
+
+    // Check if it's a round trip or multicity wrapper or single ticket
+    const segments = ticket.sI || [];
+
+    let segmentsHTML = "";
+
+    segments.forEach((seg: any) => {
+      const depDate = dayjs(seg.dt).format("DD MMM YYYY");
+      const depTime = dayjs(seg.dt).format("HH:mm");
+      const arrDate = dayjs(seg.at).format("DD MMM YYYY");
+      const arrTime = dayjs(seg.at).format("HH:mm");
+
+      segmentsHTML += `
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; background-color: #ffffff; border-collapse: separate;">
+                <tr>
+                    <td style="padding: 12px 15px; border-bottom: 1px solid #f1f5f9;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td width="30" style="vertical-align: middle;">
+                                    <img src="https://travelogy.co/assets/imgs/airlines/${seg.fD.aI.code}.png" alt="${seg.fD.aI.name}" width="24" style="display: block; border: 0;" />
+                                </td>
+                                <td style="padding-left: 10px; vertical-align: middle; font-family: Arial, sans-serif;">
+                                    <span style="font-weight: bold; color: #1e293b; font-size: 14px;">${seg.fD.aI.name}</span>
+                                    <span style="color: #64748b; font-size: 12px; margin-left: 4px;">(${seg.fD.fN})</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 20px 15px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <!-- Departure -->
+                                <td width="30%" style="vertical-align: top; font-family: Arial, sans-serif;">
+                                    <div style="font-weight: 800; font-size: 20px; color: #0f172a; margin-bottom: 2px;">${seg.da.code}</div>
+                                    <div style="color: #475569; font-size: 13px; margin-bottom: 8px;">${seg.da.city}</div>
+                                    <div style="color: #94a3b8; font-size: 12px;">${depDate}</div>
+                                    <div style="font-weight: 700; font-size: 16px; color: #e11d48; margin-top: 2px;">${depTime}</div>
+                                </td>
+                                
+                                <!-- Connection Info -->
+                                <td width="40%" style="vertical-align: middle; text-align: center; font-family: Arial, sans-serif; padding: 0 10px;">
+                                    <div style="color: #64748b; font-size: 12px; font-weight: 600; margin-bottom: 6px;">${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m</div>
+                                    <div style="display: inline-block; background-color: #f1f5f9; padding: 4px 10px; border-radius: 20px; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ${seg.stops === 0 ? 'NON-STOP' : seg.stops + ' STOP(S)'}
+                                    </div>
+                                    <div style="margin-top: 10px; font-size: 24px; color: #cbd5e1; line-height: 1;">&rarr;</div>
+                                </td>
+                                
+                                <!-- Arrival -->
+                                <td width="30%" style="vertical-align: top; text-align: right; font-family: Arial, sans-serif;">
+                                    <div style="font-weight: 800; font-size: 20px; color: #0f172a; margin-bottom: 2px;">${seg.aa.code}</div>
+                                    <div style="color: #475569; font-size: 13px; margin-bottom: 8px;">${seg.aa.city}</div>
+                                    <div style="color: #94a3b8; font-size: 12px;">${arrDate}</div>
+                                    <div style="font-weight: 700; font-size: 16px; color: #e11d48; margin-top: 2px;">${arrTime}</div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        `;
+    });
+
+    // Calculate Price
+    // Note: This logic duplicates calculateTotalPrice in TicketCard components. 
+    // Ideally refactor to shared util, but for now we replicate logic.
+    // Assuming 'adultCount', 'childCount', 'infantCount' are available in scope or we use cookies inside this func logic if needed, 
+    // but honestly retrieving exact price is complex without recreating the whole context.
+    // Simpler approach: Use the price from the selected price index if available, or just recalculate based on standard defaults (1 adult) 
+    // OR pass the calculated price string to this function if possible.
+
+    // Re-reading context: User wants "ticket card which is displayed plus the amount selected".
+    // I can try to access the specific price list item if I knew which one was selected, but I only have the ticket object.
+    // Default to the first price option or try to reproduce the cost based on typical 1 adult if counts aren't handy.
+    // Actually, I can allow the user to modify the price in markup, but the *base* price depends on passengers.
+    // 'adultCount' etc are in state in Tickets.tsx. I can use them!
+
+    const dfadu = Number(Cookies.get("gy_adult") || 1);
+    const dfchi = Number(Cookies.get("gy_child") || 0);
+    const dfinf = Number(Cookies.get("gy_infant") || 0);
+
+    const fare = ticket.totalPriceList?.[fareIndex]?.fd || ticket.totalPriceList?.[0]?.fd; // Use selected fare option
+    let total = 0;
+    if (fare) {
+      if (fare.ADULT) total += dfadu * fare.ADULT.fC.NF;
+      if (fare.CHILD) total += dfchi * fare.CHILD.fC.NF;
+      if (fare.INFANT) total += dfinf * fare.INFANT.fC.NF;
+    }
+
+    total += appliedMarkup;
+    const formattedPrice = new Intl.NumberFormat("en-IN", { style: 'currency', currency: 'INR' }).format(total);
+
+    return `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; border-collapse: separate; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+          <tr>
+            <td style="background-color: #0f172a; padding: 24px 30px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td>
+                            <h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">Flight Quote</h2>
+                        </td>
+                        <td style="text-align: right;">
+                            <span style="color: #94a3b8; font-size: 13px;">${dayjs().format("DD MMM YYYY")}</span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px;">
+                ${segmentsHTML}
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 10px; border-top: 2px solid #f1f5f9; padding-top: 20px;">
+                    <tr>
+                        <td style="text-align: right; font-family: Arial, sans-serif;">
+                            <div style="color: #64748b; font-size: 14px; margin-bottom: 4px; font-weight: 600;">Total Amount</div>
+                            <div style="color: #e11d48; font-size: 32px; font-weight: 900; letter-spacing: -1px;">${formattedPrice}</div>
+                        </td>
+                    </tr>
+                </table>
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px;">
+                    <tr>
+                        <td style="text-align: center; font-family: Arial, sans-serif;">
+                            <div style="color: #64748b; font-size: 13px; font-style: italic;">Note: Prices are subject to change based on availability at the time of booking.</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9;">
+                <div style="color: #94a3b8; font-size: 11px;">&copy; ${dayjs().year()} Travelogy. All rights reserved.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
   };
 
   const [modifySearchOpen, setModifySearchOpen] = useState(false);
@@ -517,7 +792,7 @@ export default function Tickets() {
   const applyFilters = () => {
     console.log("applyFilters ==> ");
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      let dataToFilter = flightData.ONWARD || flightData.COMBO;
+      let dataToFilter = (flightData.ONWARD || flightData.COMBO) || [];
 
       // const [minPrice, maxPrice] = getPriceRangeFromData(dataToFilter);
       // setPriceRange([minPrice, maxPrice]);
@@ -1238,9 +1513,18 @@ export default function Tickets() {
         console.log("API Result for multi-city:", result);
         console.log("resssssssssssssssssssss ", result);
         if (result && result.searchResult && result.searchResult.tripInfos) {
-          // setFlightData(result.searchResult.tripInfos.ONWARD)
-          setFlightData(result.searchResult.tripInfos);
-        } else if (result?.error) {
+          const tripInfos = result.searchResult.tripInfos;
+          Object.keys(tripInfos).forEach((key) => {
+            if (Array.isArray(tripInfos[key])) {
+              tripInfos[key] = tripInfos[key].map((ticket: any, index: number) => ({
+                ...ticket,
+                id: generateStableId(ticket)
+              }));
+            }
+          });
+          setFlightData(tripInfos);
+        }
+        else if (result?.error) {
           if (typeof result.error === "string") {
             if (result?.error?.toLowerCase()?.includes("invalid airport")) {
               setError("Invalid route. Please choose a different route.");
@@ -2018,11 +2302,29 @@ export default function Tickets() {
                       </button>
                     </div>
                   ) : (
-                    <div className="hdt_header-item">
-                      <label style={{ visibility: "hidden" }}>Search</label>
-                      <div
-                        onClick={
-                          fromError ||
+                    <div className="flex">
+                      <div className="hdt_header-item flex items-center gap-2">
+                        {/* Markup and Share buttons removed from header as per new UX */}
+                      </div>
+
+                      <div className="hdt_header-item">
+                        <label style={{ visibility: "hidden" }}>Search</label>
+
+                        <div
+                          onClick={
+                            fromError ||
+                              toError ||
+                              errorMsg ||
+                              dateError ||
+                              ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                                multicitySegments.some(
+                                  (s) => s.fromError || s.toError || s.dateError
+                                ))
+                              ? () => { }
+                              : handlesearFlight
+                            // onClickSearch
+                          }
+                          className={`hdt_search-btn ${fromError ||
                             toError ||
                             errorMsg ||
                             dateError ||
@@ -2030,23 +2332,12 @@ export default function Tickets() {
                               multicitySegments.some(
                                 (s) => s.fromError || s.toError || s.dateError
                               ))
-                            ? () => { }
-                            : handlesearFlight
-                          // onClickSearch
-                        }
-                        className={`hdt_search-btn ${fromError ||
-                          toError ||
-                          errorMsg ||
-                          dateError ||
-                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                            multicitySegments.some(
-                              (s) => s.fromError || s.toError || s.dateError
-                            ))
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                          }`}
-                      >
-                        Search
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                            }`}
+                        >
+                          Search
+                        </div>
                       </div>
                     </div>
                   )}
@@ -2866,21 +3157,29 @@ export default function Tickets() {
                                       className="box-list-flights box-list-flights-2"
                                       style={{ padding: isMobile ? "0" : "10px" }}
                                     >
-                                      {tripInfo.map((ticket: any) => (
-                                        <React.Fragment key={ticket.id}>
-                                          {isMobile ? (
-                                            <TicketCardMobile
-                                              ticket={ticket}
-                                              flightData={flightData}
-                                            />
-                                          ) : (
-                                            <TicketCard1
-                                              ticket={ticket}
-                                              flightData={flightData}
-                                            />
-                                          )}
-                                        </React.Fragment>
-                                      ))}
+                                      {tripInfo.map((ticket: any, index: number) => {
+                                        const ticketId = ticket.id;
+                                        const currentMarkup = ticketMarkups[ticketId] ?? markup;
+                                        return (
+                                          <React.Fragment key={ticketId}>
+                                            {isMobile ? (
+                                              <TicketCardMobile
+                                                ticket={{ ...ticket, id: ticketId }}
+                                                flightData={flightData}
+                                                markup={currentMarkup}
+                                                onPriceClick={openMarkupModal}
+                                              />
+                                            ) : (
+                                              <TicketCard1
+                                                ticket={{ ...ticket, id: ticketId }}
+                                                flightData={flightData}
+                                                markup={currentMarkup}
+                                                onPriceClick={openMarkupModal}
+                                              />
+                                            )}
+                                          </React.Fragment>
+                                        );
+                                      })}
                                     </div>
                                   </div>
                                 </div>
@@ -2974,6 +3273,9 @@ export default function Tickets() {
                           flightData={flightData}
                           departureFrom={departureFrom}
                           arrivalTo={arrivalTo}
+                          markup={markup}
+                          ticketMarkups={ticketMarkups}
+                          onPriceClick={openMarkupModal}
                         />
                       ) : (
                         <>
@@ -2998,8 +3300,11 @@ export default function Tickets() {
                       {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
-                        // departureFrom={departureFrom}
-                        // arrivalTo={arrivalTo}
+                          // departureFrom={departureFrom}
+                          // arrivalTo={arrivalTo}
+                          markup={markup}
+                          ticketMarkups={ticketMarkups}
+                          onPriceClick={openMarkupModal}
                         />
                       ) : (
                         <>
@@ -3054,7 +3359,7 @@ export default function Tickets() {
                               <div className="box-list-flights box-list-flights-2">
                                 {flightData.ONWARD.map((ticket: any) => (
                                   <React.Fragment key={ticket.id}>
-                                    <DomesticRoundTripTicketCard ticket={ticket} />
+                                    <DomesticRoundTripTicketCard ticket={ticket} markup={markup} />
                                   </React.Fragment>
                                 ))
                                 }
@@ -3063,7 +3368,7 @@ export default function Tickets() {
                               <div className="box-list-flights box-list-flights-2">
                                 {flightData.RETURN.map((ticket: any) => (
                                   <React.Fragment key={ticket.id}>
-                                    <DomesticRoundTripTicketCard ticket={ticket} />
+                                    <DomesticRoundTripTicketCard ticket={ticket} markup={markup} />
                                   </React.Fragment>
                                 ))
                                 }
@@ -3310,6 +3615,78 @@ export default function Tickets() {
           </section>
           <div className="pb-90 background-body" />
         </main>
+        {/* Markup Modal */}
+        <Modal
+          title="Set Markup Amount"
+          open={isMarkupModalOpen}
+          onCancel={() => setIsMarkupModalOpen(false)}
+          footer={[
+            <Button key="cancel" onClick={() => setIsMarkupModalOpen(false)}>
+              Cancel
+            </Button>,
+            <Button key="apply-ticket" onClick={handleApplyToTicket}>
+              Apply to This Ticket
+            </Button>,
+            <Button key="apply-all" type="primary" onClick={handleApplyToAll}>
+              Apply to All
+            </Button>,
+            <Button key="share-ticket" onClick={() => setIsShareModalOpen(true)}>
+              Share
+            </Button>,
+          ]}
+        >
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Markup (₹)
+            </label>
+            <Input
+              type="number"
+              value={markupInput}
+              onChange={(e) => setMarkupInput(e.target.value)}
+              placeholder="Enter markup amount"
+            />
+          </div>
+        </Modal>
+
+        {/* Share Modal */}
+        <Modal
+          title="Share Quote via Email"
+          open={isShareModalOpen}
+          onOk={handleShareQuote}
+          onCancel={() => setIsShareModalOpen(false)}
+          okText={shareStatus === "sending" ? "Sending..." : "Send"}
+          confirmLoading={shareStatus === "sending"}
+          okButtonProps={{ disabled: shareStatus !== "idle" }}
+          cancelButtonProps={{ disabled: shareStatus !== "idle" }}
+        >
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Recipient Email
+            </label>
+            <Input
+              type="email"
+              value={shareEmail}
+              onChange={(e) => setShareEmail(e.target.value)}
+              placeholder="Enter recipient email"
+              disabled={shareStatus !== "idle"}
+            />
+          </div>
+          {shareStatus === "sending" && (
+            <div className="text-blue-600 text-sm font-medium mt-2">
+              Sending quote... please wait.
+            </div>
+          )}
+          {shareStatus === "success" && (
+            <div className="text-green-600 text-sm font-medium mt-2 p-2 bg-green-50 border border-green-200 rounded">
+              ✅ Quote sent successfully! This window will close in 3 seconds.
+            </div>
+          )}
+          {shareStatus === "error" && (
+            <div className="text-red-600 text-sm font-medium mt-2 p-2 bg-red-50 border border-red-200 rounded">
+              ❌ Failed to send quote. Please try again.
+            </div>
+          )}
+        </Modal>
       </Layout>
     </Suspense >
   );

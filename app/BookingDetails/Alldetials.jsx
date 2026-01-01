@@ -56,6 +56,25 @@ const Alldetails = ({ totalpricee }) => {
   const [modalLoading, setModalLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
+  const [markup, setMarkup] = useState(0);
+
+  useEffect(() => {
+    if (bookingId) {
+      const fetchMarkup = async () => {
+        try {
+          const res = await postData("travelogy/flight/get-markup", {
+            bookingId,
+          });
+          if (res?.markup) {
+            setMarkup(Number(res.markup));
+          }
+        } catch (error) {
+          console.error("Error fetching markup:", error);
+        }
+      };
+      fetchMarkup();
+    }
+  }, [bookingId]);
 
   useEffect(() => {
     // setTicketData(...) once your parent passes it or your API completes.
@@ -1780,7 +1799,7 @@ const Alldetails = ({ totalpricee }) => {
                             className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
                             disabled={!ticketData}
                             onClick={() => {
-                              printTicket(bookingDetails);
+                              printTicket(bookingDetails, markup);
                             }}
                           >
                             Print Ticket
@@ -1804,7 +1823,7 @@ const Alldetails = ({ totalpricee }) => {
                               className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
                               disabled={!ticketData}
                               onClick={() => {
-                                printTicket(bookingDetails);
+                                printTicket(bookingDetails, markup);
                               }}
                             >
                               Print Ticket
@@ -1842,7 +1861,7 @@ const Alldetails = ({ totalpricee }) => {
                               className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
                               disabled={!ticketData}
                               onClick={() => {
-                                printTicket(bookingDetails);
+                                printTicket(bookingDetails, markup);
                               }}
                             >
                               Print Ticket
@@ -2187,6 +2206,7 @@ const Alldetails = ({ totalpricee }) => {
                   finalStage={true}
                   afsAmount={afsAmount}
                   rssrAmount={rssrAmount}
+                  markup={markup}
                   onHold={bookingDetails?.order?.status === "PENDING"}
                 />
               </div>

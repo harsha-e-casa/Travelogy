@@ -11,7 +11,7 @@ export function printTicketInWindow(data, win) {
     console.error("Failed to write print HTML:", e);
     try {
       win.close();
-    } catch {}
+    } catch { }
     return false;
   }
 
@@ -285,7 +285,7 @@ export function printTicketInWindow(data, win) {
 //   };
 // }
 
-function normalize(raw) {
+function normalize(raw, markup = 0) {
   const air = raw?.itemInfos?.AIR;
   const itemIndex = indexSegments(raw?.itemInfos); // <- build route map once
   const pax = air?.travellerInfos || [];
@@ -358,11 +358,11 @@ function normalize(raw) {
       ssr: {
         primary: primary
           ? {
-              segKey: primary.segKey,
-              baggageDesc: primary.baggageDesc,
-              mealDesc: primary.mealDesc,
-              seatCode: primary.seatCode,
-            }
+            segKey: primary.segKey,
+            baggageDesc: primary.baggageDesc,
+            mealDesc: primary.mealDesc,
+            seatCode: primary.seatCode,
+          }
           : null,
         perSegment,
       },
@@ -381,8 +381,8 @@ function normalize(raw) {
     },
     totals: {
       base: toFixedOrNull(totalsFC.BF),
-      taxes: toFixedOrNull(totalsFC.TAF),
-      total: toFixedOrNull(totalsFC.TF ?? order?.amount),
+      taxes: toFixedOrNull((Number(totalsFC.TAF) || 0) + (Number(markup) || 0)),
+      total: toFixedOrNull((Number(totalsFC.TF ?? order?.amount) || 0) + (Number(markup) || 0)),
       igst: toFixedOrNull(totalsFC.IGST),
       mealFee: toFixedOrNull(extraFees.mealFee),
       seatFee: toFixedOrNull(extraFees.seatFee),
@@ -428,7 +428,7 @@ function normalize(raw) {
       const allSegs = [];
 
       (air?.tripInfos || []).forEach((trip) => {
-        console.log("trippppppppppppppppppppp ==> ",trip);
+        console.log("trippppppppppppppppppppp ==> ", trip);
         (trip?.sI || []).forEach((s) => {
           const airline = s?.fD?.aI || {};
           const flightNo = `${airline.code ?? ""} ${s?.fD?.fN ?? ""}`.trim();
@@ -466,7 +466,7 @@ function normalize(raw) {
         });
       });
 
-      console.log("allSegsallSegs => ",allSegs);
+      console.log("allSegsallSegs => ", allSegs);
 
       return allSegs;
     })(),
@@ -559,9 +559,9 @@ function sumSSRAmounts(ssrObj) {
   }, 0);
 }
 
-export function printTicket(raw) {
+export function printTicket(raw, markup = 0) {
   // Normalize your API shape into a simple view model for printing
-  const vm = normalize(raw);
+  const vm = normalize(raw, markup);
   const html = renderTicketHTML(vm);
 
   // 1) Create a hidden iframe (no new window/tab)
@@ -591,7 +591,7 @@ export function printTicket(raw) {
     try {
       iframe.contentWindow.focus();
       iframe.contentWindow.print();
-    } catch {}
+    } catch { }
   };
 
   const cleanup = () => {
@@ -871,34 +871,29 @@ function renderTicketHTML(vm) {
       )}</span>
           </div>
           <div class="seg-meta">
-            ${
-              s.cabin
-                ? `<span class="badge">${sanitize(labelize(s.cabin))}</span>`
-                : ""
-            }
-            ${
-              s.fareClass
-                ? ` <span class="badge">Class ${sanitize(s.fareClass)}</span>`
-                : ""
-            }
-            ${
-              s.equipment
-                ? ` <span class="badge">${sanitize(s.equipment)}</span>`
-                : ""
-            }
-            ${
-              s.stops > 0
-                ? ` <span class="badge">${s.stops} stop</span>`
-                : ` <span class="badge">Non-stop</span>`
-            }
+            ${s.cabin
+          ? `<span class="badge">${sanitize(labelize(s.cabin))}</span>`
+          : ""
+        }
+            ${s.fareClass
+          ? ` <span class="badge">Class ${sanitize(s.fareClass)}</span>`
+          : ""
+        }
+            ${s.equipment
+          ? ` <span class="badge">${sanitize(s.equipment)}</span>`
+          : ""
+        }
+            ${s.stops > 0
+          ? ` <span class="badge">${s.stops} stop</span>`
+          : ` <span class="badge">Non-stop</span>`
+        }
           </div>
         </div>
         <div class="seg-body">
           <div class="station">
             <div class="code">${sanitize(s.from.code)}</div>
-            <div class="name">${sanitize(s.from.city)}${
-        s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""
-      }</div>
+            <div class="name">${sanitize(s.from.city)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""
+        }</div>
             <div class="time">${formatDT(s.depTime)}</div>
           </div>
           <div class="duration">
@@ -907,16 +902,14 @@ function renderTicketHTML(vm) {
           </div>
           <div class="station">
             <div class="code">${sanitize(s.to.code)}</div>
-            <div class="name">${sanitize(s.to.city)}${
-        s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""
-      }</div>
+            <div class="name">${sanitize(s.to.city)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""
+        }</div>
             <div class="time">${formatDT(s.arrTime)}</div>
           </div>
         </div>
-        ${
-          bagBits
-            ? `<div class="small muted" style="margin-top:8px;">${bagBits}</div>`
-            : ""
+        ${bagBits
+          ? `<div class="small muted" style="margin-top:8px;">${bagBits}</div>`
+          : ""
         }
       </div>
     `;
@@ -1004,8 +997,8 @@ function renderTicketHTML(vm) {
         <td>${pi + 1}</td>
         <td>
           <div><strong>${sanitize(
-            [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
-          )}</strong></div>
+          [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
+        )}</strong></div>
           <div class="small muted">${sanitize(p.type)}</div>
         </td>
         <td>-</td><td>-</td>
@@ -1034,37 +1027,33 @@ function renderTicketHTML(vm) {
             [p.title, p.firstName, p.lastName].filter(Boolean).join(" ")
           )}</strong></div>
           <div class="small muted">${sanitize(p.type)}</div>
-          ${
-            p.dob
+          ${p.dob
               ? `<div class="small muted">DOB: ${sanitize(p.dob)}</div>`
               : ""
-          }
-          ${
-            p.nationality
+            }
+          ${p.nationality
               ? `<div class="small muted">Nationality: ${sanitize(
-                  p.nationality
-                )}</div>`
+                p.nationality
+              )}</div>`
               : ""
-          }
-          ${
-            p.passportIssueDate
+            }
+          ${p.passportIssueDate
               ? `<div class="small muted">Passport Issue: ${sanitize(
-                  p.passportIssueDate
-                )}</div>`
+                p.passportIssueDate
+              )}</div>`
               : ""
-          }
-          ${
-            p.passportExpiry
+            }
+          ${p.passportExpiry
               ? `<div class="small muted">Passport Expiry: ${sanitize(
-                  p.passportExpiry
-                )}</div>`
+                p.passportExpiry
+              )}</div>`
               : ""
-          }
+            }
           <div class="small muted">${sanitize(seg.fromCode)} → ${sanitize(
-            seg.toCode
-          )} • ${sanitize(seg.airlineCode)} ${sanitize(
-            digitsOnly(seg.flightNo)
-          )}</div>
+              seg.toCode
+            )} • ${sanitize(seg.airlineCode)} ${sanitize(
+              digitsOnly(seg.flightNo)
+            )}</div>
         </td>
         <td>${sanitize(seg.pnr || "-")}</td>
         <td>${sanitize(seg.ticketNo || "-")}</td>
@@ -1096,16 +1085,15 @@ function renderTicketHTML(vm) {
           <strong>${sanitize(vm.bookingRef || "-")}</strong>
         </div>
 
-        ${
-          vm.status
-            ? `<div style="margin-bottom:6px;">
+        ${vm.status
+      ? `<div style="margin-bottom:6px;">
                 <span class="muted small">Booking Status:</span><br/>
                 <span class="${statusClass(vm.status)}">${sanitize(
-                vm.status
-              )}</span>
+        vm.status
+      )}</span>
               </div>`
-            : ""
-        }
+      : ""
+    }
       </div>
 
       <!-- Column 2: Contact Details -->
@@ -1143,61 +1131,56 @@ function renderTicketHTML(vm) {
           <td style="text-align:right;">₹ ${fmtIN(vm.totals.taxes)}</td>
         </tr>
 
-        ${
-          vm.totals.mealFee
-            ? `
+        ${vm.totals.mealFee
+      ? `
         <tr>
           <th>Meal Fees</th>
           <td style="text-align:right;">₹ ${fmtIN(vm.totals.mealFee)}</td>
         </tr>`
-            : ""
-        }
+      : ""
+    }
 
-        ${
-          vm.totals.seatFee
-            ? `
+        ${vm.totals.seatFee
+      ? `
         <tr>
           <th>Seat Selection Fees</th>
           <td style="text-align:right;">₹ ${fmtIN(vm.totals.seatFee)}</td>
         </tr>`
-            : ""
-        }
+      : ""
+    }
 
-        ${
-          vm.totals.baggageFee
-            ? `
+        ${vm.totals.baggageFee
+      ? `
         <tr>
           <th>Extra Baggage Fees</th>
           <td style="text-align:right;">₹ ${fmtIN(vm.totals.baggageFee)}</td>
         </tr>`
-            : ""
-        }
+      : ""
+    }
 
-        ${
-          vm.totals.oldAncillary != 0
-            ? `
+        ${vm.totals.oldAncillary != 0
+      ? `
         <tr>
           <th>Old Ancillary Amount</th>
           <td style="text-align:right;">₹ ${fmtIN(vm.totals.oldAncillary)}</td>
         </tr>`
-            : ""
-        }
+      : ""
+    }
 
-        ${
-          vm.totals.reissueFee != 0
-            ? `
+        ${vm.totals.reissueFee != 0
+      ? `
         <tr>
           <th>Reissue Fees</th>
           <td style="text-align:right;">₹ ${fmtIN(vm.totals.reissueFee)}</td>
         </tr>`
-            : ""
-        }
+      : ""
+    }
 
         <tr>
           <th style="border-top:2px solid #E5E7EB;">Total</th>
           <td style="border-top:2px solid #E5E7EB; text-align:right; font-weight:700;">₹ ${fmtIN(
-            vm.totals.total
-          )}</td>
+      vm.totals.total
+    )}</td>
         </tr>
       </tbody>
     </table>
@@ -1297,10 +1280,9 @@ function renderTicketHTML(vm) {
                 </tr>
               </thead>
               <tbody>
-                ${
-                  paxRows ||
-                  `<tr><td colspan="5" class="muted">No passengers found.</td></tr>`
-                }
+                ${paxRows ||
+    `<tr><td colspan="5" class="muted">No passengers found.</td></tr>`
+    }
               </tbody>
             </table>
           </div>

@@ -1,6 +1,7 @@
 import { AppContext } from "@/util/AppContext";
 import { useContext, useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { postData } from "../../services/NetworkAdapter";
 
 interface BookingFormProps {
   totalpricee: any;
@@ -14,7 +15,10 @@ interface BookingFormProps {
   bookingFormKey?: number;
   afsAmount?: number;
   rssrAmount?: number;
+  markup?: number;
+  setMarkup?: (value: number) => void;
   onHold?: boolean;
+  bookingId?: string;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -31,6 +35,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
   afsAmount = 0,
   rssrAmount = 0,
   onHold = false,
+  markup = 0,
+  setMarkup,
+  bookingId,
 }) => {
   // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
@@ -84,15 +91,30 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [rssrFees, setRssrFees] = useState(rssrAmount);
 
   // Markup & Breakdown States
-  const [markup, setMarkup] = useState(0);
+  // const [markup, setMarkup] = useState(0);
   const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   const [tempMarkup, setTempMarkup] = useState("0");
   const [showTaxDetails, setShowTaxDetails] = useState(false);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
 
-  const handleUpdateMarkup = () => {
-    setMarkup(Number(tempMarkup));
+  const handleUpdateMarkup = async () => {
+    const newMarkup = Number(tempMarkup);
+    if (setMarkup) {
+      setMarkup(newMarkup);
+    }
     setShowMarkupPopup(false);
+
+    if (bookingId) {
+      try {
+        await postData("travelogy/flight/save-markup", {
+          bookingId,
+          markup: newMarkup,
+        });
+        console.log("Markup saved to backend");
+      } catch (error) {
+        console.error("Error saving markup:", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -223,7 +245,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   // }, [seatinfo]);
 
   useEffect(() => {
-    if (bookingFormKey == 1) {
+    if (bookingFormKey == 1 || bookingFormKey === undefined) {
       // if (mealAmount != 0) {
       //   setTotalMealAmount(mealAmount);
       // }
