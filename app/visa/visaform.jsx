@@ -10,9 +10,9 @@ const VisaForm = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [dates, setDates] = useState({
-      startDate: null,
-      endDate: null,
-    });
+    startDate: null,
+    endDate: null,
+  });
 
   const [errors, setErrors] = useState({
     fullName: "",
@@ -57,6 +57,18 @@ const VisaForm = () => {
       newErrors.country = "Country for visa application is required.";
     }
 
+    if (!event.target.age.value) {
+      newErrors.age = "Age is required.";
+    }
+
+    if (!dates.startDate) {
+      newErrors.startDate = "Start date is required.";
+    }
+
+    if (!dates.endDate) {
+      newErrors.endDate = "End date is required.";
+    }
+
     const purpose = form.purposeOfTravel?.value;
     if (!purpose) {
       newErrors.purposeOfTravel = "Please select your purpose of travel.";
@@ -72,11 +84,20 @@ const VisaForm = () => {
 
     setErrors(newErrors);
 
+    // If there are errors, stop submission
+    if (Object.keys(newErrors).length > 0) {
+      setLoading(false);
+      return;
+    }
+
     const fullName = form.name.value.trim();
     const mobile = form.mobile.value.trim();
     const email = form.email.value.trim().toLowerCase();
     const travelingDestination = form.travelingDestination.value.trim();
     const country = form.country.value.trim();
+    const age = form.age.value.trim();
+    const startDate = dates.startDate ? dates.startDate.format("YYYY-MM-DD") : null;
+    const endDate = dates.endDate ? dates.endDate.format("YYYY-MM-DD") : null;
 
     // Use the 'other' text when "other" is selected, else the selected purpose
     const purposeResolved = purpose === "other" ? otherText : purpose;
@@ -89,6 +110,9 @@ const VisaForm = () => {
         email,
         travelingDestination,
         country,
+        age,
+        startDate,
+        endDate,
         purposeOfTravel: purposeResolved,
         rawPurpose: purpose,
         ...(purpose === "other" ? { otherPurpose: otherText } : {}),
@@ -113,6 +137,8 @@ const VisaForm = () => {
         }, 5000);
 
         form.reset();
+        setDates({ startDate: null, endDate: null });
+        setIsOtherSelected(false);
       } else {
         message.error("Failed to save data.");
       }
@@ -251,7 +277,7 @@ const VisaForm = () => {
 
         {/* Row 3 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-           
+
           <div className="form-item pt-8">
             <label
               htmlFor="country"
@@ -275,7 +301,7 @@ const VisaForm = () => {
               </span>
             )}
           </div>
-         <div className="form-item pt-8">
+          <div className="form-item pt-8">
             <label
               className="font-semibold flex items-center gap-2 text-foreground"
               htmlFor="age"
@@ -285,10 +311,15 @@ const VisaForm = () => {
 
             <input
               type="text"
-              id="number"
+              id="age"
               name="age"
               placeholder="Enter your Age"
               className="visa_input_fields pl-3"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
               onFocus={() => handleClearError("age")}
             />
 
@@ -423,9 +454,8 @@ const VisaForm = () => {
               id="otherPurpose"
               name="otherPurpose"
               placeholder="Please describe your purpose of travel"
-              className={`visa_input_fields h-12 w-full p-2 rounded-lg border transition-all duration-300 hover:border-primary/50 focus:ring-2 focus:ring-primary/20 ${
-                errors.otherPurpose ? "border-red-500" : ""
-              }`}
+              className={`visa_input_fields h-12 w-full p-2 rounded-lg border transition-all duration-300 hover:border-primary/50 focus:ring-2 focus:ring-primary/20 ${errors.otherPurpose ? "border-red-500" : ""
+                }`}
               aria-invalid={Boolean(errors.otherPurpose)}
               onFocus={() => handleClearError("otherPurpose")}
             />

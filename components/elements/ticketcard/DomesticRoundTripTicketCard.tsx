@@ -11,6 +11,8 @@ export default function DomesticRoundTripTicketCard({
   handleTicketSelected,
   tripPhase,
   selectedOnwardTicket,
+  markup = 0,
+  onPriceClick,
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const { getCookie } = useContext(AppContext);
@@ -92,6 +94,7 @@ export default function DomesticRoundTripTicketCard({
     if (fare?.fd?.ADULT) total += adultCount * fare.fd.ADULT.fC.NF;
     if (fare?.fd?.CHILD) total += childCount * fare.fd.CHILD.fC.NF;
     if (fare?.fd?.INFANT) total += infantCount * fare.fd.INFANT.fC.NF;
+    total += (Number(markup) || 0);
     return new Intl.NumberFormat("en-IN").format(total);
   };
 
@@ -156,7 +159,7 @@ export default function DomesticRoundTripTicketCard({
       </div>
 
       <div className="mobile-card-footer">
-        <div className="mobile-price-section">
+        <div className="mobile-price-section" onClick={() => onPriceClick && onPriceClick(ticket.id, markup, ticket, value)}>
           <span className="mobile-price">₹{calculateTotalPrice(ticket.totalPriceList[value])}</span>
           <span className="mobile-fare-type">{ticket.totalPriceList[value].fareIdentifier}</span>
         </div>
@@ -314,8 +317,11 @@ export default function DomesticRoundTripTicketCard({
           </div>
 
           <div
-            className="flight-price-1 border-1 price-div flex justify-center items-center flex-col"
+            className="flight-price-1 border-1 price-div flex justify-center items-center flex-col cursor-pointer hover:bg-gray-50 transition-colors"
             style={{ width: "auto", minWidth: "220px", paddingLeft: "10px" }}
+            onClick={(e) => {
+              onPriceClick && onPriceClick(ticket.id, markup, ticket, value);
+            }}
           >
             <Radio.Group
               onChange={onChange}
@@ -369,7 +375,7 @@ export default function DomesticRoundTripTicketCard({
                             }
 
                             return new Intl.NumberFormat("en-IN").format(
-                              adultCost + childCost + infantCost
+                              adultCost + childCost + infantCost + (Number(markup) || 0)
                             );
                           })()}
                         </div>

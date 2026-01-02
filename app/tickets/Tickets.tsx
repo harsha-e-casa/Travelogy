@@ -43,7 +43,7 @@ import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
 import { DownOutlined, FilterOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Dropdown, Space, Drawer, Button } from "antd";
+import { Dropdown, Space, Drawer, Button, Modal, Input, message } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
 import { AppContext } from "../../util/AppContext";
 import { TravellerForm } from "@/components/searchEngine/TravellerForm";
@@ -60,6 +60,23 @@ import BySortPrice from "@/components/Filter/BySortPrice";
 // }));
 
 const ticketsData: any = [];
+
+const generateStableId = (ticket: any) => {
+  if (!ticket || !ticket.sI) return Math.random().toString(36).substr(2, 9);
+
+  // Create a stable ID based on flight segments (Airlines, Flight Numbers, Times, Codes)
+  const segments = ticket.sI.map((seg: any) => {
+    const flightNo = seg.fD?.fN || '000';
+    const airline = seg.fD?.aI?.code || 'XX';
+    const depTime = seg.dt || '0000';
+    const fromCode = seg.da?.code || 'AAA';
+    const toCode = seg.aa?.code || 'BBB';
+    return `${airline}${flightNo}_${depTime}_${fromCode}${toCode}`;
+  });
+
+  const basePrice = ticket.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0;
+  return `${segments.join("|")}_${basePrice}`;
+};
 
 export default function Tickets() {
   // Using custom hook for ticket filter logic
@@ -106,6 +123,251 @@ export default function Tickets() {
 
   const onCloseFilterDrawer = () => {
     setFilterDrawerOpen(false);
+  };
+
+  // Markup and Share State
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [markup, setMarkup] = useState<number>(0);
+  const [isMarkupModalOpen, setIsMarkupModalOpen] = useState(false);
+  const [markupInput, setMarkupInput] = useState<string>("");
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+
+
+
+  const [ticketMarkups, setTicketMarkups] = useState<Record<string, number>>({});
+  const [currentTicketId, setCurrentTicketId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const markupParam = searchParams.get("markup");
+    if (markupParam) {
+      const parsedMarkup = Number(markupParam);
+      if (!isNaN(parsedMarkup)) {
+        setMarkup(parsedMarkup);
+      }
+    }
+  }, [searchParams]);
+
+  const [currentTicket, setCurrentTicket] = useState<any>(null);
+  const [selectedFareIndex, setSelectedFareIndex] = useState<number>(0);
+  const [previousTickets, setPreviousTickets] = useState<any[]>([]); // For combined quotes
+  const [shareStatus, setShareStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+
+  const openMarkupModal = (ticketId: string, currentVal: number, ticket: any = null, fareIndex: number = 0, prevTickets: any[] = []) => {
+    setCurrentTicketId(ticketId);
+    setCurrentTicket(ticket);
+    setMarkupInput(currentVal.toString());
+    setSelectedFareIndex(fareIndex);
+    setPreviousTickets(prevTickets);
+    setIsMarkupModalOpen(true);
+  };
+
+  const handleApplyToTicket = () => {
+    const newMarkup = Number(markupInput);
+    if (isNaN(newMarkup) || newMarkup < 0) {
+      message.error("Please enter a valid non-negative markup amount.");
+      return;
+    }
+    if (currentTicketId) {
+      setTicketMarkups((prev) => ({ ...prev, [currentTicketId]: newMarkup }));
+      message.success("Markup applied to this ticket.");
+    }
+    setIsMarkupModalOpen(false);
+  };
+
+  const handleApplyToAll = () => {
+    const newMarkup = Number(markupInput);
+    if (isNaN(newMarkup) || newMarkup < 0) {
+      message.error("Please enter a valid non-negative markup amount.");
+      return;
+    }
+    setMarkup(newMarkup);
+    setTicketMarkups({}); // Clear individual overrides
+    setIsMarkupModalOpen(false);
+
+    // Update URL with markup
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set("markup", newMarkup.toString());
+    router.push(currentUrl.toString());
+    message.success("Markup applied to all tickets.");
+  };
+
+  const handleShareQuote = async () => {
+    if (!shareEmail) {
+      message.error("Please enter a valid email.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(shareEmail)) {
+      message.error("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      const shareMarkup = Number(markupInput);
+
+      // Combine previous tickets with the current one for the quote
+      // Use their individual markups if they exist, otherwise fallback to the current session markup (shareMarkup)
+      const allTicketsInQuote = [
+        ...previousTickets.map(pt => ({
+          ticket: pt.ticket,
+          fareIndex: pt.selectedPriceIndex,
+          markup: ticketMarkups[pt.ticket.id] ?? (isNaN(shareMarkup) ? 0 : shareMarkup)
+        })),
+        {
+          ticket: currentTicket,
+          fareIndex: selectedFareIndex,
+          markup: isNaN(shareMarkup) ? 0 : shareMarkup
+        }
+      ];
+
+      const ticketHTML = generateTicketHTML(allTicketsInQuote);
+
+      const payload = {
+        email: shareEmail,
+        link: `${window.location.origin}${window.location.pathname}?${searchParams.toString()}&markup=${markupInput}`, // Keep link for reference
+        htmlContent: ticketHTML,
+      };
+
+      setShareStatus("sending");
+      const response: any = await postData("/travelogy/common/send-quote", payload);
+      if (response && (response.success || response.status)) {
+        setShareStatus("success");
+        message.success("Quote sent successfully!");
+
+        // Wait 3 seconds before closing automatically
+        setTimeout(() => {
+          setIsShareModalOpen(false);
+          setIsMarkupModalOpen(false);
+          setShareEmail("");
+          setShareStatus("idle");
+        }, 3000);
+      } else {
+        setShareStatus("error");
+        message.error(response?.message || "Failed to send quote.");
+        setTimeout(() => setShareStatus("idle"), 3000);
+      }
+    } catch (error) {
+      console.error("Error sharing quote:", error);
+      message.error("An error occurred while sharing the quote.");
+    }
+  };
+
+  const generateTicketHTML = (ticketItems: { ticket: any, fareIndex: number, markup: number }[]) => {
+    if (!ticketItems || ticketItems.length === 0) return "<p>Details unavailable.</p>";
+
+    const dfadu = parseInt(getCookie("gy_adult") || "1", 10);
+    const dfchi = parseInt(getCookie("gy_child") || "0", 10);
+    const dfinf = parseInt(getCookie("gy_infant") || "0", 10);
+
+    let totalAmount = 0;
+    let allSegmentsHTML = "";
+
+    ticketItems.forEach((item) => {
+      const { ticket, fareIndex, markup: itemMarkup } = item;
+      if (!ticket) return;
+
+      const fare = ticket.totalPriceList?.[fareIndex] || ticket.totalPriceList?.[0];
+      if (fare) {
+        if (fare.fd?.ADULT) totalAmount += dfadu * fare.fd.ADULT.fC.NF;
+        if (fare.fd?.CHILD) totalAmount += dfchi * fare.fd.CHILD.fC.NF;
+        if (fare.fd?.INFANT) totalAmount += dfinf * fare.fd.INFANT.fC.NF;
+
+        // Add markup for this specific ticket/item
+        totalAmount += (itemMarkup || 0);
+      }
+
+      const segments = ticket.sI || [];
+      segments.forEach((seg: any) => {
+        const depDate = dayjs(seg.dt).format("DD MMM YYYY");
+        const arrDate = dayjs(seg.at).format("DD MMM YYYY");
+        const depTime = dayjs(seg.dt).format("HH:mm");
+        const arrTime = dayjs(seg.at).format("HH:mm");
+        const durationHours = Math.floor(seg.duration / 60);
+        const durationMinutes = seg.duration % 60;
+        const airlineCode = seg.fD?.aI?.code || "AI";
+        const airlineName = seg.fD?.aI?.name || "Airline";
+        const flightNo = seg.fD?.fN || "";
+
+        allSegmentsHTML += `
+            <div style="margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <img src="https://travelogy.co/assets/imgs/airlines/${airlineCode}.png" width="24" height="24" style="margin-right: 10px; border-radius: 4px;" />
+                    <span style="font-weight: 700; color: #334155; font-size: 14px;">${airlineName} <span style="color: #94a3b8; font-weight: 400; margin-left: 5px;">${airlineCode}-${flightNo}</span></span>
+                </div>
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td width="30%" style="vertical-align: top;">
+                            <div style="font-weight: 800; font-size: 20px; color: #0f172a; line-height: 1;">${seg.da.code}</div>
+                            <div style="color: #64748b; font-size: 12px; margin: 4px 0;">${seg.da.city}</div>
+                            <div style="color: #94a3b8; font-size: 11px;">${depDate}</div>
+                            <div style="font-weight: 700; font-size: 15px; color: #e11d48; margin-top: 6px;">${depTime}</div>
+                        </td>
+                        <td width="40%" style="vertical-align: middle; text-align: center; padding: 0 10px;">
+                            <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px; font-weight: 600;">${durationHours}h ${durationMinutes}m</div>
+                            <div style="border-top: 1px dashed #cbd5e1; position: relative; margin: 10px 0;">
+                                <div style="position: absolute; top: -4px; left: 50%; margin-left: -4px; width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%;"></div>
+                            </div>
+                            <div style="background: #f1f5f9; color: #475569; font-size: 10px; padding: 3px 8px; border-radius: 10px; display: inline-block; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                                ${seg.stops === 0 ? "Non-stop" : seg.stops + " stop(s)"}
+                            </div>
+                        </td>
+                        <td width="30%" style="vertical-align: top; text-align: right;">
+                            <div style="font-weight: 800; font-size: 20px; color: #0f172a; line-height: 1;">${seg.aa.code}</div>
+                            <div style="color: #64748b; font-size: 12px; margin: 4px 0;">${seg.aa.city}</div>
+                            <div style="color: #94a3b8; font-size: 11px;">${arrDate}</div>
+                            <div style="font-weight: 700; font-size: 15px; color: #e11d48; margin-top: 6px;">${arrTime}</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        `;
+      });
+    });
+
+    const formattedPrice = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(totalAmount);
+
+    return `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="background-color: #0f172a; padding: 25px 30px; text-align: center;">
+                <div style="color: #ffffff; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Travelogy Quote</div>
+                <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Premium Flight Selection</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px;">
+                ${allSegmentsHTML}
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 10px; border-top: 2px solid #f1f5f9; padding-top: 20px;">
+                    <tr>
+                        <td style="text-align: right; font-family: Arial, sans-serif;">
+                            <div style="color: #64748b; font-size: 14px; margin-bottom: 4px; font-weight: 600;">Total Amount</div>
+                            <div style="color: #e11d48; font-size: 32px; font-weight: 900; letter-spacing: -1px;">${formattedPrice}</div>
+                        </td>
+                    </tr>
+                </table>
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px;">
+                    <tr>
+                        <td style="text-align: center; font-family: Arial, sans-serif;">
+                            <div style="color: #64748b; font-size: 13px; font-style: italic;">Note: Prices are subject to change based on availability at the time of booking.</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9;">
+                <div style="color: #94a3b8; font-size: 11px;">&copy; ${dayjs().year()} Travelogy. All rights reserved.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
   };
 
   const [modifySearchOpen, setModifySearchOpen] = useState(false);
@@ -295,9 +557,10 @@ export default function Tickets() {
         const prevDate = arr[idx - 1]?.departureDate;
         if (prevDate && e.departureDate) {
           if (dayjs(e.departureDate).isBefore(dayjs(prevDate), "day")) {
-            e.dateError = `Date must be on or after previous segment (${dayjs(
+            e.dateError = `Date must be on or after previous segment(${dayjs(
               prevDate
-            ).format("ddd, MMM D YYYY")})`;
+            ).format("ddd, MMM D YYYY")
+              })`;
             e.forceOpen = true;
           }
         }
@@ -324,7 +587,7 @@ export default function Tickets() {
         "Please fix the highlighted fields in your multi-city itinerary."
       );
       if (opts?.focusFirstError && firstBadIndex !== null) {
-        const el = document.querySelector(`[data-seg-row="${firstBadIndex}"]`);
+        const el = document.querySelector(`[data - seg - row= "${firstBadIndex}"]`);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     } else {
@@ -345,12 +608,11 @@ export default function Tickets() {
 
     // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
     for (let i = 1; i <= 9; i++) {
-      removeCookie(`adult_seat_map-${i}`);
-      removeCookie(`child_seat_map-${i}`);
+      removeCookie(`adult_seat_map - ${i} `);
+      removeCookie(`child_seat_map - ${i} `);
     }
   }, []);
 
-  const router = useRouter();
   const [loading, setloading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -517,7 +779,7 @@ export default function Tickets() {
   const applyFilters = () => {
     console.log("applyFilters ==> ");
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      let dataToFilter = flightData.ONWARD || flightData.COMBO;
+      let dataToFilter = (flightData.ONWARD || flightData.COMBO) || [];
 
       // const [minPrice, maxPrice] = getPriceRangeFromData(dataToFilter);
       // setPriceRange([minPrice, maxPrice]);
@@ -939,7 +1201,7 @@ export default function Tickets() {
   const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
   // hide or not ??
-  // router.push(`/tickets?${queryString}`);
+  // router.push(`/ tickets ? ${ queryString } `);
 
   // const modifySearchRef = useRef(false);
   const [modifySearchRef, setModifySearchRef] = useState(false);
@@ -1238,9 +1500,18 @@ export default function Tickets() {
         console.log("API Result for multi-city:", result);
         console.log("resssssssssssssssssssss ", result);
         if (result && result.searchResult && result.searchResult.tripInfos) {
-          // setFlightData(result.searchResult.tripInfos.ONWARD)
-          setFlightData(result.searchResult.tripInfos);
-        } else if (result?.error) {
+          const tripInfos = result.searchResult.tripInfos;
+          Object.keys(tripInfos).forEach((key) => {
+            if (Array.isArray(tripInfos[key])) {
+              tripInfos[key] = tripInfos[key].map((ticket: any, index: number) => ({
+                ...ticket,
+                id: generateStableId(ticket)
+              }));
+            }
+          });
+          setFlightData(tripInfos);
+        }
+        else if (result?.error) {
           if (typeof result.error === "string") {
             if (result?.error?.toLowerCase()?.includes("invalid airport")) {
               setError("Invalid route. Please choose a different route.");
@@ -1783,7 +2054,7 @@ export default function Tickets() {
             {/* Desktop Header */}
             {!isMobile && (
               <>
-                <div className={`hdt_header ${getHeaderClass()}`}>
+                <div className={`hdt_header ${getHeaderClass()} `}>
                   <div className="hdt_header-item">
                     <label>Fare Types</label>
                     <Dropdown
@@ -2018,11 +2289,29 @@ export default function Tickets() {
                       </button>
                     </div>
                   ) : (
-                    <div className="hdt_header-item">
-                      <label style={{ visibility: "hidden" }}>Search</label>
-                      <div
-                        onClick={
-                          fromError ||
+                    <div className="flex">
+                      <div className="hdt_header-item flex items-center gap-2">
+                        {/* Markup and Share buttons removed from header as per new UX */}
+                      </div>
+
+                      <div className="hdt_header-item">
+                        <label style={{ visibility: "hidden" }}>Search</label>
+
+                        <div
+                          onClick={
+                            fromError ||
+                              toError ||
+                              errorMsg ||
+                              dateError ||
+                              ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                                multicitySegments.some(
+                                  (s) => s.fromError || s.toError || s.dateError
+                                ))
+                              ? () => { }
+                              : handlesearFlight
+                            // onClickSearch
+                          }
+                          className={`hdt_search-btn ${fromError ||
                             toError ||
                             errorMsg ||
                             dateError ||
@@ -2030,23 +2319,12 @@ export default function Tickets() {
                               multicitySegments.some(
                                 (s) => s.fromError || s.toError || s.dateError
                               ))
-                            ? () => { }
-                            : handlesearFlight
-                          // onClickSearch
-                        }
-                        className={`hdt_search-btn ${fromError ||
-                          toError ||
-                          errorMsg ||
-                          dateError ||
-                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                            multicitySegments.some(
-                              (s) => s.fromError || s.toError || s.dateError
-                            ))
-                          ? "cursor-not-allowed opacity-50"
-                          : ""
-                          }`}
-                      >
-                        Search
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                            } `}
+                        >
+                          Search
+                        </div>
                       </div>
                     </div>
                   )}
@@ -2593,7 +2871,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Children */}
-                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""}`}>
+                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Children</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -2617,7 +2895,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Infants */}
-                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""}`}>
+                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Infant</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -2646,25 +2924,25 @@ export default function Tickets() {
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => handleChangeClass({ target: { value: "b" } })}
-                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "a" } })}
-                            className={`p-3 rounded border-2 font-semibold text-sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold text - sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Premium Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "c" } })}
-                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Business
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "d" } })}
-                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             First
                           </button>
@@ -2718,7 +2996,7 @@ export default function Tickets() {
             totalPassenderCount={totalPassenderCount}
             // specificStyle={{ top: "23%", right: "9%" }}
             // specificStyle={"pos-t-r"}
-            specificStyle={`${getTravellerClass()}`}
+            specificStyle={`${getTravellerClass()} `}
             selectedPassengerType={srx_fareType}
           />
 
@@ -2866,21 +3144,29 @@ export default function Tickets() {
                                       className="box-list-flights box-list-flights-2"
                                       style={{ padding: isMobile ? "0" : "10px" }}
                                     >
-                                      {tripInfo.map((ticket: any) => (
-                                        <React.Fragment key={ticket.id}>
-                                          {isMobile ? (
-                                            <TicketCardMobile
-                                              ticket={ticket}
-                                              flightData={flightData}
-                                            />
-                                          ) : (
-                                            <TicketCard1
-                                              ticket={ticket}
-                                              flightData={flightData}
-                                            />
-                                          )}
-                                        </React.Fragment>
-                                      ))}
+                                      {tripInfo.map((ticket: any, index: number) => {
+                                        const ticketId = ticket.id;
+                                        const currentMarkup = ticketMarkups[ticketId] ?? markup;
+                                        return (
+                                          <React.Fragment key={ticketId}>
+                                            {isMobile ? (
+                                              <TicketCardMobile
+                                                ticket={{ ...ticket, id: ticketId }}
+                                                flightData={flightData}
+                                                markup={currentMarkup}
+                                                onPriceClick={openMarkupModal}
+                                              />
+                                            ) : (
+                                              <TicketCard1
+                                                ticket={{ ...ticket, id: ticketId }}
+                                                flightData={flightData}
+                                                markup={currentMarkup}
+                                                onPriceClick={openMarkupModal}
+                                              />
+                                            )}
+                                          </React.Fragment>
+                                        );
+                                      })}
                                     </div>
                                   </div>
                                 </div>
@@ -2974,6 +3260,9 @@ export default function Tickets() {
                           flightData={flightData}
                           departureFrom={departureFrom}
                           arrivalTo={arrivalTo}
+                          markup={markup}
+                          ticketMarkups={ticketMarkups}
+                          onPriceClick={openMarkupModal}
                         />
                       ) : (
                         <>
@@ -2998,8 +3287,11 @@ export default function Tickets() {
                       {flightData ? (
                         <MulticitySelectionView
                           flightData={flightData}
-                        // departureFrom={departureFrom}
-                        // arrivalTo={arrivalTo}
+                          // departureFrom={departureFrom}
+                          // arrivalTo={arrivalTo}
+                          markup={markup}
+                          ticketMarkups={ticketMarkups}
+                          onPriceClick={openMarkupModal}
                         />
                       ) : (
                         <>
@@ -3054,7 +3346,7 @@ export default function Tickets() {
                               <div className="box-list-flights box-list-flights-2">
                                 {flightData.ONWARD.map((ticket: any) => (
                                   <React.Fragment key={ticket.id}>
-                                    <DomesticRoundTripTicketCard ticket={ticket} />
+                                    <DomesticRoundTripTicketCard ticket={ticket} markup={markup} />
                                   </React.Fragment>
                                 ))
                                 }
@@ -3063,7 +3355,7 @@ export default function Tickets() {
                               <div className="box-list-flights box-list-flights-2">
                                 {flightData.RETURN.map((ticket: any) => (
                                   <React.Fragment key={ticket.id}>
-                                    <DomesticRoundTripTicketCard ticket={ticket} />
+                                    <DomesticRoundTripTicketCard ticket={ticket} markup={markup} />
                                   </React.Fragment>
                                 ))
                                 }
@@ -3310,6 +3602,78 @@ export default function Tickets() {
           </section>
           <div className="pb-90 background-body" />
         </main>
+        {/* Markup Modal */}
+        <Modal
+          title="Set Markup Amount"
+          open={isMarkupModalOpen}
+          onCancel={() => setIsMarkupModalOpen(false)}
+          footer={[
+            <Button key="cancel" onClick={() => setIsMarkupModalOpen(false)}>
+              Cancel
+            </Button>,
+            <Button key="apply-ticket" onClick={handleApplyToTicket}>
+              Apply to This Ticket
+            </Button>,
+            <Button key="apply-all" type="primary" onClick={handleApplyToAll}>
+              Apply to All
+            </Button>,
+            <Button key="share-ticket" onClick={() => setIsShareModalOpen(true)}>
+              Share
+            </Button>,
+          ]}
+        >
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Markup (₹)
+            </label>
+            <Input
+              type="number"
+              value={markupInput}
+              onChange={(e) => setMarkupInput(e.target.value)}
+              placeholder="Enter markup amount"
+            />
+          </div>
+        </Modal>
+
+        {/* Share Modal */}
+        <Modal
+          title="Share Quote via Email"
+          open={isShareModalOpen}
+          onOk={handleShareQuote}
+          onCancel={() => setIsShareModalOpen(false)}
+          okText={shareStatus === "sending" ? "Sending..." : "Send"}
+          confirmLoading={shareStatus === "sending"}
+          okButtonProps={{ disabled: shareStatus !== "idle" }}
+          cancelButtonProps={{ disabled: shareStatus !== "idle" }}
+        >
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Recipient Email
+            </label>
+            <Input
+              type="email"
+              value={shareEmail}
+              onChange={(e) => setShareEmail(e.target.value)}
+              placeholder="Enter recipient email"
+              disabled={shareStatus !== "idle"}
+            />
+          </div>
+          {shareStatus === "sending" && (
+            <div className="text-blue-600 text-sm font-medium mt-2">
+              Sending quote... please wait.
+            </div>
+          )}
+          {shareStatus === "success" && (
+            <div className="text-green-600 text-sm font-medium mt-2 p-2 bg-green-50 border border-green-200 rounded">
+              ✅ Quote sent successfully! This window will close in 3 seconds.
+            </div>
+          )}
+          {shareStatus === "error" && (
+            <div className="text-red-600 text-sm font-medium mt-2 p-2 bg-red-50 border border-red-200 rounded">
+              ❌ Failed to send quote. Please try again.
+            </div>
+          )}
+        </Modal>
       </Layout>
     </Suspense >
   );

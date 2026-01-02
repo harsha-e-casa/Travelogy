@@ -197,12 +197,16 @@ export default function SelectedFlightSummary({
         ))}
       </div>
       {isLastFlightSelected && (
-        <div className="flex justify-end" style={{ fontSize: "14px" }}>
+        <div className="flex justify-between items-center mt-3 pt-2 border-t border-white/20">
+          <div className="text-white">
+            <span className="text-sm opacity-80">Grand Total: </span>
+            <span className="text-lg font-bold">₹{new Intl.NumberFormat("en-IN").format(totalPrice)}</span>
+          </div>
           <Link
             href={`/book-ticket?tcs_id=${flightIds}`}
             className="btn btn-primary br-10-imp"
           >
-            Continue
+            Continue to Booking
           </Link>
         </div>
       )}

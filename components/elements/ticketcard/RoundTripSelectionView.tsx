@@ -21,7 +21,7 @@ interface SelectedTicket {
   selectedPriceIndex: any;
 }
 
-export default function RoundTripSelectionView({ flightData }: any) {
+export default function RoundTripSelectionView({ flightData, markup = 0, ticketMarkups = {}, onPriceClick }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const { getCookie } = useContext(AppContext);
@@ -139,7 +139,7 @@ export default function RoundTripSelectionView({ flightData }: any) {
     const infantFare =
       (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
 
-    return adultFare + childFare + infantFare;
+    return adultFare + childFare + infantFare + (Number(ticketMarkups[ticket.id] ?? markup) || 0);
   };
 
   const getPriceRangeFromData = (data: any[]) => {
@@ -278,9 +278,20 @@ export default function RoundTripSelectionView({ flightData }: any) {
     }
   }, [flightData, tripPhase]);
 
+  const generateStableId = (ticket: any) => {
+    if (ticket.id) return ticket.id;
+    // Generate a stable ID based on flight segments and the base price of the first fare option
+    const segments = ticket.sI || [];
+    const basePrice = ticket.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0;
+    const idString = segments.map((s: any) => `${s.fD?.aI?.code}${s.fD?.fN}_${s.dt}`).join('|');
+    return `gen_${idString.replace(/[^a-zA-Z0-9]/g, '')}_${basePrice}`;
+  };
+
   const applyFilters = () => {
-    let filteredData =
+    let rawData =
       tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN;
+
+    let filteredData = (rawData || []);
     const priceRange =
       tripPhase === "ONWARD" ? onwardPriceRange : returnPriceRange;
     const stops = tripPhase === "ONWARD" ? onwardStops : returnStops;
@@ -708,15 +719,26 @@ export default function RoundTripSelectionView({ flightData }: any) {
                 className="box-list-flights box-list-flights-2"
                 style={{ padding: "10px" }}
               >
-                {currentTickets.map((ticket: any, index: number) => (
-                  <DomesticRoundTripTicketCard
-                    ticket={ticket}
-                    handleTicketSelected={handleTicketSelected}
-                    tripPhase={tripPhase}
-                    selectedOnwardTicket={selectedOnwardTicket}
-                    key={index}
-                  />
-                ))}
+                {currentTickets.map((ticket: any, index: number) => {
+                  const ticketId = ticket.id;
+                  return (
+                    <DomesticRoundTripTicketCard
+                      ticket={ticket}
+                      handleTicketSelected={handleTicketSelected}
+                      tripPhase={tripPhase}
+                      selectedOnwardTicket={selectedOnwardTicket}
+                      key={ticketId}
+                      markup={ticketMarkups[ticketId] ?? markup}
+                      onPriceClick={(id: string, m: number, t: any, fIdx: number) => {
+                        const prevTickets = [];
+                        if (tripPhase === "RETURN" && selectedOnwardTicket) {
+                          prevTickets.push(selectedOnwardTicket);
+                        }
+                        onPriceClick(id, m, t, fIdx, prevTickets);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </>
           ) : (
