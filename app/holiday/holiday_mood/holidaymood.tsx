@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 import { postData } from "@/services/NetworkAdapter";
-import { message } from "antd";
+import { message, Select, ConfigProvider } from "antd";
 
 export default function Holidaymood() {
   const searchParams = useSearchParams();
@@ -23,7 +23,7 @@ export default function Holidaymood() {
     setFormData(prev => ({ ...prev, mood: mood }));
   }, [mood]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name === "phone") {
       // Allow only numbers
@@ -264,6 +264,47 @@ export default function Holidaymood() {
         "Italy",
         "Qatar",
         "Bahrain",
+      ],
+      packages: [
+        {
+          image:
+            "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "5-Star Resort",
+          location: "Dubai",
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "Private Villa",
+          location: "Bali",
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "Luxury Cruise",
+          location: "Mediterranean",
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+          title: "Spa Retreat",
+          location: "Thailand",
+        },
+      ],
+    },
+     nightlife: {
+      title: "NightLife",
+      bannerImage:
+        "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
+      mood_destinations: [
+        "Dubai",
+        "Monaco",
+        "Switzerland",
+        "Maldives",
+        "Singapore",
+        "Japan",
+        "France",
+        "Italy",
       ],
       packages: [
         {
@@ -745,29 +786,47 @@ export default function Holidaymood() {
                       fontSize: "14px",
                     }}
                   />
-                  <select
-                    name="mood"
-                    value={formData.mood}
-                    onChange={handleInputChange}
-                    disabled={loading}
-                    style={{
-                      width: "100%",
-                      padding: "16px",
-                      marginBottom: "30px",
-                      background: "rgba(255,255,255,0.1)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "8px",
-                      color: "white",
-                      fontSize: "14px",
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Select: {
+                          selectorBg: "rgba(255,255,255,0.1)",
+                          colorBorder: "rgba(255,255,255,0.3)",
+                          colorText: "white",
+                          colorTextPlaceholder: "rgba(255,255,255,0.5)",
+                          colorIcon: "white",
+                          colorTextQuaternary: "white",
+                          colorTextTertiary: "white",
+                          borderRadius: 8,
+                          optionSelectedBg: "rgba(255,255,255,0.2)",
+                          optionActiveBg: "rgba(255,255,255,0.1)",
+                          optionSelectedColor: "white",
+                          colorPrimary: "rgba(255,255,255,0.5)",
+                          colorPrimaryHover: "rgba(255,255,255,0.5)",
+                        },
+                      },
                     }}
                   >
-                    <option value="" style={{ background: "#333", color: "white" }}>Select your mood...</option>
-                    <option value="romantic" style={{ background: "#333", color: "white" }}>Romantic</option>
-                    <option value="adventure" style={{ background: "#333", color: "white" }}>Adventure</option>
-                    <option value="beaches" style={{ background: "#333", color: "white" }}>Beaches</option>
-                    <option value="wildlife" style={{ background: "#333", color: "white" }}>Wildlife</option>
-                    <option value="luxury" style={{ background: "#333", color: "white" }}>Luxury</option>
-                  </select>
+                    <Select
+                      value={formData.mood}
+                      onChange={(value) => setFormData(prev => ({ ...prev, mood: value }))}
+                      disabled={loading}
+                      placeholder="Select your mood..."
+                      style={{
+                        width: "100%",
+                        height: "44px",
+                        marginBottom: "30px",
+                      }}
+                      dropdownStyle={{ background: "#333" }}
+                    >
+                      <Select.Option value="romantic">Romantic</Select.Option>
+                      <Select.Option value="adventure">Adventure</Select.Option>
+                      <Select.Option value="beaches">Beaches</Select.Option>
+                      <Select.Option value="wildlife">Wildlife</Select.Option>
+                      <Select.Option value="luxury">Luxury</Select.Option>
+                      <Select.Option value="nightlife">Nightlife</Select.Option>
+                    </Select>
+                  </ConfigProvider>
                   <button
                     type="submit"
                     disabled={loading}
