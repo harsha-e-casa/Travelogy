@@ -64,7 +64,6 @@ const Alldetails = ({ totalpricee }) => {
   const [modalLoading, setModalLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
-  const [markup, setMarkup] = useState(0);
 
   useEffect(() => {
     if (bookingId) {

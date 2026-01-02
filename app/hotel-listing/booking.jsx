@@ -151,11 +151,11 @@ export default function BookingCard({
           
            {/* Total Price + Markup Edit Icon */}
            <div className="flex flex-row items-center gap-2 mb-1 relative">
-             <p className="text-2xl font-bold text-neutral-900">
+             <p className="text-2xl font-bold text-neutral-900 leading-none m-0">
                ₹{displayAmount?.toLocaleString()}
              </p>
              <div
-                  className="cursor-pointer"
+                  className="cursor-pointer flex items-center justify-center"
                   onClick={() => {
                     setTempMarkup(markup.toString());
                     setShowMarkupPopup(!showMarkupPopup);
