@@ -126,6 +126,7 @@ export default function Tickets() {
   };
 
   // Markup and Share State
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [markup, setMarkup] = useState<number>(0);
   const [isMarkupModalOpen, setIsMarkupModalOpen] = useState(false);
@@ -150,13 +151,15 @@ export default function Tickets() {
 
   const [currentTicket, setCurrentTicket] = useState<any>(null);
   const [selectedFareIndex, setSelectedFareIndex] = useState<number>(0);
+  const [previousTickets, setPreviousTickets] = useState<any[]>([]); // For combined quotes
   const [shareStatus, setShareStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
-  const openMarkupModal = (ticketId: string, currentVal: number, ticket: any = null, fareIndex: number = 0) => {
+  const openMarkupModal = (ticketId: string, currentVal: number, ticket: any = null, fareIndex: number = 0, prevTickets: any[] = []) => {
     setCurrentTicketId(ticketId);
     setCurrentTicket(ticket);
     setMarkupInput(currentVal.toString());
     setSelectedFareIndex(fareIndex);
+    setPreviousTickets(prevTickets);
     setIsMarkupModalOpen(true);
   };
 
@@ -203,7 +206,23 @@ export default function Tickets() {
 
     try {
       const shareMarkup = Number(markupInput);
-      const ticketHTML = generateTicketHTML(currentTicket, isNaN(shareMarkup) ? 0 : shareMarkup, selectedFareIndex);
+
+      // Combine previous tickets with the current one for the quote
+      // Use their individual markups if they exist, otherwise fallback to the current session markup (shareMarkup)
+      const allTicketsInQuote = [
+        ...previousTickets.map(pt => ({
+          ticket: pt.ticket,
+          fareIndex: pt.selectedPriceIndex,
+          markup: ticketMarkups[pt.ticket.id] ?? (isNaN(shareMarkup) ? 0 : shareMarkup)
+        })),
+        {
+          ticket: currentTicket,
+          fareIndex: selectedFareIndex,
+          markup: isNaN(shareMarkup) ? 0 : shareMarkup
+        }
+      ];
+
+      const ticketHTML = generateTicketHTML(allTicketsInQuote);
 
       const payload = {
         email: shareEmail,
@@ -235,125 +254,93 @@ export default function Tickets() {
     }
   };
 
-  const generateTicketHTML = (ticket: any, appliedMarkup: number, fareIndex: number) => {
-    if (!ticket) return "<p>Details unavailable.</p>";
+  const generateTicketHTML = (ticketItems: { ticket: any, fareIndex: number, markup: number }[]) => {
+    if (!ticketItems || ticketItems.length === 0) return "<p>Details unavailable.</p>";
 
-    // Very basic HTML generation for now - replicating structure would require copying all styles inline or structurally.
-    // For now, let's create a clean table-based layout suitable for email.
+    const dfadu = parseInt(getCookie("gy_adult") || "1", 10);
+    const dfchi = parseInt(getCookie("gy_child") || "0", 10);
+    const dfinf = parseInt(getCookie("gy_infant") || "0", 10);
 
-    // Check if it's a round trip or multicity wrapper or single ticket
-    const segments = ticket.sI || [];
+    let totalAmount = 0;
+    let allSegmentsHTML = "";
 
-    let segmentsHTML = "";
+    ticketItems.forEach((item) => {
+      const { ticket, fareIndex, markup: itemMarkup } = item;
+      if (!ticket) return;
 
-    segments.forEach((seg: any) => {
-      const depDate = dayjs(seg.dt).format("DD MMM YYYY");
-      const depTime = dayjs(seg.dt).format("HH:mm");
-      const arrDate = dayjs(seg.at).format("DD MMM YYYY");
-      const arrTime = dayjs(seg.at).format("HH:mm");
+      const fare = ticket.totalPriceList?.[fareIndex] || ticket.totalPriceList?.[0];
+      if (fare) {
+        if (fare.fd?.ADULT) totalAmount += dfadu * fare.fd.ADULT.fC.NF;
+        if (fare.fd?.CHILD) totalAmount += dfchi * fare.fd.CHILD.fC.NF;
+        if (fare.fd?.INFANT) totalAmount += dfinf * fare.fd.INFANT.fC.NF;
 
-      segmentsHTML += `
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; background-color: #ffffff; border-collapse: separate;">
-                <tr>
-                    <td style="padding: 12px 15px; border-bottom: 1px solid #f1f5f9;">
-                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                            <tr>
-                                <td width="30" style="vertical-align: middle;">
-                                    <img src="https://travelogy.co/assets/imgs/airlines/${seg.fD.aI.code}.png" alt="${seg.fD.aI.name}" width="24" style="display: block; border: 0;" />
-                                </td>
-                                <td style="padding-left: 10px; vertical-align: middle; font-family: Arial, sans-serif;">
-                                    <span style="font-weight: bold; color: #1e293b; font-size: 14px;">${seg.fD.aI.name}</span>
-                                    <span style="color: #64748b; font-size: 12px; margin-left: 4px;">(${seg.fD.fN})</span>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding: 20px 15px;">
-                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                            <tr>
-                                <!-- Departure -->
-                                <td width="30%" style="vertical-align: top; font-family: Arial, sans-serif;">
-                                    <div style="font-weight: 800; font-size: 20px; color: #0f172a; margin-bottom: 2px;">${seg.da.code}</div>
-                                    <div style="color: #475569; font-size: 13px; margin-bottom: 8px;">${seg.da.city}</div>
-                                    <div style="color: #94a3b8; font-size: 12px;">${depDate}</div>
-                                    <div style="font-weight: 700; font-size: 16px; color: #e11d48; margin-top: 2px;">${depTime}</div>
-                                </td>
-                                
-                                <!-- Connection Info -->
-                                <td width="40%" style="vertical-align: middle; text-align: center; font-family: Arial, sans-serif; padding: 0 10px;">
-                                    <div style="color: #64748b; font-size: 12px; font-weight: 600; margin-bottom: 6px;">${Math.floor(seg.duration / 60)}h ${seg.duration % 60}m</div>
-                                    <div style="display: inline-block; background-color: #f1f5f9; padding: 4px 10px; border-radius: 20px; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
-                                        ${seg.stops === 0 ? 'NON-STOP' : seg.stops + ' STOP(S)'}
-                                    </div>
-                                    <div style="margin-top: 10px; font-size: 24px; color: #cbd5e1; line-height: 1;">&rarr;</div>
-                                </td>
-                                
-                                <!-- Arrival -->
-                                <td width="30%" style="vertical-align: top; text-align: right; font-family: Arial, sans-serif;">
-                                    <div style="font-weight: 800; font-size: 20px; color: #0f172a; margin-bottom: 2px;">${seg.aa.code}</div>
-                                    <div style="color: #475569; font-size: 13px; margin-bottom: 8px;">${seg.aa.city}</div>
-                                    <div style="color: #94a3b8; font-size: 12px;">${arrDate}</div>
-                                    <div style="font-weight: 700; font-size: 16px; color: #e11d48; margin-top: 2px;">${arrTime}</div>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        `;
-    });
+        // Add markup for this specific ticket/item
+        totalAmount += (itemMarkup || 0);
+      }
 
-    // Calculate Price
-    // Note: This logic duplicates calculateTotalPrice in TicketCard components. 
-    // Ideally refactor to shared util, but for now we replicate logic.
-    // Assuming 'adultCount', 'childCount', 'infantCount' are available in scope or we use cookies inside this func logic if needed, 
-    // but honestly retrieving exact price is complex without recreating the whole context.
-    // Simpler approach: Use the price from the selected price index if available, or just recalculate based on standard defaults (1 adult) 
-    // OR pass the calculated price string to this function if possible.
+      const segments = ticket.sI || [];
+      segments.forEach((seg: any) => {
+        const depDate = dayjs(seg.dt).format("DD MMM YYYY");
+        const arrDate = dayjs(seg.at).format("DD MMM YYYY");
+        const depTime = dayjs(seg.dt).format("HH:mm");
+        const arrTime = dayjs(seg.at).format("HH:mm");
+        const durationHours = Math.floor(seg.duration / 60);
+        const durationMinutes = seg.duration % 60;
+        const airlineCode = seg.fD?.aI?.code || "AI";
+        const airlineName = seg.fD?.aI?.name || "Airline";
+        const flightNo = seg.fD?.fN || "";
 
-    // Re-reading context: User wants "ticket card which is displayed plus the amount selected".
-    // I can try to access the specific price list item if I knew which one was selected, but I only have the ticket object.
-    // Default to the first price option or try to reproduce the cost based on typical 1 adult if counts aren't handy.
-    // Actually, I can allow the user to modify the price in markup, but the *base* price depends on passengers.
-    // 'adultCount' etc are in state in Tickets.tsx. I can use them!
-
-    const dfadu = Number(Cookies.get("gy_adult") || 1);
-    const dfchi = Number(Cookies.get("gy_child") || 0);
-    const dfinf = Number(Cookies.get("gy_infant") || 0);
-
-    const fare = ticket.totalPriceList?.[fareIndex]?.fd || ticket.totalPriceList?.[0]?.fd; // Use selected fare option
-    let total = 0;
-    if (fare) {
-      if (fare.ADULT) total += dfadu * fare.ADULT.fC.NF;
-      if (fare.CHILD) total += dfchi * fare.CHILD.fC.NF;
-      if (fare.INFANT) total += dfinf * fare.INFANT.fC.NF;
-    }
-
-    total += appliedMarkup;
-    const formattedPrice = new Intl.NumberFormat("en-IN", { style: 'currency', currency: 'INR' }).format(total);
-
-    return `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; border-collapse: separate; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-          <tr>
-            <td style="background-color: #0f172a; padding: 24px 30px;">
+        allSegmentsHTML += `
+            <div style="margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <img src="https://travelogy.co/assets/imgs/airlines/${airlineCode}.png" width="24" height="24" style="margin-right: 10px; border-radius: 4px;" />
+                    <span style="font-weight: 700; color: #334155; font-size: 14px;">${airlineName} <span style="color: #94a3b8; font-weight: 400; margin-left: 5px;">${airlineCode}-${flightNo}</span></span>
+                </div>
+                
                 <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td>
-                            <h2 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">Flight Quote</h2>
+                        <td width="30%" style="vertical-align: top;">
+                            <div style="font-weight: 800; font-size: 20px; color: #0f172a; line-height: 1;">${seg.da.code}</div>
+                            <div style="color: #64748b; font-size: 12px; margin: 4px 0;">${seg.da.city}</div>
+                            <div style="color: #94a3b8; font-size: 11px;">${depDate}</div>
+                            <div style="font-weight: 700; font-size: 15px; color: #e11d48; margin-top: 6px;">${depTime}</div>
                         </td>
-                        <td style="text-align: right;">
-                            <span style="color: #94a3b8; font-size: 13px;">${dayjs().format("DD MMM YYYY")}</span>
+                        <td width="40%" style="vertical-align: middle; text-align: center; padding: 0 10px;">
+                            <div style="color: #94a3b8; font-size: 11px; margin-bottom: 4px; font-weight: 600;">${durationHours}h ${durationMinutes}m</div>
+                            <div style="border-top: 1px dashed #cbd5e1; position: relative; margin: 10px 0;">
+                                <div style="position: absolute; top: -4px; left: 50%; margin-left: -4px; width: 8px; height: 8px; background: #cbd5e1; border-radius: 50%;"></div>
+                            </div>
+                            <div style="background: #f1f5f9; color: #475569; font-size: 10px; padding: 3px 8px; border-radius: 10px; display: inline-block; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                                ${seg.stops === 0 ? "Non-stop" : seg.stops + " stop(s)"}
+                            </div>
+                        </td>
+                        <td width="30%" style="vertical-align: top; text-align: right;">
+                            <div style="font-weight: 800; font-size: 20px; color: #0f172a; line-height: 1;">${seg.aa.code}</div>
+                            <div style="color: #64748b; font-size: 12px; margin: 4px 0;">${seg.aa.city}</div>
+                            <div style="color: #94a3b8; font-size: 11px;">${arrDate}</div>
+                            <div style="font-weight: 700; font-size: 15px; color: #e11d48; margin-top: 6px;">${arrTime}</div>
                         </td>
                     </tr>
                 </table>
+            </div>
+        `;
+      });
+    });
+
+    const formattedPrice = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(totalAmount);
+
+    return `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="background-color: #0f172a; padding: 25px 30px; text-align: center;">
+                <div style="color: #ffffff; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Travelogy Quote</div>
+                <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Premium Flight Selection</div>
             </td>
           </tr>
           <tr>
             <td style="padding: 30px;">
-                ${segmentsHTML}
+                ${allSegmentsHTML}
                 
                 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 10px; border-top: 2px solid #f1f5f9; padding-top: 20px;">
                     <tr>
@@ -570,9 +557,10 @@ export default function Tickets() {
         const prevDate = arr[idx - 1]?.departureDate;
         if (prevDate && e.departureDate) {
           if (dayjs(e.departureDate).isBefore(dayjs(prevDate), "day")) {
-            e.dateError = `Date must be on or after previous segment (${dayjs(
+            e.dateError = `Date must be on or after previous segment(${dayjs(
               prevDate
-            ).format("ddd, MMM D YYYY")})`;
+            ).format("ddd, MMM D YYYY")
+              })`;
             e.forceOpen = true;
           }
         }
@@ -599,7 +587,7 @@ export default function Tickets() {
         "Please fix the highlighted fields in your multi-city itinerary."
       );
       if (opts?.focusFirstError && firstBadIndex !== null) {
-        const el = document.querySelector(`[data-seg-row="${firstBadIndex}"]`);
+        const el = document.querySelector(`[data - seg - row= "${firstBadIndex}"]`);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     } else {
@@ -620,12 +608,11 @@ export default function Tickets() {
 
     // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
     for (let i = 1; i <= 9; i++) {
-      removeCookie(`adult_seat_map-${i}`);
-      removeCookie(`child_seat_map-${i}`);
+      removeCookie(`adult_seat_map - ${i} `);
+      removeCookie(`child_seat_map - ${i} `);
     }
   }, []);
 
-  const router = useRouter();
   const [loading, setloading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -1214,7 +1201,7 @@ export default function Tickets() {
   const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
   // hide or not ??
-  // router.push(`/tickets?${queryString}`);
+  // router.push(`/ tickets ? ${ queryString } `);
 
   // const modifySearchRef = useRef(false);
   const [modifySearchRef, setModifySearchRef] = useState(false);
@@ -2067,7 +2054,7 @@ export default function Tickets() {
             {/* Desktop Header */}
             {!isMobile && (
               <>
-                <div className={`hdt_header ${getHeaderClass()}`}>
+                <div className={`hdt_header ${getHeaderClass()} `}>
                   <div className="hdt_header-item">
                     <label>Fare Types</label>
                     <Dropdown
@@ -2334,7 +2321,7 @@ export default function Tickets() {
                               ))
                             ? "cursor-not-allowed opacity-50"
                             : ""
-                            }`}
+                            } `}
                         >
                           Search
                         </div>
@@ -2884,7 +2871,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Children */}
-                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""}`}>
+                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Children</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -2908,7 +2895,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Infants */}
-                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""}`}>
+                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Infant</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -2937,25 +2924,25 @@ export default function Tickets() {
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => handleChangeClass({ target: { value: "b" } })}
-                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "a" } })}
-                            className={`p-3 rounded border-2 font-semibold text-sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold text - sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Premium Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "c" } })}
-                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Business
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "d" } })}
-                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"}`}
+                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             First
                           </button>
@@ -3009,7 +2996,7 @@ export default function Tickets() {
             totalPassenderCount={totalPassenderCount}
             // specificStyle={{ top: "23%", right: "9%" }}
             // specificStyle={"pos-t-r"}
-            specificStyle={`${getTravellerClass()}`}
+            specificStyle={`${getTravellerClass()} `}
             selectedPassengerType={srx_fareType}
           />
 

@@ -97,7 +97,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     const infantFare =
       (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
 
-    return adultFare + childFare + infantFare + (Number(ticketMarkups[ticket.id] ?? markup) || 0);
+    return adultFare + childFare + infantFare;
   };
 
   useEffect(() => {
@@ -804,9 +804,15 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                             <div className="mobile-price-section">
                               <span
                                 className="mobile-price cursor-pointer"
-                                onClick={() =>
-                                  onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0)
-                                }
+                                onClick={() => {
+                                  const prevSegments = Object.keys(selectedFlights)
+                                    .filter(key => parseInt(key) < tabIndex)
+                                    .map(key => ({
+                                      ticket: selectedFlights[key].ticket,
+                                      selectedPriceIndex: selectedFlights[key].selectedPriceIndex
+                                    }));
+                                  onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0, prevSegments);
+                                }}
                               >
                                 ₹{calculateTotalFare(
                                   ticket.totalPriceList[selectedFares[tabIndex]?.[i] ?? 0].fd,
@@ -1039,9 +1045,15 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                             <div className="flex flex-row gap-2 items-center">
                                               <div
                                                 className="text-lg font-bold text-gray-800 price cursor-pointer hover:bg-gray-50 transition-colors"
-                                                onClick={() =>
-                                                  onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0)
-                                                }
+                                                onClick={() => {
+                                                  const prevSegments = Object.keys(selectedFlights)
+                                                    .filter(key => parseInt(key) < tabIndex)
+                                                    .map(key => ({
+                                                      ticket: selectedFlights[key].ticket,
+                                                      selectedPriceIndex: selectedFlights[key].selectedPriceIndex
+                                                    }));
+                                                  onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0, prevSegments);
+                                                }}
                                               >
                                                 ₹{fareValue}
                                               </div>
@@ -1135,6 +1147,8 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                         adultFare: new Intl.NumberFormat(
                                           "en-IN"
                                         ).format(fareFD.ADULT?.fC?.NF || 0),
+                                        ticket: ticket, // Added for combined quote parity
+                                        selectedPriceIndex: selectedFareIndex // Added for combined quote parity
                                       };
 
                                       setSelectedFlights((prev) => {

@@ -729,7 +729,13 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                       selectedOnwardTicket={selectedOnwardTicket}
                       key={ticketId}
                       markup={ticketMarkups[ticketId] ?? markup}
-                      onPriceClick={(id: string, m: number, t: any, fIdx: number) => onPriceClick(id, m, t, fIdx)}
+                      onPriceClick={(id: string, m: number, t: any, fIdx: number) => {
+                        const prevTickets = [];
+                        if (tripPhase === "RETURN" && selectedOnwardTicket) {
+                          prevTickets.push(selectedOnwardTicket);
+                        }
+                        onPriceClick(id, m, t, fIdx, prevTickets);
+                      }}
                     />
                   );
                 })}

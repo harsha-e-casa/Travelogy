@@ -43,12 +43,13 @@ const TravelForm = () => {
     const fullName = trim(form.name?.value);
     const mobile = trim(form.mobile?.value);
     const age = trim(form.age?.value);
-    const packs = trim(form.packs?.value);
+    const packs = trim(form.numberOfPacks?.value);
     const email = trim(form.email?.value).toLowerCase();
-    const durationOfStay = trim(formData.get("durationOfStay"));
-    const policyType = trim(formData.get("policyType"));
-    const insuranceCoverage = trim(formData.get("insuranceCoverage")); // leisure | business | student | other
-    const otherCoverageDetails = trim(formData.get("otherCoverageDetails"));
+    const country = trim(form.country?.value);
+    const durationOfStay = trim(form.durationOfStay?.value);
+    const policyType = form.policyType?.value;
+    const insuranceCoverage = form.insuranceCoverage?.value; // usd50k | usd100k | usd250k | other
+    const otherCoverageDetails = trim(form.otherCoverageDetails?.value);
     const startDate = dates.startDate;
     const endDate = dates.endDate;
 
@@ -101,8 +102,8 @@ const TravelForm = () => {
         policyType,
         insuranceCoverage: resolvedCoverage,
         rawCoverage: insuranceCoverage,
-        startDate: startDate ? startDate.toISOString() : "",
-        endDate: endDate ? endDate.toISOString() : "",
+        startDate: startDate ? startDate.format("YYYY-MM-DD") : "",
+        endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
         ...(insuranceCoverage === "other" ? { otherCoverageDetails } : {}),
         submittedAt: new Date().toISOString(),
       },
@@ -123,6 +124,7 @@ const TravelForm = () => {
           setSuccessMessage("");
         }, 5000);
         form.reset();
+        setDates({ startDate: null, endDate: null });
         setIsOtherSelected(false);
         setErrors({});
       } else {
@@ -333,10 +335,15 @@ const TravelForm = () => {
 
             <input
               type="text"
-              id="number"
+              id="age"
               name="age"
               placeholder="Enter your Age"
               className="visa_input_fields pl-3"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              onInput={(e) => {
+                e.target.value = e.target.value.replace(/\D/g, "");
+              }}
               onFocus={() => handleClearError("age")}
             />
 
