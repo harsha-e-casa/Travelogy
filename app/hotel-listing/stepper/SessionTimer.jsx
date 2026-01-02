@@ -24,6 +24,8 @@ export default function SessionTimerWithModal({
   const deadline = useMemo(() => {
     if (!active) return null;
     if (typeof startTime !== "number" || Number.isNaN(startTime)) return null;
+    
+    // Treat startTime as "seconds from now"
     const seconds = Math.max(0, Math.floor(startTime));
     return Date.now() + seconds * 1000;
   }, [startTime, active]);
