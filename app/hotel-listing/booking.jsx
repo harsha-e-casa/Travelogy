@@ -7,6 +7,7 @@ import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 import AppDateRange from "@/components/searchEngine/AppDateRange";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { postData } from "@/services/NetworkAdapter";
 
 import dayjs from "dayjs";
 
@@ -67,6 +68,15 @@ export default function BookingCard({
     }
     setShowMarkupPopup(false);
     setSnackbarOpen(true);
+
+    if (totalpricee?.bookingId) {
+      postData("travelogy/flight/save-markup", {
+        bookingId: totalpricee.bookingId,
+        markup: newMarkup,
+      }).catch((error) => {
+        console.error("Error saving markup:", error);
+      });
+    }
   };
 
   const handleUpdateAllMarkup = () => {
@@ -76,7 +86,15 @@ export default function BookingCard({
     }
     setShowMarkupPopup(false);
     setSnackbarOpen(true);
-    // You might want to trigger a context update or event here if "Update All" implies more than just local storage for this component
+
+    if (totalpricee?.bookingId) {
+      postData("travelogy/flight/save-markup", {
+        bookingId: totalpricee.bookingId,
+        markup: newMarkup,
+      }).catch((error) => {
+        console.error("Error saving markup:", error);
+      });
+    }
   };
   
   const displayAmount = (Number(totalfare) || 0) + markup;

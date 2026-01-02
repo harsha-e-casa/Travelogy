@@ -2473,9 +2473,21 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleUpdateMarkup = () => {
-    setMarkup(Number(tempMarkup));
+    const newMarkup = Number(tempMarkup);
+    setMarkup(newMarkup);
     setShowMarkupPopup(false);
     setSnackbarOpen(true);
+
+    const bookingId = hotelReviewData?.bookingId;
+    console.log("Saving markup for bookingId:", bookingId, "Markup:", newMarkup);
+    if (bookingId) {
+      postData("travelogy/flight/save-markup", {
+        bookingId: bookingId,
+        markup: newMarkup,
+      }).catch((error) => {
+        console.error("Error saving markup:", error);
+      });
+    }
   };
 
   return (
