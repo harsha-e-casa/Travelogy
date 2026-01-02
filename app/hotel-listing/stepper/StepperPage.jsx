@@ -124,15 +124,45 @@ export default function Stepper() {
   
   // Markup State
   const [markup, setMarkup] = useState(() => {
-     if (typeof window !== 'undefined') {
-        return Number(localStorage.getItem("hotelMarkup")) || 0;
-     }
-     return 0;
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("hotelMarkupData");
+      if (savedData) {
+        try {
+          const markupObj = JSON.parse(savedData);
+          if (oid && markupObj.individual?.[oid] !== undefined) {
+            return markupObj.individual[oid];
+          }
+          return markupObj.global || 0;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      return Number(localStorage.getItem("hotelMarkup")) || 0;
+    }
+    return 0;
   });
 
   useEffect(() => {
-    localStorage.setItem("hotelMarkup", markup);
-  }, [markup]);
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("hotelMarkupData");
+      let markupObj = { global: 0, individual: {} };
+      if (savedData) {
+        try {
+          markupObj = JSON.parse(savedData);
+        } catch (e) {}
+      }
+
+      if (oid) {
+        markupObj.individual = { ...markupObj.individual, [oid]: markup };
+        localStorage.setItem("hotelMarkupData", JSON.stringify(markupObj));
+      }
+      // Also update legacy simple key for other consumers if needed, 
+      // but strictly we are editing a specific room here so maybe not overwrite global 'hotelMarkup' unless we consider this global?
+      // Existing logic was overwriting global. Let's keep it safe by NOT overwriting global if we are in specific flow.
+      // But for backward compatibility with simple 'hotelMarkup' usage...
+      // localStorage.setItem("hotelMarkup", markup); 
+    }
+  }, [markup, oid]);
 
   const router = useRouter();
   const apiOk = !loading && !error && Boolean(hotelReviewData);

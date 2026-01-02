@@ -5,6 +5,8 @@ import Link from "next/link";
 import { AppTravellerHotel } from "@/components/searchEngine/TravellerForm";
 // import AppDateRage from "@/components/searchEngine/AppDateRage";
 import AppDateRange from "@/components/searchEngine/AppDateRange";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 import dayjs from "dayjs";
 
@@ -28,7 +30,9 @@ export default function BookingCard({
   setRoomsData,
   openDateRange,
   setOpenDateRange,
-  availabilityError
+  availabilityError,
+  markupObj,
+  onMarkupUpdate,
 }) {
   const basefare = totalpricee?.fC?.BF;
   const taxAndFees = totalpricee?.fC?.TAF || 0;
@@ -41,29 +45,38 @@ export default function BookingCard({
   const hotelId = totalpricee?.fC?.HID || totalpricee?.hotelId;
   const optionId = totalpricee?.fC?.OID || totalpricee?.optionId;
 
-
   const roomCount = searchData?.roomInfo?.length;
   const netprice = totalpricee?.fC?.NF;
   const { getCookie } = useContext(AppContext);
 
   // Markup & Breakdown States
-  const [markup, setMarkup] = useState(0);
+  const markup =
+    markupObj?.individual?.[optionId] !== undefined
+      ? markupObj.individual[optionId]
+      : markupObj?.global || 0;
+
   const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   const [tempMarkup, setTempMarkup] = useState("0");
   const [showTaxDetails, setShowTaxDetails] = useState(false);
-
-  useEffect(() => {
-    const savedMarkup = localStorage.getItem("hotelMarkup");
-    if (savedMarkup) {
-      setMarkup(Number(savedMarkup));
-    }
-  }, []);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleUpdateMarkup = () => {
     const newMarkup = Number(tempMarkup);
-    setMarkup(newMarkup);
-    localStorage.setItem("hotelMarkup", newMarkup);
+    if (onMarkupUpdate) {
+      onMarkupUpdate(newMarkup, false, optionId);
+    }
     setShowMarkupPopup(false);
+    setSnackbarOpen(true);
+  };
+
+  const handleUpdateAllMarkup = () => {
+    const newMarkup = Number(tempMarkup);
+    if (onMarkupUpdate) {
+      onMarkupUpdate(newMarkup, true);
+    }
+    setShowMarkupPopup(false);
+    setSnackbarOpen(true);
+    // You might want to trigger a context update or event here if "Update All" implies more than just local storage for this component
   };
   
   const displayAmount = (Number(totalfare) || 0) + markup;
@@ -100,6 +113,21 @@ export default function BookingCard({
 
   return (
     <div className="p-0 bg-white space-y-4">
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%", marginTop: "60px" }}
+        >
+          Markup updated successfully.
+        </Alert>
+      </Snackbar>
       <div className="item-line-booking">
         <div className="">
           
@@ -164,12 +192,20 @@ export default function BookingCard({
                         placeholder="0"
                       />
                     </div>
-                    <div className="flex justify-end">
+                    <div className="flex gap-2">
                       <button
                         onClick={handleUpdateMarkup}
-                        className="btn-logout text-white rounded px-4 py-1.5 text-sm font-bold hover:bg-orange-600 transition shadow-sm"
+                        className="flex-1 text-white rounded px-2 py-2 text-xs font-bold bg-orange-500 hover:bg-orange-600 transition shadow-sm uppercase"
+                        style={{background:"orange"}}
                       >
                         Update
+                      </button>
+                      <button
+                        onClick={handleUpdateAllMarkup}
+                        className="flex-1 text-white rounded px-2 py-2 text-xs font-bold bg-orange-500 hover:bg-orange-600 transition shadow-sm uppercase"
+                        style={{background:"orange"}}
+                      >
+                        Update All
                       </button>
                     </div>
                   </div>

@@ -7,6 +7,9 @@ import { Input, Checkbox, message, Radio, Select } from "antd";
 import AppDateRange from "@/components/searchEngine/AppDateRage";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import { postData } from "@/services/NetworkAdapter";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+
 export function HotelReviewComponent({
   setHotelReviewData,
   setLoading,
@@ -2465,14 +2468,31 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
   const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   const [tempMarkup, setTempMarkup] = useState("0");
   const [showTaxDetails, setShowTaxDetails] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const handleUpdateMarkup = () => {
     setMarkup(Number(tempMarkup));
     setShowMarkupPopup(false);
+    setSnackbarOpen(true);
   };
 
   return (
     <>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%", marginTop: "60px" }}
+        >
+          Markup updated successfully.
+        </Alert>
+      </Snackbar>
       {Category !== "abook" ? (
         <>
           <h3 className="font-semibold text-base text-gray-600">

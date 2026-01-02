@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const HotelData = ({ fetchHotelData = [], hotelId, availabilityError }) => {
+const HotelData = ({
+  fetchHotelData = [],
+  hotelId,
+  availabilityError,
+  markupObj,
+}) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [currentFacilities, setCurrentFacilities] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]); // ← This tracks ops[].ris[]
@@ -39,7 +44,12 @@ const HotelData = ({ fetchHotelData = [], hotelId, availabilityError }) => {
           return (
             <>
               {room.ris.map((data, index2) => {
-                const price = data?.tfcs?.TF?.toFixed(2);
+                const optionId = room.id;
+                const markup =
+                  markupObj?.individual?.[optionId] !== undefined
+                    ? markupObj.individual[optionId]
+                    : markupObj?.global || 0;
+                const price = ((data?.tfcs?.TF || 0) + markup).toFixed(2);
                 const nights = data?.pis?.length;
                 const isRefundable = room?.cnp?.inra;
                 const panRequired = room?.ipr;

@@ -4,6 +4,9 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
+import { Select, Input, Button, Form, ConfigProvider } from "antd";
+
+const { Option } = Select;
 
 export default function Holidaymood() {
   const searchParams = useSearchParams();
@@ -678,109 +681,161 @@ export default function Holidaymood() {
               {/* Modal Content */}
               <div style={{ color: "white" }}>
                 {!isSubmitted ? (
-                  <form onSubmit={(e) => { e.preventDefault(); setIsSubmitted(true); }}>
-                <h3
-                  style={{
-                    marginBottom: "10px",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Planning a trip? We are here to help!
-                </h3>
-                <p
-                  style={{
-                    marginBottom: "30px",
-                    fontSize: "14px",
-                    opacity: 0.9,
-                  }}
-                >
-                  Give us your details. We will reach out and help you craft
-                  your dream trip
-                </p>
-
-                
-                  <input
-                    type="text"
-                    placeholder="Enter your Name"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      marginBottom: "30px",
-                      background: "rgba(255,255,255,0.1)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "8px",
-                      color: "white",
-                      fontSize: "14px",
-                    }}
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Enter your Phone Number"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      marginBottom: "20px",
-                      background: "rgba(255,255,255,0.1)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "8px",
-                      color: "white",
-                      fontSize: "14px",
-                    }}
-                  />
-                  <select
-                    style={{
-                      width: "100%",
-                      padding: "16px",
-                      marginBottom: "30px",
-                      background: "rgba(255,255,255,0.1)",
-                      border: "1px solid rgba(255,255,255,0.3)",
-                      borderRadius: "8px",
-                      color: "white",
-                      fontSize: "14px",
+                  <ConfigProvider
+                    theme={{
+                      components: {
+                        Select: {
+                          selectorBg: "rgba(255,255,255,0.1)",
+                          colorText: "white",
+                          colorTextPlaceholder: "rgba(255,255,255,0.5)",
+                          colorBorder: "rgba(255,255,255,0.3)",
+                          optionSelectedBg: "rgba(255, 255, 255, 0.2)",
+                          optionActiveBg: "rgba(255, 255, 255, 0.1)",
+                          colorBgElevated: "#333333",
+                          colorIcon: "white",
+                          colorIconHover: "white",
+                        },
+                        Input: {
+                          colorBgContainer: "rgba(255,255,255,0.1)",
+                          colorText: "white",
+                          colorTextPlaceholder: "rgba(255,255,255,0.5)",
+                          colorBorder: "rgba(255,255,255,0.3)",
+                        },
+                      },
+                      token: {
+                        colorTextPlaceholder: "rgba(255,255,255,0.5)",
+                      },
                     }}
                   >
-                    <option value="" style={{ background: "#333", color: "white" }}>Select your mood...</option>
-                    <option value="romantic" style={{ background: "#333", color: "white" }}>Romantic</option>
-                    <option value="adventure" style={{ background: "#333", color: "white" }}>Adventure</option>
-                    <option value="beaches" style={{ background: "#333", color: "white" }}>Beaches</option>
-                    <option value="wildlife" style={{ background: "#333", color: "white" }}>Wildlife</option>
-                    <option value="luxury" style={{ background: "#333", color: "white" }}>Luxury</option>
-                    <option value="nightlife" style={{ background: "#333", color: "white" }}>NightLife</option>
-                  </select>
-                  <button
-                    type="submit"
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      background: "#000",
-                      color: "orange",
-                      border: "none",
-                      borderRadius: "25px",
-                      fontSize: "16px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "8px",
-                    }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      fill="orange"
-                      viewBox="0 0 24 24"
+                    <Form
+                      onFinish={() => setIsSubmitted(true)}
+                      layout="vertical"
+                      style={{ width: "100%" }}
                     >
-                      <path d="M6.62 10.79a15.464 15.464 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1v3.48a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.2z" />
-                    </svg>
-                    Request a call back
-                  </button>
-                  </form>
+                      <h3
+                        style={{
+                          marginBottom: "10px",
+                          fontSize: "18px",
+                          fontWeight: "bold",
+                          color: "white",
+                        }}
+                      >
+                        Planning a trip? We are here to help!
+                      </h3>
+                      <p
+                        style={{
+                          marginBottom: "30px",
+                          fontSize: "14px",
+                          opacity: 0.9,
+                          color: "white",
+                        }}
+                      >
+                        Give us your details. We will reach out and help you
+                        craft your dream trip
+                      </p>
+
+                      <Form.Item
+                        name="name"
+                        rules={[
+                          { required: true, message: "Please enter your name" },
+                        ]}
+                        style={{ marginBottom: "20px" }}
+                      >
+                        <Input
+                          placeholder="Enter your Name"
+                          style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            fontSize: "14px",
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        name="phone"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter your phone number",
+                          },
+                        ]}
+                        style={{ marginBottom: "20px" }}
+                      >
+                        <Input
+                          type="tel"
+                          placeholder="Enter your Phone Number"
+                          style={{
+                            width: "100%",
+                            padding: "12px",
+                            borderRadius: "8px",
+                            fontSize: "14px",
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item name="mood" style={{ marginBottom: "30px", 
+                            color: "white", }}>
+                        <Select
+                          placeholder="Select your mood..."
+                          style={{
+                            width: "100%",
+                            height: "45px",
+                          }}
+                        >
+                          <Option value="romantic">Romantic</Option>
+                          <Option value="adventure">Adventure</Option>
+                          <Option value="beaches">Beaches</Option>
+                          <Option value="wildlife">Wildlife</Option>
+                          <Option value="luxury">Luxury</Option>
+                          <Option value="nightlife">NightLife</Option>
+                        </Select>
+                      </Form.Item>
+
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        style={{
+                          width: "100%",
+                          height: "45px",
+                          background: "#000",
+                          color: "orange",
+                          border: "none",
+                          borderRadius: "25px",
+                          fontSize: "16px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="orange"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M6.62 10.79a15.464 15.464 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1v3.48a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.24 1.01l-2.21 2.2z" />
+                        </svg>
+                        Request a call back
+                      </Button>
+                    </Form>
+                  </ConfigProvider>
                 ) : (
                   <div style={{ textAlign: "center", padding: "40px 0" }}>
-                    <h3 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "10px" }}>Thanks!</h3>
-                    <p style={{ fontSize: "16px", opacity: 0.9 }}>We will contact you soon.</p>
+                    <h3
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: "bold",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Thanks!
+                    </h3>
+                    <p style={{ fontSize: "16px", opacity: 0.9 }}>
+                      We will contact you soon.
+                    </p>
                   </div>
                 )}
               </div>

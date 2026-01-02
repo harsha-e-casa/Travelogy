@@ -140,6 +140,38 @@ export default function ActivitiesDetail4() {
   const [showTraveller, setShowTraveller] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
+  
+  // Markup State
+  const [markupObj, setMarkupObj] = useState({ global: 0, individual: {} });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("hotelMarkupData");
+      if (saved) {
+        setMarkupObj(JSON.parse(saved));
+      } else {
+        const old = localStorage.getItem("hotelMarkup");
+        if (old) setMarkupObj({ global: Number(old), individual: {} });
+      }
+    } catch (e) {
+      console.error("Error loading markup", e);
+    }
+  }, []);
+
+  const handleMarkupUpdate = (amount, isGlobal, id = null) => {
+    setMarkupObj((prev) => {
+      const newState = isGlobal
+        ? { ...prev, global: amount, individual: {} }
+        : {
+            ...prev,
+            individual: { ...prev.individual, [id]: amount },
+          };
+
+      localStorage.setItem("hotelMarkupData", JSON.stringify(newState));
+      if (isGlobal) localStorage.setItem("hotelMarkup", amount); // Backward compatibility
+      return newState;
+    });
+  };
 
   // useEffect(() => {
   //   if (searchQueryData?.roomInfo) {
@@ -756,6 +788,7 @@ export default function ActivitiesDetail4() {
                     fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}
                     hotelId={hotelData?.id}
                     availabilityError={availabilityError}
+                    markupObj={markupObj}
                   />
                 </div>
               </div>
@@ -817,6 +850,8 @@ export default function ActivitiesDetail4() {
                   <div className="booking-form">
                     <BookingCard
                       isFetching={isFetchingButton}
+                      markupObj={markupObj}
+                      onMarkupUpdate={handleMarkupUpdate}
                       segmentsPrice={hotelData?.ops}
                       totalpricee={{
                         fC: {
