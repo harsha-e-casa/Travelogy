@@ -15,6 +15,7 @@ interface BookingFormProps {
   afsAmount?: number;
   rssrAmount?: number;
   onHold?: boolean;
+  markupProp?: number;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -31,6 +32,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   afsAmount = 0,
   rssrAmount = 0,
   onHold = false,
+  markupProp,
 }) => {
   // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
@@ -84,7 +86,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [rssrFees, setRssrFees] = useState(rssrAmount);
 
   // Markup & Breakdown States
-  const [markup, setMarkup] = useState(0);
+  const [markup, setMarkup] = useState(markupProp || 0);
+
+  useEffect(() => {
+    if (markupProp !== undefined) {
+      setMarkup(markupProp);
+    }
+  }, [markupProp]);
   const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   const [tempMarkup, setTempMarkup] = useState("0");
   const [showTaxDetails, setShowTaxDetails] = useState(false);
@@ -312,6 +320,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
                     ₹{totalSeatAmount}
                   </div>
                 </div>
+                <div className="flex flex-row justify-between border-t border-gray-100 pt-1 mt-1">
+                  <div>
+                    <strong className="text-md-bold neutral-1000">
+                      Markup
+                    </strong>
+                  </div>
+                  <div className="text-md-bold neutral-1000">
+                    ₹{Number(markup).toFixed(2)}
+                  </div>
+                </div>
               </>
             )}
             {/* Taxes and Fees with Breakdown and Markup Edit */}
@@ -340,7 +358,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                   </svg>
                 </div>
                 <div className="flex items-center gap-2 relative">
-                  <div className="text-md-bold neutral-1000">₹{Number(taxAndFees) + Number(markup)}</div>
+                  <div className="text-md-bold neutral-1000">₹{Number(taxAndFees)}</div>
                   {pathname?.includes("/book-ticket") && (
                     <div
                       className="cursor-pointer"
@@ -416,12 +434,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
                     <span>Taxes and Fees</span>
                     <span>₹{taxAndFees}</span>
                   </div>
-                  {markup > 0 && (
-                    <div className="flex justify-between text-sm neutral-500">
-                      <span>Total Airline Tax</span>
-                      <span>₹{Number(markup).toFixed(2)}</span>
-                    </div>
-                  )}
+                  <div className="flex justify-between text-sm neutral-500">
+                    <span>Markup</span>
+                    <span>₹{Number(markup).toFixed(2)}</span>
+                  </div>
                 </div>
               )}
             </div>

@@ -476,6 +476,7 @@ const BookingDetailsPage = () => {
                       Category={"abook"}
                       hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                       hotelReviewData1={bookingDetails?.order?.deliveryInfo}
+                      markup={markup}
                     />
                   ) : null}
                 </div>
@@ -487,6 +488,7 @@ const BookingDetailsPage = () => {
                     <FareAmount
                       hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                       Category={"abook"}
+                      markup={markup}
                     />
                   </div>
                 </div>
@@ -514,6 +516,7 @@ const BookingDetailsPage = () => {
                     Category={"abook"}
                     hotelReviewData={bookingDetails?.itemInfos?.HOTEL}
                     hotelReviewData1={bookingDetails?.order?.deliveryInfo}
+                    markup={markup}
                   />
                 ) : null}
               </div>

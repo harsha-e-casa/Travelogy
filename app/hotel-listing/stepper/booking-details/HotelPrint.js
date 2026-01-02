@@ -677,12 +677,10 @@ function renderHotelHTML(vm) {
             <th>Taxes and Fees</th>
             <td style="text-align: right;">₹${fmtIN(vm.pricing.taxes)}</td>
           </tr>
-          ${vm.pricing.markup > 0 ? `
           <tr>
             <th>Markup</th>
             <td style="text-align: right;">₹${fmtIN(vm.pricing.markup)}</td>
           </tr>
-          ` : ''}
           <tr>
             <th style="border-top: 1px solid #000; font-weight: 700;">Total Amount Payable</th>
             <td style="border-top: 1px solid #000; text-align: right; font-weight: 700; font-size: 14px;">₹${fmtIN(vm.pricing.total)}</td>

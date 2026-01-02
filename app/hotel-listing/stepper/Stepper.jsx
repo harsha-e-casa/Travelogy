@@ -854,6 +854,7 @@ export function Step2Review({
   hotelReviewData,
   hotelReviewData1,
   Category,
+  markup = 0,
 }) {
   const [accepted, setAccepted] = useState(false);
   useEffect(() => {
@@ -1345,7 +1346,7 @@ export function Step2Review({
         ) : null}
 
         <div className="mobile-fare-summary mt-40 mb-4 screen-only p-0">
-          <FareAmount hotelReviewData={hotelReviewData} Category={Category} />
+          <FareAmount hotelReviewData={hotelReviewData} Category={Category} markup={markup} />
         </div>
 
         <div className="border-t pt-3">
@@ -1598,6 +1599,7 @@ export function Step3PersonalDocuments({
   setFormData,
   hotelReviewData,
   onNext,
+  markup = 0,
 }) {
   // helper (top-level in component)
   const isMaster = (t) => !!t && /\bmaster\b/i.test(t);
@@ -2236,7 +2238,7 @@ export function Step3PersonalDocuments({
           206C(1G) of the Income Tax Act, 1961
         </div>
         <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
-          <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} />
+          <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} markup={markup} />
         </div>
         {/* {Category === "bbook" && ( */}
         <div className="flex justify-between items-center mt-6">
@@ -2511,7 +2513,7 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
                 </div>
                 
                 <div className="flex items-center gap-2 relative">
-                    <span>₹{(totalTax + markup).toFixed(2)}</span>
+                    <span>₹{totalTax.toFixed(2)}</span>
                     <div
                       className="cursor-pointer"
                       onClick={() => {
@@ -2596,7 +2598,11 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
             )}
           </div>
 
-          <div className="flex justify-between font-semibold text-gray-800">
+          {/* <div className="flex justify-between pb-4">
+            <span>Markup</span>
+            <span>₹{Number(markup).toFixed(2)}</span>
+          </div> */}
+          <div className="flex justify-between font-semibold text-gray-800 border-t pt-2">
             <span>Total Amount Payable</span>
             <span>₹{(totalBaseFare + totalTax + markup).toFixed(2)}</span>
           </div>
@@ -2644,13 +2650,11 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
             <span>Taxes and Fees</span>
             <span>₹{totalTaxSum.toFixed(2)}</span>
           </div>
-          {markup > 0 && (
-            <div className="flex justify-between pb-4">
-              <span>Markup</span>
-              <span>₹{Number(markup).toFixed(2)}</span>
-            </div>
-          )}
-          <div className="flex justify-between font-semibold text-gray-800">
+          <div className="flex justify-between pb-4">
+            <span>Markup</span>
+            <span>₹{Number(markup).toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between font-semibold text-gray-800 border-t pt-2">
             <span>Total Amount Payable</span>
             <span>₹{(totalBaseFareSum + totalTaxSum + markup).toFixed(2)}</span>
           </div>

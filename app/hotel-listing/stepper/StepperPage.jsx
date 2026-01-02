@@ -483,6 +483,7 @@ export default function Stepper() {
                       Category1={Category1}
                       Category={"bbook"}
                       hotelReviewData={hotelReviewData}
+                      markup={markup}
                     />
                   )}
                   {currentStep === 3 && PanRequired !== false && (
@@ -491,6 +492,7 @@ export default function Stepper() {
                       setFormData={setFormData}
                       hotelReviewData={hotelReviewData}
                       onNext={goNext}
+                      markup={markup}
                     />
                   )}
 
