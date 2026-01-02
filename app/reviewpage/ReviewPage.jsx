@@ -96,6 +96,9 @@ const ReviewPage = () => {
   const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
   const SeatAmount = Number(getCookie("seatSsr_amount") || 0);
 
+  const [markup, setMarkup] = useState(0);
+  const { removeCookie } = useContext(AppContext);
+
   const handleSessionExpire = React.useCallback(() => {
     if (!hasExpired.current) {
       hasExpired.current = true;
@@ -403,6 +406,27 @@ const ReviewPage = () => {
   const bookingId = flightData ? flightData.bookingId : null;
   console.log("bookingId", bookingId);
 
+  useEffect(() => {
+    if (bookingId) {
+      const fetchMarkup = async () => {
+        try {
+          // Fetch markup from the dedicated endpoint
+          const result = await postData("travelogy/flight/get-markup", {
+            bookingId,
+          });
+          if (result && result.markup !== undefined) {
+            setMarkup(Number(result.markup));
+          }
+          // Remove the cookie as per requirements (cleanup)
+          removeCookie(`gy_markup_${bookingId}`);
+        } catch (error) {
+          console.error("Error fetching markup:", error);
+        }
+      };
+      fetchMarkup();
+    }
+  }, [bookingId]);
+
   // Total price info
   useEffect(() => {
     if (flightData?.totalPriceInfo?.totalFareDetail) {
@@ -432,7 +456,8 @@ const ReviewPage = () => {
   console.log("mame seatTotal cookie lendhu == ", typeof seatTotal);
   const currentUrl = window.location.href;
 
-  const finalAmountToPay = totalprice + baggageTotal + mealTotal + seatTotal;
+  const finalAmountToPay =
+    totalprice + baggageTotal + mealTotal + seatTotal + Number(markup);
   //fare rule api
   const fareRule = fareDetails?.fareRule?.[`${dcitycode}-${acitycode}`]?.tfr;
 
@@ -1025,7 +1050,7 @@ const ReviewPage = () => {
     if (totalprice && bookingId) {
       const parameter = {
         bookingId,
-        paymentInfos: [{ amount: finalAmountToPay }],
+        paymentInfos: [{ amount: finalAmountToPay - markup }],
         travellerInfo: travellers,
         deliveryInfo: {
           emails: [email],
@@ -1046,7 +1071,7 @@ const ReviewPage = () => {
           type: "save",
           booking_id: bookingId,
           phone: number.number,
-          amount: finalAmountToPay,
+          amount: finalAmountToPay - markup,
           status: "",
           time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
           fareType: getCookie("gy_passender_type"),
@@ -1063,7 +1088,7 @@ const ReviewPage = () => {
       const payWallet = async () => {
         const reqpayWallet = {
           booking_id: bookingId,
-          amount: finalAmountToPay,
+          amount: finalAmountToPay - markup,
         };
         const result = await postData(
           "travelogy/flight/payWallet",
@@ -1108,7 +1133,7 @@ const ReviewPage = () => {
     if (totalprice && bookingId) {
       const parameter = {
         bookingId,
-        paymentInfos: [{ amount: finalAmountToPay }],
+        paymentInfos: [{ amount: finalAmountToPay - markup }],
         travellerInfo: travellers,
         deliveryInfo: {
           emails: [email],
@@ -1127,7 +1152,7 @@ const ReviewPage = () => {
           type: "save",
           booking_id: bookingId,
           phone: number.number,
-          amount: finalAmountToPay,
+          amount: finalAmountToPay - markup,
           status: "",
           time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
           fareType: getCookie("gy_passender_type"),
@@ -1144,7 +1169,7 @@ const ReviewPage = () => {
             "travelogy/payment/ccavenue/create",
             {
               booking_id: bookingId, // using bookingId as order_id
-              amount: finalAmountToPay, // same as TripJack
+              amount: finalAmountToPay - markup, // same as TripJack
               fe_url: currentUrl,
               data: { action: "book", requestData: parameter },
             }
@@ -1224,7 +1249,7 @@ const ReviewPage = () => {
         const reqSaveBookingId = {
           booking_id: bookingId,
           phone: number.number,
-          amount: finalAmountToPay,
+          amount: finalAmountToPay - markup,
           fareType: getCookie("gy_passender_type"),
         };
         console.log("reqSaveBookingId === > ", reqSaveBookingId);
@@ -2268,7 +2293,7 @@ const ReviewPage = () => {
                         <div class="head-booking-form">
                           <p class="text-xl-bold neutral-1000">Fare Summary</p>
                         </div>
-                        <BookingForm totalpricee={totalPriceinfo} />
+                        <BookingForm totalpricee={totalPriceinfo} markup={markup} />
                       </div>
                     </div>
                   </div>
@@ -2544,10 +2569,10 @@ const ReviewPage = () => {
                         <div
                           onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReviewWIthWallet : undefined}
                           className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoadingWallet
-                              ? "bg-gray-100 cursor-not-allowed pointer-events-none"
-                              : bookingLoading
-                                ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
-                                : "bg-white hover:border-yellow-400 cursor-pointer"
+                            ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                            : bookingLoading
+                              ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
+                              : "bg-white hover:border-yellow-400 cursor-pointer"
                             }`}
                           aria-disabled={bookingLoadingWallet || bookingLoading}
                         >
@@ -2585,10 +2610,10 @@ const ReviewPage = () => {
                         <div
                           onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReview : undefined}
                           className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoading
-                              ? "bg-gray-100 cursor-not-allowed pointer-events-none"
-                              : bookingLoadingWallet
-                                ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
-                                : "bg-white hover:border-yellow-400 cursor-pointer"
+                            ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                            : bookingLoadingWallet
+                              ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
+                              : "bg-white hover:border-yellow-400 cursor-pointer"
                             }`}
                           aria-disabled={bookingLoading || bookingLoadingWallet}
                         >

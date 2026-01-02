@@ -11,6 +11,8 @@ export default function TicketCardMobile({
     flightData,
     reschedule = false,
     requestId = "",
+    markup = 0,
+    onPriceClick,
 }: any) {
     const { getCookie } = useContext(AppContext);
     const isUat = process.env.UAT_ENV === "true";
@@ -42,6 +44,7 @@ export default function TicketCardMobile({
         if (fare?.fd?.ADULT) total += adultCount * fare.fd.ADULT.fC.NF;
         if (fare?.fd?.CHILD) total += childCount * fare.fd.CHILD.fC.NF;
         if (fare?.fd?.INFANT) total += infantCount * fare.fd.INFANT.fC.NF;
+        total += (Number(markup) || 0);
         return new Intl.NumberFormat("en-IN").format(total);
     };
 
@@ -105,7 +108,7 @@ export default function TicketCardMobile({
             </div>
 
             <div className="mobile-card-footer">
-                <div className="mobile-price-section">
+                <div className="mobile-price-section" onClick={() => onPriceClick && onPriceClick(ticket.id, markup, ticket, value)}>
                     <span className="mobile-price">₹{calculateTotalPrice(selectedFare)}</span>
                     <span className="mobile-fare-type">{selectedFare.fareIdentifier}</span>
                 </div>

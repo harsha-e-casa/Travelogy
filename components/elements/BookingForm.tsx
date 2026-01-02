@@ -1,6 +1,7 @@
 import { AppContext } from "@/util/AppContext";
 import { useContext, useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { postData } from "../../services/NetworkAdapter";
 
 interface BookingFormProps {
   totalpricee: any;
@@ -14,8 +15,10 @@ interface BookingFormProps {
   bookingFormKey?: number;
   afsAmount?: number;
   rssrAmount?: number;
+  markup?: number;
+  setMarkup?: (value: number) => void;
   onHold?: boolean;
-  markupProp?: number;
+  bookingId?: string;
 }
 
 const BookingForm: React.FC<BookingFormProps> = ({
@@ -32,7 +35,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
   afsAmount = 0,
   rssrAmount = 0,
   onHold = false,
-  markupProp,
+  markup = 0,
+  setMarkup,
+  bookingId,
 }) => {
   // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
   // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
@@ -86,21 +91,30 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const [rssrFees, setRssrFees] = useState(rssrAmount);
 
   // Markup & Breakdown States
-  const [markup, setMarkup] = useState(markupProp || 0);
-
-  useEffect(() => {
-    if (markupProp !== undefined) {
-      setMarkup(markupProp);
-    }
-  }, [markupProp]);
+  // const [markup, setMarkup] = useState(0);
   const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   const [tempMarkup, setTempMarkup] = useState("0");
   const [showTaxDetails, setShowTaxDetails] = useState(false);
   const [showPaymentDetails, setShowPaymentDetails] = useState(false);
 
-  const handleUpdateMarkup = () => {
-    setMarkup(Number(tempMarkup));
+  const handleUpdateMarkup = async () => {
+    const newMarkup = Number(tempMarkup);
+    if (setMarkup) {
+      setMarkup(newMarkup);
+    }
     setShowMarkupPopup(false);
+
+    if (bookingId) {
+      try {
+        await postData("travelogy/flight/save-markup", {
+          bookingId,
+          markup: newMarkup,
+        });
+        console.log("Markup saved to backend");
+      } catch (error) {
+        console.error("Error saving markup:", error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -231,7 +245,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   // }, [seatinfo]);
 
   useEffect(() => {
-    if (bookingFormKey == 1) {
+    if (bookingFormKey == 1 || bookingFormKey === undefined) {
       // if (mealAmount != 0) {
       //   setTotalMealAmount(mealAmount);
       // }
@@ -320,16 +334,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
                     ₹{totalSeatAmount}
                   </div>
                 </div>
-                <div className="flex flex-row justify-between border-t border-gray-100 pt-1 mt-1">
-                  <div>
-                    <strong className="text-md-bold neutral-1000">
-                      Markup
-                    </strong>
-                  </div>
-                  <div className="text-md-bold neutral-1000">
-                    ₹{Number(markup).toFixed(2)}
-                  </div>
-                </div>
               </>
             )}
             {/* Taxes and Fees with Breakdown and Markup Edit */}
@@ -358,7 +362,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
                   </svg>
                 </div>
                 <div className="flex items-center gap-2 relative">
-                  <div className="text-md-bold neutral-1000">₹{Number(taxAndFees)}</div>
+                  <div className="text-md-bold neutral-1000">₹{Number(taxAndFees) + Number(markup)}</div>
                   {pathname?.includes("/book-ticket") && (
                     <div
                       className="cursor-pointer"
@@ -434,10 +438,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
                     <span>Taxes and Fees</span>
                     <span>₹{taxAndFees}</span>
                   </div>
-                  <div className="flex justify-between text-sm neutral-500">
-                    <span>Markup</span>
-                    <span>₹{Number(markup).toFixed(2)}</span>
-                  </div>
+                  {markup > 0 && (
+                    <div className="flex justify-between text-sm neutral-500">
+                      <span>Total Airline Tax</span>
+                      <span>₹{Number(markup).toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

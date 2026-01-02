@@ -190,6 +190,7 @@ export default function BookTicket() {
   const [baggageAmount, setBaggageAmount] = useState(0);
   const [mealAmount, setMealAmount] = useState(0);
   const [firstTravellDate, setFirstTravellDate] = useState<any>("");
+  const [markup, setMarkup] = useState(0);
 
   const handleBaggageChange = useCallback((amount: number) => {
     console.log("bag amount ", amount);
@@ -1135,6 +1136,7 @@ export default function BookTicket() {
         console.log("Stored Email: key emale", getCookie("email"));
         console.log("Stored Phone: key number", getCookie("number"));
 
+
         // api call to save traveller info
         const saveTravellerInfo = async () => {
           const reqTravellerInfo = {
@@ -1148,6 +1150,10 @@ export default function BookTicket() {
             reqTravellerInfo
           );
           console.log("reqTravellerInfo result === > ", result);
+
+          setCookie(`gy_markup_${bookingId}`, markup.toString(), {
+            expires: 7,
+          });
         };
         saveTravellerInfo();
 
@@ -1597,6 +1603,9 @@ export default function BookTicket() {
                         baggageAmount={baggageAmount}
                         mealAmount={mealAmount}
                         bookingFormKey={bookingFormKey}
+                        markup={markup}
+                        setMarkup={setMarkup}
+                        bookingId={bookingId || undefined}
                       // segmentsPrice={segmentsPrice}
                       // baggageinfo={baggageinfo}
                       />

@@ -11,11 +11,17 @@ export default function TicketCard1({
   ticket,
   flightData,
   reschedule = false,
-  requestId = ""
+  requestId = "",
+  markup = 0,
+  onPriceClick,
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
+
+  useEffect(() => {
+    // console.log(`[TicketCard1] Ticket ${ticket.id} received markup:`, markup);
+  }, [markup, ticket.id]);
   const [totalPrice, setTotalprice] = useState();
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
@@ -211,8 +217,11 @@ export default function TicketCard1({
           </div>
 
           <div
-            className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center    "
+            className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center cursor-pointer hover:bg-gray-50 transition-colors"
             style={{ width: "245px", paddingLeft: "20px" }}
+            onClick={() =>
+              onPriceClick && onPriceClick(ticket.id, markup, ticket, value)
+            }
           >
             <Radio.Group
               onChange={onChange}
@@ -264,7 +273,7 @@ export default function TicketCard1({
                               }
 
                               return new Intl.NumberFormat("en-IN").format(
-                                adultCost + childCost + infantCost
+                                adultCost + childCost + infantCost + (Number(markup) || 0)
                               );
                             })()}
                           </div>
@@ -334,7 +343,7 @@ export default function TicketCard1({
             )}
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 }
