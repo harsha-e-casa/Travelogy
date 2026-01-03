@@ -458,6 +458,7 @@ export default function Stepper() {
               setHotelReviewData={setHotelReviewData}
               setLoading={setLoading}
               setError={setError}
+              markup={markup}
             />
 
             {loading ? (

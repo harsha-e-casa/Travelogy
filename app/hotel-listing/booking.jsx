@@ -36,7 +36,7 @@ export default function BookingCard({
   onMarkupUpdate,
 }) {
   const basefare = totalpricee?.fC?.BF;
-  const taxAndFees = totalpricee?.fC?.TAF || 0;
+  const taxAndFees = totalpricee?.tfcs?.TAF || 0;
   const RoomType = totalpricee?.fC?.MB;
   const RoomCategory = totalpricee?.fC?.RC;
 
@@ -48,7 +48,7 @@ export default function BookingCard({
 
   const roomCount = searchData?.roomInfo?.length;
   const netprice = totalpricee?.fC?.NF;
-  const { getCookie } = useContext(AppContext);
+  const { getCookie, setCookie } = useContext(AppContext);
 
   // Markup & Breakdown States
   const markup =
@@ -69,17 +69,12 @@ export default function BookingCard({
     setShowMarkupPopup(false);
     setSnackbarOpen(true);
 
-    if (totalpricee?.bookingId) {
-      postData("travelogy/flight/save-markup", {
-        bookingId: totalpricee.bookingId,
-        markup: newMarkup,
-      }).catch((error) => {
-        console.error("Error saving markup:", error);
-      });
-    }
+    // Save to cookies for persistence across pages
+    setCookie("hotel_markup_" + optionId, newMarkup.toString());
   };
 
   const handleUpdateAllMarkup = () => {
+    console.log("Updating all markup to:", tempMarkup);
     const newMarkup = Number(tempMarkup);
     if (onMarkupUpdate) {
       onMarkupUpdate(newMarkup, true);
@@ -87,14 +82,9 @@ export default function BookingCard({
     setShowMarkupPopup(false);
     setSnackbarOpen(true);
 
-    if (totalpricee?.bookingId) {
-      postData("travelogy/flight/save-markup", {
-        bookingId: totalpricee.bookingId,
-        markup: newMarkup,
-      }).catch((error) => {
-        console.error("Error saving markup:", error);
-      });
-    }
+    // Save to cookies for all options if needed, but usually we just save the current one
+    // or we could save a global markup cookie
+    setCookie("hotel_markup_global", newMarkup.toString());
   };
   
   const displayAmount = (Number(totalfare) || 0) + markup;
@@ -277,7 +267,7 @@ export default function BookingCard({
                 </div>
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>Taxes and Fees</span>
-                  <span>₹{taxAndFees}</span>
+                  <span>₹{Number(taxAndFees)}</span>
                 </div>
                 {markup > 0 && (
                   <div className="flex justify-between text-xs text-gray-500">
@@ -529,7 +519,21 @@ export default function BookingCard({
           aria-disabled={isFetching}
           aria-busy={isFetching}
           onClick={(e) => {
-            if (isFetching) e.preventDefault();
+            if (isFetching) {
+              e.preventDefault();
+              return;
+            }
+
+            // Call save-markup API when booking is initiated
+            // const idToSave = totalpricee?.bookingId || optionId;
+            // if (idToSave) {
+            //   postData("travelogy/flight/save-markup", {
+            //     bookingId: idToSave,
+            //     markup: markup,
+            //   }).catch((error) => {
+            //     console.error("Error saving markup on book click:", error);
+            //   });
+            // }
           }}
         >
           {isFetching ? "Updating Room Details..." : "Book This Room"}

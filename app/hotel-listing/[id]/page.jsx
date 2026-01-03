@@ -490,12 +490,15 @@ export default function ActivitiesDetail4() {
       </Layout>
     );
   }
-  const basefare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.BF;
+  const selectedOption = hotelData?.ops?.[0];
+  const ris = selectedOption?.ris || [];
+  const basefare = ris.reduce((acc, room) => acc + (room.tfcs?.BF || 0), 0);
+  const taxAndFees = ris.reduce((acc, room) => acc + (room.tfcs?.TAF || 0), 0);
+  const netprice = ris.reduce((acc, room) => acc + (room.tfcs?.NF || 0), 0);
 
-  const RoomType = hotelData?.ops?.[0]?.ris?.[0]?.mb;
-  const RoomCategory = hotelData?.ops?.[0]?.ris?.[0]?.rc;
-  const totalfare = hotelData?.ops?.[0]?.tp;
-  const netprice = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.NF;
+  const RoomType = ris[0]?.mb;
+  const RoomCategory = ris[0]?.rc;
+  const totalfare = selectedOption?.tp;
   const baggageinfo = [];
   const mealinfo = [];
   const rating = hotelData?.rt || 0;
@@ -862,6 +865,10 @@ export default function ActivitiesDetail4() {
                           OID: hotelData?.ops?.[0]?.id,
                           RC: RoomCategory,
                           HID: hotelData?.id,
+                          TAF: taxAndFees,
+                        },
+                        tfcs: {
+                          TAF: taxAndFees,
                         },
                       }}
                       baggageinfo={baggageinfo}
