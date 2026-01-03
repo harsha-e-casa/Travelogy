@@ -283,7 +283,7 @@ const BookingDetailsPage = () => {
       };
 
       const response = await postData("travelogy/hotel/fetch-data", reqBody);
-
+ console.log("Initiating cancellation for response:", response);
       if (response) {
         console.log("Booking cancelled successfully:", response);
 

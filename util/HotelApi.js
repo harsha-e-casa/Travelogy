@@ -339,7 +339,7 @@ export async function hotelBooking({
     };
 
     if (res?.status?.success === true) {
-      updateHotelBookingData();
+      await updateHotelBookingData();
     }
 
     return res;
@@ -348,7 +348,7 @@ export async function hotelBooking({
     throw e;
   }
 }
-export async function getBookingDetails(bookingId, setError) {4
+export async function getBookingDetails(bookingId, setError) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   try {
@@ -397,18 +397,18 @@ export async function getBookingDetails(bookingId, setError) {4
       });
       console.log("res == ", res);
     };
-    updateHotelBookingData();
+    await updateHotelBookingData();
 
     if (data?.status?.success) {
       return data;
     } else {
-      // throw new Error(data?.error);
-      // return data;
-      // throw new Error(response.errors?.[0]?.message);
       throw new Error(response.errors?.[0]?.message || response.error);
     }
   } catch (error) {
     console.error("Error fetching booking details:", error);
+    if (setError && typeof setError === 'function') {
+      setError(error.message);
+    }
     throw error;
   }
 }
