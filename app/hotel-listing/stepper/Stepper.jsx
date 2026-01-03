@@ -14,6 +14,7 @@ export function HotelReviewComponent({
   setHotelReviewData,
   setLoading,
   setError,
+  markup = 0,
 }) {
   const searchParams = useSearchParams();
   const hid = searchParams.get("hid");
@@ -34,7 +35,19 @@ export function HotelReviewComponent({
         if (response.error) {
           throw new Error(response.error);
         }
-        if (!cancelled) setHotelReviewData(response);
+        
+        if (!cancelled) {
+          setHotelReviewData(response);
+          
+          // Auto-save markup with the newly generated bookingId
+          if (response.bookingId && markup > 0) {
+            console.log("Auto-saving markup with new bookingId:", response.bookingId);
+            postData("travelogy/flight/save-markup", {
+              bookingId: response.bookingId,
+              markup: markup,
+            }).catch((err) => console.error("Auto-save markup error:", err));
+          }
+        }
       } catch (error) {
         if (!cancelled) setError(error?.message || "Something went wrong");
       } finally {
@@ -2451,6 +2464,9 @@ export function useFareBreakdown(hotelReviewData) {
 }
 
 export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = () => {} }) {
+  const searchParams = useSearchParams();
+  const hid = searchParams.get("hid");
+  const oid = searchParams.get("oid");
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
   const hotelPassenger = hotelReviewData?.hInfo?.ops?.[0]?.ris || [];
   const totalBaseFareSum = hotelPassenger.reduce((sum, room) => {
@@ -2478,11 +2494,11 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
     setShowMarkupPopup(false);
     setSnackbarOpen(true);
 
-    const bookingId = hotelReviewData?.bookingId;
-    console.log("Saving markup for bookingId:", bookingId, "Markup:", newMarkup);
-    if (bookingId) {
+    const idToSave = hotelReviewData?.bookingId || oid || hid;
+    console.log("Saving markup for id:", idToSave, "Markup:", newMarkup);
+    if (idToSave) {
       postData("travelogy/flight/save-markup", {
-        bookingId: bookingId,
+        bookingId: idToSave,
         markup: newMarkup,
       }).catch((error) => {
         console.error("Error saving markup:", error);

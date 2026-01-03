@@ -15,7 +15,7 @@ import { DownOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { postData } from "@/services/NetworkAdapter";
+import { postData, getData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
 import "../../stepper/StepperPage.css";
@@ -26,19 +26,32 @@ const BookingDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [markup, setMarkup] = useState(0);
-
-  useEffect(() => {
-    const savedMarkup = localStorage.getItem("hotelMarkup");
-    if (savedMarkup) {
-      setMarkup(Number(savedMarkup));
-    }
-  }, []);
-
   const [formData, setFormData] = useState({});
   const [showOptions, setShowOptions] = useState(false);
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("bookingId");
   const [Category2, setCategory2] = useState(null);
+
+  useEffect(() => {
+    if (bookingId) {
+      postData("travelogy/flight/get-markup", { bookingId }).then((res) => {
+        if (res && res.markup !== undefined) {
+          setMarkup(Number(res.markup));
+        } else {
+          const savedMarkup = localStorage.getItem("hotelMarkup");
+          if (savedMarkup) {
+            setMarkup(Number(savedMarkup));
+          }
+        }
+      }).catch(err => {
+        console.error("Error fetching markup from DB:", err);
+        const savedMarkup = localStorage.getItem("hotelMarkup");
+        if (savedMarkup) {
+          setMarkup(Number(savedMarkup));
+        }
+      });
+    }
+  }, [bookingId]);
   const dropdownRef = useRef(null);
   const printRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
