@@ -861,6 +861,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                   arrTime: dayjs(lastSegment.at).format("HH:mm"),
                                   airlineLogo: isUatAirlineLogo,
                                   price: totalPrice,
+                                  markup: ticketMarkups[ticket.id] ?? markup,
                                   adultFare: new Intl.NumberFormat("en-IN").format(
                                     fareFD.ADULT?.fC?.NF || 0
                                   ),
@@ -1144,6 +1145,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                         ),
                                         airlineLogo: isUatAirlineLogo,
                                         price: totalPrice,
+                                        markup: ticketMarkups[ticket.id] ?? markup,
                                         adultFare: new Intl.NumberFormat(
                                           "en-IN"
                                         ).format(fareFD.ADULT?.fC?.NF || 0),

@@ -263,6 +263,20 @@ export default function BookTicket() {
         const firstTrip = data.tripInfos?.[0];
         setBookingId(data.bookingId);
 
+        // Save markup to backend if passed via URL
+        const markupParam = searchParams.get("markup");
+        if (data.bookingId && markupParam) {
+          const parsedMarkup = Number(markupParam);
+          if (!isNaN(parsedMarkup) && parsedMarkup !== 0) {
+            postData("travelogy/flight/save-markup", {
+              bookingId: data.bookingId,
+              markup: parsedMarkup,
+            })
+              .then(() => console.log("Markup saved to backend from URL"))
+              .catch((error) => console.error("Error saving markup from URL:", error));
+          }
+        }
+
         const segs = firstTrip?.sI;
         const id = segs?.[0]?.id.trim();
 
@@ -403,7 +417,15 @@ export default function BookTicket() {
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
     if (tcs_id) fetchFlights(tcs_id);
-  }, []);
+
+    const markupParam = searchParams.get("markup");
+    if (markupParam) {
+      const parsedMarkup = Number(markupParam);
+      if (!isNaN(parsedMarkup)) {
+        setMarkup(parsedMarkup);
+      }
+    }
+  }, [tcs_id, searchParams]);
 
   const { Option } = Select;
 

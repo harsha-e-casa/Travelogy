@@ -156,6 +156,8 @@ const BookingDetailsPage = () => {
   //to send the priceinfo to the booking form
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
 
+  console.log("tttttttttttttttttt ", totalPriceinfo);
+
   const bookingDetailsapi = useCallback(
     async (bookingId) => {
       setLoading(true);
@@ -173,7 +175,9 @@ const BookingDetailsPage = () => {
         const parameter = { bookingId: bookingId, requirePaxPricing: true };
         console.log("paramerter", parameter);
 
-        const data = await postDataBookingDetails(parameter);
+        // const data = await postDataBookingDetails(parameter);
+        let reqData = { action: "bookingDetails", requestData: parameter };
+        const data = await postData("travelogy/one-way/fetch-data", reqData);
 
         setTotalpriceinfo(
           data?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail

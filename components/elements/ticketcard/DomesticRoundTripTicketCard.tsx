@@ -166,7 +166,7 @@ export default function DomesticRoundTripTicketCard({
         {tripPhase === "ONWARD" ? (
           <button
             className="mobile-book-btn"
-            onClick={() => handleTicketSelected(ticket, value)}
+            onClick={() => handleTicketSelected(ticket, value, markup)}
           >
             Select
           </button>
@@ -427,7 +427,7 @@ export default function DomesticRoundTripTicketCard({
               {tripPhase === "ONWARD" ? (
                 <button
                   className="btn-book-now"
-                  onClick={() => handleTicketSelected(ticket, value)}
+                  onClick={() => handleTicketSelected(ticket, value, markup)}
                 >
                   Select
                 </button>
@@ -437,7 +437,7 @@ export default function DomesticRoundTripTicketCard({
                     href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
                       selectedOnwardTicket.selectedPriceIndex
                     ]?.id
-                      },${ticket.totalPriceList[value]?.id}`}
+                      },${ticket.totalPriceList[value]?.id}&markup=${(Number(selectedOnwardTicket.markup) || 0) + (Number(markup) || 0)}`}
                     className="btn-book-now"
                   >
                     Book Now

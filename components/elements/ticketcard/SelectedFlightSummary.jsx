@@ -28,6 +28,10 @@ export default function SelectedFlightSummary({
     return sum + (isNaN(price) ? 0 : price);
   }, 0);
 
+  const totalMarkup = selectedFlightsArray.reduce((sum, [_, flight]) => {
+    return sum + (Number(flight.markup) || 0);
+  }, 0);
+
 
   // Mobile View
   if (isMobile) {
@@ -140,7 +144,7 @@ export default function SelectedFlightSummary({
 
             {isLastFlightSelected && (
               <Link
-                href={`/book-ticket?tcs_id=${flightIds}`}
+                href={`/book-ticket?tcs_id=${flightIds}&markup=${totalMarkup}`}
                 className="btn btn-primary br-10-imp w-full text-center"
                 style={{ marginTop: '12px' }}
               >
@@ -203,7 +207,7 @@ export default function SelectedFlightSummary({
             <span className="text-lg font-bold">₹{new Intl.NumberFormat("en-IN").format(totalPrice)}</span>
           </div>
           <Link
-            href={`/book-ticket?tcs_id=${flightIds}`}
+            href={`/book-ticket?tcs_id=${flightIds}&markup=${totalMarkup}`}
             className="btn btn-primary br-10-imp"
           >
             Continue to Booking
