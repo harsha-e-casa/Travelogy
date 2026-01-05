@@ -27,6 +27,7 @@ import "./style.css";
 // import staticBookingData from "./staticBookingData.json";
 
 const Alldetails = ({ totalpricee }) => {
+  console.log("aaaaaaaaaaaaaaaaaaaaaaalllllllllllllllll ",totalpricee)
   const searchParams = useSearchParams();
   const router = useRouter();
 

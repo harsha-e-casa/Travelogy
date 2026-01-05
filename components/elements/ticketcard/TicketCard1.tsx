@@ -334,7 +334,11 @@ export default function TicketCard1({
             )}
             {!reschedule && (
               <Link
-                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}`}
+                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id
+                  }${getCookie("gy_triptype") === "one-way"
+                    ? `&markup=${markup}`
+                    : ""
+                  }`}
                 // className="btn btn-gray booknow btn"
                 className="btn-book-now"
               >

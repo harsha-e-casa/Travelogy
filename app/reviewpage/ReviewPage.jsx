@@ -83,6 +83,7 @@ const ReviewPage = () => {
   const [paymsg, setPaymsg] = useState("");
   const [paymentModel, setPaymentModel] = useState(false);
   const tripType = getCookie("gy_triptype");
+  const [showWalletConfirm, setShowWalletConfirm] = useState(false);
 
   const [fareDetails, setFareDetails] = useState(null);
 
@@ -2567,7 +2568,9 @@ const ReviewPage = () => {
 
                       <div className="flex flex-col gap-4">
                         <div
-                          onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReviewWIthWallet : undefined}
+                          onClick={!(bookingLoading || bookingLoadingWallet) ? () => {
+                            setShowWalletConfirm(true);
+                          } : undefined}
                           className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoadingWallet
                             ? "bg-gray-100 cursor-not-allowed pointer-events-none"
                             : bookingLoading
@@ -2650,7 +2653,6 @@ const ReviewPage = () => {
                           )}
                         </div>
                       </div>
-
                       {paymsg && (
                         <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-lg text-center">
                           <p className="text-red-600 font-medium">
@@ -2661,6 +2663,56 @@ const ReviewPage = () => {
                           </p>
                         </div>
                       )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Wallet Confirmation Popup */}
+              {showWalletConfirm && (
+                <div
+                  className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+                  style={{ zIndex: 9999, position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}
+                >
+                  <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-100 relative">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 text-white text-center">
+                      <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md border border-white/30">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold">Wallet Payment</h3>
+                    </div>
+
+                    {/* Body */}
+                    <div className="p-8 text-center">
+                      <p className="text-gray-600 text-lg mb-2">You are about to pay</p>
+                      <div className="text-4xl font-black text-gray-900 mb-6">
+                        ₹{Number(finalAmountToPay - (markup || 0)) ? Number(finalAmountToPay - (markup || 0)).toLocaleString() : "..."}
+                      </div>
+                      <p className="text-gray-500 leading-relaxed">
+                        The total amount will be deducted from your wallet to confirm this booking. This action cannot be undone.
+                      </p>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-6 bg-gray-50 flex gap-4">
+                      <button
+                        onClick={() => setShowWalletConfirm(false)}
+                        className="flex-1 px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-white hover:shadow-md transition-all active:scale-95"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowWalletConfirm(false);
+                          bookingReviewWIthWallet();
+                        }}
+                        className="flex-1 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold text-black shadow-lg shadow-yellow-200 hover:shadow-yellow-300 transition-all active:scale-95 border-b-4 border-yellow-600"
+                      >
+                        Confirm
+                      </button>
                     </div>
                   </div>
                 </div>

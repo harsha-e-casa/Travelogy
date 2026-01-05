@@ -46,6 +46,8 @@ const ReissueReviewPage = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
   const [paymentModel, setPaymentModel] = useState(false);
+  const [showWalletConfirm, setShowWalletConfirm] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
   const [payError, setPayError] = useState("");
 
   useEffect(() => {
@@ -2806,107 +2808,187 @@ const ReissueReviewPage = () => {
                 </div>
               )}
               {paymentModel && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div
-                    className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative payment-modal-content"
-                  >
-                    <button
-                      onClick={() => {
-                        setPaymentModel(false);
-                        setPayError("");
-                      }}
-                      className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
-                    >
-                      ×
-                    </button>
-
-                    <p className="text-black-600 mb-2 font-semibold">
-                      Choose Payment Mode
-                    </p>
-
-                    <div className="payment-modal-buttons-row">
-                      <div
-                        onClick={bookingReviewWIthWallet}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                          ? "bg-gray-300"
-                          : "bg-yellow-300 hover:bg-yellow-400"
-                          }`}
-                        disabled={bookingLoadingWallet}
+                <div className="fixed inset-0 z-50 bg-white overflow-y-auto w-full h-full">
+                  <div className="w-full min-h-screen max-w-4xl mx-auto p-6 relative">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-8 border-b pb-4">
+                      <h2 className="text-2xl font-bold text-gray-800">
+                        Choose Payment Mode
+                      </h2>
+                      <button
+                        onClick={() => {
+                          setPaymentModel(false);
+                          setPaymsg("");
+                        }}
+                        className="text-gray-500 hover:text-black text-3xl font-light px-4"
                       >
-                        {bookingLoadingWallet ? (
-                          <div className="flex items-center gap-2">
-                            <svg
-                              className="animate-spin h-5 w-5 text-black"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                              ></path>
-                            </svg>
-                            <span>Loading...</span>
-                          </div>
-                        ) : (
-                          "Wallet Payment"
-                        )}
-                      </div>
-
-                      <div
-                        onClick={bookingReview}
-                        className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                          ? "bg-gray-300"
-                          : "bg-yellow-300 hover:bg-yellow-400"
-                          }`}
-                        disabled={bookingLoading}
-                      >
-                        {bookingLoading ? (
-                          <div className="flex items-center gap-2">
-                            <svg
-                              className="animate-spin h-5 w-5 text-black"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                            >
-                              <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                              ></circle>
-                              <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                              ></path>
-                            </svg>
-                            <span>Loading...</span>
-                          </div>
-                        ) : (
-                          "Pay via Gateway"
-                        )}
-                      </div>
+                        ×
+                      </button>
                     </div>
-                    {payError && (
-                      <p
-                        className="text-red-600 pt-2"
-                        style={{ textAlign: "center" }}
-                      >
-                        {payError.message}, Balance: {payError.balance}
+
+
+                    {/* Content Container */}
+                    <div className="max-w-xl mx-auto mt-12 p-8 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+                      <p className="text-gray-700 mb-8 font-medium text-center text-lg">
+                        Please select a payment method to proceed
                       </p>
-                    )}
+
+                      <div className="flex flex-col gap-4">
+                        <div
+                          onClick={!(bookingLoading || bookingLoadingWallet) ? () => {
+                            setShowWalletConfirm(true);
+                          } : undefined}
+                          className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoadingWallet
+                            ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                            : bookingLoading
+                              ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
+                              : "bg-white hover:border-yellow-400 cursor-pointer"
+                            }`}
+                          aria-disabled={bookingLoadingWallet || bookingLoading}
+                        >
+                          <span className="font-semibold text-lg">Wallet Payment</span>
+                          {bookingLoadingWallet ? (
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <svg
+                                className="animate-spin h-5 w-5"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                              </svg>
+                              Processing...
+                            </div>
+                          ) : (
+                            <span className="p-2 bg-yellow-100 rounded-full text-yellow-700">
+                              ➜
+                            </span>
+                          )}
+                        </div>
+
+                        <div
+                          onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReview : undefined}
+                          className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoading
+                            ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                            : bookingLoadingWallet
+                              ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
+                              : "bg-white hover:border-yellow-400 cursor-pointer"
+                            }`}
+                          aria-disabled={bookingLoading || bookingLoadingWallet}
+                        >
+                          <span className="font-semibold text-lg">
+                            Pay via Gateway
+                          </span>
+                          {bookingLoading ? (
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <svg
+                                className="animate-spin h-5 w-5"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                />
+                              </svg>
+                              Processing...
+                            </div>
+                          ) : (
+                            <span className="p-2 bg-yellow-100 rounded-full text-yellow-700">
+                              ➜
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {paymsg && (
+                        <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-lg text-center">
+                          <p className="text-red-600 font-medium">
+                            {paymsg.message}
+                          </p>
+                          <p className="text-red-500 text-sm mt-1">
+                            Balance: {paymsg.balance}
+                          </p>
+                        </div>
+                      )}
+                      {payError && (
+                        <p
+                          className="text-red-600 pt-2"
+                          style={{ textAlign: "center" }}
+                        >
+                          {payError.message}, Balance: {payError.balance}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Wallet Confirmation Popup */}
+              {showWalletConfirm && (
+                <div
+                  className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+                  style={{ zIndex: 9999, position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}
+                >
+                  <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-100 relative">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 text-white text-center">
+                      <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md border border-white/30">
+                        <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold">Wallet Payment</h3>
+                    </div>
+
+                    {/* Body */}
+                    <div className="p-8 text-center">
+                      <p className="text-gray-600 text-lg mb-2">You are about to pay</p>
+                      <div className="text-4xl font-black text-gray-900 mb-6">
+                        ₹{rssrAmount ? rssrAmount.toLocaleString() : "..."}
+                      </div>
+                      <p className="text-gray-500 leading-relaxed">
+                        The total amount will be deducted from your wallet to confirm this booking. This action cannot be undone.
+                      </p>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-6 bg-gray-50 flex gap-4">
+                      <button
+                        onClick={() => setShowWalletConfirm(false)}
+                        className="flex-1 px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-white hover:shadow-md transition-all active:scale-95"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowWalletConfirm(false);
+                          bookingReviewWIthWallet();
+                        }}
+                        className="flex-1 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold text-black shadow-lg shadow-yellow-200 hover:shadow-yellow-300 transition-all active:scale-95 border-b-4 border-yellow-600"
+                      >
+                        Confirm
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -2926,7 +3008,7 @@ const ReissueReviewPage = () => {
           )}
         </main>
       </Layout>
-    </Suspense>
+    </Suspense >
   );
 };
 

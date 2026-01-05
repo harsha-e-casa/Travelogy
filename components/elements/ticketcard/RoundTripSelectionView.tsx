@@ -19,6 +19,7 @@ import { FilterOutlined } from "@ant-design/icons";
 interface SelectedTicket {
   ticket: any;
   selectedPriceIndex: any;
+  markup: number;
 }
 
 export default function RoundTripSelectionView({ flightData, markup = 0, ticketMarkups = {}, onPriceClick }: any) {
@@ -461,9 +462,9 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     priceSort,
   ]);
 
-  const handleTicketSelected = (ticket: any, selectedPriceIndex: number) => {
+  const handleTicketSelected = (ticket: any, selectedPriceIndex: number, ticketMarkup: number = 0) => {
     if (tripPhase === "ONWARD") {
-      setSelectedOnwardTicket({ ticket, selectedPriceIndex }); // save selected onward
+      setSelectedOnwardTicket({ ticket, selectedPriceIndex, markup: ticketMarkup }); // save selected onward
       setCurrentTickets(flightData.RETURN); // move to return flights
       setTripPhase("RETURN");
       window.scrollTo({ top: 0, behavior: "smooth" });

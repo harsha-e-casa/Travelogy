@@ -117,7 +117,11 @@ export default function TicketCardMobile({
                     href={
                         reschedule
                             ? `reschedule-book-ticket?tcs_id=${selectedFare.id}&requestId=${requestId}`
-                            : `book-ticket?tcs_id=${selectedFare.id}`
+                            : `book-ticket?tcs_id=${selectedFare.id
+                            }${getCookie("gy_triptype") === "one-way"
+                                ? `&markup=${markup}`
+                                : ""
+                            }`
                     }
                     className="mobile-book-btn"
                 >

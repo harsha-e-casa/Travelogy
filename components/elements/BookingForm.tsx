@@ -168,16 +168,18 @@ const BookingForm: React.FC<BookingFormProps> = ({
             Number(totalfare) +
             savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
             savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) +
-            Number(ssrSeatAmount ?? 0);
+            Number(ssrSeatAmount ?? 0) +
+            Number(markup || 0);
           // (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
         } else {
-          computedAmount = Number(totalfare);
+          computedAmount = Number(totalfare) + Number(markup || 0);
         }
         setNetprice(
           computedAmount -
           savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
           savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
-          Number(ssrSeatAmount ?? 0)
+          Number(ssrSeatAmount ?? 0) -
+          Number(markup || 0)
         );
       } else {
         console.log("else varaliay ??");
@@ -229,13 +231,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
         console.log("Total Baggage Amount: ", baggageTotal);
         console.log("Total Seat Amount: ", seatTotal);
         console.log("Total Amount: ", Number(totalfare));
-        computedAmount = Number(totalfare);
+        computedAmount = Number(totalfare) + Number(markup || 0);
         setNetprice(totalfare - baggageTotal - seatTotal - mealTotal);
       }
       console.log("computedAmount ====== ", computedAmount);
       setDisplayAmount(computedAmount);
     }
-  }, [totalpricee]);
+  }, [totalpricee, markup]);
 
   // useEffect(() => {
   //   if (seatinfo != 0) {
