@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { message } from "antd";
+import dayjs from "dayjs";
+import { postData } from "@/services/NetworkAdapter";
 
 const HotelData = ({
   fetchHotelData = [],
   hotelId,
   availabilityError,
   markupObj,
+  hotelName,
+  hotelAddress,
+  hotelImage,
+  checkinDate,
+  checkoutDate,
 }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [currentFacilities, setCurrentFacilities] = useState([]);
@@ -13,7 +21,149 @@ const HotelData = ({
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [currentPriceDetails, setCurrentPriceDetails] = useState([]);
 
+  // Quote State
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+  const [shareStatus, setShareStatus] = useState("idle");
+
   const router = useRouter();
+
+  const handleShareQuote = async () => {
+    if (!shareEmail) {
+      message.error("Please enter a valid email.");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(shareEmail)) {
+      message.error("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      const hotelHTML = generateHotelHTML();
+      const payload = {
+        email: shareEmail,
+        link: window.location.href,
+        htmlContent: hotelHTML,
+      };
+
+      setShareStatus("sending");
+      const response = await postData("/travelogy/common/send-quote", payload);
+      if (response && (response.success || response.status)) {
+        setShareStatus("success");
+        message.success("Quote sent successfully!");
+        setTimeout(() => {
+          setIsShareModalOpen(false);
+          setShareEmail("");
+          setShareStatus("idle");
+        }, 2000);
+      } else {
+        setShareStatus("error");
+        message.error(response?.message || "Failed to send quote.");
+        setTimeout(() => setShareStatus("idle"), 3000);
+      }
+    } catch (error) {
+      console.error("Error sharing quote:", error);
+      message.error("An error occurred while sharing the quote.");
+      setShareStatus("idle");
+    }
+  };
+
+  const generateHotelHTML = () => {
+    if (!fetchHotelData || fetchHotelData.length === 0)
+      return "<p>Details unavailable.</p>";
+
+    let roomsHTML = "";
+    fetchHotelData.forEach((room) => {
+      room.ris.forEach((data) => {
+        const optionId = room.id;
+        const markup =
+          markupObj?.individual?.[optionId] !== undefined
+            ? markupObj.individual[optionId]
+            : markupObj?.global || 0;
+        const price = ((data?.tfcs?.TF || 0) + markup).toFixed(2);
+        const nights = data?.pis?.length;
+
+        roomsHTML += `
+          <div style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;">
+            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rc}</div>
+            <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">${data.mb}</div>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="color: #94a3b8; font-size: 12px;">
+                  ${nights} Night(s) for ${data.adt} Adult(s) ${data.chd ? `& ${data.chd} Child` : ""}
+                </td>
+                <td style="text-align: right; font-weight: 800; font-size: 18px; color: #e11d48;">
+                  ₹${Number(price).toLocaleString("en-IN")}
+                </td>
+              </tr>
+            </table>
+          </div>
+        `;
+      });
+    });
+
+    const checkin = dayjs(checkinDate).format("DD MMM YYYY");
+    const checkout = dayjs(checkoutDate).format("DD MMM YYYY");
+
+    return `
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td style="background-color: #c7941dff; padding: 25px 30px; text-align: center;">
+                <div style="color: #ffffff; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Travelogy Hotel Quote</div>
+                <div style="color: #ffffff; font-size: 12px; margin-top: 4px;">Premium Accommodation Selection</div>
+            </td>
+          </tr>
+          ${hotelImage ? `
+          <tr>
+            <td>
+              <img src="${hotelImage}" style="width: 100%; height: 250px; object-fit: cover;" alt="${hotelName}" />
+            </td>
+          </tr>
+          ` : ""}
+          <tr>
+            <td style="padding: 30px;">
+                <div style="margin-bottom: 25px;">
+                  <h2 style="margin: 0 0 5px 0; color: #0f172a; font-size: 22px; font-weight: 800;">${hotelName}</h2>
+                  <div style="color: #64748b; font-size: 14px;">${hotelAddress}</div>
+                </div>
+
+                <table width="100%" cellpadding="10" cellspacing="0" border="0" style="background-color: #f8fafc; border-radius: 8px; margin-bottom: 30px;">
+                  <tr>
+                    <td width="50%">
+                      <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Check-in</div>
+                      <div style="color: #334155; font-weight: 700; font-size: 15px;">${checkin}</div>
+                    </td>
+                    <td width="50%" style="border-left: 1px solid #e2e8f0;">
+                      <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Check-out</div>
+                      <div style="color: #334155; font-weight: 700; font-size: 15px;">${checkout}</div>
+                    </td>
+                  </tr>
+                </table>
+
+                <h3 style="color: #0f172a; font-size: 18px; font-weight: 700; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">Available Room Options</h3>
+                
+                ${roomsHTML}
+                
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px;">
+                    <tr>
+                        <td style="text-align: center; font-family: Arial, sans-serif;">
+                            <div style="color: #64748b; font-size: 13px; font-style: italic;">Note: Prices are subject to change based on availability at the time of booking.</div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color: #f8fafc; padding: 15px; text-align: center; border-top: 1px solid #f1f5f9;">
+                <div style="color: #94a3b8; font-size: 11px;">&copy; ${dayjs().year()} Travelogy. All rights reserved.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    `;
+  };
 
   const handleBookNow = (optionId) => {
     router.push(`/hotel-listing/stepper?hid=${hotelId}&oid=${optionId}`);
@@ -161,12 +311,20 @@ const HotelData = ({
                         Per Night Price
                       </div>
                       {dataLen === index2 + 1 && (
-                        <button
-                          className="book-now-btn"
-                          onClick={() => handleBookNow(room.id)}
-                        >
-                          Book Now
-                        </button>
+                        <div className="flex flex-col gap-2 items-end">
+                          <button
+                            className="book-now-btn"
+                            onClick={() => handleBookNow(room.id)}
+                          >
+                            Book Now
+                          </button>
+                          <div
+                            className="text-xs text-yellow-600 underline cursor-pointer font-semibold mt-1"
+                            onClick={() => setIsShareModalOpen(true)}
+                          >
+                            Share Quote
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -292,6 +450,46 @@ const HotelData = ({
                 No pricing details available.
               </p>
             )}{" "}
+          </div>
+        </div>
+      )}
+
+      {/* Share Quote Modal */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+            <button
+              onClick={() => setIsShareModalOpen(false)}
+              className="absolute top-2 right-3 text-gray-500 hover:text-gray-800 text-3xl"
+            >
+              ×
+            </button>
+            <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
+              Share Quote
+            </h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Recipient Email
+              </label>
+              <input
+                type="email"
+                className="w-full border rounded-md p-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="Enter email address"
+                value={shareEmail}
+                onChange={(e) => setShareEmail(e.target.value)}
+              />
+            </div>
+            <button
+              className={`w-full py-2 rounded-md text-white font-semibold transition-colors ${
+                shareStatus === "sending"
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-yellow-500 hover:bg-yellow-600"
+              }`}
+              onClick={handleShareQuote}
+              disabled={shareStatus === "sending"}
+            >
+              {shareStatus === "sending" ? "Sending..." : "Send Quote"}
+            </button>
           </div>
         </div>
       )}

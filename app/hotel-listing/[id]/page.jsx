@@ -792,6 +792,11 @@ export default function ActivitiesDetail4() {
                     hotelId={hotelData?.id}
                     availabilityError={availabilityError}
                     markupObj={markupObj}
+                    hotelName={hotelData?.name}
+                    hotelAddress={`${hotelData?.ad?.adr}, ${hotelData?.ad?.city?.name}`}
+                    hotelImage={displayImages[0]?.url || hotelData?.img?.[0]?.url}
+                    checkinDate={checkinDate}
+                    checkoutDate={checkoutDate}
                   />
                 </div>
               </div>
