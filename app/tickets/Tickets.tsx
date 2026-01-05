@@ -139,6 +139,13 @@ export default function Tickets() {
   const [ticketMarkups, setTicketMarkups] = useState<Record<string, number>>({});
   const [currentTicketId, setCurrentTicketId] = useState<string | null>(null);
 
+  const classLabels: any = {
+    a: "PREMIUM_ECONOMY",
+    b: "ECONOMY",
+    c: "BUSINESS",
+    d: "FIRST",
+  };
+
   useEffect(() => {
     const markupParam = searchParams.get("markup");
     if (markupParam) {
@@ -260,6 +267,15 @@ export default function Tickets() {
     const dfadu = parseInt(getCookie("gy_adult") || "1", 10);
     const dfchi = parseInt(getCookie("gy_child") || "0", 10);
     const dfinf = parseInt(getCookie("gy_infant") || "0", 10);
+    const gyClass = getCookie("gy_class") || "b";
+
+    const cabinClassLabel = (classLabels[gyClass] || "ECONOMY").replace("_", " ");
+    const totalPassengers = dfadu + dfchi + dfinf;
+    const passengerParts = [];
+    if (dfadu > 0) passengerParts.push(`${dfadu} Adult${dfadu > 1 ? "s" : ""}`);
+    if (dfchi > 0) passengerParts.push(`${dfchi} Child${dfchi > 1 ? "ren" : ""}`);
+    if (dfinf > 0) passengerParts.push(`${dfinf} Infant${dfinf > 1 ? "s" : ""}`);
+    const passengerBreakdown = passengerParts.join(", ");
 
     let totalAmount = 0;
     let allSegmentsHTML = "";
@@ -336,6 +352,7 @@ export default function Tickets() {
             <td style="background-color: #0f172a; padding: 25px 30px; text-align: center;">
                 <div style="color: #ffffff; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Travelogy Quote</div>
                 <div style="color: #94a3b8; font-size: 12px; margin-top: 4px;">Premium Flight Selection</div>
+                <div style="color: #94a3b8; font-size: 11px; margin-top: 6px;">Travel Class : <strong style="color: #ffffff;">${cabinClassLabel}</strong> | Passenger(s) : <strong style="color: #ffffff;">${totalPassengers} (${passengerBreakdown})</strong></div>
             </td>
           </tr>
           <tr>
@@ -1261,12 +1278,6 @@ export default function Tickets() {
   // Not required for API call but kept in state for other uses if needed.
   const [ticketParams, setTicketParams] = useState({ id: null, date: null });
 
-  const classLabels: any = {
-    a: "PREMIUM_ECONOMY",
-    b: "ECONOMY",
-    c: "BUSINESS",
-    d: "FIRST",
-  };
 
   useEffect(() => {
     // handle reschedule

@@ -89,8 +89,8 @@ const TravellerDetailsModal = ({
         ...prev,
         [tripKey]: exists
           ? current.filter(
-              (t) => t.fN !== traveller.fN || t.lN !== traveller.lN
-            )
+            (t) => t.fN !== traveller.fN || t.lN !== traveller.lN
+          )
           : [...current, traveller],
       };
     });
@@ -103,7 +103,7 @@ const TravellerDetailsModal = ({
     >
       <div
         className="bg-white rounded-lg shadow-lg p-6 w-full max-w-3xl relative overflow-y-auto traveller-modal-t"
-        // style={{ top: "3%" }}
+      // style={{ top: "3%" }}
       >
         <div>
           <div className="flex flex-row justify-between items-center pr-20 ">
@@ -128,9 +128,8 @@ const TravellerDetailsModal = ({
             {allTrips.map((trip, i) => {
               const firstSegment = trip?.sI?.[0];
               const lastSegment = trip?.sI?.[trip?.sI.length - 1];
-              const tripKey = `${firstSegment?.da?.code}-${
-                lastSegment?.aa?.code
-              }-${firstSegment?.dt?.split("T")[0]}`;
+              const tripKey = `${firstSegment?.da?.code}-${lastSegment?.aa?.code
+                }-${firstSegment?.dt?.split("T")[0]}`;
               return (
                 <div
                   key={i}
@@ -470,6 +469,7 @@ const TravellerDetailsModal = ({
                           amendment_status: amendmentDetails?.amendmentStatus,
                           type_of_amendment: amendmentType,
                           refundable_amount: amendmentDetails?.refundableAmount,
+                          is_active: 0
                           // time: dayjs().format()
                         };
 
@@ -618,9 +618,8 @@ const TravellerDetailsModal = ({
             }
           }}
           disabled={loading}
-          className={`btn btn-gray ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
+          className={`btn btn-gray ${loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
         >
           {loading ? (
             <>

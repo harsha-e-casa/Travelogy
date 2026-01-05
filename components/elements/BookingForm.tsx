@@ -609,18 +609,18 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
           {showPaymentDetails && (
             <div className="mt-3 pl-0 flex flex-col gap-2">
-              <div className="flex justify-between text-md font-medium text-gray-500">
+              {/* <div className="flex justify-between text-md font-medium text-gray-500">
                 <span>Commission</span>
                 <span>-₹0.00</span>
-              </div>
+              </div> */}
               <div className="flex justify-between text-md font-medium text-gray-500">
                 <span>Markup</span>
                 <span>-₹{Number(markup).toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-md font-medium text-gray-500">
+              {/* <div className="flex justify-between text-md font-medium text-gray-500">
                 <span>TDS</span>
                 <span>+₹0.00</span>
-              </div>
+              </div> */}
               <div className="flex justify-between text-md font-bold text-gray-700">
                 <span>Net Price</span>
                 <span>₹{(!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)) - Number(markup)}</span>
