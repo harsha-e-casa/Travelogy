@@ -121,6 +121,49 @@ export default function Stepper() {
     const savedFormData = localStorage.getItem("formData");
     return savedFormData ? JSON.parse(savedFormData) : {};
   });
+  
+  // Markup State
+  const [markup, setMarkup] = useState(() => {
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("hotelMarkupData");
+      if (savedData) {
+        try {
+          const markupObj = JSON.parse(savedData);
+          if (oid && markupObj.individual?.[oid] !== undefined) {
+            return markupObj.individual[oid];
+          }
+          return markupObj.global || 0;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      return Number(localStorage.getItem("hotelMarkup")) || 0;
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("hotelMarkupData");
+      let markupObj = { global: 0, individual: {} };
+      if (savedData) {
+        try {
+          markupObj = JSON.parse(savedData);
+        } catch (e) {}
+      }
+
+      if (oid) {
+        markupObj.individual = { ...markupObj.individual, [oid]: markup };
+        localStorage.setItem("hotelMarkupData", JSON.stringify(markupObj));
+      }
+      // Also update legacy simple key for other consumers if needed, 
+      // but strictly we are editing a specific room here so maybe not overwrite global 'hotelMarkup' unless we consider this global?
+      // Existing logic was overwriting global. Let's keep it safe by NOT overwriting global if we are in specific flow.
+      // But for backward compatibility with simple 'hotelMarkup' usage...
+      // localStorage.setItem("hotelMarkup", markup); 
+    }
+  }, [markup, oid]);
+
   const router = useRouter();
   const apiOk = !loading && !error && Boolean(hotelReviewData);
 
@@ -415,6 +458,7 @@ export default function Stepper() {
               setHotelReviewData={setHotelReviewData}
               setLoading={setLoading}
               setError={setError}
+              markup={markup}
             />
 
             {loading ? (
@@ -428,6 +472,8 @@ export default function Stepper() {
                       setFormData={setFormData}
                       onNext={goNext}
                       hotelReviewData={hotelReviewData}
+                      markup={markup}
+                      setMarkup={setMarkup}
                     />
                   )}
                   {currentStep === 2 && (
@@ -438,6 +484,7 @@ export default function Stepper() {
                       Category1={Category1}
                       Category={"bbook"}
                       hotelReviewData={hotelReviewData}
+                      markup={markup}
                     />
                   )}
                   {currentStep === 3 && PanRequired !== false && (
@@ -446,6 +493,7 @@ export default function Stepper() {
                       setFormData={setFormData}
                       hotelReviewData={hotelReviewData}
                       onNext={goNext}
+                      markup={markup}
                     />
                   )}
 
@@ -461,6 +509,7 @@ export default function Stepper() {
                       onConfirmPayment={handlePayment}
                       setError={setError}
                       setCurrentStep={setCurrentStep}
+                      markup={markup}
                     />
                   )}
                 </div>
@@ -468,6 +517,8 @@ export default function Stepper() {
                   <FareAmount
                     hotelReviewData={hotelReviewData}
                     Category="bbook"
+                    markup={markup}
+                    setMarkup={setMarkup}
                   />
                 </div>
               </>

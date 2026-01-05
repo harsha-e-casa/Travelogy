@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
+import { Select, DatePicker, Button } from "antd";
+import dayjs from "dayjs";
 
 function formatDateTime(isoString) {
   if (!isoString) return "--";
@@ -97,8 +99,8 @@ const FlightBookingList = ({
   const endIdx = startIdx + pageSize;
   const pagedBookings = sortedBookings.slice(startIdx, endIdx);
 
-  const handlePageSizeChange = (e) => {
-    setPageSize(Number(e.target.value));
+  const handlePageSizeChange = (value) => {
+    setPageSize(Number(value));
     setPage(1);
   };
 
@@ -132,68 +134,67 @@ const FlightBookingList = ({
       <div className="filters-section">
         <div className="filter-group">
           <label className="filter-label">Email:</label>
-          <select
-            className="filter-select"
+          <Select
+            style={{ width: 190, textAlign: "left" }}
             value={emailFilter}
-            onChange={(e) => {
-              setEmailFilter(e.target.value);
+            onChange={(value) => {
+              setEmailFilter(value);
               setPage(1);
             }}
           >
-            <option value="">All</option>
+            <Select.Option value="">All</Select.Option>
             {emailOptions?.map((email) => (
-              <option key={email} value={email}>
+              <Select.Option key={email} value={email}>
                 {email}
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="filter-group">
           <label className="filter-label">Status:</label>
-          <select
-            className="filter-select"
+          <Select
+            style={{ width: 150, textAlign: "left" }}
             value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
+            onChange={(value) => {
+              setStatusFilter(value);
               setPage(1);
             }}
           >
-            <option value="">All</option>
+            <Select.Option value="">All</Select.Option>
             {statusOptions.map((status) => (
-              <option key={status} value={status}>
+              <Select.Option key={status} value={status}>
                 {status}
-              </option>
+              </Select.Option>
             ))}
-          </select>
+          </Select>
         </div>
         <div className="filter-group">
           <label className="filter-label">Booking Date From:</label>
-          <input
-            type="date"
-            className="filter-input"
+          <DatePicker
+            style={{ width: 160 }}
+            format="YYYY-MM-DD"
             placeholder="DD/MM/YYYY"
-            value={fromDate}
-            onChange={(e) => {
-              setFromDate(e.target.value);
+            value={fromDate ? dayjs(fromDate) : null}
+            onChange={(date, dateString) => {
+              setFromDate(dateString);
               setPage(1);
             }}
           />
         </div>
         <div className="filter-group">
           <label className="filter-label">To:</label>
-          <input
-            type="date"
-            className="filter-input"
+          <DatePicker
+            style={{ width: 160 }}
+            format="YYYY-MM-DD"
             placeholder="DD/MM/YYYY"
-            value={toDate}
-            onChange={(e) => {
-              setToDate(e.target.value);
+            value={toDate ? dayjs(toDate) : null}
+            onChange={(date, dateString) => {
+              setToDate(dateString);
               setPage(1);
             }}
           />
         </div>
-        <button
-          className="bg-gray-200 text-sm text-black py-1 px-3 rounded hover:bg-gray-300"
+        <Button
           onClick={() => {
             setStatusFilter("");
             setFromDate("");
@@ -202,7 +203,7 @@ const FlightBookingList = ({
           }}
         >
           Reset
-        </button>
+        </Button>
       </div>
 
       {/* Table Header */}
@@ -210,17 +211,17 @@ const FlightBookingList = ({
         <div className="pagination-info">
           <div className="rows-per-page">
             <label className="filter-label">Rows per page:</label>
-            <select
-              className="filter-select"
+            <Select
+              style={{ width: 80 }}
               value={pageSize}
               onChange={handlePageSizeChange}
             >
               {PAGE_SIZE_OPTIONS.map((size) => (
-                <option key={size} value={size}>
+                <Select.Option key={size} value={size}>
                   {size}
-                </option>
+                </Select.Option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
         <div className="pagination-controls">

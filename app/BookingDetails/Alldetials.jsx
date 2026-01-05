@@ -52,12 +52,19 @@ const Alldetails = ({ totalpricee }) => {
   const [fareType, setFareType] = useState("");
   const [afsAmount, setAfsAmount] = useState(0);
   const [rssrAmount, setRssrAmount] = useState(0);
+  const [markup, setMarkup] = useState(0);
+
+  useEffect(() => {
+    const savedMarkup = localStorage.getItem("hotelMarkup");
+    if (savedMarkup) {
+      setMarkup(Number(savedMarkup));
+    }
+  }, []);
 
   const [ticketData, setTicketData] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
-  const [markup, setMarkup] = useState(0);
 
   useEffect(() => {
     if (bookingId) {
@@ -2209,6 +2216,7 @@ const Alldetails = ({ totalpricee }) => {
                   rssrAmount={rssrAmount}
                   markup={markup}
                   onHold={bookingDetails?.order?.status === "PENDING"}
+                  markupProp={markup}
                 />
               </div>
             </div>

@@ -364,7 +364,7 @@ const TravelForm = () => {
             </label>
 
             <input
-              type="number"
+              type="text"
               id="numberOfPacks"
               name="numberOfPacks"
               placeholder="Enter Number of packs"

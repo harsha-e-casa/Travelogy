@@ -140,6 +140,38 @@ export default function ActivitiesDetail4() {
   const [showTraveller, setShowTraveller] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
+  
+  // Markup State
+  const [markupObj, setMarkupObj] = useState({ global: 0, individual: {} });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("hotelMarkupData");
+      if (saved) {
+        setMarkupObj(JSON.parse(saved));
+      } else {
+        const old = localStorage.getItem("hotelMarkup");
+        if (old) setMarkupObj({ global: Number(old), individual: {} });
+      }
+    } catch (e) {
+      console.error("Error loading markup", e);
+    }
+  }, []);
+
+  const handleMarkupUpdate = (amount, isGlobal, id = null) => {
+    setMarkupObj((prev) => {
+      const newState = isGlobal
+        ? { ...prev, global: amount, individual: {} }
+        : {
+            ...prev,
+            individual: { ...prev.individual, [id]: amount },
+          };
+
+      localStorage.setItem("hotelMarkupData", JSON.stringify(newState));
+      if (isGlobal) localStorage.setItem("hotelMarkup", amount); // Backward compatibility
+      return newState;
+    });
+  };
 
   // useEffect(() => {
   //   if (searchQueryData?.roomInfo) {
@@ -458,12 +490,15 @@ export default function ActivitiesDetail4() {
       </Layout>
     );
   }
-  const basefare = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.BF;
+  const selectedOption = hotelData?.ops?.[0];
+  const ris = selectedOption?.ris || [];
+  const basefare = ris.reduce((acc, room) => acc + (room.tfcs?.BF || 0), 0);
+  const taxAndFees = ris.reduce((acc, room) => acc + (room.tfcs?.TAF || 0), 0);
+  const netprice = ris.reduce((acc, room) => acc + (room.tfcs?.NF || 0), 0);
 
-  const RoomType = hotelData?.ops?.[0]?.ris?.[0]?.mb;
-  const RoomCategory = hotelData?.ops?.[0]?.ris?.[0]?.rc;
-  const totalfare = hotelData?.ops?.[0]?.tp;
-  const netprice = hotelData?.ops?.[0]?.ris?.[0]?.tfcs?.NF;
+  const RoomType = ris[0]?.mb;
+  const RoomCategory = ris[0]?.rc;
+  const totalfare = selectedOption?.tp;
   const baggageinfo = [];
   const mealinfo = [];
   const rating = hotelData?.rt || 0;
@@ -756,6 +791,7 @@ export default function ActivitiesDetail4() {
                     fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}
                     hotelId={hotelData?.id}
                     availabilityError={availabilityError}
+                    markupObj={markupObj}
                   />
                 </div>
               </div>
@@ -817,6 +853,8 @@ export default function ActivitiesDetail4() {
                   <div className="booking-form">
                     <BookingCard
                       isFetching={isFetchingButton}
+                      markupObj={markupObj}
+                      onMarkupUpdate={handleMarkupUpdate}
                       segmentsPrice={hotelData?.ops}
                       totalpricee={{
                         fC: {
@@ -827,6 +865,10 @@ export default function ActivitiesDetail4() {
                           OID: hotelData?.ops?.[0]?.id,
                           RC: RoomCategory,
                           HID: hotelData?.id,
+                          TAF: taxAndFees,
+                        },
+                        tfcs: {
+                          TAF: taxAndFees,
                         },
                       }}
                       baggageinfo={baggageinfo}
