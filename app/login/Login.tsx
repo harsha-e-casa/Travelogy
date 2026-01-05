@@ -252,24 +252,6 @@ export default function Login() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="login-page-container" style={{ position: "relative" }}>
-        <button
-          onClick={() => setShowModal(true)}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            background: "#373742ff",
-            color: "orange",
-            padding: "12px 24px",
-            borderRadius: "20px",
-            border: "none",
-            fontSize: "16px",
-            cursor: "pointer",
-            zIndex: 3,
-          }}
-        >
-          Connect as a Vendor
-        </button>
         <div className="login-flex-wrapper">
           {/* left side */}
           <div className="login-left-section">
@@ -348,6 +330,25 @@ export default function Login() {
                     LOGIN
                   </Button>
                 </Form.Item>
+
+                <div className="flex justify-center" style={{ marginTop: "10px", width: "100%" }}>
+                  <Button
+                    type="primary"
+                    block
+                    size="large"
+                    onClick={() => setShowModal(true)}
+                    style={{
+                      background: "#373742ff",
+                      borderColor: "#373742ff",
+                      color: "white",
+                      fontWeight: 700,
+                      borderRadius: "10px",
+                      boxShadow: "0 8px 18px rgba(55, 55, 66, 0.35)",
+                    }}
+                  >
+                    Connect as a Vendor
+                  </Button>
+                </div>
               </Form>
             </div>
           </div>
