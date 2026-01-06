@@ -14,6 +14,9 @@ export default function TicketCard1({
   requestId = "",
   markup = 0,
   onPriceClick,
+  shareMode = false,
+  onQuoteSelectionChange,
+  selectedQuoteFlights = [],
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [showAllFares, setShowAllFares] = useState(false);
@@ -187,6 +190,23 @@ export default function TicketCard1({
                             ? `${segment?.["stops"]} stops`
                             : "non stop"}
                         </p>
+                        {/* {shareMode ? (
+                          <div style={{ marginRight: "10px", display: "flex", alignItems: "center" }}>
+                            <input
+                              type="checkbox"
+                              style={{ width: "18px", height: "18px", cursor: "pointer" }}
+                              checked={selectedQuoteFlights.some((f: any) => f.id === ticket?.id)}
+                              onChange={(e) => {
+                                if (onQuoteSelectionChange) {
+                                  onQuoteSelectionChange(ticket, ticket, e.target.checked);
+                                }
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                          </div>
+                        ) : (
+                          <Radio value={index} className="custom-radio"></Radio>
+                        )} */}
                       </div>
                     </div>
                   </div>
@@ -234,76 +254,166 @@ export default function TicketCard1({
               ).map((e: any, i: number) => {
                 return (
                   <>
-                    <Radio key={i} value={i} className="w-full radiocomp">
-                      <div
-                        className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
-												   ${"border-gray-300 hover:border-gray-500"}`}
-                      >
-                        <div className="flex flex-row gap-2 items-center">
-                          <div className="text-lg font-bold text-gray-800 price">
-                            ₹
-                            {(() => {
-                              let adultCost = 0;
-                              let childCost = 0;
-                              let infantCost = 0;
-                              if (e?.fd?.ADULT) {
-                                if (
-                                  getCookie("gy_adult") !== undefined &&
-                                  getCookie("gy_adult") !== "Nan"
-                                ) {
-                                  adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
-                                }
-                              }
-                              if (e?.fd?.CHILD) {
-                                if (
-                                  getCookie("gy_child") !== undefined &&
-                                  getCookie("gy_child") !== "Nan"
-                                ) {
-                                  childCost = childCount * e?.fd?.CHILD?.fC?.NF;
-                                }
-                              }
-                              if (e?.fd?.INFANT) {
-                                if (
-                                  getCookie("gy_infant") !== undefined &&
-                                  getCookie("gy_infant") !== "Nan"
-                                ) {
-                                  infantCost =
-                                    infantCount * e?.fd?.INFANT?.fC?.NF;
-                                }
-                              }
+                    <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
+                      <div style={{ flex: 1 }}>
+                        {shareMode ? (
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <Radio key={i} value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }}>
+                              <div
+                                className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
+                                                                    ${"border-gray-300 hover:border-gray-500"}`}
+                              >
+                                <div className="flex flex-row gap-2 items-center">
+                                  <div className="text-lg font-bold text-gray-800 price">
+                                    ₹
+                                    {(() => {
+                                      let adultCost = 0;
+                                      let childCost = 0;
+                                      let infantCost = 0;
+                                      if (e?.fd?.ADULT) {
+                                        if (
+                                          getCookie("gy_adult") !== undefined &&
+                                          getCookie("gy_adult") !== "Nan"
+                                        ) {
+                                          adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
+                                        }
+                                      }
+                                      if (e?.fd?.CHILD) {
+                                        if (
+                                          getCookie("gy_child") !== undefined &&
+                                          getCookie("gy_child") !== "Nan"
+                                        ) {
+                                          childCost = childCount * e?.fd?.CHILD?.fC?.NF;
+                                        }
+                                      }
+                                      if (e?.fd?.INFANT) {
+                                        if (
+                                          getCookie("gy_infant") !== undefined &&
+                                          getCookie("gy_infant") !== "Nan"
+                                        ) {
+                                          infantCost =
+                                            infantCount * e?.fd?.INFANT?.fC?.NF;
+                                        }
+                                      }
 
-                              return new Intl.NumberFormat("en-IN").format(
-                                adultCost + childCost + infantCost + (Number(markup) || 0)
-                              );
-                            })()}
+                                      return new Intl.NumberFormat("en-IN").format(
+                                        adultCost + childCost + infantCost + (Number(markup) || 0)
+                                      );
+                                    })()}
+                                  </div>
+                                  <span
+                                    className=" fareidentifier  text-xs font-bold"
+                                    style={{
+                                      backgroundColor: "#f5deb3",
+                                      color: "#5c4033",
+                                      padding: "1px 2px",
+                                    }}
+                                  >
+                                    {e.fareIdentifier}
+                                  </span>{" "}
+                                </div>
+
+                                <div className="text-xs text-gray-600">
+                                  <span className="ml-2 cabinclass">
+                                    {e.fd.ADULT.cc} |
+                                    <span className="refundable">
+                                      {" "}
+                                      {e.fd.ADULT.rT === 1
+                                        ? "Refundable"
+                                        : e.fd.ADULT.rT === 2
+                                          ? "Partial Refundable"
+                                          : "Non Refundable"}
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                            </Radio>
+                            <input
+                              type="checkbox"
+                              style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                              checked={selectedQuoteFlights.some((f: any) => f.ticketId === ticket.id && f.fareIndex === i)}
+                              onChange={(event) => {
+                                if (onQuoteSelectionChange) {
+                                  onQuoteSelectionChange(ticket, i, event.target.checked);
+                                }
+                              }}
+                              onClick={(event) => event.stopPropagation()}
+                            />
                           </div>
-                          <span
-                            className=" fareidentifier  text-xs font-bold"
-                            style={{
-                              backgroundColor: "#f5deb3",
-                              color: "#5c4033",
-                              padding: "1px 2px",
-                            }}
-                          >
-                            {e.fareIdentifier}
-                          </span>{" "}
-                        </div>
+                        ) : (
+                          <Radio key={i} value={i} className="w-full radiocomp">
+                            <div
+                              className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
+                                                                ${"border-gray-300 hover:border-gray-500"}`}
+                            >
+                              <div className="flex flex-row gap-2 items-center">
+                                <div className="text-lg font-bold text-gray-800 price">
+                                  ₹
+                                  {(() => {
+                                    let adultCost = 0;
+                                    let childCost = 0;
+                                    let infantCost = 0;
+                                    if (e?.fd?.ADULT) {
+                                      if (
+                                        getCookie("gy_adult") !== undefined &&
+                                        getCookie("gy_adult") !== "Nan"
+                                      ) {
+                                        adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
+                                      }
+                                    }
+                                    if (e?.fd?.CHILD) {
+                                      if (
+                                        getCookie("gy_child") !== undefined &&
+                                        getCookie("gy_child") !== "Nan"
+                                      ) {
+                                        childCost = childCount * e?.fd?.CHILD?.fC?.NF;
+                                      }
+                                    }
+                                    if (e?.fd?.INFANT) {
+                                      if (
+                                        getCookie("gy_infant") !== undefined &&
+                                        getCookie("gy_infant") !== "Nan"
+                                      ) {
+                                        infantCost =
+                                          infantCount * e?.fd?.INFANT?.fC?.NF;
+                                      }
+                                    }
 
-                        <div className="text-xs text-gray-600">
-                          <span className="ml-2 cabinclass">
-                            {e.fd.ADULT.cc} |
-                            <span className="refundable">
-                              {" "}
-                              {e.fd.ADULT.rT === 1
-                                ? "Refundable"
-                                : e.fd.ADULT.rT === 2
-                                  ? "Partial Refundable"
-                                  : "Non Refundable"}
-                            </span>
-                          </span>
-                        </div>
+                                    return new Intl.NumberFormat("en-IN").format(
+                                      adultCost + childCost + infantCost + (Number(markup) || 0)
+                                    );
+                                  })()}
+                                </div>
+                                <span
+                                  className=" fareidentifier  text-xs font-bold"
+                                  style={{
+                                    backgroundColor: "#f5deb3",
+                                    color: "#5c4033",
+                                    padding: "1px 2px",
+                                  }}
+                                >
+                                  {e.fareIdentifier}
+                                </span>{" "}
+                              </div>
+
+                              <div className="text-xs text-gray-600">
+                                <span className="ml-2 cabinclass">
+                                  {e.fd.ADULT.cc} |
+                                  <span className="refundable">
+                                    {" "}
+                                    {e.fd.ADULT.rT === 1
+                                      ? "Refundable"
+                                      : e.fd.ADULT.rT === 2
+                                        ? "Partial Refundable"
+                                        : "Non Refundable"}
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </Radio>
+                        )}
                       </div>
-                    </Radio>
+                    </div>
                   </>
                 );
               })}

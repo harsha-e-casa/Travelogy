@@ -12,8 +12,9 @@ import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
 import Cookies from "js-cookie";
 import BySortPrice from "@/components/Filter/BySortPrice";
-import { Drawer, Button } from "antd";
-import { FilterOutlined } from "@ant-design/icons";
+import { Drawer, Button, message } from "antd";
+import { FilterOutlined, ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import QuoteShareModal from "@/components/elements/QuoteShareModal";
 // import TicketCard1 from "./TicketCard1";
 
 interface SelectedTicket {
@@ -22,7 +23,9 @@ interface SelectedTicket {
   markup: number;
 }
 
-export default function RoundTripSelectionView({ flightData, markup = 0, ticketMarkups = {}, onPriceClick }: any) {
+import { postData } from "@/services/NetworkAdapter";
+
+export default function RoundTripSelectionView({ flightData, markup = 0, ticketMarkups = {}, onPriceClick, srx_tripType = "Round Trip" }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const { getCookie } = useContext(AppContext);
@@ -55,6 +58,12 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
   // Drawer state for mobile filters
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+
+  // Quote Sharing State
+  const [shareMode, setShareMode] = useState(false);
+  const [selectedQuoteFlights, setSelectedQuoteFlights] = useState<any[]>([]);
+  const [isQuoteSharing, setIsQuoteSharing] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
 
   useEffect(() => {
     // Detecting the window size to set `isMobile`
@@ -471,6 +480,73 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     }
   };
 
+  // Quote Sharing Handlers
+  const handleQuoteSelectionChange = (ticket: any, fareIndex: number, isChecked: boolean) => {
+    if (isChecked) {
+      // Add to selection
+      setSelectedQuoteFlights((prev) => [
+        ...prev,
+        {
+          ticketId: ticket.id,
+          fareIndex,
+          ticketData: ticket, // Store full ticket data for email
+          // Add phase info purely for reference if needed, though flight data usually has it
+          phase: tripPhase
+        },
+      ]);
+    } else {
+      // Remove from selection
+      setSelectedQuoteFlights((prev) =>
+        prev.filter(
+          (item) => !(item.ticketId === ticket.id && item.fareIndex === fareIndex)
+        )
+      );
+    }
+  };
+
+  const handleSendQuote = () => {
+    if (selectedQuoteFlights.length === 0) {
+      message.warning("Please select at least one flight to share.");
+      return;
+    }
+    setIsQuoteSharing(true);
+  };
+
+  const handleEmailSend = async (emails: string[], withPrice: boolean) => {
+    setShareLoading(true);
+    try {
+      const payload = {
+        emails,
+        withPrice,
+        flights: selectedQuoteFlights.map((item) => {
+          const itemMarkup = ticketMarkups[item.ticketId] ?? markup;
+          return {
+            ...item.ticketData, // Pass the full ticket object
+            ticket: item.ticketData,
+            fare: item.ticketData.totalPriceList[item.fareIndex],
+            fareIndex: item.fareIndex,
+            markup: itemMarkup,
+            phase: item.phase // Pass the phase (ONWARD/RETURN)
+          };
+        }),
+        tripType: srx_tripType,
+      };
+
+      await postData("travelogy/flight/send-quote", payload);
+
+      message.success("Quote sent successfully!");
+      setIsQuoteSharing(false);
+      setShareMode(false);
+      setSelectedQuoteFlights([]);
+
+    } catch (error) {
+      console.error("Error sending quote:", error);
+      message.error("An error occurred while sending the quote.");
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
   const renderFilters = () => (
     <>
       <div className="sidebar-left border-1 background-body">
@@ -707,13 +783,66 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         <div className="col-xl-9 col-12">
           {currentTickets && currentTickets.length > 0 ? (
             <>
-              <div>
-                {tripPhase == "ONWARD" ? (
-                  <>
-                    <h6 className="p-10">Departure to {departureFrom}</h6>
-                  </>
+              <div className="flex border-b mb-4">
+                <div
+                  className={`flex-1 p-3 text-center cursor-pointer font-bold ${tripPhase === "ONWARD"
+                    ? "border-b-2 border-blue-500 text-blue-500"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  onClick={() => setTripPhase("ONWARD")}
+                >
+                  Departure to {departureFrom}
+                </div>
+                <div
+                  className={`flex-1 p-3 text-center cursor-pointer font-bold ${tripPhase === "RETURN"
+                    ? "border-b-2 border-blue-500 text-blue-500"
+                    : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  onClick={() => setTripPhase("RETURN")}
+                >
+                  Return from {arrivalTo}
+                </div>
+              </div>
+
+              {/* Share Toolbar */}
+              <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100 mx-2" style={{ marginRight: '10px', marginLeft: '10px' }}>
+                {!shareMode ? (
+                  <div className="flex items-center gap-2 text-gray-600 text-sm">
+                    <ShareAltOutlined />
+                    <span className="font-semibold">Share By :</span>
+                    {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
+                    <span
+                      className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                      onClick={() => setShareMode(true)}
+                    >
+                      Email
+                    </span>
+                    {/* </span> | */}
+                    {/* <span className="cursor-pointer hover:text-blue-600 font-medium">View</span> */}
+                  </div>
                 ) : (
-                  <h6 className="p-10">Return from {arrivalTo}</h6>
+                  <div className="flex items-center gap-3 w-full justify-between">
+                    <div className="text-gray-600 text-sm font-medium">
+                      Select flights to share ({selectedQuoteFlights.length} selected)
+                    </div>
+                    <div className="flex gap-2">
+                      <span
+                        className="cursor-pointer text-orange-500 font-bold hover:text-orange-600 flex items-center gap-1"
+                        onClick={handleSendQuote}
+                      >
+                        Send <ShareAltOutlined />
+                      </span>
+                      <span
+                        className="cursor-pointer text-gray-500 hover:text-gray-700 flex items-center gap-1 ml-2"
+                        onClick={() => {
+                          setShareMode(false);
+                          setSelectedQuoteFlights([]);
+                        }}
+                      >
+                        <CloseOutlined />
+                      </span>
+                    </div>
+                  </div>
                 )}
               </div>
               <div
@@ -737,6 +866,9 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                         }
                         onPriceClick(id, m, t, fIdx, prevTickets);
                       }}
+                      shareMode={shareMode}
+                      selectedQuoteFlights={selectedQuoteFlights}
+                      onQuoteSelectionChange={handleQuoteSelectionChange}
                     />
                   );
                 })}
@@ -1115,6 +1247,13 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
           )}
         </div>
       )}
+      {/* Quote Share Modal */}
+      <QuoteShareModal
+        isOpen={isQuoteSharing}
+        onClose={() => setIsQuoteSharing(false)}
+        onSend={handleEmailSend}
+        loading={shareLoading}
+      />
     </>
   );
 }

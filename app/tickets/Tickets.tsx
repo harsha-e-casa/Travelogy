@@ -23,6 +23,7 @@ import TicketCard1 from "@/components/elements/ticketcard/TicketCard1";
 import TicketCardMobile from "@/components/elements/ticketcard/TicketCardMobile";
 import DomesticRoundTripTicketCard from "@/components/elements/ticketcard/DomesticRoundTripTicketCard";
 import RoundTripSelectionView from "@/components/elements/ticketcard/RoundTripSelectionView";
+import QuoteShareModal from "@/components/elements/QuoteShareModal";
 import MulticitySelectionView from "@/components/elements/ticketcard/MulticitySelectionView.jsx";
 import DirectFlight from "@/components/searchEngine/DirectFlight.jsx";
 import Layout from "@/components/layout/Layout";
@@ -41,7 +42,7 @@ import "./customeHeader_1.css";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
-import { DownOutlined, FilterOutlined } from "@ant-design/icons";
+import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space, Drawer, Button, Modal, Input, message } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
@@ -138,6 +139,76 @@ export default function Tickets() {
 
   const [ticketMarkups, setTicketMarkups] = useState<Record<string, number>>({});
   const [currentTicketId, setCurrentTicketId] = useState<string | null>(null);
+
+  // Share Quote State
+  const [shareMode, setShareMode] = useState(false);
+  const [selectedQuoteFlights, setSelectedQuoteFlights] = useState<any[]>([]);
+  const [isQuoteSharing, setIsQuoteSharing] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
+
+  const handleQuoteSelectionChange = (ticket: any, fareIndex: number, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedQuoteFlights((prev) => [
+        ...prev,
+        {
+          ticketId: ticket.id,
+          fareIndex: fareIndex,
+          ticket: ticket,
+        },
+      ]);
+    } else {
+      setSelectedQuoteFlights((prev) =>
+        prev.filter(
+          (f) =>
+            !(f.ticketId === ticket.id && f.fareIndex === fareIndex)
+        )
+      );
+    }
+  };
+
+  const handleSendQuote = async (emails: string[], withPrice: boolean) => {
+    if (selectedQuoteFlights.length === 0) {
+      message.warning("Please select at least one flight.");
+      return;
+    }
+    setShareLoading(true);
+    try {
+      const passengerInfo = {
+        adult: getCookie("gy_adult"),
+        child: getCookie("gy_child"),
+        infant: getCookie("gy_infant"),
+        class: classLabels[srx_cabinType]
+      };
+
+      // Construct payload with full details needed for email
+      const payload = {
+        emails,
+        withPrice,
+        flights: selectedQuoteFlights.map(item => {
+          const fareOption = item.ticket.totalPriceList[item.fareIndex];
+          return {
+            ticket: item.ticket,
+            fare: fareOption,
+            fareIndex: item.fareIndex,
+            markup: ticketMarkups[item.ticket.id] ?? markup
+          };
+        }),
+        tripType: srx_tripType,
+        passengerInfo
+      };
+
+      await postData("travelogy/flight/send-quote", payload);
+      message.success("Quote sent successfully!");
+      setIsQuoteSharing(false);
+      setShareMode(false);
+      setSelectedQuoteFlights([]);
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to send quote");
+    } finally {
+      setShareLoading(false);
+    }
+  };
 
   const classLabels: any = {
     a: "PREMIUM_ECONOMY",
@@ -3151,6 +3222,50 @@ export default function Tickets() {
                                   </div>
 
                                   <div className="col-xl-9 col-12">
+                                    {(srx_tripType?.trim().toLowerCase() === "one-way" ||
+                                      srx_tripType?.trim().toLowerCase() === "round-trip") && (
+                                        <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                          {!shareMode ? (
+                                            <div className="flex items-center gap-2 text-gray-600 text-sm">
+                                              <ShareAltOutlined />
+                                              <span className="font-semibold">Share By :</span>
+                                              {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
+                                              <span
+                                                className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                                onClick={() => setShareMode(true)}
+                                              >
+                                                Email
+                                              </span>
+                                              {/* </span> | */}
+                                              {/* <span className="cursor-pointer hover:text-blue-600 font-medium">View</span> */}
+                                            </div>
+                                          ) : (
+                                            <div className="flex items-center gap-3 w-full justify-between">
+                                              <div className="text-gray-600 text-sm font-medium">
+                                                Select flights to share ({selectedQuoteFlights.length} selected)
+                                              </div>
+                                              <div className="flex gap-2">
+                                                <span
+                                                  className="cursor-pointer text-orange-500 font-bold hover:text-orange-600 flex items-center gap-1"
+                                                  onClick={() => setIsQuoteSharing(true)}
+                                                >
+                                                  Send <ShareAltOutlined />
+                                                </span>
+                                                <span
+                                                  className="cursor-pointer text-gray-500 hover:text-gray-700 flex items-center gap-1 ml-2"
+                                                  onClick={() => {
+                                                    setShareMode(false);
+                                                    setSelectedQuoteFlights([]);
+                                                  }}
+                                                >
+                                                  <CloseOutlined />
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      )}
+
                                     <div
                                       className="box-list-flights box-list-flights-2"
                                       style={{ padding: isMobile ? "0" : "10px" }}
@@ -3173,6 +3288,9 @@ export default function Tickets() {
                                                 flightData={flightData}
                                                 markup={currentMarkup}
                                                 onPriceClick={openMarkupModal}
+                                                shareMode={shareMode}
+                                                selectedQuoteFlights={selectedQuoteFlights}
+                                                onQuoteSelectionChange={handleQuoteSelectionChange}
                                               />
                                             )}
                                           </React.Fragment>
@@ -3182,6 +3300,12 @@ export default function Tickets() {
                                   </div>
                                 </div>
                               </div>
+                              <QuoteShareModal
+                                isOpen={isQuoteSharing}
+                                onClose={() => setIsQuoteSharing(false)}
+                                onSend={handleSendQuote}
+                                loading={shareLoading}
+                              />
                               {/* <ByPagination
                                 handlePreviousPage={handlePreviousPage}
                                 totalPages={totalPages}
