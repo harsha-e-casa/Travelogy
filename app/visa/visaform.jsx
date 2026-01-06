@@ -411,7 +411,7 @@ const VisaForm = () => {
               role="radiogroup"
               aria-invalid={Boolean(errors.purposeOfTravel)}
             >
-              {["leisure", "business", "student", "other"].map((option) => (
+              {["leisure", "business", "student", "workPermit"].map((option) => (
                 <label
                   key={option}
                   className="custom-radio-button flex items-center gap-2"

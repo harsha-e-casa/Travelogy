@@ -58,6 +58,12 @@ const BookingDetailsPage = () => {
   const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [printOptions, setPrintOptions] = useState({
+    withPrice: true,
+    withAgency: true,
+    withCancellation: true,
+  });
 
   const handlePayClick = () => setShowModal(true);
   const handleCloseModal = () => !confirming && setShowModal(false);
@@ -315,9 +321,13 @@ const BookingDetailsPage = () => {
       console.error("No booking details available for printing");
       return;
     }
+    setShowPrintModal(true);
+  };
 
+  const executePrint = () => {
     try {
-      printHotelBooking(bookingDetails, markup);
+      printHotelBooking(bookingDetails, markup, printOptions);
+      setShowPrintModal(false);
     } catch (error) {
       console.error("Print failed:", error);
       alert("Failed to print booking details. Please try again.");
@@ -594,6 +604,137 @@ const BookingDetailsPage = () => {
                 <div className="flex items-center justify-center gap-2">
                   <Spin size="medium" />
                   <span>Cancelling your booking…</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showPrintModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
+              <div className="bg-white rounded shadow-lg w-full max-w-lg p-0 overflow-hidden">
+                <div className="flex justify-between items-center p-4 border-b relative">
+                  <h2 className="text-xl font-bold text-orange-600 text-center flex-1">
+                    PRINT YOUR HOTEL VOUCHER
+                  </h2>
+                  <button
+                    onClick={() => setShowPrintModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-3xl absolute right-4 top-2"
+                  >
+                    &times;
+                  </button>
+                </div>
+                <div className="p-10">
+                  <div className="flex flex-wrap justify-center gap-6 mb-12">
+                    <label className="flex items-center gap-2 cursor-pointer text-base font-medium">
+                      <div className="relative flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          className="appearance-none w-5 h-5 border-2 rounded transition-all bg-white"
+                          style={{ borderColor: "#f37021" }}
+                          checked={printOptions.withPrice}
+                          onChange={(e) =>
+                            setPrintOptions({
+                              ...printOptions,
+                              withPrice: e.target.checked,
+                            })
+                          }
+                        />
+                        {printOptions.withPrice && (
+                          <svg
+                            className="absolute w-3.5 h-3.5 pointer-events-none"
+                            style={{ color: "#f37021" }}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth="4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      With Price
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer text-base font-medium">
+                      <div className="relative flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          className="appearance-none w-5 h-5 border-2 rounded transition-all bg-white"
+                          style={{ borderColor: "#f37021" }}
+                          checked={printOptions.withAgency}
+                          onChange={(e) =>
+                            setPrintOptions({
+                              ...printOptions,
+                              withAgency: e.target.checked,
+                            })
+                          }
+                        />
+                        {printOptions.withAgency && (
+                          <svg
+                            className="absolute w-3.5 h-3.5 pointer-events-none"
+                            style={{ color: "#f37021" }}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth="4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      With Agency
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer text-base font-medium">
+                      <div className="relative flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          className="appearance-none w-5 h-5 border-2 rounded transition-all bg-white"
+                          style={{ borderColor: "#f37021" }}
+                          checked={printOptions.withCancellation}
+                          onChange={(e) =>
+                            setPrintOptions({
+                              ...printOptions,
+                              withCancellation: e.target.checked,
+                            })
+                          }
+                        />
+                        {printOptions.withCancellation && (
+                          <svg
+                            className="absolute w-3.5 h-3.5 pointer-events-none"
+                            style={{ color: "#f37021" }}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth="4"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      With Cancellation
+                    </label>
+                  </div>
+
+                  <div className="flex justify-center">
+                    <button
+                      className="text-white px-16 py-3 rounded text-lg font-bold transition shadow-md uppercase"
+                      style={{ backgroundColor: "#f37021" }}
+                      onClick={executePrint}
+                    >
+                      PRINT
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

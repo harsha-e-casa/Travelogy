@@ -519,6 +519,7 @@ export default function Stepper() {
                     Category="bbook"
                     markup={markup}
                     setMarkup={setMarkup}
+                    showEdit={currentStep === 1}
                   />
                 </div>
               </>
