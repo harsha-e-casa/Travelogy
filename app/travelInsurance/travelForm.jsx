@@ -475,7 +475,7 @@ const TravelForm = () => {
                 justifyContent: "space-around",
               }}
             >
-              {["usd50k", "usd100k", "usd250k", "other"].map((option) => (
+              {["usd50k", "usd2.5L", "usd5L", "usd10L"].map((option) => (
                 <label
                   key={option}
                   className="custom-radio-button flex items-center gap-2"

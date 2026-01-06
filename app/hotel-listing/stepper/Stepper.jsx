@@ -1359,7 +1359,7 @@ export function Step2Review({
         ) : null}
 
         <div className="mobile-fare-summary mt-40 mb-4 screen-only p-0">
-          <FareAmount hotelReviewData={hotelReviewData} Category={Category} markup={markup} />
+          <FareAmount hotelReviewData={hotelReviewData} Category={Category} markup={markup} showEdit={false} />
         </div>
 
         <div className="border-t pt-3">
@@ -2251,7 +2251,7 @@ export function Step3PersonalDocuments({
           206C(1G) of the Income Tax Act, 1961
         </div>
         <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
-          <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} markup={markup} />
+          <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} markup={markup} showEdit={false} />
         </div>
         {/* {Category === "bbook" && ( */}
         <div className="flex justify-between items-center mt-6">
@@ -2463,7 +2463,7 @@ export function useFareBreakdown(hotelReviewData) {
   return { totalBaseFare, totalTax };
 }
 
-export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = () => {} }) {
+export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = () => {}, showEdit = true }) {
   const searchParams = useSearchParams();
   const hid = searchParams.get("hid");
   const oid = searchParams.get("oid");
@@ -2537,32 +2537,34 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
             <div className="flex justify-between items-center">
                 <div className="flex items-center cursor-pointer gap-2" onClick={() => setShowTaxDetails(!showTaxDetails)}>
                     <span>Taxes and Fees</span>
-                    <DownOutlined className={`transform transition-transform ${showTaxDetails ? "rotate-180" : ""}`} />
+                    <DownOutlined className={`transform transition-transform ${showTaxDetails ? "rotate-180" : ""}`} style={{width:"10px", height:"10px"}}/>
                 </div>
                 
                 <div className="flex items-center gap-2 relative">
                     <span>₹{totalTax.toFixed(2)}</span>
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setTempMarkup(markup.toString());
-                        setShowMarkupPopup(!showMarkupPopup);
-                      }}
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                    {showEdit && (
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setTempMarkup(markup.toString());
+                          setShowMarkupPopup(!showMarkupPopup);
+                        }}
                       >
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                      </svg>
-                    </div>
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                      </div>
+                    )}
 
                     {showMarkupPopup && (
                         <div className="absolute top-8 right-0 bg-white shadow-xl rounded-lg p-3 border border-gray-200 z-50 w-60">
@@ -2674,13 +2676,37 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
               </div>
             ))}
 
-          <div className="flex justify-between pb-4">
-            <span>Taxes and Fees</span>
-            <span>₹{totalTaxSum.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between pb-4">
-            <span>Markup</span>
-            <span>₹{Number(markup).toFixed(2)}</span>
+          <div className="flex flex-col pb-4">
+            <div className="flex justify-between items-center">
+              <div
+                className="flex items-center cursor-pointer gap-2"
+                onClick={() => setShowTaxDetails(!showTaxDetails)}
+              >
+                <span>Taxes and Fees</span>
+                <DownOutlined
+                  className={`transform transition-transform ${
+                    showTaxDetails ? "rotate-180" : ""
+                  }`}
+                  style={{width:"8px", height:"8px"}}
+                />
+              </div>
+              <span>₹{totalTaxSum.toFixed(2)}</span>
+            </div>
+
+            {showTaxDetails && (
+              <div className="mt-2 pl-4 flex flex-col gap-1 text-gray-500 text-xs">
+                <div className="flex justify-between">
+                  <span>Taxes and Fees</span>
+                  <span>₹{totalTaxSum.toFixed(2)}</span>
+                </div>
+                {markup > 0 && (
+                  <div className="flex justify-between">
+                    <span>Markup</span>
+                    <span>₹{Number(markup).toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex justify-between font-semibold text-gray-800 border-t pt-2">
             <span>Total Amount Payable</span>

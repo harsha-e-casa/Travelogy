@@ -4,7 +4,7 @@
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 
-export function printHotelBooking(bookingDetails, markup = 0) {
+export function printHotelBooking(bookingDetails, markup = 0, printOptions = { withPrice: true, withAgency: true, withCancellation: true }) {
   if (!bookingDetails) return;
 
   const vm = normalizeHotelData(bookingDetails, markup);
@@ -12,6 +12,7 @@ export function printHotelBooking(bookingDetails, markup = 0) {
   // Debug logging
   console.log("=== HOTEL PRINT DEBUG ===");
   console.log("Normalized VM:", vm);
+  console.log("Print Options:", printOptions);
   console.log("Rooms with guests:", vm.rooms.map(r => ({
     name: r.name,
     type: r.type,
@@ -22,7 +23,7 @@ export function printHotelBooking(bookingDetails, markup = 0) {
   })));
   console.log("=== END DEBUG ===");
   
-  const html = renderHotelHTML(vm);
+  const html = renderHotelHTML(vm, printOptions);
 
   // Create a hidden iframe
   const iframe = document.createElement("iframe");
@@ -239,7 +240,7 @@ function statusLabel(s) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function renderHotelHTML(vm) {
+function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true, withCancellation: true }) {
   const styles = `
     <style>
       @page { 
@@ -494,7 +495,7 @@ function renderHotelHTML(vm) {
   `;
 
   // Logo and Company Header
-  const logoHeader = `
+  const logoHeader = printOptions.withAgency ? `
     <div class="logo-header">
       <img src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" alt="Travelogy Logo" />
       <div class="company-info">
@@ -504,7 +505,7 @@ function renderHotelHTML(vm) {
         <strong>Email:</strong> info@casagrandtravelogy.co.in
       </div>
     </div>
-  `;
+  ` : '';
 
   // Status Header with dynamic color
   const statusValue = String(vm.status || "").toUpperCase();
@@ -664,7 +665,7 @@ function renderHotelHTML(vm) {
   `;
 
   // Total Fare Summary
-  const fareSummary = `
+  const fareSummary = printOptions.withPrice ? `
     <div class="avoid-break">
       <h3 class="section-title">TOTAL FARE SUMMARY</h3>
       <table>
@@ -688,10 +689,10 @@ function renderHotelHTML(vm) {
         </tbody>
       </table>
     </div>
-  `;
+  ` : '';
 
   // Cancellation Policy
-  const cancellationSection = vm.cancellationPolicy.length > 0 ? `
+  const cancellationSection = (printOptions.withCancellation && vm.cancellationPolicy.length > 0) ? `
     <div class="avoid-break">
       <h3 class="section-title">Cancellation Policy:</h3>
       <table class="policy-table">
@@ -707,7 +708,7 @@ function renderHotelHTML(vm) {
             <tr>
               <td>${formatDateTime(policy.fdt)}</td>
               <td>${formatDateTime(policy.tdt)}</td>
-              <td>₹${fmtIN(policy.am || 0)}</td>
+              <td>${printOptions.withPrice ? `₹${fmtIN(policy.am || 0)}` : 'As per policy'}</td>
             </tr>
           `).join('')}
         </tbody>
