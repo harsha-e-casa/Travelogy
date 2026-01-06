@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import "./Multicity.css";
 import "./ticketCardMobile.css";
 import { Input, Radio } from "antd";
+import TicketCardMobile from "./TicketCardMobile";
 import { FilterOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import ByPrice from "@/components/Filter/ByPrice";
@@ -18,11 +19,31 @@ import ByFareType from "@/components/Filter/ByFareType";
 import SelectedFlightSummary from "./SelectedFlightSummary";
 import Cookies from "js-cookie";
 import BySortPrice from "@/components/Filter/BySortPrice";
+import { ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import QuoteShareModal from "@/components/elements/QuoteShareModal";
+import { postData } from "@/services/NetworkAdapter";
+import { message } from "antd";
 
 export default function MulticitySelectionView({ flightData, markup = 0, ticketMarkups = {}, onPriceClick }) {
   const isUat = process.env.UAT_ENV === "true";
   const { getCookie } = useContext(AppContext);
   const [activeBoxIndex, setActiveBoxIndex] = useState(0);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 991);
+    };
+
+    // Initial check
+    if (typeof window !== 'undefined') {
+      handleResize();
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const [selectedFlights, setSelectedFlights] = useState({});
   const [activeTabKey, setActiveTabKey] = useState("1");
   const [filters, setFilters] = useState([]);
@@ -37,27 +58,83 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
   const showFilterDrawer = () => setFilterDrawerOpen(true);
   const onCloseFilterDrawer = () => setFilterDrawerOpen(false);
 
+  // Quote Sharing State
+  const [shareMode, setShareMode] = useState(false);
+  const [selectedQuoteFlights, setSelectedQuoteFlights] = useState([]);
+  const [isQuoteSharing, setIsQuoteSharing] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
+
+  // Handle Share Selection
+  const handleQuoteSelectionChange = (ticket, fareIndex, isSelected, segmentIndex) => {
+    if (isSelected) {
+      setSelectedQuoteFlights((prev) => [
+        ...prev,
+        {
+          ticketId: ticket.id,
+          fareIndex: fareIndex,
+          ticket: ticket,
+          phase: `Segment ${segmentIndex + 1}` // Track phase as Segment X
+        },
+      ]);
+    } else {
+      setSelectedQuoteFlights((prev) =>
+        prev.filter(
+          (f) =>
+            !(f.ticketId === ticket.id && f.fareIndex === fareIndex)
+        )
+      );
+    }
+  };
+
+  const handleSendQuote = () => {
+    if (selectedQuoteFlights.length === 0) {
+      message.warning("Please select at least one flight to share.");
+      return;
+    }
+    setIsQuoteSharing(true);
+  };
+
+  const handleEmailSend = async (emails, withPrice) => {
+    setShareLoading(true);
+    try {
+      const payload = {
+        emails,
+        withPrice,
+        flights: selectedQuoteFlights.map((item) => {
+          const itemMarkup = ticketMarkups[item.ticketId] ?? markup;
+          return {
+            ...item.ticket,
+            ticket: item.ticket,
+            fare: item.ticket.totalPriceList[item.fareIndex],
+            fareIndex: item.fareIndex,
+            markup: itemMarkup,
+            phase: item.phase
+          };
+        }),
+        tripType: "Multi-City", // Explicitly set trip type
+      };
+
+      await postData("travelogy/flight/send-quote", payload);
+
+      message.success("Quote sent successfully!");
+      setIsQuoteSharing(false);
+      setShareMode(false);
+      setSelectedQuoteFlights([]);
+    } catch (error) {
+      console.error("Error sending quote:", error);
+      message.error("An error occurred while sending the quote.");
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
   useEffect(() => {
     // console.log("[MulticitySelectionView] ticketMarkups updated:", ticketMarkups);
   }, [ticketMarkups]);
 
 
 
-  const [isMobile, setIsMobile] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.innerWidth <= 770;
-    }
-    return false;
-  });
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
 
   useEffect(() => {
@@ -732,6 +809,46 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
               {currentFilter && renderFilters(tabIndex)}
             </div>
             <div className="col-xl-9 col-12">
+              <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
+                {!shareMode ? (
+                  <div className="flex items-center gap-2 text-gray-600 text-sm">
+                    <ShareAltOutlined />
+                    <span className="font-semibold">Share By :</span>
+                    {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
+                    <span
+                      className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                      onClick={() => setShareMode(true)}
+                    >
+                      Email
+                    </span>
+                    {/* </span> | */}
+                    {/* <span className="cursor-pointer hover:text-blue-600 font-medium">View</span> */}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 w-full justify-between">
+                    <div className="text-gray-600 text-sm font-medium">
+                      Select flights to share ({selectedQuoteFlights.length} selected)
+                    </div>
+                    <div className="flex gap-2">
+                      <span
+                        className="cursor-pointer text-orange-500 font-bold hover:text-orange-600 flex items-center gap-1"
+                        onClick={handleSendQuote}
+                      >
+                        Send Quote <ShareAltOutlined />
+                      </span>
+                      <span
+                        className="cursor-pointer text-gray-500 hover:text-red-500 flex items-center gap-1"
+                        onClick={() => {
+                          setShareMode(false);
+                          setSelectedQuoteFlights([]);
+                        }}
+                      >
+                        <CloseOutlined /> Cancel
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
               {/* Mobile Section Header */}
               {isMobile && (
                 <div style={{
@@ -752,182 +869,69 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                   return (
                     <div key={ticketId}>
                       {isMobile ? (
-                        <div className="ticket-card-mobile card-flight">
-                          <div className="mobile-card-header">
-                            {isUat ? (
-                              <img
-                                className="mobile-airline-logo"
-                                src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code}.png`}
-                                alt={ticket.sI[0].fD.aI.name}
-                                onError={(e) => {
-                                  e.target.src = "/assets/imgs/page/homepage1/flight.png";
-                                }}
-                              />
-                            ) : (
-                              <img
-                                className="mobile-airline-logo"
-                                src={`/assets/imgs/airlines/${ticket.sI[0].fD.aI.code.toLowerCase()}.png`}
-                                alt={ticket.sI[0].fD.aI.name}
-                                onError={(e) => {
-                                  e.target.src = "/assets/imgs/page/homepage1/flight.png";
-                                }}
-                              />
-                            )}
-                            <span className="mobile-airline-name">{ticket.sI[0].fD.aI.name}</span>
-                          </div>
+                        <TicketCardMobile
+                          ticket={ticket}
+                          markup={currentMarkup}
+                          onPriceClick={(ticketId, markup, ticketObj, fareIndex) => {
+                            const prevSegments = Object.keys(selectedFlights)
+                              .filter(key => parseInt(key) < tabIndex)
+                              .map(key => ({
+                                ticket: selectedFlights[key].ticket,
+                                selectedPriceIndex: selectedFlights[key].selectedPriceIndex
+                              }));
+                            onPriceClick && onPriceClick(ticketId, markup, ticketObj, fareIndex, prevSegments);
+                          }}
+                          onSelect={(selectedFare, selectedFareIndex) => {
+                            const fareFD = selectedFare.fd;
+                            const totalPrice = calculateTotalFare(
+                              fareFD,
+                              adultCount,
+                              childCount,
+                              infantCount,
+                              getCookie,
+                              ticketMarkups[ticket.id] ?? markup
+                            );
+                            const firstSegment = ticket.sI[0];
+                            const lastSegment = ticket.sI[ticket.sI.length - 1];
 
-                          <div className="mobile-flight-segments">
-                            {ticket.sI.map((segment, idx) => (
-                              <div key={idx} className="mobile-segment-row">
-                                <div className="mobile-city-block">
-                                  <span className="mobile-time">{dayjs(segment.dt).format("HH:mm")}</span>
-                                  <span className="mobile-city-code">{segment.da.code}</span>
-                                </div>
-                                <div className="mobile-duration-block">
-                                  <span className="mobile-duration">{formatTime(segment.duration)}</span>
-                                  <div className="mobile-arrow-icon"></div>
-                                  <span className="mobile-stops">
-                                    {segment.stops > 0
-                                      ? `${segment.stops} Stop${segment.stops > 1 ? "s" : ""}`
-                                      : "Non-stop"}
-                                  </span>
-                                </div>
-                                <div className="mobile-city-block" style={{ textAlign: "right" }}>
-                                  <span className="mobile-time">{dayjs(segment.at).format("HH:mm")}</span>
-                                  <span className="mobile-city-code">{segment.aa.code}</span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                            const isUatAirlineLogo = isUat
+                              ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
+                              : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
 
-                          <div className="mobile-card-footer">
-                            <div className="mobile-price-section">
-                              <span
-                                className="mobile-price cursor-pointer"
-                                onClick={() => {
-                                  const prevSegments = Object.keys(selectedFlights)
-                                    .filter(key => parseInt(key) < tabIndex)
-                                    .map(key => ({
-                                      ticket: selectedFlights[key].ticket,
-                                      selectedPriceIndex: selectedFlights[key].selectedPriceIndex
-                                    }));
-                                  onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0, prevSegments);
-                                }}
-                              >
-                                ₹{calculateTotalFare(
-                                  ticket.totalPriceList[selectedFares[tabIndex]?.[i] ?? 0].fd,
-                                  adultCount,
-                                  childCount,
-                                  infantCount,
-                                  getCookie,
-                                  ticketMarkups[ticket.id] ?? markup
-                                )}
-                              </span>
-                              <span className="mobile-fare-type">
-                                {ticket.totalPriceList[selectedFares[tabIndex]?.[i] ?? 0].fareIdentifier}
-                              </span>
-                            </div>
-                            <button
-                              className="mobile-book-btn"
-                              onClick={() => {
-                                const selectedFareIndex = selectedFares[tabIndex]?.[i] ?? 0;
-                                const selectedFare = ticket.totalPriceList[selectedFareIndex];
-                                const fareFD = selectedFare.fd;
+                            const updatedFlight = {
+                              priceId: selectedFare.id,
+                              flightName: firstSegment.fD.aI.name,
+                              depCityCode: firstSegment.da.code,
+                              arrCityCode: lastSegment.aa.code,
+                              airlineCode: firstSegment.fD.aI.code,
+                              flightNumber: firstSegment.fD.fN,
+                              depCity: firstSegment.da.city,
+                              arrCity: lastSegment.aa.city,
+                              depTime: dayjs(firstSegment.dt).format("HH:mm"),
+                              arrTime: dayjs(lastSegment.at).format("HH:mm"),
+                              airlineLogo: isUatAirlineLogo,
+                              price: totalPrice,
+                              markup: ticketMarkups[ticket.id] ?? markup,
+                              adultFare: new Intl.NumberFormat("en-IN").format(
+                                fareFD.ADULT?.fC?.NF || 0
+                              ),
+                              ticket: ticket,
+                              selectedPriceIndex: selectedFareIndex
+                            };
 
-                                const totalPrice = calculateTotalFare(
-                                  fareFD,
-                                  adultCount,
-                                  childCount,
-                                  infantCount,
-                                  getCookie,
-                                  ticketMarkups[ticket.id] ?? markup
-                                );
-                                const firstSegment = ticket.sI[0];
-                                const lastSegment = ticket.sI[ticket.sI.length - 1];
-
-                                const isUatAirlineLogo = isUat
-                                  ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
-                                  : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
-                                const updatedFlight = {
-                                  priceId: selectedFare.id,
-                                  flightName: firstSegment.fD.aI.name,
-                                  depCityCode: firstSegment.da.code,
-                                  arrCityCode: lastSegment.aa.code,
-                                  airlineCode: firstSegment.fD.aI.code,
-                                  flightNumber: firstSegment.fD.fN,
-                                  depCity: firstSegment.da.city,
-                                  arrCity: lastSegment.aa.city,
-                                  depTime: dayjs(firstSegment.dt).format("HH:mm"),
-                                  arrTime: dayjs(lastSegment.at).format("HH:mm"),
-                                  airlineLogo: isUatAirlineLogo,
-                                  price: totalPrice,
-                                  markup: ticketMarkups[ticket.id] ?? markup,
-                                  adultFare: new Intl.NumberFormat("en-IN").format(
-                                    fareFD.ADULT?.fC?.NF || 0
-                                  ),
-                                };
-
-                                setSelectedFlights((prev) => {
-                                  const newFlights = {
-                                    ...prev,
-                                    [tabIndex]: updatedFlight,
-                                  };
-                                  const nextTabIndex = tabIndex + 1;
-                                  if (nextTabIndex < matchedFlights.length) {
-                                    setActiveTabKey(String(nextTabIndex + 1));
-                                  }
-
-                                  return newFlights;
-                                });
-                              }}
-                            >
-                              Select
-                            </button>
-                          </div>
-
-                          {ticket.totalPriceList.length > 1 && (
-                            <div
-                              className="mobile-view-more"
-                              onClick={() => setShowAllFares((prev) => !prev)}
-                            >
-                              {showAllFares ? "Hide additional fares" : "View more fares"}
-                            </div>
-                          )}
-
-                          {showAllFares && (
-                            <div className="mt-3">
-                              <Radio.Group
-                                onChange={(e) => setSelectedFare(tabIndex, i, e.target.value)}
-                                value={selectedFares[tabIndex]?.[i] ?? 0}
-                                className="w-full flex flex-col gap-2"
-                              >
-                                {ticket.totalPriceList.map((fare, fareIdx) => (
-                                  <Radio
-                                    key={fareIdx}
-                                    value={fareIdx}
-                                    className="w-full border p-2 rounded"
-                                  >
-                                    <div className="flex justify-between items-center w-full">
-                                      <span className="text-sm font-bold">
-                                        ₹{calculateTotalFare(
-                                          fare.fd,
-                                          adultCount,
-                                          childCount,
-                                          infantCount,
-                                          getCookie,
-                                          ticketMarkups[ticket.id] ?? markup
-                                        )}
-                                      </span>
-                                      <span className="text-xs opacity-70">
-                                        {fare.fareIdentifier}
-                                      </span>
-                                    </div>
-                                  </Radio>
-                                ))}
-                              </Radio.Group>
-                            </div>
-                          )}
-                        </div>
+                            setSelectedFlights((prev) => {
+                              const newFlights = {
+                                ...prev,
+                                [tabIndex]: updatedFlight,
+                              };
+                              const nextTabIndex = tabIndex + 1;
+                              if (nextTabIndex < matchedFlights.length) {
+                                setActiveTabKey(String(nextTabIndex + 1));
+                              }
+                              return newFlights;
+                            });
+                          }}
+                        />
                       ) : (
                         <div className="" style={{ paddingBottom: "10px" }}>
                           {ticket.sI.length >= 1 ? (
@@ -1058,6 +1062,26 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                               >
                                                 ₹{fareValue}
                                               </div>
+                                              {/* Share Checkbox Inline */}
+                                              {shareMode && (
+                                                <div className="ml-2" onClick={(e) => e.stopPropagation()}>
+                                                  <input
+                                                    type="checkbox"
+                                                    className="w-5 h-5 cursor-pointer accent-orange-500"
+                                                    checked={selectedQuoteFlights.some(
+                                                      (f) => f.ticketId === ticket.id && f.fareIndex === j
+                                                    )}
+                                                    onChange={(e) =>
+                                                      handleQuoteSelectionChange(
+                                                        ticket,
+                                                        j,
+                                                        e.target.checked,
+                                                        tabIndex
+                                                      )
+                                                    }
+                                                  />
+                                                </div>
+                                              )}
                                               <span
                                                 className="fareidentifier text-xs font-bold"
                                                 style={{
@@ -1211,6 +1235,12 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
           isMobile={isMobile}
         />
       )}
+      <QuoteShareModal
+        isOpen={isQuoteSharing}
+        onClose={() => setIsQuoteSharing(false)}
+        onSend={handleEmailSend}
+        loading={shareLoading}
+      />
     </>
   );
 }

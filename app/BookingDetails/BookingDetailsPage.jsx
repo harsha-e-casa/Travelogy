@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useContext, useEffect, useState } from "react";
 import Alldetails from "./Alldetials";
-import { postDataBookingDetails } from "@/services/NetworkAdapter";
+import { postDataBookingDetails, postData } from "@/services/NetworkAdapter";
 import { checkTokenExpiry } from "@/services/Utils";
 import "./style.css";
 

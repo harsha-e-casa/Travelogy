@@ -46,6 +46,11 @@ import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByFareType from "@/components/Filter/ByFareType";
 import BySortPrice from "@/components/Filter/BySortPrice";
+import { ShareAltOutlined, CloseOutlined, FilterOutlined } from "@ant-design/icons";
+import { message, Drawer, Button } from "antd";
+import TicketCardMobile from "@/components/elements/ticketcard/TicketCardMobile";
+
+import QuoteShareModal from "@/components/elements/QuoteShareModal";
 
 // Convert ticket ratings from string to number
 // const ticketsData = rawticketsData.map((ticket) => ({
@@ -54,6 +59,23 @@ import BySortPrice from "@/components/Filter/BySortPrice";
 // }));
 
 const ticketsData: any = [];
+
+const generateStableId = (ticket: any) => {
+  if (!ticket || !ticket.sI) return Math.random().toString(36).substr(2, 9);
+
+  // Create a stable ID based on flight segments (Airlines, Flight Numbers, Times, Codes)
+  const segments = ticket.sI.map((seg: any) => {
+    const flightNo = seg.fD?.fN || '000';
+    const airline = seg.fD?.aI?.code || 'XX';
+    const depTime = seg.dt || '0000';
+    const fromCode = seg.da?.code || 'AAA';
+    const toCode = seg.aa?.code || 'BBB';
+    return `${airline}${flightNo}_${depTime}_${fromCode}${toCode}`;
+  });
+
+  const basePrice = ticket.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF || 0;
+  return `${segments.join("|")}_${basePrice}`;
+};
 
 export default function Tickets() {
   // Using custom hook for ticket filter logic
@@ -94,6 +116,29 @@ export default function Tickets() {
   const [activeFlight, setActiveFlight] = useState<any>(true);
   const [loading, setloading] = useState<boolean>(false);
   const [filteredFlightData, setFilteredFlightData] = useState<any>(null);
+
+  // Mobile/Tablet UI State
+  const [isMobile, setIsMobile] = useState(false);
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      console.log("window.innerWidthwindow.innerWidthwindow.innerWidth ", window.innerWidth)
+      console.log("window.innerWidthwindow.innerWidthwindow.innerWidth ", (window.innerWidth < 1070))
+      setIsMobile(window.innerWidth < 1070);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const showFilterDrawer = () => {
+    setFilterDrawerOpen(true);
+  };
+
+  const onCloseFilterDrawer = () => {
+    setFilterDrawerOpen(false);
+  };
 
   const [priceRange, setPriceRange] = useState([0, 10000000]);
   const [minPriceRange, setMinPriceRange] = useState<any>(null);
@@ -564,7 +609,7 @@ export default function Tickets() {
   const hasFetchedRef = useRef(false);
   const [srx_cabinType, setCabinType] = useState<any>(null);
 
-  const classLabels = {
+  const classLabels: any = {
     a: "PREMIUM_ECONOMY",
     b: "ECONOMY",
     c: "BUSINESS",
@@ -604,7 +649,16 @@ export default function Tickets() {
         result.searchResult &&
         result.searchResult.tripInfos
       ) {
-        setFlightData(result.searchResult.tripInfos);
+        const tripInfos = result.searchResult.tripInfos;
+        Object.keys(tripInfos).forEach((key) => {
+          if (Array.isArray(tripInfos[key])) {
+            tripInfos[key] = tripInfos[key].map((ticket: any) => ({
+              ...ticket,
+              id: generateStableId(ticket)
+            }));
+          }
+        });
+        setFlightData(tripInfos);
         setError("");
       } else {
         setError(result.errors[0].message);
@@ -663,6 +717,88 @@ export default function Tickets() {
     number | null
   >(null);
 
+  // Share Quote State
+  const [shareMode, setShareMode] = useState(false);
+  const [selectedQuoteFlights, setSelectedQuoteFlights] = useState<any[]>([]);
+  const [isQuoteSharing, setIsQuoteSharing] = useState(false);
+  const [shareLoading, setShareLoading] = useState(false);
+  const [ticketMarkups, setTicketMarkups] = useState<Record<string, number>>({});
+  const [markup, setMarkup] = useState<number>(0);
+
+  useEffect(() => {
+    const markupParam = searchParams.get("markup");
+    if (markupParam) {
+      const parsedMarkup = Number(markupParam);
+      if (!isNaN(parsedMarkup)) {
+        setMarkup(parsedMarkup);
+      }
+    }
+  }, [searchParams]);
+
+  const handleQuoteSelectionChange = (ticket: any, fareIndex: number, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedQuoteFlights((prev) => [
+        ...prev,
+        {
+          ticketId: ticket.id,
+          fareIndex: fareIndex,
+          ticket: ticket,
+        },
+      ]);
+    } else {
+      setSelectedQuoteFlights((prev) =>
+        prev.filter(
+          (f) =>
+            !(f.ticketId === ticket.id && f.fareIndex === fareIndex)
+        )
+      );
+    }
+  };
+
+  const handleSendQuote = async (emails: string[], withPrice: boolean) => {
+    if (selectedQuoteFlights.length === 0) {
+      message.warning("Please select at least one flight.");
+      return;
+    }
+    setShareLoading(true);
+    try {
+      const passengerInfo = {
+        adult: "1", // Reschedule typically implies 1 pax or same as original, defaulting to 1 for now or we can fetch from data
+        child: "0",
+        infant: "0",
+        class: classLabels[srx_cabinType] || "ECONOMY"
+      };
+
+      // Construct payload with full details needed for email
+      const payload = {
+        emails,
+        withPrice,
+        flights: selectedQuoteFlights.map(item => {
+          const fareOption = item.ticket.totalPriceList[item.fareIndex];
+          return {
+            ticket: item.ticket,
+            fare: fareOption,
+            fareIndex: item.fareIndex,
+            markup: ticketMarkups[item.ticket.id] ?? markup
+          };
+        }),
+        tripType: "One-Way", // Reschedule is usually treated as one-way search for new leg
+        passengerInfo
+      };
+
+      await postData("travelogy/flight/send-quote", payload);
+      message.success("Quote sent successfully!");
+      setIsQuoteSharing(false);
+      setShareMode(false);
+      setSelectedQuoteFlights([]);
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to send quote");
+    } finally {
+      setShareLoading(false);
+    }
+  };
+
   const multiOpenfrom = (idx: number) => {
     setOpenFromMultiIndex((prev) => (prev === idx ? null : idx));
   };
@@ -707,6 +843,135 @@ export default function Tickets() {
 
   let searchEnginewidth = {};
 
+  const renderFilters = () => (
+    <>
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Filter Price{" "}
+            </h6>
+            <ByPrice
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              minPriceRange={minPriceRange}
+              maxPriceRange={maxPriceRange}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Sort by Price
+            </h6>
+            <BySortPrice sort={priceSort} setSort={setPriceSort} />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Stops
+            </h6>
+            <ByStops stops={stops} setStops={setStops} />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Departure Time
+            </h6>
+            <ByDepartureTime
+              departureTime={departureTime}
+              setDepartureTime={setDepartureTime}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Arrival Time
+            </h6>
+            <ByArrivalTime
+              arrivalTime={arrivalTime}
+              setArrivalTime={setArrivalTime}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Airlines
+            </h6>
+            <div className="box-collapse scrollFilter">
+              <ByAirline
+                uniqueAirlines={[
+                  ...new Set(
+                    (
+                      flightData?.ONWARD ||
+                      flightData?.COMBO ||
+                      []
+                    ).map((ticket: any) => ticket.sI[0].fD.aI.name)
+                  ),
+                ]}
+                selectedAirlines={selectedAirlines}
+                setSelectedAirlines={setSelectedAirlines}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Fare Identifier
+            </h6>
+            <div className="box-collapse scrollFilter">
+              <ByFareIdentifier
+                fareIdentifiers={fareIdentifiers}
+                setFareIdentifiers={setFareIdentifiers}
+                options={uniqueFareIdentifiers}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="sidebar-left border-1 background-body">
+        <div className="box-filters-sidebar">
+          <div className="block-filter border-1">
+            <h6 className="text-lg-bold filter-sty neutral-1000">
+              Fare Type
+            </h6>
+            <div className="box-collapse scrollFilter">
+              <ByFareType
+                selectedFareTypes={selectedFareTypes}
+                setSelectedFareTypes={setSelectedFareTypes}
+                options={uniqueFareTypes}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
@@ -716,57 +981,107 @@ export default function Tickets() {
           <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
             {/* Header Section */}
 
-            <div
-              className="hdt_header"
-              // style={{ ...searchEnginewidth }}
-              style={{ width: "60%" }}
-            >
-              <>
-                <div className="hdt_header-item relative">
-                  <label>From</label>
-                  <div className="hdt_value" style={{ cursor: "not-allowed" }}>
-                    {
-                      fetchRescheduleData?.searchQuery?.routeInfos?.[0]
-                        ?.fromCityOrAirport?.city
-                    }
-                  </div>
-                </div>
-
-                <div className="hdt_header-item relative">
-                  <label>To</label>
-                  <div className="hdt_value" style={{ cursor: "not-allowed" }}>
-                    {
-                      fetchRescheduleData?.searchQuery?.routeInfos?.[0]
-                        ?.toCityOrAirport?.city
-                    }
-                  </div>
-                </div>
-              </>
-
-              <div className="hdt_header-item">
-                <label>Depart</label>
-                <div onClick={openToDateRange} className="hdt_value">
-                  {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
-                </div>
-
-                {openDateRage ? (
-                  <AppDateRangeFlight
-                    openToDateRange={openToDateRange}
-                    setDate={setDatedep}
-                    minDate={null}
-                    value={datedep}
-                  />
-                ) : null}
-              </div>
-
-              <button
-                type="button"
-                onClick={handlesearFlight}
-                className="hdt_search-btn"
+            {!isMobile && (
+              <div
+                className="hdt_header"
+                // style={{ ...searchEnginewidth }}
+                style={{ width: "60%" }}
               >
-                Search
-              </button>
-            </div>
+                <>
+                  <div className="hdt_header-item relative">
+                    <label>From</label>
+                    <div className="hdt_value" style={{ cursor: "not-allowed" }}>
+                      {
+                        fetchRescheduleData?.searchQuery?.routeInfos?.[0]
+                          ?.fromCityOrAirport?.city
+                      }
+                    </div>
+                  </div>
+
+                  <div className="hdt_header-item relative">
+                    <label>To</label>
+                    <div className="hdt_value" style={{ cursor: "not-allowed" }}>
+                      {
+                        fetchRescheduleData?.searchQuery?.routeInfos?.[0]
+                          ?.toCityOrAirport?.city
+                      }
+                    </div>
+                  </div>
+                </>
+
+                <div className="hdt_header-item">
+                  <label>Depart</label>
+                  <div onClick={openToDateRange} className="hdt_value">
+                    {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
+                  </div>
+
+                  {openDateRage ? (
+                    <AppDateRangeFlight
+                      openToDateRange={openToDateRange}
+                      setDate={setDatedep}
+                      minDate={null}
+                      value={datedep}
+                    />
+                  ) : null}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handlesearFlight}
+                  className="hdt_search-btn"
+                >
+                  Search
+                </button>
+              </div>
+            )}
+
+            {/* Mobile Header Summary */}
+            {isMobile && (
+              <div style={{ background: "#1a1a2e" }}>
+                <div className="mobile-search-summary py-2 px-3 flex justify-between items-center text-white">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold">
+                      {fetchRescheduleData?.searchQuery?.routeInfos?.[0]?.fromCityOrAirport?.city} → {fetchRescheduleData?.searchQuery?.routeInfos?.[0]?.toCityOrAirport?.city}
+                    </span>
+                    <span className="text-xs opacity-80">
+                      {dayjs(datedep).format("DD MMM")}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="small"
+                      ghost
+                      onClick={openToDateRange}
+                      style={{ color: "white", borderColor: "rgba(255,255,255,0.3)" }}
+                    >
+                      Change Date
+                    </Button>
+                    <Button
+                      size="small"
+                      type="primary"
+                      onClick={() => {
+                        handlesearFlight();
+                      }}
+                      style={{ background: "#EB5B00", borderColor: "#EB5B00" }}
+                    >
+                      Search
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Inline Date Picker */}
+                {openDateRage && (
+                  <div className="bg-white p-2 text-black relative z-50">
+                    <AppDateRangeFlight
+                      openToDateRange={openToDateRange}
+                      setDate={setDatedep}
+                      minDate={null}
+                      value={datedep}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Ticket List Section */}
@@ -844,31 +1159,106 @@ export default function Tickets() {
                           {tripInfo?.length > 0 ? (
                             <>
                               <div className="box-grid-tours">
+                                {/* Mobile Filter Button */}
+                                <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
+                                  <Button
+                                    type="primary"
+                                    icon={<FilterOutlined />}
+                                    onClick={showFilterDrawer}
+                                    style={{ marginBottom: "10px" }}
+                                  >
+                                    Filters
+                                  </Button>
+                                </div>
+
+                                {/* Drawer */}
+                                <Drawer
+                                  title="Filter Flights"
+                                  placement="left"
+                                  onClose={onCloseFilterDrawer}
+                                  open={filterDrawerOpen}
+                                  width={300}
+                                >
+                                  <div className="content-left">
+                                    {renderFilters()}
+                                  </div>
+                                </Drawer>
+
                                 <div className="row">
                                   <div
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
+                                    <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                      {!shareMode ? (
+                                        <div className="flex items-center gap-2 text-gray-600 text-sm">
+                                          <ShareAltOutlined />
+                                          <span className="font-semibold">Share By :</span>
+                                          <span
+                                            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                            onClick={() => setShareMode(true)}
+                                          >
+                                            Email
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-3 w-full justify-between">
+                                          <div className="text-gray-600 text-sm font-medium">
+                                            Select flights to share ({selectedQuoteFlights.length} selected)
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <span
+                                              className="cursor-pointer text-orange-500 font-bold hover:text-orange-600 flex items-center gap-1"
+                                              onClick={() => setIsQuoteSharing(true)}
+                                            >
+                                              Send <ShareAltOutlined />
+                                            </span>
+                                            <span
+                                              className="cursor-pointer text-gray-500 hover:text-gray-700 flex items-center gap-1 ml-2"
+                                              onClick={() => {
+                                                setShareMode(false);
+                                                setSelectedQuoteFlights([]);
+                                              }}
+                                            >
+                                              <CloseOutlined />
+                                            </span>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+
                                     {tripInfo.map((ticket: any) => (
                                       <React.Fragment key={ticket.id}>
-                                        <TicketCard1
-                                          ticket={ticket}
-                                          flightData={flightData}
-                                          reschedule={true}
-                                          requestId={requestId}
-                                        />
+                                        {isMobile ? (
+                                          <TicketCardMobile
+                                            ticket={ticket}
+                                            flightData={flightData}
+                                            markup={markup}
+                                          // onPriceClick={openMarkupModal} 
+                                          />
+                                        ) : (
+                                          <TicketCard1
+                                            ticket={ticket}
+                                            flightData={flightData}
+                                            reschedule={true}
+                                            requestId={requestId}
+                                            shareMode={shareMode}
+                                            selectedQuoteFlights={selectedQuoteFlights}
+                                            onQuoteSelectionChange={handleQuoteSelectionChange}
+                                          />
+                                        )}
                                       </React.Fragment>
                                     ))}
                                   </div>
                                 </div>
                               </div>
-                              <ByPagination
+                              {/* <ByPagination
                                 handlePreviousPage={handlePreviousPage}
                                 totalPages={totalPages}
                                 currentPage={currentPage}
                                 handleNextPage={handleNextPage}
                                 handlePageChange={handlePageChange}
-                              />
+                              /> */}
                             </>
                           ) : (
                             !loading && (
@@ -907,137 +1297,20 @@ export default function Tickets() {
                 </div>
 
                 {/* Left Sidebar Filters */}
-                <div className="content-left order-lg-first">
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Filter Price{" "}
-                        </h6>
-                        <ByPrice
-                          priceRange={priceRange}
-                          setPriceRange={setPriceRange}
-                          minPriceRange={minPriceRange}
-                          maxPriceRange={maxPriceRange}
-                        />
-                      </div>
+                {!isMobile && (
+                  <div className="content-left order-lg-first">
+                    {/* Desktop Sidebar */}
+                    <div className="d-none d-xl-block">
+                      {renderFilters()}
                     </div>
                   </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Sort by Price
-                        </h6>
-                        <BySortPrice sort={priceSort} setSort={setPriceSort} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Stops
-                        </h6>
-                        <ByStops stops={stops} setStops={setStops} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Departure Time
-                        </h6>
-                        <ByDepartureTime
-                          departureTime={departureTime}
-                          setDepartureTime={setDepartureTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Arrival Time
-                        </h6>
-                        <ByArrivalTime
-                          arrivalTime={arrivalTime}
-                          setArrivalTime={setArrivalTime}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Airlines
-                        </h6>
-                        <div className="box-collapse scrollFilter">
-                          <ByAirline
-                            uniqueAirlines={[
-                              ...new Set(
-                                (
-                                  flightData?.ONWARD ||
-                                  flightData?.COMBO ||
-                                  []
-                                ).map((ticket: any) => ticket.sI[0].fD.aI.name)
-                              ),
-                            ]}
-                            selectedAirlines={selectedAirlines}
-                            setSelectedAirlines={setSelectedAirlines}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Fare Identifier
-                        </h6>
-                        <div className="box-collapse scrollFilter">
-                          <ByFareIdentifier
-                            fareIdentifiers={fareIdentifiers}
-                            setFareIdentifiers={setFareIdentifiers}
-                            options={uniqueFareIdentifiers}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="sidebar-left border-1 background-body">
-                    <div className="box-filters-sidebar">
-                      <div className="block-filter border-1">
-                        <h6 className="text-lg-bold filter-sty neutral-1000">
-                          Fare Type
-                        </h6>
-                        <div className="box-collapse scrollFilter">
-                          <ByFareType
-                            selectedFareTypes={selectedFareTypes}
-                            setSelectedFareTypes={setSelectedFareTypes}
-                            options={uniqueFareTypes}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </section>
 
-          {/* How It Works Section */}
+
+
           <section className="section-box box-how-it-work-3 background-body">
             <div className="container">
               <div className="box-how-it-work-inner background-3">
@@ -1112,10 +1385,16 @@ export default function Tickets() {
                 </div>
               </div>
             </div>
-          </section>
+          </section >
           <div className="pb-90 background-body" />
-        </main>
-      </Layout>
-    </Suspense>
+        </main >
+        <QuoteShareModal
+          isOpen={isQuoteSharing}
+          onClose={() => setIsQuoteSharing(false)}
+          onSend={handleSendQuote}
+          loading={shareLoading}
+        />
+      </Layout >
+    </Suspense >
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import React, { Suspense, useEffect, useState } from "react";
 import "./style.css";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, Divider } from "antd";
 import {
   GoogleOutlined,
   FacebookFilled,
@@ -330,6 +330,18 @@ export default function Login() {
                     LOGIN
                   </Button>
                 </Form.Item>
+
+                <Divider
+                  style={{
+                    borderColor: "rgba(255,255,255,0.3)",
+                    color: "rgba(255,255,255,0.8)",
+                    margin: "24px 0",
+                    fontSize: "14px",
+                    fontWeight: 400
+                  }}
+                >
+                  or Register
+                </Divider>
 
                 <div className="flex justify-center" style={{ marginTop: "10px", width: "100%" }}>
                   <Button

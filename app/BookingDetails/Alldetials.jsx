@@ -27,7 +27,7 @@ import "./style.css";
 // import staticBookingData from "./staticBookingData.json";
 
 const Alldetails = ({ totalpricee }) => {
-  console.log("aaaaaaaaaaaaaaaaaaaaaaalllllllllllllllll ",totalpricee)
+  console.log("aaaaaaaaaaaaaaaaaaaaaaalllllllllllllllll ", totalpricee)
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -84,33 +84,33 @@ const Alldetails = ({ totalpricee }) => {
     }
   }, [bookingId]);
 
-  useEffect(() => {
-    // setTicketData(...) once your parent passes it or your API completes.
-    // Example seed so you can test print now:
-    setTicketData({
-      bookingRef: "6PNR12",
-      airlineLogo:
-        "https://upload.wikimedia.org/wikipedia/commons/4/4b/IndiGo_Airlines_logo.svg",
-      airlineName: "IndiGo",
-      passengers: [
-        { title: "MR", firstName: "ARUN", lastName: "K", pnr: "AB12CD" },
-        { title: "MS", firstName: "PRIYA", lastName: "R" },
-      ],
-      segments: [
-        {
-          flightNo: "6E-502",
-          from: { code: "MAA", name: "Chennai" },
-          to: { code: "DEL", name: "Delhi" },
-          depTime: "2025-11-05T06:00:00+05:30",
-          arrTime: "2025-11-05T08:30:00+05:30",
-          durationMins: 150,
-          cabin: "ECONOMY",
-          fareClass: "T",
-        },
-      ],
-      contact: { email: "user@email.com", phone: "+91 9xxxx xxxxx" },
-    });
-  }, []);
+  // useEffect(() => {
+  //   // setTicketData(...) once your parent passes it or your API completes.
+  //   // Example seed so you can test print now:
+  //   setTicketData({
+  //     bookingRef: "6PNR12",
+  //     airlineLogo:
+  //       "https://upload.wikimedia.org/wikipedia/commons/4/4b/IndiGo_Airlines_logo.svg",
+  //     airlineName: "IndiGo",
+  //     passengers: [
+  //       { title: "MR", firstName: "ARUN", lastName: "K", pnr: "AB12CD" },
+  //       { title: "MS", firstName: "PRIYA", lastName: "R" },
+  //     ],
+  //     segments: [
+  //       {
+  //         flightNo: "6E-502",
+  //         from: { code: "MAA", name: "Chennai" },
+  //         to: { code: "DEL", name: "Delhi" },
+  //         depTime: "2025-11-05T06:00:00+05:30",
+  //         arrTime: "2025-11-05T08:30:00+05:30",
+  //         durationMins: 150,
+  //         cabin: "ECONOMY",
+  //         fareClass: "T",
+  //       },
+  //     ],
+  //     contact: { email: "user@email.com", phone: "+91 9xxxx xxxxx" },
+  //   });
+  // }, []);
 
   const openPrintWindowSync = (name) => {
     // 1) Try normal window.open with only 'noopener'

@@ -13,6 +13,7 @@ export default function TicketCardMobile({
     requestId = "",
     markup = 0,
     onPriceClick,
+    onSelect,
 }: any) {
     const { getCookie } = useContext(AppContext);
     const isUat = process.env.UAT_ENV === "true";
@@ -113,20 +114,29 @@ export default function TicketCardMobile({
                     <span className="mobile-fare-type">{selectedFare.fareIdentifier}</span>
                 </div>
 
-                <Link
-                    href={
-                        reschedule
-                            ? `reschedule-book-ticket?tcs_id=${selectedFare.id}&requestId=${requestId}`
-                            : `book-ticket?tcs_id=${selectedFare.id
-                            }${getCookie("gy_triptype") === "one-way"
-                                ? `&markup=${markup}`
-                                : ""
-                            }`
-                    }
-                    className="mobile-book-btn"
-                >
-                    Book Now
-                </Link>
+                {onSelect ? (
+                    <button
+                        className="mobile-book-btn"
+                        onClick={() => onSelect(selectedFare, value)}
+                    >
+                        Select
+                    </button>
+                ) : (
+                    <Link
+                        href={
+                            reschedule
+                                ? `reschedule-book-ticket?tcs_id=${selectedFare.id}&requestId=${requestId}`
+                                : `book-ticket?tcs_id=${selectedFare.id
+                                }${getCookie("gy_triptype") === "one-way"
+                                    ? `&markup=${markup}`
+                                    : ""
+                                }`
+                        }
+                        className="mobile-book-btn"
+                    >
+                        Book Now
+                    </Link>
+                )}
             </div>
 
             {ticket.totalPriceList.length > 1 && (
