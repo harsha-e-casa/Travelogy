@@ -1,7 +1,13 @@
+const BASE_URL = "http://travelogy.co";
+
 export function printTicketInWindow(data, win) {
   if (!win) return false;
 
   const html = renderTicketHTML(data);
+  // ... existing code ...
+
+  // In normalize function (I will use multi_replace to handle this better since they are far apart)
+
 
   try {
     win.document.open();
@@ -285,7 +291,7 @@ export function printTicketInWindow(data, win) {
 //   };
 // }
 
-function normalize(raw, markup = 0) {
+function normalize(raw, markup = 0, useAbsolute = false) {
   const air = raw?.itemInfos?.AIR;
   const itemIndex = indexSegments(raw?.itemInfos); // <- build route map once
   const pax = air?.travellerInfos || [];
@@ -322,7 +328,7 @@ function normalize(raw, markup = 0) {
         { firstName: p?.fN, lastName: p?.lN, pnr }, // name + this seg PNR
         segForBarcode
       );
-      const barcodeUrl = `/api/barcode/pdf417?data=${encodeURIComponent(
+      const barcodeUrl = `${useAbsolute ? BASE_URL : ""}/api/barcode/pdf417?data=${encodeURIComponent(
         rawCode
       )}&scale=3&eclevel=5&truncated=true`;
 
@@ -560,76 +566,106 @@ function sumSSRAmounts(ssrObj) {
 }
 
 export function printTicket(raw, markup = 0) {
-  // Normalize your API shape into a simple view model for printing
-  const vm = normalize(raw, markup);
-  const html = renderTicketHTML(vm);
+  console.log("printTicket called");
+  // Normalize with useAbsolute = false (relative paths for browser print)
+  try {
+    const vm = normalize(raw, markup, false);
+    console.log("normalize success");
+    const html = renderTicketHTML(vm, false);
+    console.log("renderTicketHTML success");
 
-  // 1) Create a hidden iframe (no new window/tab)
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "0";
-  iframe.setAttribute("aria-hidden", "true");
-  document.body.appendChild(iframe);
+    // 1) Create a hidden iframe (no new window/tab)
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    iframe.setAttribute("aria-hidden", "true");
+    document.body.appendChild(iframe);
+    console.log("iframe appended");
 
-  // 2) Write content
-  const doc = iframe.contentDocument || iframe.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
+    // 2) Write content
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+    console.log("doc wrote");
 
-  // 3) Print once, then cleanup
-  let printed = false;
-  let timeoutId;
+    // 3) Print once, then cleanup
+    let printed = false;
+    let timeoutId;
 
-  const triggerOnce = () => {
-    if (printed) return;
-    printed = true;
-    try {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-    } catch { }
-  };
-
-  const cleanup = () => {
-    setTimeout(() => {
-      if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      if (timeoutId) clearTimeout(timeoutId);
-    }, 50);
-  };
-
-  if (iframe.contentWindow) {
-    iframe.contentWindow.onafterprint = cleanup;
-  }
-
-  const mql = iframe.contentWindow?.matchMedia?.("print");
-  if (mql && typeof mql.addEventListener === "function") {
-    mql.addEventListener("change", (e) => {
-      if (printed && !e.matches) cleanup();
-    });
-  }
-
-  const waitForFonts = doc.fonts?.ready ?? Promise.resolve();
-  const waitForImages = new Promise((resolve) => {
-    const imgs = Array.from(doc.images || []);
-    if (imgs.length === 0) return resolve();
-    let loaded = 0;
-    const done = () => {
-      loaded++;
-      if (loaded >= imgs.length) resolve();
+    const triggerOnce = () => {
+      console.log("triggerOnce called. printed:", printed);
+      if (printed) return;
+      printed = true;
+      try {
+        console.log("Attempting iframe.contentWindow.focus() and print()");
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        console.log("print() called");
+      } catch (e) {
+        console.error("Print triggered error:", e);
+      }
     };
-    imgs.forEach((img) => {
-      if (img.complete) return done();
-      img.addEventListener("load", done);
-      img.addEventListener("error", done);
-    });
-  });
 
-  Promise.all([waitForFonts, waitForImages]).then(triggerOnce);
-  timeoutId = setTimeout(triggerOnce, 1200); // fallback
+    const cleanup = () => {
+      console.log("cleanup called");
+      setTimeout(() => {
+        if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        if (timeoutId) clearTimeout(timeoutId);
+        console.log("cleanup done");
+      }, 500); // Increased timeout to see if it helps
+    };
+
+    if (iframe.contentWindow) {
+      iframe.contentWindow.onafterprint = cleanup;
+    }
+
+    const mql = iframe.contentWindow?.matchMedia?.("print");
+    if (mql && typeof mql.addEventListener === "function") {
+      mql.addEventListener("change", (e) => {
+        if (printed && !e.matches) cleanup();
+      });
+    }
+
+    const waitForFonts = doc.fonts?.ready ?? Promise.resolve();
+    const waitForImages = new Promise((resolve) => {
+      const imgs = Array.from(doc.images || []);
+      if (imgs.length === 0) return resolve();
+      let loaded = 0;
+      const done = () => {
+        loaded++;
+        if (loaded >= imgs.length) resolve();
+      };
+      imgs.forEach((img) => {
+        if (img.complete) return done();
+        img.addEventListener("load", done);
+        img.addEventListener("error", done);
+      });
+    });
+
+    Promise.all([waitForFonts, waitForImages]).then(() => {
+      console.log("Resources loaded, calling triggerOnce");
+      triggerOnce();
+    });
+
+    // Increased fallback timeout
+    timeoutId = setTimeout(() => {
+      console.log("Fallback timeout reached");
+      triggerOnce();
+    }, 2000);
+  } catch (err) {
+    console.error("Error in printTicket:", err);
+  }
+}
+
+export function generateTicketHTML(raw, markup = 0) {
+  // Normalize with useAbsolute = true (absolute paths for email)
+  const vm = normalize(raw, markup, true);
+  return renderTicketHTML(vm, true);
 }
 
 function julianDate3(dtStr) {
@@ -797,7 +833,7 @@ function fmtIN(n) {
   });
 }
 
-function renderTicketHTML(vm) {
+function renderTicketHTML(vm, useAbsolute = false) {
   const styles = `
     <style>
       @page { size: A4; margin: 14mm; }
@@ -863,7 +899,7 @@ function renderTicketHTML(vm) {
       <div class="seg">
         <div class="seg-head">
           <div class="seg-title" style="display:flex; align-items:center; gap:6px;">
-            <img src="/assets/imgs/airlines/${sanitize(s.airlineCode)}.png"
+            <img src="${useAbsolute ? BASE_URL : ""}/assets/imgs/airlines/${sanitize(s.airlineCode)}.png"
                 onerror="this.style.display='none'"
                 style="height:18px; width:auto;" />
             <span>${sanitize(s.airlineName || "Airline")} • ${sanitize(
