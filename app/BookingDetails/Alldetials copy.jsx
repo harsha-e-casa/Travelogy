@@ -565,7 +565,7 @@ const Alldetails = ({ totalpricee }) => {
           cnv.style.display = "";
           img.remove();
         });
-      } catch {}
+      } catch { }
     });
 
     // 2) SVG -> PNG <img>
@@ -587,7 +587,7 @@ const Alldetails = ({ totalpricee }) => {
           svg.style.display = "";
           img.remove();
         });
-      } catch {}
+      } catch { }
     });
 
     return () => swaps.forEach((undo) => undo());
@@ -992,7 +992,7 @@ const Alldetails = ({ totalpricee }) => {
 
       setSegmentPrices(
         data?.AIR?.tripInfos?.map((trip) => trip.sI.map((seg) => seg.price)) ??
-          []
+        []
       );
     } catch (err) {
       console.error("error caused", err);
@@ -1735,7 +1735,7 @@ const Alldetails = ({ totalpricee }) => {
                                           p.lastName === passenger.lastName &&
                                           p.title === passenger.title &&
                                           p.passengerType ===
-                                            passenger.passengerType &&
+                                          passenger.passengerType &&
                                           p.index === index // compare index also!
                                       )}
                                       onChange={(e) => {
@@ -1752,12 +1752,12 @@ const Alldetails = ({ totalpricee }) => {
                                             (p) =>
                                               !(
                                                 p.firstName ===
-                                                  passenger.firstName &&
+                                                passenger.firstName &&
                                                 p.lastName ===
-                                                  passenger.lastName &&
+                                                passenger.lastName &&
                                                 p.title === passenger.title &&
                                                 p.passengerType ===
-                                                  passenger.passengerType &&
+                                                passenger.passengerType &&
                                                 p.index === index
                                               )
                                           );
@@ -2503,11 +2503,10 @@ const Alldetails = ({ totalpricee }) => {
             >
               <div
                 onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoadingWallet
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
                     ? "bg-gray-300"
                     : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                  }`}
                 disabled={bookingLoadingWallet}
               >
                 {bookingLoadingWallet ? (
@@ -2542,11 +2541,10 @@ const Alldetails = ({ totalpricee }) => {
               <div
                 // onClick={bookingReview}
                 onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoading
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
                     ? "bg-gray-300"
                     : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                  }`}
                 disabled={bookingLoading}
               >
                 {bookingLoading ? (
@@ -2616,11 +2614,10 @@ const Alldetails = ({ totalpricee }) => {
             >
               <div
                 onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoadingWallet
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
                     ? "bg-gray-300"
                     : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                  }`}
                 disabled={bookingLoadingWallet}
               >
                 {bookingLoadingWallet ? (
@@ -2655,11 +2652,10 @@ const Alldetails = ({ totalpricee }) => {
               <div
                 // onClick={bookingReview}
                 onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${
-                  bookingLoading
+                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
                     ? "bg-gray-300"
                     : "bg-yellow-300 hover:bg-yellow-400"
-                }`}
+                  }`}
                 disabled={bookingLoading}
               >
                 {bookingLoading ? (
