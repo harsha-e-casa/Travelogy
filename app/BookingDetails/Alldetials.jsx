@@ -21,7 +21,7 @@ import { request } from "http";
 import { type } from "os";
 import BookingForm from "@/components/elements/BookingForm";
 import { DatePicker } from "antd";
-import { printTicket, downloadTicketPdf } from "./TicketPrint";
+import { printTicket, downloadTicketPdf, generateTicketHTML } from "./TicketPrint";
 import "./style.css";
 import { jwtDecode } from "jwt-decode";
 
@@ -167,6 +167,55 @@ const Alldetails = ({ totalpricee }) => {
 
   const [isReIssueModalOpen, setIsReIssueModalOpen] = useState(false);
   const [selectedTravellers, setSelectedTravellers] = useState([]);
+
+  // Email Share State
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailToShare, setEmailToShare] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+
+  const handleOpenEmailModal = () => {
+    const defaultEmail = bookingDetails?.order?.deliveryInfo?.emails?.[0] || "";
+    setEmailToShare(defaultEmail);
+    setShowEmailModal(true);
+  };
+
+  const handleEmailShare = async () => {
+    if (!emailToShare) {
+      setError("Please enter an email address.");
+      return;
+    }
+
+    // Basic email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailToShare)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      setEmailLoading(true);
+
+      // Generate HTML on client side
+      const generatedHtml = generateTicketHTML(bookingDetails, markup);
+
+      const payload = {
+        email: emailToShare,
+        htmlContent: generatedHtml,
+        subject: `Your Booking Ticket - ${bookingDetails?.order?.bookingId || ""}`
+      };
+
+      // Use "travelogy/common/share-booking" endpoint
+      await postData("travelogy/common/share-booking", payload);
+
+      // alert("Ticket sent successfully!");
+      setShowEmailModal(false);
+    } catch (err) {
+      console.error("Share email error:", err);
+      setError(err?.response?.data?.message || "Failed to send email. Please try again.");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (bookingDetails) {
@@ -1806,12 +1855,19 @@ const Alldetails = ({ totalpricee }) => {
                         >
                           <button
                             className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
-                            disabled={!ticketData}
+                            disabled={!bookingDetails}
                             onClick={() => {
                               printTicket(bookingDetails, markup);
                             }}
                           >
                             Print Ticket
+                          </button>
+                          <button
+                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100 ml-2"
+                            disabled={!bookingDetails}
+                            onClick={handleOpenEmailModal}
+                          >
+                            Email Ticket
                           </button>
                         </div>
                       ) : bookingDetails?.order?.status === "PENDING" ||
@@ -1830,12 +1886,19 @@ const Alldetails = ({ totalpricee }) => {
                           >
                             <button
                               className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
-                              disabled={!ticketData}
+                              disabled={!bookingDetails}
                               onClick={() => {
                                 printTicket(bookingDetails, markup);
                               }}
                             >
                               Print Ticket
+                            </button>
+                            <button
+                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100 ml-2"
+                              disabled={!bookingDetails}
+                              onClick={handleOpenEmailModal}
+                            >
+                              Email Ticket
                             </button>
                           </div>
                         </>
@@ -1868,12 +1931,19 @@ const Alldetails = ({ totalpricee }) => {
 
                             <button
                               className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
-                              disabled={!ticketData}
+                              disabled={!bookingDetails}
                               onClick={() => {
                                 printTicket(bookingDetails, markup);
                               }}
                             >
                               Print Ticket
+                            </button>
+                            <button
+                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100 ml-2"
+                              disabled={!bookingDetails}
+                              onClick={handleOpenEmailModal}
+                            >
+                              Email Ticket
                             </button>
                           </div>
                         </div>
@@ -2476,6 +2546,39 @@ const Alldetails = ({ totalpricee }) => {
                 {paymsg.message}, Balance: {paymsg.balance}
               </p>
             )}
+          </div>
+        </div>
+      )}
+      {showEmailModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+          <div className="bg-white px-6 py-6 rounded-lg shadow-lg flex flex-col items-center gap-4 w-[400px]">
+            <h3 className="text-xl font-bold mb-2">Share Ticket</h3>
+            <p className="text-sm text-gray-600 mb-4 text-center">Enter the email address to send the booking details.</p>
+
+            <input
+              type="email"
+              className="w-full border p-2 rounded"
+              placeholder="Enter email address"
+              value={emailToShare}
+              onChange={(e) => setEmailToShare(e.target.value)}
+            />
+
+            <div className="flex gap-4 w-full mt-4">
+              <button
+                className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition"
+                onClick={() => setShowEmailModal(false)}
+                disabled={emailLoading}
+              >
+                Cancel
+              </button>
+              <button
+                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                onClick={handleEmailShare}
+                disabled={emailLoading}
+              >
+                {emailLoading ? "Sending..." : "Send Email"}
+              </button>
+            </div>
           </div>
         </div>
       )}
