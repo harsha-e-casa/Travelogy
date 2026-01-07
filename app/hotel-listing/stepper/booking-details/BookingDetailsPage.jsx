@@ -54,8 +54,6 @@ const BookingDetailsPage = () => {
   }, [bookingId]);
   const dropdownRef = useRef(null);
   const printRef = useRef(null);
-  const [showModal, setShowModal] = useState(false);
-  const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
@@ -65,76 +63,116 @@ const BookingDetailsPage = () => {
     withCancellation: true,
   });
 
-  const handlePayClick = () => setShowModal(true);
-  const handleCloseModal = () => !confirming && setShowModal(false);
+  const [paymentModel, setPaymentModel] = useState(false);
+  const [showWalletConfirm, setShowWalletConfirm] = useState(false);
+  const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
 
-  const handleConfirm = async () => {
-    setShowModal(false);
-    setConfirming(true);
-    try {
-      const amount = totalAmount;
-      const paymentData = {
+  const { order, itemInfos } = bookingDetails || {};
+  const hotelInfo = itemInfos?.HOTEL?.hInfo || {};
+  const deliveryInfo = order?.deliveryInfo || {};
+  const { bookingId: orderBookingId } = order || {};
+  const status = order?.status;
+  const totalAmount = order?.amount;
+
+  useEffect(() => {
+    console.log("Current Booking Status:", status);
+  }, [status]);
+
+  const handlePayClick = () => {
+    console.log("Pay Now clicked, setting paymentModel to true");
+    setPaymsg("");
+    setPaymentModel(true);
+  };
+
+  useEffect(() => {
+    console.log("paymentModel state changed:", paymentModel);
+  }, [paymentModel]);
+
+  const bookingReviewWIthWallet = async () => {
+    console.log("bookingReviewWIthWallet ==> ");
+    setBookingLoadingWallet(true);
+    setPaymsg("");
+
+    if (totalAmount && bookingId) {
+      const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+      const finalAmount = Number(totalAmount) + Number(markup);
+
+      const parameter = {
         bookingId,
-        paymentInfos: [{ amount }],
+        paymentInfos: [{ amount: finalAmount }],
       };
 
-      // const response = await fetch(
-      //   "https://apitest.tripjack.com/oms/v1/hotel/confirm-book",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       apikey: "412605943ad923-4ae7-49f6-9c8e-8b75be573422",
-      //     },
-      //     body: JSON.stringify(paymentData),
-      //   }
-      // );
-
-      const reqBody = {
-        action: "conformBook",
-        requestData: paymentData,
-      };
-
-      const response = await postData("travelogy/hotel/fetch-data", reqBody);
-
-      console.log("Booking response Success:", response);
-      console.log("Booking response Success:", response.status);
-
-      // const data = await response.json();
-
-      // if (!response.ok) {
-      //   console.error("Error confirming booking:", data);
-      //   alert(
-      //     data?.message || "Booking confirmation failed. Please try again."
-      //   );
-      //   return;
-      // }
-
-      // alert("Booking confirmed successfully!");
-
-      setLoading(true);
-      try {
-        const fresh = await getBookingDetails(bookingId);
-        setBookingDetails(fresh);
-      } catch (e) {
-        console.error("Refresh failed:", e);
-        alert(
-          "Payment succeeded, but refreshing details failed. Please reload."
+      // reduce amount in wallet and call the third party apis
+      const payWallet = async () => {
+        const reqpayWallet = {
+          booking_id: bookingId,
+          amount: finalAmount,
+        };
+        const result = await postData(
+          "travelogy/flight/payWallet",
+          reqpayWallet,
+          { Authorization: `Bearer ${token}` }
         );
-      } finally {
-        setLoading(false);
-      }
+        console.log("payWallet result ===>", result);
+        return result;
+      };
 
-      if (typeof onConfirmPayment === "function") {
-        setTimeout(() => {
-          onConfirmPayment(bookingId);
-        }, 20000);
+      try {
+        const payWalletRes = await payWallet();
+        console.log("payWalletRes ==> ", payWalletRes);
+
+        if (payWalletRes?.success) {
+          // Confirm booking with hotel API
+          const reqBody = {
+            action: "conformBook",
+            requestData: parameter,
+          };
+
+          const response = await postData("travelogy/hotel/fetch-data", reqBody);
+          console.log("Booking response Success:", response);
+
+          if (response?.error) {
+            console.log("Booking error, refunding wallet...");
+            // Refund wallet if booking fails
+            await postData(
+              "travelogy/flight/refundWallet",
+              {
+                booking_id: bookingId,
+                amount: finalAmount,
+              },
+              { Authorization: `Bearer ${token}` }
+            );
+            setPaymsg({ message: "Booking failed, amount refunded to wallet." });
+            setBookingLoadingWallet(false);
+          } else {
+            // Success
+            setLoading(true);
+            try {
+              const fresh = await getBookingDetails(bookingId);
+              setBookingDetails(fresh);
+              setPaymentModel(false);
+            } catch (e) {
+              console.error("Refresh failed:", e);
+              alert("Payment succeeded, but refreshing details failed. Please reload.");
+            } finally {
+              setLoading(false);
+              setBookingLoadingWallet(false);
+            }
+          }
+        } else {
+          setPaymsg(payWalletRes);
+          setBookingLoadingWallet(false);
+        }
+      } catch (error) {
+        console.error("Wallet payment failed:", error);
+        setPaymsg({ message: "An error occurred during wallet payment." });
+        setBookingLoadingWallet(false);
       }
-    } catch (error) {
-      console.error("Booking failed:", error);
-      alert("Booking failed. Please try again.");
-    } finally {
-      setConfirming(false);
+    } else {
+      console.error("Booking ID or total price is missing");
+      setPaymsg({ message: "Booking information is missing. Please try again." });
+      setBookingLoadingWallet(false);
     }
   };
 
@@ -230,13 +268,6 @@ const BookingDetailsPage = () => {
   // if (!bookingDetails || !bookingDetails.order || !bookingDetails.itemInfos)
   //   return <div>Invalid booking details</div>;
 
-  const { order, itemInfos } = bookingDetails || {};
-  const hotelInfo = itemInfos?.HOTEL?.hInfo || {};
-  const deliveryInfo = order?.deliveryInfo || {};
-  const { bookingId: orderBookingId } = order || {};
-  const status = order?.status;
-  const totalAmount = order?.amount;
-
   const email = deliveryInfo.emails?.[0];
   const contact = deliveryInfo.contacts?.[0];
   const countryCode = deliveryInfo.code?.[0];
@@ -289,9 +320,61 @@ const BookingDetailsPage = () => {
       };
 
       const response = await postData("travelogy/hotel/fetch-data", reqBody);
- console.log("Initiating cancellation for response:", response);
-      if (response) {
+      console.log("Initiating cancellation for response:", response);
+
+      if (response && !response.error) {
         console.log("Booking cancelled successfully:", response);
+
+        // Refund to wallet logic
+        try {
+          const now = new Date();
+          let cancellationCharge = 0;
+          
+          if (cancellationPolicy && cancellationPolicy.length > 0) {
+            // Find applicable cancellation charge from policy
+            const applicablePolicy = cancellationPolicy.find(policy => {
+              const fromDate = new Date(policy.fdt);
+              const toDate = new Date(policy.tdt);
+              return now >= fromDate && now <= toDate;
+            });
+
+            if (applicablePolicy) {
+              cancellationCharge = Number(applicablePolicy.am);
+            } else {
+              // If no matching period found, check if it's before the first period or after the last
+              const firstPolicy = cancellationPolicy[0];
+              const lastPolicy = cancellationPolicy[cancellationPolicy.length - 1];
+              
+              if (now < new Date(firstPolicy.fdt)) {
+                cancellationCharge = 0; // Assuming free cancellation before first period
+              } else if (now > new Date(lastPolicy.tdt)) {
+                cancellationCharge = Number(lastPolicy.am);
+              }
+            }
+          }
+
+          const hotelPassenger = hotelInfo?.ops?.[0]?.ris || [];
+          const totalBaseFareSum = hotelPassenger.reduce((sum, room) => {
+            return sum + (room.tfcs?.BF || 0);
+          }, 0);
+
+          const finalRefundAmount = totalBaseFareSum - cancellationCharge;
+
+          if (finalRefundAmount > 0) {
+            const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+            const refundRes = await postData(
+              "https://api.travelogy.co/travelogy/flight/refundWallet",
+              {
+                booking_id: bookingId,
+                amount: finalRefundAmount,
+              },
+              { Authorization: `Bearer ${token}` }
+            );
+            console.log("Wallet refund result:", refundRes);
+          }
+        } catch (refundErr) {
+          console.error("Error during wallet refund calculation/execution:", refundErr);
+        }
 
         try {
           const fresh = await getBookingDetails(bookingId);
@@ -305,8 +388,8 @@ const BookingDetailsPage = () => {
           alert("Cancellation succeeded, but refreshing details failed. Please reload.");
         }
       } else {
-        console.error("Error cancelling booking:", response);
-        alert("Failed to cancel booking. Please try again.");
+        console.error("Error cancelling booking:", response?.error || response);
+        alert(`Failed to cancel booking: ${response?.error || "Unknown error"}`);
       }
     } catch (error) {
       console.error("Error in API call:", error);
@@ -335,6 +418,12 @@ const BookingDetailsPage = () => {
   };
 
 
+
+  const handleCloseModal = () => {
+    setPaymentModel(false);
+    setPaymsg("");
+  };
+  const handleConfirm = () => bookingReviewWIthWallet();
 
   const statusLabel =
     status
@@ -381,9 +470,9 @@ const BookingDetailsPage = () => {
                   <button
                     className="book-now-btn bg-orange-500 hover:bg-orange-600 text-white ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handlePayClick}
-                    disabled={confirming}
+                    disabled={bookingLoadingWallet}
                   >
-                    {confirming ? "Processing…" : "Pay Now"}
+                    {bookingLoadingWallet ? "Processing…" : "Pay Now"}
                   </button>
                 </div>
               ) : status === "CANCELLED" ||
@@ -405,11 +494,11 @@ const BookingDetailsPage = () => {
                     <button
                       className="book-now-btn ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
                       onClick={() =>
-                        !confirming && setShowOptions((prev) => !prev)
+                        !bookingLoadingWallet && setShowOptions((prev) => !prev)
                       }
                       aria-haspopup="true"
                       aria-expanded={showOptions ? "true" : "false"}
-                      disabled={confirming}
+                      disabled={bookingLoadingWallet}
                     >
                       More Options
                       <DownOutlined className="ml-2 mt-1" />
@@ -450,11 +539,11 @@ const BookingDetailsPage = () => {
                     <button
                       className="book-now-btn ml-auto disabled:opacity-60 disabled:cursor-not-allowed"
                       onClick={() =>
-                        !confirming && setShowOptions((prev) => !prev)
+                        !bookingLoadingWallet && setShowOptions((prev) => !prev)
                       }
                       aria-haspopup="true"
                       aria-expanded={showOptions ? "true" : "false"}
-                      disabled={confirming}
+                      disabled={bookingLoadingWallet}
                     >
                       More Options
                       <DownOutlined className="ml-2 mt-1" />
@@ -557,7 +646,7 @@ const BookingDetailsPage = () => {
               </div>
             </div>
           </div>
-          {showModal && (
+          {paymentModel && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
                 <h2 className="text-center text-lg font-bold text-orange-600 mb-4">
@@ -568,25 +657,30 @@ const BookingDetailsPage = () => {
                   to proceed.
                 </p>
                 <p className="text-center text-xl font-semibold mb-6">
-                  ₹{totalAmount}
+                  ₹{Number(totalAmount) + Number(markup)}
                 </p>
 
                 <div className="flex justify-center gap-4">
                   <button
                     className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
                     onClick={handleCloseModal}
-                    disabled={confirming}
+                    disabled={bookingLoadingWallet}
                   >
                     BACK
                   </button>
                   <button
                     className="book-now-btn px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={handleConfirm}
-                    disabled={confirming}
+                    disabled={bookingLoadingWallet}
                   >
-                    {confirming ? "Processing…" : "CONTINUE"}
+                    {bookingLoadingWallet ? "Processing…" : "CONTINUE"}
                   </button>
                 </div>
+                {paymsg && (
+                  <p className="text-red-600 pt-4 text-center">
+                    {paymsg.message} {paymsg.balance !== undefined && `, Balance: ${paymsg.balance}`}
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -740,7 +834,7 @@ const BookingDetailsPage = () => {
             </div>
           )}
 
-          {confirming && (
+          {bookingLoadingWallet && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative text-center m-3">
                 <div className="flex items-center justify-center gap-2">

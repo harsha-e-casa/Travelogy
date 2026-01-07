@@ -117,6 +117,7 @@ export default function Stepper() {
     [hid, oid]
   );
   const [currentStep, setCurrentStep] = useState(1);
+  const [paymentModel, setPaymentModel] = useState(false);
   const [formData, setFormData] = useState(() => {
     const savedFormData = localStorage.getItem("formData");
     return savedFormData ? JSON.parse(savedFormData) : {};
@@ -510,25 +511,29 @@ export default function Stepper() {
                       setError={setError}
                       setCurrentStep={setCurrentStep}
                       markup={markup}
+                      paymentModel={paymentModel}
+                      setPaymentModel={setPaymentModel}
                     />
                   )}
                 </div>
-                <div className="hidden md:block md:col-span-4 desktop-fare-summary">
-                  <FareAmount
-                    hotelReviewData={hotelReviewData}
-                    Category="bbook"
-                    markup={markup}
-                    setMarkup={setMarkup}
-                    showEdit={currentStep === 1}
-                  />
-                </div>
+                {!paymentModel && (
+                  <div className="hidden md:block md:col-span-4 desktop-fare-summary">
+                    <FareAmount
+                      hotelReviewData={hotelReviewData}
+                      Category="bbook"
+                      markup={markup}
+                      setMarkup={setMarkup}
+                      showEdit={currentStep === 1}
+                    />
+                  </div>
+                )}
               </>
             )}
           </div>
         </div>
       )}
       <>
-        {apiOk && (
+        {apiOk && !paymentModel && (
           <SessionTimerWithModal
             active={!loading && !error && !!hotelReviewData}
             startTime={Number(hotelReviewData?.conditions?.st ?? 0)}

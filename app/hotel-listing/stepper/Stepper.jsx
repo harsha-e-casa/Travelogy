@@ -2284,17 +2284,25 @@ export function Step4Payment({
   setCurrentStep,
   onConfirmPayment,
   markup = 0,
+  paymentModel,
+  setPaymentModel,
 }) {
   const [showModal, setShowModal] = useState(false);
+  const [showWalletConfirm, setShowWalletConfirm] = useState(false);
+  const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
+  const [paymsg, setPaymsg] = useState("");
+
   const { totalBaseFare, totalTax } = useFareBreakdown(hotelReviewData);
   const [globalToast, setGlobalToast] = useState(null); // for a top toast/banner
   const [panError, setPanError] = useState(null);
   const handlePayClick = () => {
+    setPaymsg("");
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setPaymsg("");
   };
 
   // const handleConfirm = async () => {
@@ -2318,40 +2326,98 @@ export function Step4Payment({
   // };
 
   const [loading, setLoading] = useState(false);
-  const [paymsg, setPaymsg] = useState("");
 
   const handleConfirm = async () => {
+    setShowModal(false);
+    setPaymentModel(true);
+  };
+
+  const bookingReviewWIthWallet = async () => {
     setPaymsg("");
     const token =
       typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-    setShowModal(false);
-    setLoading(true);
+    const finalAmount = Number(totalBaseFare + totalTax) + Number(markup);
+
+    setBookingLoadingWallet(true);
+
     try {
-      const result = await hotelBooking({ formData, hotelReviewData });
-      console.log("result: ", result);
-      console.log("formdata", formData);
-      setLoading(false);
-      if (result?.error) {
-        console.error("Booking error:", result.error);
+      // 1. Pay with wallet
+      const reqpayWallet = {
+        booking_id: bookingId || hotelReviewData?.bookingId,
+        amount: finalAmount,
+      };
 
-        const errorMessage =
-          typeof result.error === "string"
-            ? result.error
-            : JSON.stringify(result.error);
+      const payWalletRes = await postData(
+        "travelogy/flight/payWallet",
+        reqpayWallet,
+        { Authorization: `Bearer ${token}` }
+      );
 
-        setError(errorMessage);
-        return;
+      console.log("payWalletRes ==> ", payWalletRes);
+
+      if (payWalletRes?.success) {
+        // 2. Proceed with hotel booking
+        try {
+          const result = await hotelBooking({ formData, hotelReviewData });
+          console.log("hotelBooking result: ", result);
+
+          if (result?.error) {
+            console.log("Booking error, refunding wallet...");
+            // Refund wallet if booking fails
+            await postData(
+              "travelogy/flight/refundWallet",
+              {
+                booking_id: bookingId || hotelReviewData?.bookingId,
+                amount: finalAmount,
+              },
+              { Authorization: `Bearer ${token}` }
+            );
+
+            const errorMessage =
+              typeof result.error === "string"
+                ? result.error
+                : JSON.stringify(result.error);
+            setPaymsg({ message: errorMessage });
+            setBookingLoadingWallet(false);
+            setShowWalletConfirm(false);
+          } else {
+            // Success
+            console.log("Booking success:", result);
+            setBookingLoadingWallet(false);
+            setPaymentModel(false);
+            setShowWalletConfirm(false);
+            setTimeout(() => {
+              onConfirmPayment(bookingId || hotelReviewData?.bookingId);
+            }, 1000);
+          }
+        } catch (bookingErr) {
+          console.error("Internal booking error, refunding wallet:", bookingErr);
+          await postData(
+            "travelogy/flight/refundWallet",
+            {
+              booking_id: bookingId || hotelReviewData?.bookingId,
+              amount: finalAmount,
+            },
+            { Authorization: `Bearer ${token}` }
+          );
+          setPaymsg({ message: bookingErr?.message || "Booking failed. Refund initiated." });
+          setBookingLoadingWallet(false);
+          setShowWalletConfirm(false);
+        }
+      } else {
+        // Wallet payment failed
+        setPaymsg(payWalletRes || { message: "Wallet payment failed." });
+        setBookingLoadingWallet(false);
+        setShowWalletConfirm(false);
       }
-      console.log("Booking success:", result);
-      setTimeout(() => {
-        onConfirmPayment(bookingId);
-      }, 1000); //time decreased to check the booking flow from 100000
     } catch (error) {
-      setLoading(false);
-      console.error("Booking failed:", error);
-      setError(error?.message || "Something went wrong");
+      setBookingLoadingWallet(false);
+      setShowWalletConfirm(false);
+      console.error("Process failed:", error);
+      setPaymsg({ message: error?.message || "Something went wrong during payment." });
     }
   };
+
   if (loading) {
     return (
       <div className="col-12 d-flex justify-center py-5">
@@ -2425,6 +2491,153 @@ export function Step4Payment({
                 onClick={handleConfirm}
               >
                 CONTINUE
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {paymentModel && (
+        <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto w-full h-full payment-modal-overlay">
+          <style jsx>{`
+            .payment-modal-overlay {
+              background-color: white !important;
+            }
+          `}</style>
+          <div className="w-full min-h-screen max-w-4xl mx-auto p-6 relative">
+            <div className="flex justify-between items-center mb-8 border-b pb-4">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Choose Payment Mode
+              </h2>
+              <button
+                disabled={bookingLoadingWallet}
+                onClick={() => {
+                  setPaymentModel(false);
+                  setPaymsg("");
+                }}
+                className="text-gray-500 hover:text-black text-3xl font-light px-4 disabled:opacity-50"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="max-w-xl mx-auto mt-12 p-8 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
+              <p className="text-gray-700 mb-8 font-medium text-center text-lg">
+                Please select a payment method to proceed
+              </p>
+
+              <div className="flex flex-col gap-4">
+                <div
+                  onClick={!bookingLoadingWallet ? () => {
+                    setShowWalletConfirm(true);
+                  } : undefined}
+                  className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoadingWallet
+                    ? "bg-gray-100 cursor-not-allowed pointer-events-none"
+                    : "bg-white hover:border-yellow-400 cursor-pointer"
+                    }`}
+                  aria-disabled={bookingLoadingWallet}
+                >
+                  <span className="font-semibold text-lg">Wallet Payment</span>
+                  {bookingLoadingWallet ? (
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <svg
+                        className="animate-spin h-5 w-5"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                      </svg>
+                      Processing...
+                    </div>
+                  ) : (
+                    <span className="p-2 bg-yellow-100 rounded-full text-yellow-700">
+                      ➜
+                    </span>
+                  )}
+                </div>
+
+                <div
+                  className="border border-gray-300 px-6 py-4"
+                >
+                  <span className="font-semibold text-lg">
+                    Pay via Gateway
+                  </span>
+                  {/* <span className="text-xs text-gray-500 italic">(Coming soon)</span> */}
+                </div>
+              </div>
+              {paymsg && (
+                <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-lg text-center">
+                  <p className="text-red-600 font-medium">
+                    {paymsg.message}
+                  </p>
+                  {paymsg.balance !== undefined && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Balance: ₹{paymsg.balance}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showWalletConfirm && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+          style={{ zIndex: 9999 }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all border border-gray-100 relative">
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 p-6 text-white text-center">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-md border border-white/30">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold">Wallet Payment</h3>
+            </div>
+
+            <div className="p-8 text-center">
+              <p className="text-gray-600 text-lg mb-2">You are about to pay</p>
+              <div className="text-4xl font-black text-gray-900 mb-6">
+                ₹{Number(Number(totalBaseFare + totalTax) + Number(markup)).toLocaleString()}
+              </div>
+              <p className="text-gray-500 leading-relaxed">
+                The total amount will be deducted from your wallet to confirm this booking. This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="p-6 bg-gray-50 flex gap-4">
+              <button
+                disabled={bookingLoadingWallet}
+                onClick={() => {
+                  setShowWalletConfirm(false);
+                  setPaymsg("");
+                }}
+                className="flex-1 px-6 py-3 border border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-white hover:shadow-md transition-all active:scale-95 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                disabled={bookingLoadingWallet}
+                onClick={() => {
+                  bookingReviewWIthWallet();
+                }}
+                className="flex-1 px-6 py-3 bg-yellow-400 hover:bg-yellow-500 rounded-xl font-bold text-black shadow-lg shadow-yellow-200 hover:shadow-yellow-300 transition-all active:scale-95 border-b-4 border-yellow-600 disabled:opacity-50"
+              >
+                {bookingLoadingWallet ? "Processing..." : "Confirm"}
               </button>
             </div>
           </div>

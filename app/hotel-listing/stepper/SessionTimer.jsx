@@ -97,9 +97,9 @@ export default function SessionTimerWithModal({
   return (
     <>
       {showBar && (
-        <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-[9998] p-2 text-center">
+        <div className="session shadow sm:rounded-sm text-md sticky bottom-0 z-[9998] p-0 text-center bg-orange-500 text-white font-medium">
           <div
-            className="sm:rounded-sm text-md p-2 text-center"
+            className="sm:rounded-sm text-md p-3 text-center"
             aria-live="polite"
           >
             {remaining > 0 ? (
