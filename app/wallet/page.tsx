@@ -19,6 +19,7 @@ import {
   Skeleton,
   Row,
   Col,
+  DatePicker,
 } from "antd";
 import {
   LockOutlined,
@@ -33,6 +34,12 @@ import { jwtDecode } from "jwt-decode";
 import CryptoJS from "crypto-js";
 import Layout from "@/components/layout/Layout";
 import "../dashboard/style.css";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(isBetween);
+
+const { RangePicker } = DatePicker;
 // import "../dashboard/responsive.css";
 
 type CreateVendorResponse = {
@@ -56,6 +63,7 @@ type WalletTx = {
   description: string;
   type: "CREDIT" | "DEBIT";
   created_at: string;
+  original_date?: string; // For filtering
 };
 
 type WalletStats = {
@@ -103,6 +111,10 @@ export default function WalletOption(): JSX.Element {
   const [adminInfo, setAdminInfo] = useState<{ id: number; e_mail: string } | null>(
     null
   );
+
+  // Date Filter State
+  const [dateFilter, setDateFilter] = useState<"ALL" | "TODAY" | "WEEK" | "MONTH" | "CUSTOM">("ALL");
+  const [customRange, setCustomRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
 
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
@@ -189,6 +201,7 @@ export default function WalletOption(): JSX.Element {
           type: t.type,
           description: t.description,
           created_at: new Date(t.created_at).toLocaleString(),
+          original_date: t.created_at,
         }));
 
         // Frontend filter fallback: if backend didn't filter, we do it here
@@ -231,6 +244,32 @@ export default function WalletOption(): JSX.Element {
   useEffect(() => {
     fetchWalletHistory(selectedVendorId);
   }, [selectedVendorId]);
+
+  const filteredHistory = React.useMemo(() => {
+    if (dateFilter === "ALL") return history;
+    const now = dayjs();
+    return history.filter((item) => {
+      const dateStr = item.original_date || item.created_at; // Fallback
+      const itemDate = dayjs(dateStr);
+      if (!itemDate.isValid()) return true;
+
+      if (dateFilter === "TODAY") {
+        return itemDate.isSame(now, "day");
+      } else if (dateFilter === "WEEK") {
+        return itemDate.isSame(now, "week");
+      } else if (dateFilter === "MONTH") {
+        return itemDate.isSame(now, "month");
+      } else if (
+        dateFilter === "CUSTOM" &&
+        customRange &&
+        customRange[0] &&
+        customRange[1]
+      ) {
+        return itemDate.isBetween(customRange[0], customRange[1], "day", "[]");
+      }
+      return true;
+    });
+  }, [history, dateFilter, customRange]);
 
   const onFinish = async (vals: {
     email: string;
@@ -387,6 +426,23 @@ export default function WalletOption(): JSX.Element {
                   )}
                 </div>
 
+                <div style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                  <span style={{ fontWeight: 600 }}>Date Filter:</span>
+                  <Radio.Group value={dateFilter} onChange={e => setDateFilter(e.target.value)} buttonStyle="solid">
+                    <Radio.Button value="ALL">All</Radio.Button>
+                    <Radio.Button value="TODAY">Today</Radio.Button>
+                    <Radio.Button value="WEEK">This Week</Radio.Button>
+                    <Radio.Button value="MONTH">This Month</Radio.Button>
+                    <Radio.Button value="CUSTOM">Custom Range</Radio.Button>
+                  </Radio.Group>
+                  {dateFilter === "CUSTOM" && (
+                    <RangePicker
+                      value={customRange}
+                      onChange={(dates: any) => setCustomRange(dates)}
+                    />
+                  )}
+                </div>
+
 
                 {/* Stats Cards */}
                 <div
@@ -472,7 +528,7 @@ export default function WalletOption(): JSX.Element {
                     <Table<WalletTx>
                       rowKey="id"
                       loading={loadingHistory}
-                      dataSource={history}
+                      dataSource={filteredHistory}
                       pagination={{ pageSize: 10 }}
                       scroll={{ x: 'max-content' }}
                       columns={[

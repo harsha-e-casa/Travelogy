@@ -1205,15 +1205,15 @@ export default function Tickets() {
 
     setErrorMsg(""); // Clear error if validation passed
 
-    const displayDate = dayjs().add(2, "day");
+    const newDepartureDate = dayjs(lastSegment.departureDate).add(2, "day");
     setMulticitySegments((prev) => [
       ...prev,
       {
-        from: "Select City",
-        fromCode: "",
+        from: lastSegment.to,
+        fromCode: lastSegment.toCode,
         to: "Select City",
         toCode: "",
-        departureDate: displayDate,
+        departureDate: newDepartureDate,
         fromError: "",
         toError: "",
         lastEditedField: null,
@@ -2829,7 +2829,7 @@ export default function Tickets() {
                     <div key={idx} className="border rounded p-3 bg-gray-50">
                       <div className="text-xs font-bold text-gray-600 mb-2">Segment {idx + 2}</div>
                       <div className="flex gap-2 mb-2">
-                        <div className="flex-1">
+                        <div className="flex-1 relative">
                           <label className="text-xs font-bold text-gray-500 uppercase">From</label>
                           <div onClick={() => multiOpenfrom(idx)} className="border p-2 rounded cursor-pointer bg-white truncate text-sm">
                             {segment.from}
@@ -2856,7 +2856,7 @@ export default function Tickets() {
                             <div className="text-xs text-red-500 mt-1">{segment.fromError}</div>
                           )}
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 relative">
                           <label className="text-xs font-bold text-gray-500 uppercase">To</label>
                           <div onClick={() => multiOpenToSecond(idx)} className="border p-2 rounded cursor-pointer bg-white truncate text-sm">
                             {segment.to}
@@ -2884,7 +2884,7 @@ export default function Tickets() {
                           )}
                         </div>
                       </div>
-                      <div>
+                      <div className="relative">
                         <label className="text-xs font-bold text-gray-500 uppercase">Depart</label>
                         <div onClick={() => multiOpenToDateRange(idx)} className="border p-2 rounded cursor-pointer bg-white text-sm">
                           {segment.departureDate ? dayjs(segment.departureDate).format("ddd, MMM D YYYY") : "Select Date"}
