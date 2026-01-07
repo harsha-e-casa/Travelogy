@@ -13,8 +13,6 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import { DownOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { postData, getData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
@@ -57,6 +55,7 @@ const BookingDetailsPage = () => {
   const [cancelling, setCancelling] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [exportType, setExportType] = useState("print"); // "print" or "pdf"
   const [printOptions, setPrintOptions] = useState({
     withPrice: true,
     withAgency: true,
@@ -295,13 +294,8 @@ const BookingDetailsPage = () => {
       alert("Unable to generate PDF. Booking details are not available.");
       return;
     }
-
-    try {
-      await downloadHotelBookingAsPDF(bookingDetails, markup);
-    } catch (error) {
-      console.error("Failed to generate PDF:", error);
-      alert("Failed to generate PDF. Please try again.");
-    }
+    setExportType("pdf");
+    setShowPrintModal(true);
   };
 
   const cancelBooking = async () => {
@@ -404,16 +398,21 @@ const BookingDetailsPage = () => {
       console.error("No booking details available for printing");
       return;
     }
+    setExportType("print");
     setShowPrintModal(true);
   };
 
   const executePrint = () => {
     try {
-      printHotelBooking(bookingDetails, markup, printOptions);
+      if (exportType === "print") {
+        printHotelBooking(bookingDetails, markup, printOptions);
+      } else {
+        downloadHotelBookingAsPDF(bookingDetails, markup, printOptions);
+      }
       setShowPrintModal(false);
     } catch (error) {
-      console.error("Print failed:", error);
-      alert("Failed to print booking details. Please try again.");
+      console.error(`${exportType === "print" ? "Print" : "PDF"} failed:`, error);
+      alert(`Failed to ${exportType === "print" ? "print" : "generate PDF"} booking details. Please try again.`);
     }
   };
 
@@ -708,7 +707,7 @@ const BookingDetailsPage = () => {
               <div className="bg-white rounded shadow-lg w-full max-w-lg p-0 overflow-hidden">
                 <div className="flex justify-between items-center p-4 border-b relative">
                   <h2 className="text-xl font-bold text-orange-600 text-center flex-1">
-                    PRINT YOUR HOTEL VOUCHER
+                    {exportType === "print" ? "PRINT YOUR HOTEL VOUCHER" : "DOWNLOAD YOUR HOTEL VOUCHER"}
                   </h2>
                   <button
                     onClick={() => setShowPrintModal(false)}
@@ -826,7 +825,7 @@ const BookingDetailsPage = () => {
                       style={{ backgroundColor: "#f37021" }}
                       onClick={executePrint}
                     >
-                      PRINT
+                      {exportType === "print" ? "PRINT" : "DOWNLOAD"}
                     </button>
                   </div>
                 </div>

@@ -829,7 +829,7 @@ function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true,
  * Uses browser's native print-to-PDF for proper page breaks
  * @param {Object} bookingDetails - The booking details object
  */
-export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0) {
+export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0, printOptions = { withPrice: true, withAgency: true, withCancellation: true }) {
   if (!bookingDetails) {
     console.error("No booking details provided for PDF generation");
     return;
@@ -838,7 +838,7 @@ export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0) {
   try {
     // Normalize data and render HTML using the same functions as print
     const vm = normalizeHotelData(bookingDetails, markup);
-    const html = renderHotelHTML(vm);
+    const html = renderHotelHTML(vm, printOptions);
 
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
