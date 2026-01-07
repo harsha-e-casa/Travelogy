@@ -193,6 +193,7 @@ export default function VendorCreate(): JSX.Element {
   };
 
   const toggleActive = async (vendor: any, isActive: boolean) => {
+    console.log("vendor => ", vendor);
     const req = {
       vendor_id: vendor.user_id,
       is_active: isActive ? 1 : 0,
