@@ -34,7 +34,7 @@ export default function HotelCard2({ hotel, nights }: any) {
 							<div className="card-price">
 								<p className="text-md-medium neutral-500 mr-5">From </p>
 								<h6 className="heading-6 neutral-1000">${hotel.price}</h6>
-								<p className="text-md-medium neutral-500">{nights && nights > 0 ? `${nights} night${nights > 1 ? 's' : ''} /` : '/'} night</p>
+								<p className="text-md-medium neutral-500">{nights && nights > 1 ? `${nights} nights` : "night"}</p>
 							</div>
 							<div className="card-button"> <Link className="btn btn-gray" href="/hotel-detail">See Availability</Link></div>
 						</div>
