@@ -24,14 +24,15 @@ export default function HotelSearchFilter({
         onChange={(e) => onSearchNameChange(e.target.value)}
         style={{ fontSize: '13px', height: '40px' }}
       />
-      <button
-        type="button"
-        className={`btn btn-gray rounded-4 w-100 ${freeCancellation ? 'active' : ''}`}
-        onClick={() => onFreeCancellationChange(!freeCancellation)}
-         style={freeCancellation ? { backgroundColor: 'black', color: '#ffffff', borderColor: 'black' } : {}}
-      >
-        Free Cancellation Available
-      </button>
+      <label className="cb-container mt-2">
+        <input
+          type="checkbox"
+          checked={freeCancellation}
+          onChange={() => onFreeCancellationChange(!freeCancellation)}
+        />
+        <span className="text-sm-medium">Free Cancellation Available</span>
+        <span className="checkmark" />
+      </label>
     </div>
   );
 }

@@ -231,11 +231,13 @@ const HotelBookingList = ({
               className="cursor-pointer select-none"
               onClick={() => handleSort("amount")}
             >
-              Amount
+              Base Fare
               {sortBy === "amount" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
+            <th>Markup</th>
+            <th>Total Amount</th>
             <th>Status</th>
             <th>Booking Time</th>
           </tr>
@@ -243,7 +245,7 @@ const HotelBookingList = ({
         <tbody>
           {!bookings || bookings.length === 0 ? (
             <tr>
-              <td colSpan={5} className="empty-state">
+              <td colSpan={7} className="empty-state">
                 <div className="empty-state-text">No bookings found</div>
               </td>
             </tr>
@@ -260,6 +262,8 @@ const HotelBookingList = ({
                   </Link>
                 </td>
                 <td>{b.amount || "--"}</td>
+                <td>{b.markup || "--"}</td>
+                <td>{b.totalAmount || "--"}</td>
                 <td>
                   <span className={getStatusClass(b.status)}>
                     {b.status || "--"}
@@ -270,7 +274,7 @@ const HotelBookingList = ({
             ))
           ) : (
             <tr>
-              <td colSpan={5} className="text-center py-4">
+              <td colSpan={7} className="text-center py-4">
                 No bookings found
               </td>
             </tr>
