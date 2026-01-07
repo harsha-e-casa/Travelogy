@@ -182,7 +182,7 @@ export default function HotelListing() {
     const prices: number[] = [];
 
     data.forEach((hotel) => {
-      const totalPrice = hotel.price * nights; // multiply by nights like flights multiply by passengers
+      const totalPrice = hotel.price; // total price already from API
       if (totalPrice > 0 && totalPrice < 99999) { // exclude invalid/placeholder prices
         prices.push(totalPrice);
       }
@@ -215,7 +215,7 @@ export default function HotelListing() {
   const applyPriceFilter = () => {
     if (transformedHotels.length > 0) {
       const filtered = transformedHotels.filter((hotel) => {
-        const totalPrice = hotel.price * nights;
+        const totalPrice = hotel.price;
         return totalPrice >= priceRange[0] && totalPrice <= priceRange[1];
       });
       setFilteredHotels(filtered);
@@ -840,7 +840,7 @@ export default function HotelListing() {
     console.log("DEBUG - First 3 transformed hotels:", transformedHotels.slice(0, 3).map(h => ({
       name: h.name,
       price: h.price,
-      totalPrice: h.price * nights,
+      totalPrice: h.price,
       rating: h.rating,
       location: h.location
     })))
