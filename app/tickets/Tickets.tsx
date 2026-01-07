@@ -480,6 +480,43 @@ export default function Tickets() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleDepartureDateChange = (date: any) => {
+    console.log("handleDepartureDateChange called with:", date);
+    setDatedep(date);
+
+    if (date) {
+      const formattedDate = dayjs(date);
+      setCookie("gy_trd", formattedDate.format("YYYY-MM-DD"));
+      setDd_monthStr(formattedDate.format("MMM")); // Format as string
+      setDd_strdate(formattedDate.format("dddd")); // Format as string
+      setDd_date(formattedDate.format("DD")); // Format as string
+      setDd_year(formattedDate.format("YY")); // Format as string
+    }
+
+    if ((srx_tripType?.toLowerCase() || "") === "round-trip" && datedepr) {
+      console.log("Comparing dates. Dep:", dayjs(date).format("YYYY-MM-DD"), "Return:", dayjs(datedepr).format("YYYY-MM-DD"));
+      if (dayjs(date).isAfter(dayjs(datedepr))) {
+        console.log("Departure is after Return. Updating Return date...");
+        const newReturnDate = dayjs(date).add(2, 'day');
+        console.log("New Return Date:", newReturnDate.format("YYYY-MM-DD"));
+        setDatedepr(newReturnDate);
+
+        const formattedReturnDate = dayjs(newReturnDate);
+
+        setCookie("gy_return", formattedReturnDate.format("YYYY-MM-DD"));
+        setDdr_monthStr(formattedReturnDate.format("MMM"));
+        setDdr_strdate(formattedReturnDate.format("dddd"));
+        setDdr_date(formattedReturnDate.format("DD"));
+        setDdr_year(formattedReturnDate.format("YY"));
+        console.log("Return date updated successfully.");
+      } else {
+        console.log("Departure is NOT after Return. No update needed.");
+      }
+    } else {
+      console.log("Not round-trip or no return date set.");
+    }
+  };
+
   const renderFilters = () => (
     <>
       <div className="sidebar-left border-1 background-body">
@@ -2056,10 +2093,10 @@ export default function Tickets() {
     }
   }, [datedep]);
 
-  const [ddr_monthStr, setDdr_monthStr] = useState(null);
-  const [ddr_strdate, setDdr_strdate] = useState(null);
-  const [ddr_date, setDdr_date] = useState(null);
-  const [ddr_year, setDdr_year] = useState(null);
+  const [ddr_monthStr, setDdr_monthStr] = useState<string | null>(null);
+  const [ddr_strdate, setDdr_strdate] = useState<string | null>(null);
+  const [ddr_date, setDdr_date] = useState<string | null>(null);
+  const [ddr_year, setDdr_year] = useState<string | null>(null);
 
   useEffect(() => {
     if (datedepr) {
@@ -2308,7 +2345,7 @@ export default function Tickets() {
                         {openDateRage ? (
                           <AppDateRangeFlight
                             openToDateRange={openToDateRange}
-                            setDate={setDatedep}
+                            setDate={handleDepartureDateChange}
                             minDate={null}
                             value={datedep}
                           />
@@ -2700,7 +2737,7 @@ export default function Tickets() {
                     {openDateRage && (
                       <AppDateRangeFlight
                         openToDateRange={openToDateRange}
-                        setDate={setDatedep}
+                        setDate={handleDepartureDateChange}
                         minDate={null}
                         value={datedep}
                       />
@@ -3273,6 +3310,7 @@ export default function Tickets() {
                                       {tripInfo.map((ticket: any, index: number) => {
                                         const ticketId = ticket.id;
                                         const currentMarkup = ticketMarkups[ticketId] ?? markup;
+                                        console.log("markupmarkupmarkupmarkup ", markup);
                                         return (
                                           <React.Fragment key={ticketId}>
                                             {isMobile ? (
@@ -3281,6 +3319,9 @@ export default function Tickets() {
                                                 flightData={flightData}
                                                 markup={currentMarkup}
                                                 onPriceClick={openMarkupModal}
+                                                shareMode={shareMode}
+                                                selectedQuoteFlights={selectedQuoteFlights}
+                                                onQuoteSelectionChange={handleQuoteSelectionChange}
                                               />
                                             ) : (
                                               <TicketCard1

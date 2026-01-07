@@ -17,6 +17,8 @@ import { useContext, useEffect, useState } from "react";
 import { Tabs } from "antd";
 import { checkTokenExpiry } from "@/services/Utils";
 import "./style.css";
+import { jwtDecode } from "jwt-decode";
+
 
 // import "./style.css"
 
@@ -49,6 +51,20 @@ const ReissueReviewPage = () => {
   const [showWalletConfirm, setShowWalletConfirm] = useState(false);
   const [paymsg, setPaymsg] = useState("");
   const [payError, setPayError] = useState("");
+  const [loginPhone, setLoginPhone] = useState(null)
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      console.log("tokentoken ==> 11111111 ", token);
+      const decoded = jwtDecode(token);
+      console.log("decodeddecoded 11111 ==> ", decoded);
+      setLoginPhone(decoded.phone);
+
+    } catch {
+      // setIsVisible(false);
+    }
+  }, []);
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -909,7 +925,7 @@ const ReissueReviewPage = () => {
       console.log("loadDataBook =========== ", result?.status?.success);
 
       if (result?.status?.success === true) {
-        saveBookingIdFn();
+        saveBookingIdFn(parameter.oldBookingId);
 
         if (finalAmountToPay <= 0) {
           await postData(
@@ -1091,7 +1107,7 @@ const ReissueReviewPage = () => {
       const payWalletRes = await payWallet();
 
       if (payWalletRes?.success && payWalletRes.success == true) {
-        saveBookingIdFn();
+        saveBookingIdFn(rsJsonData?.searchQuery?.oldBookingId);
         loadDataBook(parameter, true);
       } else {
         // handle edge case
@@ -1152,7 +1168,7 @@ const ReissueReviewPage = () => {
 
       const startPayment = async () => {
         try {
-          await saveBookingIdFn();
+          await saveBookingIdFn(rsJsonData?.searchQuery?.oldBookingId);
 
           // 🔥 Call your CC Avenue create API
           const paymentRes = await postData(
@@ -1202,12 +1218,13 @@ const ReissueReviewPage = () => {
     }
   };
 
-  const saveBookingIdFn = async () => {
+  const saveBookingIdFn = async (oldBookingId) => {
     const reqSaveBookingId = {
       type: "save",
       old_booking_id: oldBookingId,
       booking_id: bookingId,
-      phone: number.number,
+      // phone: number.number,
+      phone: loginPhone,
       amount: finalAmountToPay,
       status: "",
       time: new Date().toISOString(),
@@ -2964,7 +2981,7 @@ const ReissueReviewPage = () => {
                     <div className="p-8 text-center">
                       <p className="text-gray-600 text-lg mb-2">You are about to pay</p>
                       <div className="text-4xl font-black text-gray-900 mb-6">
-                        ₹{rssrAmount ? rssrAmount.toLocaleString() : "..."}
+                        ₹{finalAmountToPay ? finalAmountToPay.toLocaleString() : "..."}
                       </div>
                       <p className="text-gray-500 leading-relaxed">
                         The total amount will be deducted from your wallet to confirm this booking. This action cannot be undone.

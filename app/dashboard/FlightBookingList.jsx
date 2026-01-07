@@ -262,11 +262,13 @@ const FlightBookingList = ({
               className="cursor-pointer select-none"
               onClick={() => handleSort("amount")}
             >
-              Amount
+              Booking Fare
               {sortBy === "amount" && (
                 <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
               )}
             </th>
+            <th>Markup</th>
+            <th>Total Amount</th>
             <th>Status</th>
             <th>Booking Time</th>
           </tr>
@@ -274,7 +276,7 @@ const FlightBookingList = ({
         <tbody>
           {!bookings || bookings.length === 0 ? (
             <tr>
-              <td colSpan={5} className="empty-state">
+              <td colSpan={7} className="empty-state">
                 <div className="empty-state-text">No bookings found</div>
               </td>
             </tr>
@@ -291,6 +293,8 @@ const FlightBookingList = ({
                   </Link>
                 </td>
                 <td>{b.amount || "--"}</td>
+                <td>{b.markup || 0}</td>
+                <td>{b.totalAmount || b.amount}</td>
                 <td>
                   <span className={getStatusClass(b.status)}>
                     {b.status || "--"}
@@ -301,7 +305,7 @@ const FlightBookingList = ({
             ))
           ) : (
             <tr>
-              <td colSpan={5} className="empty-state">
+              <td colSpan={7} className="empty-state">
                 <div className="empty-state-text">No Bookings found</div>
               </td>
             </tr>

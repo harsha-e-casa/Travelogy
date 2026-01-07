@@ -1096,7 +1096,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                         }
 
                         return new Intl.NumberFormat("en-IN").format(
-                          adultCost + childCost + infantCost
+                          adultCost + childCost + infantCost + (Number(ticketMarkups[selectedOnwardTicket.ticket.id] ?? markup) || 0)
                         );
                       })()}
                     </span>
@@ -1228,6 +1228,43 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                       </div>
                     </div>
                   ))}
+                </div>
+                <div className="text-right mt-2 mr-4">
+                  <p className="text-sm text-white font-medium">
+                    Fare: ₹
+                    {(() => {
+                      let adultCost = 0;
+                      let childCost = 0;
+                      let infantCost = 0;
+                      const selectedFare =
+                        selectedOnwardTicket.ticket.totalPriceList[
+                        selectedOnwardTicket.selectedPriceIndex
+                        ];
+
+                      if (selectedFare?.fd?.ADULT) {
+                        adultCost = adultCount * selectedFare.fd.ADULT.fC.NF;
+                      }
+                      if (selectedFare?.fd?.CHILD) {
+                        childCost = childCount * selectedFare.fd.CHILD.fC.NF;
+                      }
+                      if (selectedFare?.fd?.INFANT) {
+                        infantCost = infantCount * selectedFare.fd.INFANT.fC.NF;
+                      }
+
+                      return new Intl.NumberFormat("en-IN").format(
+                        adultCost + childCost + infantCost + (Number(ticketMarkups[selectedOnwardTicket.ticket.id] ?? markup) || 0)
+                      );
+                    })()}{" "}
+                    <span className="text-xs text-white-500">
+                      (
+                      {
+                        selectedOnwardTicket.ticket.totalPriceList[
+                          selectedOnwardTicket.selectedPriceIndex
+                        ].fareIdentifier
+                      }
+                      )
+                    </span>
+                  </p>
                 </div>
               </div>
               <div className="col-lg-1">

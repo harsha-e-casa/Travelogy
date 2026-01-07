@@ -26,6 +26,7 @@ import Button from "@mui/material/Button";
 import dayjs from "dayjs";
 import SessionTime from "../book-ticket/SessionTime";
 import useSessionTime from "../book-ticket/useSessionTime";
+import { jwtDecode } from "jwt-decode";
 
 const ReviewPage = () => {
   const searchParams = useSearchParams();
@@ -41,7 +42,21 @@ const ReviewPage = () => {
   const [paymentFailurePopup, setPaymentFailurePopup] = useState(
     new URLSearchParams(window.location.search).get("payment") === "retry"
   );
+  const [loginPhone, setLoginPhone] = useState(null)
   console.log("paymentFailurePopup ==> ", paymentFailurePopup);
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      console.log("tokentoken ==> 11111111 ", token);
+      const decoded = jwtDecode(token);
+      console.log("decodeddecoded 11111 ==> ", decoded);
+      setLoginPhone(decoded.phone);
+
+    } catch {
+      // setIsVisible(false);
+    }
+  }, []);
   // useEffect(() => {
   //   if (payment === "retry") {
   //     setPaymentFailurePopup(true);
@@ -1071,7 +1086,8 @@ const ReviewPage = () => {
         const reqSaveBookingId = {
           type: "save",
           booking_id: bookingId,
-          phone: number.number,
+          // phone: number.number,
+          phone: loginPhone,
           amount: finalAmountToPay - markup,
           status: "",
           time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
@@ -1152,7 +1168,8 @@ const ReviewPage = () => {
         const reqSaveBookingId = {
           type: "save",
           booking_id: bookingId,
-          phone: number.number,
+          // phone: number.number,
+          phone: loginPhone,
           amount: finalAmountToPay - markup,
           status: "",
           time: dayjs().format("YYYY-MM-DD HH:mm:ss"),
@@ -1249,7 +1266,8 @@ const ReviewPage = () => {
       const saveBookingId = async () => {
         const reqSaveBookingId = {
           booking_id: bookingId,
-          phone: number.number,
+          // phone: number.number,
+          phone: loginPhone,
           amount: finalAmountToPay - markup,
           fareType: getCookie("gy_passender_type"),
         };
