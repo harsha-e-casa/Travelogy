@@ -1234,6 +1234,9 @@ export default function Tickets() {
                                             ticket={ticket}
                                             flightData={flightData}
                                             markup={markup}
+                                            shareMode={shareMode}
+                                            selectedQuoteFlights={selectedQuoteFlights}
+                                            onQuoteSelectionChange={handleQuoteSelectionChange}
                                           // onPriceClick={openMarkupModal} 
                                           />
                                         ) : (

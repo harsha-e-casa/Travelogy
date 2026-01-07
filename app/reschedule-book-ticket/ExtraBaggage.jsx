@@ -132,11 +132,11 @@ const ExtraBaggage = ({
                   >
                     ADULT {idx + 1}
                   </span>
-                  <Form.Item name={field} style={{ marginBottom: 0 }}>
+                  <Form.Item name={field} style={{ marginBottom: 0, width: "100%" }}>
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: "100%", maxWidth: "500px" }}
+                      style={{ width: "100%"}}
                       onChange={handleChange}
                       allowClear
                       onClear={handleChange}
@@ -178,11 +178,11 @@ const ExtraBaggage = ({
                   >
                     CHILD {idx + 1}
                   </span>
-                  <Form.Item name={field} style={{ marginBottom: 0 }}>
+                  <Form.Item name={field} style={{ marginBottom: 0, width: "100%" }}>
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: "100%", maxWidth: "500px" }}
+                      style={{ width: "100%" }}
                       onChange={handleChange}
                       allowClear
                       onClear={handleChange}

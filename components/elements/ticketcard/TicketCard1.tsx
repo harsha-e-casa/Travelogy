@@ -23,7 +23,7 @@ export default function TicketCard1({
   const { getCookie } = useContext(AppContext);
 
   useEffect(() => {
-    // console.log(`[TicketCard1] Ticket ${ticket.id} received markup:`, markup);
+    console.log(`[TicketCard1] Ticket ${ticket.id} received markup:`, markup);
   }, [markup, ticket.id]);
   const [totalPrice, setTotalprice] = useState();
   const formatTime = (minutes: any) => {
@@ -444,11 +444,7 @@ export default function TicketCard1({
             )}
             {!reschedule && (
               <Link
-                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id
-                  }${getCookie("gy_triptype") === "one-way"
-                    ? `&markup=${markup}`
-                    : ""
-                  }`}
+                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}&markup=${markup || 0}`}
                 // className="btn btn-gray booknow btn"
                 className="btn-book-now"
               >

@@ -103,7 +103,7 @@ export default function DomesticRoundTripTicketCard({
 
   // Mobile View UI layout
   const mobileView = (
-    <div className="ticket-card-mobile card-flight">
+    <div className="ticket-card-mobile card-flight drtm">
       <div className="mobile-card-header">
         {isUat ? (
           <img
@@ -179,7 +179,7 @@ export default function DomesticRoundTripTicketCard({
               href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
                 selectedOnwardTicket.selectedPriceIndex
               ]?.id
-                },${ticket.totalPriceList[value]?.id}`}
+                },${ticket.totalPriceList[value]?.id}&markup=${(Number(selectedOnwardTicket.markup) || 0) + (Number(markup) || 0)}`}
               className="mobile-book-btn"
             >
               Book Now

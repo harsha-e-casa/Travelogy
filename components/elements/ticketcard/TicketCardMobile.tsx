@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { Radio } from "antd";
+import { Radio, Checkbox } from "antd";
 import { AppContext } from "@/util/AppContext";
 import "./ticketCardMobile.css";
 
@@ -14,6 +14,9 @@ export default function TicketCardMobile({
     markup = 0,
     onPriceClick,
     onSelect,
+    shareMode = false,
+    selectedQuoteFlights = [],
+    onQuoteSelectionChange,
 }: any) {
     const { getCookie } = useContext(AppContext);
     const isUat = process.env.UAT_ENV === "true";
@@ -51,8 +54,18 @@ export default function TicketCardMobile({
 
     const selectedFare = ticket.totalPriceList[value];
 
+    const isQuoteSelected = selectedQuoteFlights?.some(
+        (f: any) => f.ticketId === ticket.id && f.fareIndex === value
+    );
+
+    const handleCheckboxChange = (e: any) => {
+        if (onQuoteSelectionChange) {
+            onQuoteSelectionChange(ticket, value, e.target.checked);
+        }
+    };
+
     return (
-        <div className="ticket-card-mobile card-flight">
+        <div className="ticket-card-mobile card-flight tcm">
             <div className="mobile-card-header">
                 {isUat ? (
                     <img
@@ -82,6 +95,14 @@ export default function TicketCardMobile({
                     }}
                 /> */}
                 <span className="mobile-airline-name">{ticket.sI[0].fD.aI.name}</span>
+                {shareMode && (
+                    <div style={{ marginLeft: "auto" }}>
+                        <Checkbox
+                            checked={isQuoteSelected}
+                            onChange={handleCheckboxChange}
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="mobile-flight-segments">
@@ -126,11 +147,7 @@ export default function TicketCardMobile({
                         href={
                             reschedule
                                 ? `reschedule-book-ticket?tcs_id=${selectedFare.id}&requestId=${requestId}`
-                                : `book-ticket?tcs_id=${selectedFare.id
-                                }${getCookie("gy_triptype") === "one-way"
-                                    ? `&markup=${markup}`
-                                    : ""
-                                }`
+                                : `book-ticket?tcs_id=${selectedFare.id}&markup=${markup || 0}`
                         }
                         className="mobile-book-btn"
                     >

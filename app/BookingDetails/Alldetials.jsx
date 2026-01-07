@@ -23,6 +23,8 @@ import BookingForm from "@/components/elements/BookingForm";
 import { DatePicker } from "antd";
 import { printTicket, downloadTicketPdf } from "./TicketPrint";
 import "./style.css";
+import { jwtDecode } from "jwt-decode";
+
 
 // import staticBookingData from "./staticBookingData.json";
 
@@ -741,6 +743,21 @@ const Alldetails = ({ totalpricee }) => {
   //   }
   // };
 
+  const [loginPhone, setLoginPhone] = useState(null)
+
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem("authToken");
+      console.log("tokentoken ==> 11111111 ", token);
+      const decoded = jwtDecode(token);
+      console.log("decodeddecoded 11111 ==> ", decoded);
+      setLoginPhone(decoded.phone);
+
+    } catch {
+      // setIsVisible(false);
+    }
+  }, []);
+
   const handlePrint = async (ref) => {
     const html2canvas = (await import("html2canvas")).default;
 
@@ -974,45 +991,22 @@ const Alldetails = ({ totalpricee }) => {
 
       // save the bookingstatus
       const saveBookingStatus = async () => {
-        const countryCodes = [
-          "+91",
-          "+1",
-          "+44",
-          "+61",
-          "+81",
-          "+49",
-          "+33",
-          "+55",
-          "+86",
-          "+7",
-          "+39",
-          "+34",
-          "+52",
-          "+27",
-          "+971",
-          "+63",
-          "+47",
-          "+92",
-          "+82",
-          "+54",
-          "+354",
-          "+90",
-          "+234",
-          "+66",
-          "+20",
-          "+31",
-        ];
-        const rawPhone = data?.order?.deliveryInfo?.contacts?.[0] || "";
-        const codePattern = new RegExp(
-          "^(" + countryCodes.map((code) => "\\" + code).join("|") + ")"
-        );
-        const phone = rawPhone.replace(codePattern, "");
+        let phoneFromToken = null;
+        try {
+          const token = localStorage.getItem("authToken");
+          if (token) {
+            const decoded = jwtDecode(token);
+            phoneFromToken = decoded.phone;
+          }
+        } catch (e) {
+          console.error("Error decoding token in saveBookingStatus:", e);
+        }
 
         const reqSaveBookingId = {
           type: "update",
           booking_id: bookingId,
           status: data?.order?.status,
-          phone: phone,
+          phone: phoneFromToken,
         };
 
         const result = await postData(
