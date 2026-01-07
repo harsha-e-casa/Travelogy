@@ -12,7 +12,7 @@ import { Step2Review, FareAmount } from "../../stepper/Stepper";
 import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import { DownOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
+import { Spin, message, Modal, Input } from "antd";
 import { postData, getData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
@@ -55,6 +55,9 @@ const BookingDetailsPage = () => {
   const [cancelling, setCancelling] = useState(false);
   const [showCancellationModal, setShowCancellationModal] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareEmail, setShareEmail] = useState("");
+  const [isSharing, setIsSharing] = useState(false);
   const [exportType, setExportType] = useState("print"); // "print" or "pdf"
   const [printOptions, setPrintOptions] = useState({
     withPrice: true,
@@ -283,9 +286,33 @@ const BookingDetailsPage = () => {
       case "print":
         handlePrint();
         break;
+      case "share":
+        setShareEmail(email || "");
+        setShowShareModal(true);
+        break;
       default:
         break;
     }
+  };
+
+  const handleShareEmail = async () => {
+    if (!shareEmail) {
+      message.error("Please enter an email address");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(shareEmail)) {
+      message.error("Please enter a valid email address");
+      return;
+    }
+
+    setIsSharing(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSharing(false);
+      setShowShareModal(false);
+      message.success("Booking details shared successfully via email.");
+    }, 1500);
   };
 
   const handleDownloadPDF = async () => {
@@ -516,6 +543,12 @@ const BookingDetailsPage = () => {
                         >
                           Download as PDF
                         </button>
+                        <button
+                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                          onClick={() => handleOptionClick("share")}
+                        >
+                          Share via Email
+                        </button>
                       </div>
                     )}
                   </div>
@@ -566,6 +599,12 @@ const BookingDetailsPage = () => {
                           onClick={() => handleOptionClick("pdf")}
                         >
                           Download as PDF
+                        </button>
+                        <button
+                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                          onClick={() => handleOptionClick("share")}
+                        >
+                          Share via Email
                         </button>
                       </div>
                     )}
@@ -690,6 +729,39 @@ const BookingDetailsPage = () => {
             cancellationPolicy={cancellationPolicy}
             isProcessing={cancelling}
           />
+
+          <Modal
+            title={<h2 className="text-xl font-bold text-orange-600 text-center">SHARE BOOKING DETAILS</h2>}
+            open={showShareModal}
+            onCancel={() => setShowShareModal(false)}
+            footer={null}
+            centered
+          >
+            <div className="p-4">
+              <p className="mb-4 text-gray-600">Enter the email address you want to share the booking details</p>
+              <Input
+                placeholder="Enter email address"
+                value={shareEmail}
+                onChange={(e) => setShareEmail(e.target.value)}
+                className="mb-6 h-12"
+              />
+              <div className="flex justify-center gap-4">
+                <button
+                  className="px-8 py-2 bg-gray-200 rounded hover:bg-gray-300 font-semibold"
+                  onClick={() => setShowShareModal(false)}
+                >
+                  CANCEL
+                </button>
+                <button
+                  className="book-now-btn px-8 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed font-semibold"
+                  onClick={handleShareEmail}
+                  disabled={isSharing}
+                >
+                  {isSharing ? "SHARING..." : "SHARE"}
+                </button>
+              </div>
+            </div>
+          </Modal>
 
           {cancelling && (
             <div className="fixed inset-0 modal-overlay flex items-center justify-center z-50">
