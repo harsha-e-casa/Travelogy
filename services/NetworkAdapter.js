@@ -107,7 +107,8 @@ export const fetchData = async (endpoint, params = {}) => {
 
 export const postData = async (endpoint, payload, headers = {}, options = {}) => {
   try {
-    const response = await apiInstance.post(endpoint, payload, {headers}, options);
+    console.log("postData headers:", headers);
+    const response = await apiInstance.post(endpoint, payload, { headers }, options);
     console.log("ressssssssss 1111111 ", response);
     return response.data;
   } catch (error) {

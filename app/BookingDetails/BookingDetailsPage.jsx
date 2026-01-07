@@ -177,15 +177,20 @@ const BookingDetailsPage = () => {
 
         // const data = await postDataBookingDetails(parameter);
         let reqData = { action: "bookingDetails", requestData: parameter };
-        const data = await postData("travelogy/one-way/fetch-data", reqData);
+        const token = localStorage.getItem("authToken");
+        console.log("token 111111111 111111111 ", token);
+        const data = await postData("travelogy/one-way/fetch-data", reqData, { Authorization: `Bearer ${token}` });
 
         setTotalpriceinfo(
           data?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail
         );
       } catch (err) {
-        console.error("error caused", err);
+        console.log("error caused bookingDetails", err);
+        console.log("error caused bookingDetails", err.response.data.message);
 
-        if (err?.response?.data?.errors?.length) {
+        if (err?.response?.data?.message) {
+          setError(err.response.data.message);
+        } else if (err?.response?.data?.errors?.length) {
           const firstError = err.response.data.errors[0];
           const message = firstError?.message || "An unknown error occurred.";
           setError(message);
