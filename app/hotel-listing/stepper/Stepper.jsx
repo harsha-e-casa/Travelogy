@@ -2338,10 +2338,11 @@ export function Step4Payment({
     setPaymsg("");
     const token =
       typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-    const finalAmount = Number(totalBaseFare + totalTax);
+    const finalAmount = Number(totalBaseFare + totalTax).toFixed(2);
 
     setBookingLoadingWallet(true);
 
+      console.log("hotelBooking amount: ", amount);
     try {
       // 1. Pay with wallet
       const reqpayWallet = {
@@ -2362,7 +2363,7 @@ export function Step4Payment({
         try {
           const result = await hotelBooking({ formData, hotelReviewData });
           console.log("hotelBooking result: ", result);
-
+          console.log("hotelBooking amount: ", amount);
           if (result?.error) {
             console.log("Booking error, refunding wallet...");
             // Refund wallet if booking fails
