@@ -895,41 +895,93 @@ function renderTicketHTML(vm, useAbsolute = false) {
         .filter(Boolean)
         .join(" · ");
 
-      return `
+      if (useAbsolute) {
+        // --- EMAIL LAYOUT (Tables) ---
+        return `
+      <div class="seg" style="border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+        <!-- Header: Airline & Badges -->
+        <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 12px;">
+          <tr>
+            <td align="left" style="vertical-align: middle;">
+               <table cellspacing="0" cellpadding="0" border="0">
+                 <tr>
+                    <td style="padding-right: 8px;">
+                      <img src="${BASE_URL}/assets/imgs/airlines/${sanitize(s.airlineCode)}.png"
+                          onerror="this.style.display='none'"
+                          style="height:18px; width:auto; display: block;" />
+                    </td>
+                    <td style="font-weight: 700;">
+                      ${sanitize(s.airlineName || "Airline")} • ${sanitize(s.flightNo)}
+                    </td>
+                 </tr>
+               </table>
+            </td>
+            <td align="right" style="vertical-align: middle;">
+               <span class="seg-meta">
+                 ${[
+            s.cabin ? `<span class="badge" style="display:inline-block;padding:2px 8px;border:1px solid #D1D5DB;border-radius:12px;font-size:12px;margin-left:4px;">${sanitize(labelize(s.cabin))}</span>` : "",
+            s.fareClass ? `<span class="badge" style="display:inline-block;padding:2px 8px;border:1px solid #D1D5DB;border-radius:12px;font-size:12px;margin-left:4px;">Class ${sanitize(s.fareClass)}</span>` : "",
+            s.stops > 0 ? `<span class="badge" style="display:inline-block;padding:2px 8px;border:1px solid #D1D5DB;border-radius:12px;font-size:12px;margin-left:4px;">${s.stops} stop</span>` : `<span class="badge" style="display:inline-block;padding:2px 8px;border:1px solid #D1D5DB;border-radius:12px;font-size:12px;margin-left:4px;">Non-stop</span>`
+          ].join("")}
+               </span>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Body: From | Duration | To -->
+        <table width="100%" cellspacing="0" cellpadding="0" border="0">
+          <tr>
+            <!-- From -->
+            <td align="left" width="35%" style="vertical-align: top;">
+              <div style="font-size: 24px; font-weight: 800; letter-spacing: .5px;">${sanitize(s.from.code)}</div>
+              <div style="color: #374151;">${sanitize(s.from.city)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""}</div>
+              <div style="margin-top: 2px; font-weight: 600;">${formatDT(s.depTime)}</div>
+            </td>
+
+            <!-- Duration / Center -->
+            <td align="center" width="30%" style="vertical-align: middle;">
+               <div style="width: 100px; height: 1px; background-color: #D1D5DB; margin: 0 auto;"></div>
+               <div class="small muted" style="margin-top: 4px; text-align: center;">${minsToHM(s.durationMins)}</div>
+            </td>
+
+            <!-- To -->
+            <td align="right" width="35%" style="vertical-align: top;">
+               <div style="font-size: 24px; font-weight: 800; letter-spacing: .5px;">${sanitize(s.to.code)}</div>
+              <div style="color: #374151;">${sanitize(s.to.city)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""}</div>
+              <div style="margin-top: 2px; font-weight: 600;">${formatDT(s.arrTime)}</div>
+            </td>
+          </tr>
+        </table>
+
+        ${bagBits ? `
+        <div style="margin-top: 12px; padding-top: 8px; border-top: 1px dashed #E5E7EB; font-size: 12px; color: #6B7280;">
+           ${bagBits}
+        </div>
+        ` : ""}
+      </div>
+    `;
+      } else {
+        // --- PRINT LAYOUT (Flex/Grid) ---
+        return `
       <div class="seg">
         <div class="seg-head">
           <div class="seg-title" style="display:flex; align-items:center; gap:6px;">
-            <img src="${useAbsolute ? BASE_URL : ""}/assets/imgs/airlines/${sanitize(s.airlineCode)}.png"
+            <img src="/assets/imgs/airlines/${sanitize(s.airlineCode)}.png"
                 onerror="this.style.display='none'"
                 style="height:18px; width:auto;" />
-            <span>${sanitize(s.airlineName || "Airline")} • ${sanitize(
-        s.flightNo
-      )}</span>
+            <span>${sanitize(s.airlineName || "Airline")} • ${sanitize(s.flightNo)}</span>
           </div>
           <div class="seg-meta">
-            ${s.cabin
-          ? `<span class="badge">${sanitize(labelize(s.cabin))}</span>`
-          : ""
-        }
-            ${s.fareClass
-          ? ` <span class="badge">Class ${sanitize(s.fareClass)}</span>`
-          : ""
-        }
-            ${s.equipment
-          ? ` <span class="badge">${sanitize(s.equipment)}</span>`
-          : ""
-        }
-            ${s.stops > 0
-          ? ` <span class="badge">${s.stops} stop</span>`
-          : ` <span class="badge">Non-stop</span>`
-        }
+            ${s.cabin ? `<span class="badge">${sanitize(labelize(s.cabin))}</span>` : ""}
+            ${s.fareClass ? ` <span class="badge">Class ${sanitize(s.fareClass)}</span>` : ""}
+            ${s.equipment ? ` <span class="badge">${sanitize(s.equipment)}</span>` : ""}
+            ${s.stops > 0 ? ` <span class="badge">${s.stops} stop</span>` : ` <span class="badge">Non-stop</span>`}
           </div>
         </div>
         <div class="seg-body">
           <div class="station">
             <div class="code">${sanitize(s.from.code)}</div>
-            <div class="name">${sanitize(s.from.city)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""
-        }</div>
+            <div class="name">${sanitize(s.from.city)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""}</div>
             <div class="time">${formatDT(s.depTime)}</div>
           </div>
           <div class="duration">
@@ -938,17 +990,14 @@ function renderTicketHTML(vm, useAbsolute = false) {
           </div>
           <div class="station">
             <div class="code">${sanitize(s.to.code)}</div>
-            <div class="name">${sanitize(s.to.city)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""
-        }</div>
+            <div class="name">${sanitize(s.to.city)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""}</div>
             <div class="time">${formatDT(s.arrTime)}</div>
           </div>
         </div>
-        ${bagBits
-          ? `<div class="small muted" style="margin-top:8px;">${bagBits}</div>`
-          : ""
-        }
+        ${bagBits ? `<div class="small muted" style="margin-top:8px;">${bagBits}</div>` : ""}
       </div>
-    `;
+      `;
+      }
     })
     .join("");
 
@@ -1267,6 +1316,39 @@ function renderTicketHTML(vm, useAbsolute = false) {
   </div>
 `;
 
+  const headerBlock = useAbsolute ? `
+    <!-- Company Header Table (Email) -->
+    <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 12px; border: 0;">
+      <tr>
+        <td width="50%" align="left" style="border: 0; padding: 0;">
+          <img src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" alt="Travelogy" style="height: 100px; width: auto;" />
+        </td>
+        <td width="50%" align="right" style="border: 0; padding: 0; font-size: 12px; line-height: 1.4; text-align: right;">
+          Address: NPL Devi, 111,<br/>
+          Lattice Brg Rd, Thiruvanmiyur,<br/>
+          Chennai, Tamil Nadu 600041<br/>
+          Phone: +91-9566266061<br/>
+          info@casagrandtravelogy.co.in
+        </td>
+      </tr>
+    </table>
+  ` : `
+    <!-- Company Header Div (Print) -->
+    <div class="header-top">
+        <div class="header-logo">
+        <img src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" alt="Travelogy" />
+        </div>
+
+        <div class="header-address">
+        Address: NPL Devi, 111,</br>
+        Lattice Brg Rd, Thiruvanmiyur,<br/>
+        Chennai, Tamil Nadu 600041<br/>
+        Phone: +91-9566266061<br/>
+        info@casagrandtravelogy.co.in
+        </div>
+    </div>
+  `;
+
   return `
     <!doctype html>
     <html>
@@ -1279,19 +1361,7 @@ function renderTicketHTML(vm, useAbsolute = false) {
       <body>
         <div class="wrap">
             <!-- Company Header -->
-            <div class="header-top">
-                <div class="header-logo">
-                <img src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" alt="Travelogy" />
-                </div>
-
-                <div class="header-address">
-                Address: NPL Devi, 111,</br>
-                Lattice Brg Rd, Thiruvanmiyur,<br/>
-                Chennai, Tamil Nadu 600041<br/>
-                Phone: +91-9566266061<br/>
-                info@casagrandtravelogy.co.in
-                </div>
-            </div>
+            ${headerBlock}
 
             <div class="hr"></div>
           ${contactBlock}
