@@ -13,6 +13,11 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import { DownOutlined } from "@ant-design/icons";
 import { Spin, message, Modal, Input } from "antd";
+
+message.config({
+  top: 80,
+  duration: 3,
+});
 import { postData, getData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF, generateHotelTicketHTML } from "./HotelPrint";
@@ -321,7 +326,7 @@ const BookingDetailsPage = () => {
       const response = await postData("travelogy/common/share-booking", payload);
 
       if (response && !response.error) {
-        message.success("Quote sent successfully!");
+        message.success("Email sent successfully!");
         setTimeout(() => {
           setShowShareModal(false);
         }, 0);

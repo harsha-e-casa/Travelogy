@@ -105,6 +105,8 @@ const HotelData = ({
         roomsHTML += `
           <div style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;">
             <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rc}</div>
+            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rt}</div>
+            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.srn}</div>
             <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">${data.mb}</div>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>

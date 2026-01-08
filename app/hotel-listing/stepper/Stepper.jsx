@@ -2540,6 +2540,17 @@ export function Step4Payment({
                       Balance: ₹{paymsg.balance}
                     </p>
                   )}
+                  {paymsg.message?.includes("Please, enter valid PAN number") && (
+                    <button
+                      onClick={() => {
+                        setPaymentModel(false);
+                        setCurrentStep(3);
+                      }}
+                      className="mt-4 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-bold rounded-lg transition-all"
+                    >
+                      Go back
+                    </button>
+                  )}
                 </div>
               )}
             </div>
