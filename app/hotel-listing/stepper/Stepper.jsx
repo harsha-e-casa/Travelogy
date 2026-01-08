@@ -993,34 +993,22 @@ export function Step2Review({
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
-            {Category === "abook" ? (
-              <p className="text-gray-700">
-                {hotelReviewData?.query?.checkinDate || "N/A"}
-              </p>
-            ) : (
-              <p className="text-gray-700">
-                {hotelReviewData?.query?.checkinDate || "N/A"}
-                <br />
-                {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
-                  "No Clock-in Time"}
-              </p>
-            )}
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkinDate || "N/A"}
+              <br />
+              {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
+                "No Clock-in Time"}
+            </p>
           </div>
 
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Check Out</strong>
-            {Category === "abook" ? (
-              <p className="text-gray-700">
-                {hotelReviewData?.query?.checkoutDate || "N/A"}
-              </p>
-            ) : (
-              <p className="text-gray-700">
-                {hotelReviewData?.query?.checkoutDate || "N/A"}
-                <br />
-                {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
-                  "No Clock-out Time"}
-              </p>
-            )}
+            <p className="text-gray-700">
+              {hotelReviewData?.query?.checkoutDate || "N/A"}
+              <br />
+              {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
+                "No Clock-out Time"}
+            </p>
           </div>
 
           <div className="border-l-1 pl-4">
@@ -2287,7 +2275,6 @@ export function Step4Payment({
   paymentModel,
   setPaymentModel,
 }) {
-  const [showModal, setShowModal] = useState(false);
   const [showWalletConfirm, setShowWalletConfirm] = useState(false);
   const [bookingLoadingWallet, setBookingLoadingWallet] = useState(false);
   const [paymsg, setPaymsg] = useState("");
@@ -2297,11 +2284,11 @@ export function Step4Payment({
   const [panError, setPanError] = useState(null);
   const handlePayClick = () => {
     setPaymsg("");
-    setShowModal(true);
+    setPaymentModel(true);
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
+    setPaymentModel(false);
     setPaymsg("");
   };
 
@@ -2326,11 +2313,6 @@ export function Step4Payment({
   // };
 
   const [loading, setLoading] = useState(false);
-
-  const handleConfirm = async () => {
-    setShowModal(false);
-    setPaymentModel(true);
-  };
 
 
 // amount to be deducted from wallet is totalBaseFare + totalTax
@@ -2468,38 +2450,6 @@ export function Step4Payment({
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow-lg w-full max-w-md p-6 confirm_modal">
-            <h2 className="text-center text-lg font-bold text-orange-600 mb-4">
-              CONFIRM TRANSACTION
-            </h2>
-            <p className="text-center mb-4">
-              Please choose one of the payment methods. Please confirm to
-              proceed.
-            </p>
-            <p className="text-center text-xl font-semibold mb-6">
-              ₹{(totalBaseFare + totalTax + markup).toFixed(2)}
-            </p>
-
-            <div className="flex justify-center gap-4">
-              <button
-                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                onClick={handleCloseModal}
-              >
-                BACK
-              </button>
-              <button
-                className="book-now-btn px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600"
-                onClick={handleConfirm}
-              >
-                CONTINUE
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {paymentModel && (
         <div className="fixed inset-0 z-[9999] bg-white overflow-y-auto w-full h-full payment-modal-overlay">
           <style jsx>{`
@@ -2589,6 +2539,17 @@ export function Step4Payment({
                     <p className="text-red-500 text-sm mt-1">
                       Balance: ₹{paymsg.balance}
                     </p>
+                  )}
+                  {paymsg.message?.includes("Please, enter valid PAN number") && (
+                    <button
+                      onClick={() => {
+                        setPaymentModel(false);
+                        setCurrentStep(3);
+                      }}
+                      className="mt-4 px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-bold rounded-lg transition-all"
+                    >
+                      Go back
+                    </button>
                   )}
                 </div>
               )}

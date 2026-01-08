@@ -13,6 +13,11 @@ import Layout from "@/components/layout/Layout";
 import Link from "next/link";
 import { DownOutlined } from "@ant-design/icons";
 import { Spin, message, Modal, Input } from "antd";
+
+message.config({
+  top: 80,
+  duration: 3,
+});
 import { postData, getData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
 import { printHotelBooking, downloadHotelBookingAsPDF, generateHotelTicketHTML } from "./HotelPrint";
@@ -82,9 +87,9 @@ const BookingDetailsPage = () => {
   }, [status]);
 
   const handlePayClick = () => {
-    console.log("Pay Now clicked, setting paymentModel to true");
+    console.log("Pay Now clicked, starting bookingReviewWIthWallet");
     setPaymsg("");
-    setPaymentModel(true);
+    bookingReviewWIthWallet();
   };
 
   useEffect(() => {
@@ -321,7 +326,7 @@ const BookingDetailsPage = () => {
       const response = await postData("travelogy/common/share-booking", payload);
 
       if (response && !response.error) {
-        message.success("Quote sent successfully!");
+        message.success("Email sent successfully!");
         setTimeout(() => {
           setShowShareModal(false);
         }, 0);
@@ -466,12 +471,6 @@ const BookingDetailsPage = () => {
 
 
 
-  const handleCloseModal = () => {
-    setPaymentModel(false);
-    setPaymsg("");
-  };
-  const handleConfirm = () => bookingReviewWIthWallet();
-
   const statusLabel =
     status
       ?.replace(/_/g, " ")
@@ -563,12 +562,6 @@ const BookingDetailsPage = () => {
                           onClick={() => handleOptionClick("pdf")}
                         >
                           Download as PDF
-                        </button>
-                        <button
-                          className="block w-full px-4 py-2 text-left hover:bg-gray-100"
-                          onClick={() => handleOptionClick("share")}
-                        >
-                          Share via Email
                         </button>
                       </div>
                     )}
@@ -705,44 +698,6 @@ const BookingDetailsPage = () => {
               </div>
             </div>
           </div>
-          {paymentModel && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded shadow-lg w-full max-w-md p-6">
-                <h2 className="text-center text-lg font-bold text-orange-600 mb-4">
-                  CONFIRM TRANSACTION
-                </h2>
-                <p className="text-center mb-4">
-                  You have choosen to make the following payment. Please confirm
-                  to proceed.
-                </p>
-                <p className="text-center text-xl font-semibold mb-6">
-                  ₹{Number(totalAmount) + Number(markup)}
-                </p>
-
-                <div className="flex justify-center gap-4">
-                  <button
-                    className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-                    onClick={handleCloseModal}
-                    disabled={bookingLoadingWallet}
-                  >
-                    BACK
-                  </button>
-                  <button
-                    className="book-now-btn px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={handleConfirm}
-                    disabled={bookingLoadingWallet}
-                  >
-                    {bookingLoadingWallet ? "Processing…" : "CONTINUE"}
-                  </button>
-                </div>
-                {paymsg && (
-                  <p className="text-red-600 pt-4 text-center">
-                    {paymsg.message} {paymsg.balance !== undefined && `, Balance: ${paymsg.balance}`}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
           <CancellationModal
             isOpen={showCancellationModal}
             onClose={() => setShowCancellationModal(false)}

@@ -730,8 +730,8 @@ export default function ActivitiesDetail4() {
                     >
                       <div className="cards card-body">
                         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-6 list-disc pl-6 text-gray-700 text-sm leading-relaxed">
-                          {hotelData?.fl?.length > 0 ? (
-                            hotelData?.fl.map((item, index) => (
+                          {(hotelData?.facilities || hotelData?.fl)?.length > 0 ? (
+                            (hotelData?.facilities || hotelData?.fl).map((item, index) => (
                               <li key={index} className="relative pl-1">
                                 {item}
                               </li>
@@ -785,7 +785,7 @@ export default function ActivitiesDetail4() {
                 <div className="py-10 container" ref={hotelDataRef}>
                   <hr />
                   <HotelData
-                    facilities={hotelData?.fl || []}
+                    facilities={hotelData?.facilities || hotelData?.fl || []}
                     longitude={hotelData?.gl?.lt}
                     latitude={hotelData?.gl?.ln}
                     fetchHotelData={hotelData?.ops?.flatMap((o) => o) || []}

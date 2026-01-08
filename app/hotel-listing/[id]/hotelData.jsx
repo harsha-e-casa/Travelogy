@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { message } from "antd";
 import dayjs from "dayjs";
 import { postData } from "@/services/NetworkAdapter";
+import { ShareAltOutlined } from "@ant-design/icons";
 
 const HotelData = ({
   fetchHotelData = [],
@@ -16,8 +17,11 @@ const HotelData = ({
   checkoutDate,
 }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
   const [currentFacilities, setCurrentFacilities] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]); // ← This tracks ops[].ris[]
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedQuoteRooms, setSelectedQuoteRooms] = useState([]);
   const [showPriceModal, setShowPriceModal] = useState(false);
   const [currentPriceDetails, setCurrentPriceDetails] = useState([]);
 
@@ -27,6 +31,13 @@ const HotelData = ({
   const [shareStatus, setShareStatus] = useState("idle");
 
   const router = useRouter();
+
+  const toggleSelectionMode = () => {
+    if (isSelectionMode) {
+      setSelectedQuoteRooms([]);
+    }
+    setIsSelectionMode(!isSelectionMode);
+  };
 
   const handleShareQuote = async () => {
     if (!shareEmail) {
@@ -40,7 +51,7 @@ const HotelData = ({
     }
 
     try {
-      const hotelHTML = generateHotelHTML();
+      const hotelHTML = generateHotelHTML(selectedQuoteRooms);
       const payload = {
         email: shareEmail,
         link: window.location.href,
@@ -56,6 +67,8 @@ const HotelData = ({
           setIsShareModalOpen(false);
           setShareEmail("");
           setShareStatus("idle");
+          setIsSelectionMode(false);
+          setSelectedQuoteRooms([]);
         }, 2000);
       } else {
         setShareStatus("error");
@@ -69,13 +82,18 @@ const HotelData = ({
     }
   };
 
-  const generateHotelHTML = () => {
+  const generateHotelHTML = (selectedIds = []) => {
     if (!fetchHotelData || fetchHotelData.length === 0)
       return "<p>Details unavailable.</p>";
 
     let roomsHTML = "";
     fetchHotelData.forEach((room) => {
-      room.ris.forEach((data) => {
+      room.ris.forEach((data, index2) => {
+        const roomKey = `${room.id}-${index2}`;
+        if (selectedIds.length > 0 && !selectedIds.includes(roomKey)) {
+          return;
+        }
+
         const optionId = room.id;
         const markup =
           markupObj?.individual?.[optionId] !== undefined
@@ -87,6 +105,8 @@ const HotelData = ({
         roomsHTML += `
           <div style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;">
             <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rc}</div>
+            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rt}</div>
+            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.srn}</div>
             <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">${data.mb}</div>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
@@ -181,8 +201,59 @@ const HotelData = ({
   };
   return (
     <>
-      <h6 className="mt-3">Rooms</h6>
+      <div className="flex justify-between items-center mt-3">
+        <h6>Rooms</h6>
+        <button
+          onClick={
+            isSelectionMode && selectedQuoteRooms.length > 0
+              ? () => setIsShareModalOpen(true)
+              : toggleSelectionMode
+          }
+          className={`text-sm font-semibold px-4 py-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 flex items-center gap-2 ${
+            isSelectionMode
+              ? selectedQuoteRooms.length > 0
+                ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-blue-600 text-white hover:bg-yellow-500"
+          }`}
+        >
+          {isSelectionMode
+            ? selectedQuoteRooms.length > 0
+              ? "Send Quote"
+              : "Cancel"
+            : "Share Quote"}
+           {(selectedQuoteRooms.length > 0 || !isSelectionMode) && (
+            <ShareAltOutlined />
+          )}
+        </button>
+      </div>
       <div className="border rounded-md mt-10">
+        {isSelectionMode && fetchHotelData.length > 0 && (
+          <div className="p-3 border-b bg-gray-50 flex items-center gap-2">
+            <input
+              type="checkbox"
+              className="w-4 h-4"
+              checked={
+                selectedQuoteRooms.length ===
+                fetchHotelData.reduce((acc, room) => acc + room.ris.length, 0)
+              }
+              onChange={(e) => {
+                if (e.target.checked) {
+                  const allKeys = [];
+                  fetchHotelData.forEach((room) => {
+                    room.ris.forEach((_, idx) => {
+                      allKeys.push(`${room.id}-${idx}`);
+                    });
+                  });
+                  setSelectedQuoteRooms(allKeys);
+                } else {
+                  setSelectedQuoteRooms([]);
+                }
+              }}
+            />
+            <span className="text-sm font-semibold text-gray-700">Select All Rooms</span>
+          </div>
+        )}
         {fetchHotelData.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
             <p className="text-sm">No rooms available for the selected dates.</p>
@@ -203,6 +274,7 @@ const HotelData = ({
                 const nights = data?.pis?.length;
                 const isRefundable = room?.cnp?.inra;
                 const panRequired = room?.ipr;
+                const roomKey = `${room.id}-${index2}`;
                 let freeCancellationDate = null;
                 if (room?.cnp?.inra === false && Array.isArray(room?.cnp?.pd)) {
                   const freeCancellation = room.cnp.pd.find((p) => p.am === 0);
@@ -218,9 +290,33 @@ const HotelData = ({
                       dataLen == index2 + 1 ? "room_options" : ""
                     }`}
                   >
-                    <div className="col-span-6">
+                    {isSelectionMode && (
+                      <div className="col-span-1">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4"
+                          checked={selectedQuoteRooms.includes(roomKey)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedQuoteRooms((prev) => [
+                                ...prev,
+                                roomKey,
+                              ]);
+                            } else {
+                              setSelectedQuoteRooms((prev) =>
+                                prev.filter((id) => id !== roomKey)
+                              );
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className={isSelectionMode ? "col-span-5" : "col-span-6"}>
                       <h4 className="font-semibold text-gray-800 text-sm mb-1">
-                        {data.rc}
+                        <strong>Room Details:</strong><br />
+                        {data.rc} <br />
+                        {data.rt} <br />
+                        {data.srn}
                         {/* {data.mb ? ` (${data.mb})` : ""} */}
                       </h4>
                       <br />
@@ -285,11 +381,24 @@ const HotelData = ({
                           <span
                             className="underline cursor-pointer"
                             onClick={() => {
+                              setModalTitle("Room Facilities");
                               setCurrentFacilities(data?.fcs || []);
                               setShowFacilityModal(true);
                             }}
                           >
                             Room Facilities
+                          </span>
+
+                          <span
+                            className="underline cursor-pointer"
+                            onClick={() => {
+                              const services = data?.rexb?.SERVICE?.flatMap(s => s.values) || [];
+                              setModalTitle("Services");
+                              setCurrentFacilities([...services]);
+                              setShowFacilityModal(true);
+                            }}
+                          >
+                            Services
                           </span>
                         </div>
                       ) : null}
@@ -300,8 +409,8 @@ const HotelData = ({
                         ₹{Number(price).toLocaleString("en-IN")}
                       </div>
                       <div className="text-xs text-gray-500 mb-1">
-                        for {nights} Night(s) For {data.adt} adult
-                        {data.adt > 1 ? "s" : ""}
+                        for {nights} Night(s) For {data.adt} Adult 
+                        {data.adt > 1 ? "s" : ""} {data.chd} Child
                         {room.chd ? ` ${data.chd} child` : ""}
                       </div>
                       <div
@@ -318,12 +427,18 @@ const HotelData = ({
                           >
                             Book Now
                           </button>
-                          <div
-                            className="text-xs text-yellow-600 underline cursor-pointer font-semibold mt-1"
-                            onClick={() => setIsShareModalOpen(true)}
-                          >
-                            Share Quote
-                          </div>
+                          {/* {!isSelectionMode && (
+                            <div
+                              className="text-xs text-yellow-600 underline cursor-pointer font-semibold mt-1"
+                              onClick={() => {
+                                // For backward compatibility if needed, though we want to use the common button
+                                setSelectedQuoteRooms([roomKey]);
+                                setIsShareModalOpen(true);
+                              }}
+                            >
+                              Share Quote
+                            </div>
+                          )} */}
                         </div>
                       )}
                     </div>
@@ -347,7 +462,7 @@ const HotelData = ({
               ×
             </button>
             <h3 className="text-lg font-bold mb-4 text-gray-800 text-center">
-              Room Facilities
+              {modalTitle}
             </h3>
             {currentFacilities.length > 0 ? (
               <div className="flex flex-wrap space-x-4">
@@ -362,7 +477,7 @@ const HotelData = ({
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 italic">No facilities available.</p>
+              <p className="text-gray-500 italic">No {modalTitle.toLowerCase()} available.</p>
             )}
           </div>
         </div>

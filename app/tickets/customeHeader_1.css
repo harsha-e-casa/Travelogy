@@ -127,7 +127,7 @@
   color: #fff;
   padding: 4px 14px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-around;
   /* border-radius: 4px; */
   margin-bottom: 20px;
@@ -180,11 +180,18 @@
   margin-right: 0;
 }
 
+.hdt_header-item .input-field {
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
 .hdt_header-item label {
   font-size: 0.85rem;
   display: block;
   color: #ddd;
   padding-left: 8px;
+  margin-bottom: 0px;
 }
 
 .hdt_header-item .hdt_value {

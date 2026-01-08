@@ -107,6 +107,7 @@ export default function WalletOption(): JSX.Element {
     totalUsage: 0,
   });
   const [loadingHistory, setLoadingHistory] = useState(true);
+  const [loadingTable, setLoadingTable] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedVendorId, setSelectedVendorId] = useState<number | null>(null);
   const [adminInfo, setAdminInfo] = useState<{ id: number; e_mail: string } | null>(
@@ -399,8 +400,14 @@ export default function WalletOption(): JSX.Element {
             <div
               className="bookings-container wallet_container"
             >
+              <div style={{ padding: "20px 25px 0", background: "#f8fafc", borderTopLeftRadius: "16px", borderTopRightRadius: "16px" }}>
+                <h2 className="wallet-title" style={{ margin: 0, fontSize: "24px", fontWeight: 700, textAlign: "left" }}>
+                  {activeTab === "overview" ? "Wallet History Overview" : "Vendor Section"}
+                </h2>
+              </div>
+
               {isAdmin && (
-                <div className="modern-tabs" style={{ padding: "20px 20px 0", background: "#f8fafc", display: "flex", gap: "10px" }}>
+                <div className="modern-tabs" style={{ padding: "10px 20px 15px 15px", background: "#f8fafc", display: "flex", gap: "20px" }}>
                   <div
                     className="tab-item"
                     onClick={() => setActiveTab("overview")}
@@ -433,17 +440,64 @@ export default function WalletOption(): JSX.Element {
               {/* Wallet History Section */}
               {activeTab === "overview" && (
                 <div style={{ marginTop: "20px", padding: "0 25px" }}>
-                  <div className="wallet-header">
-                    <h2 className="wallet-title">
-                      Wallet History Overview
-                    </h2>
+                  <style jsx>{`
+                    @media (max-width: 768px) {
+                      .wallet-date-filter-group {
+                        display: flex !important;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                        width: 100%;
+                      }
+                      .wallet-date-filter-group .ant-radio-button-wrapper {
+                        flex: 1 1 calc(50% - 8px);
+                        text-align: center;
+                        margin-bottom: 0;
+                        border-radius: 4px; 
+                      }
+                    }
+                  `}</style>
+
+                  <div style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                      <span style={{ fontWeight: 600 }}>Date Filter:</span>
+                      <Radio.Group
+                        className="wallet-date-filter-group"
+                        value={dateFilter}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDateFilter(val); // Always update state
+                          if (val !== "CUSTOM") {
+                            setLoadingTable(true);
+                            setTimeout(() => setLoadingTable(false), 1000);
+                          }
+                        }}
+                        buttonStyle="solid"
+                      >
+                        <Radio.Button value="ALL">All</Radio.Button>
+                        <Radio.Button value="TODAY">Today</Radio.Button>
+                        <Radio.Button value="WEEK">This Week</Radio.Button>
+                        <Radio.Button value="MONTH">This Month</Radio.Button>
+                        <Radio.Button value="CUSTOM">Custom Range</Radio.Button>
+                      </Radio.Group>
+                      {dateFilter === "CUSTOM" && (
+                        <RangePicker
+                          value={customRange}
+                          onChange={(dates: any) => {
+                            setLoadingTable(true);
+                            setCustomRange(dates);
+                            setTimeout(() => setLoadingTable(false), 1000);
+                          }}
+                        />
+                      )}
+                    </div>
 
                     {isAdmin && (
-                      <div className="wallet-filter">
-                        <span className="wallet-filter-label">Filter by Vendor:</span>
+                      <div className="wallet-filter" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span className="wallet-filter-label" style={{ fontWeight: 600, margin: 0 }}>Filter by Vendor:</span>
                         <Select
                           placeholder="Select Vendor"
                           className="wallet-filter-select"
+                          style={{ minWidth: "200px" }}
                           allowClear
                           loading={loadingList}
                           onChange={(val) => setSelectedVendorId(val)}
@@ -465,56 +519,6 @@ export default function WalletOption(): JSX.Element {
                             ))}
                         </Select>
                       </div>
-                    )}
-                  </div>
-
-                  <style jsx>{`
-                    @media (max-width: 768px) {
-                      .wallet-date-filter-group {
-                        display: flex !important;
-                        flex-wrap: wrap;
-                        gap: 8px;
-                        width: 100%;
-                      }
-                      .wallet-date-filter-group .ant-radio-button-wrapper {
-                        flex: 1 1 calc(50% - 8px);
-                        text-align: center;
-                        margin-bottom: 0;
-                        border-radius: 4px; 
-                      }
-                    }
-                  `}</style>
-
-                  <div style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                    <span style={{ fontWeight: 600 }}>Date Filter:</span>
-                    <Radio.Group
-                      className="wallet-date-filter-group"
-                      value={dateFilter}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        setDateFilter(val); // Always update state
-                        if (val !== "CUSTOM") {
-                          setLoadingHistory(true);
-                          setTimeout(() => setLoadingHistory(false), 1000);
-                        }
-                      }}
-                      buttonStyle="solid"
-                    >
-                      <Radio.Button value="ALL">All</Radio.Button>
-                      <Radio.Button value="TODAY">Today</Radio.Button>
-                      <Radio.Button value="WEEK">This Week</Radio.Button>
-                      <Radio.Button value="MONTH">This Month</Radio.Button>
-                      <Radio.Button value="CUSTOM">Custom Range</Radio.Button>
-                    </Radio.Group>
-                    {dateFilter === "CUSTOM" && (
-                      <RangePicker
-                        value={customRange}
-                        onChange={(dates: any) => {
-                          setLoadingHistory(true);
-                          setCustomRange(dates);
-                          setTimeout(() => setLoadingHistory(false), 1000);
-                        }}
-                      />
                     )}
                   </div>
 
@@ -566,7 +570,7 @@ export default function WalletOption(): JSX.Element {
                       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                     }}
                   >
-                    <Skeleton loading={loadingHistory} active paragraph={{ rows: 10 }}>
+                    <Skeleton loading={loadingHistory || loadingTable} active paragraph={{ rows: 10 }}>
                       <div
                         style={{
                           display: "flex",
@@ -688,12 +692,23 @@ export default function WalletOption(): JSX.Element {
                         Vendors
                       </span>
                       <Button
+                        onClick={() => window.location.href = '/user-create'}
+                        style={{
+                          marginLeft: "auto",
+                          marginRight: 8,
+                          background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                          border: "none",
+                          color: "white",
+                        }}
+                      >
+                        Create Vendor
+                      </Button>
+                      <Button
                         icon={<ReloadOutlined />}
                         size="small"
                         onClick={fetchVendors}
                         loading={loadingList}
                         style={{
-                          marginLeft: "auto",
                           background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
                           border: "none",
                           color: "white",

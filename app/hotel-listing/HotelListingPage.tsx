@@ -984,7 +984,7 @@ export default function HotelListing() {
                 <div className="input-field font-bold nights_width">
                   {checkinDate && checkoutDate ? (
                     <>
-                      <div className="text-base font-bold text-center">
+                      <div className="text-base font-bold text-center w-full">
                         {" "}{nights}
                         {/* {nights} {nights === 1 ? "Night" : "Nights"} */}
                       </div>
@@ -1000,7 +1000,7 @@ export default function HotelListing() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <label className="">Rooms & Guest</label>
-                <div className="input-field text-base font-bold mb-5 mt-8">
+                <div className="input-field text-base font-bold">
                   <button onClick={toggleTraveller} style={{
 
                     background: "none",
@@ -1568,7 +1568,7 @@ export default function HotelListing() {
                       <div className="input-field font-bold nights_width">
                         {checkinDate && checkoutDate ? (
                           <>
-                            <div className="text-base font-bold ">
+                            <div className="text-base font-bold text-center w-full">
                               {" "}{nights}
                               {/* {nights} {nights === 1 ? "Night" : "Nights"} */}
                             </div>
@@ -1584,7 +1584,7 @@ export default function HotelListing() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <label className="">Rooms & Guest</label>
-                      <div className="input-field text-base font-bold mb-5 mt-8">
+                      <div className="input-field text-base font-bold">
                         <button onClick={toggleTraveller} style={{
 
                           background: "none",
