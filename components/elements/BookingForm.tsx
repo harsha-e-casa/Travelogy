@@ -75,6 +75,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;
+  console.log("totalfare ====> ", totalfare);
   // const netprice = totalpricee?.fC?.NF;
   const { getCookie, removeCookie } = useContext(AppContext);
   // const initLoaded = useRef(false);
@@ -171,9 +172,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
             Number(ssrSeatAmount ?? 0) +
             Number(markup || 0);
           // (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
+          console.log("computedAmountcomputedAmount ====> ", computedAmount);
         } else {
           computedAmount = Number(totalfare) + Number(markup || 0);
+          console.log("computedAmountcomputedAmount 11 ====> ", computedAmount);
         }
+        console.log("computedAmountcomputedAmount 22 ====> ", computedAmount);
         setNetprice(
           computedAmount -
           savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
@@ -232,7 +236,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
         console.log("Total Seat Amount: ", seatTotal);
         console.log("Total Amount: ", Number(totalfare));
         computedAmount = Number(totalfare) + Number(markup || 0);
-        setNetprice(totalfare - baggageTotal - seatTotal - mealTotal);
+        // setNetprice(totalfare - baggageTotal - seatTotal - mealTotal);
+        setNetprice(computedAmount);
+        console.log("computedAmount 11 ====== ", computedAmount);
       }
       console.log("computedAmount ====== ", computedAmount);
       setDisplayAmount(computedAmount);
@@ -601,9 +607,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </svg>
             </div>
             <div className="line-booking-right">
-              <p className="text-xl-bold neutral-1000">
-                ₹{!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)}
-              </p>
+              {!finalStage && (
+                <p className="text-xl-bold neutral-1000">
+                  ₹{!onHold ? (displayAmount) : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)}
+                </p>
+              )}
+              {finalStage && (
+                <p className="text-xl-bold neutral-1000">
+                  ₹{!onHold ? (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount) : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)}
+                </p>
+              )}
             </div>
           </div>
 
@@ -623,7 +636,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
               </div> */}
               <div className="flex justify-between text-md font-bold text-gray-700">
                 <span>Net Price</span>
-                <span>₹{(!onHold ? displayAmount : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)) - Number(markup)}</span>
+                {!finalStage && (
+                  <span>₹{(!onHold ? (displayAmount) : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)) - Number(markup)}</span>
+                )}
+                {finalStage && (
+                  <span>₹{(!onHold ? (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount) : (displayAmount - totalBaggageAmount - totalMealAmount - totalSeatAmount)) - Number(markup)}</span>
+                )}
               </div>
             </div>
           )}
