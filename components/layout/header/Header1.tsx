@@ -174,12 +174,12 @@ export default function Header1(props: Header1Props) {
                   <Link href="/contact-us">Contact</Link>
                 </li>
 
-                {!isVisible && authToken && (
+                {/* {!isVisible && authToken && (
                   <li className={pathname === "/profile" ? "active" : ""}>
                     <Link href="/profile">Profile</Link>
                   </li>
-                )}
-                {!isVisible && authToken && (<li
+                )} */}
+                {/* {!isVisible && authToken && (<li
                   className={`${pathname === "/wallet" ? "active" : ""
                     }`}
                 >
@@ -191,9 +191,10 @@ export default function Header1(props: Header1Props) {
                       </span>
                     )}
                   </Link>
-                </li>)}
+                </li>)} */}
 
-                {isVisible && authToken && (
+                {/* {isVisible && authToken && ( */}
+                {authToken && (
                   <li
                     className={`dropdown ${pathname.startsWith("/profile") &&
                       pathname.startsWith("/dashboard") &&
@@ -216,26 +217,32 @@ export default function Header1(props: Header1Props) {
                       className={`dropdown-menu ${adminDropdownOpen ? "show" : ""
                         }`}
                     >
-                      <li
+                      {/* <li
                         className={`${pathname === "/profile" ? "active" : ""}`}
                       >
                         <Link href="/profile">Profile</Link>
+                      </li> */}
+                      <li
+                        className={`${pathname === "/dashboard" ? "active" : ""
+                          }`}
+                      >
+                        <Link href="/dashboard">Dashboard</Link>
                       </li>
                       {isVisible && (
                         <>
-                          <li
+                          {/* <li
                             className={`${pathname === "/dashboard" ? "active" : ""
                               }`}
                           >
                             <Link href="/dashboard">Dashboard</Link>
-                          </li>
+                          </li> */}
                           <li
                             className={`${pathname === "/user-create" ? "active" : ""
                               }`}
                           >
                             <Link href="/user-create">Vendor Creation</Link>
                           </li>
-                          <li
+                          {/* <li
                             className={`${pathname === "/wallet" ? "active" : ""
                               }`}
                           >
@@ -247,10 +254,22 @@ export default function Header1(props: Header1Props) {
                                 </span>
                               )}
                             </Link>
-                          </li>
-
+                          </li> */}
                         </>
                       )}
+                      <li
+                        className={`${pathname === "/wallet" ? "active" : ""
+                          }`}
+                      >
+                        <Link href="/wallet">
+                          Wallet
+                          {walletBalance !== null && (
+                            <span className="wallet-balance-badge">
+                              ₹{walletBalance.toLocaleString()}
+                            </span>
+                          )}
+                        </Link>
+                      </li>
                     </ul>
                   </li>
                 )}
@@ -320,9 +339,17 @@ export default function Header1(props: Header1Props) {
 
           {authToken && (
             <>
-              <li>
+              {/* <li>
                 <Link href="/profile" onClick={() => setMobileMenuOpen(false)}>
                   Profile
+                </Link>
+              </li> */}
+              <li>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Dashboard
                 </Link>
               </li>
               <li>
@@ -345,14 +372,14 @@ export default function Header1(props: Header1Props) {
               </li>
               {isVisible && (
                 <>
-                  <li>
+                  {/* <li>
                     <Link
                       href="/dashboard"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
-                  </li>
+                  </li> */}
                   <li>
                     <Link
                       href="/user-create"

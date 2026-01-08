@@ -50,13 +50,13 @@ const Page = () => {
   const [reBookingFromDate, setReBookingFromDate] = useState("");
   const [reBookingToDate, setReBookingToDate] = useState("");
 
-  useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-    const decodedToken = jwtDecode(token);
-    if (decodedToken?.travelogy_admin != 1) {
-      router.push("/profile");
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  //   const decodedToken = jwtDecode(token);
+  //   if (decodedToken?.travelogy_admin != 1) {
+  //     router.push("/profile");
+  //   }
+  // }, [router]);
 
   // Helper function to count bookings grouped by status
   const countByStatus = (items, key = "status") => {

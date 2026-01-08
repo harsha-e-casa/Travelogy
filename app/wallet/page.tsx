@@ -433,205 +433,237 @@ export default function WalletOption(): JSX.Element {
               {/* Wallet History Section */}
               {activeTab === "overview" && (
                 <div style={{ marginTop: "20px", padding: "0 25px" }}>
-                <div className="wallet-header">
-                  <h2 className="wallet-title">
-                    Wallet History Overview
-                  </h2>
+                  <div className="wallet-header">
+                    <h2 className="wallet-title">
+                      Wallet History Overview
+                    </h2>
 
-                  {isAdmin && (
-                    <div className="wallet-filter">
-                      <span className="wallet-filter-label">Filter by Vendor:</span>
-                      <Select
-                        placeholder="Select Vendor"
-                        className="wallet-filter-select"
-                        allowClear
-                        loading={loadingList}
-                        onChange={(val) => setSelectedVendorId(val)}
-                        value={selectedVendorId}
-                        showSearch
-                        optionFilterProp="children"
-                      >
-                        {isAdmin && adminInfo && (
-                          <Select.Option key="admin-self" value={adminInfo.id}>
-                            {adminInfo.e_mail} (Admin)
-                          </Select.Option>
-                        )}
-                        {vendors
-                          // .filter((v) => v.is_admin !== 1)
-                          .map((v) => (
-                            <Select.Option key={v.id} value={v.user_id || v.id}>
-                              {v.e_mail}
+                    {isAdmin && (
+                      <div className="wallet-filter">
+                        <span className="wallet-filter-label">Filter by Vendor:</span>
+                        <Select
+                          placeholder="Select Vendor"
+                          className="wallet-filter-select"
+                          allowClear
+                          loading={loadingList}
+                          onChange={(val) => setSelectedVendorId(val)}
+                          value={selectedVendorId}
+                          showSearch
+                          optionFilterProp="children"
+                        >
+                          {isAdmin && adminInfo && (
+                            <Select.Option key="admin-self" value={adminInfo.id}>
+                              {adminInfo.e_mail} (Admin)
                             </Select.Option>
-                          ))}
-                      </Select>
-                    </div>
-                  )}
-                </div>
+                          )}
+                          {vendors
+                            // .filter((v) => v.is_admin !== 1)
+                            .map((v) => (
+                              <Select.Option key={v.id} value={v.user_id || v.id}>
+                                {v.e_mail}
+                              </Select.Option>
+                            ))}
+                        </Select>
+                      </div>
+                    )}
+                  </div>
 
-                <div style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontWeight: 600 }}>Date Filter:</span>
-                  <Radio.Group value={dateFilter} onChange={e => setDateFilter(e.target.value)} buttonStyle="solid">
-                    <Radio.Button value="ALL">All</Radio.Button>
-                    <Radio.Button value="TODAY">Today</Radio.Button>
-                    <Radio.Button value="WEEK">This Week</Radio.Button>
-                    <Radio.Button value="MONTH">This Month</Radio.Button>
-                    <Radio.Button value="CUSTOM">Custom Range</Radio.Button>
-                  </Radio.Group>
-                  {dateFilter === "CUSTOM" && (
-                    <RangePicker
-                      value={customRange}
-                      onChange={(dates: any) => setCustomRange(dates)}
-                    />
-                  )}
-                </div>
+                  <style jsx>{`
+                    @media (max-width: 768px) {
+                      .wallet-date-filter-group {
+                        display: flex !important;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                        width: 100%;
+                      }
+                      .wallet-date-filter-group .ant-radio-button-wrapper {
+                        flex: 1 1 calc(50% - 8px);
+                        text-align: center;
+                        margin-bottom: 0;
+                        border-radius: 4px; 
+                      }
+                    }
+                  `}</style>
 
-
-                {/* Stats Cards */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-                    gap: "20px",
-                    marginBottom: "30px",
-                  }}
-                >
-                  {[1, 2, 3].map((i) => (
-                    <Card
-                      key={i}
-                      bordered={false}
-                      style={{
-                        borderRadius: "16px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                        border: "1px solid #f0f0f0",
+                  <div style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                    <span style={{ fontWeight: 600 }}>Date Filter:</span>
+                    <Radio.Group
+                      className="wallet-date-filter-group"
+                      value={dateFilter}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setDateFilter(val); // Always update state
+                        if (val !== "CUSTOM") {
+                          setLoadingHistory(true);
+                          setTimeout(() => setLoadingHistory(false), 1000);
+                        }
                       }}
+                      buttonStyle="solid"
                     >
-                      <Skeleton loading={loadingHistory} active avatar={false} paragraph={{ rows: 1 }}>
-                        <Statistic
-                          title={
-                            <span style={{ fontWeight: 600, color: i === 1 ? "#389e0d" : i === 2 ? "#d46b08" : "#cf1322" }}>
-                              {i === 1 ? "Total Top-up Amount" : i === 2 ? "Pending Amount" : "Total Usage Amount"}
-                            </span>
-                          }
-                          value={i === 1 ? stats.totalTopup : i === 2 ? stats.pendingAmount : stats.totalUsage}
-                          precision={2}
-                          prefix="₹"
-                          valueStyle={{
-                            color: i === 1 ? "#389e0d" : i === 2 ? "#d46b08" : "#cf1322",
-                            fontWeight: "700",
-                            fontSize: "28px",
+                      <Radio.Button value="ALL">All</Radio.Button>
+                      <Radio.Button value="TODAY">Today</Radio.Button>
+                      <Radio.Button value="WEEK">This Week</Radio.Button>
+                      <Radio.Button value="MONTH">This Month</Radio.Button>
+                      <Radio.Button value="CUSTOM">Custom Range</Radio.Button>
+                    </Radio.Group>
+                    {dateFilter === "CUSTOM" && (
+                      <RangePicker
+                        value={customRange}
+                        onChange={(dates: any) => {
+                          setLoadingHistory(true);
+                          setCustomRange(dates);
+                          setTimeout(() => setLoadingHistory(false), 1000);
+                        }}
+                      />
+                    )}
+                  </div>
+
+
+                  {/* Stats Cards */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                      gap: "20px",
+                      marginBottom: "30px",
+                    }}
+                  >
+                    {[1, 2, 3].map((i) => (
+                      <Card
+                        key={i}
+                        bordered={false}
+                        style={{
+                          borderRadius: "16px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                          border: "1px solid #f0f0f0",
+                        }}
+                      >
+                        <Skeleton loading={loadingHistory} active avatar={false} paragraph={{ rows: 1 }}>
+                          <Statistic
+                            title={
+                              <span style={{ fontWeight: 600, color: i === 1 ? "#389e0d" : i === 2 ? "#d46b08" : "#cf1322" }}>
+                                {i === 1 ? "Total Top-up Amount" : i === 2 ? "Pending Amount" : "Total Usage Amount"}
+                              </span>
+                            }
+                            value={i === 1 ? stats.totalTopup : i === 2 ? stats.pendingAmount : stats.totalUsage}
+                            precision={2}
+                            prefix="₹"
+                            valueStyle={{
+                              color: i === 1 ? "#389e0d" : i === 2 ? "#d46b08" : "#cf1322",
+                              fontWeight: "700",
+                              fontSize: "28px",
+                            }}
+                          />
+                        </Skeleton>
+                      </Card>
+                    ))}
+                  </div>
+
+                  {/* Transactions Table */}
+                  <Card
+                    style={{
+                      borderRadius: "16px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <Skeleton loading={loadingHistory} active paragraph={{ rows: 10 }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          marginBottom: 20,
+                        }}
+                      >
+                        <span
+                          style={{
+                            color: "#333",
+                            fontWeight: 600,
+                            fontSize: "18px",
                           }}
-                        />
-                      </Skeleton>
-                    </Card>
-                  ))}
-                </div>
+                        >
+                          Recent Transactions
+                        </span>
+                        <Button
+                          icon={<ReloadOutlined />}
+                          size="small"
+                          onClick={() => fetchWalletHistory(selectedVendorId)}
+                          loading={loadingHistory}
+                          style={{
+                            marginLeft: "auto",
+                            background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                            border: "none",
+                            color: "white",
+                          }}
+                        >
+                          Refresh
+                        </Button>
+                      </div>
 
-                {/* Transactions Table */}
-                <Card
-                  style={{
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <Skeleton loading={loadingHistory} active paragraph={{ rows: 10 }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        marginBottom: 20,
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "#333",
-                          fontWeight: 600,
-                          fontSize: "18px",
-                        }}
-                      >
-                        Recent Transactions
-                      </span>
-                      <Button
-                        icon={<ReloadOutlined />}
-                        size="small"
-                        onClick={() => fetchWalletHistory(selectedVendorId)}
+                      <Table<WalletTx>
+                        rowKey="id"
                         loading={loadingHistory}
-                        style={{
-                          marginLeft: "auto",
-                          background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
-                          border: "none",
-                          color: "white",
-                        }}
-                      >
-                        Refresh
-                      </Button>
-                    </div>
-
-                    <Table<WalletTx>
-                      rowKey="id"
-                      loading={loadingHistory}
-                      dataSource={filteredHistory}
-                      pagination={{ pageSize: 10 }}
-                      scroll={{ x: 'max-content' }}
-                      columns={[
-                        // { title: "#ID", dataIndex: "id", width: 80 },
-                        {
-                          title: "Booking ID",
-                          dataIndex: "booking_id",
-                          render: (text) =>
-                            text === "-" ? (
-                              <span style={{ color: "#aaa" }}>-</span>
-                            ) : (
+                        dataSource={filteredHistory}
+                        pagination={{ pageSize: 10 }}
+                        scroll={{ x: 'max-content' }}
+                        columns={[
+                          // { title: "#ID", dataIndex: "id", width: 80 },
+                          {
+                            title: "Booking ID",
+                            dataIndex: "booking_id",
+                            render: (text) =>
+                              text === "-" ? (
+                                <span style={{ color: "#aaa" }}>-</span>
+                              ) : (
+                                <a href={`/BookingDetails?booking_id=${text}`}
+                                  style={{
+                                    fontWeight: 600,
+                                    fontFamily: "monospace",
+                                    color: "#1890ff",
+                                  }}
+                                >
+                                  {text}
+                                </a>
+                              ),
+                          },
+                          { title: "Description", dataIndex: "description" },
+                          {
+                            title: "Date & Time",
+                            dataIndex: "created_at",
+                            width: 200,
+                            render: (text) => (
+                              <span style={{ color: "#666" }}>{text}</span>
+                            ),
+                          },
+                          {
+                            title: "Amount",
+                            dataIndex: "amount",
+                            align: "right",
+                            render: (amount, record) => (
                               <span
                                 style={{
-                                  fontWeight: 600,
-                                  fontFamily: "monospace",
-                                  color: "#1890ff",
+                                  color:
+                                    record.type === "CREDIT" ? "#389e0d" : "#cf1322",
+                                  fontWeight: "bold",
+                                  fontSize: "16px",
                                 }}
                               >
-                                {text}
+                                {record.type === "CREDIT" ? "+" : "-"} ₹
+                                {amount.toLocaleString()}
                               </span>
                             ),
-                        },
-
-                        { title: "Description", dataIndex: "description" },
-                        {
-                          title: "Date & Time",
-                          dataIndex: "created_at",
-                          width: 200,
-                          render: (text) => (
-                            <span style={{ color: "#666" }}>{text}</span>
-                          ),
-                        },
-                        {
-                          title: "Amount",
-                          dataIndex: "amount",
-                          align: "right",
-                          render: (amount, record) => (
-                            <span
-                              style={{
-                                color:
-                                  record.type === "CREDIT" ? "#389e0d" : "#cf1322",
-                                fontWeight: "bold",
-                                fontSize: "16px",
-                              }}
-                            >
-                              {record.type === "CREDIT" ? "+" : "-"} ₹
-                              {amount.toLocaleString()}
-                            </span>
-                          ),
-                        },
-                      ]}
-                    />
-                  </Skeleton>
-                </Card>
-              </div>
+                          },
+                        ]}
+                      />
+                    </Skeleton>
+                  </Card>
+                </div>
               )}
 
               {/* Vendors Section */}
               {activeTab === "vendors" && isAdmin && (
                 <div style={{ marginTop: "20px", padding: "20px" }}>
-                   <Card
+                  <Card
                     style={{
                       borderRadius: "16px",
                       boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
