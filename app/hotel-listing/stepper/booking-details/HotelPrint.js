@@ -125,6 +125,8 @@ export function normalizeHotelData(raw, markup = 0) {
     children: room.chd || 0,
     checkIn: query.checkinDate || "",
     checkOut: query.checkoutDate || "",
+    checkInTime: hotelInfo.checkInTime?.beginTime || "",
+    checkOutTime: hotelInfo.checkOutTime?.beginTime || "",
     nights: calculateNights(query.checkinDate, query.checkoutDate),
     guests: (room.ti || []).filter(g => 
       g?.fN?.trim().toUpperCase() !== "TBA" && 
@@ -589,11 +591,17 @@ export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency
       <tr>
         <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
           <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Check In</div>
-          <div style="font-size: 12px; color: #000;">${formatDate(vm.rooms[0]?.checkIn)}</div>
+          <div style="font-size: 12px; color: #000;">
+            ${formatDate(vm.rooms[0]?.checkIn)}<br/>
+            ${vm.rooms[0]?.checkInTime || ""}
+          </div>
         </td>
         <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
           <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Check Out</div>
-          <div style="font-size: 12px; color: #000;">${formatDate(vm.rooms[0]?.checkOut)}</div>
+          <div style="font-size: 12px; color: #000;">
+            ${formatDate(vm.rooms[0]?.checkOut)}<br/>
+            ${vm.rooms[0]?.checkOutTime || ""}
+          </div>
         </td>
         <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
           <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Total Rooms</div>
