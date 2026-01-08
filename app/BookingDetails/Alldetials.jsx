@@ -1565,63 +1565,69 @@ const Alldetails = ({ totalpricee }) => {
                     alignItems: "center",
                   }}
                 >
-                  <div>
-                    {bookingDetails?.order?.status === "SUCCESS" && (
-                      <div className="flex flex-row gap-3">
-                        <button
-                          style={{
-                            paddingTop: "5px",
-                            paddingBottom: "5px",
-                            paddingLeft: "10px",
-                            paddingRight: "10px",
-                          }}
-                          onClick={handleCancellation}
-                        >
-                          <AmendmentPopup
-                            bookingId={bookingId}
-                            bookingDetails={bookingDetails}
-                            onSubmit={(
-                              bookingId,
-                              amendmentType,
-                              remarks,
-                              callback
-                            ) =>
-                              sumbitAmendmentapi(
+                  {departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && (
+                    <div>
+                      {bookingDetails?.order?.status === "SUCCESS" && (
+                        <div className="flex flex-row gap-3">
+                          <button
+                            style={{
+                              paddingTop: "5px",
+                              paddingBottom: "5px",
+                              paddingLeft: "10px",
+                              paddingRight: "10px",
+                            }}
+                            onClick={handleCancellation}
+                          >
+                            <AmendmentPopup
+                              bookingId={bookingId}
+                              bookingDetails={bookingDetails}
+                              onSubmit={(
                                 bookingId,
                                 amendmentType,
                                 remarks,
-                                (data) => {
-                                  callback?.(data);
-                                  setShowTravellerModal(true);
-                                }
-                              )
-                            }
-                          />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {!reStatus && isNoPrintVisible && (
-                    <div className={isNoPrintVisible ? "" : "no-print"}>
-                      {bookingDetails?.order?.status === "SUCCESS" && (
-                        <div
-                          style={{
-                            paddingTop: "5px",
-                            paddingBottom: "5px",
-                            paddingLeft: "10px",
-                            paddingRight: "10px",
-                          }}
-                        >
-                          <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
-                            onClick={openReIssueModal}
-                          >
-                            Reschedule
+                                callback
+                              ) =>
+                                sumbitAmendmentapi(
+                                  bookingId,
+                                  amendmentType,
+                                  remarks,
+                                  (data) => {
+                                    callback?.(data);
+                                    setShowTravellerModal(true);
+                                  }
+                                )
+                              }
+                            />
                           </button>
                         </div>
                       )}
                     </div>
+                  )}
+
+                  {departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && (
+                    <>
+                      {!reStatus && isNoPrintVisible && (
+                        <div className={isNoPrintVisible ? "" : "no-print"}>
+                          {bookingDetails?.order?.status === "SUCCESS" && (
+                            <div
+                              style={{
+                                paddingTop: "5px",
+                                paddingBottom: "5px",
+                                paddingLeft: "10px",
+                                paddingRight: "10px",
+                              }}
+                            >
+                              <button
+                                className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                                onClick={openReIssueModal}
+                              >
+                                Reschedule
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {isReIssueModalOpen && (
@@ -2321,295 +2327,306 @@ const Alldetails = ({ totalpricee }) => {
             </div>
           </div>
         </>
-      )}
+      )
+      }
 
-      {modalLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-          <div className="bg-white px-6 py-6 rounded-lg shadow-lg flex flex-col items-center gap-4">
-            {/* Dot Pulse Loader */}
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
-              <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse delay-150"></div>
-              <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse delay-300"></div>
-            </div>
-
-            <p className="text-gray-700 font-medium">
-              Processing, please wait...
-            </p>
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
-            <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
-
-            <button
-              className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition"
-              onClick={() => setError("")}
-            >
-              Ok, Got It
-            </button>
-          </div>
-        </div>
-      )}
-
-      {paymentFailurePopup && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div
-            className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
-            style={{ width: "35%" }}
-          >
-            <button
-              // onClick={() => setPaymentFailurePopup(false)}
-              onClick={() => {
-                setPaymentFailurePopup(false);
-                setPaymsg("");
-              }}
-              className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
-            >
-              ×
-            </button>
-
-            <p className="text-red-600 mb-2 font-semibold">Payment Failed</p>
-            <p>Your payment could not be completed.</p>
-            <p>You can retry the payment or hold this booking and pay later.</p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-around",
-                paddingTop: "10px",
-              }}
-            >
-              <div
-                onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
-                disabled={bookingLoadingWallet}
-              >
-                {bookingLoadingWallet ? (
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-black"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
-                    <span>Loading...</span>
-                  </div>
-                ) : (
-                  "Wallet Payment"
-                )}
+      {
+        modalLoading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+            <div className="bg-white px-6 py-6 rounded-lg shadow-lg flex flex-col items-center gap-4">
+              {/* Dot Pulse Loader */}
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse"></div>
+                <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse delay-150"></div>
+                <div className="w-3 h-3 bg-blue-600 rounded-full animate-pulse delay-300"></div>
               </div>
 
-              <div
-                // onClick={bookingReview}
-                onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
-                disabled={bookingLoading}
-              >
-                {bookingLoading ? (
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-black"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
-                    <span>Loading...</span>
-                  </div>
-                ) : (
-                  "Retry Payment"
-                )}
-              </div>
-            </div>
-            {paymsg && (
-              <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
-                {paymsg.message}, Balance: {paymsg.balance}
+              <p className="text-gray-700 font-medium">
+                Processing, please wait...
               </p>
-            )}
-          </div>
-        </div>
-      )}
-      {paymentModel && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div
-            className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
-            style={{ width: "35%" }}
-          >
-            <button
-              // onClick={() => setPaymentFailurePopup(false)}
-              onClick={() => {
-                setPaymentModel(false);
-                setPaymsg("");
-              }}
-              className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
-            >
-              ×
-            </button>
-
-            <p className="text-black-600 mb-2 font-semibold">
-              Choose Payment Mode
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-around",
-                paddingTop: "10px",
-              }}
-            >
-              <div
-                onClick={bookingReviewWIthWallet}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
-                disabled={bookingLoadingWallet}
-              >
-                {bookingLoadingWallet ? (
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-black"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
-                    <span>Loading...</span>
-                  </div>
-                ) : (
-                  "Wallet Payment"
-                )}
-              </div>
-
-              <div
-                // onClick={bookingReview}
-                onClick={handlePayNow}
-                className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                  ? "bg-gray-300"
-                  : "bg-yellow-300 hover:bg-yellow-400"
-                  }`}
-                disabled={bookingLoading}
-              >
-                {bookingLoading ? (
-                  <div className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5 text-black"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                      ></path>
-                    </svg>
-                    <span>Loading...</span>
-                  </div>
-                ) : (
-                  "Pay via Gateway"
-                )}
-              </div>
             </div>
-            {paymsg && (
-              <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
-                {paymsg.message}, Balance: {paymsg.balance}
-              </p>
-            )}
           </div>
-        </div>
-      )}
-      {showEmailModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
-          <div className="bg-white px-6 py-6 rounded-lg shadow-lg flex flex-col items-center gap-4 w-[400px]">
-            <h3 className="text-xl font-bold mb-2">Share Ticket</h3>
-            <p className="text-sm text-gray-600 mb-4 text-center">Enter the email address to send the booking details.</p>
+        )
+      }
 
-            <input
-              type="email"
-              className="w-full border p-2 rounded"
-              placeholder="Enter email address"
-              value={emailToShare}
-              onChange={(e) => setEmailToShare(e.target.value)}
-            />
+      {
+        error && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg">
+              <p className="text-red-600 mb-4 font-semibold">Error: {error}</p>
 
-            <div className="flex gap-4 w-full mt-4">
               <button
-                className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition"
-                onClick={() => setShowEmailModal(false)}
-                disabled={emailLoading}
+                className="border-2 border-black px-4 py-2 bg-gray-100 hover:bg-gray-200 transition"
+                onClick={() => setError("")}
               >
-                Cancel
-              </button>
-              <button
-                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-                onClick={handleEmailShare}
-                disabled={emailLoading}
-              >
-                {emailLoading ? "Sending..." : "Send Email"}
+                Ok, Got It
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
+
+      {
+        paymentFailurePopup && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div
+              className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
+              style={{ width: "35%" }}
+            >
+              <button
+                // onClick={() => setPaymentFailurePopup(false)}
+                onClick={() => {
+                  setPaymentFailurePopup(false);
+                  setPaymsg("");
+                }}
+                className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+              >
+                ×
+              </button>
+
+              <p className="text-red-600 mb-2 font-semibold">Payment Failed</p>
+              <p>Your payment could not be completed.</p>
+              <p>You can retry the payment or hold this booking and pay later.</p>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  paddingTop: "10px",
+                }}
+              >
+                <div
+                  onClick={bookingReviewWIthWallet}
+                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                    }`}
+                  disabled={bookingLoadingWallet}
+                >
+                  {bookingLoadingWallet ? (
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Wallet Payment"
+                  )}
+                </div>
+
+                <div
+                  // onClick={bookingReview}
+                  onClick={handlePayNow}
+                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                    }`}
+                  disabled={bookingLoading}
+                >
+                  {bookingLoading ? (
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Retry Payment"
+                  )}
+                </div>
+              </div>
+              {paymsg && (
+                <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                  {paymsg.message}, Balance: {paymsg.balance}
+                </p>
+              )}
+            </div>
+          </div>
+        )
+      }
+      {
+        paymentModel && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div
+              className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
+              style={{ width: "35%" }}
+            >
+              <button
+                // onClick={() => setPaymentFailurePopup(false)}
+                onClick={() => {
+                  setPaymentModel(false);
+                  setPaymsg("");
+                }}
+                className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+              >
+                ×
+              </button>
+
+              <p className="text-black-600 mb-2 font-semibold">
+                Choose Payment Mode
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  paddingTop: "10px",
+                }}
+              >
+                <div
+                  onClick={bookingReviewWIthWallet}
+                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                    }`}
+                  disabled={bookingLoadingWallet}
+                >
+                  {bookingLoadingWallet ? (
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Wallet Payment"
+                  )}
+                </div>
+
+                <div
+                  // onClick={bookingReview}
+                  onClick={handlePayNow}
+                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
+                    ? "bg-gray-300"
+                    : "bg-yellow-300 hover:bg-yellow-400"
+                    }`}
+                  disabled={bookingLoading}
+                >
+                  {bookingLoading ? (
+                    <div className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-black"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      <span>Loading...</span>
+                    </div>
+                  ) : (
+                    "Pay via Gateway"
+                  )}
+                </div>
+              </div>
+              {paymsg && (
+                <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                  {paymsg.message}, Balance: {paymsg.balance}
+                </p>
+              )}
+            </div>
+          </div>
+        )
+      }
+      {
+        showEmailModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+            <div className="bg-white px-6 py-6 rounded-lg shadow-lg flex flex-col items-center gap-4 w-[400px]">
+              <h3 className="text-xl font-bold mb-2">Share Ticket</h3>
+              <p className="text-sm text-gray-600 mb-4 text-center">Enter the email address to send the booking details.</p>
+
+              <input
+                type="email"
+                className="w-full border p-2 rounded"
+                placeholder="Enter email address"
+                value={emailToShare}
+                onChange={(e) => setEmailToShare(e.target.value)}
+              />
+
+              <div className="flex gap-4 w-full mt-4">
+                <button
+                  className="flex-1 bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 transition"
+                  onClick={() => setShowEmailModal(false)}
+                  disabled={emailLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                  onClick={handleEmailShare}
+                  disabled={emailLoading}
+                >
+                  {emailLoading ? "Sending..." : "Send Email"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
     </>
   );
 };
