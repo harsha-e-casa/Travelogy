@@ -95,7 +95,7 @@ export function printHotelBooking(bookingDetails, markup = 0, printOptions = { w
   timeoutId = setTimeout(triggerOnce, 1500);
 }
 
-function normalizeHotelData(raw, markup = 0) {
+export function normalizeHotelData(raw, markup = 0) {
   const order = raw?.order || {};
   const hotelInfo = raw?.itemInfos?.HOTEL?.hInfo || {};
   const deliveryInfo = order?.deliveryInfo || {};
@@ -240,7 +240,7 @@ function statusLabel(s) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true, withCancellation: true }) {
+export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true, withCancellation: true }) {
   const styles = `
     <style>
       @page { 
@@ -496,15 +496,21 @@ function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true,
 
   // Logo and Company Header
   const logoHeader = printOptions.withAgency ? `
-    <div class="logo-header">
-      <img src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" alt="Travelogy Logo" />
-      <div class="company-info">
-        <strong>Address:</strong> NPL Devi, 111, Lattice Brg Rd,<br/>
-       Thiruvanmiyur, Chennai, Tamil Nadu 600041<br/>
-        <strong>Phone:</strong> +91-95662 66061<br/>
-        <strong>Email:</strong> info@casagrandtravelogy.co.in
-      </div>
-    </div>
+    <table style="width: 100%; border-bottom: 1px solid #e5e7eb; margin-bottom: 15px; padding-bottom: 10px;">
+      <tr>
+        <td style="border: none; padding: 0; vertical-align: top;">
+          <img src="https://travelogy.digilogy.co/Travelogy%20logoNew.png" alt="Travelogy Logo" style="height: 80px; width: auto;" />
+        </td>
+        <td style="border: none; padding: 0; text-align: right; vertical-align: top;">
+          <div class="company-info" style="color: #666; font-size: 11px; line-height: 1.5;">
+            <strong>Address:</strong> NPL Devi, 111, Lattice Brg Rd,<br/>
+            Thiruvanmiyur, Chennai, Tamil Nadu 600041<br/>
+            <strong>Phone:</strong> +91-95662 66061<br/>
+            <strong>Email:</strong> info@casagrandtravelogy.co.in
+          </div>
+        </td>
+      </tr>
+    </table>
   ` : '';
 
   // Status Header with dynamic color
@@ -525,13 +531,21 @@ function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true,
   
   const statusHeader = `
     <div class="status-header">
-      <svg class="status-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" fill="${iconColor}"/>
-        <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <h1 class="status-text ${statusColorClass}">${sanitize(statusLabel(vm.status))}</h1>
+      <table style="width: auto; margin-bottom: 6px; margin-top: 12px;">
+        <tr>
+          <td style="border: none; padding: 0; vertical-align: middle; padding-right: 10px;">
+            <svg style="width: 40px; height: 40px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="${iconColor}"/>
+              <path d="M8 12l2 2 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </td>
+          <td style="border: none; padding: 0; vertical-align: middle;">
+            <h1 class="status-text ${statusColorClass}" style="margin: 0;">${sanitize(statusLabel(vm.status))}</h1>
+          </td>
+        </tr>
+      </table>
     </div>
-    <div class="booking-id">Booking ID: ${sanitize(vm.bookingRef)}</div>
+    <div class="booking-id" style="font-size: 14px; margin-bottom: 15px;">Booking ID: ${sanitize(vm.bookingRef)}</div>
   `;
 
   // Calculate free cancellation date
@@ -571,28 +585,30 @@ function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true,
   const totalChildren = vm.rooms.reduce((sum, r) => sum + r.children, 0);
   
   const infoGrid = `
-    <div class="info-grid">
-      <div class="info-item">
-        <div class="info-label">Check In</div>
-        <div class="info-value">${formatDate(vm.rooms[0]?.checkIn)}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Check Out</div>
-        <div class="info-value">${formatDate(vm.rooms[0]?.checkOut)}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Rooms</div>
-        <div class="info-value">${vm.rooms.length}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Guests</div>
-        <div class="info-value">${totalAdults} Adult${totalAdults !== 1 ? 's' : ''}${totalChildren > 0 ? `, ${totalChildren} Child${totalChildren !== 1 ? 'ren' : ''}` : ''}</div>
-      </div>
-      <div class="info-item">
-        <div class="info-label">Total Nights</div>
-        <div class="info-value">${vm.rooms[0]?.nights || 0} Night${vm.rooms[0]?.nights !== 1 ? 's' : ''}</div>
-      </div>
-    </div>
+    <table style="width: 100%; background: #d2ddf3ff; border-radius: 4px; margin-bottom: 18px; border-collapse: separate; border-spacing: 0;">
+      <tr>
+        <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
+          <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Check In</div>
+          <div style="font-size: 12px; color: #000;">${formatDate(vm.rooms[0]?.checkIn)}</div>
+        </td>
+        <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
+          <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Check Out</div>
+          <div style="font-size: 12px; color: #000;">${formatDate(vm.rooms[0]?.checkOut)}</div>
+        </td>
+        <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
+          <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Total Rooms</div>
+          <div style="font-size: 12px; color: #000;">${vm.rooms.length}</div>
+        </td>
+        <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
+          <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Total Guests</div>
+          <div style="font-size: 12px; color: #000;">${totalAdults} Adult${totalAdults !== 1 ? 's' : ''}${totalChildren > 0 ? `, ${totalChildren} Child${totalChildren !== 1 ? 'ren' : ''}` : ''}</div>
+        </td>
+        <td style="border: none; padding: 15px 10px; text-align: center; width: 20%;">
+          <div style="font-size: 12px; font-weight: 600; color: #000; margin-bottom: 3px;">Total Nights</div>
+          <div style="font-size: 12px; color: #000;">${vm.rooms[0]?.nights || 0} Night${vm.rooms[0]?.nights !== 1 ? 's' : ''}</div>
+        </td>
+      </tr>
+    </table>
   `;
 
   // Guest Details Section - use guests from room.guests (ti array)
@@ -829,7 +845,7 @@ function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency: true,
  * Uses browser's native print-to-PDF for proper page breaks
  * @param {Object} bookingDetails - The booking details object
  */
-export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0) {
+export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0, printOptions = { withPrice: true, withAgency: true, withCancellation: true }) {
   if (!bookingDetails) {
     console.error("No booking details provided for PDF generation");
     return;
@@ -838,7 +854,7 @@ export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0) {
   try {
     // Normalize data and render HTML using the same functions as print
     const vm = normalizeHotelData(bookingDetails, markup);
-    const html = renderHotelHTML(vm);
+    const html = renderHotelHTML(vm, printOptions);
 
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
@@ -903,4 +919,10 @@ export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0) {
     console.error("Failed to generate PDF:", error);
     throw error;
   }
+}
+
+export function generateHotelTicketHTML(bookingDetails, markup = 0) {
+  const vm = normalizeHotelData(bookingDetails, markup);
+  // Pass true for all options to ensure complete HTML content
+  return renderHotelHTML(vm, { withPrice: true, withAgency: true, withCancellation: true });
 }
