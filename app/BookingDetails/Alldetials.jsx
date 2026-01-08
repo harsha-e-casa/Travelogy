@@ -63,6 +63,31 @@ const Alldetails = ({ totalpricee }) => {
     }
   }, []);
 
+  // Calculate total amounts for Baggage, Meal, and Seat from bookingDetails
+  let baggageTotal = 0;
+  let mealTotal = 0;
+  let seatTotal = 0;
+
+  if (bookingDetails?.itemInfos?.AIR?.travellerInfos) {
+    bookingDetails.itemInfos.AIR.travellerInfos.forEach((traveller) => {
+      if (traveller?.ssrBaggageInfos) {
+        Object.values(traveller.ssrBaggageInfos).forEach((item) => {
+          baggageTotal += item.amount || 0;
+        });
+      }
+      if (traveller?.ssrMealInfos) {
+        Object.values(traveller.ssrMealInfos).forEach((item) => {
+          mealTotal += item.amount || 0;
+        });
+      }
+      if (traveller?.ssrSeatInfos) {
+        Object.values(traveller.ssrSeatInfos).forEach((item) => {
+          seatTotal += item.amount || 0;
+        });
+      }
+    });
+  }
+
   const [ticketData, setTicketData] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [bookingLoading, setBookingLoading] = useState(false);
@@ -2288,6 +2313,9 @@ const Alldetails = ({ totalpricee }) => {
                   markup={markup}
                   onHold={bookingDetails?.order?.status === "PENDING"}
                   markupProp={markup}
+                  baggageAmount={baggageTotal}
+                  mealAmount={mealTotal}
+                  seatinfo={seatTotal}
                 />
               </div>
             </div>

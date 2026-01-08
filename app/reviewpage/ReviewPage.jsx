@@ -2312,7 +2312,13 @@ const ReviewPage = () => {
                         <div class="head-booking-form">
                           <p class="text-xl-bold neutral-1000">Fare Summary</p>
                         </div>
-                        <BookingForm totalpricee={totalPriceinfo} markup={markup} />
+                        <BookingForm
+                          totalpricee={totalPriceinfo}
+                          markup={markup}
+                          baggageAmount={baggageTotal}
+                          mealAmount={mealTotal}
+                          seatinfo={seatTotal}
+                        />
                       </div>
                     </div>
                   </div>
