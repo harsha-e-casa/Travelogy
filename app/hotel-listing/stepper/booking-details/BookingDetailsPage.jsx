@@ -321,8 +321,10 @@ const BookingDetailsPage = () => {
       const response = await postData("travelogy/common/share-booking", payload);
 
       if (response && !response.error) {
-        setShowShareModal(false);
-        message.success("Booking details shared successfully via email.");
+        message.success("Quote sent successfully!");
+        setTimeout(() => {
+          setShowShareModal(false);
+        }, 0);
       } else {
         message.error(response?.message || "Failed to share booking details. Please try again.");
       }

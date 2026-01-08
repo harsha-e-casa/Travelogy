@@ -2332,11 +2332,13 @@ export function Step4Payment({
     setPaymentModel(true);
   };
 
+
+// amount to be deducted from wallet is totalBaseFare + totalTax
   const bookingReviewWIthWallet = async () => {
     setPaymsg("");
     const token =
       typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-    const finalAmount = Number(totalBaseFare + totalTax) + Number(markup);
+    const finalAmount = Number(totalBaseFare + totalTax);
 
     setBookingLoadingWallet(true);
 
