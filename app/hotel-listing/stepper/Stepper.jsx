@@ -2472,7 +2472,7 @@ export function Step4Payment({
               CONFIRM TRANSACTION
             </h2>
             <p className="text-center mb-4">
-              You have choosen to make the following payment. Please confirm to
+              Please choose one of the payment methods. Please confirm to
               proceed.
             </p>
             <p className="text-center text-xl font-semibold mb-6">

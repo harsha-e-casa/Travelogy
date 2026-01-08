@@ -15,7 +15,7 @@ import { DownOutlined } from "@ant-design/icons";
 import { Spin, message, Modal, Input } from "antd";
 import { postData, getData } from "@/services/NetworkAdapter";
 import CancellationModal from "./CancellationModal";
-import { printHotelBooking, downloadHotelBookingAsPDF } from "./HotelPrint";
+import { printHotelBooking, downloadHotelBookingAsPDF, generateHotelTicketHTML } from "./HotelPrint";
 import "../../stepper/StepperPage.css";
 import "../../booking-mobile.css";
 
@@ -307,12 +307,31 @@ const BookingDetailsPage = () => {
     }
 
     setIsSharing(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Generate HTML content for the email
+      const generatedHtml = generateHotelTicketHTML(bookingDetails, markup);
+
+      const payload = {
+        email: shareEmail,
+        htmlContent: generatedHtml,
+        subject: `Your Hotel Booking Ticket - ${bookingDetails?.order?.bookingId || ""}`
+      };
+
+      // Use the sharing endpoint
+      const response = await postData("travelogy/common/share-booking", payload);
+
+      if (response && !response.error) {
+        setShowShareModal(false);
+        message.success("Booking details shared successfully via email.");
+      } else {
+        message.error(response?.message || "Failed to share booking details. Please try again.");
+      }
+    } catch (err) {
+      console.error("Share email error:", err);
+      message.error("An error occurred while sharing. Please try again.");
+    } finally {
       setIsSharing(false);
-      setShowShareModal(false);
-      message.success("Booking details shared successfully via email.");
-    }, 1500);
+    }
   };
 
   const handleDownloadPDF = async () => {
