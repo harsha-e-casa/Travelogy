@@ -197,6 +197,7 @@ const BookingDetailsPage = () => {
     if (bookingId) {
       getBookingDetails(bookingId, setError)
         .then((data) => {
+          console.log("Fetched booking details:", data);
           setBookingDetails(data);
           if (data?.error) {
             setError(data.error);
@@ -209,7 +210,12 @@ const BookingDetailsPage = () => {
         })
         .catch((error) => {
           console.error("Error fetching booking details:", error);
-          setError(error.message);
+
+          if (error?.response?.data?.message) {
+            setError(error.response.data.message);
+          } else {
+            setError(error.message);
+          }
 
           setLoading(false);
         });
@@ -229,6 +235,7 @@ const BookingDetailsPage = () => {
       </Layout>
     );
   if (error) {
+    console.error("Rendering error page with message:", error);
     const isForbiddenError = error.includes("403");
     const isAccessDenied = error.includes("408");
 
