@@ -64,6 +64,7 @@ type WalletTx = {
   type: "CREDIT" | "DEBIT";
   created_at: string;
   original_date?: string; // For filtering
+  booking_type?: "FLIGHT" | "HOTEL";
 };
 
 type WalletStats = {
@@ -205,6 +206,7 @@ export default function WalletOption(): JSX.Element {
           description: t.description,
           created_at: new Date(t.created_at).toLocaleString(),
           original_date: t.created_at,
+          booking_type: t.booking_type,
         }));
 
         // Frontend filter fallback: if backend didn't filter, we do it here
@@ -615,20 +617,41 @@ export default function WalletOption(): JSX.Element {
                           {
                             title: "Booking ID",
                             dataIndex: "booking_id",
-                            render: (text) =>
-                              text === "-" ? (
+                            filters: [
+                              { text: "Flight", value: "FLIGHT" },
+                              { text: "Hotel", value: "HOTEL" },
+                              { text: "Payments", value: "WALLET" },
+                            ],
+                            onFilter: (value: any, record: any) => {
+                              if (value === "FLIGHT") return record.booking_type === "FLIGHT";
+                              if (value === "HOTEL") return record.booking_type === "HOTEL";
+                              if (value === "WALLET") {
+                                return record.booking_id === "-";
+                              }
+                              return true;
+                            },
+                            render: (text, record) => {
+                              console.log("record record record", record);
+                              return text === "-" ? (
                                 <span style={{ color: "#aaa" }}>-</span>
                               ) : (
-                                <a href={`/BookingDetails?booking_id=${text}`}
+                                <a
+                                  href={
+                                    record.booking_type === "HOTEL"
+                                      ? `/hotel-listing/stepper/booking-details?bookingId=${text}`
+                                      : `/BookingDetails?booking_id=${text}`
+                                  }
                                   style={{
                                     fontWeight: 600,
                                     fontFamily: "monospace",
                                     color: "#1890ff",
                                   }}
                                 >
+                                  {record.booking_type === "HOTEL" ? "H-" : "F-"}
                                   {text}
                                 </a>
-                              ),
+                              );
+                            },
                           },
                           { title: "Description", dataIndex: "description" },
                           {
