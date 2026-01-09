@@ -370,13 +370,16 @@ export async function getBookingDetails(bookingId, setError) {
       action: "bookDetails",
       requestData: { bookingId },
     };
-    const response = await postData("travelogy/hotel/fetch-data", reqData);
-    if (response.errors && response.errors.length > 0) {
+    const response = await postData("travelogy/hotel/fetch-data", reqData, { Authorization: `Bearer ${token}` });
+
+    if (response?.message) {
+      setError(response.message);
+    } else if (response.errors && response.errors.length > 0) {
       console.log("Error Message ", response.errors[0].message);
-      setError(response.errors[0].message); // Set error from response.errors
+      setError(response.errors.message); // Set error from response.errors
     } else if (response.error) {
       console.log("Error Message new", response.error);
-      setError(response.error); // Set error from response.error field
+      setError(response.error[0].message); // Set error from response.error field
     }
     //  console.log("Error Message ", response.errors?.[0].message);
     // console.log("Error Message new", response.error);
@@ -406,7 +409,9 @@ export async function getBookingDetails(bookingId, setError) {
     }
   } catch (error) {
     console.error("Error fetching booking details:", error);
-    if (setError && typeof setError === 'function') {
+    if (error?.response?.data?.message) {
+      setError(error.response.data.message);
+    } else if (setError && typeof setError === 'function') {
       setError(error.message);
     }
     throw error;
