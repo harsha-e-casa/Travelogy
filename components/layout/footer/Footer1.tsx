@@ -20,7 +20,7 @@ export default function Footer1() {
           <div className="footer-top">
             <div className="row align-items-center">
               <div className="col-md-4 text-center text-md-start">
-                <Link className="d-inline-block" href="/">
+                <Link className="d-inline-block" href="/" style={{marginTop:"10px"}}>
                   <img 
                     alt="Travelogy"
                     className="header_logo"
