@@ -14,7 +14,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState, Suspense } from "react";
-import { Tabs } from "antd";
+import { Tabs, message } from "antd";
 import { checkTokenExpiry } from "@/services/Utils";
 
 import "./style.css";
@@ -923,6 +923,34 @@ const ReviewPage = () => {
 
       const result = await postData("travelogy/one-way/fetch-data", reqData);
       console.log("loadDataBook =========== ", result);
+
+      if (result?.errCode == "1131") {
+        if (wallet) {
+          const reqRefund = {
+            booking_id: bookingId,
+            amount: parameter?.paymentInfos?.[0]?.amount,
+          };
+          const refundRes = await postData(
+            "travelogy/flight/refundWallet",
+            reqRefund,
+            { Authorization: `Bearer ${token}` }
+          );
+          if (refundRes.success) {
+            message.error(
+              result?.message + ". Amount refunded to wallet."
+            );
+          } else {
+            message.error(result?.message + ". Refund failed.");
+          }
+        } else {
+          message.error(result?.message);
+        }
+        setPaymentFailurePopup(false);
+        setPaymentModel(false);
+        setBookingLoading(false);
+        setBookingLoadingWallet(false);
+        return;
+      }
 
       // // test
       // const result = { error: "Request failed with status code 400" };
