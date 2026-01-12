@@ -797,6 +797,7 @@ export default function ActivitiesDetail4() {
                     hotelImage={displayImages[0]?.url || hotelData?.img?.[0]?.url}
                     checkinDate={checkinDate}
                     checkoutDate={checkoutDate}
+                    hotelData={hotelData}
                   />
                 </div>
               </div>

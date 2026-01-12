@@ -15,6 +15,7 @@ const HotelData = ({
   hotelImage,
   checkinDate,
   checkoutDate,
+  hotelData,
 }) => {
   const [showFacilityModal, setShowFacilityModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
@@ -101,23 +102,66 @@ const HotelData = ({
             : markupObj?.global || 0;
         const price = ((data?.tfcs?.TF || 0) + markup).toFixed(2);
         const nights = data?.pis?.length;
+        const cancellationText =
+          room?.cnp?.ifra === false && room?.cnp?.inra === true
+            ? "Non-Refundable"
+            : room?.cnp?.ifra === false && room?.cnp?.inra === false
+            ? "No Free Cancellation"
+            : room?.cnp?.ifra === true && room?.cnp?.inra === false && room?.cnp?.pd?.[0]?.tdt
+            ? `Free Cancellation Till: ${dayjs(room?.cnp?.pd[0]?.tdt).format("DD/MM/YYYY")}`
+            : "";
+
+        const facilitiesHTML = data?.fcs?.length > 0 
+          ? `<div style="margin-top: 15px;">
+               <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px;">Room Facilities:</div>
+               <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                 ${data.fcs.map(f => `<span style="background-color: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 6px; font-size: 12px; border: 1px solid #e2e8f0;">${f}</span>`).join('')}
+               </div>
+             </div>`
+          : "";
 
         roomsHTML += `
-          <div style="margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px;">
-            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rc}</div>
-            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.rt}</div>
-            <div style="font-weight: 700; color: #334155; font-size: 16px; margin-bottom: 5px;">${data.srn}</div>
-            <div style="color: #64748b; font-size: 14px; margin-bottom: 8px;">${data.mb}</div>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="color: #94a3b8; font-size: 12px;">
-                  ${nights} Night(s) for ${data.adt} Adult(s) ${data.chd ? `& ${data.chd} Child` : ""}
-                </td>
-                <td style="text-align: right; font-weight: 800; font-size: 18px; color: #e11d48;">
-                  ₹${Number(price).toLocaleString("en-IN")}
-                </td>
-              </tr>
-            </table>
+          <div style="margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
+            <div style="background-color: #ffffff; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-weight: 800; color: #1e293b; font-size: 15px; text-transform: uppercase; letter-spacing: 0.5px;">${data.mb || "ROOM ONLY"}</span>
+                ${cancellationText ? `<span style="font-size: 13px; font-weight: 700; color: ${cancellationText.startsWith('Free Cancellation Till') ? '#10b981' : '#ef4444'}; margin-left: 5px;">${cancellationText}</span>` : ""}
+              </div>
+            </div>
+            
+            <div style="padding: 20px;">
+              <table width="100%" cellpadding="12" cellspacing="0" border="1" style="border-collapse: collapse; border: 1px solid #e2e8f0; margin-bottom: 15px; font-size: 14px;">
+                <tr>
+                  <td width="35%" style="color: #64748b; background-color: #f8fafc; font-weight: 500;">Room Name:</td>
+                  <td style="color: #0f172a; font-weight: 800; font-size: 15px;">${data.srn}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; background-color: #f8fafc; font-weight: 500;">Room Category:</td>
+                  <td style="color: #334155; font-weight: 500;">${data.rc}</td>
+                </tr>
+                <tr>
+                  <td width="35%" style="color: #64748b; background-color: #f8fafc; font-weight: 500;">Room Type:</td>
+                  <td style="color: #334155; font-weight: 500;">${data.rt}</td>
+                </tr>
+              </table>
+
+              ${facilitiesHTML}
+
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 20px; padding-top: 20px; border-top: 1px dashed #cbd5e1;">
+                <tr>
+                  <td style="vertical-align: middle;">
+                    <div style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Stay Details</div>
+                    <div style="color: #334155; font-size: 14px; font-weight: 600;">
+                      ${nights} ${nights !== 1 ? "Nights" : "Night"} for ${data.adt} ${data.adt !== 1 ? "Adults" : "Adult"} ${data.chd ? `& ${data.chd} ${data.chd !== 1 ? "Children" : "Child"}` : ""}
+                    </div>
+                  </td>
+                  <td style="text-align: right; vertical-align: middle;">
+                    <div style="color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Price</div>
+                    <div style="font-weight: 900; font-size: 24px; color: #e11d48; letter-spacing: -0.5px;">₹${Number(price).toLocaleString("en-IN")}</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
           </div>
         `;
       });
@@ -125,6 +169,18 @@ const HotelData = ({
 
     const checkin = dayjs(checkinDate).format("DD MMM YYYY");
     const checkout = dayjs(checkoutDate).format("DD MMM YYYY");
+
+    const checkinTime = 
+      hotelData?.checkInTime?.beginTime || 
+      hotelData?.ad?.checkInTime || 
+      hotelData?.ad?.checkInTime?.beginTime || 
+      "02:00 PM";
+      
+    const checkoutTime = 
+      hotelData?.checkOutTime?.beginTime || 
+      hotelData?.ad?.checkOutTime || 
+      hotelData?.ad?.checkOutTime?.beginTime || 
+      "11:00 AM";
 
     return `
       <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
@@ -154,10 +210,12 @@ const HotelData = ({
                     <td width="50%">
                       <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Check-in</div>
                       <div style="color: #334155; font-weight: 700; font-size: 15px;">${checkin}</div>
+                      <div style="color: #64748b; font-size: 12px; margin-top: 2px;">From: ${checkinTime}</div>
                     </td>
                     <td width="50%" style="border-left: 1px solid #e2e8f0;">
                       <div style="color: #94a3b8; font-size: 11px; text-transform: uppercase; font-weight: 700; margin-bottom: 4px;">Check-out</div>
                       <div style="color: #334155; font-weight: 700; font-size: 15px;">${checkout}</div>
+                      <div style="color: #64748b; font-size: 12px; margin-top: 2px;">Till: ${checkoutTime}</div>
                     </td>
                   </tr>
                 </table>
@@ -286,7 +344,7 @@ const HotelData = ({
                 return (
                   <div
                     key={index2}
-                    className={`flex items-start border-t p-5 hover:bg-gray-50/50 transition-colors gap-4 ${
+                    className={`flex items-start border-t p-4 hover:bg-gray-50/50 transition-colors gap-4 ${
                       dataLen == index2 + 1 ? "room_options" : ""
                     }`}
                   >
@@ -411,9 +469,9 @@ const HotelData = ({
                         <div className="text-2xl font-bold text-gray-900">
                           ₹{Number(price).toLocaleString("en-IN")}
                         </div>
-                        <div className="text-xs text-gray-500 mt-1 text-right">
-                          for {nights} Night(s) For {data.adt} Adult{" "}
-                          {data.chd} Child
+                        <div className="text-xs text-gray-500 mt-1 text-right font-bold">
+                          for {nights} {nights !== 1 ? "Nights" : "Night"} For {data.adt} {data.adt !== 1 ? "Adults" : "Adult"}{" "}
+                          {data.chd} {data.chd !== 1 ? "Children" : "Child"}
                         </div>
                         <div
                           className="text-xs text-blue-600 hover:text-blue-800 mt-2 underline cursor-pointer font-medium"
