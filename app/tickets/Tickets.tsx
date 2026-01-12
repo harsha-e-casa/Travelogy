@@ -733,8 +733,8 @@ export default function Tickets() {
 
     // for loop to remover adult_seat_map-1 till 9 and same goes for child_seat_map-1
     for (let i = 1; i <= 9; i++) {
-      removeCookie(`adult_seat_map - ${i} `);
-      removeCookie(`child_seat_map - ${i} `);
+      removeCookie(`adult_seat_map-${i}`);
+      removeCookie(`child_seat_map-${i}`);
     }
   }, []);
 
