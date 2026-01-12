@@ -8098,6 +8098,7 @@ label {
 
 .footer-top {
   border-bottom: 1px solid rgba(87, 86, 86, 0.4901960784);
+  padding-top: 35px;
   padding-bottom: 35px;
   margin-bottom: 49px;
 }
@@ -19488,6 +19489,13 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 .check-avail-modal .w-1-6 {
   width: 83.333333%;
+}
+
+.check-avail-modal .hotelbooking_traveller {
+  min-height: 200px;
+  max-height: 200px;
+  height: 180px;
+
 }
 
 .form-field {

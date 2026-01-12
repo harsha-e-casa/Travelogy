@@ -11,7 +11,7 @@ function formatDateTime(isoString) {
   const day = String(date.getDate()).padStart(2, "0");
   const hour = String(date.getHours()).padStart(2, "0");
   const minute = String(date.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day} ${hour}:${minute}`;
+  return `${day}/${month}/${year} ${hour}:${minute}`;
 }
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];

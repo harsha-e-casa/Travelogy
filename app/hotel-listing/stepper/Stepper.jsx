@@ -480,7 +480,9 @@ export function Step1TravellerDetails({
           <div>
             <strong className="block text-gray-900">Check In</strong>
             <p className="text-gray-700">
-              {hotelReviewData?.query?.checkinDate || "N/A"}
+              {hotelReviewData?.query?.checkinDate
+                ? dayjs(hotelReviewData.query.checkinDate).format("DD/MM/YYYY")
+                : "N/A"}
               <br />
               {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
                 "No Clock-in Time"}
@@ -490,7 +492,9 @@ export function Step1TravellerDetails({
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Check Out</strong>
             <p className="text-gray-700">
-              {hotelReviewData?.query?.checkoutDate || "N/A"}
+              {hotelReviewData?.query?.checkoutDate
+                ? dayjs(hotelReviewData.query.checkoutDate).format("DD/MM/YYYY")
+                : "N/A"}
               <br />
               {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
                 "No Clock-out Time"}
@@ -808,9 +812,10 @@ export function Step1TravellerDetails({
                 placeholder="Mobile No."
                 className="border p-2 rounded form-field stepper_input"
                 value={formData.mobile}
-                onChange={(e) =>
-                  setFormData({ ...formData, mobile: e.target.value })
-                }
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  setFormData({ ...formData, mobile: val });
+                }}
               />{" "}
               <span className="text-red-500 text-xs mt-1">
                 {errors.mobile || ""}
@@ -994,7 +999,9 @@ export function Step2Review({
           <div>
             <strong className="block text-gray-900">Check In</strong>
             <p className="text-gray-700">
-              {hotelReviewData?.query?.checkinDate || "N/A"}
+              {hotelReviewData?.query?.checkinDate
+                ? dayjs(hotelReviewData.query.checkinDate).format("DD/MM/YYYY")
+                : "N/A"}
               <br />
               {hotelReviewData?.hInfo?.checkInTime?.beginTime ||
                 "No Clock-in Time"}
@@ -1004,7 +1011,9 @@ export function Step2Review({
           <div className="border-l-1 pl-4">
             <strong className="block text-gray-900">Check Out</strong>
             <p className="text-gray-700">
-              {hotelReviewData?.query?.checkoutDate || "N/A"}
+              {hotelReviewData?.query?.checkoutDate
+                ? dayjs(hotelReviewData.query.checkoutDate).format("DD/MM/YYYY")
+                : "N/A"}
               <br />
               {hotelReviewData?.hInfo?.checkOutTime?.beginTime ||
                 "No Clock-out Time"}
@@ -2771,7 +2780,13 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
                             <input
                               type="number"
                               value={tempMarkup}
-                              onChange={(e) => setTempMarkup(e.target.value)}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (val === "" || Number(val) <= 1000000) {
+                                  setTempMarkup(val);
+                                }
+                              }}
+                              onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
                               className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
                               placeholder="0"
                             />

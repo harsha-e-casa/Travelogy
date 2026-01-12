@@ -193,11 +193,10 @@ function formatDate(dateStr) {
   if (!dateStr) return "-";
   try {
     const dt = new Date(dateStr);
-    return dt.toLocaleDateString("en-GB", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
+    const day = String(dt.getDate()).padStart(2, "0");
+    const month = String(dt.getMonth() + 1).padStart(2, "0");
+    const year = dt.getFullYear();
+    return `${day}/${month}/${year}`;
   } catch {
     return dateStr;
   }
@@ -207,11 +206,10 @@ function formatDateTime(dateStr) {
   if (!dateStr) return "-";
   try {
     const dt = new Date(dateStr);
-    return dt.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
+    const day = String(dt.getDate()).padStart(2, "0");
+    const month = String(dt.getMonth() + 1).padStart(2, "0");
+    const year = dt.getFullYear();
+    return `${day}/${month}/${year}`;
   } catch {
     return dateStr;
   }
@@ -676,16 +674,18 @@ export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency
   // Contact Details
   const contactDetails = `
     <h3 class="section-title">Contact Details</h3>
-    <div class="contact-grid">
-      <div class="contact-item">
-        <div class="contact-label">Email</div>
-        <div class="contact-value">${vm.contact.emails?.[0] ? sanitize(vm.contact.emails[0]) : '-'}</div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-label">Mobile</div>
-        <div class="contact-value">${vm.contact.phones?.[0] ? `${vm.contact.codes?.[0] || ''} ${sanitize(vm.contact.phones[0])}` : '-'}</div>
-      </div>
-    </div>
+    <table style="width: 100%; background: #d2ddf3ff; border-radius: 4px; margin-bottom: 18px; border-collapse: separate; border-spacing: 0;">
+      <tr>
+        <td style="border: none; padding: 12px 15px; width: 50%;">
+          <div style="font-size: 12px; color: #000; margin-bottom: 3px;">Email</div>
+          <div style="font-size: 12px; font-weight: 600; color: #000;">${vm.contact.emails?.[0] ? sanitize(vm.contact.emails[0]) : '-'}</div>
+        </td>
+        <td style="border: none; padding: 12px 15px; width: 50%;">
+          <div style="font-size: 12px; color: #000; margin-bottom: 3px;">Mobile</div>
+          <div style="font-size: 12px; font-weight: 600; color: #000;">${vm.contact.phones?.[0] ? `${vm.contact.codes?.[0] || ''} ${sanitize(vm.contact.phones[0])}` : '-'}</div>
+        </td>
+      </tr>
+    </table>
   `;
 
   // Total Fare Summary
@@ -701,10 +701,6 @@ export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency
           <tr>
             <th>Taxes and Fees</th>
             <td style="text-align: right;">₹${fmtIN(vm.pricing.taxes)}</td>
-          </tr>
-          <tr>
-            <th>Markup</th>
-            <td style="text-align: right;">₹${fmtIN(vm.pricing.markup)}</td>
           </tr>
           <tr>
             <th style="border-top: 1px solid #000; font-weight: 700;">Total Amount Payable</th>

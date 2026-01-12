@@ -423,7 +423,13 @@ const BookingForm: React.FC<BookingFormProps> = ({
                         <input
                           type="number"
                           value={tempMarkup}
-                          onChange={(e) => setTempMarkup(e.target.value)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "" || Number(val) <= 1000000) {
+                              setTempMarkup(val);
+                            }
+                          }}
+                          onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
                           className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
                           placeholder="0"
                         />
