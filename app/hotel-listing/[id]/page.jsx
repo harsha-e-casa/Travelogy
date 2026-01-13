@@ -264,8 +264,6 @@ export default function ActivitiesDetail4() {
         },
       };
       const response = await postData("travelogy/hotel/fetch-data", reqData);
-
-      console.log("karthik", response.status);
       if (response?.status?.success) {
         setHotelData(response.hotel);
         setSearchQueryData(response.searchQuery);
@@ -274,9 +272,7 @@ export default function ActivitiesDetail4() {
         setDynamicId(response.hotel.id);
         setRoomsData(response.searchQuery?.roomInfo);
         setAvailabilityError(null); // Clear availability error on success
-        console.log("roomInfo", response.searchQuery?.roomInfo);
       } else {
-        console.log("error", response?.error);
         const errorMessage = response?.error || "Error fetching hotel details";
 
         // Check if it's a network/server error (status codes, request failed, etc.)
@@ -333,25 +329,7 @@ export default function ActivitiesDetail4() {
       (roomsChanged && bothDatesComplete) ||
       (triggerFetch > 0 && bothDatesComplete);
 
-    console.log("Fetch Debug:", {
-      bothDatesComplete,
-      isCheckoutChanged,
-      roomsChanged,
-      triggerFetch,
-      shouldFetch,
-      checkinDate,
-      checkoutDate,
-      prevCheckinDate: prevCheckinDate.current,
-      prevCheckoutDate: prevCheckoutDate.current,
-    });
-
     if (shouldFetch) {
-      console.log("Triggering fetch with:", {
-        checkinDate,
-        checkoutDate,
-        roomInfo: normalizedRooms,
-      });
-
       fetchHotelDetails(
         {
           checkinDate,
@@ -418,10 +396,7 @@ export default function ActivitiesDetail4() {
           setCheckoutDate(searchData?.checkoutDate || null);
           setDynamicId(hotel.id);
           setRoomsData(response.searchQuery?.roomInfo);
-          console.log(
-            "12312312312312312312312312312312321",
-            response.searchQuery?.roomInfo
-          );
+
           // 🔒 Baseline "previous" refs so the watcher sees NO change right after initial load
           const normalized = normalizeRooms(
             response.searchQuery?.roomInfo || []
@@ -524,13 +499,6 @@ export default function ActivitiesDetail4() {
   );
   const totalImageCount = displayImages.length;
   const hasMultipleImages = totalImageCount > 1;
-
-  // Debug: Log the images to see what we're working with
-  console.log("Hotel images:", images);
-  console.log("Display images:", displayImages);
-  console.log("Total image count:", totalImageCount);
-  console.log("Has multiple images:", hasMultipleImages);
-
   let hotelDescription = {};
   try {
     hotelDescription = hotelData?.des ? JSON.parse(hotelData.des) : {};

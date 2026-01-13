@@ -74,8 +74,6 @@ export const useNationalities = () => {
 
         const data = res?.nationalityInfos || [];
         setNationalities(data);
-
-        console.log("Fetched nationalities:", data);
       } catch (err) {
         console.error("Error fetching nationalities:", err);
         setNationalities([]); // fallback
@@ -284,7 +282,6 @@ export async function hotelBooking({
 }) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-  console.log("tokentoken 1111111 => ",token)
   try {
     const roomInfo = hotelReviewData?.query?.roomInfo || [];
     const totalAmount = hotelReviewData?.hInfo?.ops?.[0]?.tp;
@@ -315,9 +312,6 @@ export async function hotelBooking({
         : { paymentInfos: totalAmount ? [{ amount: totalAmount }] : [] }),
     };
 
-    console.log("PAN MODE:", panInfo.mode);
-    console.log("PAYLOAD:", JSON.stringify(payload, null, 2));
-
     const res = await postData("travelogy/hotel/fetch-data", {
       action: "book",
       requestData: payload,
@@ -335,7 +329,6 @@ export async function hotelBooking({
       const res = await postData("travelogy/hotel/save-booking-data", saveReq, {
         Authorization: `Bearer ${token}`,
       });
-      console.log("res == ", res);
     };
 
     if (res?.status?.success === true) {
@@ -375,14 +368,10 @@ export async function getBookingDetails(bookingId, setError) {
     if (response?.message) {
       setError(response.message);
     } else if (response.errors && response.errors.length > 0) {
-      console.log("Error Message ", response.errors[0].message);
       setError(response.errors.message); // Set error from response.errors
     } else if (response.error) {
-      console.log("Error Message new", response.error);
       setError(response.error[0].message); // Set error from response.error field
     }
-    //  console.log("Error Message ", response.errors?.[0].message);
-    // console.log("Error Message new", response.error);
 
     const data = response;
 
@@ -398,7 +387,6 @@ export async function getBookingDetails(bookingId, setError) {
       const res = await postData("travelogy/hotel/save-booking-data", saveReq,{
         Authorization: `Bearer ${token}`,
       });
-      console.log("res == ", res);
     };
     await updateHotelBookingData();
 

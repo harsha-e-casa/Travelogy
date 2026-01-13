@@ -9,20 +9,6 @@ export function printHotelBooking(bookingDetails, markup = 0, printOptions = { w
 
   const vm = normalizeHotelData(bookingDetails, markup);
   
-  // Debug logging
-  console.log("=== HOTEL PRINT DEBUG ===");
-  console.log("Normalized VM:", vm);
-  console.log("Print Options:", printOptions);
-  console.log("Rooms with guests:", vm.rooms.map(r => ({
-    name: r.name,
-    type: r.type,
-    checkIn: r.checkIn,
-    checkOut: r.checkOut,
-    guestCount: r.guests.length,
-    guests: r.guests
-  })));
-  console.log("=== END DEBUG ===");
-  
   const html = renderHotelHTML(vm, printOptions);
 
   // Create a hidden iframe
@@ -513,6 +499,7 @@ export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency
     </table>
   ` : '';
 
+      
   // Status Header with dynamic color
   const statusValue = String(vm.status || "").toUpperCase();
   let statusColorClass = "status-success";
@@ -624,11 +611,12 @@ export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency
       .map((room, idx) => {
         const roomGuests = room.guests || [];
         // Use the actual room capacity (adults + children) for display
-        const totalRoomCapacity = room.adults + room.children;
+        const adults = room.adults || 0;
+        const children = room.children || 0;
         
         return `
           <div class="room-section avoid-break">
-            <div class="room-title">${sanitize(room.name)} (${sanitize(room.type)}) (${totalRoomCapacity} Guest${totalRoomCapacity !== 1 ? 's' : ''})</div>
+            <div class="room-title">${sanitize(room.name)} (${sanitize(room.type)}) (${adults} Adult${adults !== 1 ? 's' : ''}${children > 0 ? `, ${children} Child${children !== 1 ? 'ren' : ''}` : ''})</div>
             <table>
               <thead>
                 <tr>
@@ -811,7 +799,9 @@ export function renderHotelHTML(vm, printOptions = { withPrice: true, withAgency
       </ol>
     </div>
     
-    <div style="text-align: center; font-size: 12px; color: #6B7280; margin-top: 20px; padding: 12px; border: 1px solid #E5E7EB; border-radius: 8px;">
+   
+    
+    <div style="text-align: center; font-size: 12px; color: #6B7280; margin-bottom: 20px; padding: 12px; border: 1px solid #E5E7EB; border-radius: 8px;">
       This booking receipt is system generated. Please carry a valid government ID along with this document.
     </div>
   `;
@@ -918,7 +908,6 @@ export async function downloadHotelBookingAsPDF(bookingDetails, markup = 0, prin
       }, 100);
     });
 
-    console.log("Print dialog opened for PDF generation");
   } catch (error) {
     console.error("Failed to generate PDF:", error);
     throw error;

@@ -83,21 +83,17 @@ const BookingDetailsPage = () => {
   const totalAmount = order?.amount;
 
   useEffect(() => {
-    console.log("Current Booking Status:", status);
   }, [status]);
 
   const handlePayClick = () => {
-    console.log("Pay Now clicked, starting bookingReviewWIthWallet");
     setPaymsg("");
     bookingReviewWIthWallet();
   };
 
   useEffect(() => {
-    console.log("paymentModel state changed:", paymentModel);
   }, [paymentModel]);
 
   const bookingReviewWIthWallet = async () => {
-    console.log("bookingReviewWIthWallet ==> ");
     setBookingLoadingWallet(true);
     setPaymsg("");
 
@@ -121,13 +117,11 @@ const BookingDetailsPage = () => {
           reqpayWallet,
           { Authorization: `Bearer ${token}` }
         );
-        console.log("payWallet result ===>", result);
         return result;
       };
 
       try {
         const payWalletRes = await payWallet();
-        console.log("payWalletRes ==> ", payWalletRes);
 
         if (payWalletRes?.success) {
           // Confirm booking with hotel API
@@ -137,10 +131,8 @@ const BookingDetailsPage = () => {
           };
 
           const response = await postData("travelogy/hotel/fetch-data", reqBody);
-          console.log("Booking response Success:", response);
 
           if (response?.error) {
-            console.log("Booking error, refunding wallet...");
             // Refund wallet if booking fails
             await postData(
               "travelogy/flight/refundWallet",
@@ -197,7 +189,6 @@ const BookingDetailsPage = () => {
     if (bookingId) {
       getBookingDetails(bookingId, setError)
         .then((data) => {
-          console.log("Fetched booking details:", data);
           setBookingDetails(data);
           if (data?.error) {
             setError(data.error);
@@ -320,8 +311,29 @@ const BookingDetailsPage = () => {
 
     setIsSharing(true);
     try {
+      // Extract lead guest name
+      const leadGuest = bookingDetails?.itemInfos?.HOTEL?.hInfo?.ops?.[0]?.ris?.[0]?.ti?.[0];
+      const guestName = leadGuest 
+        ? `${leadGuest.fN || ""} ${leadGuest.lN || ""}`.trim() 
+        : "Traveller";
+
       // Generate HTML content for the email
-      const generatedHtml = generateHotelTicketHTML(bookingDetails, markup);
+      let generatedHtml = generateHotelTicketHTML(bookingDetails, markup);
+
+      // Add thanks content above the HTML content
+      const thanksContent = `
+        <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; color: #333; line-height: 1.6; margin-bottom: 25px; padding: 15px; background-color: #f9fafb; border-radius: 8px; border-left: 4px solid #f37021;">
+          <p style="font-size: 18px; font-weight: 600; color: #111; margin: 0 0 15px 0;">Dear ${guestName},</p>
+          <p style="margin: 0 0 10px 0;">Thanks for choosing <strong>Travelogy</strong>!</p>
+          <p style="margin: 0 0 10px 0;">We’re pleased to confirm that your reservation has been successfully completed. Your booking details are included in this receipt for your reference.</p>
+          <p style="margin: 0 0 10px 0;">Wishing you a pleasant and memorable stay. We hope to serve you again soon!</p>
+          <p style="margin: 20px 0 0 10px;">Warm regards,</p><br/>
+          <p style="color: #f37021; font-weight: 700; font-size: 20px;">Travelogy Team</p>
+          <p style="color: #f37021; font-weight: 500; font-size: 15px;">Happy Travelling!</p>
+        </div>
+      `;
+      
+      generatedHtml = thanksContent + generatedHtml;
 
       const payload = {
         email: shareEmail,
@@ -374,10 +386,8 @@ const BookingDetailsPage = () => {
       };
 
       const response = await postData("travelogy/hotel/fetch-data", reqBody);
-      console.log("Initiating cancellation for response:", response);
 
       if (response && !response.error) {
-        console.log("Booking cancelled successfully:", response);
 
         // Refund to wallet logic
         try {
@@ -424,7 +434,6 @@ const BookingDetailsPage = () => {
               },
               { Authorization: `Bearer ${token}` }
             );
-            console.log("Wallet refund result:", refundRes);
           }
         } catch (refundErr) {
           console.error("Error during wallet refund calculation/execution:", refundErr);
@@ -512,6 +521,12 @@ const BookingDetailsPage = () => {
               />
             </div>
             <div className="container w-full max-w-7xl">
+              {/* {(status === "CONFIRMED" || status === "SUCCESS") && (
+                <div className="mt-4 text-align-center text-yellow-600 font-bold text-xl no-print">
+                  <div>Thanks for booking with Travelogy!</div>
+                  <div>Happy Travelling!</div>
+                </div>
+              )} */}
               {status === "ON_HOLD" ? (
                 <div className="booking-status-container p-6 flex justify-start items-center w-full">
                   <img
