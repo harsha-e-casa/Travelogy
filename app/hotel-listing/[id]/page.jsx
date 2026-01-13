@@ -797,10 +797,11 @@ export default function ActivitiesDetail4() {
                     hotelImage={displayImages[0]?.url || hotelData?.img?.[0]?.url}
                     checkinDate={checkinDate}
                     checkoutDate={checkoutDate}
+                    hotelData={hotelData}
                   />
                 </div>
               </div>
-              <div className="xl:col-span-4 order-2 xl:row-span-2 px-4 md:px-6 lg:px-8 xl:px-0">
+              <div className="xl:col-span-4 order-2 xl:row-span-2 px-4 md:px-6 lg:px-8 xl:px-0 mb-40">
                 <div className="xl:sticky xl:top-4">
                   <div className="tour-header">
                     <div className="tour-title-main">

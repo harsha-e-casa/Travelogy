@@ -195,7 +195,13 @@ export default function BookingCard({
                       <input
                         type="number"
                         value={tempMarkup}
-                        onChange={(e) => setTempMarkup(e.target.value)}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "" || Number(val) <= 1000000) {
+                            setTempMarkup(val);
+                          }
+                        }}
+                        onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
                         className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
                         placeholder="0"
                       />
@@ -263,11 +269,11 @@ export default function BookingCard({
               <div className="mt-2 pl-2 flex flex-col gap-1 border-l-2 border-gray-100">
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>Base Fare</span>
-                  <span>₹{Number(basefare)}</span>
+                  <span>₹{Number(basefare).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>Taxes and Fees</span>
-                  <span>₹{Number(taxAndFees)}</span>
+                  <span>₹{Number(taxAndFees).toFixed(2)}</span>
                 </div>
                 {markup > 0 && (
                   <div className="flex justify-between text-xs text-gray-500">
