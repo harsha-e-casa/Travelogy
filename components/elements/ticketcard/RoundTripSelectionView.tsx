@@ -237,8 +237,6 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         })
         .filter((val: any) => Number.isFinite(Number(val)));
 
-      console.log("🎯 Final allFareTypes:", allFareTypes);
-
       const fareTypeCounts = allFareTypes.reduce(
         (acc: any, fareType: string) => {
           acc[fareType] = (acc[fareType] || 0) + 1;

@@ -16,9 +16,6 @@ const BookingDetailsPage = () => {
   const router = useRouter();
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
-
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -156,8 +153,6 @@ const BookingDetailsPage = () => {
   //to send the priceinfo to the booking form
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
 
-  console.log("tttttttttttttttttt ", totalPriceinfo);
-
   const bookingDetailsapi = useCallback(
     async (bookingId) => {
       setLoading(true);
@@ -168,25 +163,20 @@ const BookingDetailsPage = () => {
         setLoading(false);
         return;
       } else {
-        console.log("found");
+        // console.log("found");
       }
 
       try {
         const parameter = { bookingId: bookingId, requirePaxPricing: true };
-        console.log("paramerter", parameter);
-
         // const data = await postDataBookingDetails(parameter);
         let reqData = { action: "bookingDetails", requestData: parameter };
         const token = localStorage.getItem("authToken");
-        console.log("token 111111111 111111111 ", token);
         const data = await postData("travelogy/one-way/fetch-data", reqData, { Authorization: `Bearer ${token}` });
 
         setTotalpriceinfo(
           data?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail
         );
       } catch (err) {
-        console.log("error caused bookingDetails", err);
-        console.log("error caused bookingDetails", err.response.data.message);
 
         if (err?.response?.data?.message) {
           setError(err.response.data.message);
@@ -207,7 +197,6 @@ const BookingDetailsPage = () => {
   );
 
   useEffect(() => {
-    console.log("Extracted Booking Id:", bookingId); // Debug log to check if bookingId is correct
     if (bookingId) {
       bookingDetailsapi(bookingId);
     } else {

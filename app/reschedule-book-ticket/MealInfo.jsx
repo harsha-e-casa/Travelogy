@@ -18,10 +18,6 @@ const MealInfo = ({
       !apiData
     )
       return;
-    console.log(
-      "storedTravellerInfosstoredTravellerInfos ==== ",
-      storedTravellerInfos
-    );
 
     const values = {};
     let segmentIndex = 0;
@@ -30,7 +26,6 @@ const MealInfo = ({
 
       segmentinfo.forEach((segment) => {
         const segmentIdStr = segment?.ssrInfo?.MEAL;
-        console.log("segmentIdStr == ", segmentIdStr);
 
         // Adults
         for (let index = 0; index < numAdults; index++) {
@@ -71,7 +66,6 @@ const MealInfo = ({
   const hasMeal = segmentinfo.some((seg) => seg?.ssrInfo?.MEAL?.length > 0);
 
   const handleValuesChange = (changedValues, allValues) => {
-    console.log("handleValuesChange allValues ==> ", allValues);
     let totalMealAmount = 0;
     const allMeals = Object.keys(allValues)
       .filter(

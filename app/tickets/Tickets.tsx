@@ -481,7 +481,6 @@ export default function Tickets() {
   }, []);
 
   const handleDepartureDateChange = (date: any) => {
-    console.log("handleDepartureDateChange called with:", date);
     setDatedep(date);
 
     if (date) {
@@ -494,11 +493,8 @@ export default function Tickets() {
     }
 
     if ((srx_tripType?.toLowerCase() || "") === "round-trip" && datedepr) {
-      console.log("Comparing dates. Dep:", dayjs(date).format("YYYY-MM-DD"), "Return:", dayjs(datedepr).format("YYYY-MM-DD"));
       if (dayjs(date).isAfter(dayjs(datedepr))) {
-        console.log("Departure is after Return. Updating Return date...");
         const newReturnDate = dayjs(date).add(2, 'day');
-        console.log("New Return Date:", newReturnDate.format("YYYY-MM-DD"));
         setDatedepr(newReturnDate);
 
         const formattedReturnDate = dayjs(newReturnDate);
@@ -508,12 +504,11 @@ export default function Tickets() {
         setDdr_strdate(formattedReturnDate.format("dddd"));
         setDdr_date(formattedReturnDate.format("DD"));
         setDdr_year(formattedReturnDate.format("YY"));
-        console.log("Return date updated successfully.");
       } else {
-        console.log("Departure is NOT after Return. No update needed.");
+        // console.log("Departure is NOT after Return. No update needed.");
       }
     } else {
-      console.log("Not round-trip or no return date set.");
+      // console.log("Not round-trip or no return date set.");
     }
   };
 
@@ -693,10 +688,6 @@ export default function Tickets() {
 
       // --- Track first error for scrolling/focus ---
       if (ok && (e.fromError || e.toError || e.dateError)) {
-        console.log("ok ", ok);
-        console.log("e.fromError ", e.fromError);
-        console.log("e.toError ", e.toError);
-        console.log("e.dateError ", e.dateError);
         ok = false;
         firstBadIndex = idx;
       }
@@ -742,9 +733,6 @@ export default function Tickets() {
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
-
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -877,9 +865,6 @@ export default function Tickets() {
           );
         })
         .filter((val: any) => Number.isFinite(Number(val)));
-
-      console.log("🎯 Final allFareTypes:", allFareTypes);
-
       const fareTypeCounts = allFareTypes.reduce(
         (acc: any, fareType: string) => {
           acc[fareType] = (acc[fareType] || 0) + 1;
@@ -894,15 +879,11 @@ export default function Tickets() {
           count: fareTypeCounts[fareType],
         })
       );
-
-      console.log("uniqueFaresWithCounts --> ", uniqueFaresWithCounts);
-
       setUniqueFareTypes(uniqueFaresWithCounts);
     }
   }, [flightData]);
 
   const applyFilters = () => {
-    console.log("applyFilters ==> ");
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToFilter = (flightData.ONWARD || flightData.COMBO) || [];
 
@@ -1003,7 +984,6 @@ export default function Tickets() {
       }
 
       if (selectedFareTypes.length > 0) {
-        console.log("selectedFareTypes ===> ", selectedFareTypes);
         const typeMap: { [key: number]: string } = {
           0: "Non Refundable",
           1: "Refundable",
@@ -1014,7 +994,6 @@ export default function Tickets() {
           return ticket.totalPriceList.some((priceInfo: any) =>
             Object.keys(priceInfo.fd).some((paxType) => {
               const fareType = typeMap[priceInfo.fd[paxType].rT];
-              console.log("fareType -------- ", fareType);
               return selectedFareTypes.includes(fareType);
             })
           );
@@ -1236,7 +1215,6 @@ export default function Tickets() {
   useEffect(() => {
     let needsUpdate = false;
     const updatedSegments = multicitySegments.map((segment, idx) => {
-      console.log("segmentsegmentsegment ==> ", segment);
       const newSegment = { ...segment };
       let fromError = "";
       let toError = "";
@@ -1294,17 +1272,11 @@ export default function Tickets() {
     },
   ];
 
-  console.log("firstSegment == ", firstSegment);
-  console.log("multicitySegments == ", multicitySegments);
-
   useEffect(() => {
     setCookie("gy_multi_city", JSON.stringify(multicitySegments));
   }, [multicitySegments]);
 
   let combinedMulticitySegment = [...firstSegment, ...multicitySegments];
-
-  console.log("combinedMulticitySegment == ", combinedMulticitySegment);
-
   const mydata: any = {
     departureFrom: departureFrom,
     arrivalTo: arrivalTo,
@@ -1347,16 +1319,12 @@ export default function Tickets() {
   };
 
   const handlesearFlight = () => {
-    console.log("handlesearFlight ==> clicked ");
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       const pass = validateMultiCity({ focusFirstError: true });
-      console.log("pass ==> ", pass);
       if (!pass) return; // stop if invalid
     }
 
     if (fromError || toError) {
-      console.log("handleModifySearch fromError ", fromError);
-      console.log("handleModifySearch toError ", toError);
       return; // Do not proceed if there are city selection errors
     }
 
@@ -1450,13 +1418,10 @@ export default function Tickets() {
     // } else {
     //   // might move the code
     // }
-    console.log("inge ???????????? 0 ");
 
     if (!searchFlight || hasFetchedRef.current) return;
     closeAllFields();
     hasFetchedRef.current = true;
-
-    console.log("inge ????????????");
 
     if ((srx_tripType?.toLowerCase() || "") === "multi-city") {
       setModifySearchRef(false);
@@ -1541,7 +1506,6 @@ export default function Tickets() {
           travelDate: departDate,
         },
       ];
-      console.log("tripBasedRouteInfoMain ==> ", tripBasedRouteInfoMain);
       let tripBasedRouteInfoSub = parsedSegments.map((item) => ({
         fromCityOrAirport: {
           code: item.fromCode,
@@ -1556,7 +1520,6 @@ export default function Tickets() {
             ? item.departureDate.split("T")[0]
             : item?.departureDate,
       }));
-      console.log("tripBasedRouteInfoSub ==> ", tripBasedRouteInfoSub);
 
       tripBasedRouteInfo = [
         ...tripBasedRouteInfoMain,
@@ -1570,11 +1533,7 @@ export default function Tickets() {
       REGULAR: "REGULAR",
     };
 
-    console.log("tripBasedRouteInfo == ", tripBasedRouteInfo);
-
     // Build the parameter object without extra curly braces
-    console.log("222222222222 ", cabinType);
-    console.log("222222222222 ", classLabels[cabinType]);
     const parameter = {
       searchQuery: {
         cabinClass: classLabels[cabinType],
@@ -1616,8 +1575,6 @@ export default function Tickets() {
           "travelogy/one-way/fetch-data",
           reqData
         );
-        console.log("API Result for multi-city:", result);
-        console.log("resssssssssssssssssssss ", result);
         if (result && result.searchResult && result.searchResult.tripInfos) {
           const tripInfos = result.searchResult.tripInfos;
           Object.keys(tripInfos).forEach((key) => {
@@ -1639,7 +1596,6 @@ export default function Tickets() {
             }
           }
         } else {
-          console.log("no dataaaaaaaa");
           setError("");
         }
       } catch (err: any) {
@@ -1681,7 +1637,6 @@ export default function Tickets() {
     //   loadData();
     //   SetSearchFlight(false);
     // }
-    console.log("call search api 11111111");
     loadData();
 
     // Run the effect whenever any dependency changes
@@ -1809,7 +1764,6 @@ export default function Tickets() {
       srx_arrivalTo &&
       srx_departureFrom === srx_arrivalTo
     ) {
-      console.log("srx_departureFromsrx_departureFrom ==> ", srx_departureFrom);
       if (lastEditedField === "from") {
         setFromError("From and To cities cannot be the same.");
         setToError("");
@@ -2133,7 +2087,6 @@ export default function Tickets() {
 
   const getHeaderClass = () => {
     const t = srx_tripType?.toLowerCase();
-    console.log("daiiiiiiiiiiiiiiiiiiii ", t);
     if (t === "one-way") {
       return "hdt_header-fligt-w-o";
     }
@@ -2149,7 +2102,6 @@ export default function Tickets() {
 
   const getTravellerClass = () => {
     const t = srx_tripType?.toLowerCase();
-    console.log("daiiiiiiiiiiiiiiiiiiii ", t);
     // if (t === "one-way") {
     //   return "pos-t-r";
     // }
@@ -3219,8 +3171,6 @@ export default function Tickets() {
                     (() => {
                       // const tripInfo = filteredFlightData;
                       const tripInfo = sortedFlightData;
-                      console.log("mameeeeeeeeee ", tripInfo);
-                      console.log("mameeeeeeeeee ", tripInfo?.length);
 
                       return (
                         <>
@@ -3310,7 +3260,6 @@ export default function Tickets() {
                                       {tripInfo.map((ticket: any, index: number) => {
                                         const ticketId = ticket.id;
                                         const currentMarkup = ticketMarkups[ticketId] ?? markup;
-                                        console.log("markupmarkupmarkupmarkup ", markup);
                                         return (
                                           <React.Fragment key={ticketId}>
                                             {isMobile ? (

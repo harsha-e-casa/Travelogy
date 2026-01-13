@@ -193,7 +193,6 @@ export default function WalletOption(): JSX.Element {
         params.user_id = vendorId; // Some endpoints might use user_id
       }
       const res = await getData(Wallet_Transactions, params, { Authorization: `Bearer ${token}` });
-      console.log("Wallet_Transactions:", res);
 
       if (res.success && Array.isArray(res.transactions)) {
         let transactions = res.transactions.map((t: any) => ({
@@ -631,7 +630,6 @@ export default function WalletOption(): JSX.Element {
                               return true;
                             },
                             render: (text, record) => {
-                              console.log("record record record", record);
                               return text === "-" ? (
                                 <span style={{ color: "#aaa" }}>-</span>
                               ) : (

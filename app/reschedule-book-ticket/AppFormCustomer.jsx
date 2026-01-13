@@ -5,7 +5,6 @@ const { Option } = Select;
 
 const AppFormCustomer = ({ form, bookingDetailsData }) => {
   useEffect(() => {
-    console.log("bookingDetailsDatabookingDetailsData == ", bookingDetailsData);
     if (bookingDetailsData) {
       const { mobileCode, mobileNumber, email } = bookingDetailsData;
 

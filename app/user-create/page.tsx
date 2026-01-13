@@ -182,7 +182,6 @@ export default function VendorCreate(): JSX.Element {
       type: walletOperation, // ADD or DEDUCT
       description: walletDescription,
     };
-    console.log("activeVendor => ", activeVendor);
 
     await postData("/travelogy/flight/vendor/update-wallet", req, authHeader);
 
@@ -193,7 +192,6 @@ export default function VendorCreate(): JSX.Element {
   };
 
   const toggleActive = async (vendor: any, isActive: boolean) => {
-    console.log("vendor => ", vendor);
     const req = {
       vendor_id: vendor.user_id,
       is_active: isActive ? 1 : 0,
@@ -465,14 +463,11 @@ export default function VendorCreate(): JSX.Element {
                           dataIndex: "is_active",
                           width: 120,
                           render: (_, rec: any) => {
-                            console.log("recrec => ", rec);
                             const isActive =
                               rec.is_active === 1 ||
                               rec.is_active === true ||
                               (typeof rec.status === "string" &&
                                 rec.status.toLowerCase() === "active");
-
-                            console.log("isActive ==> ", isActive);
 
                             return (
                               <Switch

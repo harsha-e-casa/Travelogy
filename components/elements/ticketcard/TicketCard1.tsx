@@ -22,9 +22,6 @@ export default function TicketCard1({
   const [showAllFares, setShowAllFares] = useState(false);
   const { getCookie } = useContext(AppContext);
 
-  useEffect(() => {
-    console.log(`[TicketCard1] Ticket ${ticket.id} received markup:`, markup);
-  }, [markup, ticket.id]);
   const [totalPrice, setTotalprice] = useState();
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
@@ -74,7 +71,6 @@ export default function TicketCard1({
 
   const onChange = (e: RadioChangeEvent) => {
     setValue(e.target.value);
-    console.log("the value is", value);
   };
 
   return (

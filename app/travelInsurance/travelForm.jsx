@@ -80,8 +80,6 @@ const TravelForm = () => {
     // (optional) stricter mobile rule: 10 digits only
     // if (!/^\d{10}$/.test(mobile)) newErrors.mobile = "Enter a valid 10-digit mobile number.";
 
-    console.log("errrrrrrrrrrrrrr ", newErrors);
-
     setErrors(newErrors);
     if (Object.keys(newErrors).length) return;
 

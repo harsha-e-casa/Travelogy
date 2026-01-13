@@ -29,12 +29,10 @@ import { jwtDecode } from "jwt-decode";
 // import staticBookingData from "./staticBookingData.json";
 
 const Alldetails = ({ totalpricee }) => {
-  console.log("aaaaaaaaaaaaaaaaaaaaaaalllllllllllllllll ", totalpricee)
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const bookingId = searchParams.get("booking_id");
-  console.log("bookingid from alldetails", bookingId);
   const reStatus = searchParams.get("re");
   const [paymentFailurePopup, setPaymentFailurePopup] = useState(
     new URLSearchParams(window.location.search).get("payment") === "retry"
@@ -243,13 +241,6 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   useEffect(() => {
-    if (bookingDetails) {
-      console.log(
-        "api data from the page.tsx kk",
-        bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd
-          ?.fC?.AFS
-      );
-    }
     const afsAmt =
       bookingDetails?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail?.fC?.AFS;
     // const adultAfs = bookingDetails?.itemInfos?.AIR?.tripInfos?.[0]?.sI?.[0]?.bI?.tI?.[0]?.fd?.fC?.AFS;
@@ -466,9 +457,6 @@ const Alldetails = ({ totalpricee }) => {
   const [reissueApiError, setReissueApiError] = useState("");
 
   const handlePNRSelect = (pnr) => {
-    console.log("ssssssssssssssssss 11111111111 ", pnr);
-    console.log(rescheduleData.pnrFlightDetails);
-    console.log(rescheduleData.pnrFlightDetails[selectedPNR]);
     setSelectedPNR(pnr);
     setSelectedTravellers([]);
   };
@@ -496,10 +484,6 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   const handleSubmitReIssue = async () => {
-    console.log("handleSubmitReIssue ==> ");
-    console.log("Reschedule Date:", rescheduleDate);
-    console.log("Selected Travellers:", selectedTravellers);
-    console.log("rescheduleData == > ", rescheduleData);
 
     setRescheduleLoading(true);
     setRescheduleError("");
@@ -509,8 +493,6 @@ const Alldetails = ({ totalpricee }) => {
     const pnrKey = Object.keys(rescheduleData.pnrs).find(
       (key) => rescheduleData.pnrs[key] === pnr
     );
-
-    console.log("pnrKeypnrKey == > ", pnrKey);
 
     const [from, to] = pnrKey.split("-");
 
@@ -542,13 +524,9 @@ const Alldetails = ({ totalpricee }) => {
       // ],
     };
 
-    console.log("parameterparameter ===> ", parameter);
-
     try {
       let reqData = { action: "searchQuery", requestData: parameter };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
-
-      console.log("resultttttttttt ", result);
 
       if (result?.searchQuery?.requestId) {
         // call search using requestid
@@ -564,21 +542,17 @@ const Alldetails = ({ totalpricee }) => {
         setReissueApiError(result?.message);
         setRescheduleLoading(false);
       } else if (result?.errors?.[0]?.message) {
-        console.log("errorrrrrrrrrrrrrrrr ", result?.errors?.[0]?.message);
         setRescheduleError(result?.errors?.[0]?.message);
         setRescheduleLoading(false);
       }
     } catch (error) {
-      console.log("handleSubmitReIssue error ", error);
       setRescheduleLoading(false);
       setReissueApiError("Something went wrong with the request.");
     }
   };
 
   const openReIssueModal = () => {
-    console.log("openReIssueModal == >");
     const rescheduleData = createStructuredData(bookingDetails);
-    console.log("rescheduleDatarescheduleData == ", rescheduleData);
     setRescheduleData(rescheduleData);
     setIsReIssueModalOpen(true);
   };
@@ -589,7 +563,7 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   const handleCancellation = async () => {
-    console.log("handleCancellation function == > ");
+    // console.log("handleCancellation function == > ");
     // try {
     //   let reqData = { action: "amendmentCharges", requestData: parameter };
     //   const result = await postData("travelogy/one-way/fetch-data", reqData);
@@ -601,8 +575,6 @@ const Alldetails = ({ totalpricee }) => {
 
   const handleUnHold = async () => {
     setPaymentFailurePopup(false);
-    console.log("handleUnHold ==> ");
-    console.log(bookingDetails);
     setModalLoading(true);
 
     // Validate Fare
@@ -629,13 +601,10 @@ const Alldetails = ({ totalpricee }) => {
       pnrs: pnrs,
     };
 
-    console.log("unHoldParams ----------- ", unHoldParams);
-
     try {
       // const result = await postUnHold(unHoldParams);
       let reqData = { action: "unholdBooking", requestData: unHoldParams };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
-      console.log("Result => ", result);
 
       if (result?.status?.success === true) {
         window.location.reload();
@@ -822,9 +791,7 @@ const Alldetails = ({ totalpricee }) => {
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
-      console.log("tokentoken ==> 11111111 ", token);
       const decoded = jwtDecode(token);
-      console.log("decodeddecoded 11111 ==> ", decoded);
       setLoginPhone(decoded.phone);
 
     } catch {
@@ -939,7 +906,7 @@ const Alldetails = ({ totalpricee }) => {
       );
 
       if (!validateRes?.status?.success) {
-        alert("Fare validation failed. Please try again.");
+        // alert("Fare validation failed. Please try again.");
         setModalLoading(false);
         return;
       }
@@ -952,7 +919,7 @@ const Alldetails = ({ totalpricee }) => {
 
       const payableAmount = fetchBookingData?.data?.[0]?.amount;
       if (!payableAmount) {
-        alert("Amount not found.");
+        // alert("Amount not found.");
         setModalLoading(false);
         return;
       }
@@ -979,7 +946,7 @@ const Alldetails = ({ totalpricee }) => {
       );
 
       if (!paymentRes?.fields?.encRequest || !paymentRes?.fields?.access_code) {
-        alert("Payment initiation failed.");
+        // alert("Payment initiation failed.");
         setModalLoading(false);
         return;
       }
@@ -1001,7 +968,7 @@ const Alldetails = ({ totalpricee }) => {
       document.body.appendChild(form);
       form.submit(); // 🔥 Redirects to CCAvenue Payment Page
     } catch (error) {
-      console.log("handlePayNow error ", error);
+      // console.log("handlePayNow error ", error);
     }
 
     // setModalLoading(false);
@@ -1031,7 +998,7 @@ const Alldetails = ({ totalpricee }) => {
       if (data?.bookingData?.fare_type)
         setFareType(data?.bookingData?.fare_type);
     } catch (e) {
-      console.log("error in fetchFareType ", e);
+      // console.log("error in fetchFareType ", e);
     }
   };
 
@@ -1044,12 +1011,11 @@ const Alldetails = ({ totalpricee }) => {
       setLoading(false);
       return;
     } else {
-      console.log("found");
+      // console.log("found");
     }
 
     try {
       const parameter = { bookingId: bookingId, requirePaxPricing: true };
-      console.log("paramerter", parameter);
 
       let reqData = { action: "bookingDetails", requestData: parameter };
       // const data = await postData("travelogy/one-way/fetch-data", reqData);
@@ -1059,7 +1025,6 @@ const Alldetails = ({ totalpricee }) => {
       });
 
       // const data = await postDataBookingDetails(parameter);
-      console.log("bookingDetails !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ", data);
 
       if (data?.error) {
         setError(data?.error);
@@ -1091,8 +1056,6 @@ const Alldetails = ({ totalpricee }) => {
           "travelogy/flight/save-booking",
           reqSaveBookingId
         );
-
-        console.log("saveBookingStatus result ===>", result);
       };
       saveBookingStatus();
 
@@ -1101,8 +1064,6 @@ const Alldetails = ({ totalpricee }) => {
         []
       );
     } catch (err) {
-      console.log("error caused alldetails", err);
-      console.log("error caused alldetails", err.response.data.message);
 
       if (err?.response?.data?.message) {
         setError(err.response.data.message);
@@ -1324,7 +1285,6 @@ const Alldetails = ({ totalpricee }) => {
   };
 
   useEffect(() => {
-    console.log("Extracted Booking Id:", bookingId); // Debug log to check if bookingId is correct
     if (bookingId) {
       bookingDetailsapi(bookingId);
       fetchFareType(bookingId);
@@ -1347,9 +1307,6 @@ const Alldetails = ({ totalpricee }) => {
     cabinBaggage: firstBaggage?.fd?.bI?.cB || "N/A",
     checkinBaggage: firstBaggage?.fd?.bI?.iB || "N/A",
   };
-
-  console.log(baggageInfo);
-
   const formatDepartureDate = (dateString) => {
     if (!dateString || isNaN(new Date(dateString))) return "";
     return format(new Date(dateString), "EEE, dd MMM");
@@ -1366,13 +1323,6 @@ const Alldetails = ({ totalpricee }) => {
     bookingDetails?.itemInfos?.AIR?.travellerInfos?.map(
       (traveller) => traveller
     ) ?? [];
-  console.log("segments", segments);
-
-  console.log(
-    "bookingDetails?.itemInfos?.AIR?.travellerInfos ",
-    bookingDetails?.itemInfos?.AIR?.travellerInfos
-  );
-  console.log("travellerinfos =============> ", travellerinfos);
 
   const convertToJulianDate = (dateString) => {
     const date = new Date(dateString); // Convert the string to a Date object
@@ -1438,10 +1388,6 @@ const Alldetails = ({ totalpricee }) => {
 
     const payableAmount = fetchBookingData?.data?.[0]?.amount;
 
-    if (!payableAmount) {
-      console.log("no amount found");
-    }
-
     const payWallet = async () => {
       const reqpayWallet = {
         booking_id: bookingId,
@@ -1452,12 +1398,9 @@ const Alldetails = ({ totalpricee }) => {
         reqpayWallet,
         { Authorization: `Bearer ${token}` }
       );
-      console.log("saveBookingId result ===>", result);
       return result;
     };
     const payWalletRes = await payWallet();
-    console.log("payWalletRes ==> ", payWalletRes);
-    console.log("payWalletRes ==> ", payWalletRes.success);
 
     if (payWalletRes?.success && payWalletRes.success == true) {
       const parameter = { bookingId: bookingId };
@@ -1486,10 +1429,6 @@ const Alldetails = ({ totalpricee }) => {
             "travelogy/one-way/fetch-data",
             reqData
           );
-          console.log(
-            "airBookResponseairBookResponse ==> airBookResponse ",
-            airBookResponse
-          );
           if (airBookResponse?.status?.success === true) {
             // payment success
           } else {
@@ -1501,8 +1440,6 @@ const Alldetails = ({ totalpricee }) => {
               },
               { Authorization: `Bearer ${token}` }
             );
-
-            console.log("Wallet rollback done");
           }
           window.location.reload();
         } else {
@@ -1514,11 +1451,10 @@ const Alldetails = ({ totalpricee }) => {
             },
             { Authorization: `Bearer ${token}` }
           );
-          console.log("Wallet rollback done");
           window.location.reload();
         }
       } catch (error) {
-        console.log("handlePayNow error ", error);
+        // console.log("handlePayNow error ", error);
       }
     } else {
       // handle edge case

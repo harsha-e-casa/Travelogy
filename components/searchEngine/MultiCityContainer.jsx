@@ -29,7 +29,6 @@ const MultiCityContainer = ({
   const hasMultiCityError = Object.values(segmentErrors).some((error) => error);
 
   useEffect(() => {
-    console.log("hasMultiCityErrorhasMultiCityError ==> ", hasMultiCityError);
     if (onMultiCityErrorChange) {
       onMultiCityErrorChange(hasMultiCityError);
     }

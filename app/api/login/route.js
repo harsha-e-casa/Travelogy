@@ -48,8 +48,6 @@ export async function POST(req) {
 
     const data = await upstream.json().catch(() => ({}));
 
-    console.log("datadata => ",data)
-
     if (!upstream.ok || !data?.token) {
       const msg = data?.message || "Invalid credentials";
       return NextResponse.json(

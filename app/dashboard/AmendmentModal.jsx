@@ -1,9 +1,6 @@
 import React from "react";
 
 const AmendmentModal = ({ isOpen, closeModal, data, loading }) => {
-  console.log("isOpen ==> ", isOpen);
-  console.log("loading ==> ", loading);
-
   if (!isOpen) return null;
 
   return (

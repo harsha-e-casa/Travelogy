@@ -27,11 +27,9 @@ const AppDateRangeww = () => {
     if (dates) {
       const startDate = dayjs(dates[0]).format("MMM D YYYY"); // Format start date
       const endDate = dayjs(dates[1]).format("MMM D YYYY"); // Format end date
-      console.log(`Start Date: ${startDate}`);
-      console.log(`End Date: ${endDate}`);
       //   setDates([startDate, endDate]);
     } else {
-      console.log("No dates selected");
+      // console.log("No dates selected");
     }
   };
 

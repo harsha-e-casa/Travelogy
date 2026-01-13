@@ -2,7 +2,6 @@ import React from 'react';
 import { Form, Input, Row, Col } from 'antd';
 
 const AppFormCompany = ({ form, manditory = false }) => {
-  console.log("manditory ==> ", manditory);
 
   // Helper function to return rules based on manditory
   const getRequiredRules = (type = "text", pattern) => {

@@ -13,7 +13,6 @@ const AppDateRangeFlight = ({ openToDateRange, setDate, minDate, value }) => {
       setOpen(false);
     } else {
       setDate(null);
-      console.log("No dates selected");
     }
   };
 

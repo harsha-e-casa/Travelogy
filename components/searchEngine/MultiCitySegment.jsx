@@ -120,7 +120,6 @@ const MultiCitySegment = ({
       segment.to === "Select City";
 
     // Send validity to parent
-    console.log("hasInvalidCityhasInvalidCity ==> ", hasInvalidCity);
     onSegmentErrorChange(index, hasInvalidCity);
   }, [segment.from, segment.to, index, onSegmentErrorChange]);
 
@@ -246,7 +245,7 @@ const MultiCitySegment = ({
           </div>
         )}
       </div>
-      
+
       <div
         className="text_start b_right_2px g_w_3 css_pointer"
         style={{ paddingBottom: "13px", position: "relative" }}
