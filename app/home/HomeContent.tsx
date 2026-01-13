@@ -169,13 +169,13 @@ export default function HomeContent(): JSX.Element {
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6 col-md-12 mb-30 mb-lg-0">
-              <span className="btn btn-gray mb-5 d-flex align-items-center intro-badge">
+              <span className="intro-badge intro-badge-custom mb-5 d-flex align-items-center">
                 <img
                   className="mr-15"
                   src="/assets/imgs/page/homepage9/real.svg"
                   alt="Travelogy"
                 />
-                <span className="text-md neutral-600 text-bold-200">
+                <span className="text-md neutral-1000 text-bold-500">
                   Welcome to Travelogy
                 </span>
               </span>
@@ -512,6 +512,7 @@ export default function HomeContent(): JSX.Element {
               position: "relative",
               maxHeight: "90vh",
               overflowY: "auto",
+              top:"35px",
             }}
             onClick={(e) => e.stopPropagation()}
           >
