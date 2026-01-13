@@ -87,7 +87,7 @@ export default function HomeContent(): JSX.Element {
     if (!form.address.trim()) err.address = "Address is required.";
     if (form.secondaryNumber && !/^\d{10}$/.test(form.secondaryNumber))
       err.secondaryNumber = "Enter a valid 10-digit number.";
-    if (!form.description.trim()) err.description = "Description is required.";
+    if (form.description.trim().length < 5) err.description = "Description must be at least 5 characters.";
 
     setErrors(err);
     return Object.keys(err).length === 0;
@@ -510,6 +510,8 @@ export default function HomeContent(): JSX.Element {
               maxWidth: 640,
               border: "1px solid rgba(255,255,255,0.2)",
               position: "relative",
+              maxHeight: "90vh",
+              overflowY: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
           >
