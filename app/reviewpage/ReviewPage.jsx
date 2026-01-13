@@ -32,8 +32,6 @@ const ReviewPage = () => {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
   const payment = searchParams.get("payment");
-
-  console.log("paymentpayment ==> ", payment);
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
@@ -43,14 +41,11 @@ const ReviewPage = () => {
     new URLSearchParams(window.location.search).get("payment") === "retry"
   );
   const [loginPhone, setLoginPhone] = useState(null)
-  console.log("paymentFailurePopup ==> ", paymentFailurePopup);
 
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
-      console.log("tokentoken ==> 11111111 ", token);
       const decoded = jwtDecode(token);
-      console.log("decodeddecoded 11111 ==> ", decoded);
       setLoginPhone(decoded.phone);
 
     } catch {
@@ -69,9 +64,6 @@ const ReviewPage = () => {
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
-
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -88,7 +80,6 @@ const ReviewPage = () => {
     ids = [priceId];
   }
   const parameter = { priceIds: ids };
-  console.log(parameter);
 
   const [flightData, setFlightData] = useState(null);
   const [error, setError] = useState(null);
@@ -105,7 +96,6 @@ const ReviewPage = () => {
   const [travellers, setTravellers] = useState([]);
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
-  console.log("number", number);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
@@ -118,7 +108,6 @@ const ReviewPage = () => {
   const handleSessionExpire = React.useCallback(() => {
     if (!hasExpired.current) {
       hasExpired.current = true;
-      console.log("Session expired");
     }
   }, []);
   const timeLeftRef = useSessionTime(
@@ -132,10 +121,8 @@ const ReviewPage = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedApiData = localStorage.getItem("apiData");
-      console.log("storedApi", storedApiData);
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
-        console.log("fakjsdhfalshfkjsadf", flightData);
       }
     }
   }, []);
@@ -144,9 +131,7 @@ const ReviewPage = () => {
     const data = getCookie("travellerInfo");
     if (data) {
       try {
-        console.log(data);
         const parsedData = JSON.parse(data);
-        console.log("parseddata from review page", parsedData);
         setTravellers(parsedData);
       } catch (err) {
         console.error("Invalid JSON in cookie:", err);
@@ -158,7 +143,6 @@ const ReviewPage = () => {
     const data = getCookie("email");
     if (data) {
       try {
-        console.log(data);
         const parsedData = JSON.parse(data);
         setEmail(parsedData);
       } catch (err) {
@@ -171,7 +155,6 @@ const ReviewPage = () => {
     const data = getCookie("number");
     if (data) {
       try {
-        console.log(data);
         const parsedData = JSON.parse(data);
         setNumber(parsedData);
       } catch (err) {
@@ -227,9 +210,7 @@ const ReviewPage = () => {
     // setError(null);
 
     try {
-      console.log("Fetching FARERULE with parameter:", params);
       const data = await postDataFareDetails(params);
-      console.log("Flight details FROM FARERULE:", data);
       setFareDetails(data);
     } catch (err) {
       console.error("error caused", err);
@@ -239,13 +220,8 @@ const ReviewPage = () => {
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
         setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
       } else if (err?.message) {
         setError(err.message);
-        console.log("Generic error message:", err.message);
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -253,13 +229,6 @@ const ReviewPage = () => {
       // setLoading(false);
     }
   };
-  useEffect(() => {
-    console.log("logged fare details", fareDetails);
-  }, [fareDetails]);
-
-  useEffect(() => {
-    console.log("logged fflight details", flightData);
-  }, [flightData]);
 
   // UseEffect to call the function when 'tcs_id' is available in the search params
   // useEffect(() => {
@@ -272,7 +241,6 @@ const ReviewPage = () => {
   // }, [priceId]);
 
   useEffect(() => {
-    console.log("fetchFareRule Extracted tcs_id:", priceId);
     if (priceId) {
       fetchFareRule({ id: [priceId], flowType: "SEARCH" });
     } else {
@@ -344,7 +312,6 @@ const ReviewPage = () => {
     ?.map((e, i) => e.sI?.map((data) => data.id))
     .join("");
 
-  console.log("segment id from review", segmentId);
   const totalpriceinfos =
     flightData?.tripInfos.flatMap((trip) => trip.totalPriceList) ?? [];
   const cabinBaggage = totalpriceinfos.map((e) => e.fd?.ADULT?.bI?.iB);
@@ -420,7 +387,6 @@ const ReviewPage = () => {
 
   //bookingid
   const bookingId = flightData ? flightData.bookingId : null;
-  console.log("bookingId", bookingId);
 
   useEffect(() => {
     if (bookingId) {
@@ -458,18 +424,10 @@ const ReviewPage = () => {
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
-  console.log("mame totalprice amount cookie lendhu == ", totalprice);
-  console.log("mame totalprice amount cookie lendhu == ", typeof totalprice);
   const baggageTotal =
     BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
-  console.log("mame baggage amount cookie lendhu == ", baggageTotal);
-  console.log("mame baggage amount cookie lendhu == ", typeof baggageTotal);
   const mealTotal = MealAmount.reduce((acc, curr) => acc + curr.amount, 0);
-  console.log("mame seat amount cookie lendhu == ", mealTotal);
-  console.log("mame seat amount cookie lendhu == ", typeof mealTotal);
   const seatTotal = SeatAmount && SeatAmount !== "" ? SeatAmount : 0;
-  console.log("mame seatTotal cookie lendhu == ", seatTotal);
-  console.log("mame seatTotal cookie lendhu == ", typeof seatTotal);
   const currentUrl = window.location.href;
 
   const finalAmountToPay =
@@ -481,24 +439,18 @@ const ReviewPage = () => {
   const noShow = fareRule?.NO_SHOW ?? [];
   const dateChange = fareRule?.DATECHANGE ?? [];
   const seatCharge = fareRule?.SEAT_CHARGEABLE ?? [];
-  console.log(
-    "checking",
-    cancellation?.map((e) => e.pp)
-  );
 
   // Cancellation
   const cancellationAmount = cancellation.map((e) => e.amount);
   const cancellationPolicy = cancellation.map((e) => e.policyInfo);
   const cancellationPenaltyPeriod = cancellation.map((e) => e.pp);
   const cancellationLength = cancellation.length;
-  console.log("lenght", cancellationLength);
   const cancellationFee = cancellation.map((e) => e.fcs?.ACF);
   const cancellationST = cancellation.map((e) => e.st ?? 0);
   const cancellationET = cancellation.map((e) => e.et ?? 365);
 
   const hasFareRules = fareRule && Object.keys(fareRule).length > 0;
 
-  console.log("Has Fare Rules?", hasFareRules);
   // No Show
   const noShowPolicy = noShow.map((e) =>
     e.policyInfo?.includes("__nls__")
@@ -615,7 +567,6 @@ const ReviewPage = () => {
   const [selectedRoute, setSelectedRoute] = useState();
 
   useEffect(() => {
-    console.log("fareRulesMap ===", fareRulesMap);
     const keys = Object.keys(fareRulesMap);
     if (keys.length > 0 && !selectedRoute) {
       setSelectedRoute(keys[0]);
@@ -623,7 +574,6 @@ const ReviewPage = () => {
   }, [fareRulesMap]);
 
   const fareRulesData = fareRulesMap[selectedRoute] || {};
-  console.log("fareRulesData ===", fareRulesData);
 
   const itemss = [
     {
@@ -913,7 +863,6 @@ const ReviewPage = () => {
 
   const loadDataBook = async (parameter, wallet = false) => {
     try {
-      console.log("final", parameter);
       // Call your API function with the properly constructed parameter
       // const result = await postDataTJBookingAir(parameter);
       const reqData = {
@@ -922,7 +871,6 @@ const ReviewPage = () => {
       };
 
       const result = await postData("travelogy/one-way/fetch-data", reqData);
-      console.log("loadDataBook =========== ", result);
 
       if (result?.errCode == "1131") {
         if (wallet) {
@@ -970,7 +918,6 @@ const ReviewPage = () => {
       // };
       // saveBookingId();
       if (result?.error) {
-        console.log("result?.error ==> ", result?.error);
         setError(result?.error);
         setPaymentFailurePopup(false);
         setPaymentModel(false);
@@ -985,8 +932,6 @@ const ReviewPage = () => {
             },
             { Authorization: `Bearer ${token}` }
           );
-
-          console.log("Wallet rollback done");
         }
       } else {
         // setBookingLoading(false);
@@ -1002,13 +947,8 @@ const ReviewPage = () => {
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
         setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
       } else if (err?.message) {
         setError(err.message);
-        console.log("Generic error message:", err.message);
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -1076,17 +1016,11 @@ const ReviewPage = () => {
   // };
 
   const bookingReviewWIthWallet = async () => {
-    console.log("bookingReviewWIthWallet ==> ");
     setBookingLoadingWallet(true);
     setPaymsg("");
 
-    console.log("travellers (before update)", travellers);
-    console.log("totalprice bookingId", totalprice, bookingId);
-
     const gstInfoCookies = getCookie("gst_info");
-    console.log("gstInfoCookies = ", gstInfoCookies);
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
-    console.log("gstInfos = ", gstInfos);
 
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
@@ -1103,12 +1037,8 @@ const ReviewPage = () => {
       };
 
       if (gstInfos && Object.keys(gstInfos).length > 0) {
-        console.log("gstInfo irukan");
         parameter.gstInfo = { ...gstInfos };
       }
-
-      console.log("travellerInfo (final):", parameter.travellerInfo);
-      console.log("parameter for book:", parameter);
 
       const saveBookingId = async () => {
         const reqSaveBookingId = {
@@ -1125,7 +1055,6 @@ const ReviewPage = () => {
           "travelogy/flight/save-booking",
           reqSaveBookingId
         );
-        console.log("saveBookingId result ===>", result);
       };
       // saveBookingId();
 
@@ -1140,12 +1069,9 @@ const ReviewPage = () => {
           reqpayWallet,
           { Authorization: `Bearer ${token}` }
         );
-        console.log("saveBookingId result ===>", result);
         return result;
       };
       const payWalletRes = await payWallet();
-      console.log("payWalletRes ==> ", payWalletRes);
-      console.log("payWalletRes ==> ", payWalletRes.success);
 
       if (payWalletRes?.success && payWalletRes.success == true) {
         saveBookingId();
@@ -1166,9 +1092,6 @@ const ReviewPage = () => {
     setBookingLoading(true);
     setPaymsg("");
 
-    console.log("travellers (before update)", travellers);
-    console.log("totalprice bookingId", totalprice, bookingId);
-
     const gstInfoCookies = getCookie("gst_info");
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
@@ -1189,9 +1112,6 @@ const ReviewPage = () => {
       if (gstInfos && Object.keys(gstInfos).length > 0) {
         parameter.gstInfo = { ...gstInfos };
       }
-
-      console.log("parameter for book:", parameter);
-
       const saveBookingId = async () => {
         const reqSaveBookingId = {
           type: "save",
@@ -1220,9 +1140,6 @@ const ReviewPage = () => {
               data: { action: "book", requestData: parameter },
             }
           );
-
-          console.log("paymentRes ===>", paymentRes);
-
           const { action, fields } = paymentRes;
           const { encRequest, access_code } = fields;
 
@@ -1260,19 +1177,9 @@ const ReviewPage = () => {
 
   const handleHoldBooking = () => {
     setHoldLoading(true);
-    console.log("travellers (before update)", travellers);
-    console.log(
-      "totalprice, finalAmountToPay,  bookingId",
-      totalprice,
-      finalAmountToPay,
-      bookingId
-    );
 
     const gstInfoCookies = getCookie("gst_info");
-    console.log("gstInfoCookies = ", gstInfoCookies);
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
-    console.log("gstInfos = ", gstInfos);
-
     if (totalprice && bookingId) {
       const parameter = {
         bookingId,
@@ -1284,12 +1191,8 @@ const ReviewPage = () => {
       };
 
       if (gstInfos && Object.keys(gstInfos).length > 0) {
-        console.log("gstInfo irukan");
         parameter.gstInfo = { ...gstInfos };
       }
-
-      console.log("travellerInfo (final):", parameter.travellerInfo);
-      console.log("parameter for book:", parameter);
 
       const saveBookingId = async () => {
         const reqSaveBookingId = {
@@ -1299,12 +1202,10 @@ const ReviewPage = () => {
           amount: finalAmountToPay - markup,
           fareType: getCookie("gy_passender_type"),
         };
-        console.log("reqSaveBookingId === > ", reqSaveBookingId);
         const result = await postData(
           "travelogy/flight/save-booking",
           reqSaveBookingId
         );
-        console.log("saveBookingId result === > ", result);
       };
       saveBookingId();
 
@@ -1993,10 +1894,6 @@ const ReviewPage = () => {
                                               traveller.ssrBaggageInfos &&
                                               traveller.ssrBaggageInfos.length > 0
                                             ) {
-                                              console.log(
-                                                "traveller.ssrBaggageInfos ==> ",
-                                                traveller.ssrBaggageInfos
-                                              );
                                               const baggageDetails =
                                                 traveller.ssrBaggageInfos
                                                   .map((b) => {
@@ -2004,20 +1901,12 @@ const ReviewPage = () => {
                                                       cookieBaggageData.find(
                                                         (c) => c.code === b.code
                                                       );
-                                                    console.log(
-                                                      "baggageFromCookiebaggageFromCookie =",
-                                                      baggageFromCookie
-                                                    );
                                                     return baggageFromCookie
                                                       ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
                                                       : b.code;
                                                   })
                                                   .filter(Boolean)
                                                   .join(", ");
-                                              console.log(
-                                                "baggageDetailsbaggageDetails ==> ",
-                                                baggageDetails
-                                              );
                                               if (baggageDetails) {
                                                 addOns.push(
                                                   `Baggage: ${baggageDetails}`

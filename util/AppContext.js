@@ -49,7 +49,6 @@ export function AppContextProvider({ children }) {
   // Remove the cookie
   const removeCookie = (keyname) => {
     Cookies.remove(keyname);
-    console.log(`Cookie removed: ${keyname}`);
   };
 
   useEffect(() => {
@@ -89,7 +88,6 @@ export function AppContextProvider({ children }) {
       const parameter = { priceIds: [priceId] };
 
       const data = await postDataFlightDetails(parameter);
-      console.log("Flight detailsssss FOR REVIEW from context:", data);
       setFlightData(data);
     } catch (err) {
       console.error("error caused", err);
@@ -99,13 +97,8 @@ export function AppContextProvider({ children }) {
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
         setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
       } else if (err?.message) {
         setError(err.message);
-        console.log("Generic error message:", err.message);
       } else {
         setError("Something went wrong. Please try again.");
       }

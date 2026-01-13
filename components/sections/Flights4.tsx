@@ -83,7 +83,6 @@ export default function Flights4() {
   };
 
   const primeCookiesFromItem = (item: any) => {
-    console.log("jjjjjjjjjjjjjjjjjjjjjjjkkkkkkkkkkkkkkkkkkkkkkk")
     const sI = item?.data?.sI || [];
     const first = sI[0];
     const last = sI[sI.length - 1];

@@ -90,8 +90,6 @@ const Page = () => {
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
 
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -202,7 +200,6 @@ const Page = () => {
         setReUserBookingData(result);
         setloading(false);
       } catch (error) {
-        console.log("error ==> ", error);
         setloading(false);
       }
     };

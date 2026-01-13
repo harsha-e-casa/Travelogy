@@ -25,8 +25,6 @@ export default function DomesticRoundTripTicketCard({
   // State for mobile detection
   const [isMobile, setIsMobile] = useState(false);
 
-  console.log("isMobileisMobile ==> ", isMobile)
-
   const formatTime = (minutes: any) => {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
@@ -43,7 +41,6 @@ export default function DomesticRoundTripTicketCard({
 
   const onChange = (e: RadioChangeEvent) => {
     setValue(e.target.value);
-    console.log("the value is", value);
   };
 
   const [adultCount, setAdultCount] = useState(0);

@@ -19,15 +19,15 @@ export default function ByFareType({
   const safeOptions =
     Array.isArray(options)
       ? options
-          .filter(Boolean) // remove null/undefined
-          .map((o) => ({
-            name: safeName(o?.name),
-            count:
-              typeof o?.count === "number" && Number.isFinite(o.count)
-                ? o.count
-                : undefined,
-          }))
-          .filter((o) => o.name.length > 0) // only valid names
+        .filter(Boolean) // remove null/undefined
+        .map((o) => ({
+          name: safeName(o?.name),
+          count:
+            typeof o?.count === "number" && Number.isFinite(o.count)
+              ? o.count
+              : undefined,
+        }))
+        .filter((o) => o.name.length > 0) // only valid names
       : [];
 
   const toggleFareType = (value: string) => {
@@ -51,7 +51,6 @@ export default function ByFareType({
     <div className="box-collapse scrollFilter">
       <ul className="list-filter-checkbox">
         {safeOptions.map((option) => {
-          console.log("by fare nameeeeeeee = ",option.name);
           const name = option.name; // guaranteed non-empty string
           const id = `fareType-${tabIndex ?? 0}-${name}`;
 

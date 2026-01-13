@@ -37,9 +37,6 @@ const ReissueReviewPage = () => {
   const payment = searchParams.get("payment");
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-
-  console.log("paymentpayment ==> ", payment);
-
   const router = useRouter();
   const [loading, setloading] = useState(false);
   const [paymentFailurePopup, setPaymentFailurePopup] = useState(
@@ -56,9 +53,7 @@ const ReissueReviewPage = () => {
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
-      console.log("tokentoken ==> 11111111 ", token);
       const decoded = jwtDecode(token);
-      console.log("decodeddecoded 11111 ==> ", decoded);
       setLoginPhone(decoded.phone);
 
     } catch {
@@ -68,9 +63,6 @@ const ReissueReviewPage = () => {
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
-
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -86,7 +78,6 @@ const ReissueReviewPage = () => {
     ids = [priceId];
   }
   const parameter = { priceIds: ids };
-  console.log(parameter);
 
   const [flightData, setFlightData] = useState(null);
   const [error, setError] = useState(null);
@@ -97,7 +88,6 @@ const ReissueReviewPage = () => {
   const [travellers, setTravellers] = useState([]);
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
-  console.log("number", number);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(false);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
@@ -107,7 +97,6 @@ const ReissueReviewPage = () => {
   const handleSessionExpire = React.useCallback(() => {
     if (!hasExpired.current) {
       hasExpired.current = true;
-      console.log("Session expired");
     }
   }, []);
   const timeLeftRef = useSessionTime(
@@ -121,7 +110,6 @@ const ReissueReviewPage = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedApiData = localStorage.getItem("apiData");
-      console.log("storedApi", storedApiData);
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
       }
@@ -131,9 +119,7 @@ const ReissueReviewPage = () => {
     const data = getCookie("travellerInfo");
     if (data) {
       try {
-        console.log(data);
         const parsedData = JSON.parse(data);
-        console.log("parseddata from review page", parsedData);
         setTravellers(parsedData);
       } catch (err) {
         console.error("Invalid JSON in cookie:", err);
@@ -145,7 +131,6 @@ const ReissueReviewPage = () => {
     const data = getCookie("email");
     if (data) {
       try {
-        console.log(data);
         const parsedData = JSON.parse(data);
         setEmail(parsedData);
       } catch (err) {
@@ -158,7 +143,6 @@ const ReissueReviewPage = () => {
     const data = getCookie("number");
     if (data) {
       try {
-        console.log(data);
         const parsedData = JSON.parse(data);
         setNumber(parsedData);
       } catch (err) {
@@ -214,14 +198,12 @@ const ReissueReviewPage = () => {
     // setError(null);
 
     try {
-      console.log("Fetching FARERULE with parameter:", params);
       const reqData = {
         action: "fareRuleV2",
         requestData: params,
       };
       const data = await postData("travelogy/one-way/fetch-data", reqData);
       // const data = await postDataFareDetails(params);
-      console.log("Flight details FROM FARERULE:", data);
       setFareDetails(data);
     } catch (err) {
       console.error("error caused", err);
@@ -231,13 +213,8 @@ const ReissueReviewPage = () => {
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
         setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
       } else if (err?.message) {
         setError(err.message);
-        console.log("Generic error message:", err.message);
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -245,9 +222,6 @@ const ReissueReviewPage = () => {
       // setLoading(false);
     }
   };
-  useEffect(() => {
-    console.log("logged fare details", fareDetails);
-  }, [fareDetails]);
 
   // UseEffect to call the function when 'tcs_id' is available in the search params
   // useEffect(() => {
@@ -260,7 +234,6 @@ const ReissueReviewPage = () => {
   // }, [priceId]);
 
   useEffect(() => {
-    console.log("fetchFareRule Extracted tcs_id:", priceId);
     if (priceId) {
       fetchFareRule({ id: [priceId], flowType: "SEARCH" });
     } else {
@@ -332,7 +305,6 @@ const ReissueReviewPage = () => {
     ?.map((e, i) => e.sI?.map((data) => data.id))
     .join("");
 
-  console.log("segment id from review", segmentId);
   const totalpriceinfos =
     flightData?.tripInfos.flatMap((trip) => trip.totalPriceList) ?? [];
   const cabinBaggage = totalpriceinfos.map((e) => e.fd?.ADULT?.bI?.iB);
@@ -408,7 +380,6 @@ const ReissueReviewPage = () => {
 
   //bookingid
   const bookingId = flightData ? flightData.bookingId : null;
-  console.log("bookingId", bookingId);
 
   // Total price info
   useEffect(() => {
@@ -427,9 +398,6 @@ const ReissueReviewPage = () => {
   const [rssrAmount, setRssrAmount] = useState(0);
 
   useEffect(() => {
-    if (flightData) {
-      console.log("api data from the page.tsx kk", flightData);
-    }
     const adultAfs =
       flightData?.tripInfos?.[0]?.totalPriceList?.[0]?.fd?.ADULT?.fC?.AFS || 0;
     const childAfs =
@@ -443,18 +411,10 @@ const ReissueReviewPage = () => {
 
   //totalfare
   const totalprice = flightData?.totalPriceInfo?.totalFareDetail?.fC?.TF;
-  console.log("mame totalprice amount cookie lendhu == ", totalprice);
-  console.log("mame totalprice amount cookie lendhu == ", typeof totalprice);
   const baggageTotal =
     BaggageAmount?.reduce((acc, curr) => acc + curr.amount, 0) || 0;
-  console.log("mame baggage amount cookie lendhu == ", baggageTotal);
-  console.log("mame baggage amount cookie lendhu == ", typeof baggageTotal);
   const mealTotal = MealAmount.reduce((acc, curr) => acc + curr.amount, 0);
-  console.log("mame seat amount cookie lendhu == ", mealTotal);
-  console.log("mame seat amount cookie lendhu == ", typeof mealTotal);
   const seatTotal = SeatAmount && SeatAmount !== "" ? SeatAmount : 0;
-  console.log("mame seatTotal cookie lendhu == ", seatTotal);
-  console.log("mame seatTotal cookie lendhu == ", typeof seatTotal);
   const currentUrl = window.location.href;
 
   const finalAmountToPay = totalprice + baggageTotal + mealTotal + seatTotal;
@@ -465,24 +425,18 @@ const ReissueReviewPage = () => {
   const noShow = fareRule?.NO_SHOW ?? [];
   const dateChange = fareRule?.DATECHANGE ?? [];
   const seatCharge = fareRule?.SEAT_CHARGEABLE ?? [];
-  console.log(
-    "checking",
-    cancellation?.map((e) => e.pp)
-  );
 
   // Cancellation
   const cancellationAmount = cancellation.map((e) => e.amount);
   const cancellationPolicy = cancellation.map((e) => e.policyInfo);
   const cancellationPenaltyPeriod = cancellation.map((e) => e.pp);
   const cancellationLength = cancellation.length;
-  console.log("lenght", cancellationLength);
   const cancellationFee = cancellation.map((e) => e.fcs?.ACF);
   const cancellationST = cancellation.map((e) => e.st ?? 0);
   const cancellationET = cancellation.map((e) => e.et ?? 365);
 
   const hasFareRules = fareRule && Object.keys(fareRule).length > 0;
 
-  console.log("Has Fare Rules?", hasFareRules);
   // No Show
   const noShowPolicy = noShow.map((e) =>
     e.policyInfo?.includes("__nls__")
@@ -531,11 +485,6 @@ const ReissueReviewPage = () => {
   const redirectBookDetailsPage = () => {
     const rsData = getCookie("rs_data");
     const rsJsonData = JSON.parse(rsData);
-    console.log("redirectBookDetailsPage rsJSONDATA == ", rsJsonData);
-    console.log(
-      "redirectBookDetailsPage rsJSONDATA == ",
-      rsJsonData?.searchQuery?.oldBookingId
-    );
     const oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
     router.push(`/BookingDetails?booking_id=${oldBookingId}`);
   };
@@ -612,7 +561,6 @@ const ReissueReviewPage = () => {
   const [selectedRoute, setSelectedRoute] = useState();
 
   useEffect(() => {
-    console.log("fareRulesMap ===", fareRulesMap);
     const keys = Object.keys(fareRulesMap);
     if (keys.length > 0 && !selectedRoute) {
       setSelectedRoute(keys[0]);
@@ -620,8 +568,6 @@ const ReissueReviewPage = () => {
   }, [selectedRoute, fareRulesMap]);
 
   const fareRulesData = fareRulesMap[selectedRoute] || {};
-  console.log("fareRulesData ===", fareRulesData);
-
   const itemss = [
     {
       label: (
@@ -910,7 +856,6 @@ const ReissueReviewPage = () => {
 
   const loadDataBook = async (parameter, wallet = false) => {
     try {
-      console.log("final", parameter);
       // Call your API function with the properly constructed parameter
 
       // const result = await postDataTJBookingAir(parameter);
@@ -920,9 +865,6 @@ const ReissueReviewPage = () => {
         requestData: parameter,
       };
       const result = await postData("travelogy/one-way/fetch-data", reqData);
-
-      console.log("loadDataBook =========== ", result);
-      console.log("loadDataBook =========== ", result?.status?.success);
 
       if (result?.status?.success === true) {
         saveBookingIdFn(parameter.oldBookingId);
@@ -955,8 +897,6 @@ const ReissueReviewPage = () => {
             },
             { Authorization: `Bearer ${token}` }
           );
-
-          console.log("Wallet rollback done");
         }
         return;
       } else {
@@ -972,13 +912,8 @@ const ReissueReviewPage = () => {
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
         setError(`${message}`);
-
-        console.log("API error message:", message);
-        console.log("Error details:", details);
-        console.log("Error status code:", err.response.status);
       } else if (err?.message) {
         setError(err.message);
-        console.log("Generic error message:", err.message);
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -989,7 +924,6 @@ const ReissueReviewPage = () => {
   let oldBookingId = null;
 
   const handleReissuePayment = () => {
-    console.log("reissue payment finalAmountToPay ==> ", finalAmountToPay);
     if (finalAmountToPay < 0) {
       bookingReview();
     } else {
@@ -1000,21 +934,15 @@ const ReissueReviewPage = () => {
   // Function to handle booking review and trigger loadDataBook
   const bookingReviewWithoutPaymentGateway = async () => {
     setBookingLoading(true);
-    console.log("travellers (before update)", travellers);
-    console.log("totalprice bookingId", totalprice, bookingId);
 
     const gstInfoCookies = getCookie("gst_info");
-    console.log("gstInfoCookies = ", gstInfoCookies);
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
-    console.log("gstInfos = ", gstInfos);
 
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
     const rsData = getCookie("rs_data");
     const rsJsonData = JSON.parse(rsData);
-    console.log("rsJSONDATA == ", rsJsonData);
-    console.log("rsJSONDATA == ", rsJsonData?.searchQuery?.oldBookingId);
     oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
 
     if (
@@ -1034,12 +962,8 @@ const ReissueReviewPage = () => {
       };
 
       if (gstInfos && Object.keys(gstInfos).length > 0) {
-        console.log("gstInfo irukan");
         parameter.gstInfo = { ...gstInfos };
       }
-
-      console.log("travellerInfo (final):", parameter.travellerInfo);
-      console.log("parameter for book:", parameter);
 
       // if (finalAmountToPay <= 0) {
       //   await postData(
@@ -1061,12 +985,8 @@ const ReissueReviewPage = () => {
   };
 
   const bookingReviewWIthWallet = async () => {
-    console.log("bookingReviewWIthWallet ==> ");
     setBookingLoadingWallet(true);
     setPayError("");
-
-    console.log("travellers (before update)", travellers);
-    console.log("totalprice bookingId", totalprice, bookingId);
 
     const gstInfoCookies = getCookie("gst_info");
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
@@ -1087,7 +1007,6 @@ const ReissueReviewPage = () => {
       };
 
       if (gstInfos && Object.keys(gstInfos).length > 0) {
-        console.log("gstInfo irukan");
         parameter.gstInfo = { ...gstInfos };
       }
 
@@ -1101,7 +1020,6 @@ const ReissueReviewPage = () => {
           reqpayWallet,
           { Authorization: `Bearer ${token}` }
         );
-        console.log("saveBookingId result ===>", result);
         return result;
       };
       const payWalletRes = await payWallet();
@@ -1120,21 +1038,14 @@ const ReissueReviewPage = () => {
   const bookingReview = () => {
     setBookingLoading(true);
 
-    console.log("travellers (before update)", travellers);
-    console.log("totalprice bookingId", totalprice, bookingId);
-
     const gstInfoCookies = getCookie("gst_info");
-    console.log("gstInfoCookies = ", gstInfoCookies);
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
-    console.log("gstInfos = ", gstInfos);
 
     const segmentinfo =
       flightData?.tripInfos?.flatMap((trip) => trip.sI || []) || [];
 
     const rsData = getCookie("rs_data");
     const rsJsonData = JSON.parse(rsData);
-    console.log("rsJSONDATA == ", rsJsonData);
-    console.log("rsJSONDATA == ", rsJsonData?.searchQuery?.oldBookingId);
     oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
 
     if (totalprice <= 0) {
@@ -1159,12 +1070,8 @@ const ReissueReviewPage = () => {
       };
 
       if (gstInfos && Object.keys(gstInfos).length > 0) {
-        console.log("gstInfo irukan");
         parameter.gstInfo = { ...gstInfos };
       }
-
-      console.log("travellerInfo (final):", parameter.travellerInfo);
-      console.log("parameter for book:", parameter);
 
       const startPayment = async () => {
         try {
@@ -1180,9 +1087,6 @@ const ReissueReviewPage = () => {
               data: { action: "autoReissue", requestData: parameter },
             }
           );
-
-          console.log("paymentRes ===>", paymentRes);
-
           const { action, fields } = paymentRes;
           const { encRequest, access_code } = fields;
 
@@ -1233,14 +1137,9 @@ const ReissueReviewPage = () => {
       "travelogy/flight/re-save-booking",
       reqSaveBookingId
     );
-    console.log("saveReBookingId result ===>", result);
   };
 
   const handleHoldBooking = () => {
-    console.log("handleHoldBooking =========== ");
-
-    console.log("traveelers", travellers);
-    console.log("finalAmountToPay bookingid", finalAmountToPay, bookingId);
     if (Array.isArray(travellers) && travellers.length > 0) {
       if (bookingId) {
         // handlePayment();
@@ -1261,21 +1160,16 @@ const ReissueReviewPage = () => {
             contacts: [`${number.code}${number.number}`],
           },
         };
-
-        console.log("parameter for hold", parameter);
-
         const saveBookingId = async () => {
           const reqSaveBookingId = {
             booking_id: bookingId,
             phone: number.number,
             amount: finalAmountToPay,
           };
-          console.log("reqSaveBookingId === > ", reqSaveBookingId);
           const result = await postData(
             "travelogy/flight/save-booking",
             reqSaveBookingId
           );
-          console.log("saveBookingId result === > ", result);
         };
         saveBookingId();
 
@@ -2415,10 +2309,6 @@ const ReissueReviewPage = () => {
                                     <tbody>
                                       {travellers.length > 0 ? (
                                         travellers.map((traveller, index) => {
-                                          console.log(
-                                            "cccccccfffffff ",
-                                            traveller
-                                          );
                                           const fullName = `${traveller?.ti || ""
                                             } ${traveller?.fN || ""} ${traveller?.lN || ""
                                             }`.trim();
@@ -2436,10 +2326,6 @@ const ReissueReviewPage = () => {
                                                     cookieBaggageData.find(
                                                       (c) => c.code === b.code
                                                     );
-                                                  console.log(
-                                                    "baggageFromCookiebaggageFromCookie =",
-                                                    baggageFromCookie
-                                                  );
                                                   return baggageFromCookie
                                                     ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
                                                     : b.code;

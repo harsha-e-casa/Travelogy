@@ -132,9 +132,6 @@ const EngineTabs = ({ active_border }) => {
   }, []);
 
   const searchTickets = () => {
-    console.log("fn searchTickettttttttttt ");
-    console.log(multicitySegments);
-
     let departureFrom = getCookie("gy_da");
     let arrivalTo = getCookie("gy_aa");
     let adults = getCookie("gy_adult");
@@ -166,10 +163,6 @@ const EngineTabs = ({ active_border }) => {
 
     if (tripType == "multi-city") {
       mydata.multicitySegments = multicitySegments;
-      console.log(
-        " flight search save ==? ",
-        JSON.stringify(multicitySegments)
-      );
       setCookie("gy_multi_city", JSON.stringify(multicitySegments));
     }
 
@@ -207,10 +200,10 @@ const EngineTabs = ({ active_border }) => {
   const openfrom = () => {
     if (showSearchState) {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
     } else {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
       setShowSearchState(true);
     }
   };
@@ -267,10 +260,10 @@ const EngineTabs = ({ active_border }) => {
   const openTraveller = () => {
     if (showTraveller) {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
     } else {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
       setShowYTraveller(true);
     }
   };
@@ -395,10 +388,10 @@ const EngineTabs = ({ active_border }) => {
   const openTo = () => {
     if (showSearchStateTo) {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
     } else {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
       setShowSearchStateTo(true);
     }
   };
@@ -406,20 +399,20 @@ const EngineTabs = ({ active_border }) => {
   const openToDateRange = () => {
     if (openDateRage) {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
     } else {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
       setOpenDateRage(true);
     }
   };
   const openToDateRangeR = () => {
     if (openDateRageR) {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
     } else {
       closeAllFields();
-      handleToggleSectionFn(null,null);
+      handleToggleSectionFn(null, null);
       setOpenDateRageR(true);
     }
   };
@@ -437,7 +430,6 @@ const EngineTabs = ({ active_border }) => {
   });
 
   const handleToggleSectionFn = (index, type) => {
-    console.log("onToggleSection called with:", index, type);
     setOpenSection((prev) =>
       prev.segmentIndex === index && prev.type === type
         ? { segmentIndex: null, type: null }
@@ -447,7 +439,6 @@ const EngineTabs = ({ active_border }) => {
 
   const handleSelectFrom = (city, subCity) => {
     setFromError("");
-    console.log("handleSelectFrom == ");
     setSelectFrom(city);
     setSelectFromSub(subCity);
 
@@ -460,7 +451,6 @@ const EngineTabs = ({ active_border }) => {
 
   const handleSelectTo = (city, subCity) => {
     setFromError("");
-    console.log("handleSelectTo == ");
     setSelectFromTo(city);
     setSelectFromSubTo(subCity);
 
@@ -559,9 +549,6 @@ const EngineTabs = ({ active_border }) => {
       setMulticitySegments(multicitySegments.filter((_, i) => i !== index));
     }
   };
-
-  console.log("multicitySegmentsmulticitySegments ==> ", multicitySegments);
-
   return (
     <section
       className="section_main_book_dash_01 relative_MainBanner "
@@ -761,7 +748,7 @@ const EngineTabs = ({ active_border }) => {
                 <div className="text_start b_right_2px g_w_4 css_pointer" onClick={() => setSelectedPlan("round-trip")}>
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
-                      <div style={{color: "#e88400"}} className="font-semibold text-lg">+ ADD RETURN DATE</div>
+                      <div style={{ color: "#e88400" }} className="font-semibold text-lg">+ ADD RETURN DATE</div>
                       <div className="text-sm text-gray-500 mt-1">Save more on round trips!</div>
                     </div>
                   </div>
@@ -861,24 +848,23 @@ const EngineTabs = ({ active_border }) => {
             <div
               onClick={
                 !fromError &&
-                !toError &&
-                selectFrom &&
-                selectFromTo &&
-                !hasMultiCityError &&
-                !dateError
+                  !toError &&
+                  selectFrom &&
+                  selectFromTo &&
+                  !hasMultiCityError &&
+                  !dateError
                   ? searchTickets
                   : null
               }
-              className={`search_btn_font text-white uppercase tracking-wide cursor-pointer ${
-                !!fromError ||
+              className={`search_btn_font text-white uppercase tracking-wide cursor-pointer ${!!fromError ||
                 !!toError ||
                 !selectFrom ||
                 !selectFromTo ||
                 hasMultiCityError ||
                 !!dateError
-                  ? "cursor-not-allowed opacity-50"
-                  : ""
-              }`}
+                ? "cursor-not-allowed opacity-50"
+                : ""
+                }`}
             >
               Search
             </div>

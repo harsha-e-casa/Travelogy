@@ -123,8 +123,6 @@ export default function Tickets() {
 
   useEffect(() => {
     const handleResize = () => {
-      console.log("window.innerWidthwindow.innerWidthwindow.innerWidth ", window.innerWidth)
-      console.log("window.innerWidthwindow.innerWidthwindow.innerWidth ", (window.innerWidth < 1070))
       setIsMobile(window.innerWidth < 1070);
     };
     handleResize();
@@ -220,31 +218,17 @@ export default function Tickets() {
       };
       const allFareTypes = dataToCheck
         .flatMap((ticket: any, ticketIndex: number) => {
-          console.log("🔹 Ticket Index:", ticketIndex, "Ticket Data:", ticket);
-
           return ticket.totalPriceList.flatMap(
             (priceInfo: any, priceIndex: number) => {
-              console.log(
-                "   🔸 PriceInfo Index:",
-                priceIndex,
-                "PriceInfo Data:",
-                priceInfo
-              );
-
               return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-                console.log("      🔹 paxTypeKey:", paxTypeKey);
-                console.log("      🔹 paxTypeObj:", priceInfo.fd[paxTypeKey]);
                 return priceInfo.fd[paxTypeKey].rT;
               });
             }
           );
         })
         .filter((val: any) => {
-          console.log("✅ Filtering value:", val);
           return val;
         });
-
-      console.log("🎯 Final allFareTypes:", allFareTypes);
 
       const fareTypeCounts = allFareTypes.reduce(
         (acc: any, fareType: string) => {
@@ -310,7 +294,6 @@ export default function Tickets() {
   };
 
   const applyFilters = () => {
-    console.log("applyFilters ==> ");
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToFilter = flightData.ONWARD || flightData.COMBO;
 
@@ -461,9 +444,6 @@ export default function Tickets() {
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
-
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -474,13 +454,8 @@ export default function Tickets() {
   const searchParams = useSearchParams();
   const rsData = getCookie("rs_data");
   const fetchRescheduleData = JSON.parse(rsData);
-  console.log(
-    "fetchRescheduleDatafetchRescheduleData == ",
-    fetchRescheduleData
-  );
 
   const requestId = searchParams.get("requestId");
-  console.log("requestIdrequestIdrequestId ", requestId);
 
   const [datedep, setDatedep] = useState<Dayjs>(() => {
     return dayjs(fetchRescheduleData?.searchQuery?.routeInfos?.[0]?.travelDate);
@@ -554,10 +529,6 @@ export default function Tickets() {
             oldBookingId: fetchRescheduleData?.searchQuery?.oldBookingId,
             pnr: fetchRescheduleData?.searchQuery?.pnr,
           };
-          console.log(
-            "handlesearFlight parameter ---------------> ",
-            parameter
-          );
           let reqData = {
             action: "searchQuery",
             requestData: parameter,
@@ -566,7 +537,6 @@ export default function Tickets() {
             "travelogy/one-way/fetch-data",
             reqData
           );
-          console.log("resultresult ---------------> ", result);
           loadReissueTicket(result?.searchQuery?.requestId);
         } catch (err: any) {
           console.error("error caused", err);
@@ -601,7 +571,7 @@ export default function Tickets() {
       };
       callReissueTicket();
     } else {
-      alert("fetchRescheduleData not available");
+      // alert("fetchRescheduleData not available");
     }
   };
 

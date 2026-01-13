@@ -68,8 +68,6 @@ export default function Login() {
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const nextUrl = searchParams.get("next") || "/flights";
-  console.log("nextUrlnextUrl login page ==> ", nextUrl)
-
   // Vendor Modal State
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
@@ -229,16 +227,13 @@ export default function Login() {
         return;
       }
 
-      console.log("resres ==> ", res)
       const data = await res.json();
-      console.log("data from /api/login => ", data);
 
       if (data && data?.token) {
         localStorage.setItem("authToken", data.token);
       }
 
       message.success("Login successful");
-      console.log("nextUrlnextUrl ==> ", nextUrl)
       // router.push(nextUrl);
       window.location.href = nextUrl;
     } catch (e) {

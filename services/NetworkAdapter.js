@@ -88,7 +88,6 @@ apiInstance.interceptors.response.use(
 export const fetchData = async (endpoint, params = {}) => {
   try {
     const response = await apiInstance.get(endpoint, { params });
-    console.log("networkadaptar ", response);
     return response.data;
   } catch (error) {
     // You can handle specific error cases or rethrow the error
@@ -107,9 +106,7 @@ export const fetchData = async (endpoint, params = {}) => {
 
 export const postData = async (endpoint, payload, headers = {}, options = {}) => {
   try {
-    console.log("postData headers:", headers);
     const response = await apiInstance.post(endpoint, payload, { headers }, options);
-    console.log("ressssssssss 1111111 ", response);
     return response.data;
   } catch (error) {
     throw error;
@@ -119,7 +116,6 @@ export const postData = async (endpoint, payload, headers = {}, options = {}) =>
 export const postDatav1 = async (endpoint, payload) => {
   try {
     const response = await apiInstance.post(endpoint, payload);
-    console.log("ressssssssss 1111111 ", response);
     return response;
   } catch (error) {
     throw error;
@@ -129,7 +125,6 @@ export const postDatav1 = async (endpoint, payload) => {
 export const getData = async (endpoint, params = {}, headers = {}) => {
   try {
     const { data } = await apiInstance.get(endpoint, { params, headers }); // use 'params'
-    console.log("[getData] Response data:", data);
     return data;
   } catch (error) {
     console.error(`[getData] Error fetching ${endpoint}:`, error);
@@ -307,12 +302,10 @@ export const postSumbitAmendment = async (parameter) => {
 
 export const postAmendmentDetails = async (parameter) => {
   try {
-    console.log("🚀 Calling Amendment Details API with:", parameter);
     const response = await apiInstanceTripJack.post(
       "oms/v1/air/amendment/amendment-details",
       parameter
     );
-    console.log("✅ Amendment Details API Success:", response.data);
     return response.data;
   } catch (error) {
     console.error("❌ Error in postAmendmentDetails:", error);

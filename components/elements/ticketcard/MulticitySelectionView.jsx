@@ -129,15 +129,6 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
   };
 
   useEffect(() => {
-    // console.log("[MulticitySelectionView] ticketMarkups updated:", ticketMarkups);
-  }, [ticketMarkups]);
-
-
-
-
-
-
-  useEffect(() => {
     if (flightData && activeTabKey) {
       const tabIndex = parseInt(activeTabKey) - 1;
       const flightsForSegment = flightData[String(tabIndex)] || [];

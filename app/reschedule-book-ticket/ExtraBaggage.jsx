@@ -93,7 +93,6 @@ const ExtraBaggage = ({
   };
 
   const handleChange = () => {
-    console.log("baggage handleChange");
     const allValues = form.getFieldsValue();
     let totalAmount = 0;
     Object.values(allValues).forEach((val) => {
@@ -136,7 +135,7 @@ const ExtraBaggage = ({
                     <Select
                       placeholder="Add Baggage"
                       disabled={baggageOptions.every((b) => !b.amount)}
-                      style={{ width: "100%"}}
+                      style={{ width: "100%" }}
                       onChange={handleChange}
                       allowClear
                       onClear={handleChange}

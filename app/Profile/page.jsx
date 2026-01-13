@@ -37,8 +37,6 @@ const Page = () => {
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
 
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -149,7 +147,6 @@ const Page = () => {
         setReUserBookingData(result);
         setloading(false);
       } catch (error) {
-        console.log("error ==> ", error);
         setloading(false);
       }
     };
@@ -216,11 +213,10 @@ const Page = () => {
                   {/* //profile bar */}
 
                   <div
-                    className={`flex justify-between items-center border-b sidebar-content ${
-                      activeTab === "profile"
-                        ? "bg-gray-100 font-semibold"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`flex justify-between items-center border-b sidebar-content ${activeTab === "profile"
+                      ? "bg-gray-100 font-semibold"
+                      : "hover:bg-gray-100"
+                      }`}
                     style={{ borderBottom: "1px solid gray" }}
                     onClick={() =>
                       document
@@ -252,11 +248,10 @@ const Page = () => {
                   {/*//logindetails bar */}
 
                   <div
-                    className={`flex justify-between items-center sidebar-content-div border-b ${
-                      activeTab === "login"
-                        ? "bg-gray-100 font-semibold"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`flex justify-between items-center sidebar-content-div border-b ${activeTab === "login"
+                      ? "bg-gray-100 font-semibold"
+                      : "hover:bg-gray-100"
+                      }`}
                     style={{ borderBottom: "1px solid gray" }}
                     onClick={() =>
                       document
@@ -331,11 +326,10 @@ const Page = () => {
                   {/* bookings bar */}
 
                   <div
-                    className={`flex justify-between items-center sidebar-content border-b ${
-                      activeTab === "bookings"
-                        ? "bg-gray-100 font-semibold"
-                        : "hover:bg-gray-100"
-                    }`}
+                    className={`flex justify-between items-center sidebar-content border-b ${activeTab === "bookings"
+                      ? "bg-gray-100 font-semibold"
+                      : "hover:bg-gray-100"
+                      }`}
                     style={{ borderBottom: "1px solid gray" }}
                     onClick={() =>
                       document

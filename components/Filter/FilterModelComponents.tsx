@@ -1,5 +1,4 @@
 export default function FilterModelComponents({ filterData, filter, handleCheckboxChange }: any) {
-    console.log('sdkhsdd', filter);
 
 	return (
         <>

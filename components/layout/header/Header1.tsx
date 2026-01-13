@@ -34,22 +34,18 @@ export default function Header1(props: Header1Props) {
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
 
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) localStorage.removeItem("authToken");
   }, []);
 
   useEffect(() => {
     try {
       const token = localStorage.getItem("authToken");
-      console.log("tokentoken ==> 11111111 ", token);
       setAuthToken(token);
       if (!token) {
         setIsVisible(false);
         return;
       }
       const decoded = jwtDecode<{ travelogy_admin?: boolean | number; id?: number; userId?: number }>(token);
-      console.log("decodeddecoded ==> ", decoded);
       setIsVisible(!!decoded?.travelogy_admin);
 
       if (decoded?.id || decoded?.userId) {
@@ -107,7 +103,7 @@ export default function Header1(props: Header1Props) {
       });
 
       if (res.ok) {
-        console.log("Logout successful");
+        // console.log("Logout successful");
       } else {
         console.error("Logout failed", await res.text());
       }

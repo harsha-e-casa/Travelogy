@@ -78,8 +78,6 @@ export default function BookTicket() {
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
 
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
       localStorage.removeItem("authToken");
       router.push("/login");
@@ -160,7 +158,6 @@ export default function BookTicket() {
   }, []);
 
   const [loadingBtn, setLoadingBtn] = useState<any>(false);
-  console.log("loadingBtnloadingBtn ==> ", loadingBtn);
   const [apiData, setApiData] = useState<any>(null);
   const [bookingFormKey, setBookingFormKey] = useState<any>(1);
   const [segments, setSegments] = useState<FlightSegment[]>([]);
@@ -193,7 +190,6 @@ export default function BookTicket() {
   const [markup, setMarkup] = useState(0);
 
   const handleBaggageChange = useCallback((amount: number) => {
-    console.log("bag amount ", amount);
     setBaggageAmount(amount);
   }, []);
 
@@ -206,7 +202,6 @@ export default function BookTicket() {
   };
 
   const handleSeatinfo = (v: number) => {
-    console.log("Value from child:", v);
     setSeatinfo(v);
   };
 
@@ -222,7 +217,6 @@ export default function BookTicket() {
           ids = priceId.includes(",") ? priceId.split(",") : [priceId];
         }
         const parameter = { priceIds: ids };
-        console.log(parameter);
 
         let reqData = {
           action: "reviewRevalidate",
@@ -245,18 +239,12 @@ export default function BookTicket() {
           throw new Error(fullErrorMessage);
         }
 
-        console.log("data from page.tsx", data);
         localStorage.setItem("apiData", JSON.stringify(data));
         if (data?.tripInfos?.[0]?.sI?.[0]?.dt) {
-          console.log(
-            "ssssssssssssssssdddddddddddddd ==> ",
-            (data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]
-          );
           setFirstTravellDate(
             (data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]
           );
         }
-        console.log("apidata from book-ticket page.tsx", apiData);
 
         setApiData(data);
 
@@ -272,7 +260,7 @@ export default function BookTicket() {
               bookingId: data.bookingId,
               markup: parsedMarkup,
             })
-              .then(() => console.log("Markup saved to backend from URL"))
+              .then(() => console.log(""))
               .catch((error) => console.error("Error saving markup from URL:", error));
           }
         }
@@ -293,7 +281,6 @@ export default function BookTicket() {
         setSegments(segs);
 
         const totalFareDetail = data.totalPriceInfo.totalFareDetail;
-        console.log("total fare detail", totalFareDetail);
         setTotalpricee(totalFareDetail);
 
         const netFare = totalFareDetail.fC.NF;
@@ -301,14 +288,12 @@ export default function BookTicket() {
         setNetFare(netFare);
 
         const ssrInfo = segs?.[0]?.ssrInfo;
-        console.log("ssr info from page.tsx", ssrInfo);
         const mealOptions = ssrInfo?.MEAL || [];
 
         const fareRuleInformation = firstTrip?.fareRuleInformation || {};
         setSegmentsPrice(firstTrip.totalPriceList ?? []);
 
         const cabinClass = data.searchQuery.cabinClass;
-        console.log("Cabin Class:", cabinClass);
 
         const paxInfo = data.searchQuery.paxInfo;
 
@@ -332,12 +317,8 @@ export default function BookTicket() {
           const details = firstError?.details ? ` - ${firstError.details}` : "";
           setError(`${message}`);
 
-          console.log("API error message:", message);
-          console.log("Error details:", details);
-          console.log("Error status code:", err.response.status);
         } else if (err?.message) {
           setError(err.message);
-          console.log("Generic error message:", err.message);
         } else {
           setError("Something went wrong. Please try again.");
         }
@@ -372,10 +353,8 @@ export default function BookTicket() {
 
   useEffect(() => {
     try {
-      console.log("travellerCookieData == ", travellerCookieData);
       if (travellerCookieData !== undefined) {
         const parsedData: any = JSON.parse(travellerCookieData);
-        console.log("travellerCookieData ==parsedData ", parsedData);
         const groupedData = parsedData.reduce((acc: any, item: any) => {
           const category = item.pt;
           if (!acc[category]) {
@@ -402,10 +381,6 @@ export default function BookTicket() {
     if (mobile !== undefined) {
       const parsedMobile: any = JSON.parse(mobile);
       const parsedEmail: any = JSON.parse(email);
-      console.log("mobilemobile == ", mobile);
-      console.log("mobilemobile == ", parsedMobile.code);
-      console.log("mobilemobile == ", parsedMobile.number);
-      console.log("emailemail == ", parsedEmail);
       setBookingDetailsData({
         mobileCode: parsedMobile.code,
         mobileNumber: parsedMobile.number,
@@ -438,26 +413,10 @@ export default function BookTicket() {
     </Form.Item>
   );
 
-  // useEffect(() => {
-  //     //   console.log("segmentPrice",segmentsPrice)
-  // }, [segmentsPrice])
-  useEffect(() => {
-    if (totalpricee) {
-      console.log("Updated totalpricee:", totalpricee);
-    }
-  }, [totalpricee]);
-
-  useEffect(() => {
-    if (apiData) {
-      console.log("api data from the page.tsx kk", apiData);
-    }
-  }, [apiData]);
-
   const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({});
   useEffect(() => {
     const storedTravellerInfo: any = getCookie("travellerInfo");
     if (storedTravellerInfo !== undefined) {
-      console.log("iruku storedTravellerInfo == ", storedTravellerInfo);
       setStoredTravellerInfos(JSON.parse(storedTravellerInfo));
     }
   }, []);
@@ -487,7 +446,6 @@ export default function BookTicket() {
   // Async function to fetch flight data
   const loadDataBook = async (parameter: any) => {
     try {
-      console.log("final", parameter);
       let reqData = {
         action: "book",
         requestData: parameter,
@@ -533,9 +491,7 @@ export default function BookTicket() {
     const res = await loadRazorpayScript();
 
     if (!res) {
-      // console.log(res);
-
-      alert("Failed to load Razorpay SDK. Please check your internet.");
+      // alert("Failed to load Razorpay SDK. Please check your internet.");
       return;
     }
 
@@ -687,23 +643,6 @@ export default function BookTicket() {
       .then(() => {
         // Retrieve all form values for the current fields
         const formValues = form.getFieldsValue(true);
-        console.log("all form vlaues", formValues);
-
-        console.log(
-          "Bacis Form Data:",
-          formValues[`select_code`],
-          formValues[`mNumber`],
-          formValues[`mEmail`]
-        );
-
-        console.log(
-          "GST Number for Business Travel (Optional): ",
-          formValues["gstNumber"],
-          formValues["registeredName"],
-          formValues["companyEmail"],
-          formValues["companyPhone"],
-          formValues["companyAddress"]
-        );
 
         if (
           formValues["gstNumber"] &&
@@ -712,7 +651,6 @@ export default function BookTicket() {
           formValues["companyPhone"] &&
           formValues["companyAddress"]
         ) {
-          console.log("vantan daaaaaaaaa");
           const gstInfo = {
             gstNumber: formValues["gstNumber"],
             registeredName: formValues["registeredName"],
@@ -850,15 +788,12 @@ export default function BookTicket() {
                 const matchedSegment = segmentinfo.find(
                   (seg: any) => seg.id === segmentId
                 );
-                console.log("baggabe matchedSegment ==> ", matchedSegment);
-
                 const tripFrom = matchedSegment?.da?.code;
                 const tripTo = matchedSegment?.aa?.code;
 
                 const baggageOption = matchedSegment?.ssrInfo?.BAGGAGE?.find(
                   (bag: any) => bag.code === baggageCode
                 );
-                console.log("baggageOptionbaggageOption == > ", baggageOption);
 
                 if (baggageOption) {
                   baggageInfosPayload.push({
@@ -904,7 +839,6 @@ export default function BookTicket() {
             });
             const adultSeatInfo = [];
             if (seatInfo?.length > 0) {
-              console.log("seatInfoseatInfo ==> ", seatInfo);
               for (let i = 0; i < seatInfo.length; i++) {
                 const item = seatInfo[i];
                 adultSeatInfo.push({
@@ -925,7 +859,6 @@ export default function BookTicket() {
             if (mealInfos.length > 0) {
               traveller.ssrMealInfos = mealInfos;
             }
-            console.log("travellertravellertraveller =====> ", traveller);
             groupedAdults.push(traveller);
           }
         }
@@ -976,8 +909,6 @@ export default function BookTicket() {
 
           const baggageInfos: { key: string; code: string }[] = [];
           const mealInfos: { key: string; code: string }[] = [];
-
-          console.log("groupedChildren seatInfo = ", seatInfo);
 
           if (ti && fN && lN) {
             // const traveller = { ti, fN, lN, pt: "CHILD" };
@@ -1133,30 +1064,16 @@ export default function BookTicket() {
           expires: 7,
         });
         // setMealinfo(mealinfosPaylode)
-
-        console.log("groupedAdultsgroupedAdults === ", groupedAdults);
-
-        console.log("groupedChildrengroupedChildren === ", groupedChildren);
-
-        console.log("groupedInfantsgroupedInfants === ", groupedInfants);
         // Combine all
         const travellerInfoV: Traveller[] = [
           ...groupedAdults,
           ...groupedChildren,
           ...groupedInfants,
         ];
-        console.log("travellerinfo", travellerInfoV);
         setTravellerInfoV(travellerInfoV);
         setCookie("travellerInfo", JSON.stringify(travellerInfoV), {
           expires: 7,
         });
-        console.log("document cookie", document.cookie);
-
-        console.log("Cookies after update:", document.cookie);
-        console.log("Stored Email:", getCookie("user_email"));
-        console.log("Stored Phone:", getCookie("user_number"));
-        console.log("Stored Email: key emale", getCookie("email"));
-        console.log("Stored Phone: key number", getCookie("number"));
 
 
         // api call to save traveller info
@@ -1166,12 +1083,10 @@ export default function BookTicket() {
             email: getCookie("email"),
             number: getCookie("number"),
           };
-          console.log("reqTravellerInfo === > ", reqTravellerInfo);
           const result = await postData(
             "travelogy/flight/save-traveller-info",
             reqTravellerInfo
           );
-          console.log("reqTravellerInfo result === > ", result);
 
           setCookie(`gy_markup_${bookingId}`, markup.toString(), {
             expires: 7,
@@ -1187,15 +1102,12 @@ export default function BookTicket() {
         router.push(`/reviewpage?tcs_id=${tcs_id}`);
       })
       .catch((errorInfo) => {
-        console.log("Validation failed:", errorInfo);
         if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
           const firstErrorField = errorInfo.errorFields[0].name[0];
-          console.log("firstErrorField = ", firstErrorField);
 
           const fieldElement = document.querySelector(
             `[data-name="${firstErrorField}"]`
           );
-          console.log("fieldElement = ", fieldElement);
 
           if (fieldElement) {
             fieldElement.scrollIntoView({
@@ -1302,7 +1214,6 @@ export default function BookTicket() {
   const handleSessionExpire = useCallback(() => {
     if (!hasExpired.current) {
       hasExpired.current = true;
-      console.log("Session expired");
     }
   }, []);
   const timeLeftRef = useSessionTime(

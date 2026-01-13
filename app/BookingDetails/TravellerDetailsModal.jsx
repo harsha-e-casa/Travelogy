@@ -20,9 +20,6 @@ const TravellerDetailsModal = ({
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const isUat = process.env.UAT_ENV === "true";
-  console.log("ddddddddddddddddddddddd ", bookingId);
-  console.log("ddddddddddddddddddddddd ", amendmentType);
-  console.log("ddddddddddddddddddddddd ", bookingDetails);
   const [selectedTravellersPerTrip, setSelectedTravellersPerTrip] = useState(
     {}
   );
@@ -33,7 +30,6 @@ const TravellerDetailsModal = ({
   const [error, setError] = useState(null);
 
   const shortTripKey = tripKey?.split("-")?.slice(0, 2)?.join("-");
-  console.log("ddddddddddddddddddddddd ", shortTripKey);
   const allTrips = bookingDetails?.itemInfos?.AIR?.tripInfos || [];
   const travellerInfos = bookingDetails?.itemInfos?.AIR?.travellerInfos || [];
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -53,18 +49,6 @@ const TravellerDetailsModal = ({
     handleClose();
   };
 
-  // Debug logs
-  console.log("📦 travellerInfos:", travellerInfos);
-  console.log("🔑 tripKey:", tripKey);
-
-  // Log each traveler's pnrDetails keys to understand the structure
-  travellerInfos?.forEach((traveller, index) => {
-    console.log(
-      `👤 Traveller ${index + 1} PNR Keys:`,
-      Object.keys(traveller?.pnrDetails || {})
-    );
-  });
-
   const handleConfirm = () => {
     const finalPayload = Object.entries(selectedPerTrip).map(
       ([tripKey, travellers]) => {
@@ -72,9 +56,6 @@ const TravellerDetailsModal = ({
         return { src, dest, departureDate, travellers };
       }
     );
-
-    console.log("🚀 Final API Payload:", finalPayload);
-
     onClose(); // close the modal
   };
 
@@ -242,9 +223,6 @@ const TravellerDetailsModal = ({
                             (t) =>
                               t.fN === traveller.fN && t.lN === traveller.lN
                           );
-
-                          console.log("oooooooooopppppppppssssssssss ",traveller)
-
                           return (
                             <div
                               key={k}
@@ -289,9 +267,6 @@ const TravellerDetailsModal = ({
                             (t) =>
                               t.fN === traveller.fN && t.lN === traveller.lN
                           );
-
-                          console.log("Traveller: ", traveller);
-
                           return (
                             <div
                               key={k}
@@ -355,14 +330,10 @@ const TravellerDetailsModal = ({
                     action: "amendmentCharges",
                     requestData: param,
                   };
-                  console.log("📤 Sending parameters to API:", reqData);
-
                   const req = await postData(
                     "travelogy/one-way/fetch-data",
                     reqData
                   );
-                  console.log("rrrrrrrrrrr ", req);
-
                   if (req?.errCode) {
                     setSubmitAmendmentapiError(req?.error || req?.message);
                   } else {
@@ -370,7 +341,6 @@ const TravellerDetailsModal = ({
                     setReqAmendmentChargesPopUp(true);
                   }
                 } catch (error) {
-                  console.log("Error while requesting Amendment: ", error);
                   setError(
                     "Error requesting amendment charges. Please try again."
                   );
@@ -390,9 +360,6 @@ const TravellerDetailsModal = ({
                     remarks: "cancellation",
                     trips, // 🔁 include this if your API expects it
                   };
-
-                  console.log("📤 Sending parameters to API:", parameter);
-
                   // const response = await postSumbitAmendment(parameter);
                   let reqData = {
                     action: "submitAmendment",
@@ -403,9 +370,6 @@ const TravellerDetailsModal = ({
                     reqData
                   );
                   const data = response;
-
-                  console.log("📌 amendmentId received:", data);
-                  console.log("📌 amendmentId received id:", data?.amendmentId);
                   if (data?.error || data?.errCode) {
                     setSubmitAmendmentapiError(data?.error || data?.message);
                   }
@@ -421,14 +385,6 @@ const TravellerDetailsModal = ({
                       let amendmentDetails = null;
 
                       for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-                        console.log(
-                          "📨 Sending amendmentId to details API (poll attempt)",
-                          {
-                            amendmentId,
-                            attempt,
-                            maxAttempts,
-                          }
-                        );
 
                         const reqData = {
                           action: "pollAmendment",
@@ -440,18 +396,9 @@ const TravellerDetailsModal = ({
                           reqData
                         );
 
-                        console.log(
-                          "📋 Amendment Details (poll result):",
-                          amendmentDetails
-                        );
-
                         const status = amendmentDetails?.amendmentStatus;
 
                         if (status && status !== "REQUESTED") {
-                          console.log(
-                            "Amendment reached final status: ",
-                            status
-                          );
                           break;
                         }
 
@@ -478,7 +425,6 @@ const TravellerDetailsModal = ({
                           req,
                           { Authorization: `Bearer ${token}` }
                         );
-                        console.log("saveAmendmentID result ===> ", result);
                       };
 
                       await saveAmendmentID();
@@ -492,7 +438,6 @@ const TravellerDetailsModal = ({
                           },
                           { Authorization: `Bearer ${token}` }
                         );
-                        console.log("refundApiCall ==> ", refundApiCall);
                       }
 
                       setAmendmentDetailData(amendmentDetails);
@@ -508,13 +453,8 @@ const TravellerDetailsModal = ({
                           ? ` - ${firstError.details}`
                           : "";
                         setError(`${message}`);
-
-                        console.log("API error message:", message);
-                        console.log("Error details:", details);
-                        console.log("Error status code:", err.response.status);
                       } else if (err?.message) {
                         setError(err.message);
-                        console.log("Generic error message:", err.message);
                       } else {
                         setError("Something went wrong. Please try again.");
                       }
@@ -598,13 +538,8 @@ const TravellerDetailsModal = ({
                       ? ` - ${firstError.details}`
                       : "";
                     setError(`${message}`);
-
-                    console.log("API error message:", message);
-                    console.log("Error details:", details);
-                    console.log("Error status code:", err.response.status);
                   } else if (err?.message) {
                     setError(err.message);
-                    console.log("Generic error message:", err.message);
                   } else {
                     setError("Something went wrong. Please try again.");
                   }

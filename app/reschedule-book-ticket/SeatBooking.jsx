@@ -56,14 +56,13 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
         setErrorModal("No seat data found")
       }
     } catch (error) {
-      console.log("SeatBooking error = ", error);
+      // console.log("SeatBooking error = ", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleProceed = () => {
-    console.log("handleProceed functionality == ");
 
     calculateAndStoreTotalAmount();
 
@@ -109,7 +108,6 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
       });
     }
 
-    console.log("setData == ", setData);
     setSeatNo(setData);
   };
 
@@ -139,11 +137,9 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
 
     // Set final total into seatSsr_amount
     setCookie("seatSsr_amount", parseInt(totalAmount, 10).toString());
-    console.log("Total amount calculated and stored:", totalAmount);
   };
 
   const handleSeatSelect = (seatNo, cost) => {
-    console.log("seat no and amount =", seatNo, cost);
     const flightId = flightSeat?.seg?.id || null;
 
     // const updatedSelections = [...seatSelections];
@@ -201,7 +197,6 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     }
 
     setCookie(passengerKey, JSON.stringify(updatedData));
-    console.log("Cookie updated:", passengerKey, updatedData);
   };
 
   // const renderSeatMap = (sInfo) => {
@@ -377,8 +372,6 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
 
     return <div className="p-4">{seatGrid}</div>;
   };
-
-  console.log("seatSelectionsseatSelections ============= ", seatSelections);
 
   const isUat = process.env.UAT_ENV === "true";
 

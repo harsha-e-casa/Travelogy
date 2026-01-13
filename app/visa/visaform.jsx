@@ -125,7 +125,6 @@ const VisaForm = () => {
       const response = await postData("/travelogy/common/save", reqData, {
         Authorization: `Bearer ${token}`,
       });
-      console.log("responseresponse ==> ", response);
       if (response.success) {
         // message.success("Data saved successfully!");
         setSuccessMessage(

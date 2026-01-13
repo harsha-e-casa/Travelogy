@@ -27,10 +27,9 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
   };
 
   const handleSubmit = () => {
-    console.log("Submitting Amendment ", amendmentType);
 
     if (!amendmentType) {
-      alert("Please select an amendment type.");
+      // alert("Please select an amendment type.");
       return;
     }
 
@@ -122,9 +121,8 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
           amendmentId={selectedAmendmentId}
           amendmentType={selectedAmendmentType}
           bookingDetails={bookingDetails}
-          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${
-            firstSegment?.dt?.split("T")[0]
-          }`}
+          tripKey={`${firstSegment?.da?.code}-${lastSegment?.aa?.code}-${firstSegment?.dt?.split("T")[0]
+            }`}
           onClose={() => setShowTravellerModal(false)}
           setmodalClose={() => setShowModal(false)}
         />

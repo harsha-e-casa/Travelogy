@@ -434,7 +434,6 @@ function normalize(raw, markup = 0, useAbsolute = false) {
       const allSegs = [];
 
       (air?.tripInfos || []).forEach((trip) => {
-        console.log("trippppppppppppppppppppp ==> ", trip);
         (trip?.sI || []).forEach((s) => {
           const airline = s?.fD?.aI || {};
           const flightNo = `${airline.code ?? ""} ${s?.fD?.fN ?? ""}`.trim();
@@ -471,9 +470,6 @@ function normalize(raw, markup = 0, useAbsolute = false) {
           });
         });
       });
-
-      console.log("allSegsallSegs => ", allSegs);
-
       return allSegs;
     })(),
     passengers,
@@ -514,12 +510,9 @@ function sumObjectKeys(obj, keys) {
 function extractFees(raw) {
   const air = raw?.itemInfos?.AIR;
   const topFC = air?.totalPriceInfo?.totalFareDetail?.fC || {};
-  console.log("topFC ==> ", topFC);
   const travellers = Array.isArray(air?.travellerInfos)
     ? air.travellerInfos
     : [];
-  console.log("travellers ==> ", travellers);
-
   // Common keys (observed or typical) for ancillary fees in different APIs
   const KEYSETS = {
     meal: ["MF", "MFT"], // Meal fee / Meal fee total
@@ -566,13 +559,10 @@ function sumSSRAmounts(ssrObj) {
 }
 
 export function printTicket(raw, markup = 0) {
-  console.log("printTicket called");
   // Normalize with useAbsolute = false (relative paths for browser print)
   try {
     const vm = normalize(raw, markup, false);
-    console.log("normalize success");
     const html = renderTicketHTML(vm, false);
-    console.log("renderTicketHTML success");
 
     // 1) Create a hidden iframe (no new window/tab)
     const iframe = document.createElement("iframe");
@@ -584,39 +574,31 @@ export function printTicket(raw, markup = 0) {
     iframe.style.border = "0";
     iframe.setAttribute("aria-hidden", "true");
     document.body.appendChild(iframe);
-    console.log("iframe appended");
-
     // 2) Write content
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
     doc.write(html);
     doc.close();
-    console.log("doc wrote");
 
     // 3) Print once, then cleanup
     let printed = false;
     let timeoutId;
 
     const triggerOnce = () => {
-      console.log("triggerOnce called. printed:", printed);
       if (printed) return;
       printed = true;
       try {
-        console.log("Attempting iframe.contentWindow.focus() and print()");
         iframe.contentWindow.focus();
         iframe.contentWindow.print();
-        console.log("print() called");
       } catch (e) {
         console.error("Print triggered error:", e);
       }
     };
 
     const cleanup = () => {
-      console.log("cleanup called");
       setTimeout(() => {
         if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
         if (timeoutId) clearTimeout(timeoutId);
-        console.log("cleanup done");
       }, 500); // Increased timeout to see if it helps
     };
 
@@ -648,13 +630,11 @@ export function printTicket(raw, markup = 0) {
     });
 
     Promise.all([waitForFonts, waitForImages]).then(() => {
-      console.log("Resources loaded, calling triggerOnce");
       triggerOnce();
     });
 
     // Increased fallback timeout
     timeoutId = setTimeout(() => {
-      console.log("Fallback timeout reached");
       triggerOnce();
     }, 2000);
   } catch (err) {
@@ -1075,7 +1055,6 @@ function renderTicketHTML(vm, useAbsolute = false) {
   const paxRows = vm.passengers
     .map((p, pi) => {
       // If no segments for this passenger, show a single placeholder row
-      console.log("ppppppppppppprrrrrrrrrrrrr ", p);
       if (!p.ssr?.perSegment || p.ssr.perSegment.length === 0) {
         return `
       <tr>

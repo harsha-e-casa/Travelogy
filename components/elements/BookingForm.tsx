@@ -39,23 +39,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
   setMarkup,
   bookingId,
 }) => {
-  // console.log("mealinfo 111111111111111111111==========> ", mealinfo);
-  // console.log("baggageinfo 111111111111111111111==========> ", baggageinfo);
-  console.log("baggageAmount 111111111111111111111==========> ", baggageAmount);
-  console.log("seatinfo 111111111111111111111==========> ", seatinfo);
-  console.log(
-    "bookingFormKey 111111111111111111111==========> ",
-    bookingFormKey
-  );
-  console.log("afsAmountafsAmountafsAmount ", afsAmount);
-  console.log("rssrAmountrssrAmountrssrAmount ", rssrAmount);
-
-  console.log("bookingData 111111111111111111111==========> ", bookingData);
-  console.log(
-    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee ",
-    finalStage,
-    totalpricee
-  );
 
   if (totalpricee === undefined) {
     if (bookingData?.totalPriceInfo?.totalFareDetail) {
@@ -66,16 +49,11 @@ const BookingForm: React.FC<BookingFormProps> = ({
         bookingData?.itemInfos?.AIR?.totalPriceInfo?.totalFareDetail;
     }
   }
-  console.log(
-    "totalpriceetotalpriceetotalpriceetotalpriceetotalpricee11 ",
-    totalpricee
-  );
   const basefare = totalpricee?.fC?.BF || 0;
   const taxAndFees = totalpricee?.fC?.TAF || 0;
   const Airlinegst = totalpricee?.afC?.TAF?.AGST;
   const othertaxes = totalpricee?.afC?.TAF?.OT;
   const totalfare = totalpricee?.fC?.TF;
-  console.log("totalfare ====> ", totalfare);
   // const netprice = totalpricee?.fC?.NF;
   const { getCookie, removeCookie } = useContext(AppContext);
   // const initLoaded = useRef(false);
@@ -111,7 +89,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
           bookingId,
           markup: newMarkup,
         });
-        console.log("Markup saved to backend");
       } catch (error) {
         console.error("Error saving markup:", error);
       }
@@ -136,7 +113,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
     if (totalpricee) {
       // initLoaded.current = true;
       // for booking details page
-      console.log("bookingDatabookingData =====> ", bookingData);
 
       // except booking details page
       if (bookingData && Object.keys(bookingData).length === 0) {
@@ -144,10 +120,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
         let totalBaggageAmount = savedBaggage.reduce(
           (acc: any, curr: any) => acc + curr.amount,
           0
-        );
-        console.log(
-          "totalBaggageAmounttotalBaggageAmount ==> ",
-          totalBaggageAmount
         );
         setTotalBaggageAmount(
           savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0)
@@ -159,10 +131,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
         let ssrSeatAmount = getCookie("seatSsr_amount");
         // setTotalSeatAmount(Number(ssrSeatAmount));
         setTotalSeatAmount(Number(ssrSeatAmount ?? 0));
-        console.log("saved baggage", savedBaggage);
-        console.log("saved meal", savedMeal);
-        console.log("totalfare ====> ", totalfare);
-        console.log("finalStage ===> ", finalStage);
 
         if (finalStage === false) {
           computedAmount =
@@ -172,12 +140,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
             Number(ssrSeatAmount ?? 0) +
             Number(markup || 0);
           // (ssrSeatAmount ? Number(ssrSeatAmount) : 0);
-          console.log("computedAmountcomputedAmount ====> ", computedAmount);
         } else {
           computedAmount = Number(totalfare) + Number(markup || 0);
-          console.log("computedAmountcomputedAmount 11 ====> ", computedAmount);
         }
-        console.log("computedAmountcomputedAmount 22 ====> ", computedAmount);
         setNetprice(
           computedAmount -
           savedBaggage.reduce((acc: any, curr: any) => acc + curr.amount, 0) -
@@ -186,7 +151,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
           Number(markup || 0)
         );
       } else {
-        console.log("else varaliay ??");
         let baggageTotal = 0;
         let seatTotal = 0;
         let mealTotal = 0;
@@ -231,16 +195,10 @@ const BookingForm: React.FC<BookingFormProps> = ({
         setTotalBaggageAmount(baggageTotal);
         setTotalSeatAmount(seatTotal);
         setTotalMealAmount(mealTotal);
-
-        console.log("Total Baggage Amount: ", baggageTotal);
-        console.log("Total Seat Amount: ", seatTotal);
-        console.log("Total Amount: ", Number(totalfare));
         computedAmount = Number(totalfare) + Number(markup || 0);
         // setNetprice(totalfare - baggageTotal - seatTotal - mealTotal);
         setNetprice(computedAmount);
-        console.log("computedAmount 11 ====== ", computedAmount);
       }
-      console.log("computedAmount ====== ", computedAmount);
       setDisplayAmount(computedAmount);
     }
   }, [totalpricee, markup]);
