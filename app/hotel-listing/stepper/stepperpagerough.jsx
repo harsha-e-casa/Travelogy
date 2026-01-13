@@ -216,8 +216,6 @@ Try Again              </button>
       if (!bookingId) {
         throw new Error("Booking ID is missing.");
       }
-
-      console.log("Fetched booking details:", bookingId);
       localStorage.removeItem("formData");
       setFormData({});
       window.location.href = `/hotel-listing/stepper/booking-details/?bookingId=${bookingId}`;

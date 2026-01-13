@@ -74,10 +74,7 @@ export default function HotelListing() {
   useEffect(() => {
     const tokenValid = checkTokenExpiry(); // Check if the token is valid
 
-    console.log("tokenValid ==> ", tokenValid);
-
     if (!tokenValid) {
-      console.log("Token is valid.");
       // If token is expired, remove from localStorage and redirect to login
       localStorage.removeItem("authToken");
       router.push("/login"); // Redirect to the login page
@@ -144,7 +141,6 @@ export default function HotelListing() {
     return apiHotelData.map((hotel: any) => {
       const price = Number(hotel.ops?.[0]?.tp || 0);
       if (price <= 0 || isNaN(price)) {
-        console.log("Invalid price for hotel:", hotel.name, price);
       }
       const finalPrice = price <= 0 || isNaN(price) ? 99999 : price;
       const address = hotel.ad?.adr || "";
@@ -460,12 +456,10 @@ export default function HotelListing() {
         reqBody,
         signal ? { signal } : {}
       );
-      console.log("fetch-data ", response);
       clearLocalStorageExceptAuthToken();
       return response;
     } catch (e: any) {
       if (signal?.aborted) {
-        console.log("Request aborted");
         return null;
       }
 
@@ -555,7 +549,6 @@ export default function HotelListing() {
       // Update data and URL
       setApiHotelData(data.searchResult?.his || []);
       router.push(`/hotel-listing?${queryParams}`);
-      console.log('data1', data);
     } catch (e: any) {
       console.error("Error in handleSearch:", e);
 
@@ -640,7 +633,6 @@ export default function HotelListing() {
           err.status = 200;
           throw err;
         }
-        console.log('data2', data);
       } catch (e: any) {
         console.error("Error in loadInitialData:", e);
 
@@ -824,17 +816,6 @@ export default function HotelListing() {
     if (!checkinDate || !checkoutDate) return 0;
     return Math.max(dayjs(checkoutDate).diff(dayjs(checkinDate), "day"), 0);
   }, [checkinDate, checkoutDate]);
-
-  console.log("DEBUG - error:", error)
-  console.log("DEBUG - apiHotelData length:", apiHotelData.length)
-  console.log("DEBUG - transformedHotels length:", transformedHotels.length)
-  console.log("DEBUG - filteredHotels length:", filteredHotels.length)
-  console.log("DEBUG - paginatedHotels length:", paginatedHotels.length)
-  console.log("DEBUG - priceRange:", priceRange)
-  console.log("DEBUG - minPriceRange:", minPriceRange)
-  console.log("DEBUG - maxPriceRange:", maxPriceRange)
-  console.log("DEBUG - nights:", nights)
-
   // Debug first few hotels
   if (transformedHotels.length > 0) {
     console.log("DEBUG - First 3 transformed hotels:", transformedHotels.slice(0, 3).map(h => ({

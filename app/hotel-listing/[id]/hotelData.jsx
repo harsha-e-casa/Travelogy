@@ -259,7 +259,12 @@ const HotelData = ({
   };
   return (
     <>
-      <div className="flex justify-between items-center mt-3">
+      <div className="flex justify-between items-center mt-3"style={{
+        position:"sticky",
+        padding: "5px",
+        top: "20px",
+        background: "white"
+      }}>
         <h2 className="text-xl font-bold text-gray-800">Rooms</h2>
         <button
           onClick={
@@ -287,7 +292,7 @@ const HotelData = ({
       </div>
       <div className="border rounded-xl mt-6 overflow-hidden shadow-sm">
         {isSelectionMode && fetchHotelData.length > 0 && (
-          <div className="px-5 py-3 border-b bg-gray-50 flex items-center gap-4">
+          <div className="px-4 py-3 border-b bg-gray-50 flex items-center gap-4">
             <input
               type="checkbox"
               className="w-4 h-4"
@@ -399,7 +404,7 @@ const HotelData = ({
                           ) : null}
 
                           {panRequired === false && (
-                            <div className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[9px] font-bold uppercase inline-block mt-1">
+                            <div className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[7px] font-bold uppercase inline-block">
                               PAN not Required
                             </div>
                           )}

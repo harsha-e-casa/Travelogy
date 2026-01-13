@@ -41,7 +41,6 @@ export function HotelReviewComponent({
           
           // Auto-save markup with the newly generated bookingId
           if (response.bookingId && markup > 0) {
-            console.log("Auto-saving markup with new bookingId:", response.bookingId);
             postData("travelogy/flight/save-markup", {
               bookingId: response.bookingId,
               markup: markup,
@@ -71,8 +70,6 @@ export function Step1TravellerDetails({
   markup = 0,
   setMarkup = () => {},
 }) {
-  console.log("CheckinDate", hotelReviewData?.query?.checkinDate);
-
   // Markup State handled by parent (StepperPage)
   // const [markup, setMarkup] = useState(0);
   // const [showMarkupPopup, setShowMarkupPopup] = useState(false);
@@ -1078,9 +1075,8 @@ export function Step2Review({
 
               // Get the actual room configuration for accurate guest count
               const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
-              const totalGuestCount =
-                (roomConfig?.numberOfAdults || 0) +
-                (roomConfig?.numberOfChild || 0);
+              const adults = roomConfig?.numberOfAdults || 0;
+              const children = roomConfig?.numberOfChild || 0;
 
               return (
                 <div key={roomIndex} className="border-b pb-4">
@@ -1092,8 +1088,12 @@ export function Step2Review({
                         {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
                         <span className="text-gray-500">
                           {" "}
-                          ({totalGuestCount}{" "}
-                          {totalGuestCount === 1 ? "Guest" : "Guests"})
+                          ({adults} {adults === 1 ? "Adult" : "Adults"}
+                          {children > 0
+                            ? `, ${children} ${
+                                children === 1 ? "Child" : "Children"
+                              }`
+                            : ""})
                         </span>
                       </p>
                     </div>
@@ -1173,7 +1173,8 @@ export function Step2Review({
               if (validGuests.length === 0) return null;
 
               // Total guest count includes all guests (for display purposes)
-              const totalGuestCount = room?.ti?.length || 0;
+              const adults = room?.adt || 0;
+              const children = room?.chd || 0;
 
               return (
                 <div key={roomIndex} className="border-b space-y-2">
@@ -1182,8 +1183,12 @@ export function Step2Review({
                       {room?.rc} <span className="text-md">( {room?.mb})</span>
                       <span className="text-gray-500">
                         {" "}
-                        ({totalGuestCount}{" "}
-                        {totalGuestCount === 1 ? "Guest" : "Guests"})
+                        ({adults} {adults === 1 ? "Adult" : "Adults"}
+                        {children > 0
+                          ? `, ${children} ${
+                              children === 1 ? "Child" : "Children"
+                            }`
+                          : ""})
                       </span>
                     </p>
                   </h4>
@@ -1630,9 +1635,6 @@ export function Step3PersonalDocuments({
   });
   const PanRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipr;
   const PassportRequired = hotelReviewData?.hInfo?.ops?.[0]?.ipm;
-  console.log("PanRequired", PanRequired);
-  console.log("PassportRequired", PassportRequired);
-
   const isValidPAN = (v) => panRegex.test((v || "").trim());
   const getUiGuests = (roomIdx) => {
     const leadGuest = formData?.guests?.[roomIdx];
@@ -2332,8 +2334,6 @@ export function Step4Payment({
     const finalAmount = Number(totalBaseFare + totalTax).toFixed(2);
 
     setBookingLoadingWallet(true);
-
-      console.log("hotelBooking amount: ", amount);
     try {
       // 1. Pay with wallet
       const reqpayWallet = {
@@ -2347,16 +2347,11 @@ export function Step4Payment({
         { Authorization: `Bearer ${token}` }
       );
 
-      console.log("payWalletRes ==> ", payWalletRes);
-
       if (payWalletRes?.success) {
         // 2. Proceed with hotel booking
         try {
           const result = await hotelBooking({ formData, hotelReviewData });
-          console.log("hotelBooking result: ", result);
-          console.log("hotelBooking amount: ", amount);
           if (result?.error) {
-            console.log("Booking error, refunding wallet...");
             // Refund wallet if booking fails
             await postData(
               "travelogy/flight/refundWallet",
@@ -2376,7 +2371,6 @@ export function Step4Payment({
             setShowWalletConfirm(false);
           } else {
             // Success
-            console.log("Booking success:", result);
             setBookingLoadingWallet(false);
             setPaymentModel(false);
             setShowWalletConfirm(false);
@@ -2681,7 +2675,6 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
     setSnackbarOpen(true);
 
     const idToSave = hotelReviewData?.bookingId || oid || hid;
-    console.log("Saving markup for id:", idToSave, "Markup:", newMarkup);
     if (idToSave) {
       postData("travelogy/flight/save-markup", {
         bookingId: idToSave,

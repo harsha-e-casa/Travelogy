@@ -74,7 +74,6 @@ export default function BookingCard({
   };
 
   const handleUpdateAllMarkup = () => {
-    console.log("Updating all markup to:", tempMarkup);
     const newMarkup = Number(tempMarkup);
     if (onMarkupUpdate) {
       onMarkupUpdate(newMarkup, true);
@@ -287,7 +286,7 @@ export default function BookingCard({
 
         {/* Display availability error if present */}
         {availabilityError && (
-          <div className="mt-3 p-3 bg-red-50 border border-red-300 rounded-md">
+          <div className="mt-1 p-2 bg-red-50 border border-red-300 rounded-md">
             <div className="flex items-start gap-2">
               <div className="flex-1">
                 {/* <p className="text-xs font-semibold text-red-800 mb-1">
@@ -410,23 +409,10 @@ export default function BookingCard({
                   }}
                   setDatedep={(date) => {
                     const newDate = date ? date.format("YYYY-MM-DD") : null;
-
-                    console.log('Checkout date selected:', {
-                      newDate,
-                      currentCheckoutDate: checkoutDate,
-                      tempCheckin: tempCheckinRef.current,
-                      tempCheckout: tempCheckoutRef.current
-                    });
-
                     // Check if we have a temporary check-in date from recent selection
                     const effectiveCheckinDate = tempCheckinRef.current || checkinDate;
 
                     if (newDate && effectiveCheckinDate) {
-                      console.log('Triggering fetch with:', {
-                        checkin: effectiveCheckinDate,
-                        checkout: newDate
-                      });
-
                       // If we have a temp check-in, update it
                       if (tempCheckinRef.current) {
                         setCheckinDate(tempCheckinRef.current);
@@ -437,7 +423,6 @@ export default function BookingCard({
 
                       // Always trigger fetch when user selects a checkout date
                       setTriggerFetch(prev => {
-                        console.log('setTriggerFetch called, prev:', prev);
                         return prev + 1;
                       });
 
@@ -487,23 +472,11 @@ export default function BookingCard({
             </span>
           </div>
         </div>
-
-        <div className="flex items-start gap-2 border rounded p-2 text-sm text-neutral-700">
-          <div className="text-sm text-neutral-700">
-            <label className="text-xs text-gray-500">Persons and Room</label>
-            <button
-              onClick={toggleTraveller}
-              className="w-full text-left text-xs font-semibold"
-            >
-              {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}
-              {totalAdults} Adult
-              {totalAdults > 1 ? "s" : ""}, {totalChildren} Child
-              {totalChildren > 1 ? "ren" : ""}
-            </button>
-
-            {showTraveller && (
+          <div>
+             {showTraveller && (
               <div
-                className="check-avail-modal"
+                className="check-avail-modal mb-2 w-full"
+                style={{minHeight:"180px", maxHeight:"180px", height:"180px"}}
                 onClick={(e) => e.stopPropagation()}
               >
                 <AppTravellerHotel
@@ -515,8 +488,21 @@ export default function BookingCard({
                 />
               </div>
             )}
+            <div 
+              className="flex items-start gap-2 border rounded p-2 text-sm text-neutral-700 cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={toggleTraveller}
+            >
+              <div className="text-sm text-neutral-700 w-full">
+                <label className="text-xs text-gray-500 cursor-pointer">Persons and Room</label>
+                <div className="w-full text-left text-xs font-semibold">
+                  {roomsData?.length} Room{roomsData?.length > 1 ? "s" : ""},{" "}
+                  {totalAdults} Adult
+                  {totalAdults > 1 ? "s" : ""}, {totalChildren} Child
+                  {totalChildren > 1 ? "ren" : ""}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
       </div>
       <div className="box-button-book">
         <Link
