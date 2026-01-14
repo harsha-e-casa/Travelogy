@@ -948,7 +948,7 @@ export default function Tickets() {
         <main className="main">
           {/* <EngineTabs active_border={'1'} /> */}
 
-          <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
+          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{top:"65px"}}>
             {/* Header Section */}
 
             {!isMobile && (
@@ -979,19 +979,21 @@ export default function Tickets() {
                   </div>
                 </>
 
-                <div className="hdt_header-item">
+                <div className="hdt_header-item relative">
                   <label>Depart</label>
                   <div onClick={openToDateRange} className="hdt_value">
                     {dd_strdate}, {dd_monthStr} {dd_date} {dd_year}
                   </div>
 
                   {openDateRage ? (
-                    <AppDateRangeFlight
-                      openToDateRange={openToDateRange}
-                      setDate={setDatedep}
-                      minDate={null}
-                      value={datedep}
-                    />
+                    <div className="relative" style={{ zIndex: 10000002 }}>
+                      <AppDateRangeFlight
+                        openToDateRange={openToDateRange}
+                        setDate={setDatedep}
+                        minDate={null}
+                        value={datedep}
+                      />
+                    </div>
                   ) : null}
                 </div>
 
