@@ -18,6 +18,7 @@ export default function TicketCard1({
   onQuoteSelectionChange,
   selectedQuoteFlights = [],
   selectedFareTypes = [], // New prop for strict filtering
+  selectedFareIdentifiers = [], // New prop for strict filtering
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [showAllFares, setShowAllFares] = useState(false);
@@ -250,6 +251,13 @@ export default function TicketCard1({
                 : ticket.totalPriceList.slice(0, 2)
               )
                 .filter((fare: any) => {
+                  // Filter by selectedFareIdentifiers first
+                  if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
+                    if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
+                      return false;
+                    }
+                  }
+
                   if (selectedFareTypes && selectedFareTypes.length > 0) {
                     const fareTypeMap: { [key: number]: string } = {
                       0: "Non Refundable",
