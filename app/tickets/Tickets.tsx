@@ -2745,6 +2745,7 @@ export default function Tickets() {
             open={isMobile && modifySearchOpen}
             height="100%"
             className="modify-search-drawer"
+            zIndex={10000001}
           >
             <div className="flex flex-col gap-4 p-2">
               <div className="modify-field">
@@ -3304,6 +3305,7 @@ export default function Tickets() {
                               onClose={onCloseFilterDrawer}
                               open={filterDrawerOpen}
                               width={300}
+                              zIndex={10000001}
                             >
                               <div className="content-left">
                                 {renderFilters()}

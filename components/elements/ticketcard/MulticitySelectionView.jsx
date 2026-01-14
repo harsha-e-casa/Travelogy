@@ -866,6 +866,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
             onClose={onCloseFilterDrawer}
             open={filterDrawerOpen}
             width={300}
+            zIndex={10000001}
           >
             <div className="content-left">
               {currentFilter ? renderFilters(tabIndex) : <div className="p-3 text-sm text-gray-500">Loading filters…</div>}

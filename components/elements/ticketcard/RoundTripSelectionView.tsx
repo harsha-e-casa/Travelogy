@@ -867,6 +867,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         onClose={onCloseFilterDrawer}
         open={filterDrawerOpen}
         width={300}
+        zIndex={10000001}
       >
         <div className="content-left">
           {renderFilters()}
@@ -1223,6 +1224,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                 open={showDetails}
                 height="auto"
                 className="mobile-flight-details-drawer"
+                zIndex={10000001}
                 styles={{
                   body: { padding: '16px' },
                   header: { padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }

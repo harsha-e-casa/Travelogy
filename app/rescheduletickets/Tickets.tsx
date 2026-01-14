@@ -1150,6 +1150,7 @@ export default function Tickets() {
                                   onClose={onCloseFilterDrawer}
                                   open={filterDrawerOpen}
                                   width={300}
+                                  zIndex={10000001}
                                 >
                                   <div className="content-left">
                                     {renderFilters()}
