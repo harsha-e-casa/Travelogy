@@ -7,28 +7,28 @@ export default function AboutContent() {
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-        minHeight: "130vh",
+        minHeight: "160vh",
       }}
     >
       <div className="container-fluid px-4">
         <div className="row justify-content-center">
-          <div className="col-md-8 col-lg-8">
+          <div className="col-sm-10 col-md-10">
             <div
               className="card shadow-lg border-0"
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.95)",
-                marginTop: "10px",
-                width: "1000px",
+                marginTop:'25px',
+                 width:'75%'
               }}
             >
-              <div className="card-body p-30">
-                <div className="text-center mb-40">
+              <div className="card-body p-10">
+                <div className="text-center mb-10">
                   <h1 className="heading-44-medium text-brand-1" style={{ fontSize: "32px" }} >
                     About Us
                   </h1>
                 </div>
 
-                <div className="row">
+                <div className="row px-5">
                   {/* <div className="col-md-6 mb-30"> */}
                   <div className="mb-30">
                     <h3 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }}>
@@ -73,7 +73,7 @@ export default function AboutContent() {
                   <h3 className="heading-6-medium text-brand-1 font-bold" style={{ fontSize: "26px" }}>
                     Why Choose Us?
                   </h3>
-                  <ul className="list-disc pl-6 space-y-2">
+                  <ul className="list-disc pl-6 space-y-2 pb-20">
                     <li>
                       <span className="font-semibold">
                         Expertise and Experience:

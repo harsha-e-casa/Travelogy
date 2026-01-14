@@ -11,9 +11,9 @@ export default function ContactContent() {
     >
       <div className="container-fluid px-4">
         <div className="row justify-content-center">
-          <div className="col-lg-10 col-xl-8">
+          <div className="col-sm-10 col-md-10">
             <div className="card shadow-lg border-0" style={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', marginTop:'25px', width:'75%' }}>
-              <div className="card-body p-30">
+              <div className="card-body p-10">
                 <div className="text-center mb-40">
                   <h1 className="heading-44-medium text-brand-1" style={{ fontSize: "32px" }}>Contact Us</h1>
                   <p className="text-lg neutral-600">
@@ -21,7 +21,7 @@ export default function ContactContent() {
                   </p>
                 </div>
 
-                <div className="row">
+                <div className="row px-10">
                   <div className="col-md-6 mb-30">
                     <h4 className="heading-6-medium text-brand-1" style={{ fontSize: "26px" }}>Contact Information</h4>
                     <div className="mb-15">
