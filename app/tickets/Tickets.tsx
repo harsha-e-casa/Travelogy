@@ -520,6 +520,24 @@ export default function Tickets() {
 
   const renderFilters = () => (
     <>
+      {isFilterApplied && (
+        <div className="sidebar-left border-1 background-body mb-10" style={{height:"60px", paddingTop:"15px"}}>
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <div className="d-flex align-items-center justify-content-between">
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                <Button
+                  type="link"
+                  onClick={handleResetAllFilters}
+                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom:"20px" }}
+                >
+                  Reset All
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="sidebar-left border-1 background-body">
         <div className="box-filters-sidebar">
           <div className="block-filter border-1">
@@ -763,6 +781,32 @@ export default function Tickets() {
   const [flightNumberSearch, setFlightNumberSearch] = useState("");
   const [selectedFareTypes, setSelectedFareTypes] = useState<string[]>([]);
   const [uniqueFareTypes, setUniqueFareTypes] = useState<any[]>([]);
+
+  const handleResetAllFilters = () => {
+    setPriceRange([minPriceRange, maxPriceRange]);
+    setStops("all");
+    setPriceSort("asc");
+    setDepartureTime("all");
+    setSelectedAirlines([]);
+    setArrivalTime("all");
+    setFareIdentifiers([]);
+    setFlightNumberSearch("");
+    setSelectedFareTypes([]);
+  };
+
+  const isFilterApplied = useMemo(() => {
+    return (
+      stops !== "all" ||
+      departureTime !== "all" ||
+      arrivalTime !== "all" ||
+      selectedAirlines.length > 0 ||
+      fareIdentifiers.length > 0 ||
+      flightNumberSearch !== "" ||
+      selectedFareTypes.length > 0 ||
+      priceSort !== "asc" ||
+      (priceRange[0] !== minPriceRange || priceRange[1] !== maxPriceRange)
+    );
+  }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {

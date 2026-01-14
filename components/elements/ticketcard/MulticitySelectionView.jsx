@@ -553,8 +553,63 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
 
     const filteredFlights = applyFilters(pair.flights, filters[tabIndex]);
 
+    const handleResetAllFilters = (tabIdx) => {
+      setFilters((prev) => {
+        const next = [...prev];
+        if (next[tabIdx]) {
+          next[tabIdx] = {
+            ...next[tabIdx],
+            priceRange: [next[tabIdx].minPriceRange, next[tabIdx].maxPriceRange],
+            stops: "all",
+            departureTime: "all",
+            arrivalTime: "all",
+            selectedAirlines: [],
+            fareIdentifiers: [],
+            flightNumberSearch: "",
+            selectedFareTypes: [],
+          };
+        }
+        return next;
+      });
+      setPriceSort("asc");
+    };
+
+    const isFilterApplied = (tabIdx) => {
+      const f = filters[tabIdx];
+      if (!f) return false;
+      return (
+        f.stops !== "all" ||
+        f.departureTime !== "all" ||
+        f.arrivalTime !== "all" ||
+        f.selectedAirlines?.length > 0 ||
+        f.fareIdentifiers?.length > 0 ||
+        f.flightNumberSearch !== "" ||
+        f.selectedFareTypes?.length > 0 ||
+        priceSort !== "asc" ||
+        (f.priceRange[0] !== f.minPriceRange || f.priceRange[1] !== f.maxPriceRange)
+      );
+    };
+
     const renderFilters = (tabIndex) => (
       <>
+        {isFilterApplied(tabIndex) && (
+          <div className="sidebar-left border-1 background-body mb-10" style={{height:"60px", paddingTop:"15px"}}>
+            <div className="box-filters-sidebar">
+              <div className="block-filter border-1">
+                <div className="d-flex align-items-center justify-content-between">
+                  <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                  <Button
+                    type="link"
+                    onClick={() => handleResetAllFilters(tabIndex)}
+                    style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold",  marginBottom:"20px" }}
+                  >
+                    Reset All
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="sidebar-left border-1 background-body">
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">

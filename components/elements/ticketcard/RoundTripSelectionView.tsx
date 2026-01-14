@@ -574,8 +574,82 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     }
   };
 
+  const handleResetAllFilters = () => {
+    if (tripPhase === "ONWARD") {
+      setOnwardPriceRange([minOnwardPriceRange, maxOnwardPriceRange]);
+      setOnwardStops("all");
+      setOnwardDepartureTime("all");
+      setOnwardArrivalTime("all");
+      setOnwardSelectedAirlines([]);
+      setOnwardFareIdentifiers([]);
+      setOnwardFlightNumberSearch("");
+      setOnwardSelectedFareTypes([]);
+    } else {
+      setReturnPriceRange([minReturnPriceRange, maxReturnPriceRange]);
+      setReturnStops("all");
+      setReturnDepartureTime("all");
+      setReturnArrivalTime("all");
+      setReturnSelectedAirlines([]);
+      setReturnFareIdentifiers([]);
+      setReturnFlightNumberSearch("");
+      setReturnSelectedFareTypes([]);
+    }
+    setPriceSort("asc");
+  };
+
+  const isFilterApplied = React.useMemo(() => {
+    if (tripPhase === "ONWARD") {
+      return (
+        onwardStops !== "all" ||
+        onwardDepartureTime !== "all" ||
+        onwardArrivalTime !== "all" ||
+        onwardSelectedAirlines.length > 0 ||
+        onwardFareIdentifiers.length > 0 ||
+        onwardFlightNumberSearch !== "" ||
+        onwardSelectedFareTypes.length > 0 ||
+        priceSort !== "asc" ||
+        (onwardPriceRange[0] !== minOnwardPriceRange || onwardPriceRange[1] !== maxOnwardPriceRange)
+      );
+    } else {
+      return (
+        returnStops !== "all" ||
+        returnDepartureTime !== "all" ||
+        returnArrivalTime !== "all" ||
+        returnSelectedAirlines.length > 0 ||
+        returnFareIdentifiers.length > 0 ||
+        returnFlightNumberSearch !== "" ||
+        returnSelectedFareTypes.length > 0 ||
+        priceSort !== "asc" ||
+        (returnPriceRange[0] !== minReturnPriceRange || returnPriceRange[1] !== maxReturnPriceRange)
+      );
+    }
+  }, [
+    tripPhase,
+    onwardStops, onwardDepartureTime, onwardArrivalTime, onwardSelectedAirlines, onwardFareIdentifiers, onwardFlightNumberSearch, onwardSelectedFareTypes, onwardPriceRange, minOnwardPriceRange, maxOnwardPriceRange,
+    returnStops, returnDepartureTime, returnArrivalTime, returnSelectedAirlines, returnFareIdentifiers, returnFlightNumberSearch, returnSelectedFareTypes, returnPriceRange, minReturnPriceRange, maxReturnPriceRange,
+    priceSort
+  ]);
+
   const renderFilters = () => (
     <>
+      {isFilterApplied && (
+        <div className="sidebar-left border-1 background-body mb-10" style={{height:"60px", paddingTop:"15px"}}>
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <div className="d-flex align-items-center justify-content-between">
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                <Button
+                  type="link"
+                  onClick={handleResetAllFilters}
+                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold",  marginBottom:"20px" }}
+                >
+                  Reset All
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="sidebar-left border-1 background-body">
         <div className="box-filters-sidebar">
           <div className="block-filter border-1">
