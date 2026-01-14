@@ -1339,6 +1339,318 @@ export default function BookTicket() {
                         </>
                       );
                     })}
+                    <section
+                      aria-labelledby="applicant-information-title"
+                      className="mt-20"
+                    >
+                      <div className="bg-white shadow sm:rounded-lg relative">
+                        <div className="px-4 py-3 border_xcolor_1px">
+                          <h2
+                            id="applicant-information-title"
+                            className="text-lg leading-6 font-bold text-gray-900"
+                          >
+                            Traveller Details
+                          </h2>
+                        </div>
+                        <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
+                          <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                            <div className="sm:col-span-1">
+                              <dd className="mt-1 text-sm font-medium text-gray-900">
+                                <Avatar
+                                  className="mr-1"
+                                  style={{
+                                    backgroundColor: "rgb(255 201 84)",
+                                  }}
+                                  icon={
+                                    <UserOutlined className="text-black" />
+                                  }
+                                />{" "}
+                                ADULT (12 yrs+)
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-2 pb-4">
+                              <dd className="text-sm text-gray-900">
+                                <ul
+                                  role="list"
+                                  className="border border-gray-200 rounded-md divide-y divide-gray-200 pb-2"
+                                >
+                                  {Array.from({ length: numAdults }).map(
+                                    (_, index) => (
+                                      <div className="p-3" key={index}>
+                                        <span className="text-sm leading-5 font-bold text-gray-900">
+                                          ADULT {index + 1}
+                                        </span>
+                                        <AppFormAdult
+                                          form={form}
+                                          index={index}
+                                          showDocumentField={
+                                            apiData?.conditions?.dc?.ida ===
+                                            true
+                                          }
+                                          fieldData={
+                                            segregateTravellerResultState
+                                              ?.segrigatedTravellerInfo
+                                              ?.ADULT[index]
+                                          }
+                                          disabled={true}
+                                        />
+                                      </div>
+                                    )
+                                  )}
+                                </ul>
+                              </dd>
+                            </div>
+                          </dl>
+
+                          {numChild ? (
+                            <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                              <div className="sm:col-span-1">
+                                <dd className="mt-1 text-sm font-medium text-gray-900">
+                                  <Avatar
+                                    className="mr-1"
+                                    style={{
+                                      backgroundColor: "rgb(254 99 214)",
+                                    }}
+                                    icon={
+                                      <UserOutlined className="text-black" />
+                                    }
+                                  />{" "}
+                                  CHILD (2-12 Yrs){" "}
+                                </dd>
+                              </div>
+
+                              <div className="sm:col-span-2 pb-4">
+                                <dd className="text-sm text-gray-900">
+                                  <ul
+                                    role="list"
+                                    className="border border-gray-200 rounded-md divide-y divide-gray-200"
+                                  >
+                                    {Array.from({ length: numChild }).map(
+                                      (_, index) => (
+                                        <div className="p-3" key={index}>
+                                          <span className="text-sm leading-5 font-bold text-gray-900">
+                                            CHILD {index + 1}
+                                          </span>
+                                          <AppFormChild
+                                            form={form}
+                                            index={index}
+                                            fieldData={
+                                              segregateTravellerResultState
+                                                ?.segrigatedTravellerInfo
+                                                ?.CHILD?.[index]
+                                            }
+                                            disabled={true}
+                                          />
+                                        </div>
+                                      )
+                                    )}
+                                  </ul>
+                                </dd>
+                              </div>
+                            </dl>
+                          ) : null}
+                          {numInfants ? (
+                            <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                              <div className="sm:col-span-1">
+                                <dd className="mt-1 text-sm font-medium text-gray-900">
+                                  <Avatar
+                                    className="mr-1"
+                                    style={{ backgroundColor: "#ebc7ff" }}
+                                    icon={
+                                      <UserOutlined className="text-black" />
+                                    }
+                                  />{" "}
+                                  Infant (15 days - 2 Yrs){" "}
+                                </dd>
+                              </div>
+
+                              <div className="sm:col-span-2 pb-4">
+                                <dd className="text-sm text-gray-900">
+                                  <ul
+                                    role="list"
+                                    className="border border-gray-200 rounded-md divide-y divide-gray-200"
+                                  >
+                                    {Array.from({ length: numInfants }).map(
+                                      (_, index) => (
+                                        <div className="p-3" key={index}>
+                                          <span className="text-sm leading-5 font-bold text-gray-900">
+                                            INFANT {index + 1}
+                                          </span>
+                                          <AppFormInfant
+                                            form={form}
+                                            index={index}
+                                            fieldData={
+                                              segregateTravellerResultState
+                                                ?.segrigatedTravellerInfo
+                                                ?.INFANT?.[index]
+                                            }
+                                            disabled={true}
+                                          />
+                                        </div>
+                                      )
+                                    )}
+                                  </ul>
+                                </dd>
+                              </div>
+                            </dl>
+                          ) : null}
+                        </div>
+
+                        <div className="px-4 py-3 border_xcolor_1px">
+                          <h2
+                            id="applicant-information-title"
+                            className="text-lg leading-6 font-bold text-gray-900"
+                          >
+                            Booking details will be sent to
+                          </h2>
+                          <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            This is where your confirmation will be sent
+                          </p>
+                        </div>
+                        <AppFormCustomer
+                          form={form}
+                          bookingDetailsData={bookingDetailsData}
+                        />
+
+                        <div className="text-lg leading-6 font-bold text-gray-900 p-4">
+                          Add Meal and Baggage
+                          <div>
+                            <div className="px-4 py-3 border_xcolor_1px">
+                              <h2
+                                id="applicant-information-title"
+                                className="text-lg leading-6 font-bold text-gray-900"
+                              >
+                                Baggage
+                              </h2>
+                              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                <ExtraBaggage
+                                  form={form}
+                                  numAdults={numAdults}
+                                  numChild={numChild}
+                                  apiData={apiData}
+                                  storedTravellerInfos={storedTravellerInfos}
+                                  onBaggageChange={handleBaggageChange}
+                                />
+                              </p>
+                            </div>
+
+                            <div className="px-4 py-3 border_xcolor_1px">
+                              <h2
+                                id="applicant-information-title"
+                                className="text-lg leading-6 font-bold text-gray-900"
+                              >
+                                Meal
+                              </h2>
+                              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                <MealInfo
+                                  form={form}
+                                  numAdults={numAdults}
+                                  numChild={numChild}
+                                  numInfants={numInfants}
+                                  apiData={apiData}
+                                  storedTravellerInfos={storedTravellerInfos}
+                                  onMealChange={handleMealChange}
+                                />
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {apiData?.conditions?.isa === true && (
+                          <div className="text-lg leading-6 font-bold text-gray-900 p-4">
+                            Add Seats
+                            <div>
+                              <div className="px-4 py-3 border_xcolor_1px">
+                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                  <SeatBooking
+                                    numAdults={numAdults}
+                                    numChild={numChild}
+                                    apiData={apiData}
+                                  />
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="text-lg leading-6 font-bold text-gray-900 p-4">
+                          GST Number for Business Travel{" "}
+                          {!apiData?.conditions?.gst?.igm && (
+                            <span>(Optional)</span>
+                          )}
+                          <div>
+                            <div className="px-4 py-3 border_xcolor_1px">
+                              <h2
+                                id="applicant-information-title"
+                                className="text-sm leading-6 text-gray-500"
+                              >
+                                To claim credit of GST charged by airlines,
+                                Please enter your company's GST number
+                              </h2>
+                              <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                                <AppFormCompany form={form} manditory={apiData?.conditions?.gst?.igm} />
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="bg-white shadow sm:rounded-lg relative">
+                          <div className="px-4 py-3 border_xcolor_1px flex justify-between">
+
+                            <Link
+                              href={`/rescheduletickets?requestId=${requestId}`}
+                              style={{ borderRadius: "5px" }}
+                              className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
+                            >
+                              Back
+                            </Link>
+
+
+                            <button
+                              onClick={handleNextClick}
+                              disabled={loadingBtn}
+                              style={{ borderRadius: "5px" }}
+                              className={`cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-flex items-center justify-center gap-2 ${loadingBtn
+                                ? "opacity-75 cursor-not-allowed"
+                                : ""
+                                }`}
+                            >
+                              {loadingBtn ? (
+                                <>
+                                  <svg
+                                    className="animate-spin h-5 w-5 text-black"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <circle
+                                      className="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                      className="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                    ></path>
+                                  </svg>
+                                  <span>Loading...</span>
+                                </>
+                              ) : (
+                                "Continue"
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="px-4 py-3 border_xcolor_1px"></div>
+                      </div>
+                      <br />
+                      <br />
+                    </section>
                   </div>
                   <div className="col-lg-4">
                     <div className="booking-form add_sticky">
@@ -1365,7 +1677,7 @@ export default function BookTicket() {
                 </div>
               )}
 
-              {loading ? (
+              {/* {loading ? (
                 <BookingSkeleton />
               ) : (
                 <>
@@ -1383,10 +1695,6 @@ export default function BookTicket() {
                             >
                               Traveller Details
                             </h2>
-                            {/* <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                              Log in to view your saved traveller list, unlock
-                              amazing deals & much more!
-                            </p> */}
                           </div>
                           <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
                             <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
@@ -1609,7 +1917,6 @@ export default function BookTicket() {
                             </div>
                           )}
 
-                          {/* GST Number for  Business Travel (Optional) */}
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
                             GST Number for Business Travel{" "}
                             {!apiData?.conditions?.gst?.igm && (
@@ -1633,12 +1940,7 @@ export default function BookTicket() {
 
                           <div className="bg-white shadow sm:rounded-lg relative">
                             <div className="px-4 py-3 border_xcolor_1px flex justify-between">
-                              {/* <button
-                                className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
-                                style={{ borderRadius: "5px" }}
-                              >
-                                Back
-                              </button> */}
+
                               <Link
                                 href={`/rescheduletickets?requestId=${requestId}`}
                                 style={{ borderRadius: "5px" }}
@@ -1647,13 +1949,7 @@ export default function BookTicket() {
                                 Back
                               </Link>
 
-                              {/* <button
-                                onClick={handleNextClick}
-                                className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 text-black transition inline-block text-center"
-                                style={{ borderRadius: "5px" }}
-                              >
-                                Continue
-                              </button> */}
+
                               <button
                                 onClick={handleNextClick}
                                 disabled={loadingBtn}
@@ -1665,7 +1961,6 @@ export default function BookTicket() {
                               >
                                 {loadingBtn ? (
                                   <>
-                                    {/* Spinner animation */}
                                     <svg
                                       className="animate-spin h-5 w-5 text-black"
                                       xmlns="http://www.w3.org/2000/svg"
@@ -1703,7 +1998,7 @@ export default function BookTicket() {
                     </div>
                   </div>
                 </>
-              )}
+              )} */}
 
               {Object.keys(fareAlert.current).length > 0 &&
                 isFareAlertModalOpen && (

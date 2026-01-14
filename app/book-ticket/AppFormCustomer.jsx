@@ -123,20 +123,40 @@
 
 import { Form, Input, Select, Row, Col } from "antd";
 import { useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const { Option } = Select;
 
 const AppFormCustomer = ({ form, bookingDetailsData }) => {
   useEffect(() => {
-    if (bookingDetailsData) {
-      const { mobileCode, mobileNumber, email } = bookingDetailsData;
+    // if (bookingDetailsData) {
+    //   const { mobileCode, mobileNumber, email } = bookingDetailsData;
 
-      form.setFieldsValue({
-        ["select_code"]: mobileCode,
-        ["mNumber"]: mobileNumber,
-        ["mEmail"]: email,
-      });
+    //   form.setFieldsValue({
+    //     ["select_code"]: mobileCode,
+    //     ["mNumber"]: mobileNumber,
+    //     ["mEmail"]: email,
+    //   });
+    // } else {
+    // Default country code
+    form.setFieldsValue({ ["select_code"]: "+91" });
+
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log("decodeddecodeddecoded ==> ", decoded)
+        if (decoded) {
+          form.setFieldsValue({
+            ["mNumber"]: decoded.phone || decoded.mobile || decoded.mobileNumber || "",
+            ["mEmail"]: decoded.email || decoded.e_mail || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
     }
+    // }
   }, [bookingDetailsData]);
 
   return (
@@ -159,7 +179,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
               { required: true, message: "Country Code should not be empty!" },
             ]}
           >
-            <Select className="h-10" placeholder="Please select Country Code" data-name="select_code">
+            <Select className="h-10" placeholder="Please select Country Code" data-name="select_code" disabled>
               <Option value="+91">India (+91)</Option>
               <Option value="+1">United States (+1)</Option>
               <Option value="+44">United Kingdom (+44)</Option>
@@ -213,6 +233,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
               maxLength={10}
               type="tel"
               onInput={(e) => e.preventDefault()}
+              disabled
             />
           </Form.Item>
         </Col>
@@ -235,6 +256,7 @@ const AppFormCustomer = ({ form, bookingDetailsData }) => {
             <Input
               className="h-10 flex flex-row justify-between items-center"
               placeholder="Enter Email ID"
+              disabled
             />
           </Form.Item>
         </Col>
