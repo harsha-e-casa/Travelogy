@@ -199,7 +199,7 @@ export default function DomesticRoundTripTicketCard({
         <div className="mt-3">
           <Radio.Group onChange={(e) => setValue(e.target.value)} value={value} className="w-full flex flex-col gap-2">
             {ticket.totalPriceList.map((fare: any, idx: number) => (
-              <Radio key={idx} value={idx} className="w-full border p-2 rounded">
+              <Radio key={idx} value={idx} className="w-full border p-2 rounded" onClick={(e) => e.stopPropagation()}>
                 <div className="flex justify-between items-center w-full">
                   <span className="text-sm font-bold">₹{calculateTotalPrice(fare)}</span>
                   <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
@@ -354,7 +354,7 @@ export default function DomesticRoundTripTicketCard({
                       <div style={{ flex: 1 }}>
                         {shareMode ? (
                           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <Radio value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }}>
+                            <Radio value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }} onClick={(e) => e.stopPropagation()}>
                               <div
                                 className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
                              ${"border-gray-300 hover:border-gray-500"}`}
@@ -445,7 +445,7 @@ export default function DomesticRoundTripTicketCard({
                             />
                           </div>
                         ) : (
-                          <Radio value={i} className="w-full radiocomp">
+                          <Radio value={i} className="w-full radiocomp" onClick={(e) => e.stopPropagation()}>
                             <div
                               className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
                            ${"border-gray-300 hover:border-gray-500"}`}

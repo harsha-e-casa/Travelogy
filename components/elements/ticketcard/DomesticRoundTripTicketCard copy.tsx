@@ -181,7 +181,7 @@ export default function DomesticRoundTripTicketCard({
                 : ticket.totalPriceList.slice(0, 2)
               ).map((e: any, i: number) => {
                 return (
-                  <Radio key={i} value={i} className="w-full radiocomp">
+                  <Radio key={i} value={i} className="w-full radiocomp" onClick={(e) => e.stopPropagation()}>
                     <div
                       className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
                            ${"border-gray-300 hover:border-gray-500"}`}

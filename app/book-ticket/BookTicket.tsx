@@ -240,6 +240,9 @@ export default function BookTicket() {
         }
 
         localStorage.setItem("apiData", JSON.stringify(data));
+        if (data.bookingId) {
+          localStorage.setItem(`bookingData_${data.bookingId}`, JSON.stringify(data));
+        }
         if (data?.tripInfos?.[0]?.sI?.[0]?.dt) {
           setFirstTravellDate(
             (data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]
@@ -1099,7 +1102,7 @@ export default function BookTicket() {
         // alert('Validation success!');
         // Proceed with form submission or further actions
         // setLoadingBtn(false);
-        router.push(`/reviewpage?tcs_id=${tcs_id}`);
+        router.push(`/reviewpage?tcs_id=${tcs_id}&booking_id=${bookingId}`);
       })
       .catch((errorInfo) => {
         if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
@@ -1737,10 +1740,10 @@ export default function BookTicket() {
                             >
                               Traveller Details
                             </h2>
-                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            {/* <p className="mt-1 max-w-2xl text-sm text-gray-500">
                               Log in to view your saved traveller list, unlock
                               amazing deals & much more!
-                            </p>
+                            </p> */}
                           </div>
                           <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
                             <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">

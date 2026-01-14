@@ -1383,10 +1383,10 @@ export default function BookTicket() {
                             >
                               Traveller Details
                             </h2>
-                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            {/* <p className="mt-1 max-w-2xl text-sm text-gray-500">
                               Log in to view your saved traveller list, unlock
                               amazing deals & much more!
-                            </p>
+                            </p> */}
                           </div>
                           <div className="border-t border-gray-200 px-4 py-4 sm:px-6 border_xcolor_1px">
                             <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">

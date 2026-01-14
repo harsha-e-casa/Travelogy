@@ -32,6 +32,7 @@ const ReviewPage = () => {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
   const payment = searchParams.get("payment");
+  const urlBookingId = searchParams.get("booking_id");
   const token =
     typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
@@ -120,12 +121,19 @@ const ReviewPage = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedApiData = localStorage.getItem("apiData");
+      let storedApiData = null;
+      if (urlBookingId) {
+        storedApiData = localStorage.getItem(`bookingData_${urlBookingId}`);
+      }
+      if (!storedApiData) {
+        storedApiData = localStorage.getItem("apiData");
+      }
+
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
       }
     }
-  }, []);
+  }, [urlBookingId]);
 
   useEffect(() => {
     const data = getCookie("travellerInfo");

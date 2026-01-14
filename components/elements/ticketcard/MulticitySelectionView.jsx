@@ -97,6 +97,20 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
   const handleEmailSend = async (emails, withPrice) => {
     setShareLoading(true);
     try {
+      const classLabels = {
+        a: "PREMIUM_ECONOMY",
+        b: "ECONOMY",
+        c: "BUSINESS",
+        d: "FIRST",
+      };
+
+      const passengerInfo = {
+        adult: Cookies.get("gy_adult"),
+        child: Cookies.get("gy_child"),
+        infant: Cookies.get("gy_infant"),
+        class: classLabels[Cookies.get("gy_class") || "b"]
+      };
+
       const payload = {
         emails,
         withPrice,
@@ -112,6 +126,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
           };
         }),
         tripType: "Multi-City", // Explicitly set trip type
+        passengerInfo
       };
 
       await postData("travelogy/flight/send-quote", payload);
