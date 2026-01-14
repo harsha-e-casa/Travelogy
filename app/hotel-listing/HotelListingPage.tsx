@@ -878,7 +878,7 @@ export default function HotelListing() {
         <main className="main">
           <div 
             className="h-24 w-full sticky bg_cs_search search_header_list_lg"
-            style={{ position: 'sticky', top: '70px', zIndex: 9999999 }}
+            style={{ position: 'sticky', top: '70px', zIndex: 999 }}
           >
             <div className="hdt_header">
               <div
@@ -1040,7 +1040,7 @@ export default function HotelListing() {
           </div>
           <div
             className="sticky search_header_list h-16 flex items-center px-4 cursor-pointer"
-            style={{ position: 'sticky', top: '70px', zIndex: 9999999 }}
+            style={{ position: 'sticky', top: '70px', zIndex: 999 }}
             onClick={() => setOpenSearchModal(true)}
           >
             <div className="text-sm search_header_list_truncate w-full flex flex-col items-center justify-center text-center">
