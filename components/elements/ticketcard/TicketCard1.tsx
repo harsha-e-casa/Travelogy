@@ -19,6 +19,7 @@ export default function TicketCard1({
   selectedQuoteFlights = [],
   selectedFareTypes = [], // New prop for strict filtering
   selectedFareIdentifiers = [], // New prop for strict filtering
+  allTicketMarkups = {}, // New prop for specific markups
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [showAllFares, setShowAllFares] = useState(false);
@@ -73,6 +74,11 @@ export default function TicketCard1({
 
   const onChange = (e: RadioChangeEvent) => {
     setValue(e.target.value);
+  };
+
+  // Calculate markup for the currently selected fare index for the Book Now link
+  const getSelectedMarkup = () => {
+    return allTicketMarkups[`${ticket.id}_${value}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
   };
 
   return (
@@ -270,6 +276,7 @@ export default function TicketCard1({
                   return true;
                 })
                 .map((e: any, i: number) => {
+                  const currentFareMarkup = allTicketMarkups[`${ticket.id}_${i}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
                   return (
                     <>
                       <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
@@ -315,7 +322,7 @@ export default function TicketCard1({
                                         }
 
                                         return new Intl.NumberFormat("en-IN").format(
-                                          adultCost + childCost + infantCost + (Number(markup) || 0)
+                                          adultCost + childCost + infantCost + (Number(currentFareMarkup) || 0)
                                         );
                                       })()}
                                     </div>
@@ -406,7 +413,7 @@ export default function TicketCard1({
                                       }
 
                                       return new Intl.NumberFormat("en-IN").format(
-                                        adultCost + childCost + infantCost + (Number(markup) || 0)
+                                        adultCost + childCost + infantCost + (Number(currentFareMarkup) || 0)
                                       );
                                     })()}
                                   </div>
@@ -479,7 +486,7 @@ export default function TicketCard1({
             )}
             {!reschedule && (
               <Link
-                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}&markup=${markup || 0}`}
+                href={`book-ticket?tcs_id=${ticket.totalPriceList[value]?.id}&markup=${getSelectedMarkup()}`}
                 // className="btn btn-gray booknow btn"
                 className="btn-book-now"
               >

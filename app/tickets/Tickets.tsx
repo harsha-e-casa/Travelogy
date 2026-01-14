@@ -186,11 +186,13 @@ export default function Tickets() {
         withPrice,
         flights: selectedQuoteFlights.map(item => {
           const fareOption = item.ticket.totalPriceList[item.fareIndex];
+          const specificMarkup = ticketMarkups[`${item.ticket.id}_${item.fareIndex}`];
+          const itemMarkup = specificMarkup ?? ticketMarkups[item.ticket.id] ?? markup;
           return {
             ticket: item.ticket,
             fare: fareOption,
             fareIndex: item.fareIndex,
-            markup: ticketMarkups[item.ticket.id] ?? markup
+            markup: itemMarkup
           };
         }),
         tripType: srx_tripType,
@@ -248,8 +250,10 @@ export default function Tickets() {
       return;
     }
     if (currentTicketId) {
-      setTicketMarkups((prev) => ({ ...prev, [currentTicketId]: newMarkup }));
-      message.success("Markup applied to this ticket.");
+      // Use composite key for specific fare markup
+      const key = `${currentTicketId}_${selectedFareIndex}`;
+      setTicketMarkups((prev) => ({ ...prev, [key]: newMarkup }));
+      message.success("Markup applied to this fare.");
     }
     setIsMarkupModalOpen(false);
   };
@@ -291,7 +295,7 @@ export default function Tickets() {
         ...previousTickets.map(pt => ({
           ticket: pt.ticket,
           fareIndex: pt.selectedPriceIndex,
-          markup: ticketMarkups[pt.ticket.id] ?? (isNaN(shareMarkup) ? 0 : shareMarkup)
+          markup: ticketMarkups[`${pt.ticket.id}_${pt.selectedPriceIndex}`] ?? ticketMarkups[pt.ticket.id] ?? (isNaN(shareMarkup) ? 0 : shareMarkup)
         })),
         {
           ticket: currentTicket,
@@ -521,7 +525,7 @@ export default function Tickets() {
   const renderFilters = () => (
     <>
       {isFilterApplied && (
-        <div className="sidebar-left border-1 background-body mb-10" style={{height:"60px", paddingTop:"15px"}}>
+        <div className="sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">
               <div className="d-flex align-items-center justify-content-between">
@@ -529,7 +533,7 @@ export default function Tickets() {
                 <Button
                   type="link"
                   onClick={handleResetAllFilters}
-                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom:"20px" }}
+                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
                 >
                   Reset All
                 </Button>
@@ -3375,6 +3379,7 @@ export default function Tickets() {
                                               ticket={{ ...ticket, id: ticketId }}
                                               flightData={flightData}
                                               markup={currentMarkup}
+                                              allTicketMarkups={ticketMarkups}
                                               onPriceClick={openMarkupModal}
                                               shareMode={shareMode}
                                               selectedQuoteFlights={selectedQuoteFlights}
@@ -3387,6 +3392,7 @@ export default function Tickets() {
                                               ticket={{ ...ticket, id: ticketId }}
                                               flightData={flightData}
                                               markup={currentMarkup}
+                                              allTicketMarkups={ticketMarkups}
                                               onPriceClick={openMarkupModal}
                                               shareMode={shareMode}
                                               selectedQuoteFlights={selectedQuoteFlights}
@@ -3835,7 +3841,7 @@ export default function Tickets() {
           title="Set Markup Amount"
           open={isMarkupModalOpen}
           onCancel={() => setIsMarkupModalOpen(false)}
-          style={{top:"230px"}}
+          style={{ top: "230px" }}
           footer={[
             <Button key="cancel" onClick={() => setIsMarkupModalOpen(false)}>
               Cancel

@@ -125,9 +125,9 @@ const ReviewPage = () => {
       if (urlBookingId) {
         storedApiData = localStorage.getItem(`bookingData_${urlBookingId}`);
       }
-      if (!storedApiData) {
-        storedApiData = localStorage.getItem("apiData");
-      }
+      // if (!storedApiData) {
+      //   storedApiData = localStorage.getItem("apiData");
+      // }
 
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));

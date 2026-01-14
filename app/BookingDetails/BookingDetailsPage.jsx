@@ -199,6 +199,10 @@ const BookingDetailsPage = () => {
   useEffect(() => {
     if (bookingId) {
       bookingDetailsapi(bookingId);
+      if (typeof window !== "undefined") {
+        localStorage.removeItem(`bookingData_${bookingId}`);
+        localStorage.removeItem(`bookingData_${bookingId}_timestamp`);
+      }
     } else {
       setError("No valid booking id found in the URL.");
     }
