@@ -90,7 +90,7 @@ const ReissueReviewPage = () => {
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
-  const [showMore, setShowMore] = useState(false);
+  const [showMore, setShowMore] = useState(true);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
   const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
   const SeatAmount = Number(getCookie("seatSsr_amount") || 0);
@@ -642,7 +642,10 @@ const ReissueReviewPage = () => {
                               </>
                             );
                           }
-                          return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                          if (cItem?.amount || cItem?.additionalFee) {
+                            return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                          }
+                          return null;
                         })()}
                       </div>
                     </div>
@@ -660,7 +663,10 @@ const ReissueReviewPage = () => {
                           </>
                         );
                       }
-                      return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                      if (cItem?.amount || cItem?.additionalFee) {
+                        return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                      }
+                      return null;
                     })()}{" "}
                   </div>
                 )}
@@ -736,13 +742,16 @@ const ReissueReviewPage = () => {
                                   </>
                                 );
                               }
-                              return (
-                                <>
-                                  ₹
-                                  {dateChange?.amount ||
-                                    dateChange?.additionalFee}
-                                </>
-                              );
+                              if (dateChange?.amount || dateChange?.additionalFee) {
+                                return (
+                                  <>
+                                    ₹
+                                    {dateChange?.amount ||
+                                      dateChange?.additionalFee}
+                                  </>
+                                );
+                              }
+                              return null;
                             })()}
                           </div>
                         </>
@@ -761,11 +770,14 @@ const ReissueReviewPage = () => {
                             </>
                           );
                         }
-                        return (
-                          <>
-                            ₹{dateChange?.amount || dateChange?.additionalFee}
-                          </>
-                        );
+                        if (dateChange?.amount || dateChange?.additionalFee) {
+                          return (
+                            <>
+                              ₹{dateChange?.amount || dateChange?.additionalFee}
+                            </>
+                          );
+                        }
+                        return null;
                       })()}
                     </p>
                   );
@@ -895,9 +907,12 @@ const ReissueReviewPage = () => {
                         </>
                       );
                     }
-                    return (
-                      <>₹{seatItem?.amount || seatItem?.additionalFee}</>
-                    );
+                    if (seatItem?.amount || seatItem?.additionalFee) {
+                      return (
+                        <>₹{seatItem?.amount || seatItem?.additionalFee}</>
+                      );
+                    }
+                    return null;
                   })()}
                 </p>
               </div>
@@ -1937,7 +1952,7 @@ const ReissueReviewPage = () => {
                                   </div>
                                 )}
 
-                                <div className="pl-30 ">
+                                <div className="pl-30 hidden">
                                   <Stack>
                                     <Button
                                       variant="contained"

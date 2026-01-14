@@ -98,7 +98,7 @@ const ReviewPage = () => {
   const [email, setEmail] = useState(null);
   const [number, setNumber] = useState(null);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
-  const [showMore, setShowMore] = useState(false);
+  const [showMore, setShowMore] = useState(true);
   const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
   const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
   const SeatAmount = Number(getCookie("seatSsr_amount") || 0);
@@ -649,7 +649,10 @@ const ReviewPage = () => {
                               </>
                             );
                           }
-                          return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                          if (cItem?.amount || cItem?.additionalFee) {
+                            return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                          }
+                          return null;
                         })()}
                       </div>
                     </div>
@@ -667,7 +670,10 @@ const ReviewPage = () => {
                           </>
                         );
                       }
-                      return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                      if (cItem?.amount || cItem?.additionalFee) {
+                        return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                      }
+                      return null;
                     })()}{" "}
                   </div>
                 )}
@@ -743,13 +749,16 @@ const ReviewPage = () => {
                                   </>
                                 );
                               }
-                              return (
-                                <>
-                                  ₹
-                                  {dateChange?.amount ||
-                                    dateChange?.additionalFee}
-                                </>
-                              );
+                              if (dateChange?.amount || dateChange?.additionalFee) {
+                                return (
+                                  <>
+                                    ₹
+                                    {dateChange?.amount ||
+                                      dateChange?.additionalFee}
+                                  </>
+                                );
+                              }
+                              return null;
                             })()}
                           </div>
                         </>
@@ -768,11 +777,14 @@ const ReviewPage = () => {
                             </>
                           );
                         }
-                        return (
-                          <>
-                            ₹{dateChange?.amount || dateChange?.additionalFee}
-                          </>
-                        );
+                        if (dateChange?.amount || dateChange?.additionalFee) {
+                          return (
+                            <>
+                              ₹{dateChange?.amount || dateChange?.additionalFee}
+                            </>
+                          );
+                        }
+                        return null;
                       })()}
                     </p>
                   );
@@ -907,9 +919,12 @@ const ReviewPage = () => {
                       </>
                     );
                   }
-                  return (
-                    <>₹{seatItem?.amount || seatItem?.additionalFee}</>
-                  );
+                  if (seatItem?.amount || seatItem?.additionalFee) {
+                    return (
+                      <>₹{seatItem?.amount || seatItem?.additionalFee}</>
+                    );
+                  }
+                  return null;
                 })()}
               </div>
             </div>
@@ -1762,7 +1777,7 @@ const ReviewPage = () => {
                                   </div>
                                 )}
 
-                                <div className="pl-30 ">
+                                <div className="pl-30 hidden">
                                   <Stack>
                                     <Button
                                       variant="contained"
@@ -1778,8 +1793,7 @@ const ReviewPage = () => {
                               </div>
 
                               {/* Cancellation Charges */}
-                              <div className="py-5 ">
-                                {/* Refund boxes */}
+                              {/* <div className="py-5 ">
                                 <div className="flex flex-row justify-around pr-4 mt-5 flex-wrap gap-y-5">
                                   <div className=" gap-5 justify-center">
                                     <div className="text-center pl-6">
@@ -1790,10 +1804,8 @@ const ReviewPage = () => {
                                   </div>
                                 </div>
 
-                                {/* Timeline */}
                                 <div className="space-y-3 mt-3 pl-20 pr-30">
                                   <div className="relative flex items-center pl-5 justify-center">
-                                    {/* Left Icon */}
                                     <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
                                       <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
                                         <svg
@@ -1807,7 +1819,6 @@ const ReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    {/* Right Icon */}
                                     <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
                                       <div
                                         className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white"
@@ -1824,10 +1835,8 @@ const ReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    {/* Horizontal Gradient Line */}
                                     <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
 
-                                    {/* Vertical Dotted Line at Center */}
                                     <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
                                   </div>
                                 </div>
@@ -1877,7 +1886,7 @@ const ReviewPage = () => {
                                     </p>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
 
                               {showMore && (
                                 <div
