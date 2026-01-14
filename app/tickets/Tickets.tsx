@@ -3833,6 +3833,7 @@ export default function Tickets() {
           title="Set Markup Amount"
           open={isMarkupModalOpen}
           onCancel={() => setIsMarkupModalOpen(false)}
+          style={{top:"230px"}}
           footer={[
             <Button key="cancel" onClick={() => setIsMarkupModalOpen(false)}>
               Cancel
