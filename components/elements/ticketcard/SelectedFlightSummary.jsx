@@ -84,6 +84,7 @@ export default function SelectedFlightSummary({
           open={showDetails}
           height="70vh"
           className="mobile-flight-details-drawer"
+          zIndex={10000001}
           styles={{
             body: { padding: '16px', maxHeight: 'calc(70vh - 55px)', overflowY: 'auto' },
             header: { padding: '12px 16px', borderBottom: '1px solid #f0f0f0' }
