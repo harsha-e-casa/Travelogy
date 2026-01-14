@@ -18538,6 +18538,7 @@ h2 span {
   background: white;
   height: auto;
   position: absolute;
+  z-index: 10000005;
   /*  box-shadow: 0 1px 6px 0 rgb(0 0 0 / 20%);*/
   /*  top: 0px;*/
   /* bottom: 0px; */
@@ -20505,7 +20506,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 .search_header_list_lg .hdt_header .hdt_search-btn {
   padding: 5px 16px;
-  margin-top: 25px;
+  margin-top: 3px;
 }
 /* Wallet Header */
 .wallet-header {

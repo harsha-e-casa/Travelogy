@@ -4,7 +4,7 @@ export default function WhyChooseUs1() {
     return (
         <>
 
-            <section className="section-box box-why-choose-us background-body">
+            <section className="section-box box-why-choose-us background-body correct-row">
                 <div className="container">
                     <div className="row align-items-center">
                         <div className="col-lg-6 mb-40">

@@ -87,7 +87,7 @@ export default function HomeDashboard() {
                             Experience the difference with our premium travel services
                         </p>
                     </div>
-                    <div className="row">
+                    <div className="row correct-row">
                         <div className="col-lg-4 col-md-6 mb-30">
                             <div className="card-feature text-center background-card">
                                 <div className="card-image">

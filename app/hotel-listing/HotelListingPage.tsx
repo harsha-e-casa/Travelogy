@@ -876,10 +876,13 @@ export default function HotelListing() {
     >
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          <div className="h-24 w-full z-20 sticky top-0 bg_cs_search search_header_list_lg">
+          <div 
+            className="h-24 w-full sticky bg_cs_search search_header_list_lg"
+            style={{ position: 'sticky', top: '70px', zIndex: 9999999 }}
+          >
             <div className="hdt_header">
               <div
-                className="hdt_header-item"
+                className="hdt_header-item relative"
                 onClick={(e) => e.stopPropagation()}
               >
                 <label>Location</label>
@@ -892,7 +895,7 @@ export default function HotelListing() {
                   <div
                     // className="searchFfromSelect searchFfromSelect_1 appListDropdownCompact"
                     className="left-auto searchFfromSelect searchFromSelect"
-
+                    style={{ zIndex: 10000002 }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <CityListSearch
@@ -905,7 +908,7 @@ export default function HotelListing() {
                 )}
               </div>
               <div
-                className="hdt_header-item"
+                className="hdt_header-item relative"
                 onClick={(e) => e.stopPropagation()}
               >
                 <label>Check-in</label>
@@ -919,7 +922,7 @@ export default function HotelListing() {
                 )}
 
                 {openCheckin && (
-                  <div onClick={(e) => e.stopPropagation()}>
+                  <div onClick={(e) => e.stopPropagation()} style={{ zIndex: 10000002, position: 'relative' }}>
                     <AppDateRange
                       minDate={dayjs() || null}
                       openToDateRange={() => setOpenCheckin(false)}
@@ -930,7 +933,7 @@ export default function HotelListing() {
                 )}
               </div>
               <div
-                className="hdt_header-item"
+                className="hdt_header-item relative"
                 onClick={(e) => e.stopPropagation()}
               >
                 <label>Check-out</label>
@@ -941,7 +944,7 @@ export default function HotelListing() {
                   {checkoutDate}
                 </button>
                 {openCheckout && (
-                  <div onClick={(e) => e.stopPropagation()}>
+                  <div onClick={(e) => e.stopPropagation()} style={{ zIndex: 10000002, position: 'relative' }}>
                     <AppDateRange
                       minDate={
                         checkinDate
@@ -977,7 +980,7 @@ export default function HotelListing() {
               </div>
 
               <div
-                className="hdt_header-item"
+                className="hdt_header-item relative"
                 onClick={(e) => e.stopPropagation()}
               >
                 <label className="">Rooms & Guest</label>
@@ -1001,7 +1004,7 @@ export default function HotelListing() {
                   </button>
                 </div>
                 {showTraveller && (
-                  <div onClick={(e) => e.stopPropagation()}>
+                  <div onClick={(e) => e.stopPropagation()} style={{ zIndex: 10000002, position: 'relative' }}>
                     {" "}
                     <AppTravellerHotel
                       roomsData={roomsData}
@@ -1014,23 +1017,30 @@ export default function HotelListing() {
                 )}
               </div>
               {!loading && (
-                <button className="hdt_search-btn" onClick={handleSearch}>
-                  Search
-                </button>
+                <div className="hdt_header-item">
+                  <label style={{ visibility: "hidden" }}>Search</label>
+                  <button className="hdt_search-btn" onClick={handleSearch}>
+                    Search
+                  </button>
+                </div>
               )}
 
               {loading && (
-                <button
-                  className="hdt_search-btn opacity-70 cursor-not-allowed"
-                  disabled
-                >
-                  Searching...
-                </button>
+                <div className="hdt_header-item">
+                  <label style={{ visibility: "hidden" }}>Search</label>
+                  <button
+                    className="hdt_search-btn opacity-70 cursor-not-allowed"
+                    disabled
+                  >
+                    Searching...
+                  </button>
+                </div>
               )}
             </div>
           </div>
           <div
-            className="sticky top-0 z-20 search_header_list h-16 flex items-center px-4 cursor-pointer"
+            className="sticky search_header_list h-16 flex items-center px-4 cursor-pointer"
+            style={{ position: 'sticky', top: '70px', zIndex: 9999999 }}
             onClick={() => setOpenSearchModal(true)}
           >
             <div className="text-sm search_header_list_truncate w-full flex flex-col items-center justify-center text-center">
@@ -1598,24 +1608,30 @@ export default function HotelListing() {
                       )}
                     </div>
                     {!loading && (
-                      <button
-                        className="hdt_search-btn"
-                        onClick={() => {
-                          handleSearch();
-                          setOpenSearchModal(false);
-                        }}
-                      >
-                        Search
-                      </button>
+                      <div className="hdt_header-item">
+                        <label style={{ visibility: "hidden" }}>Search</label>
+                        <button
+                          className="hdt_search-btn"
+                          onClick={() => {
+                            handleSearch();
+                            setOpenSearchModal(false);
+                          }}
+                        >
+                          Search
+                        </button>
+                      </div>
                     )}
 
                     {loading && (
-                      <button
-                        className="hdt_search-btn opacity-70 cursor-not-allowed"
-                        disabled
-                      >
-                        Searching...
-                      </button>
+                      <div className="hdt_header-item">
+                        <label style={{ visibility: "hidden" }}>Search</label>
+                        <button
+                          className="hdt_search-btn opacity-70 cursor-not-allowed"
+                          disabled
+                        >
+                          Searching...
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
