@@ -595,7 +595,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
   };
 
   return (
-    <div className="check-avail-modal-content p-2 bg-white bx_shadow_dr1 z-10 max-h-full overflow-y-auto overflow-x-hidden">
+    <div className="check-avail-modal-content p-2 bg-white bx_shadow_dr1 z-10 max-h-full overflow-y-auto overflow-x-hidden absolute right-4 w-400 tab_view_hdr">
       {Array.isArray(rooms) &&
         rooms.map((room, roomIndex) => (
           <div key={roomIndex} className="border px-2 mb-2 rounded-lg relative">
@@ -671,6 +671,7 @@ export const AppTravellerHotel = ({ roomsData, onClose }) => {
                     onChange={(value) =>
                       updateChildAge(roomIndex, childIndex, value)
                     }
+                    dropdownStyle={{ zIndex: 10000020 }}
                     style={{ width: 60, marginBottom: 8, padding: 3 }}
                     options={ageOptions}
                     placeholder="Select Age"
