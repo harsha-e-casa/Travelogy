@@ -18,6 +18,7 @@ export default function DomesticRoundTripTicketCard({
   onQuoteSelectionChange,
   selectedFareTypes = [], // New prop
   selectedFareIdentifiers = [], // New prop
+  allTicketMarkups = {}, // New prop for specific markups
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const { getCookie } = useContext(AppContext);
@@ -91,13 +92,19 @@ export default function DomesticRoundTripTicketCard({
   }, []);
 
   // Calculate fare price
-  const calculateTotalPrice = (fare: any) => {
+  const calculateTotalPrice = (fare: any, specificMarkup?: number) => {
     let total = 0;
     if (fare?.fd?.ADULT) total += adultCount * fare.fd.ADULT.fC.NF;
     if (fare?.fd?.CHILD) total += childCount * fare.fd.CHILD.fC.NF;
     if (fare?.fd?.INFANT) total += infantCount * fare.fd.INFANT.fC.NF;
-    total += (Number(markup) || 0);
+
+    // Use specific markup if provided, otherwise fallback to global/default
+    total += (Number(specificMarkup !== undefined ? specificMarkup : markup) || 0);
     return new Intl.NumberFormat("en-IN").format(total);
+  };
+
+  const getSelectedMarkup = () => {
+    return allTicketMarkups[`${ticket.id}_${value}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
   };
 
   // Mobile View UI layout
@@ -162,13 +169,13 @@ export default function DomesticRoundTripTicketCard({
 
       <div className="mobile-card-footer">
         <div className="mobile-price-section" onClick={() => onPriceClick && onPriceClick(ticket.id, markup, ticket, value)}>
-          <span className="mobile-price">₹{calculateTotalPrice(ticket.totalPriceList[value])}</span>
+          <span className="mobile-price">₹{calculateTotalPrice(ticket.totalPriceList[value], getSelectedMarkup())}</span>
           <span className="mobile-fare-type">{ticket.totalPriceList[value].fareIdentifier}</span>
         </div>
         {tripPhase === "ONWARD" ? (
           <button
             className="mobile-book-btn"
-            onClick={() => handleTicketSelected(ticket, value, markup)}
+            onClick={() => handleTicketSelected(ticket, value, getSelectedMarkup())}
           >
             Select
           </button>
@@ -178,7 +185,7 @@ export default function DomesticRoundTripTicketCard({
               href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
                 selectedOnwardTicket.selectedPriceIndex
               ]?.id
-                },${ticket.totalPriceList[value]?.id}&markup=${(Number(selectedOnwardTicket.markup) || 0) + (Number(markup) || 0)}`}
+                },${ticket.totalPriceList[value]?.id}&markup=${(Number(selectedOnwardTicket.markup) || 0) + (Number(getSelectedMarkup()) || 0)}`}
               className="mobile-book-btn"
             >
               Book Now
@@ -199,14 +206,17 @@ export default function DomesticRoundTripTicketCard({
       {showAllFares && (
         <div className="mt-3">
           <Radio.Group onChange={(e) => setValue(e.target.value)} value={value} className="w-full flex flex-col gap-2">
-            {ticket.totalPriceList.map((fare: any, idx: number) => (
-              <Radio key={idx} value={idx} className="w-full border p-2 rounded" onClick={(e) => e.stopPropagation()}>
-                <div className="flex justify-between items-center w-full">
-                  <span className="text-sm font-bold">₹{calculateTotalPrice(fare)}</span>
-                  <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
-                </div>
-              </Radio>
-            ))}
+            {ticket.totalPriceList.map((fare: any, idx: number) => {
+              const currentFareMarkup = allTicketMarkups[`${ticket.id}_${idx}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
+              return (
+                <Radio key={idx} value={idx} className="w-full border p-2 rounded" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex justify-between items-center w-full">
+                    <span className="text-sm font-bold">₹{calculateTotalPrice(fare, currentFareMarkup)}</span>
+                    <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
+                  </div>
+                </Radio>
+              )
+            })}
           </Radio.Group>
         </div>
       )}
@@ -356,6 +366,7 @@ export default function DomesticRoundTripTicketCard({
                   return true;
                 })
                 .map((e: any, i: number) => {
+                  const currentFareMarkup = allTicketMarkups[`${ticket.id}_${i}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
                   return (
                     <div key={i} style={{ display: "flex", width: "100%", alignItems: "center" }}>
                       <div style={{ flex: 1 }}>
@@ -369,40 +380,7 @@ export default function DomesticRoundTripTicketCard({
                                 <div className="flex flex-row gap-2 items-center">
                                   <div className="text-lg font-bold text-gray-800 price">
                                     ₹
-                                    {(() => {
-                                      let adultCost = 0;
-                                      let childCost = 0;
-                                      let infantCost = 0;
-                                      if (e?.fd?.ADULT) {
-                                        if (
-                                          getCookie("gy_adult") !== undefined &&
-                                          getCookie("gy_adult") !== "Nan"
-                                        ) {
-                                          adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
-                                        }
-                                      }
-                                      if (e?.fd?.CHILD) {
-                                        if (
-                                          getCookie("gy_child") !== undefined &&
-                                          getCookie("gy_child") !== "Nan"
-                                        ) {
-                                          childCost = childCount * e?.fd?.CHILD?.fC?.NF;
-                                        }
-                                      }
-                                      if (e?.fd?.INFANT) {
-                                        if (
-                                          getCookie("gy_infant") !== undefined &&
-                                          getCookie("gy_infant") !== "Nan"
-                                        ) {
-                                          infantCost =
-                                            infantCount * e?.fd?.INFANT?.fC?.NF;
-                                        }
-                                      }
-
-                                      return new Intl.NumberFormat("en-IN").format(
-                                        adultCost + childCost + infantCost + (Number(markup) || 0)
-                                      );
-                                    })()}
+                                    {calculateTotalPrice(e, currentFareMarkup)}
                                   </div>
                                   <span
                                     className=" fareidentifier  text-xs font-bold"
@@ -460,40 +438,7 @@ export default function DomesticRoundTripTicketCard({
                               <div className="flex flex-row gap-2 items-center">
                                 <div className="text-lg font-bold text-gray-800 price">
                                   ₹
-                                  {(() => {
-                                    let adultCost = 0;
-                                    let childCost = 0;
-                                    let infantCost = 0;
-                                    if (e?.fd?.ADULT) {
-                                      if (
-                                        getCookie("gy_adult") !== undefined &&
-                                        getCookie("gy_adult") !== "Nan"
-                                      ) {
-                                        adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
-                                      }
-                                    }
-                                    if (e?.fd?.CHILD) {
-                                      if (
-                                        getCookie("gy_child") !== undefined &&
-                                        getCookie("gy_child") !== "Nan"
-                                      ) {
-                                        childCost = childCount * e?.fd?.CHILD?.fC?.NF;
-                                      }
-                                    }
-                                    if (e?.fd?.INFANT) {
-                                      if (
-                                        getCookie("gy_infant") !== undefined &&
-                                        getCookie("gy_infant") !== "Nan"
-                                      ) {
-                                        infantCost =
-                                          infantCount * e?.fd?.INFANT?.fC?.NF;
-                                      }
-                                    }
-
-                                    return new Intl.NumberFormat("en-IN").format(
-                                      adultCost + childCost + infantCost + (Number(markup) || 0)
-                                    );
-                                  })()}
+                                  {calculateTotalPrice(e, currentFareMarkup)}
                                 </div>
                                 <span
                                   className=" fareidentifier  text-xs font-bold"
@@ -552,7 +497,7 @@ export default function DomesticRoundTripTicketCard({
               {tripPhase === "ONWARD" ? (
                 <button
                   className="btn-book-now"
-                  onClick={() => handleTicketSelected(ticket, value, markup)}
+                  onClick={() => handleTicketSelected(ticket, value, getSelectedMarkup())}
                 >
                   Select
                 </button>
@@ -562,7 +507,7 @@ export default function DomesticRoundTripTicketCard({
                     href={`book-ticket?tcs_id=${selectedOnwardTicket.ticket.totalPriceList[
                       selectedOnwardTicket.selectedPriceIndex
                     ]?.id
-                      },${ticket.totalPriceList[value]?.id}&markup=${(Number(selectedOnwardTicket.markup) || 0) + (Number(markup) || 0)}`}
+                      },${ticket.totalPriceList[value]?.id}&markup=${(Number(selectedOnwardTicket.markup) || 0) + (Number(getSelectedMarkup()) || 0)}`}
                     className="btn-book-now"
                   >
                     Book Now

@@ -43,6 +43,7 @@ import {
   Form,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
 } from "antd";
@@ -74,6 +75,8 @@ export default function BookTicket() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [hasExistingData, setHasExistingData] = useState(false);
 
   useEffect(() => {
     const tokenValid = checkTokenExpiry();
@@ -85,6 +88,66 @@ export default function BookTicket() {
       setLoading(false);
     }
   }, [router]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const EXPIRATION_TIME = 20 * 60 * 1000; // 20 minutes
+      const now = Date.now();
+      const existingKeys: string[] = [];
+      let foundExisting = false;
+
+      // Check for expired data
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("bookingData_") && !key.endsWith("_timestamp")) {
+          const timestampKey = `${key}_timestamp`;
+          const timestamp = localStorage.getItem(timestampKey);
+          if (timestamp) {
+            if (now - parseInt(timestamp, 10) > EXPIRATION_TIME) {
+              localStorage.removeItem(key);
+              localStorage.removeItem(timestampKey);
+            } else {
+              if (!foundExisting) {
+                foundExisting = true;
+              }
+              existingKeys.push(key);
+            }
+          } else {
+            // If no timestamp, still consider it existing/pending
+            if (!foundExisting) {
+              foundExisting = true;
+            }
+            existingKeys.push(key);
+          }
+        }
+      });
+
+      // Also check apiData key if it exists and treat it similarly?
+      // User script specifically mentioned booking_id_apiData.
+      // But standard apiData key is also used.
+      // If ANY booking data exists, show popup.
+
+      if (existingKeys.length > 0) {
+        setHasExistingData(true);
+        // Clear the specific conflicting booking keys
+        existingKeys.forEach((key) => {
+          localStorage.removeItem(key);
+          localStorage.removeItem(`${key}_timestamp`);
+        });
+
+        Modal.warning({
+          title: "Booking in Progress",
+          content: "Previous booking under progress",
+          onOk: () => {
+            if (window.history.length > 1) {
+              router.back();
+            } else {
+              router.push("/flights");
+            }
+          },
+        });
+      }
+    }
+  }, []);
 
   const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
     useContext(AppContext);
@@ -167,7 +230,6 @@ export default function BookTicket() {
   const [error, setError] = useState<string | null>(null);
   const [totalpricee, setTotalpricee] = useState<string | null>(null);
   const [tdnetPrice, setNetFare] = useState<string | null>(null);
-  const [bookingId, setBookingId] = useState<string | null>(null);
   const [isBaggageOpen, setIsBaggageOpen] = useState(false);
   const [numAdults, setNumAdults] = useState<number>(0);
   const [numChild, setNumChild] = useState<number>(0);
@@ -239,9 +301,10 @@ export default function BookTicket() {
           throw new Error(fullErrorMessage);
         }
 
-        localStorage.setItem("apiData", JSON.stringify(data));
+        // localStorage.setItem("apiData", JSON.stringify(data));
         if (data.bookingId) {
           localStorage.setItem(`bookingData_${data.bookingId}`, JSON.stringify(data));
+          localStorage.setItem(`bookingData_${data.bookingId}_timestamp`, Date.now().toString());
         }
         if (data?.tripInfos?.[0]?.sI?.[0]?.dt) {
           setFirstTravellDate(
@@ -394,7 +457,7 @@ export default function BookTicket() {
 
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
-    if (tcs_id) fetchFlights(tcs_id);
+    if (tcs_id && !hasExistingData) fetchFlights(tcs_id);
 
     const markupParam = searchParams.get("markup");
     if (markupParam) {

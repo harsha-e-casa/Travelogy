@@ -18,6 +18,7 @@ export default function TicketCardMobile({
     selectedQuoteFlights = [],
     onQuoteSelectionChange,
     selectedFareTypes = [],
+    allTicketMarkups = {},
 }: any) {
     const { getCookie } = useContext(AppContext);
     const isUat = process.env.UAT_ENV === "true";
@@ -44,16 +45,20 @@ export default function TicketCardMobile({
         return `${hours}h ${remainingMinutes}m`;
     };
 
-    const calculateTotalPrice = (fare: any) => {
+    const calculateTotalPrice = (fare: any, specificMarkup?: number) => {
         let total = 0;
         if (fare?.fd?.ADULT) total += adultCount * fare.fd.ADULT.fC.NF;
         if (fare?.fd?.CHILD) total += childCount * fare.fd.CHILD.fC.NF;
         if (fare?.fd?.INFANT) total += infantCount * fare.fd.INFANT.fC.NF;
-        total += (Number(markup) || 0);
+        total += (Number(specificMarkup !== undefined ? specificMarkup : markup) || 0);
         return new Intl.NumberFormat("en-IN").format(total);
     };
 
     const selectedFare = ticket.totalPriceList[value];
+
+    const getSelectedMarkup = () => {
+        return allTicketMarkups[`${ticket.id}_${value}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
+    };
 
     const isQuoteSelected = selectedQuoteFlights?.some(
         (f: any) => f.ticketId === ticket.id && f.fareIndex === value
@@ -131,8 +136,8 @@ export default function TicketCardMobile({
             </div>
 
             <div className="mobile-card-footer">
-                <div className="mobile-price-section" onClick={() => onPriceClick && onPriceClick(ticket.id, markup, ticket, value)}>
-                    <span className="mobile-price">₹{calculateTotalPrice(selectedFare)}</span>
+                <div className="mobile-price-section" onClick={() => onPriceClick && onPriceClick(ticket.id, getSelectedMarkup(), ticket, value)}>
+                    <span className="mobile-price">₹{calculateTotalPrice(selectedFare, getSelectedMarkup())}</span>
                     <span className="mobile-fare-type">{selectedFare.fareIdentifier}</span>
                 </div>
 
@@ -148,7 +153,7 @@ export default function TicketCardMobile({
                         href={
                             reschedule
                                 ? `reschedule-book-ticket?tcs_id=${selectedFare.id}&requestId=${requestId}`
-                                : `book-ticket?tcs_id=${selectedFare.id}&markup=${markup || 0}`
+                                : `book-ticket?tcs_id=${selectedFare.id}&markup=${getSelectedMarkup()}`
                         }
                         className="mobile-book-btn"
                     >
@@ -179,14 +184,18 @@ export default function TicketCardMobile({
                                 }
                                 return true;
                             })
-                            .map((fare: any, idx: number) => (
-                                <Radio key={idx} value={idx} className="w-full border p-2 rounded">
-                                    <div className="flex justify-between items-center w-full">
-                                        <span className="text-sm font-bold">₹{calculateTotalPrice(fare)}</span>
-                                        <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
-                                    </div>
-                                </Radio>
-                            ))}
+                            .map((fare: any, idx: number) => {
+                                const realIndex = ticket.totalPriceList.indexOf(fare);
+                                const currentFareMarkup = allTicketMarkups[`${ticket.id}_${realIndex}`] ?? allTicketMarkups[ticket.id] ?? markup;
+                                return (
+                                    <Radio key={idx} value={idx} className="w-full border p-2 rounded">
+                                        <div className="flex justify-between items-center w-full">
+                                            <span className="text-sm font-bold">₹{calculateTotalPrice(fare, currentFareMarkup)}</span>
+                                            <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
+                                        </div>
+                                    </Radio>
+                                )
+                            })}
                     </Radio.Group>
                 </div>
             )}

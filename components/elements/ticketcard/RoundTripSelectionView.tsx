@@ -545,7 +545,9 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         emails,
         withPrice,
         flights: selectedQuoteFlights.map((item) => {
-          const itemMarkup = ticketMarkups[item.ticketId] ?? markup;
+          const specificMarkup = ticketMarkups[`${item.ticketId}_${item.fareIndex}`];
+          const ticketLevelMarkup = ticketMarkups[item.ticketId] ?? markup;
+          const itemMarkup = specificMarkup ?? ticketLevelMarkup;
           return {
             ...item.ticketData, // Pass the full ticket object
             ticket: item.ticketData,
@@ -633,7 +635,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
   const renderFilters = () => (
     <>
       {isFilterApplied && (
-        <div className="sidebar-left border-1 background-body mb-10" style={{height:"60px", paddingTop:"15px"}}>
+        <div className="sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">
               <div className="d-flex align-items-center justify-content-between">
@@ -641,7 +643,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                 <Button
                   type="link"
                   onClick={handleResetAllFilters}
-                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold",  marginBottom:"20px" }}
+                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
                 >
                   Reset All
                 </Button>
@@ -961,6 +963,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                       tripPhase={tripPhase}
                       selectedOnwardTicket={selectedOnwardTicket}
                       key={ticketId}
+                      allTicketMarkups={ticketMarkups}
                       markup={ticketMarkups[ticketId] ?? markup}
                       onPriceClick={(id: string, m: number, t: any, fIdx: number) => {
                         const prevTickets = [];
@@ -1208,8 +1211,14 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                           infantCost = infantCount * selectedFare.fd.INFANT.fC.NF;
                         }
 
+                        const tId = selectedOnwardTicket.ticket.id;
+                        const pIdx = selectedOnwardTicket.selectedPriceIndex;
+                        const specific = ticketMarkups[`${tId}_${pIdx}`];
+                        const fallback = ticketMarkups[tId] ?? markup;
+                        const finalMarkup = specific ?? fallback ?? 0;
+
                         return new Intl.NumberFormat("en-IN").format(
-                          adultCost + childCost + infantCost + (Number(ticketMarkups[selectedOnwardTicket.ticket.id] ?? markup) || 0)
+                          adultCost + childCost + infantCost + (Number(finalMarkup) || 0)
                         );
                       })()}
                     </span>
@@ -1365,8 +1374,14 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                         infantCost = infantCount * selectedFare.fd.INFANT.fC.NF;
                       }
 
+                      const tId = selectedOnwardTicket.ticket.id;
+                      const pIdx = selectedOnwardTicket.selectedPriceIndex;
+                      const specific = ticketMarkups[`${tId}_${pIdx}`];
+                      const fallback = ticketMarkups[tId] ?? markup;
+                      const finalMarkup = specific ?? fallback ?? 0;
+
                       return new Intl.NumberFormat("en-IN").format(
-                        adultCost + childCost + infantCost + (Number(ticketMarkups[selectedOnwardTicket.ticket.id] ?? markup) || 0)
+                        adultCost + childCost + infantCost + (Number(finalMarkup) || 0)
                       );
                     })()}{" "}
                     <span className="text-xs text-white-500">

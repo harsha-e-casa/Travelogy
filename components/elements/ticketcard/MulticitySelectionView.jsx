@@ -115,7 +115,9 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
         emails,
         withPrice,
         flights: selectedQuoteFlights.map((item) => {
-          const itemMarkup = ticketMarkups[item.ticketId] ?? markup;
+          const specificMarkup = ticketMarkups[`${item.ticketId}_${item.fareIndex}`];
+          const ticketLevelMarkup = ticketMarkups[item.ticketId] ?? markup;
+          const itemMarkup = specificMarkup ?? ticketLevelMarkup;
           return {
             ...item.ticket,
             ticket: item.ticket,
@@ -593,7 +595,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     const renderFilters = (tabIndex) => (
       <>
         {isFilterApplied(tabIndex) && (
-          <div className="sidebar-left border-1 background-body mb-10" style={{height:"60px", paddingTop:"15px"}}>
+          <div className="sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
                 <div className="d-flex align-items-center justify-content-between">
@@ -601,7 +603,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                   <Button
                     type="link"
                     onClick={() => handleResetAllFilters(tabIndex)}
-                    style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold",  marginBottom:"20px" }}
+                    style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
                   >
                     Reset All
                   </Button>
@@ -945,6 +947,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                           <TicketCardMobile
                             ticket={ticket}
                             markup={currentMarkup}
+                            allTicketMarkups={ticketMarkups}
                             onPriceClick={(ticketId, markup, ticketObj, fareIndex) => {
                               const prevSegments = Object.keys(selectedFlights)
                                 .filter(key => parseInt(key) < tabIndex)
@@ -956,13 +959,17 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                             }}
                             onSelect={(selectedFare, selectedFareIndex) => {
                               const fareFD = selectedFare.fd;
+                              const specificMarkup = ticketMarkups[`${ticket.id}_${selectedFareIndex}`];
+                              const ticketLevelMarkup = ticketMarkups[ticket.id] ?? markup;
+                              const finalMarkup = specificMarkup ?? ticketLevelMarkup;
+
                               const totalPrice = calculateTotalFare(
                                 fareFD,
                                 adultCount,
                                 childCount,
                                 infantCount,
                                 getCookie,
-                                ticketMarkups[ticket.id] ?? markup
+                                finalMarkup
                               );
                               const firstSegment = ticket.sI[0];
                               const lastSegment = ticket.sI[ticket.sI.length - 1];
@@ -984,7 +991,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                 arrTime: dayjs(lastSegment.at).format("HH:mm"),
                                 airlineLogo: isUatAirlineLogo,
                                 price: totalPrice,
-                                markup: ticketMarkups[ticket.id] ?? markup,
+                                markup: finalMarkup,
                                 adultFare: new Intl.NumberFormat("en-IN").format(
                                   fareFD.ADULT?.fC?.NF || 0
                                 ),
@@ -1131,13 +1138,17 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                           return true;
                                         })
                                         .map((e, j) => {
+                                          const specificMarkup = ticketMarkups[`${ticket.id}_${j}`];
+                                          const ticketLevelMarkup = ticketMarkups[ticket.id] ?? markup;
+                                          const finalMarkup = specificMarkup ?? ticketLevelMarkup;
+
                                           const fareValue = calculateTotalFare(
                                             e.fd,
                                             adultCount,
                                             childCount,
                                             infantCount,
                                             getCookie,
-                                            ticketMarkups[ticket.id] ?? markup
+                                            finalMarkup
                                           );
                                           return (
                                             <Radio
@@ -1245,13 +1256,17 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                           ticket.totalPriceList[selectedFareIndex];
                                         const fareFD = selectedFare.fd;
 
+                                        const specificMarkup = ticketMarkups[`${ticket.id}_${selectedFareIndex}`];
+                                        const ticketLevelMarkup = ticketMarkups[ticket.id] ?? markup;
+                                        const finalMarkup = specificMarkup ?? ticketLevelMarkup;
+
                                         const totalPrice = calculateTotalFare(
                                           fareFD,
                                           adultCount,
                                           childCount,
                                           infantCount,
                                           getCookie,
-                                          ticketMarkups[ticket.id] ?? markup
+                                          finalMarkup
                                         );
                                         const firstSegment = ticket.sI[0];
                                         const lastSegment =
@@ -1277,7 +1292,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                           ),
                                           airlineLogo: isUatAirlineLogo,
                                           price: totalPrice,
-                                          markup: ticketMarkups[ticket.id] ?? markup,
+                                          markup: finalMarkup,
                                           adultFare: new Intl.NumberFormat(
                                             "en-IN"
                                           ).format(fareFD.ADULT?.fC?.NF || 0),
