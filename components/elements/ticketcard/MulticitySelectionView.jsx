@@ -1055,6 +1055,14 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                                           // Check if we need to map based on how filters are stored. 
                                           // If filters store "Refundable", "Non Refundable", etc.
 
+                                          const selectedFareIdentifiers = currentFilters?.fareIdentifiers || [];
+
+                                          if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
+                                            if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
+                                              return false;
+                                            }
+                                          }
+
                                           if (selectedFareTypes && selectedFareTypes.length > 0) {
                                             const fareTypeMap = {
                                               0: "Non Refundable",

@@ -902,6 +902,11 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                           ? onwardSelectedFareTypes
                           : returnSelectedFareTypes
                       }
+                      selectedFareIdentifiers={
+                        tripPhase === "ONWARD"
+                          ? onwardFareIdentifiers
+                          : returnFareIdentifiers
+                      }
                     />
                   );
                 })}

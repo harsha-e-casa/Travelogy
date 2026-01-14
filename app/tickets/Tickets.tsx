@@ -952,6 +952,15 @@ export default function Tickets() {
         });
       }
 
+      // Fare Identifier Filter
+      if (fareIdentifiers.length > 0) {
+        dataToFilter = dataToFilter.filter((ticket: any) => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            fareIdentifiers.includes(priceInfo.fareIdentifier)
+          );
+        });
+      }
+
       // 2. Price Range Filter (Uses updated getTicketPrice)
       let filteredData = dataToFilter.filter((ticket: any) => {
         const price = getTicketPrice(ticket);
@@ -3325,6 +3334,7 @@ export default function Tickets() {
                                               selectedQuoteFlights={selectedQuoteFlights}
                                               onQuoteSelectionChange={handleQuoteSelectionChange}
                                               selectedFareTypes={selectedFareTypes}
+                                              selectedFareIdentifiers={fareIdentifiers}
                                             />
                                           ) : (
                                             <TicketCard1
@@ -3336,6 +3346,7 @@ export default function Tickets() {
                                               selectedQuoteFlights={selectedQuoteFlights}
                                               onQuoteSelectionChange={handleQuoteSelectionChange}
                                               selectedFareTypes={selectedFareTypes}
+                                              selectedFareIdentifiers={fareIdentifiers}
                                             />
                                           )}
                                         </React.Fragment>
