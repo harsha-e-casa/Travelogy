@@ -437,7 +437,7 @@ type Props = {
   priceRange: any;
   setPriceRange: (r: [number, number]) => void;
   minPriceRange?: number;
-    maxPriceRange?: number;
+  maxPriceRange?: number;
 };
 
 export default function ByPrice({
@@ -446,15 +446,15 @@ export default function ByPrice({
   minPriceRange,
   maxPriceRange,
 }: Props) {
-  const STEP = 10;
+  const STEP = 1;
   const MIN =
     minPriceRange != null && !isNaN(Number(minPriceRange))
-      ? Number(minPriceRange)
+      ? Math.floor(Number(minPriceRange))
       : 0;
 
   const MAX =
     maxPriceRange != null && !isNaN(Number(maxPriceRange))
-      ? Number(maxPriceRange)
+      ? Math.ceil(Number(maxPriceRange))
       : 100000000;
 
   const [minInput, setMinInput] = useState(String(priceRange?.[0] ?? MIN));
@@ -518,13 +518,11 @@ export default function ByPrice({
         max={MAX}
         values={sliderVals}
         onChange={(vals) => {
-          const rounded = vals.map((v) => Math.round(v / STEP) * STEP) as [
-            number,
-            number
-          ];
-          setSliderVals(rounded);
-          setMinInput(String(rounded[0]));
-          setMaxInput(String(rounded[1]));
+          // No rounding needed, just cast to tuple
+          const nextVals = vals as [number, number];
+          setSliderVals(nextVals);
+          setMinInput(String(nextVals[0]));
+          setMaxInput(String(nextVals[1]));
         }}
         onFinalChange={(vals) => {
           const next = normalizeRange(vals[0], vals[1]);
@@ -600,7 +598,7 @@ export default function ByPrice({
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             onKeyDown={onEnterApply}
-            style={{height:40}}
+            style={{ height: 40 }}
           />
         </div>
         <span style={{ color: "#6b7280", marginTop: 30 }}>to</span>
@@ -609,11 +607,11 @@ export default function ByPrice({
           <input
             type="number"
             className="form-control"
-            placeholder="Max" 
+            placeholder="Max"
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             onKeyDown={onEnterApply}
-            style={{height:40}}
+            style={{ height: 40 }}
           />
         </div>
       </div>

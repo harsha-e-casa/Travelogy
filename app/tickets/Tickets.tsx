@@ -760,17 +760,38 @@ export default function Tickets() {
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      const dataToCheck = flightData.ONWARD || flightData.COMBO;
+      let dataToCheck = (flightData.ONWARD || flightData.COMBO) || [];
+
+      // Filter data by fare type FIRST to get accurate price range
+      if (selectedFareTypes.length > 0) {
+        const typeMap: { [key: number]: string } = {
+          0: "Non Refundable",
+          1: "Refundable",
+          2: "Partial Refundable",
+        };
+
+        dataToCheck = dataToCheck.filter((ticket: any) => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            Object.keys(priceInfo.fd).some((paxType) => {
+              const fareType = typeMap[priceInfo.fd[paxType].rT];
+              return selectedFareTypes.includes(fareType);
+            })
+          );
+        });
+      }
+
       const [minPrice, maxPrice] = getPriceRangeFromData(dataToCheck);
 
+      // Only update if range has meaningfully changed or wasn't set
+      // (avoid infinite loops by checking against current state if possible, or trigger once)
       setMinPriceRange(minPrice);
       setMaxPriceRange(maxPrice);
 
-      if (priceRange[0] !== minPrice || priceRange[1] !== maxPrice) {
-        setPriceRange([minPrice, maxPrice]);
-      }
+      // Auto-adjust current range if it's out of bounds or this is a "reset" / filter change
+      // A simple logic: reset to full range on filter change to allow user to see all filtered results
+      setPriceRange([minPrice, maxPrice]);
     }
-  }, [flightData]);
+  }, [flightData, selectedFareTypes]);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
@@ -802,12 +823,32 @@ export default function Tickets() {
     const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
     const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
 
-    const adultFare =
-      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
-    const childFare =
-      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
-    const infantFare =
-      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+    const typeMap: { [key: number]: string } = {
+      0: "Non Refundable",
+      1: "Refundable",
+      2: "Partial Refundable",
+    };
+
+    let selectedFareIndex = 0;
+
+    // If strict fare types are selected, find the first matching fare Option
+    if (selectedFareTypes.length > 0) {
+      const matchIndex = ticket.totalPriceList.findIndex((priceInfo: any) =>
+        Object.keys(priceInfo.fd).some((paxType) => {
+          const fareType = typeMap[priceInfo.fd[paxType].rT];
+          return selectedFareTypes.includes(fareType);
+        })
+      );
+      if (matchIndex !== -1) {
+        selectedFareIndex = matchIndex;
+      }
+    }
+
+    const fareOption = ticket.totalPriceList?.[selectedFareIndex];
+
+    const adultFare = (fareOption?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare = (fareOption?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare = (fareOption?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
 
     return adultFare + childFare + infantFare;
   };
@@ -824,7 +865,7 @@ export default function Tickets() {
     }
 
     return arr;
-  }, [filteredFlightData, priceSort]);
+  }, [filteredFlightData, priceSort, selectedFareTypes]);
 
   useEffect(() => {
     if (!filteredFlightData) return;
@@ -839,7 +880,7 @@ export default function Tickets() {
     }
 
     setFilteredFlightData(sorted);
-  }, [priceSort]);
+  }, [priceSort, selectedFareTypes]);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
@@ -887,23 +928,27 @@ export default function Tickets() {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToFilter = (flightData.ONWARD || flightData.COMBO) || [];
 
-      // const [minPrice, maxPrice] = getPriceRangeFromData(dataToFilter);
-      // setPriceRange([minPrice, maxPrice]);
-      // console.log("Min Price:", minPrice, "Max Price:", maxPrice);
+      // 1. Strict Fare Type Filter (First Priority)
+      if (selectedFareTypes.length > 0) {
+        const typeMap: { [key: number]: string } = {
+          0: "Non Refundable",
+          1: "Refundable",
+          2: "Partial Refundable",
+        };
 
-      // Price Range Filter
+        dataToFilter = dataToFilter.filter((ticket: any) => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            Object.keys(priceInfo.fd).some((paxType) => {
+              const fareType = typeMap[priceInfo.fd[paxType].rT];
+              return selectedFareTypes.includes(fareType);
+            })
+          );
+        });
+      }
+
+      // 2. Price Range Filter (Uses updated getTicketPrice)
       let filteredData = dataToFilter.filter((ticket: any) => {
-        const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-        const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-        const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-        const adultFare =
-          (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-        const childFare =
-          (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-        const infantFare =
-          (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
-
-        const price = adultFare + childFare + infantFare;
+        const price = getTicketPrice(ticket);
         return price >= priceRange[0] && price <= priceRange[1];
       });
 
@@ -983,23 +1028,6 @@ export default function Tickets() {
         });
       }
 
-      if (selectedFareTypes.length > 0) {
-        const typeMap: { [key: number]: string } = {
-          0: "Non Refundable",
-          1: "Refundable",
-          2: "Partial Refundable",
-        };
-
-        filteredData = filteredData.filter((ticket: any) => {
-          return ticket.totalPriceList.some((priceInfo: any) =>
-            Object.keys(priceInfo.fd).some((paxType) => {
-              const fareType = typeMap[priceInfo.fd[paxType].rT];
-              return selectedFareTypes.includes(fareType);
-            })
-          );
-        });
-      }
-
       setFilteredFlightData(filteredData);
     }
   };
@@ -1007,23 +1035,15 @@ export default function Tickets() {
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
 
-    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-
     data.forEach((ticket) => {
-      const adultFare =
-        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-      const childFare =
-        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-      const infantFare =
-        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
-
-      const price = adultFare + childFare + infantFare;
-      if (price !== undefined) {
+      // Use getTicketPrice to account for strict fare types
+      const price = getTicketPrice(ticket);
+      if (price !== undefined && !isNaN(price)) {
         prices.push(price);
       }
     });
+
+    if (prices.length === 0) return [0, 100000]; // Fallback
 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
@@ -2121,7 +2141,10 @@ export default function Tickets() {
         <main className="main">
           {/* <EngineTabs active_border={'1'} /> */}
 
-          <div className="h-[auto] w-full z-20 sticky top-0 bg_cs_search">
+          <div
+            className="h-[auto] w-full bg_cs_search"
+            style={{ position: 'sticky', top: isMobile ? '70px' : '70px', zIndex: 9999999 }} // Extremely high z-index to stay above everything
+          >
             {/* Desktop Header */}
             {!isMobile && (
               <>
@@ -2133,6 +2156,9 @@ export default function Tickets() {
                       open={fareOpen}
                       trigger={[]}
                       placement="bottomLeft"
+                      overlayStyle={{ zIndex: 10000001 }}
+                      getPopupContainer={(trigger) => trigger.parentElement!}
+
                     >
                       <div
                         className="hdt_value"
@@ -2150,7 +2176,7 @@ export default function Tickets() {
                         {srx_fareType}
                       </div>
                     </Dropdown>
-                    <div className="mt-2">
+                    <div className="mt-2 pl-2">
                       <DirectFlight
                         isDirectFlight={isDirectFlight}
                         setIsDirectFlight={setIsDirectFlight}
@@ -2165,6 +2191,8 @@ export default function Tickets() {
                       open={open}
                       trigger={[]} // ← disable all built‑in open/close triggers
                       placement="bottomLeft" // or wherever you like
+                      overlayStyle={{ zIndex: 10000001 }}
+                      getPopupContainer={(trigger) => trigger.parentElement!}
                     >
                       <div
                         className="hdt_value"
@@ -2221,7 +2249,7 @@ export default function Tickets() {
                           </div>
 
                           {showSearchState ? (
-                            <div className="searchFfromSelect searchFfromSelect_2">
+                            <div className="searchFfromSelect searchFfromSelect_2" style={{ zIndex: 10000002 }}>
                               <AppListSearch
                                 operEngLocation={openfrom}
                                 setSelectFrom={handleFromCityChange}
@@ -2250,7 +2278,7 @@ export default function Tickets() {
                           </div>
 
                           {showSearchStateTo ? (
-                            <div className="searchFfromSelect searchFfromSelect_2">
+                            <div className="searchFfromSelect searchFfromSelect_2" style={{ zIndex: 10000002 }}>
                               <AppListSearch
                                 operEngLocation={openTo}
                                 setSelectFrom={handleToCityChange}
@@ -2295,12 +2323,14 @@ export default function Tickets() {
                         </div>
 
                         {openDateRage ? (
-                          <AppDateRangeFlight
-                            openToDateRange={openToDateRange}
-                            setDate={handleDepartureDateChange}
-                            minDate={null}
-                            value={datedep}
-                          />
+                          <div className="relative" style={{ zIndex: 10000002 }}>
+                            <AppDateRangeFlight
+                              openToDateRange={openToDateRange}
+                              setDate={handleDepartureDateChange}
+                              minDate={null}
+                              value={datedep}
+                            />
+                          </div>
                         ) : null}
                       </div>
                     )}
@@ -2313,19 +2343,21 @@ export default function Tickets() {
                           {ddr_strdate}, {ddr_monthStr} {ddr_date} {ddr_year}
                         </div>
                         {openDateRageR ? (
-                          <AppDateRangeFlight
-                            openToDateRange={openToDateRangeR}
-                            setDate={setDatedepr}
-                            minDate={datedep}
-                            value={datedepr}
-                          />
+                          <div className="relative" style={{ zIndex: 10000002 }}>
+                            <AppDateRangeFlight
+                              openToDateRange={openToDateRangeR}
+                              setDate={setDatedepr}
+                              minDate={datedep}
+                              value={datedepr}
+                            />
+                          </div>
                         ) : null}
                       </div>
                     </>
                   ) : null}
 
                   <div
-                    className="hdt_header-item"
+                    className="hdt_header-item relative"
                     onClick={() => {
                       if (
                         ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
@@ -2360,11 +2392,7 @@ export default function Tickets() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex">
-                      <div className="hdt_header-item flex items-center gap-2">
-                        {/* Markup and Share buttons removed from header as per new UX */}
-                      </div>
-
+                    <>
                       <div className="hdt_header-item">
                         <label style={{ visibility: "hidden" }}>Search</label>
 
@@ -2397,7 +2425,7 @@ export default function Tickets() {
                           Search
                         </div>
                       </div>
-                    </div>
+                    </>
                   )}
                 </div>
                 {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
@@ -2421,7 +2449,7 @@ export default function Tickets() {
                                 {/* {segment.fromError && <span className="error">{segment.fromError}</span>} */}
                               </div>
                               {openFromMultiIndex === idx && (
-                                <div className="searchFfromSelect searchFfromSelect_2">
+                                <div className="searchFfromSelect searchFfromSelect_2" style={{ zIndex: 10000002 }}>
                                   <AppListSearch
                                     operEngLocation={() => multiOpenfrom(idx)}
                                     setSelectFrom={(val: any) => {
@@ -2467,7 +2495,7 @@ export default function Tickets() {
                                 {/* {segment.toError && <span className="error">{segment.toError}</span>} */}
                               </div>
                               {openToMultiIndex === idx && (
-                                <div className="searchFfromSelect searchFfromSelect_2">
+                                <div className="searchFfromSelect searchFfromSelect_2" style={{ zIndex: 10000002 }}>
                                   <AppListSearch
                                     operEngLocation={() => multiOpenToSecond(idx)}
                                     setSelectFrom={(val: any) => {
@@ -2514,20 +2542,22 @@ export default function Tickets() {
                               </div>
                               {/* {segment.dateError && <span className="error">{segment.dateError}</span>} */}
                               {openDepartMultiIndex === idx && (
-                                <AppDateRangeFlight
-                                  openToDateRange={() => multiOpenToDateRange(idx)}
-                                  setDate={(val: any) => {
-                                    const newSegs = [...multicitySegments];
-                                    newSegs[idx].departureDate = val;
-                                    setMulticitySegments(newSegs);
-                                  }}
-                                  minDate={
-                                    idx > 0
-                                      ? multicitySegments[idx - 1].departureDate
-                                      : datedep
-                                  } // Use datedep for the first segment
-                                  value={multicitySegments[idx].departureDate}
-                                />
+                                <div className="relative" style={{ zIndex: 10000002 }}>
+                                  <AppDateRangeFlight
+                                    openToDateRange={() => multiOpenToDateRange(idx)}
+                                    setDate={(val: any) => {
+                                      const newSegs = [...multicitySegments];
+                                      newSegs[idx].departureDate = val;
+                                      setMulticitySegments(newSegs);
+                                    }}
+                                    minDate={
+                                      idx > 0
+                                        ? multicitySegments[idx - 1].departureDate
+                                        : datedep
+                                    } // Use datedep for the first segment
+                                    value={multicitySegments[idx].departureDate}
+                                  />
+                                </div>
                               )}
                               <Tooltip
                                 className="flex shadow-md z-50"
@@ -2555,7 +2585,7 @@ export default function Tickets() {
                                       style={{
                                         background: "grey",
                                         borderRadius: "10px",
-                                        margin: "10px",
+                                        marginTop: "14px",
                                       }}
                                       onClick={() => removeSegment(idx)}
                                       className="remove-segment text-white"
@@ -2603,10 +2633,31 @@ export default function Tickets() {
                   )}
               </>
             )}
+
+            {isMobile && (
+              <div className="mobile-search-summary py-2 px-3 flex justify-between items-center text-white" style={{ background: "#1a1a2e" }}>
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold">
+                    {srx_departureFrom} → {srx_arrivalTo}
+                  </span>
+                  <span className="text-xs opacity-80">
+                    {dayjs(datedep).format("DD MMM")} | {srx_traveller} {srx_traveller > 1 ? "Travellers" : "Traveller"}
+                  </span>
+                </div>
+                <Button
+                  size="small"
+                  ghost
+                  onClick={() => setModifySearchOpen(true)}
+                  style={{ color: "white", borderColor: "rgba(255,255,255,0.3)" }}
+                >
+                  Modify
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Header Summary */}
-          {isMobile && (
+          {/* {isMobile && (
             <div className="mobile-search-summary py-2 px-3 flex justify-between items-center text-white" style={{ background: "#1a1a2e" }}>
               <div className="flex flex-col">
                 <span className="text-sm font-bold">
@@ -2625,7 +2676,7 @@ export default function Tickets() {
                 Modify
               </Button>
             </div>
-          )}
+          )} */}
 
           {/* Modify Search Drawer for Mobile */}
           <Drawer
@@ -3174,149 +3225,138 @@ export default function Tickets() {
 
                       return (
                         <>
-                          {tripInfo?.length > 0 ? (
-                            <>
-                              <div className="box-grid-tours">
-                                {/* Mobile Filter Button */}
-                                <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
-                                  <Button
-                                    type="primary"
-                                    icon={<FilterOutlined />}
-                                    onClick={showFilterDrawer}
-                                    style={{ marginBottom: "10px" }}
-                                  >
-                                    Filters
-                                  </Button>
-                                </div>
+                          <div className="box-grid-tours">
+                            {/* Mobile Filter Button */}
+                            <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
+                              <Button
+                                type="primary"
+                                icon={<FilterOutlined />}
+                                onClick={showFilterDrawer}
+                                style={{ marginBottom: "10px" }}
+                              >
+                                Filters
+                              </Button>
+                            </div>
 
-                                {/* Drawer */}
-                                <Drawer
-                                  title="Filter Flights"
-                                  placement="left"
-                                  onClose={onCloseFilterDrawer}
-                                  open={filterDrawerOpen}
-                                  width={300}
-                                >
-                                  <div className="content-left">
-                                    {renderFilters()}
-                                  </div>
-                                </Drawer>
+                            {/* Drawer */}
+                            <Drawer
+                              title="Filter Flights"
+                              placement="left"
+                              onClose={onCloseFilterDrawer}
+                              open={filterDrawerOpen}
+                              width={300}
+                            >
+                              <div className="content-left">
+                                {renderFilters()}
+                              </div>
+                            </Drawer>
 
-                                <div className="row">
-                                  {/* Sidebar Desktop */}
-                                  <div className="col-xl-3 d-none d-xl-block content-left" style={{ paddingTop: "10px" }}>
-                                    {renderFilters()}
-                                  </div>
+                            <div className="row">
+                              {/* Sidebar Desktop */}
+                              <div className="col-xl-3 d-none d-xl-block content-left" style={{ paddingTop: "10px" }}>
+                                {renderFilters()}
+                              </div>
 
-                                  <div className="col-xl-9 col-12">
-                                    {(srx_tripType?.trim().toLowerCase() === "one-way" ||
-                                      srx_tripType?.trim().toLowerCase() === "round-trip") && (
-                                        <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
-                                          {!shareMode ? (
-                                            <div className="flex items-center gap-2 text-gray-600 text-sm">
-                                              <ShareAltOutlined />
-                                              <span className="font-semibold">Share By :</span>
-                                              {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
-                                              <span
-                                                className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
-                                                onClick={() => setShareMode(true)}
-                                              >
-                                                Email
-                                              </span>
-                                              {/* </span> | */}
-                                              {/* <span className="cursor-pointer hover:text-blue-600 font-medium">View</span> */}
-                                            </div>
-                                          ) : (
-                                            <div className="flex items-center gap-3 w-full justify-between">
-                                              <div className="text-gray-600 text-sm font-medium">
-                                                Select flights to share ({selectedQuoteFlights.length} selected)
-                                              </div>
-                                              <div className="flex gap-2">
-                                                <span
-                                                  className="cursor-pointer text-orange-500 font-bold hover:text-orange-600 flex items-center gap-1"
-                                                  onClick={() => setIsQuoteSharing(true)}
-                                                >
-                                                  Send <ShareAltOutlined />
-                                                </span>
-                                                <span
-                                                  className="cursor-pointer text-gray-500 hover:text-gray-700 flex items-center gap-1 ml-2"
-                                                  onClick={() => {
-                                                    setShareMode(false);
-                                                    setSelectedQuoteFlights([]);
-                                                  }}
-                                                >
-                                                  <CloseOutlined />
-                                                </span>
-                                              </div>
-                                            </div>
-                                          )}
+                              <div className="col-xl-9 col-12">
+                                {(srx_tripType?.trim().toLowerCase() === "one-way" ||
+                                  srx_tripType?.trim().toLowerCase() === "round-trip") && (
+                                    <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                      {!shareMode ? (
+                                        <div className="flex items-center gap-2 text-gray-600 text-sm">
+                                          <ShareAltOutlined />
+                                          <span className="font-semibold">Share By :</span>
+                                          <span
+                                            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                            onClick={() => setShareMode(true)}
+                                          >
+                                            Email
+                                          </span>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-3 w-full justify-between">
+                                          <div className="text-gray-600 text-sm font-medium">
+                                            Select flights to share ({selectedQuoteFlights.length} selected)
+                                          </div>
+                                          <div className="flex gap-2">
+                                            <span
+                                              className="cursor-pointer text-orange-500 font-bold hover:text-orange-600 flex items-center gap-1"
+                                              onClick={() => setIsQuoteSharing(true)}
+                                            >
+                                              Send <ShareAltOutlined />
+                                            </span>
+                                            <span
+                                              className="cursor-pointer text-gray-500 hover:text-gray-700 flex items-center gap-1 ml-2"
+                                              onClick={() => {
+                                                setShareMode(false);
+                                                setSelectedQuoteFlights([]);
+                                              }}
+                                            >
+                                              <CloseOutlined />
+                                            </span>
+                                          </div>
                                         </div>
                                       )}
-
-                                    <div
-                                      className="box-list-flights box-list-flights-2"
-                                      style={{ padding: isMobile ? "0" : "10px" }}
-                                    >
-                                      {tripInfo.map((ticket: any, index: number) => {
-                                        const ticketId = ticket.id;
-                                        const currentMarkup = ticketMarkups[ticketId] ?? markup;
-                                        return (
-                                          <React.Fragment key={ticketId}>
-                                            {isMobile ? (
-                                              <TicketCardMobile
-                                                ticket={{ ...ticket, id: ticketId }}
-                                                flightData={flightData}
-                                                markup={currentMarkup}
-                                                onPriceClick={openMarkupModal}
-                                                shareMode={shareMode}
-                                                selectedQuoteFlights={selectedQuoteFlights}
-                                                onQuoteSelectionChange={handleQuoteSelectionChange}
-                                              />
-                                            ) : (
-                                              <TicketCard1
-                                                ticket={{ ...ticket, id: ticketId }}
-                                                flightData={flightData}
-                                                markup={currentMarkup}
-                                                onPriceClick={openMarkupModal}
-                                                shareMode={shareMode}
-                                                selectedQuoteFlights={selectedQuoteFlights}
-                                                onQuoteSelectionChange={handleQuoteSelectionChange}
-                                              />
-                                            )}
-                                          </React.Fragment>
-                                        );
-                                      })}
                                     </div>
+                                  )}
+
+                                {tripInfo?.length > 0 ? (
+                                  <div
+                                    className="box-list-flights box-list-flights-2"
+                                    style={{ padding: isMobile ? "0" : "10px" }}
+                                  >
+                                    {tripInfo.map((ticket: any, index: number) => {
+                                      const ticketId = ticket.id;
+                                      const currentMarkup = ticketMarkups[ticketId] ?? markup;
+                                      return (
+                                        <React.Fragment key={ticketId}>
+                                          {isMobile ? (
+                                            <TicketCardMobile
+                                              ticket={{ ...ticket, id: ticketId }}
+                                              flightData={flightData}
+                                              markup={currentMarkup}
+                                              onPriceClick={openMarkupModal}
+                                              shareMode={shareMode}
+                                              selectedQuoteFlights={selectedQuoteFlights}
+                                              onQuoteSelectionChange={handleQuoteSelectionChange}
+                                              selectedFareTypes={selectedFareTypes}
+                                            />
+                                          ) : (
+                                            <TicketCard1
+                                              ticket={{ ...ticket, id: ticketId }}
+                                              flightData={flightData}
+                                              markup={currentMarkup}
+                                              onPriceClick={openMarkupModal}
+                                              shareMode={shareMode}
+                                              selectedQuoteFlights={selectedQuoteFlights}
+                                              onQuoteSelectionChange={handleQuoteSelectionChange}
+                                              selectedFareTypes={selectedFareTypes}
+                                            />
+                                          )}
+                                        </React.Fragment>
+                                      );
+                                    })}
                                   </div>
-                                </div>
+                                ) : (
+                                  !loading && (
+                                    <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                                      <p className="text-xl font-semibold">
+                                        No flights found for your filter criteria.
+                                      </p>
+                                      <p className="text-sm mt-2 text-gray-400">
+                                        Try adjusting your filters to see more results.
+                                      </p>
+                                    </div>
+                                  )
+                                )}
                               </div>
-                              <QuoteShareModal
-                                isOpen={isQuoteSharing}
-                                onClose={() => setIsQuoteSharing(false)}
-                                onSend={handleSendQuote}
-                                loading={shareLoading}
-                              />
-                              {/* <ByPagination
-                                handlePreviousPage={handlePreviousPage}
-                                totalPages={totalPages}
-                                currentPage={currentPage}
-                                handleNextPage={handleNextPage}
-                                handlePageChange={handlePageChange}
-                              /> */}
-                            </>
-                          ) : (
-                            !loading && (
-                              <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                                <p className="text-xl font-semibold">
-                                  Request flight is not longer available. Please
-                                  try different flight
-                                </p>
-                                <p className="text-sm mt-2 text-gray-400">
-                                  Try adjusting your filters or search criteria.
-                                </p>
-                              </div>
-                            )
-                          )}
+                            </div>
+                          </div>
+                          <QuoteShareModal
+                            isOpen={isQuoteSharing}
+                            onClose={() => setIsQuoteSharing(false)}
+                            onSend={handleSendQuote}
+                            loading={shareLoading}
+                          />
                         </>
                       );
                     })()}
@@ -3742,9 +3782,9 @@ export default function Tickets() {
             <Button key="apply-all" type="primary" onClick={handleApplyToAll}>
               Apply to All
             </Button>,
-            <Button key="share-ticket" onClick={() => setIsShareModalOpen(true)}>
-              Share
-            </Button>,
+            // <Button key="share-ticket" onClick={() => setIsShareModalOpen(true)}>
+            //   Share
+            // </Button>,
           ]}
         >
           <div className="mb-4">
@@ -3754,8 +3794,18 @@ export default function Tickets() {
             <Input
               type="number"
               value={markupInput}
-              onChange={(e) => setMarkupInput(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val.length <= 5) {
+                  setMarkupInput(val);
+                }
+              }}
               placeholder="Enter markup amount"
+              onKeyDown={(e) => {
+                if (["e", "E", "+", "-"].includes(e.key)) {
+                  e.preventDefault();
+                }
+              }}
             />
           </div>
         </Modal>

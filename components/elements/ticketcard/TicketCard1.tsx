@@ -17,6 +17,7 @@ export default function TicketCard1({
   shareMode = false,
   onQuoteSelectionChange,
   selectedQuoteFlights = [],
+  selectedFareTypes = [], // New prop for strict filtering
 }: any) {
   const isUat = process.env.UAT_ENV === "true";
   const [showAllFares, setShowAllFares] = useState(false);
@@ -247,17 +248,121 @@ export default function TicketCard1({
               {(showAllFares
                 ? ticket.totalPriceList
                 : ticket.totalPriceList.slice(0, 2)
-              ).map((e: any, i: number) => {
-                return (
-                  <>
-                    <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
-                      <div style={{ flex: 1 }}>
-                        {shareMode ? (
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                            <Radio key={i} value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }}>
+              )
+                .filter((fare: any) => {
+                  if (selectedFareTypes && selectedFareTypes.length > 0) {
+                    const fareTypeMap: { [key: number]: string } = {
+                      0: "Non Refundable",
+                      1: "Refundable",
+                      2: "Partial Refundable",
+                    };
+                    const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
+                    return selectedFareTypes.includes(fareTypeLabel);
+                  }
+                  return true;
+                })
+                .map((e: any, i: number) => {
+                  return (
+                    <>
+                      <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
+                        <div style={{ flex: 1 }}>
+                          {shareMode ? (
+                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                              <Radio key={i} value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }}>
+                                <div
+                                  className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
+                                                                    ${"border-gray-300 hover:border-gray-500"}`}
+                                >
+                                  <div className="flex flex-row gap-2 items-center">
+                                    <div className="text-lg font-bold text-gray-800 price">
+                                      ₹
+                                      {(() => {
+                                        let adultCost = 0;
+                                        let childCost = 0;
+                                        let infantCost = 0;
+                                        if (e?.fd?.ADULT) {
+                                          if (
+                                            getCookie("gy_adult") !== undefined &&
+                                            getCookie("gy_adult") !== "Nan"
+                                          ) {
+                                            adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
+                                          }
+                                        }
+                                        if (e?.fd?.CHILD) {
+                                          if (
+                                            getCookie("gy_child") !== undefined &&
+                                            getCookie("gy_child") !== "Nan"
+                                          ) {
+                                            childCost = childCount * e?.fd?.CHILD?.fC?.NF;
+                                          }
+                                        }
+                                        if (e?.fd?.INFANT) {
+                                          if (
+                                            getCookie("gy_infant") !== undefined &&
+                                            getCookie("gy_infant") !== "Nan"
+                                          ) {
+                                            infantCost =
+                                              infantCount * e?.fd?.INFANT?.fC?.NF;
+                                          }
+                                        }
+
+                                        return new Intl.NumberFormat("en-IN").format(
+                                          adultCost + childCost + infantCost + (Number(markup) || 0)
+                                        );
+                                      })()}
+                                    </div>
+                                    <span
+                                      className=" fareidentifier  text-xs font-bold"
+                                      style={{
+                                        backgroundColor: "#f5deb3",
+                                        color: "#5c4033",
+                                        padding: "1px 2px",
+                                      }}
+                                    >
+                                      {e.fareIdentifier}
+                                    </span>{" "}
+                                  </div>
+
+                                  <div className="text-xs text-gray-600">
+                                    <span className="ml-2 cabinclass">
+                                      {e.fd.ADULT.cc} |
+                                      <span
+                                        className="refundable"
+                                        style={{
+                                          color:
+                                            e.fd.ADULT.rT === 1 || e.fd.ADULT.rT === 2
+                                              ? "#22c55e"
+                                              : "#dc2626",
+                                        }}
+                                      >
+                                        {" "}
+                                        {e.fd.ADULT.rT === 1
+                                          ? "Refundable"
+                                          : e.fd.ADULT.rT === 2
+                                            ? "Partial Refundable"
+                                            : "Non Refundable"}
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </Radio>
+                              <input
+                                type="checkbox"
+                                style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                                checked={selectedQuoteFlights.some((f: any) => f.ticketId === ticket.id && f.fareIndex === i)}
+                                onChange={(event) => {
+                                  if (onQuoteSelectionChange) {
+                                    onQuoteSelectionChange(ticket, i, event.target.checked);
+                                  }
+                                }}
+                                onClick={(event) => event.stopPropagation()}
+                              />
+                            </div>
+                          ) : (
+                            <Radio key={i} value={i} className="w-full radiocomp">
                               <div
                                 className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
-                                                                    ${"border-gray-300 hover:border-gray-500"}`}
+                                                                ${"border-gray-300 hover:border-gray-500"}`}
                               >
                                 <div className="flex flex-row gap-2 items-center">
                                   <div className="text-lg font-bold text-gray-800 price">
@@ -312,7 +417,15 @@ export default function TicketCard1({
                                 <div className="text-xs text-gray-600">
                                   <span className="ml-2 cabinclass">
                                     {e.fd.ADULT.cc} |
-                                    <span className="refundable">
+                                    <span
+                                      className="refundable"
+                                      style={{
+                                        color:
+                                          e.fd.ADULT.rT === 1 || e.fd.ADULT.rT === 2
+                                            ? "#22c55e"
+                                            : "#dc2626",
+                                      }}
+                                    >
                                       {" "}
                                       {e.fd.ADULT.rT === 1
                                         ? "Refundable"
@@ -324,100 +437,18 @@ export default function TicketCard1({
                                 </div>
                               </div>
                             </Radio>
-                            <input
-                              type="checkbox"
-                              style={{ width: "20px", height: "20px", cursor: "pointer" }}
-                              checked={selectedQuoteFlights.some((f: any) => f.ticketId === ticket.id && f.fareIndex === i)}
-                              onChange={(event) => {
-                                if (onQuoteSelectionChange) {
-                                  onQuoteSelectionChange(ticket, i, event.target.checked);
-                                }
-                              }}
-                              onClick={(event) => event.stopPropagation()}
-                            />
-                          </div>
-                        ) : (
-                          <Radio key={i} value={i} className="w-full radiocomp">
-                            <div
-                              className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
-                                                                ${"border-gray-300 hover:border-gray-500"}`}
-                            >
-                              <div className="flex flex-row gap-2 items-center">
-                                <div className="text-lg font-bold text-gray-800 price">
-                                  ₹
-                                  {(() => {
-                                    let adultCost = 0;
-                                    let childCost = 0;
-                                    let infantCost = 0;
-                                    if (e?.fd?.ADULT) {
-                                      if (
-                                        getCookie("gy_adult") !== undefined &&
-                                        getCookie("gy_adult") !== "Nan"
-                                      ) {
-                                        adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
-                                      }
-                                    }
-                                    if (e?.fd?.CHILD) {
-                                      if (
-                                        getCookie("gy_child") !== undefined &&
-                                        getCookie("gy_child") !== "Nan"
-                                      ) {
-                                        childCost = childCount * e?.fd?.CHILD?.fC?.NF;
-                                      }
-                                    }
-                                    if (e?.fd?.INFANT) {
-                                      if (
-                                        getCookie("gy_infant") !== undefined &&
-                                        getCookie("gy_infant") !== "Nan"
-                                      ) {
-                                        infantCost =
-                                          infantCount * e?.fd?.INFANT?.fC?.NF;
-                                      }
-                                    }
-
-                                    return new Intl.NumberFormat("en-IN").format(
-                                      adultCost + childCost + infantCost + (Number(markup) || 0)
-                                    );
-                                  })()}
-                                </div>
-                                <span
-                                  className=" fareidentifier  text-xs font-bold"
-                                  style={{
-                                    backgroundColor: "#f5deb3",
-                                    color: "#5c4033",
-                                    padding: "1px 2px",
-                                  }}
-                                >
-                                  {e.fareIdentifier}
-                                </span>{" "}
-                              </div>
-
-                              <div className="text-xs text-gray-600">
-                                <span className="ml-2 cabinclass">
-                                  {e.fd.ADULT.cc} |
-                                  <span className="refundable">
-                                    {" "}
-                                    {e.fd.ADULT.rT === 1
-                                      ? "Refundable"
-                                      : e.fd.ADULT.rT === 2
-                                        ? "Partial Refundable"
-                                        : "Non Refundable"}
-                                  </span>
-                                </span>
-                              </div>
-                            </div>
-                          </Radio>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                );
-              })}
+                    </>
+                  );
+                })}
               {ticket.totalPriceList.length > 2 && (
                 <button
                   className="view-more-txt"
                   style={{ textAlign: "right", fontSize: "10px" }}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setShowAllFares((prev) => !prev);
                   }}
                 >

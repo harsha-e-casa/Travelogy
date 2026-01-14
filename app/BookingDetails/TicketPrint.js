@@ -914,7 +914,7 @@ function renderTicketHTML(vm, useAbsolute = false) {
             <!-- From -->
             <td align="left" width="35%" style="vertical-align: top;">
               <div style="font-size: 24px; font-weight: 800; letter-spacing: .5px;">${sanitize(s.from.code)}</div>
-              <div style="color: #374151;">${sanitize(s.from.city)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""}</div>
+              <div style="color: #374151;">${sanitize(s.from.city)}<br/>${sanitize(s.from.name)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""}</div>
               <div style="margin-top: 2px; font-weight: 600;">${formatDT(s.depTime)}</div>
             </td>
 
@@ -927,7 +927,7 @@ function renderTicketHTML(vm, useAbsolute = false) {
             <!-- To -->
             <td align="right" width="35%" style="vertical-align: top;">
                <div style="font-size: 24px; font-weight: 800; letter-spacing: .5px;">${sanitize(s.to.code)}</div>
-              <div style="color: #374151;">${sanitize(s.to.city)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""}</div>
+              <div style="color: #374151;">${sanitize(s.to.city)}<br/>${sanitize(s.to.name)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""}</div>
               <div style="margin-top: 2px; font-weight: 600;">${formatDT(s.arrTime)}</div>
             </td>
           </tr>
@@ -961,7 +961,7 @@ function renderTicketHTML(vm, useAbsolute = false) {
         <div class="seg-body">
           <div class="station">
             <div class="code">${sanitize(s.from.code)}</div>
-            <div class="name">${sanitize(s.from.city)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""}</div>
+            <div class="name">${sanitize(s.from.city)}<br/>${sanitize(s.from.name)}${s.from.terminal ? ` • ${sanitize(s.from.terminal)}` : ""}</div>
             <div class="time">${formatDT(s.depTime)}</div>
           </div>
           <div class="duration">
@@ -970,7 +970,7 @@ function renderTicketHTML(vm, useAbsolute = false) {
           </div>
           <div class="station">
             <div class="code">${sanitize(s.to.code)}</div>
-            <div class="name">${sanitize(s.to.city)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""}</div>
+            <div class="name">${sanitize(s.to.city)}<br/>${sanitize(s.to.name)}${s.to.terminal ? ` • ${sanitize(s.to.terminal)}` : ""}</div>
             <div class="time">${formatDT(s.arrTime)}</div>
           </div>
         </div>
