@@ -153,17 +153,41 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     }
   }, [flightData, activeTabKey]);
 
-  const getTicketPrice = (ticket) => {
+  const getTicketPrice = (ticket, validFareTypes = []) => {
     const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
     const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
     const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
 
+    const typeMap = {
+      0: "Non Refundable",
+      1: "Refundable",
+      2: "Partial Refundable",
+    };
+
+    let selectedFareIndex = 0;
+
+    // If strict fare types are selected, find the first matching fare Option
+    if (validFareTypes && validFareTypes.length > 0) {
+      const matchIndex = ticket.totalPriceList.findIndex((priceInfo) =>
+        Object.values(priceInfo.fd || {}).some((pax) => {
+          const code = Number(pax?.rT);
+          const label = typeMap[code] ?? code;
+          return validFareTypes.includes(label);
+        })
+      );
+      if (matchIndex !== -1) {
+        selectedFareIndex = matchIndex;
+      }
+    }
+
+    const fareOption = ticket.totalPriceList?.[selectedFareIndex];
+
     const adultFare =
-      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+      (fareOption?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
     const childFare =
-      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+      (fareOption?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
     const infantFare =
-      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+      (fareOption?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
 
     return adultFare + childFare + infantFare;
   };
@@ -207,28 +231,29 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
   const applyFilters = (flights, filter) => {
     if (!filter) return flights;
     let filteredData = flights;
+    const selectedFareTypes = filter.selectedFareTypes || [];
+
+    // 1. Strict Fare Type Filter (First Priority)
+    if (selectedFareTypes.length > 0) {
+      const FARE_TYPE_LABEL = {
+        0: "Non Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
+      };
+      filteredData = filteredData.filter((ticket) =>
+        (ticket.totalPriceList || []).some((priceInfo) =>
+          Object.values(priceInfo.fd || {}).some((pax) => {
+            const code = String(pax?.rT);
+            const label = FARE_TYPE_LABEL[code] ?? code;
+            return selectedFareTypes.includes(label);
+          })
+        )
+      );
+    }
 
     // Price Range Filter
-    // filteredData = filteredData.filter((ticket) => {
-    //   const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-    //   const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-    //   const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-    //   const adultFare =
-    //     (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-    //   const childFare =
-    //     (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-    //   const infantFare =
-    //     (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
-
-    //   const price = adultFare + childFare + infantFare;
-    //   return (
-    //     price !== undefined &&
-    //     price >= filter.priceRange[0] &&
-    //     price <= filter.priceRange[1]
-    //   );
-    // });
     filteredData = filteredData.filter((ticket) => {
-      const price = getTicketPrice(ticket);
+      const price = getTicketPrice(ticket, selectedFareTypes);
       return (
         price !== undefined &&
         price >= filter.priceRange[0] &&
@@ -313,27 +338,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
       });
     }
 
-    if (filter.selectedFareTypes.length > 0) {
-      const FARE_TYPE_LABEL = {
-        0: "Non Refundable",
-        1: "Refundable",
-        2: "Partial Refundable",
-      };
-      filteredData = filteredData.filter((ticket) =>
-        (ticket.totalPriceList || []).some((priceInfo) =>
-          Object.values(priceInfo.fd || {}).some((pax) => {
-            const code = String(pax?.rT);
-            const label = FARE_TYPE_LABEL[code] ?? code;
-            return filter.selectedFareTypes.includes(label);
-          })
-        )
-      );
-    }
-
     if (priceSort === "asc") {
-      filteredData.sort((a, b) => getTicketPrice(a) - getTicketPrice(b));
+      filteredData.sort((a, b) => getTicketPrice(a, selectedFareTypes) - getTicketPrice(b, selectedFareTypes));
     } else if (priceSort === "desc") {
-      filteredData.sort((a, b) => getTicketPrice(b) - getTicketPrice(a));
+      filteredData.sort((a, b) => getTicketPrice(b, selectedFareTypes) - getTicketPrice(a, selectedFareTypes));
     }
 
     return filteredData;
@@ -527,6 +535,8 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
         adultCount * adult + childCount * child + infantCount * infant + (Number(markupValue) || 0)
       );
     };
+
+    const filteredFlights = applyFilters(pair.flights, filters[tabIndex]);
 
     const renderFilters = (tabIndex) => (
       <>
@@ -854,349 +864,387 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
               )}
 
               {pair.flights.length > 0 ? (
-                applyFilters(pair.flights, filters[tabIndex]).map((ticket, i) => {
-                  const ticketId = ticket.id;
-                  const currentMarkup = ticketMarkups[ticketId] ?? markup;
-                  return (
-                    <div key={ticketId}>
-                      {isMobile ? (
-                        <TicketCardMobile
-                          ticket={ticket}
-                          markup={currentMarkup}
-                          onPriceClick={(ticketId, markup, ticketObj, fareIndex) => {
-                            const prevSegments = Object.keys(selectedFlights)
-                              .filter(key => parseInt(key) < tabIndex)
-                              .map(key => ({
-                                ticket: selectedFlights[key].ticket,
-                                selectedPriceIndex: selectedFlights[key].selectedPriceIndex
-                              }));
-                            onPriceClick && onPriceClick(ticketId, markup, ticketObj, fareIndex, prevSegments);
-                          }}
-                          onSelect={(selectedFare, selectedFareIndex) => {
-                            const fareFD = selectedFare.fd;
-                            const totalPrice = calculateTotalFare(
-                              fareFD,
-                              adultCount,
-                              childCount,
-                              infantCount,
-                              getCookie,
-                              ticketMarkups[ticket.id] ?? markup
-                            );
-                            const firstSegment = ticket.sI[0];
-                            const lastSegment = ticket.sI[ticket.sI.length - 1];
+                filteredFlights.length > 0 ? (
+                  filteredFlights.map((ticket, i) => {
+                    const ticketId = ticket.id;
+                    const currentMarkup = ticketMarkups[ticketId] ?? markup;
+                    return (
+                      <div key={ticketId}>
+                        {isMobile ? (
+                          <TicketCardMobile
+                            ticket={ticket}
+                            markup={currentMarkup}
+                            onPriceClick={(ticketId, markup, ticketObj, fareIndex) => {
+                              const prevSegments = Object.keys(selectedFlights)
+                                .filter(key => parseInt(key) < tabIndex)
+                                .map(key => ({
+                                  ticket: selectedFlights[key].ticket,
+                                  selectedPriceIndex: selectedFlights[key].selectedPriceIndex
+                                }));
+                              onPriceClick && onPriceClick(ticketId, markup, ticketObj, fareIndex, prevSegments);
+                            }}
+                            onSelect={(selectedFare, selectedFareIndex) => {
+                              const fareFD = selectedFare.fd;
+                              const totalPrice = calculateTotalFare(
+                                fareFD,
+                                adultCount,
+                                childCount,
+                                infantCount,
+                                getCookie,
+                                ticketMarkups[ticket.id] ?? markup
+                              );
+                              const firstSegment = ticket.sI[0];
+                              const lastSegment = ticket.sI[ticket.sI.length - 1];
 
-                            const isUatAirlineLogo = isUat
-                              ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
-                              : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
+                              const isUatAirlineLogo = isUat
+                                ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
+                                : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
 
-                            const updatedFlight = {
-                              priceId: selectedFare.id,
-                              flightName: firstSegment.fD.aI.name,
-                              depCityCode: firstSegment.da.code,
-                              arrCityCode: lastSegment.aa.code,
-                              airlineCode: firstSegment.fD.aI.code,
-                              flightNumber: firstSegment.fD.fN,
-                              depCity: firstSegment.da.city,
-                              arrCity: lastSegment.aa.city,
-                              depTime: dayjs(firstSegment.dt).format("HH:mm"),
-                              arrTime: dayjs(lastSegment.at).format("HH:mm"),
-                              airlineLogo: isUatAirlineLogo,
-                              price: totalPrice,
-                              markup: ticketMarkups[ticket.id] ?? markup,
-                              adultFare: new Intl.NumberFormat("en-IN").format(
-                                fareFD.ADULT?.fC?.NF || 0
-                              ),
-                              ticket: ticket,
-                              selectedPriceIndex: selectedFareIndex
-                            };
-
-                            setSelectedFlights((prev) => {
-                              const newFlights = {
-                                ...prev,
-                                [tabIndex]: updatedFlight,
+                              const updatedFlight = {
+                                priceId: selectedFare.id,
+                                flightName: firstSegment.fD.aI.name,
+                                depCityCode: firstSegment.da.code,
+                                arrCityCode: lastSegment.aa.code,
+                                airlineCode: firstSegment.fD.aI.code,
+                                flightNumber: firstSegment.fD.fN,
+                                depCity: firstSegment.da.city,
+                                arrCity: lastSegment.aa.city,
+                                depTime: dayjs(firstSegment.dt).format("HH:mm"),
+                                arrTime: dayjs(lastSegment.at).format("HH:mm"),
+                                airlineLogo: isUatAirlineLogo,
+                                price: totalPrice,
+                                markup: ticketMarkups[ticket.id] ?? markup,
+                                adultFare: new Intl.NumberFormat("en-IN").format(
+                                  fareFD.ADULT?.fC?.NF || 0
+                                ),
+                                ticket: ticket,
+                                selectedPriceIndex: selectedFareIndex
                               };
-                              const nextTabIndex = tabIndex + 1;
-                              if (nextTabIndex < matchedFlights.length) {
-                                setActiveTabKey(String(nextTabIndex + 1));
-                              }
-                              return newFlights;
-                            });
-                          }}
-                        />
-                      ) : (
-                        <div className="" style={{ paddingBottom: "10px" }}>
-                          {ticket.sI.length >= 1 ? (
-                            <div className="combined-connecting-flight">
-                              <div className="flex gap-4 border rounded-md justify-around items-center pr-20 ">
-                                <div className="flex flex-col">
-                                  {ticket.sI.map((segment, index) => (
-                                    <div
-                                      key={index}
-                                      className="relative flex flex-col rounded-md p-1 xl:p-5"
-                                    >
+
+                              setSelectedFlights((prev) => {
+                                const newFlights = {
+                                  ...prev,
+                                  [tabIndex]: updatedFlight,
+                                };
+                                const nextTabIndex = tabIndex + 1;
+                                if (nextTabIndex < matchedFlights.length) {
+                                  setActiveTabKey(String(nextTabIndex + 1));
+                                }
+                                return newFlights;
+                              });
+                            }}
+                          />
+                        ) : (
+                          <div className="" style={{ paddingBottom: "10px" }}>
+                            {ticket.sI.length >= 1 ? (
+                              <div className="combined-connecting-flight">
+                                <div className="flex gap-4 border rounded-md justify-around items-center pr-20 ">
+                                  <div className="flex flex-col">
+                                    {ticket.sI.map((segment, index) => (
                                       <div
-                                        className="flex justify-between"
-                                        style={{ width: "500px" }}
+                                        key={index}
+                                        className="relative flex flex-col rounded-md p-1 xl:p-5"
                                       >
-                                        <div className="flex flex-col items-center justify-center w-max">
-                                          {isUat && (
-                                            <img
-                                              style={{ width: "50%", margin: "5px" }}
-                                              src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
-                                            />
-                                          )}
-                                          {!isUat && (
-                                            <img
-                                              style={{ width: "50%", margin: "5px" }}
-                                              src={`/assets/imgs/airlines/${segment[
-                                                "fD"
-                                              ].aI.code.toLowerCase()}.png`}
-                                            />
-                                          )}
-                                          <div className="text-sm-medium">
-                                            {segment["fD"].aI.name}
+                                        <div
+                                          className="flex justify-between"
+                                          style={{ width: "500px" }}
+                                        >
+                                          <div className="flex flex-col items-center justify-center w-max">
+                                            {isUat && (
+                                              <img
+                                                style={{ width: "50%", margin: "5px" }}
+                                                src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
+                                              />
+                                            )}
+                                            {!isUat && (
+                                              <img
+                                                style={{ width: "50%", margin: "5px" }}
+                                                src={`/assets/imgs/airlines/${segment[
+                                                  "fD"
+                                                ].aI.code.toLowerCase()}.png`}
+                                              />
+                                            )}
+                                            <div className="text-sm-medium" style={{ textAlign: "center" }}>
+                                              {segment["fD"].aI.name}
+                                            </div>
                                           </div>
-                                        </div>
-                                        <div
-                                          className="text-sm  flex flex-col justify-center items-center "
-                                          style={{ width: "150px" }}
-                                        >
-                                          <p className="text-md-bold neutral-1000 city1name">
-                                            {segment.da.city} ({segment.da.code})
-                                          </p>
-                                          <p className="neutral-1000 time">
-                                            {dayjs(segment.dt).format("HH:mm")}
-                                          </p>
-                                        </div>
-                                        <div
-                                          className="text-xs text-center  "
-                                          style={{ width: "100px" }}
-                                        >
-                                          <p className="text-sm-medium neutral-500">
-                                            {formatTime(segment.duration)}
-                                          </p>
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="16"
-                                            height="16"
-                                            fill="currentColor"
-                                            className="bi bi-arrow-right"
-                                            viewBox="0 0 16 16"
+                                          <div
+                                            className="text-sm  flex flex-col justify-center items-center "
+                                            style={{ width: "150px" }}
                                           >
-                                            <path
-                                              fill-rule="evenodd"
-                                              d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                                            />
-                                          </svg>
-                                          <p className="text-sm-medium neutral-500">
-                                            {" "}
-                                            {segment.stops > 0
-                                              ? `${segment.stops} stops`
-                                              : "non-stop"}
-                                          </p>
-                                        </div>
-                                        <div
-                                          className="text-sm  flex flex-col justify-center items-center gap-1 "
-                                          style={{ width: "200px" }}
-                                        >
-                                          <p className="text-md-bold neutral-1000 city1name">
-                                            {segment.aa.city} ({segment.aa.code})
-                                          </p>
-                                          <p className="neutral-1000 time">
-                                            {dayjs(segment.at).format("HH:mm")}
-                                          </p>
+                                            <p className="text-md-bold neutral-1000 city1name">
+                                              {segment.da.city} ({segment.da.code})
+                                            </p>
+                                            <p className="neutral-1000 time">
+                                              {dayjs(segment.dt).format("HH:mm")}
+                                            </p>
+                                          </div>
+                                          <div
+                                            className="text-xs text-center  "
+                                            style={{ width: "100px" }}
+                                          >
+                                            <p className="text-sm-medium neutral-500">
+                                              {formatTime(segment.duration)}
+                                            </p>
+                                            <svg
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              width="16"
+                                              height="16"
+                                              fill="currentColor"
+                                              className="bi bi-arrow-right"
+                                              viewBox="0 0 16 16"
+                                            >
+                                              <path
+                                                fill-rule="evenodd"
+                                                d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
+                                              />
+                                            </svg>
+                                            <p className="text-sm-medium neutral-500">
+                                              {" "}
+                                              {segment.stops > 0
+                                                ? `${segment.stops} stops`
+                                                : "non-stop"}
+                                            </p>
+                                          </div>
+                                          <div
+                                            className="text-sm  flex flex-col justify-center items-center gap-1 "
+                                            style={{ width: "200px" }}
+                                          >
+                                            <p className="text-md-bold neutral-1000 city1name">
+                                              {segment.aa.city} ({segment.aa.code})
+                                            </p>
+                                            <p className="neutral-1000 time">
+                                              {dayjs(segment.at).format("HH:mm")}
+                                            </p>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
-                                </div>
+                                    ))}
+                                  </div>
 
-                                <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
-                                  <Radio.Group
-                                    onChange={(e) =>
-                                      setSelectedFare(tabIndex, i, e.target.value)
-                                    }
-                                    value={selectedFares[tabIndex]?.[i] ?? 0}
-                                    className="fare-options flex flex-col gap-2 w-full"
-                                  >
-                                    {(showAllFares
-                                      ? ticket.totalPriceList
-                                      : ticket.totalPriceList.slice(0, 2)
-                                    ).map((e, j) => {
-                                      const fareValue = calculateTotalFare(
-                                        e.fd,
-                                        adultCount,
-                                        childCount,
-                                        infantCount,
-                                        getCookie,
-                                        ticketMarkups[ticket.id] ?? markup
-                                      );
-                                      return (
-                                        <Radio
-                                          key={j}
-                                          value={j}
-                                          className="w-full radiocomp"
-                                        >
-                                          <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
-                                            <div className="flex flex-row gap-2 items-center">
-                                              <div
-                                                className="text-lg font-bold text-gray-800 price cursor-pointer hover:bg-gray-50 transition-colors"
-                                                onClick={() => {
-                                                  const prevSegments = Object.keys(selectedFlights)
-                                                    .filter(key => parseInt(key) < tabIndex)
-                                                    .map(key => ({
-                                                      ticket: selectedFlights[key].ticket,
-                                                      selectedPriceIndex: selectedFlights[key].selectedPriceIndex
-                                                    }));
-                                                  onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0, prevSegments);
-                                                }}
-                                              >
-                                                ₹{fareValue}
-                                              </div>
-                                              {/* Share Checkbox Inline */}
-                                              {shareMode && (
-                                                <div className="ml-2" onClick={(e) => e.stopPropagation()}>
-                                                  <input
-                                                    type="checkbox"
-                                                    className="w-5 h-5 cursor-pointer accent-orange-500"
-                                                    checked={selectedQuoteFlights.some(
-                                                      (f) => f.ticketId === ticket.id && f.fareIndex === j
-                                                    )}
-                                                    onChange={(e) =>
-                                                      handleQuoteSelectionChange(
-                                                        ticket,
-                                                        j,
-                                                        e.target.checked,
-                                                        tabIndex
-                                                      )
-                                                    }
-                                                  />
+                                  <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
+                                    <Radio.Group
+                                      onChange={(e) =>
+                                        setSelectedFare(tabIndex, i, e.target.value)
+                                      }
+                                      value={selectedFares[tabIndex]?.[i] ?? 0}
+                                      className="fare-options flex flex-col gap-2 w-full"
+                                    >
+                                      {(showAllFares
+                                        ? ticket.totalPriceList
+                                        : ticket.totalPriceList.slice(0, 2)
+                                      )
+                                        .filter((fare) => {
+                                          const currentFilters = filters[tabIndex];
+                                          const selectedFareTypes = currentFilters?.selectedFareTypes || [];
+                                          // Check if we need to map based on how filters are stored. 
+                                          // If filters store "Refundable", "Non Refundable", etc.
+
+                                          if (selectedFareTypes && selectedFareTypes.length > 0) {
+                                            const fareTypeMap = {
+                                              0: "Non Refundable",
+                                              1: "Refundable",
+                                              2: "Partial Refundable",
+                                            };
+                                            const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
+                                            return selectedFareTypes.includes(fareTypeLabel);
+                                          }
+                                          return true;
+                                        })
+                                        .map((e, j) => {
+                                          const fareValue = calculateTotalFare(
+                                            e.fd,
+                                            adultCount,
+                                            childCount,
+                                            infantCount,
+                                            getCookie,
+                                            ticketMarkups[ticket.id] ?? markup
+                                          );
+                                          return (
+                                            <Radio
+                                              key={j}
+                                              value={j}
+                                              className="w-full radiocomp"
+                                            >
+                                              <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
+                                                <div className="flex flex-row gap-2 items-center">
+                                                  <div
+                                                    className="text-lg font-bold text-gray-800 price cursor-pointer hover:bg-gray-50 transition-colors"
+                                                    onClick={() => {
+                                                      const prevSegments = Object.keys(selectedFlights)
+                                                        .filter(key => parseInt(key) < tabIndex)
+                                                        .map(key => ({
+                                                          ticket: selectedFlights[key].ticket,
+                                                          selectedPriceIndex: selectedFlights[key].selectedPriceIndex
+                                                        }));
+                                                      onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0, prevSegments);
+                                                    }}
+                                                  >
+                                                    ₹{fareValue}
+                                                  </div>
+                                                  {/* Share Checkbox Inline */}
+                                                  {shareMode && (
+                                                    <div className="ml-2" onClick={(e) => e.stopPropagation()}>
+                                                      <input
+                                                        type="checkbox"
+                                                        className="w-5 h-5 cursor-pointer accent-orange-500"
+                                                        checked={selectedQuoteFlights.some(
+                                                          (f) => f.ticketId === ticket.id && f.fareIndex === j
+                                                        )}
+                                                        onChange={(e) =>
+                                                          handleQuoteSelectionChange(
+                                                            ticket,
+                                                            j,
+                                                            e.target.checked,
+                                                            tabIndex
+                                                          )
+                                                        }
+                                                      />
+                                                    </div>
+                                                  )}
+                                                  <span
+                                                    className="fareidentifier text-xs font-bold"
+                                                    style={{
+                                                      backgroundColor: "#f5deb3",
+                                                      color: "#5c4033",
+                                                      padding: "1px 2px",
+                                                    }}
+                                                  >
+                                                    {e.fareIdentifier}
+                                                  </span>
                                                 </div>
-                                              )}
-                                              <span
-                                                className="fareidentifier text-xs font-bold"
-                                                style={{
-                                                  backgroundColor: "#f5deb3",
-                                                  color: "#5c4033",
-                                                  padding: "1px 2px",
-                                                }}
-                                              >
-                                                {e.fareIdentifier}
-                                              </span>
-                                            </div>
-                                            <div className="text-xs text-gray-600">
-                                              <span className="ml-2 cabinclass">
-                                                {e.fd.ADULT.cc} |{" "}
-                                                <span className="refundable">
-                                                  {e.fd.ADULT.rT === 1
-                                                    ? "Refundable"
-                                                    : e.fd.ADULT.rT === 2
-                                                      ? "Partial Refundable"
-                                                      : "Non Refundable"}
-                                                </span>
-                                              </span>
-                                            </div>
-                                          </div>
-                                        </Radio>
-                                      );
-                                    })}
-                                    {ticket.totalPriceList.length > 2 && (
-                                      <button
-                                        className="view-more-txt"
-                                        style={{
-                                          textAlign: "right",
-                                          fontSize: "10px",
-                                        }}
-                                        onClick={() =>
-                                          setShowAllFares((prev) => !prev)
-                                        }
-                                      >
-                                        {showAllFares
-                                          ? "(-) View Less"
-                                          : "(+) View More"}
-                                      </button>
-                                    )}
-                                  </Radio.Group>
-                                </div>
-                                <div>
-                                  <button
-                                    className="btn-book-now"
-                                    onClick={() => {
-                                      const selectedFareIndex =
-                                        selectedFares[tabIndex]?.[i] ?? 0;
-                                      const selectedFare =
-                                        ticket.totalPriceList[selectedFareIndex];
-                                      const fareFD = selectedFare.fd;
+                                                <div className="text-xs text-gray-600">
+                                                  <span className="ml-2 cabinclass">
+                                                    {e.fd.ADULT.cc} |{" "}
+                                                    <span
+                                                      className="refundable"
+                                                      style={{
+                                                        color:
+                                                          e.fd.ADULT.rT === 1 || e.fd.ADULT.rT === 2
+                                                            ? "#22c55e"
+                                                            : "#dc2626",
+                                                      }}
+                                                    >
+                                                      {e.fd.ADULT.rT === 1
+                                                        ? "Refundable"
+                                                        : e.fd.ADULT.rT === 2
+                                                          ? "Partial Refundable"
+                                                          : "Non Refundable"}
+                                                    </span>
+                                                  </span>
+                                                </div>
+                                              </div>
+                                            </Radio>
+                                          );
+                                        })}
+                                      {ticket.totalPriceList.length > 2 && (
+                                        <button
+                                          className="view-more-txt"
+                                          style={{
+                                            textAlign: "right",
+                                            fontSize: "10px",
+                                          }}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowAllFares((prev) => !prev);
+                                          }}
+                                        >
+                                          {showAllFares
+                                            ? "(-) View Less"
+                                            : "(+) View More"}
+                                        </button>
+                                      )}
+                                    </Radio.Group>
+                                  </div>
+                                  <div>
+                                    <button
+                                      className="btn-book-now"
+                                      onClick={() => {
+                                        const selectedFareIndex =
+                                          selectedFares[tabIndex]?.[i] ?? 0;
+                                        const selectedFare =
+                                          ticket.totalPriceList[selectedFareIndex];
+                                        const fareFD = selectedFare.fd;
 
-                                      const totalPrice = calculateTotalFare(
-                                        fareFD,
-                                        adultCount,
-                                        childCount,
-                                        infantCount,
-                                        getCookie,
-                                        ticketMarkups[ticket.id] ?? markup
-                                      );
-                                      const firstSegment = ticket.sI[0];
-                                      const lastSegment =
-                                        ticket.sI[ticket.sI.length - 1];
+                                        const totalPrice = calculateTotalFare(
+                                          fareFD,
+                                          adultCount,
+                                          childCount,
+                                          infantCount,
+                                          getCookie,
+                                          ticketMarkups[ticket.id] ?? markup
+                                        );
+                                        const firstSegment = ticket.sI[0];
+                                        const lastSegment =
+                                          ticket.sI[ticket.sI.length - 1];
 
-                                      const isUatAirlineLogo = isUat
-                                        ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
-                                        : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
-                                      const updatedFlight = {
-                                        priceId: selectedFare.id,
-                                        flightName: firstSegment.fD.aI.name,
-                                        depCityCode: firstSegment.da.code,
-                                        arrCityCode: lastSegment.aa.code,
-                                        airlineCode: firstSegment.fD.aI.code,
-                                        flightNumber: firstSegment.fD.fN,
-                                        depCity: firstSegment.da.city,
-                                        arrCity: lastSegment.aa.city,
-                                        depTime: dayjs(firstSegment.dt).format(
-                                          "HH:mm"
-                                        ),
-                                        arrTime: dayjs(lastSegment.at).format(
-                                          "HH:mm"
-                                        ),
-                                        airlineLogo: isUatAirlineLogo,
-                                        price: totalPrice,
-                                        markup: ticketMarkups[ticket.id] ?? markup,
-                                        adultFare: new Intl.NumberFormat(
-                                          "en-IN"
-                                        ).format(fareFD.ADULT?.fC?.NF || 0),
-                                        ticket: ticket, // Added for combined quote parity
-                                        selectedPriceIndex: selectedFareIndex // Added for combined quote parity
-                                      };
-
-                                      setSelectedFlights((prev) => {
-                                        const newFlights = {
-                                          ...prev,
-                                          [tabIndex]: updatedFlight,
+                                        const isUatAirlineLogo = isUat
+                                          ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
+                                          : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
+                                        const updatedFlight = {
+                                          priceId: selectedFare.id,
+                                          flightName: firstSegment.fD.aI.name,
+                                          depCityCode: firstSegment.da.code,
+                                          arrCityCode: lastSegment.aa.code,
+                                          airlineCode: firstSegment.fD.aI.code,
+                                          flightNumber: firstSegment.fD.fN,
+                                          depCity: firstSegment.da.city,
+                                          arrCity: lastSegment.aa.city,
+                                          depTime: dayjs(firstSegment.dt).format(
+                                            "HH:mm"
+                                          ),
+                                          arrTime: dayjs(lastSegment.at).format(
+                                            "HH:mm"
+                                          ),
+                                          airlineLogo: isUatAirlineLogo,
+                                          price: totalPrice,
+                                          markup: ticketMarkups[ticket.id] ?? markup,
+                                          adultFare: new Intl.NumberFormat(
+                                            "en-IN"
+                                          ).format(fareFD.ADULT?.fC?.NF || 0),
+                                          ticket: ticket, // Added for combined quote parity
+                                          selectedPriceIndex: selectedFareIndex // Added for combined quote parity
                                         };
-                                        const nextTabIndex = tabIndex + 1;
-                                        if (
-                                          nextTabIndex < matchedFlights.length
-                                        ) {
-                                          setActiveTabKey(
-                                            String(nextTabIndex + 1)
-                                          ); // Because tab keys are 1-based
-                                        }
 
-                                        return newFlights;
-                                      });
-                                    }}
-                                  >
-                                    Select
-                                  </button>
+                                        setSelectedFlights((prev) => {
+                                          const newFlights = {
+                                            ...prev,
+                                            [tabIndex]: updatedFlight,
+                                          };
+                                          const nextTabIndex = tabIndex + 1;
+                                          if (
+                                            nextTabIndex < matchedFlights.length
+                                          ) {
+                                            setActiveTabKey(
+                                              String(nextTabIndex + 1)
+                                            ); // Because tab keys are 1-based
+                                          }
+
+                                          return newFlights;
+                                        });
+                                      }}
+                                    >
+                                      Select
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ) : null}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
+                            ) : null}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
+                    <p className="text-xl font-semibold">
+                      No flights found for your filter criteria.
+                    </p>
+                    <p className="text-sm mt-2 text-gray-400">
+                      Try adjusting your filters to see more results.
+                    </p>
+                  </div>
+                )
               ) : (
                 <p>No matching flights found for this route.</p>
               )}

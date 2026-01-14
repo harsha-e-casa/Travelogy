@@ -199,6 +199,38 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     setCookie(passengerKey, JSON.stringify(updatedData));
   };
 
+  const handleSeatDeselect = (passengerIdx = selectedPassengerIndex) => {
+    const flightId = flightSeat?.seg?.id || null;
+    if (!flightId) return;
+
+    // Update state
+    const updatedSelections = { ...seatSelections };
+    if (updatedSelections[flightId]) {
+      delete updatedSelections[flightId][passengerIdx];
+    }
+    setSeatSelections(updatedSelections);
+
+    // Update cookie
+    const passengerKey =
+      passengerIdx < numAdults
+        ? `adult_seat_map-${passengerIdx + 1}`
+        : `child_seat_map-${passengerIdx - numAdults + 1}`;
+
+    let existingData = getCookie(passengerKey);
+    if (existingData) {
+      try {
+        let updatedData = JSON.parse(existingData);
+        // Remove the entry for this flight
+        updatedData = updatedData.filter(
+          (entry) => entry.flightId != String(flightId)
+        );
+        setCookie(passengerKey, JSON.stringify(updatedData));
+      } catch (err) {
+        console.error("Error updating cookie for deselection:", err);
+      }
+    }
+  };
+
   // const renderSeatMap = (sInfo) => {
   //   console.log("renderSeatMaprenderSeatMaprenderSeatMap == ",sInfo);
   //   const maxRow = Math.max(...sInfo.map((seat) => seat.seatPosition.row));
@@ -348,7 +380,9 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                 key={colIndex}
                 title={seat.code}
                 onClick={() => {
-                  if (isSelectable) {
+                  if (isSelected) {
+                    handleSeatDeselect(selectedPassengerIndex);
+                  } else if (isSelectable) {
                     handleSeatSelect(seat.code, seat.amount || 0);
                   }
                 }}
@@ -541,7 +575,27 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                           </td>
                           <td className="px-2 py-2 text-gray-700">
                             {seatSelections[flightSeat?.seg?.id]?.[index]
-                              ?.seatNo || "—"}
+                              ?.seatNo ? (
+                              <div className="flex items-center gap-2">
+                                <span>
+                                  {
+                                    seatSelections[flightSeat?.seg?.id]?.[index]
+                                      ?.seatNo
+                                  }
+                                </span>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSeatDeselect(index);
+                                  }}
+                                  className="text-red-500 hover:text-red-700 font-bold ml-2"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ) : (
+                              "—"
+                            )}
                           </td>
                           <td className="px-2 py-2 text-gray-700">
                             {seatSelections[flightSeat?.seg?.id]?.[index]
@@ -576,7 +630,28 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                               <td className="px-2 py-2 text-gray-700">
                                 {seatSelections[flightSeat?.seg?.id]?.[
                                   passengerIndex
-                                ]?.seatNo || "—"}
+                                ]?.seatNo ? (
+                                  <div className="flex items-center gap-2">
+                                    <span>
+                                      {
+                                        seatSelections[flightSeat?.seg?.id]?.[
+                                          passengerIndex
+                                        ]?.seatNo
+                                      }
+                                    </span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSeatDeselect(passengerIndex);
+                                      }}
+                                      className="text-red-500 hover:text-red-700 font-bold ml-2"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                ) : (
+                                  "—"
+                                )}
                               </td>
                               <td className="px-2 py-2 text-gray-700">
                                 {seatSelections[flightSeat?.seg?.id]?.[

@@ -137,41 +137,64 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     }
   }, []);
 
-  const getTicketPrice = (ticket: any) => {
+  const getTicketPrice = (ticket: any, validFareTypes: string[] = []) => {
     const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
     const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
     const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
 
-    const adultFare =
-      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
-    const childFare =
-      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
-    const infantFare =
-      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+    const typeMap: { [key: number]: string } = {
+      0: "Non Refundable",
+      1: "Refundable",
+      2: "Partial Refundable",
+    };
 
-    return adultFare + childFare + infantFare + (Number(ticketMarkups[ticket.id] ?? markup) || 0);
+    let selectedFareIndex = 0;
+
+    // If strict fare types are selected, find the first matching fare Option
+    if (validFareTypes && validFareTypes.length > 0) {
+      const matchIndex = ticket.totalPriceList.findIndex((priceInfo: any) =>
+        Object.values(priceInfo.fd || {}).some((pax: any) => {
+          const code = Number(pax?.rT);
+          const label = typeMap[code];
+          return validFareTypes.includes(label);
+        })
+      );
+      if (matchIndex !== -1) {
+        selectedFareIndex = matchIndex;
+      }
+    }
+
+    const fareOption = ticket.totalPriceList?.[selectedFareIndex];
+
+    const adultFare =
+      (fareOption?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare =
+      (fareOption?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare =
+      (fareOption?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+
+    return adultFare + childFare + infantFare;
   };
 
   const getPriceRangeFromData = (data: any[]) => {
     const prices: number[] = [];
 
-    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-
     data.forEach((ticket) => {
-      const adultFare =
-        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-      const childFare =
-        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-      const infantFare =
-        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+      // Note: We use the default Cheapest price for setting the range bounds,
+      // as the filters are separate per tab phase and this runs on init/change.
+      // If we wanted dynamic range based on Active Fare Type, we'd need to pass state here.
+      // For now, keeping it simple as per Tickets.tsx pattern, 
+      // but verifying we use getTicketPrice with empty array (default expensive/cheap doesn't matter for ALL data unless filtered).
+      // Actually, to get true MIN/MAX of ALL tickets, we should check ALL fare options?
+      // Or just the cheapest one? Standard behavior is usually Cheapest Available.
+      const price = getTicketPrice(ticket);
 
-      const price = adultFare + childFare + infantFare;
       if (price !== undefined) {
         prices.push(price);
       }
     });
+
+    if (prices.length === 0) return [0, 100000];
 
     const minPrice = Math.min(...prices);
     const maxPrice = Math.max(...prices);
@@ -318,19 +341,22 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         ? onwardSelectedFareTypes
         : returnSelectedFareTypes;
 
-    // Price Range Filter
-    filteredData = filteredData.filter((ticket: any) => {
-      const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-      const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-      const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-      const adultFare =
-        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-      const childFare =
-        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-      const infantFare =
-        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
+    // 1. Strict Fare Type Filter (Priority)
+    if (activeFareTypes.length > 0) {
+      filteredData = filteredData.filter((ticket: any) =>
+        (ticket.totalPriceList || []).some((priceInfo: any) =>
+          Object.values(priceInfo.fd || {}).some((pax: any) => {
+            const code = Number(pax?.rT);
+            const label = FARE_TYPE_LABEL[code] ?? code;
+            return activeFareTypes.includes(label);
+          })
+        )
+      );
+    }
 
-      const price = adultFare + childFare + infantFare;
+    // 2. Price Range Filter (Use getTicketPrice with activeFareTypes)
+    filteredData = filteredData.filter((ticket: any) => {
+      const price = getTicketPrice(ticket, activeFareTypes);
       return price >= priceRange[0] && price <= priceRange[1];
     });
 
@@ -421,25 +447,13 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
       });
     }
 
-    if (activeFareTypes.length > 0) {
-      filteredData = filteredData.filter((ticket: any) =>
-        (ticket.totalPriceList || []).some((priceInfo: any) =>
-          Object.values(priceInfo.fd || {}).some((pax: any) => {
-            const code = Number(pax?.rT);
-            const label = FARE_TYPE_LABEL[code] ?? code;
-            return activeFareTypes.includes(label);
-          })
-        )
-      );
-    }
-
     if (priceSort === "asc") {
       filteredData.sort(
-        (a: any, b: any) => getTicketPrice(a) - getTicketPrice(b)
+        (a: any, b: any) => getTicketPrice(a, activeFareTypes) - getTicketPrice(b, activeFareTypes)
       );
     } else if (priceSort === "desc") {
       filteredData.sort(
-        (a: any, b: any) => getTicketPrice(b) - getTicketPrice(a)
+        (a: any, b: any) => getTicketPrice(b, activeFareTypes) - getTicketPrice(a, activeFareTypes)
       );
     }
 
@@ -781,9 +795,9 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         <div className="col-xl-9 col-12">
           {currentTickets && currentTickets.length > 0 ? (
             <>
-              <div className="flex border-b mb-4">
+              <div className="flex border-b">
                 <div
-                  className={`flex-1 p-3 text-center cursor-pointer font-bold ${tripPhase === "ONWARD"
+                  className={`flex-1 p-1 text-center cursor-pointer font-bold ${tripPhase === "ONWARD"
                     ? "border-b-2 border-blue-500 text-blue-500"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
@@ -792,7 +806,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                   Departure to {departureFrom}
                 </div>
                 <div
-                  className={`flex-1 p-3 text-center cursor-pointer font-bold ${tripPhase === "RETURN"
+                  className={`flex-1 p-1 text-center cursor-pointer font-bold ${tripPhase === "RETURN"
                     ? "border-b-2 border-blue-500 text-blue-500"
                     : "text-gray-500 hover:text-gray-700"
                     }`}
@@ -848,10 +862,11 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                 style={{ padding: "10px" }}
               >
                 {currentTickets.map((ticket: any, index: number) => {
-                  const ticketId = ticket.id;
+                  const ticketId = generateStableId(ticket);
                   return (
                     <DomesticRoundTripTicketCard
-                      ticket={ticket}
+                      // ticket={ticket}
+                      ticket={{ ...ticket, id: ticketId }}
                       handleTicketSelected={handleTicketSelected}
                       tripPhase={tripPhase}
                       selectedOnwardTicket={selectedOnwardTicket}
@@ -862,11 +877,16 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                         if (tripPhase === "RETURN" && selectedOnwardTicket) {
                           prevTickets.push(selectedOnwardTicket);
                         }
-                        onPriceClick(id, m, t, fIdx, prevTickets);
+                        onPriceClick(ticketId, m, t, fIdx, prevTickets);
                       }}
                       shareMode={shareMode}
                       selectedQuoteFlights={selectedQuoteFlights}
                       onQuoteSelectionChange={handleQuoteSelectionChange}
+                      selectedFareTypes={
+                        tripPhase === "ONWARD"
+                          ? onwardSelectedFareTypes
+                          : returnSelectedFareTypes
+                      }
                     />
                   );
                 })}
@@ -884,7 +904,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
       </div>
       {selectedOnwardTicket && tripPhase === "RETURN" && (
         <div
-          className="items-center p-3 border border-yellow-300 rounded-md mb-4 shadow-sm"
+          className="items-center p-2 border border-yellow-300 rounded-md mb-1 shadow-sm a"
           style={{
             position: "sticky",
             bottom: "0px",
@@ -1048,7 +1068,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
           {isMobile ? (
             <>
               <div
-                className="mobile-view p-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] cursor-pointer"
+                className="mobile-view p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] cursor-pointer"
                 style={{
                   position: "sticky",
                   bottom: 0,
@@ -1188,15 +1208,15 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
             // Desktop View Layout for Selected Onward Ticket (existing layout)
             <div className="row">
               <div className="col-lg-11">
-                <p className="text-sm font-semibold text-white mb-2">Selected Departure Flight</p>
+                <p className="text-xs font-semibold text-white mb-1">Selected Departure Flight</p>
                 <div className="flex justify-evenly">
                   {selectedOnwardTicket?.ticket?.sI?.map((segment: any, index: number) => (
-                    <div key={index} className="mb-2 w-[50%] justify-around items-center border border-white rounded px-2 py-0.5 flex" style={{ margin: "2px", width: "50%" }}>
+                    <div key={index} className="mb-1 w-[50%] justify-around items-center border border-white rounded px-2 py-0.5 flex" style={{ margin: "1px", width: "50%" }}>
                       {isUat && (
                         <img
                           style={{
-                            width: "35px",
-                            height: "35px",
+                            width: "24px",
+                            height: "24px",
                             padding: "1px",
                           }}
                           src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
@@ -1205,30 +1225,30 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                       {!isUat && (
                         <img
                           style={{
-                            width: "35px",
-                            height: "35px",
+                            width: "24px",
+                            height: "24px",
                             padding: "1px",
                           }}
                           src={`/assets/imgs/airlines/${segment["fD"].aI.code.toLowerCase()}.png`}
                         />
                       )}
                       <div>
-                        <p className="text-sm font-semibold text-white">{segment.da.city}</p>
-                        <p className="text-sm font-semibold text-white">{dayjs(segment.dt).format("hh:mm A")}</p>
+                        <p className="text-xs font-semibold text-white">{segment.da.city}</p>
+                        <p className="text-xs font-semibold text-white">{dayjs(segment.dt).format("hh:mm A")}</p>
                       </div>
                       <div className="flex flex-col items-center">
-                        <p className="text-sm font-semibold text-white">{Math.floor(segment.duration / 60)}h {segment.duration % 60}m</p>
+                        <p className="text-[10px] font-semibold text-white">{Math.floor(segment.duration / 60)}h {segment.duration % 60}m</p>
                         <img src="https://edge.ixigo.com/st/vimaan/_next/static/media/line.9641f579.svg" alt="" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">{segment.aa.city}</p>
-                        <p className="text-sm font-semibold text-white">{dayjs(segment.at).format("hh:mm A")}</p>
+                        <p className="text-xs font-semibold text-white">{segment.aa.city}</p>
+                        <p className="text-xs font-semibold text-white">{dayjs(segment.at).format("hh:mm A")}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="text-right mt-2 mr-4">
-                  <p className="text-sm text-white font-medium">
+                <div className="text-right mt-1 mr-4">
+                  <p className="text-xs text-white font-medium">
                     Fare: ₹
                     {(() => {
                       let adultCost = 0;

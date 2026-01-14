@@ -17,6 +17,7 @@ export default function TicketCardMobile({
     shareMode = false,
     selectedQuoteFlights = [],
     onQuoteSelectionChange,
+    selectedFareTypes = [],
 }: any) {
     const { getCookie } = useContext(AppContext);
     const isUat = process.env.UAT_ENV === "true";
@@ -165,14 +166,27 @@ export default function TicketCardMobile({
             {showAllFares && (
                 <div className="mt-3">
                     <Radio.Group onChange={(e) => setValue(e.target.value)} value={value} className="w-full flex flex-col gap-2">
-                        {ticket.totalPriceList.map((fare: any, idx: number) => (
-                            <Radio key={idx} value={idx} className="w-full border p-2 rounded">
-                                <div className="flex justify-between items-center w-full">
-                                    <span className="text-sm font-bold">₹{calculateTotalPrice(fare)}</span>
-                                    <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
-                                </div>
-                            </Radio>
-                        ))}
+                        {ticket.totalPriceList
+                            .filter((fare: any) => {
+                                if (selectedFareTypes && selectedFareTypes.length > 0) {
+                                    const fareTypeMap: { [key: number]: string } = {
+                                        0: "Non Refundable",
+                                        1: "Refundable",
+                                        2: "Partial Refundable",
+                                    };
+                                    const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
+                                    return selectedFareTypes.includes(fareTypeLabel);
+                                }
+                                return true;
+                            })
+                            .map((fare: any, idx: number) => (
+                                <Radio key={idx} value={idx} className="w-full border p-2 rounded">
+                                    <div className="flex justify-between items-center w-full">
+                                        <span className="text-sm font-bold">₹{calculateTotalPrice(fare)}</span>
+                                        <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
+                                    </div>
+                                </Radio>
+                            ))}
                     </Radio.Group>
                 </div>
             )}

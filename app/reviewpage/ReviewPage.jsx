@@ -631,26 +631,36 @@ const ReviewPage = () => {
                         </>
                       ) : null}
                       <div>
-                        ₹
-                        {fareRulesData?.fareRuleInformation?.tfr
-                          ?.CANCELLATION?.[0]?.amount
-                          ? fareRulesData?.fareRuleInformation?.tfr
-                            ?.CANCELLATION?.[0]?.amount
-                          : fareRulesData?.fareRuleInformation?.tfr
-                            ?.CANCELLATION?.[0]?.additionalFee}
+                        {(() => {
+                          const cItem =
+                            fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0];
+                          if (cItem?.amount && cItem?.additionalFee) {
+                            return (
+                              <>
+                                ₹{cItem.amount} + ₹{cItem.additionalFee}
+                              </>
+                            );
+                          }
+                          return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                        })()}
                       </div>
                     </div>
                   </>
                 ) : (
                   <div>
                     {" "}
-                    ₹
-                    {fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0]
-                      ?.amount
-                      ? fareRulesData?.fareRuleInformation?.tfr
-                        ?.CANCELLATION?.[0]?.amount
-                      : fareRulesData?.fareRuleInformation?.tfr
-                        ?.CANCELLATION?.[0]?.additionalFee}{" "}
+                    {(() => {
+                      const cItem =
+                        fareRulesData?.fareRuleInformation?.tfr?.CANCELLATION?.[0];
+                      if (cItem?.amount && cItem?.additionalFee) {
+                        return (
+                          <>
+                            ₹{cItem.amount} + ₹{cItem.additionalFee}
+                          </>
+                        );
+                      }
+                      return <>₹{cItem?.amount || cItem?.additionalFee}</>;
+                    })()}{" "}
                   </div>
                 )}
               </div>
@@ -713,10 +723,26 @@ const ReviewPage = () => {
                               <div key={index}>{line.trim()}</div>
                             ))}
                           <div>
-                            ₹
-                            {dateChange?.amount
-                              ? dateChange?.amount
-                              : dateChange?.additionalFee}
+                            {(() => {
+                              if (
+                                dateChange?.amount &&
+                                dateChange?.additionalFee
+                              ) {
+                                return (
+                                  <>
+                                    ₹{dateChange.amount} + ₹
+                                    {dateChange.additionalFee}
+                                  </>
+                                );
+                              }
+                              return (
+                                <>
+                                  ₹
+                                  {dateChange?.amount ||
+                                    dateChange?.additionalFee}
+                                </>
+                              );
+                            })()}
                           </div>
                         </>
                       ) : null}
@@ -726,10 +752,20 @@ const ReviewPage = () => {
                   return (
                     <p>
                       {" "}
-                      ₹
-                      {dateChange?.amount
-                        ? dateChange?.amount
-                        : dateChange?.additionalFee}
+                      {(() => {
+                        if (dateChange?.amount && dateChange?.additionalFee) {
+                          return (
+                            <>
+                              ₹{dateChange.amount} + ₹{dateChange.additionalFee}
+                            </>
+                          );
+                        }
+                        return (
+                          <>
+                            ₹{dateChange?.amount || dateChange?.additionalFee}
+                          </>
+                        );
+                      })()}
                     </p>
                   );
                 }
@@ -852,6 +888,21 @@ const ReviewPage = () => {
                       ?.SEAT_CHARGEABLE?.[0]?.policyInfo
                   }
                 </p>
+                {(() => {
+                  const seatItem =
+                    fareRulesData?.fareRuleInformation?.tfr
+                      ?.SEAT_CHARGEABLE?.[0];
+                  if (seatItem?.amount && seatItem?.additionalFee) {
+                    return (
+                      <>
+                        ₹{seatItem.amount} + ₹{seatItem.additionalFee}
+                      </>
+                    );
+                  }
+                  return (
+                    <>₹{seatItem?.amount || seatItem?.additionalFee}</>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -1553,6 +1604,7 @@ const ReviewPage = () => {
                                       {/* Flight Timings */}
                                       <div
                                         className="flex justify-between items-center gap-5 flight-timings-inner"
+                                        style={{ width: "100%" }}
                                       >
                                         <div className="text-left space-y-1 flight-timing-item">
                                           <h4
@@ -2552,47 +2604,25 @@ const ReviewPage = () => {
                         </div>
 
                         <div
-                          onClick={!(bookingLoading || bookingLoadingWallet) ? bookingReview : undefined}
-                          className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between hover:shadow-md ${bookingLoading
-                            ? "bg-gray-100 cursor-not-allowed pointer-events-none"
-                            : bookingLoadingWallet
-                              ? "bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"
-                              : "bg-white hover:border-yellow-400 cursor-pointer"
-                            }`}
-                          aria-disabled={bookingLoading || bookingLoadingWallet}
+                          className={`border border-gray-300 px-6 py-4 transition text-black rounded-lg flex items-center justify-between ${"bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none"}`}
+                          aria-disabled={true}
                         >
                           <span className="font-semibold text-lg">
                             Pay via Gateway
                           </span>
-                          {bookingLoading ? (
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <svg
-                                className="animate-spin h-5 w-5"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="currentColor"
-                                  strokeWidth="4"
-                                  fill="none"
-                                />
-                                <path
-                                  className="opacity-75"
-                                  fill="currentColor"
-                                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                                />
-                              </svg>
-                              Processing...
-                            </div>
-                          ) : (
-                            <span className="p-2 bg-yellow-100 rounded-full text-yellow-700">
-                              ➜
-                            </span>
-                          )}
+                          <span className="text-xs text-gray-500">
+                            (Currently Unavailable)
+                          </span>
                         </div>
+                      </div>
+
+                      <div className="mt-4 flex justify-center">
+                        <button
+                          onClick={() => setPaymentModel(false)}
+                          className="text-red-500 hover:text-red-800 font-medium underline"
+                        >
+                          Cancel
+                        </button>
                       </div>
                       {paymsg && (
                         <div className="mt-6 p-4 bg-red-50 border border-red-100 rounded-lg text-center">
