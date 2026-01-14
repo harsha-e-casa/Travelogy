@@ -300,7 +300,13 @@ export default function Tickets() {
         }
       ];
 
-      const ticketHTML = generateTicketHTML(allTicketsInQuote);
+      const passengerCounts = {
+        adult: parseInt(Cookies.get("gy_adult") || "1", 10),
+        child: parseInt(Cookies.get("gy_child") || "0", 10),
+        infant: parseInt(Cookies.get("gy_infant") || "0", 10),
+      };
+
+      const ticketHTML = generateTicketHTML(allTicketsInQuote, passengerCounts);
 
       const payload = {
         email: shareEmail,
@@ -332,12 +338,12 @@ export default function Tickets() {
     }
   };
 
-  const generateTicketHTML = (ticketItems: { ticket: any, fareIndex: number, markup: number }[]) => {
+  const generateTicketHTML = (ticketItems: { ticket: any, fareIndex: number, markup: number }[], passengerCounts?: { adult: number, child: number, infant: number }) => {
     if (!ticketItems || ticketItems.length === 0) return "<p>Details unavailable.</p>";
 
-    const dfadu = parseInt(getCookie("gy_adult") || "1", 10);
-    const dfchi = parseInt(getCookie("gy_child") || "0", 10);
-    const dfinf = parseInt(getCookie("gy_infant") || "0", 10);
+    const dfadu = passengerCounts ? passengerCounts.adult : parseInt(getCookie("gy_adult") || "1", 10);
+    const dfchi = passengerCounts ? passengerCounts.child : parseInt(getCookie("gy_child") || "0", 10);
+    const dfinf = passengerCounts ? passengerCounts.infant : parseInt(getCookie("gy_infant") || "0", 10);
     const gyClass = getCookie("gy_class") || "b";
 
     const cabinClassLabel = (classLabels[gyClass] || "ECONOMY").replace("_", " ");
