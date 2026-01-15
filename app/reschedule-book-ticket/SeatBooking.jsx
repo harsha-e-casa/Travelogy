@@ -28,6 +28,54 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     };
   }, [flightSeat]);
 
+  // New Effect to hydrate seatSelections from cookies
+  useEffect(() => {
+    const bookingId = apiData?.bookingId;
+    const newSeatSelections = {};
+
+    const processCookie = (prefix, i, passengerIndex) => {
+      const key = `${prefix}_seat_map-${i}`;
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`${key}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(key);
+      }
+
+      if (cookieData) {
+        try {
+          const seatArray = JSON.parse(cookieData);
+          seatArray.forEach((item) => {
+            const { seat, flightId, amount } = item;
+            if (!newSeatSelections[flightId]) {
+              newSeatSelections[flightId] = [];
+            }
+            newSeatSelections[flightId][passengerIndex] = {
+              seatNo: seat,
+              cost: amount,
+              flightId: flightId
+            };
+          });
+        } catch (e) {
+          console.error("Error parsing seat cookie for hydration", e);
+        }
+      }
+    };
+
+    // Adults (re-adult)
+    for (let i = 1; i <= (numAdults || 9); i++) {
+      processCookie("re-adult", i, i - 1);
+    }
+
+    // Children (re-child)
+    for (let i = 1; i <= (numChild || 9); i++) {
+      processCookie("re-child", i, (numAdults || 0) + i - 1);
+    }
+
+    setSeatSelections(newSeatSelections);
+  }, [apiData, numAdults, numChild]);
+
   const handleViewSeat = async ({ id, seg, fromCode, toCode }) => {
     // prevIdRef.current = id;
     setFromToCode("");
@@ -74,8 +122,17 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
   const showSeatNo = () => {
     let setData = {};
 
+    const bookingId = apiData?.bookingId;
+
     for (let i = 1; i <= 9; i++) {
-      let cookieData = getCookie(`re-adult_seat_map-${i}`);
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`re-adult_seat_map-${i}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(`re-adult_seat_map-${i}`);
+      }
+
       if (!cookieData) continue; // skip if no cookie for this adult
 
       let adultSeatArray = JSON.parse(cookieData);
@@ -92,7 +149,14 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     }
 
     for (let i = 1; i <= 9; i++) {
-      let cookieData = getCookie(`re-child_seat_map-${i}`);
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`re-child_seat_map-${i}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(`re-child_seat_map-${i}`);
+      }
+
       if (!cookieData) continue; // skip if no cookie for this child
 
       let childSeatArray = JSON.parse(cookieData);
@@ -119,8 +183,17 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
       ...Array.from({ length: 9 }, (_, i) => `child_seat_map-${i + 1}`),
     ];
 
+    const bookingId = apiData?.bookingId;
+
     collectKeys.forEach((key) => {
-      const cookieData = getCookie(key);
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`${key}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(key);
+      }
+
       if (cookieData) {
         try {
           const parsedArray = JSON.parse(cookieData); // Expecting an array
@@ -170,12 +243,20 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
     };
 
     // Check existing cookie
-    let existingData = getCookie(passengerKey);
+    const bookingId = apiData?.bookingId;
+    let existingDataStr = null;
+    if (bookingId) {
+      existingDataStr = getCookie(`${passengerKey}_${bookingId}`);
+    }
+    if (!existingDataStr) {
+      existingDataStr = getCookie(passengerKey);
+    }
+
     let updatedData = [];
 
-    if (existingData) {
+    if (existingDataStr) {
       try {
-        updatedData = JSON.parse(existingData);
+        updatedData = JSON.parse(existingDataStr);
         let foundIndex = updatedData.findIndex(
           (entry) => entry.flightId === newSeatData.flightId
         );
@@ -196,7 +277,13 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
       updatedData = [newSeatData];
     }
 
-    setCookie(passengerKey, JSON.stringify(updatedData));
+    const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+    const cookieOptions = { expires: expires };
+
+    setCookie(passengerKey, JSON.stringify(updatedData), cookieOptions);
+    if (bookingId) {
+      setCookie(`${passengerKey}_${bookingId}`, JSON.stringify(updatedData), cookieOptions);
+    }
   };
 
   const handleSeatDeselect = (passengerIdx = selectedPassengerIndex) => {
@@ -216,15 +303,30 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
         ? `adult_seat_map-${passengerIdx + 1}`
         : `child_seat_map-${passengerIdx - numAdults + 1}`;
 
-    let existingData = getCookie(passengerKey);
-    if (existingData) {
+    const bookingId = apiData?.bookingId;
+    let existingDataStr = null;
+    if (bookingId) {
+      existingDataStr = getCookie(`${passengerKey}_${bookingId}`);
+    }
+    if (!existingDataStr) {
+      existingDataStr = getCookie(passengerKey);
+    }
+
+    if (existingDataStr) {
       try {
-        let updatedData = JSON.parse(existingData);
+        let updatedData = JSON.parse(existingDataStr);
         // Remove the entry for this flight
         updatedData = updatedData.filter(
           (entry) => entry.flightId != String(flightId)
         );
-        setCookie(passengerKey, JSON.stringify(updatedData));
+
+        const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+        const cookieOptions = { expires: expires };
+
+        setCookie(passengerKey, JSON.stringify(updatedData), cookieOptions);
+        if (bookingId) {
+          setCookie(`${passengerKey}_${bookingId}`, JSON.stringify(updatedData), cookieOptions);
+        }
       } catch (err) {
         console.error("Error updating cookie for deselection:", err);
       }

@@ -286,7 +286,7 @@ export default function WalletOption(): JSX.Element {
     try {
       const encryptedPassword = CryptoJS.AES.encrypt(
         vals.password,
-        "yourSecretKey"
+        "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
       ).toString();
       const reqData = {
         email: vals.email,
@@ -332,7 +332,7 @@ export default function WalletOption(): JSX.Element {
       setResetSubmitting(true);
       const encrypted = CryptoJS.AES.encrypt(
         newPassword,
-        "yourSecretKey"
+        "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
       ).toString();
       await postData(
         RESET_ENDPOINT,

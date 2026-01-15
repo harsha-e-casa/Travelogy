@@ -167,7 +167,7 @@ export default function Login() {
   //     // Encrypt password using crypto-js before sending it
   //     const encryptedPassword = CryptoJS.AES.encrypt(
   //       values.password,
-  //       "yourSecretKey"
+  //       "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
   //     ).toString();
 
   //     // Prepare the request data

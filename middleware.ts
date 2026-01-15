@@ -12,7 +12,7 @@ function isPublic(pathname: string) {
 
 async function verifyJWT(token: string) {
   // Use the SAME secret & algorithm you used to sign on the server (HS256)
-  const secret = new TextEncoder().encode("yourSecretKey");
+  const secret = new TextEncoder().encode("92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b");
   // Throws if invalid/expired
   return jwtVerify(token, secret, { algorithms: ["HS256"] });
 }

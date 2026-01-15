@@ -2206,7 +2206,7 @@ export default function Tickets() {
 
           <div
             className="h-[auto] w-full bg_cs_search"
-            style={{ position: 'sticky', top: isMobile ? '70px' : '70px', zIndex: 9999999 }} // Extremely high z-index to stay above everything
+            style={{ position: 'sticky', top: isMobile ? '70px' : '70px', zIndex: 900 }} // Lower z-index to stay below header's dropdown
           >
             {/* Desktop Header */}
             {!isMobile && (

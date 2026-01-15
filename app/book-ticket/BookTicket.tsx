@@ -129,10 +129,10 @@ export default function BookTicket() {
       if (existingKeys.length > 0) {
         setHasExistingData(true);
         // Clear the specific conflicting booking keys
-        existingKeys.forEach((key) => {
-          localStorage.removeItem(key);
-          localStorage.removeItem(`${key}_timestamp`);
-        });
+        // existingKeys.forEach((key) => {
+        //   localStorage.removeItem(key);
+        //   localStorage.removeItem(`${key}_timestamp`);
+        // });
 
         Modal.warning({
           title: "Booking in Progress",
@@ -302,10 +302,10 @@ export default function BookTicket() {
         }
 
         // localStorage.setItem("apiData", JSON.stringify(data));
-        if (data.bookingId) {
-          localStorage.setItem(`bookingData_${data.bookingId}`, JSON.stringify(data));
-          localStorage.setItem(`bookingData_${data.bookingId}_timestamp`, Date.now().toString());
-        }
+        // if (data.bookingId) {
+        //   localStorage.setItem(`bookingData_${data.bookingId}`, JSON.stringify(data));
+        //   localStorage.setItem(`bookingData_${data.bookingId}_timestamp`, Date.now().toString());
+        // }
         if (data?.tripInfos?.[0]?.sI?.[0]?.dt) {
           setFirstTravellDate(
             (data?.tripInfos?.[0]?.sI?.[0]?.dt).split("T")[0]
@@ -453,7 +453,39 @@ export default function BookTicket() {
         email: parsedEmail,
       });
     }
-  }, []);
+
+    // Hydrate Baggage Amount
+    const baggageCookie = bookingId ? getCookie(`baggageinfo_${bookingId}`) : getCookie("baggageinfo");
+    if (baggageCookie) {
+      try {
+        const parsedBaggage = JSON.parse(baggageCookie);
+        if (Array.isArray(parsedBaggage)) {
+          // Also set the baggageinfo state if needed, though strictly we need amount
+          setBaggageinfo(parsedBaggage);
+          const totalBaggage = parsedBaggage.reduce((sum: number, item: any) => sum + (Number(item.amount) || 0), 0);
+          setBaggageAmount(totalBaggage);
+        }
+      } catch (e) {
+        console.error("Error parsing baggage cookie for hydration", e);
+      }
+    }
+
+    // Hydrate Meal Amount
+    const mealCookie = bookingId ? getCookie(`mealinfo_${bookingId}`) : getCookie("mealinfo");
+    if (mealCookie) {
+      try {
+        const parsedMeal = JSON.parse(mealCookie);
+        if (Array.isArray(parsedMeal)) {
+          setMealinfo(parsedMeal); // Ensure mealinfo is also set
+          const totalMeal = parsedMeal.reduce((sum: number, item: any) => sum + (Number(item.amount) || 0), 0);
+          setMealAmount(totalMeal);
+        }
+      } catch (e) {
+        console.error("Error parsing meal cookie for hydration", e);
+      }
+    }
+
+  }, [bookingId]);
 
   const tcs_id = searchParams.get("tcs_id");
   useEffect(() => {
@@ -480,6 +512,8 @@ export default function BookTicket() {
   );
 
   const [storedTravellerInfos, setStoredTravellerInfos] = useState<any>({});
+
+
   useEffect(() => {
     const storedTravellerInfo: any = getCookie("travellerInfo");
     if (storedTravellerInfo !== undefined) {
@@ -487,26 +521,52 @@ export default function BookTicket() {
     }
   }, []);
 
+  const clearSessionCookies = () => {
+    const cookiesToClear = [
+      "travellerInfo",
+      "baggageinfo",
+      "mealinfo",
+      "mappedSeatInfo",
+      "gst_info",
+      "email",
+      "number",
+    ];
+
+    cookiesToClear.forEach((name) => {
+      removeCookie(name);
+      if (bookingId) {
+        removeCookie(`${name}_${bookingId}`);
+      }
+    });
+
+    // Also clear other related cookies if needed
+    // removeCookie("gy_da");
+    // removeCookie("gy_aa");
+    // ...
+  };
+
   const searchTickets = () => {
-    let departureFrom = getCookie("gy_da");
-    let arrivalTo = getCookie("gy_aa");
-    let adults = getCookie("gy_adult");
-    let children = getCookie("gy_child");
-    let cabinType = getCookie("gy_class");
-    let departDate = getCookie("gy_trd");
+    clearSessionCookies();
+    // let departureFrom = getCookie("gy_da");
+    // let arrivalTo = getCookie("gy_aa");
+    // let adults = getCookie("gy_adult");
+    // let children = getCookie("gy_child");
+    // let cabinType = getCookie("gy_class");
+    // let departDate = getCookie("gy_trd");
 
-    const mydata = {
-      departureFrom: departureFrom,
-      arrivalTo: arrivalTo,
-      adults: adults,
-      children: children,
-      cabinType: cabinType,
-      departDate: departDate,
-    };
+    // const mydata = {
+    //   departureFrom: departureFrom,
+    //   arrivalTo: arrivalTo,
+    //   adults: adults,
+    //   children: children,
+    //   cabinType: cabinType,
+    //   departDate: departDate,
+    // };
 
-    const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
+    // const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
-    router.push(`/tickets?${queryString}`);
+    // router.push(`/tickets?${queryString}`);
+    window.history.back();
   };
 
   // Async function to fetch flight data
@@ -703,6 +763,11 @@ export default function BookTicket() {
   const [form] = Form.useForm();
 
   const handleNextClick = () => {
+    // Save apiData to localStorage when continue is clicked
+    if (apiData?.bookingId) {
+      localStorage.setItem(`bookingData_${apiData.bookingId}`, JSON.stringify(apiData));
+      localStorage.setItem(`bookingData_${apiData.bookingId}_timestamp`, Date.now().toString());
+    }
     setLoadingBtn(true)
     form
       .validateFields() // Validate all fields
@@ -725,6 +790,9 @@ export default function BookTicket() {
             address: formValues["companyAddress"],
           };
           setCookie("gst_info", JSON.stringify(gstInfo));
+          if (bookingId) {
+            setCookie(`gst_info_${bookingId}`, JSON.stringify(gstInfo), { expires: 7 });
+          }
         }
 
         updateemail(formValues["mEmail"]);
@@ -732,6 +800,15 @@ export default function BookTicket() {
           code: formValues["select_code"],
           number: formValues["mNumber"],
         });
+
+        // Save scoped cookies for multi-tab support
+        if (bookingId) {
+          setCookie(`email_${bookingId}`, JSON.stringify(formValues["mEmail"]), { expires: 7 });
+          setCookie(`number_${bookingId}`, JSON.stringify({
+            code: formValues["select_code"],
+            number: formValues["mNumber"],
+          }), { expires: 7 });
+        }
 
         const segmentinfo = apiData.tripInfos.flatMap(
           (trip: any) => trip.sI || []
@@ -1118,18 +1195,29 @@ export default function BookTicket() {
         // Set all grouped travelers and cookie
         // setBaggageinfo(baggageInfos);
 
+        const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+
         setCookie("baggageinfo", JSON.stringify(baggageInfosPayload), {
-          expires: 7,
+          expires: expires,
         });
+        if (bookingId) {
+          setCookie(`baggageinfo_${bookingId}`, JSON.stringify(baggageInfosPayload), { expires: expires });
+        }
+
         // setBaggageinfo(baggageInfosPayload);
         setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
-          expires: 7,
+          expires: expires,
         });
+        if (bookingId) {
+          setCookie(`mealinfo_${bookingId}`, JSON.stringify(mealinfosPaylode), { expires: expires });
+        }
 
         setCookie("mappedSeatInfo", JSON.stringify(seatInfosPaylode), {
-          expires: 7,
+          expires: expires,
         });
-        // setMealinfo(mealinfosPaylode)
+        if (bookingId) {
+          setCookie(`mappedSeatInfo_${bookingId}`, JSON.stringify(seatInfosPaylode), { expires: expires });
+        }
         // Combine all
         const travellerInfoV: Traveller[] = [
           ...groupedAdults,
@@ -1138,8 +1226,28 @@ export default function BookTicket() {
         ];
         setTravellerInfoV(travellerInfoV);
         setCookie("travellerInfo", JSON.stringify(travellerInfoV), {
-          expires: 7,
+          expires: expires,
         });
+        if (bookingId) {
+          setCookie(`travellerInfo_${bookingId}`, JSON.stringify(travellerInfoV), { expires: expires });
+        }
+
+        // Save GST Info with proper expiration
+        const gstInfo = formValues["gst_info"] || {};
+        if (Object.keys(gstInfo).length > 0) {
+          setCookie("gst_info", JSON.stringify(gstInfo), { expires: expires });
+          if (bookingId) {
+            setCookie(`gst_info_${bookingId}`, JSON.stringify(gstInfo), { expires: expires });
+          }
+        }
+
+        // Manual email/phone cookies if needed (though usually handled in AppFormCustomer)
+        setCookie("email", getCookie("email"), { expires: expires });
+        setCookie("number", getCookie("number"), { expires: expires });
+        if (bookingId) {
+          setCookie(`email_${bookingId}`, getCookie("email"), { expires: expires });
+          setCookie(`number_${bookingId}`, getCookie("number"), { expires: expires });
+        }
 
 
         // api call to save traveller info
@@ -1842,7 +1950,8 @@ export default function BookTicket() {
                         totalpricee={totalpricee}
                         mealinfo={mealinfo}
                         baggageinfo={baggageinfo}
-                        seatinfo={seatinfo}
+                        // seatinfo={seatinfo}
+                        seatinfo={0} // Force 0 as per request to not use cookie/stored value
                         baggageAmount={baggageAmount}
                         mealAmount={mealAmount}
                         bookingFormKey={bookingFormKey}

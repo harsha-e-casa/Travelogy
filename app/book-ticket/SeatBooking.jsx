@@ -66,6 +66,67 @@ const SeatBooking = ({
     setPrefilledSeatNo(seatMap);
   }, [storedTravellerInfos, numAdults, numChild]);
 
+  /* // New Effect to hydrate seatSelections from cookies
+  useEffect(() => {
+    const bookingId = apiData?.bookingId;
+    console.log("Hydration: Starting for bookingId:", bookingId);
+
+    const newSeatSelections = {};
+
+    const processCookie = (role, i, passengerIndex) => {
+      const key = `${role}_seat_map-${i}`;
+      let cookieData = null;
+      let usedKey = key;
+
+      if (bookingId) {
+        cookieData = getCookie(`${key}_${bookingId}`);
+        if (cookieData) usedKey = `${key}_${bookingId}`;
+      }
+      if (!cookieData) {
+        cookieData = getCookie(key);
+        usedKey = key;
+      }
+
+      console.log(`Hydration: checking ${role} ${i} (idx ${passengerIndex}). usedKey: ${usedKey}, found: ${!!cookieData}`);
+
+      if (cookieData) {
+        try {
+          const seatArray = JSON.parse(cookieData);
+          console.log(`Hydration: parsed data for ${usedKey}:`, seatArray);
+
+          seatArray.forEach((item) => {
+            const { seat, flightId, amount } = item;
+            if (seat && flightId) {
+              if (!newSeatSelections[flightId]) {
+                newSeatSelections[flightId] = [];
+              }
+              newSeatSelections[flightId][passengerIndex] = {
+                seatNo: seat,
+                cost: amount,
+                flightId: flightId
+              };
+            }
+          });
+        } catch (e) {
+          console.error("Error parsing seat cookie for hydration", e);
+        }
+      }
+    };
+
+    // Adults
+    for (let i = 1; i <= (numAdults || 9); i++) {
+      processCookie("adult", i, i - 1);
+    }
+
+    // Children
+    for (let i = 1; i <= (numChild || 9); i++) {
+      processCookie("child", i, (numAdults || 0) + i - 1);
+    }
+
+    console.log("Hydration: valid newSeatSelections:", newSeatSelections);
+    setSeatSelections(newSeatSelections);
+  }, [apiData, numAdults, numChild]); */
+
   const handleViewSeat = async ({ id, seg, fromCode, toCode }) => {
     // prevIdRef.current = id;
     setFromToCode("");
@@ -111,8 +172,18 @@ const SeatBooking = ({
   const showSeatNo = () => {
     let setData = {};
 
+    const bookingId = apiData?.bookingId;
+    console.log("showSeatNo bookingId:", bookingId);
+
     for (let i = 1; i <= 9; i++) {
-      let cookieData = getCookie(`adult_seat_map-${i}`);
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`adult_seat_map-${i}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(`adult_seat_map-${i}`);
+      }
+
       if (!cookieData) continue; // skip if no cookie for this adult
 
       let adultSeatArray = JSON.parse(cookieData);
@@ -129,7 +200,14 @@ const SeatBooking = ({
     }
 
     for (let i = 1; i <= 9; i++) {
-      let cookieData = getCookie(`child_seat_map-${i}`);
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`child_seat_map-${i}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(`child_seat_map-${i}`);
+      }
+
       if (!cookieData) continue; // skip if no cookie for this child
 
       let childSeatArray = JSON.parse(cookieData);
@@ -149,6 +227,90 @@ const SeatBooking = ({
     setSeatNo(setData);
   };
 
+  // New Effect to hydrate seatSelections from cookies and update summary
+  useEffect(() => {
+    const bookingId = apiData?.bookingId;
+    const newSeatSelections = {};
+
+    // Hydrate from storedTravellerInfos first (API/Server state)
+    if (storedTravellerInfos && Array.isArray(storedTravellerInfos)) {
+      const counters = { ADULT: 0, CHILD: 0 };
+      storedTravellerInfos.forEach((traveller) => {
+        const type = traveller?.pt?.toUpperCase();
+        if (type === 'INFANT') return;
+
+        let passengerIndex = -1;
+        if (type === 'ADULT') {
+          passengerIndex = counters.ADULT;
+          counters.ADULT++;
+        } else if (type === 'CHILD') {
+          passengerIndex = (numAdults || 0) + counters.CHILD;
+          counters.CHILD++;
+        }
+
+        if (passengerIndex !== -1 && traveller.ssrSeatInfos) {
+          traveller.ssrSeatInfos.forEach(({ key, code, amount }) => {
+            // key is usually the flightId/segmentId
+            if (!newSeatSelections[key]) newSeatSelections[key] = [];
+            newSeatSelections[key][passengerIndex] = {
+              seatNo: code,
+              cost: amount || "0",
+              flightId: key
+            };
+          });
+        }
+      });
+    }
+
+    const processCookie = (role, i, passengerIndex) => {
+      const key = `${role}_seat_map-${i}`;
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`${key}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(key);
+      }
+
+      if (cookieData) {
+        try {
+          const seatArray = JSON.parse(cookieData);
+          seatArray.forEach((item) => {
+            const { seat, flightId, amount } = item;
+            if (seat && flightId) {
+              if (!newSeatSelections[flightId]) {
+                newSeatSelections[flightId] = [];
+              }
+              newSeatSelections[flightId][passengerIndex] = {
+                seatNo: seat,
+                cost: amount,
+                flightId: flightId
+              };
+            }
+          });
+        } catch (e) {
+          console.error("Error parsing seat cookie for hydration", e);
+        }
+      }
+    };
+
+    // Adults
+    for (let i = 1; i <= (numAdults || 9); i++) {
+      processCookie("adult", i, i - 1);
+    }
+
+    // Children
+    for (let i = 1; i <= (numChild || 9); i++) {
+      processCookie("child", i, (numAdults || 0) + i - 1);
+    }
+
+    // setSeatSelections(newSeatSelections);
+
+    // Also hydrate the summary view state
+    // showSeatNo();
+    // calculateAndStoreTotalAmount(); // Trigger parent update on mount
+  }, [apiData, numAdults, numChild, storedTravellerInfos]);
+
   const calculateAndStoreTotalAmount = () => {
     let totalAmount = 0;
 
@@ -157,8 +319,17 @@ const SeatBooking = ({
       ...Array.from({ length: 9 }, (_, i) => `child_seat_map-${i + 1}`),
     ];
 
+    const bookingId = apiData?.bookingId;
+
     collectKeys.forEach((key) => {
-      const cookieData = getCookie(key);
+      let cookieData = null;
+      if (bookingId) {
+        cookieData = getCookie(`${key}_${bookingId}`);
+      }
+      if (!cookieData) {
+        cookieData = getCookie(key);
+      }
+
       if (cookieData) {
         try {
           const parsedArray = JSON.parse(cookieData); // Expecting an array
@@ -174,7 +345,10 @@ const SeatBooking = ({
     });
 
     // Set final total into seatSsr_amount
-    setCookie("seatSsr_amount", parseInt(totalAmount, 10).toString());
+    // setCookie("seatSsr_amount", parseInt(totalAmount, 10).toString());
+    if (bookingId) {
+      setCookie(`seatSsr_amount_${bookingId}`, parseInt(totalAmount, 10).toString());
+    }
     console.log("onValueChangeonValueChange ==> ", onValueChange);
     if (typeof onValueChange === "function") {
       console.log("onValueChangeonValueChange ==> 111");
@@ -216,12 +390,21 @@ const SeatBooking = ({
     };
 
     // Check existing cookie
-    let existingData = getCookie(passengerKey);
+    // Prioritize scoped cookie, else fallback to global (though consistent reads should use the same logic)
+    const bookingId = apiData?.bookingId;
+    let existingDataStr = null;
+    if (bookingId) {
+      existingDataStr = getCookie(`${passengerKey}_${bookingId}`);
+    }
+    if (!existingDataStr) {
+      existingDataStr = getCookie(passengerKey);
+    }
+
     let updatedData = [];
 
-    if (existingData) {
+    if (existingDataStr) {
       try {
-        updatedData = JSON.parse(existingData);
+        updatedData = JSON.parse(existingDataStr);
         let foundIndex = updatedData.findIndex(
           (entry) => entry.fromTo === newSeatData.fromTo
         );
@@ -242,7 +425,13 @@ const SeatBooking = ({
       updatedData = [newSeatData];
     }
 
-    setCookie(passengerKey, JSON.stringify(updatedData));
+    const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+    const cookieOptions = { expires: expires };
+
+    setCookie(passengerKey, JSON.stringify(updatedData), cookieOptions);
+    if (bookingId) {
+      setCookie(`${passengerKey}_${bookingId}`, JSON.stringify(updatedData), cookieOptions);
+    }
     console.log("Cookie updated:", passengerKey, updatedData);
   };
 
@@ -253,6 +442,7 @@ const SeatBooking = ({
     // Update state
     const updatedSelections = { ...seatSelections };
     if (updatedSelections[flightId]) {
+      updatedSelections[flightId] = [...updatedSelections[flightId]]; // Copy array to avoid mutation
       delete updatedSelections[flightId][passengerIdx];
     }
     setSeatSelections(updatedSelections);
@@ -263,15 +453,38 @@ const SeatBooking = ({
         ? `adult_seat_map-${passengerIdx + 1}`
         : `child_seat_map-${passengerIdx - numAdults + 1}`;
 
-    let existingData = getCookie(passengerKey);
-    if (existingData) {
+    const bookingId = apiData?.bookingId;
+
+    let existingDataStr = null;
+    if (bookingId) {
+      existingDataStr = getCookie(`${passengerKey}_${bookingId}`);
+    }
+    if (!existingDataStr) {
+      existingDataStr = getCookie(passengerKey);
+    }
+
+    if (existingDataStr) {
       try {
-        let updatedData = JSON.parse(existingData);
+        let updatedData = JSON.parse(existingDataStr);
         // Remove the entry for this flight
         updatedData = updatedData.filter(
           (entry) => entry.flightId != String(flightId)
         );
-        setCookie(passengerKey, JSON.stringify(updatedData));
+
+        const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+        const cookieOptions = { expires: expires };
+
+        setCookie(passengerKey, JSON.stringify(updatedData), cookieOptions);
+        if (bookingId) {
+          setCookie(`${passengerKey}_${bookingId}`, JSON.stringify(updatedData), cookieOptions);
+        }
+
+        // Update summary
+        showSeatNo();
+
+        // Recalculate total amount and notify parent
+        calculateAndStoreTotalAmount();
+
       } catch (err) {
         console.error("Error updating cookie for deselection:", err);
       }
@@ -356,7 +569,7 @@ const SeatBooking = ({
                 ${seatStyle} 
                 ${aisle ? "border-blue-500" : ""}
                 ${legroom ? "rounded-full" : "rounded"}`}
-                style={{ backgroundColor: booked ? undefined : seatColor }} // Apply the dynamic color using inline style
+                style={{ backgroundColor: (booked || isSelected) ? undefined : seatColor }} // Apply the dynamic color using inline style
               >
                 {isSelected ? (
                   <span className="text-white font-bold text-lg">✓</span>
@@ -411,44 +624,24 @@ const SeatBooking = ({
                       </div> */}
 
                       <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
-                        {seatNo?.[seg.id] && seatNo[seg.id].length > 0
-                          ? seatNo[seg.id].map((item, index) => {
-                            const key = Object.keys(item)[0];
-                            const seatValue = item[key];
-                            return (
-                              <div key={index}>
-                                {key}: {seatValue}
-                              </div>
-                            );
-                          })
-                          : (() => {
-                            if (
-                              !prefilledSeatNo ||
-                              typeof prefilledSeatNo !== "object"
-                            )
-                              return null;
+                        {(seatSelections[seg.id] || []).map((sel, idx) => {
+                          if (!sel || !sel.seatNo) return null;
 
-                            const keysArray = Object.keys(prefilledSeatNo);
+                          let label = "";
+                          const nAdults = Number(numAdults) || 0;
 
-                            if (
-                              !Array.isArray(
-                                prefilledSeatNo[keysArray[segIndex]]
-                              )
-                            )
-                              return null;
+                          if (idx < nAdults) {
+                            label = `ADULT-${idx + 1}`;
+                          } else {
+                            label = `CHILD-${idx - nAdults + 1}`;
+                          }
 
-                            return prefilledSeatNo[keysArray[segIndex]].map(
-                              (item, i) => {
-                                const key = Object.keys(item)[0];
-                                const seatNo = item[key];
-                                return (
-                                  <div key={i}>
-                                    {key}: {seatNo}
-                                  </div>
-                                );
-                              }
-                            );
-                          })()}
+                          return (
+                            <div key={idx}>
+                              {label}: {sel.seatNo}
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">

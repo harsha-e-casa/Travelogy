@@ -948,7 +948,7 @@ export default function Tickets() {
         <main className="main">
           {/* <EngineTabs active_border={'1'} /> */}
 
-          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{top:"65px"}}>
+          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{ top: "65px" }}>
             {/* Header Section */}
 
             {!isMobile && (
