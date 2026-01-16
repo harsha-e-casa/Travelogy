@@ -909,7 +909,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
               </div>
 
               {/* Share Toolbar */}
-              <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100 mx-2" style={{ marginRight: '10px', marginLeft: '10px' }}>
+              <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100 mx-2" style={{ marginRight: '10px', marginLeft: '10px' }}>
                 {!shareMode ? (
                   <div className="flex items-center gap-2 text-gray-600 text-sm">
                     <ShareAltOutlined />

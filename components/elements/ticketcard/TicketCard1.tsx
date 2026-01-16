@@ -1,6 +1,6 @@
 import Link from "next/link";
 import dayjs from "dayjs";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import type { RadioChangeEvent } from "antd";
 import { Input, Radio } from "antd";
 import { ArrowRightOutlined } from "@ant-design/icons";
@@ -81,6 +81,43 @@ export default function TicketCard1({
     return allTicketMarkups[`${ticket.id}_${value}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
   };
 
+  const enrichedFares = useMemo(() => {
+    return ticket.totalPriceList.map((fare: any, index: number) => ({ ...fare, originalIndex: index }));
+  }, [ticket.totalPriceList]);
+
+  const filteredFares = useMemo(() => {
+    return enrichedFares.filter((fare: any) => {
+      // Filter by selectedFareIdentifiers first
+      if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
+        if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
+          return false;
+        }
+      }
+
+      if (selectedFareTypes && selectedFareTypes.length > 0) {
+        const fareTypeMap: { [key: number]: string } = {
+          0: "Non Refundable",
+          1: "Refundable",
+          2: "Partial Refundable",
+        };
+        const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
+        return selectedFareTypes.includes(fareTypeLabel);
+      }
+      return true;
+    });
+  }, [enrichedFares, selectedFareIdentifiers, selectedFareTypes]);
+
+  useEffect(() => {
+    if (filteredFares.length > 0) {
+      const isSelectedInFiltered = filteredFares.some((f: any) => f.originalIndex === value);
+      if (!isSelectedInFiltered) {
+        setValue(filteredFares[0].originalIndex);
+      }
+    }
+  }, [filteredFares, value]);
+
+  const displayedFares = showAllFares ? filteredFares : filteredFares.slice(0, 2);
+
   return (
     <>
       <div>
@@ -128,6 +165,9 @@ export default function TicketCard1({
                 <div className="flex justify-evenly items-center  pl-20 pr-5">
                   <div className="flight-route flight-route-type-2 city1">
                     <div className="flex flex-col items-center justify-center w-max">
+                      <div className="text-xs text-gray-500 mb-1">
+                        {segment["fD"].aI.code} {segment["fD"].fN}
+                      </div>
                       {isUat && (
                         <img
                           style={{ width: "50%", margin: "5px" }}
@@ -252,132 +292,19 @@ export default function TicketCard1({
               value={value}
               className="fare-options flex flex-col gap-2  w-full"
             >
-              {(showAllFares
-                ? ticket.totalPriceList
-                : ticket.totalPriceList.slice(0, 2)
-              )
-                .filter((fare: any) => {
-                  // Filter by selectedFareIdentifiers first
-                  if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
-                    if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
-                      return false;
-                    }
-                  }
-
-                  if (selectedFareTypes && selectedFareTypes.length > 0) {
-                    const fareTypeMap: { [key: number]: string } = {
-                      0: "Non Refundable",
-                      1: "Refundable",
-                      2: "Partial Refundable",
-                    };
-                    const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
-                    return selectedFareTypes.includes(fareTypeLabel);
-                  }
-                  return true;
-                })
-                .map((e: any, i: number) => {
-                  const currentFareMarkup = allTicketMarkups[`${ticket.id}_${i}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
-                  return (
-                    <>
-                      <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
-                        <div style={{ flex: 1 }}>
-                          {shareMode ? (
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                              <Radio key={i} value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }} onClick={(e) => e.stopPropagation()}>
-                                <div
-                                  className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
-                                                                    ${"border-gray-300 hover:border-gray-500"}`}
-                                >
-                                  <div className="flex flex-row gap-2 items-center">
-                                    <div className="text-lg font-bold text-gray-800 price">
-                                      ₹
-                                      {(() => {
-                                        let adultCost = 0;
-                                        let childCost = 0;
-                                        let infantCost = 0;
-                                        if (e?.fd?.ADULT) {
-                                          if (
-                                            getCookie("gy_adult") !== undefined &&
-                                            getCookie("gy_adult") !== "Nan"
-                                          ) {
-                                            adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
-                                          }
-                                        }
-                                        if (e?.fd?.CHILD) {
-                                          if (
-                                            getCookie("gy_child") !== undefined &&
-                                            getCookie("gy_child") !== "Nan"
-                                          ) {
-                                            childCost = childCount * e?.fd?.CHILD?.fC?.NF;
-                                          }
-                                        }
-                                        if (e?.fd?.INFANT) {
-                                          if (
-                                            getCookie("gy_infant") !== undefined &&
-                                            getCookie("gy_infant") !== "Nan"
-                                          ) {
-                                            infantCost =
-                                              infantCount * e?.fd?.INFANT?.fC?.NF;
-                                          }
-                                        }
-
-                                        return new Intl.NumberFormat("en-IN").format(
-                                          adultCost + childCost + infantCost + (Number(currentFareMarkup) || 0)
-                                        );
-                                      })()}
-                                    </div>
-                                    <span
-                                      className=" fareidentifier  text-xs font-bold"
-                                      style={{
-                                        backgroundColor: "#f5deb3",
-                                        color: "#5c4033",
-                                        padding: "1px 2px",
-                                      }}
-                                    >
-                                      {e.fareIdentifier}
-                                    </span>{" "}
-                                  </div>
-
-                                  <div className="text-xs text-gray-600">
-                                    <span className="ml-2 cabinclass">
-                                      {e.fd.ADULT.cc} |
-                                      <span
-                                        className="refundable"
-                                        style={{
-                                          color:
-                                            e.fd.ADULT.rT === 1 || e.fd.ADULT.rT === 2
-                                              ? "#22c55e"
-                                              : "#dc2626",
-                                        }}
-                                      >
-                                        {" "}
-                                        {e.fd.ADULT.rT === 1
-                                          ? "Refundable"
-                                          : e.fd.ADULT.rT === 2
-                                            ? "Partial Refundable"
-                                            : "Non Refundable"}
-                                      </span>
-                                    </span>
-                                  </div>
-                                </div>
-                              </Radio>
-                              <input
-                                type="checkbox"
-                                style={{ width: "20px", height: "20px", cursor: "pointer" }}
-                                checked={selectedQuoteFlights.some((f: any) => f.ticketId === ticket.id && f.fareIndex === i)}
-                                onChange={(event) => {
-                                  if (onQuoteSelectionChange) {
-                                    onQuoteSelectionChange(ticket, i, event.target.checked);
-                                  }
-                                }}
-                                onClick={(event) => event.stopPropagation()}
-                              />
-                            </div>
-                          ) : (
-                            <Radio key={i} value={i} className="w-full radiocomp" onClick={(e) => e.stopPropagation()}>
+              {displayedFares.map((e: any) => {
+                const i = e.originalIndex;
+                const currentFareMarkup = allTicketMarkups[`${ticket.id}_${i}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
+                return (
+                  <>
+                    <div style={{ display: "flex", width: "100%", alignItems: "center" }}>
+                      <div style={{ flex: 1 }}>
+                        {shareMode ? (
+                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                            <Radio key={i} value={i} className="w-full radiocomp" disabled={shareMode} style={{ pointerEvents: "none", opacity: 0.6 }} onClick={(e) => e.stopPropagation()}>
                               <div
                                 className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
-                                                                ${"border-gray-300 hover:border-gray-500"}`}
+                                                                    ${"border-gray-300 hover:border-gray-500"}`}
                               >
                                 <div className="flex flex-row gap-2 items-center">
                                   <div className="text-lg font-bold text-gray-800 price">
@@ -452,13 +379,104 @@ export default function TicketCard1({
                                 </div>
                               </div>
                             </Radio>
-                          )}
-                        </div>
+                            <input
+                              type="checkbox"
+                              style={{ width: "20px", height: "20px", cursor: "pointer" }}
+                              checked={selectedQuoteFlights.some((f: any) => f.ticketId === ticket.id && f.fareIndex === i)}
+                              onChange={(event) => {
+                                if (onQuoteSelectionChange) {
+                                  onQuoteSelectionChange(ticket, i, event.target.checked);
+                                }
+                              }}
+                              onClick={(event) => event.stopPropagation()}
+                            />
+                          </div>
+                        ) : (
+                          <Radio key={i} value={i} className="w-full radiocomp" onClick={(e) => e.stopPropagation()}>
+                            <div
+                              className={`p-0 rounded-lg border-2 transition-all duration-200 radiodiv
+                                                                ${"border-gray-300 hover:border-gray-500"}`}
+                            >
+                              <div className="flex flex-row gap-2 items-center">
+                                <div className="text-lg font-bold text-gray-800 price">
+                                  ₹
+                                  {(() => {
+                                    let adultCost = 0;
+                                    let childCost = 0;
+                                    let infantCost = 0;
+                                    if (e?.fd?.ADULT) {
+                                      if (
+                                        getCookie("gy_adult") !== undefined &&
+                                        getCookie("gy_adult") !== "Nan"
+                                      ) {
+                                        adultCost = adultCount * e?.fd?.ADULT?.fC?.NF;
+                                      }
+                                    }
+                                    if (e?.fd?.CHILD) {
+                                      if (
+                                        getCookie("gy_child") !== undefined &&
+                                        getCookie("gy_child") !== "Nan"
+                                      ) {
+                                        childCost = childCount * e?.fd?.CHILD?.fC?.NF;
+                                      }
+                                    }
+                                    if (e?.fd?.INFANT) {
+                                      if (
+                                        getCookie("gy_infant") !== undefined &&
+                                        getCookie("gy_infant") !== "Nan"
+                                      ) {
+                                        infantCost =
+                                          infantCount * e?.fd?.INFANT?.fC?.NF;
+                                      }
+                                    }
+
+                                    return new Intl.NumberFormat("en-IN").format(
+                                      adultCost + childCost + infantCost + (Number(currentFareMarkup) || 0)
+                                    );
+                                  })()}
+                                </div>
+                                <span
+                                  className=" fareidentifier  text-xs font-bold"
+                                  style={{
+                                    backgroundColor: "#f5deb3",
+                                    color: "#5c4033",
+                                    padding: "1px 2px",
+                                  }}
+                                >
+                                  {e.fareIdentifier}
+                                </span>{" "}
+                              </div>
+
+                              <div className="text-xs text-gray-600">
+                                <span className="ml-2 cabinclass">
+                                  {e.fd.ADULT.cc} |
+                                  <span
+                                    className="refundable"
+                                    style={{
+                                      color:
+                                        e.fd.ADULT.rT === 1 || e.fd.ADULT.rT === 2
+                                          ? "#22c55e"
+                                          : "#dc2626",
+                                    }}
+                                  >
+                                    {" "}
+                                    {e.fd.ADULT.rT === 1
+                                      ? "Refundable"
+                                      : e.fd.ADULT.rT === 2
+                                        ? "Partial Refundable"
+                                        : "Non Refundable"}
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </Radio>
+                        )}
                       </div>
-                    </>
-                  );
-                })}
-              {ticket.totalPriceList.length > 2 && (
+                    </div>
+                  </>
+                );
+              })}
+              {filteredFares.length > 2 && (
                 <button
                   className="view-more-txt"
                   style={{ textAlign: "right", fontSize: "10px" }}

@@ -6,6 +6,7 @@ import "./Multicity.css";
 import "./ticketCardMobile.css";
 import { Input, Radio } from "antd";
 import TicketCardMobile from "./TicketCardMobile";
+import MulticityTicketCardDesktop from "./MulticityTicketCardDesktop";
 import { FilterOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import ByPrice from "@/components/Filter/ByPrice";
@@ -883,7 +884,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
               {currentFilter && renderFilters(tabIndex)}
             </div>
             <div className="col-xl-9 col-12">
-              <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
+              <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
                 {!shareMode ? (
                   <div className="flex items-center gap-2 text-gray-600 text-sm">
                     <ShareAltOutlined />
@@ -1013,318 +1014,28 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                             }}
                           />
                         ) : (
-                          <div className="" style={{ paddingBottom: "10px" }}>
-                            {ticket.sI.length >= 1 ? (
-                              <div className="combined-connecting-flight">
-                                <div className="flex gap-4 border rounded-md justify-around items-center pr-20 ">
-                                  <div className="flex flex-col">
-                                    {ticket.sI.map((segment, index) => (
-                                      <div
-                                        key={index}
-                                        className="relative flex flex-col rounded-md p-1 xl:p-5"
-                                      >
-                                        <div
-                                          className="flex justify-between"
-                                          style={{ width: "500px" }}
-                                        >
-                                          <div className="flex flex-col items-center justify-center w-max">
-                                            {isUat && (
-                                              <img
-                                                style={{ width: "50%", margin: "5px" }}
-                                                src={`/assets/imgs/airlines/${segment["fD"].aI.code}.png`}
-                                              />
-                                            )}
-                                            {!isUat && (
-                                              <img
-                                                style={{ width: "50%", margin: "5px" }}
-                                                src={`/assets/imgs/airlines/${segment[
-                                                  "fD"
-                                                ].aI.code.toLowerCase()}.png`}
-                                              />
-                                            )}
-                                            <div className="text-sm-medium" style={{ textAlign: "center" }}>
-                                              {segment["fD"].aI.name}
-                                            </div>
-                                          </div>
-                                          <div
-                                            className="text-sm  flex flex-col justify-center items-center "
-                                            style={{ width: "150px" }}
-                                          >
-                                            <p className="text-md-bold neutral-1000 city1name">
-                                              {segment.da.city} ({segment.da.code})
-                                            </p>
-                                            <p className="neutral-1000 time">
-                                              {dayjs(segment.dt).format("HH:mm")}
-                                            </p>
-                                          </div>
-                                          <div
-                                            className="text-xs text-center  "
-                                            style={{ width: "100px" }}
-                                          >
-                                            <p className="text-sm-medium neutral-500">
-                                              {formatTime(segment.duration)}
-                                            </p>
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              width="16"
-                                              height="16"
-                                              fill="currentColor"
-                                              className="bi bi-arrow-right"
-                                              viewBox="0 0 16 16"
-                                            >
-                                              <path
-                                                fill-rule="evenodd"
-                                                d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"
-                                              />
-                                            </svg>
-                                            <p className="text-sm-medium neutral-500">
-                                              {" "}
-                                              {segment.stops > 0
-                                                ? `${segment.stops} stops`
-                                                : "non-stop"}
-                                            </p>
-                                          </div>
-                                          <div
-                                            className="text-sm  flex flex-col justify-center items-center gap-1 "
-                                            style={{ width: "200px" }}
-                                          >
-                                            <p className="text-md-bold neutral-1000 city1name">
-                                              {segment.aa.city} ({segment.aa.code})
-                                            </p>
-                                            <p className="neutral-1000 time">
-                                              {dayjs(segment.at).format("HH:mm")}
-                                            </p>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-
-                                  <div className="flight-price-1 border-1 price-div flex flex-row justify-center items-center flex-col mt-4">
-                                    <Radio.Group
-                                      onChange={(e) =>
-                                        setSelectedFare(tabIndex, i, e.target.value)
-                                      }
-                                      value={selectedFares[tabIndex]?.[i] ?? 0}
-                                      className="fare-options flex flex-col gap-2 w-full"
-                                    >
-                                      {(showAllFares
-                                        ? ticket.totalPriceList
-                                        : ticket.totalPriceList.slice(0, 2)
-                                      )
-                                        .filter((fare) => {
-                                          const currentFilters = filters[tabIndex];
-                                          const selectedFareTypes = currentFilters?.selectedFareTypes || [];
-                                          // Check if we need to map based on how filters are stored. 
-                                          // If filters store "Refundable", "Non Refundable", etc.
-
-                                          const selectedFareIdentifiers = currentFilters?.fareIdentifiers || [];
-
-                                          if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
-                                            if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
-                                              return false;
-                                            }
-                                          }
-
-                                          if (selectedFareTypes && selectedFareTypes.length > 0) {
-                                            const fareTypeMap = {
-                                              0: "Non Refundable",
-                                              1: "Refundable",
-                                              2: "Partial Refundable",
-                                            };
-                                            const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
-                                            return selectedFareTypes.includes(fareTypeLabel);
-                                          }
-                                          return true;
-                                        })
-                                        .map((e, j) => {
-                                          const specificMarkup = ticketMarkups[`${ticket.id}_${j}`];
-                                          const ticketLevelMarkup = ticketMarkups[ticket.id] ?? markup;
-                                          const finalMarkup = specificMarkup ?? ticketLevelMarkup;
-
-                                          const fareValue = calculateTotalFare(
-                                            e.fd,
-                                            adultCount,
-                                            childCount,
-                                            infantCount,
-                                            getCookie,
-                                            finalMarkup
-                                          );
-                                          return (
-                                            <Radio
-                                              key={j}
-                                              value={j}
-                                              className="w-full radiocomp"
-                                            >
-                                              <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
-                                                <div className="flex flex-row gap-2 items-center">
-                                                  <div
-                                                    className="text-lg font-bold text-gray-800 price cursor-pointer hover:bg-gray-50 transition-colors"
-                                                    onClick={() => {
-                                                      const prevSegments = Object.keys(selectedFlights)
-                                                        .filter(key => parseInt(key) < tabIndex)
-                                                        .map(key => ({
-                                                          ticket: selectedFlights[key].ticket,
-                                                          selectedPriceIndex: selectedFlights[key].selectedPriceIndex
-                                                        }));
-                                                      onPriceClick && onPriceClick(ticket.id, ticketMarkups[ticket.id] ?? markup, ticket, selectedFares[tabIndex]?.[i] ?? 0, prevSegments);
-                                                    }}
-                                                  >
-                                                    ₹{fareValue}
-                                                  </div>
-                                                  {/* Share Checkbox Inline */}
-                                                  {shareMode && (
-                                                    <div className="ml-2" onClick={(e) => e.stopPropagation()}>
-                                                      <input
-                                                        type="checkbox"
-                                                        className="w-5 h-5 cursor-pointer accent-orange-500"
-                                                        checked={selectedQuoteFlights.some(
-                                                          (f) => f.ticketId === ticket.id && f.fareIndex === j
-                                                        )}
-                                                        onChange={(e) =>
-                                                          handleQuoteSelectionChange(
-                                                            ticket,
-                                                            j,
-                                                            e.target.checked,
-                                                            tabIndex
-                                                          )
-                                                        }
-                                                      />
-                                                    </div>
-                                                  )}
-                                                  <span
-                                                    className="fareidentifier text-xs font-bold"
-                                                    style={{
-                                                      backgroundColor: "#f5deb3",
-                                                      color: "#5c4033",
-                                                      padding: "1px 2px",
-                                                    }}
-                                                  >
-                                                    {e.fareIdentifier}
-                                                  </span>
-                                                </div>
-                                                <div className="text-xs text-gray-600">
-                                                  <span className="ml-2 cabinclass">
-                                                    {e.fd.ADULT.cc} |{" "}
-                                                    <span
-                                                      className="refundable"
-                                                      style={{
-                                                        color:
-                                                          e.fd.ADULT.rT === 1 || e.fd.ADULT.rT === 2
-                                                            ? "#22c55e"
-                                                            : "#dc2626",
-                                                      }}
-                                                    >
-                                                      {e.fd.ADULT.rT === 1
-                                                        ? "Refundable"
-                                                        : e.fd.ADULT.rT === 2
-                                                          ? "Partial Refundable"
-                                                          : "Non Refundable"}
-                                                    </span>
-                                                  </span>
-                                                </div>
-                                              </div>
-                                            </Radio>
-                                          );
-                                        })}
-                                      {ticket.totalPriceList.length > 2 && (
-                                        <button
-                                          className="view-more-txt"
-                                          style={{
-                                            textAlign: "right",
-                                            fontSize: "10px",
-                                          }}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setShowAllFares((prev) => !prev);
-                                          }}
-                                        >
-                                          {showAllFares
-                                            ? "(-) View Less"
-                                            : "(+) View More"}
-                                        </button>
-                                      )}
-                                    </Radio.Group>
-                                  </div>
-                                  <div>
-                                    <button
-                                      className="btn-book-now"
-                                      onClick={() => {
-                                        const selectedFareIndex =
-                                          selectedFares[tabIndex]?.[i] ?? 0;
-                                        const selectedFare =
-                                          ticket.totalPriceList[selectedFareIndex];
-                                        const fareFD = selectedFare.fd;
-
-                                        const specificMarkup = ticketMarkups[`${ticket.id}_${selectedFareIndex}`];
-                                        const ticketLevelMarkup = ticketMarkups[ticket.id] ?? markup;
-                                        const finalMarkup = specificMarkup ?? ticketLevelMarkup;
-
-                                        const totalPrice = calculateTotalFare(
-                                          fareFD,
-                                          adultCount,
-                                          childCount,
-                                          infantCount,
-                                          getCookie,
-                                          finalMarkup
-                                        );
-                                        const firstSegment = ticket.sI[0];
-                                        const lastSegment =
-                                          ticket.sI[ticket.sI.length - 1];
-
-                                        const isUatAirlineLogo = isUat
-                                          ? `/assets/imgs/airlines/${firstSegment.fD.aI.code}.png`
-                                          : `/assets/imgs/airlines/${firstSegment.fD.aI.code.toLowerCase()}.png`;
-                                        const updatedFlight = {
-                                          priceId: selectedFare.id,
-                                          flightName: firstSegment.fD.aI.name,
-                                          depCityCode: firstSegment.da.code,
-                                          arrCityCode: lastSegment.aa.code,
-                                          airlineCode: firstSegment.fD.aI.code,
-                                          flightNumber: firstSegment.fD.fN,
-                                          depCity: firstSegment.da.city,
-                                          arrCity: lastSegment.aa.city,
-                                          depTime: dayjs(firstSegment.dt).format(
-                                            "HH:mm"
-                                          ),
-                                          arrTime: dayjs(lastSegment.at).format(
-                                            "HH:mm"
-                                          ),
-                                          airlineLogo: isUatAirlineLogo,
-                                          price: totalPrice,
-                                          markup: finalMarkup,
-                                          adultFare: new Intl.NumberFormat(
-                                            "en-IN"
-                                          ).format(fareFD.ADULT?.fC?.NF || 0),
-                                          ticket: ticket, // Added for combined quote parity
-                                          selectedPriceIndex: selectedFareIndex // Added for combined quote parity
-                                        };
-
-                                        setSelectedFlights((prev) => {
-                                          const newFlights = {
-                                            ...prev,
-                                            [tabIndex]: updatedFlight,
-                                          };
-                                          const nextTabIndex = tabIndex + 1;
-                                          if (
-                                            nextTabIndex < matchedFlights.length
-                                          ) {
-                                            setActiveTabKey(
-                                              String(nextTabIndex + 1)
-                                            ); // Because tab keys are 1-based
-                                          }
-
-                                          return newFlights;
-                                        });
-                                      }}
-                                    >
-                                      Select
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            ) : null}
-                          </div>
+                          <MulticityTicketCardDesktop
+                            ticket={ticket}
+                            i={i}
+                            tabIndex={tabIndex}
+                            selectedFares={selectedFares}
+                            setSelectedFare={setSelectedFare}
+                            filters={filters}
+                            markup={markup}
+                            ticketMarkups={ticketMarkups}
+                            onPriceClick={onPriceClick}
+                            shareMode={shareMode}
+                            selectedQuoteFlights={selectedQuoteFlights}
+                            handleQuoteSelectionChange={handleQuoteSelectionChange}
+                            isUat={isUat}
+                            adultCount={adultCount}
+                            childCount={childCount}
+                            infantCount={infantCount}
+                            selectedFlights={selectedFlights}
+                            setSelectedFlights={setSelectedFlights}
+                            setActiveTabKey={setActiveTabKey}
+                            matchedFlightsLength={matchedFlights.length}
+                          />
                         )}
                       </div>
                     );

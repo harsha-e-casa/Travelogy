@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { Radio, Checkbox } from "antd";
@@ -39,6 +39,38 @@ export default function TicketCardMobile({
         if (infant !== undefined && infant !== "Nan") setInfantCount(Number(infant));
     }, [getCookie]);
 
+    const enrichedFares = useMemo(() => {
+        return ticket.totalPriceList.map((fare: any, index: number) => ({
+            ...fare,
+            originalIndex: index,
+        }));
+    }, [ticket.totalPriceList]);
+
+    const filteredFares = useMemo(() => {
+        return enrichedFares.filter((fare: any) => {
+            if (selectedFareTypes && selectedFareTypes.length > 0) {
+                const fareTypeMap: { [key: number]: string } = {
+                    0: "Non Refundable",
+                    1: "Refundable",
+                    2: "Partial Refundable",
+                };
+                const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
+                return selectedFareTypes.includes(fareTypeLabel);
+            }
+            return true;
+        });
+    }, [enrichedFares, selectedFareTypes]);
+
+    useEffect(() => {
+        const isSelectedAvailable = filteredFares.some(
+            (f: any) => f.originalIndex === Number(value)
+        );
+
+        if (!isSelectedAvailable && filteredFares.length > 0) {
+            setValue(filteredFares[0].originalIndex);
+        }
+    }, [filteredFares, value]);
+
     const formatDuration = (minutes: any) => {
         const hours = Math.floor(minutes / 60);
         const remainingMinutes = minutes % 60;
@@ -73,6 +105,9 @@ export default function TicketCardMobile({
     return (
         <div className="ticket-card-mobile card-flight tcm">
             <div className="mobile-card-header">
+                <div className="text-xs text-gray-500 mb-1">
+                    {ticket.sI[0].fD.aI.code} {ticket.sI[0].fD.fN}
+                </div>
                 {isUat ? (
                     <img
                         className="mobile-airline-logo"
@@ -162,7 +197,7 @@ export default function TicketCardMobile({
                 )}
             </div>
 
-            {ticket.totalPriceList.length > 1 && (
+            {filteredFares.length > 1 && (
                 <div className="mobile-view-more" onClick={() => setShowAllFares(!showAllFares)}>
                     {showAllFares ? "Hide additional fares" : "View more fares"}
                 </div>
@@ -171,24 +206,12 @@ export default function TicketCardMobile({
             {showAllFares && (
                 <div className="mt-3">
                     <Radio.Group onChange={(e) => setValue(e.target.value)} value={value} className="w-full flex flex-col gap-2">
-                        {ticket.totalPriceList
-                            .filter((fare: any) => {
-                                if (selectedFareTypes && selectedFareTypes.length > 0) {
-                                    const fareTypeMap: { [key: number]: string } = {
-                                        0: "Non Refundable",
-                                        1: "Refundable",
-                                        2: "Partial Refundable",
-                                    };
-                                    const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
-                                    return selectedFareTypes.includes(fareTypeLabel);
-                                }
-                                return true;
-                            })
+                        {filteredFares
                             .map((fare: any, idx: number) => {
-                                const realIndex = ticket.totalPriceList.indexOf(fare);
+                                const realIndex = fare.originalIndex;
                                 const currentFareMarkup = allTicketMarkups[`${ticket.id}_${realIndex}`] ?? allTicketMarkups[ticket.id] ?? markup;
                                 return (
-                                    <Radio key={idx} value={idx} className="w-full border p-2 rounded">
+                                    <Radio key={realIndex} value={realIndex} className="w-full border p-2 rounded">
                                         <div className="flex justify-between items-center w-full">
                                             <span className="text-sm font-bold">₹{calculateTotalPrice(fare, currentFareMarkup)}</span>
                                             <span className="text-xs opacity-70">{fare.fareIdentifier}</span>

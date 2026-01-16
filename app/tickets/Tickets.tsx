@@ -1916,7 +1916,7 @@ export default function Tickets() {
     setCookie("gy_triptype", key);
     setOpen((prev) => !prev);
     setIsSearchPerformed(false);
-    setFlightData(null);
+    // setFlightData(null);
   };
 
   const handleFareMenuClick: MenuProps["onClick"] = ({ key }) => {
@@ -3325,7 +3325,7 @@ export default function Tickets() {
                               <div className="col-xl-9 col-12">
                                 {(srx_tripType?.trim().toLowerCase() === "one-way" ||
                                   srx_tripType?.trim().toLowerCase() === "round-trip") && (
-                                    <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />
