@@ -48,7 +48,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
   const [onwardFareIdentifiers, setOnwardFareIdentifiers] = useState<string[]>(
     []
   );
-  const [priceSort, setPriceSort] = useState<"asc" | "desc">("asc");
+  const [onwardPriceSort, setOnwardPriceSort] = useState<"asc" | "desc">("asc");
   const [uniqueFareIdentifiers, setUniqueFareIdentifiers] = useState<any[]>([]);
   const [onwardFlightNumberSearch, setOnwardFlightNumberSearch] = useState("");
   const [onwardSelectedFareTypes, setOnwardSelectedFareTypes] = useState<
@@ -108,6 +108,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
   const [returnFareIdentifiers, setReturnFareIdentifiers] = useState<string[]>(
     []
   );
+  const [returnPriceSort, setReturnPriceSort] = useState<"asc" | "desc">("asc");
   const [returnFlightNumberSearch, setReturnFlightNumberSearch] = useState("");
   const [returnSelectedFareTypes, setReturnSelectedFareTypes] = useState<
     string[]
@@ -204,8 +205,8 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.RETURN)) {
-      const onwardDataToCheck = flightData.ONWARD;
-      const returnDataToCheck = flightData.RETURN;
+      const onwardDataToCheck = flightData.ONWARD || [];
+      const returnDataToCheck = flightData.RETURN || [];
 
       const [onwardMinPrice, onwardMaxPrice] =
         getPriceRangeFromData(onwardDataToCheck);
@@ -213,29 +214,33 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
       const [returnMinPrice, returnMaxPrice] =
         getPriceRangeFromData(returnDataToCheck);
 
-      if (tripPhase === "ONWARD") {
-        setMinOnwardPriceRange(onwardMinPrice);
-        setMaxOnwardPriceRange(onwardMaxPrice);
+      // Set Onward
+      setMinOnwardPriceRange(onwardMinPrice);
+      setMaxOnwardPriceRange(onwardMaxPrice);
+      setOnwardPriceRange([onwardMinPrice, onwardMaxPrice]);
+      setOnwardStops("all");
+      setOnwardDepartureTime("all");
+      setOnwardArrivalTime("all");
+      setOnwardSelectedAirlines([]);
+      setOnwardFareIdentifiers([]);
+      setOnwardFlightNumberSearch("");
+      setOnwardSelectedFareTypes([]);
+      setOnwardPriceSort("asc");
 
-        if (
-          onwardPriceRange[0] !== onwardMinPrice ||
-          onwardPriceRange[1] !== onwardMaxPrice
-        ) {
-          setOnwardPriceRange([onwardMinPrice, onwardMaxPrice]);
-        }
-      } else {
-        setMinReturnPriceRange(returnMinPrice);
-        setMaxReturnPriceRange(returnMaxPrice);
-
-        if (
-          returnPriceRange[0] !== returnMinPrice ||
-          returnPriceRange[1] !== returnMaxPrice
-        ) {
-          setReturnPriceRange([returnMinPrice, returnMaxPrice]);
-        }
-      }
+      // Set Return
+      setMinReturnPriceRange(returnMinPrice);
+      setMaxReturnPriceRange(returnMaxPrice);
+      setReturnPriceRange([returnMinPrice, returnMaxPrice]);
+      setReturnStops("all");
+      setReturnDepartureTime("all");
+      setReturnArrivalTime("all");
+      setReturnSelectedAirlines([]);
+      setReturnFareIdentifiers([]);
+      setReturnFlightNumberSearch("");
+      setReturnSelectedFareTypes([]);
+      setReturnPriceSort("asc");
     }
-  }, [flightData, tripPhase]);
+  }, [flightData]);
 
   const FARE_TYPE_LABEL: Record<number, string> = {
     0: "Non Refundable",
@@ -447,13 +452,20 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
       });
     }
 
-    if (priceSort === "asc") {
+    const currentPriceSort =
+      tripPhase === "ONWARD" ? onwardPriceSort : returnPriceSort;
+
+    if (currentPriceSort === "asc") {
       filteredData.sort(
-        (a: any, b: any) => getTicketPrice(a, activeFareTypes) - getTicketPrice(b, activeFareTypes)
+        (a: any, b: any) =>
+          getTicketPrice(a, activeFareTypes) -
+          getTicketPrice(b, activeFareTypes)
       );
-    } else if (priceSort === "desc") {
+    } else if (currentPriceSort === "desc") {
       filteredData.sort(
-        (a: any, b: any) => getTicketPrice(b, activeFareTypes) - getTicketPrice(a, activeFareTypes)
+        (a: any, b: any) =>
+          getTicketPrice(b, activeFareTypes) -
+          getTicketPrice(a, activeFareTypes)
       );
     }
 
@@ -480,7 +492,10 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     returnFlightNumberSearch,
     onwardSelectedFareTypes,
     returnSelectedFareTypes,
-    priceSort,
+    onwardSelectedFareTypes,
+    returnSelectedFareTypes,
+    onwardPriceSort,
+    returnPriceSort,
   ]);
 
   const handleTicketSelected = (ticket: any, selectedPriceIndex: number, ticketMarkup: number = 0) => {
@@ -586,6 +601,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
       setOnwardFareIdentifiers([]);
       setOnwardFlightNumberSearch("");
       setOnwardSelectedFareTypes([]);
+      setOnwardPriceSort("asc");
     } else {
       setReturnPriceRange([minReturnPriceRange, maxReturnPriceRange]);
       setReturnStops("all");
@@ -595,8 +611,8 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
       setReturnFareIdentifiers([]);
       setReturnFlightNumberSearch("");
       setReturnSelectedFareTypes([]);
+      setReturnPriceSort("asc");
     }
-    setPriceSort("asc");
   };
 
   const isFilterApplied = React.useMemo(() => {
@@ -609,8 +625,9 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         onwardFareIdentifiers.length > 0 ||
         onwardFlightNumberSearch !== "" ||
         onwardSelectedFareTypes.length > 0 ||
-        priceSort !== "asc" ||
-        (onwardPriceRange[0] !== minOnwardPriceRange || onwardPriceRange[1] !== maxOnwardPriceRange)
+        onwardPriceSort !== "asc" ||
+        onwardPriceRange[0] !== minOnwardPriceRange ||
+        onwardPriceRange[1] !== maxOnwardPriceRange
       );
     } else {
       return (
@@ -621,15 +638,89 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
         returnFareIdentifiers.length > 0 ||
         returnFlightNumberSearch !== "" ||
         returnSelectedFareTypes.length > 0 ||
-        priceSort !== "asc" ||
-        (returnPriceRange[0] !== minReturnPriceRange || returnPriceRange[1] !== maxReturnPriceRange)
+        returnPriceSort !== "asc" ||
+        returnPriceRange[0] !== minReturnPriceRange ||
+        returnPriceRange[1] !== maxReturnPriceRange
       );
     }
   }, [
     tripPhase,
-    onwardStops, onwardDepartureTime, onwardArrivalTime, onwardSelectedAirlines, onwardFareIdentifiers, onwardFlightNumberSearch, onwardSelectedFareTypes, onwardPriceRange, minOnwardPriceRange, maxOnwardPriceRange,
-    returnStops, returnDepartureTime, returnArrivalTime, returnSelectedAirlines, returnFareIdentifiers, returnFlightNumberSearch, returnSelectedFareTypes, returnPriceRange, minReturnPriceRange, maxReturnPriceRange,
-    priceSort
+    onwardFlightNumberSearch,
+    onwardSelectedFareTypes,
+    onwardPriceSort,
+    onwardPriceRange,
+    minOnwardPriceRange,
+    maxOnwardPriceRange,
+    returnStops,
+    returnDepartureTime,
+    returnArrivalTime,
+    returnSelectedAirlines,
+    returnFareIdentifiers,
+    returnFlightNumberSearch,
+    returnSelectedFareTypes,
+    returnPriceSort,
+    returnPriceRange,
+    minReturnPriceRange,
+    maxReturnPriceRange,
+  ]
+  );
+
+  const activeFilterCount = React.useMemo(() => {
+    let count = 0;
+    if (tripPhase === "ONWARD") {
+      if (onwardStops !== "all") count++;
+      if (onwardDepartureTime !== "all") count++;
+      if (onwardArrivalTime !== "all") count++;
+      if (onwardSelectedAirlines.length > 0) count++;
+      if (onwardFareIdentifiers.length > 0) count++;
+      if (onwardFlightNumberSearch !== "") count++;
+      if (onwardSelectedFareTypes.length > 0) count++;
+      if (onwardPriceSort !== "asc") count++;
+      if (
+        onwardPriceRange[0] !== minOnwardPriceRange ||
+        onwardPriceRange[1] !== maxOnwardPriceRange
+      )
+        count++;
+    } else {
+      if (returnStops !== "all") count++;
+      if (returnDepartureTime !== "all") count++;
+      if (returnArrivalTime !== "all") count++;
+      if (returnSelectedAirlines.length > 0) count++;
+      if (returnFareIdentifiers.length > 0) count++;
+      if (returnFlightNumberSearch !== "") count++;
+      if (returnSelectedFareTypes.length > 0) count++;
+      if (returnPriceSort !== "asc") count++;
+      if (
+        returnPriceRange[0] !== minReturnPriceRange ||
+        returnPriceRange[1] !== maxReturnPriceRange
+      )
+        count++;
+    }
+    return count;
+  }, [
+    tripPhase,
+    onwardStops,
+    onwardDepartureTime,
+    onwardArrivalTime,
+    onwardSelectedAirlines,
+    onwardFareIdentifiers,
+    onwardFlightNumberSearch,
+    onwardSelectedFareTypes,
+    onwardPriceSort,
+    onwardPriceRange,
+    minOnwardPriceRange,
+    maxOnwardPriceRange,
+    returnStops,
+    returnDepartureTime,
+    returnArrivalTime,
+    returnSelectedAirlines,
+    returnFareIdentifiers,
+    returnFlightNumberSearch,
+    returnSelectedFareTypes,
+    returnPriceSort,
+    returnPriceRange,
+    minReturnPriceRange,
+    maxReturnPriceRange,
   ]);
 
   const renderFilters = () => (
@@ -639,7 +730,7 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">
               <div className="d-flex align-items-center justify-content-between">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
                 <Button
                   type="link"
                   onClick={handleResetAllFilters}
@@ -687,7 +778,12 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
             <h6 className="text-lg-bold filter-sty neutral-1000">
               Sort by Price
             </h6>
-            <BySortPrice sort={priceSort} setSort={setPriceSort} />
+            <BySortPrice
+              sort={tripPhase === "ONWARD" ? onwardPriceSort : returnPriceSort}
+              setSort={
+                tripPhase === "ONWARD" ? setOnwardPriceSort : setReturnPriceSort
+              }
+            />
           </div>
         </div>
       </div>

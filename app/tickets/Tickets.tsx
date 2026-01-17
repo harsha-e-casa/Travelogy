@@ -529,7 +529,7 @@ export default function Tickets() {
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">
               <div className="d-flex align-items-center justify-content-between">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
                 <Button
                   type="link"
                   onClick={handleResetAllFilters}
@@ -812,6 +812,20 @@ export default function Tickets() {
     );
   }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (stops !== "all") count++;
+    if (departureTime !== "all") count++;
+    if (arrivalTime !== "all") count++;
+    if (selectedAirlines.length > 0) count++; // Count airline filter as 1 regardless of how many airlines selected
+    if (fareIdentifiers.length > 0) count++;
+    if (flightNumberSearch !== "") count++;
+    if (selectedFareTypes.length > 0) count++;
+    if (priceSort !== "asc") count++;
+    if (priceRange[0] !== minPriceRange || priceRange[1] !== maxPriceRange) count++;
+    return count;
+  }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
+
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToCheck = (flightData.ONWARD || flightData.COMBO) || [];
@@ -846,6 +860,19 @@ export default function Tickets() {
       setPriceRange([minPrice, maxPrice]);
     }
   }, [flightData, selectedFareTypes]);
+
+  useEffect(() => {
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
+      setStops("all");
+      setPriceSort("asc");
+      setDepartureTime("all");
+      setSelectedAirlines([]);
+      setArrivalTime("all");
+      setFareIdentifiers([]);
+      setFlightNumberSearch("");
+      setSelectedFareTypes([]);
+    }
+  }, [flightData]);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {

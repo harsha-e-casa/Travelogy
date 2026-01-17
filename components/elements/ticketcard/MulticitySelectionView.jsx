@@ -52,8 +52,6 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
   const [uniqueFareTypes, setUniqueFareTypes] = useState([]);
   const [selectedFares, setSelectedFares] = useState([]);
   const [showAllFares, setShowAllFares] = useState(false);
-  const [priceSort, setPriceSort] = useState("asc");
-
   // Drawer state
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const showFilterDrawer = () => setFilterDrawerOpen(true);
@@ -356,9 +354,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
       });
     }
 
-    if (priceSort === "asc") {
+    const sortOrder = filter.priceSort || "asc";
+    if (sortOrder === "asc") {
       filteredData.sort((a, b) => getTicketPrice(a, selectedFareTypes) - getTicketPrice(b, selectedFareTypes));
-    } else if (priceSort === "desc") {
+    } else if (sortOrder === "desc") {
       filteredData.sort((a, b) => getTicketPrice(b, selectedFareTypes) - getTicketPrice(a, selectedFareTypes));
     }
 
@@ -464,6 +463,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
           fareIdentifiers: [],
           flightNumberSearch: "",
           selectedFareTypes: [],
+          priceSort: "asc",
         };
       });
 
@@ -570,11 +570,11 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
             fareIdentifiers: [],
             flightNumberSearch: "",
             selectedFareTypes: [],
+            priceSort: "asc",
           };
         }
         return next;
       });
-      setPriceSort("asc");
     };
 
     const isFilterApplied = (tabIdx) => {
@@ -588,9 +588,25 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
         f.fareIdentifiers?.length > 0 ||
         f.flightNumberSearch !== "" ||
         f.selectedFareTypes?.length > 0 ||
-        priceSort !== "asc" ||
+        (f.priceSort && f.priceSort !== "asc") ||
         (f.priceRange[0] !== f.minPriceRange || f.priceRange[1] !== f.maxPriceRange)
       );
+    };
+
+    const getActiveFilterCount = (tabIdx) => {
+      const f = filters[tabIdx];
+      if (!f) return 0;
+      let count = 0;
+      if (f.stops !== "all") count++;
+      if (f.departureTime !== "all") count++;
+      if (f.arrivalTime !== "all") count++;
+      if (f.selectedAirlines?.length > 0) count++;
+      if (f.fareIdentifiers?.length > 0) count++;
+      if (f.flightNumberSearch !== "") count++;
+      if (f.selectedFareTypes?.length > 0) count++;
+      if (f.priceSort && f.priceSort !== "asc") count++;
+      if (f.priceRange[0] !== f.minPriceRange || f.priceRange[1] !== f.maxPriceRange) count++;
+      return count;
     };
 
     const renderFilters = (tabIndex) => (
@@ -600,7 +616,7 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
                 <div className="d-flex align-items-center justify-content-between">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                  <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter <span className="text-sm font-normal text-gray-500">({getActiveFilterCount(tabIndex)})</span></h6>
                   <Button
                     type="link"
                     onClick={() => handleResetAllFilters(tabIndex)}
@@ -656,7 +672,21 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
               <h6 className="text-lg-bold filter-sty neutral-1000">
                 Sort by Price
               </h6>
-              <BySortPrice sort={priceSort} setSort={setPriceSort} />
+              <BySortPrice
+                sort={filters[tabIndex]?.priceSort || "asc"}
+                setSort={(validSort) => {
+                  setFilters((prev) => {
+                    const next = [...prev];
+                    if (next[tabIndex]) {
+                      next[tabIndex] = {
+                        ...next[tabIndex],
+                        priceSort: validSort,
+                      };
+                    }
+                    return next;
+                  });
+                }}
+              />
             </div>
           </div>
         </div>
