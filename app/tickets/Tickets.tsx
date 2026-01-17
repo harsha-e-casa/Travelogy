@@ -2421,26 +2421,53 @@ export default function Tickets() {
 
                   <div
                     className="hdt_header-item relative"
-                    onClick={() => {
-                      if (
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          modifySearchRef) ||
-                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                      ) {
-                        openTraveller();
-                      }
-                    }}
                   >
-                    <label>Passengers &amp; Class</label>
-                    <div className="hdt_value">
-                      <span>
-                        {srx_traveller}{" "}
-                        {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
-                        <span className="text-sm">
-                          {classLabels[srx_cabinType]}
+                    <div
+                      onClick={() => {
+                        if (
+                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                            modifySearchRef) ||
+                          (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                        ) {
+                          openTraveller();
+                        }
+                      }}
+                    >
+                      <label>Passengers &amp; Class</label>
+                      <div className="hdt_value">
+                        <span>
+                          {srx_traveller}{" "}
+                          {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
+                          <span className="text-sm">
+                            {classLabels[srx_cabinType]}
+                          </span>
                         </span>
-                      </span>
+                      </div>
                     </div>
+                    {/* Render TravellerForm here for correct positioning */}
+                    {showTraveller && (
+                      <div style={{ position: 'absolute', top: '130%', right: '-40%', zIndex: 10000002 }}>
+                        <TravellerForm
+                          showTraveller={showTraveller}
+                          adult={adultCount}
+                          opentrvForm={openTraveller}
+                          clickMinus={clickMinus}
+                          clickPlus={clickPlus}
+                          clickMinusChildren={clickMinusChildren}
+                          clickPlusChildren={clickPlusChildren}
+                          countchildren={countChildren}
+                          countinfant={countInfant}
+                          handleChangeClass={handleChangeClass}
+                          travellerClass={srx_cabinType}
+                          clickMinusinfant={clickMinusinfant}
+                          clickPlusinfant={clickPlusinfant}
+                          totalPassenderCount={totalPassenderCount}
+                          specificStyle={`${getTravellerClass()} !w-[190%]`}
+                          selectedPassengerType={srx_fareType}
+                          contentWidth="max-content"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
@@ -3057,7 +3084,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Children */}
-                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
+                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Children</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -3081,7 +3108,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Infants */}
-                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
+                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Infant</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -3110,25 +3137,25 @@ export default function Tickets() {
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => handleChangeClass({ target: { value: "b" } })}
-                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "a" } })}
-                            className={`p - 3 rounded border - 2 font - semibold text - sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold text-sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Premium Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "c" } })}
-                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Business
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "d" } })}
-                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             First
                           </button>
@@ -3165,7 +3192,7 @@ export default function Tickets() {
             </div>
           </Drawer>
 
-          <TravellerForm
+          {/* <TravellerForm
             showTraveller={showTraveller}
             adult={adultCount}
             opentrvForm={openTraveller}
@@ -3184,7 +3211,7 @@ export default function Tickets() {
             // specificStyle={"pos-t-r"}
             specificStyle={`${getTravellerClass()} `}
             selectedPassengerType={srx_fareType}
-          />
+          /> */}
 
           {/* Block Banner Tickets */}
           {/* <section className="section-box box-logos-2 box-logos-tickets background-body">
