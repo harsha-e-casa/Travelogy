@@ -1436,6 +1436,7 @@ export default function Tickets() {
 
   // Not required for API call but kept in state for other uses if needed.
   const [ticketParams, setTicketParams] = useState({ id: null, date: null });
+  const [searchedTripType, setSearchedTripType] = useState<string>("");
 
 
   useEffect(() => {
@@ -1669,8 +1670,8 @@ export default function Tickets() {
             }
           });
           setFlightData(tripInfos);
-        }
-        else if (result?.error) {
+          setSearchedTripType(srx_tripType || "");
+        } else if (result?.error) {
           if (typeof result.error === "string") {
             if (result?.error?.toLowerCase()?.includes("invalid airport")) {
               setError("Invalid route. Please choose a different route.");
@@ -1914,6 +1915,9 @@ export default function Tickets() {
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     setTripType(key);
     setCookie("gy_triptype", key);
+    if (key.toLowerCase() === "multi-city") {
+      setModifySearchRef(true);
+    }
     setOpen((prev) => !prev);
     setIsSearchPerformed(false);
     // setFlightData(null);
@@ -3304,11 +3308,11 @@ export default function Tickets() {
                     </div>
                   )}
 
-                  {((srx_tripType?.trim().toLowerCase() === "one-way" &&
+                  {((searchedTripType?.trim().toLowerCase() === "one-way" &&
                     flightData?.ONWARD?.length > 0) ||
-                    (srx_tripType?.trim().toLowerCase() === "round-trip" &&
+                    (searchedTripType?.trim().toLowerCase() === "round-trip" &&
                       flightData?.COMBO?.length > 0) ||
-                    (srx_tripType?.trim().toLowerCase() === "multi-city" &&
+                    (searchedTripType?.trim().toLowerCase() === "multi-city" &&
                       flightData?.COMBO?.length > 0)) &&
                     (() => {
                       // const tripInfo = filteredFlightData;
@@ -3350,8 +3354,8 @@ export default function Tickets() {
                               </div>
 
                               <div className="col-xl-9 col-12">
-                                {(srx_tripType?.trim().toLowerCase() === "one-way" ||
-                                  srx_tripType?.trim().toLowerCase() === "round-trip") && (
+                                {(searchedTripType?.trim().toLowerCase() === "one-way" ||
+                                  searchedTripType?.trim().toLowerCase() === "round-trip") && (
                                     <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
@@ -3457,7 +3461,7 @@ export default function Tickets() {
                       );
                     })()}
 
-                  {(!flightData || (flightData && (!flightData.ONWARD || flightData.ONWARD.length === 0))) && srx_tripType?.trim().toLowerCase() === "one-way" &&
+                  {(!flightData || (flightData && (!flightData.ONWARD || flightData.ONWARD.length === 0))) && searchedTripType?.trim().toLowerCase() === "one-way" &&
                     (() => {
                       return (
                         <>
@@ -3507,10 +3511,10 @@ export default function Tickets() {
                   ) : null } */}
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
-                  {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "round-trip" &&
-                    srx_tripType.trim().toLowerCase() !== "one-way" &&
-                    srx_tripType.trim().toLowerCase() !== "multi-city" ? (
+                  {searchedTripType &&
+                    searchedTripType.trim().toLowerCase() === "round-trip" &&
+                    searchedTripType.trim().toLowerCase() !== "one-way" &&
+                    searchedTripType.trim().toLowerCase() !== "multi-city" ? (
                     <>
                       {flightData &&
                         flightData.ONWARD &&
@@ -3541,8 +3545,8 @@ export default function Tickets() {
                       )}
                     </>
                   ) : null}
-                  {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "multi-city" &&
+                  {searchedTripType &&
+                    searchedTripType.trim().toLowerCase() === "multi-city" &&
                     !flightData?.COMBO ? (
                     <>
                       {flightData ? (
