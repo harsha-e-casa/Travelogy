@@ -180,9 +180,9 @@ const SeatBooking = ({
       if (bookingId) {
         cookieData = getCookie(`adult_seat_map-${i}_${bookingId}`);
       }
-      if (!cookieData) {
-        cookieData = getCookie(`adult_seat_map-${i}`);
-      }
+      // if (!cookieData) {
+      //   cookieData = getCookie(`adult_seat_map-${i}`);
+      // }
 
       if (!cookieData) continue; // skip if no cookie for this adult
 
@@ -204,9 +204,9 @@ const SeatBooking = ({
       if (bookingId) {
         cookieData = getCookie(`child_seat_map-${i}_${bookingId}`);
       }
-      if (!cookieData) {
-        cookieData = getCookie(`child_seat_map-${i}`);
-      }
+      // if (!cookieData) {
+      //   cookieData = getCookie(`child_seat_map-${i}`);
+      // }
 
       if (!cookieData) continue; // skip if no cookie for this child
 
@@ -396,9 +396,9 @@ const SeatBooking = ({
     if (bookingId) {
       existingDataStr = getCookie(`${passengerKey}_${bookingId}`);
     }
-    if (!existingDataStr) {
-      existingDataStr = getCookie(passengerKey);
-    }
+    // if (!existingDataStr) {
+    //   existingDataStr = getCookie(passengerKey);
+    // }
 
     let updatedData = [];
 
@@ -431,6 +431,7 @@ const SeatBooking = ({
     setCookie(passengerKey, JSON.stringify(updatedData), cookieOptions);
     if (bookingId) {
       setCookie(`${passengerKey}_${bookingId}`, JSON.stringify(updatedData), cookieOptions);
+      console.log("Cookie_bookingId updated:", `${passengerKey}_${bookingId}`, updatedData);
     }
     console.log("Cookie updated:", passengerKey, updatedData);
   };
