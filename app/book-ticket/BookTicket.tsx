@@ -139,7 +139,8 @@ export default function BookTicket() {
           content: "Previous booking under progress",
           onOk: () => {
             if (window.history.length > 1) {
-              router.back();
+              // router.back();
+              router.push("/tickets");
             } else {
               router.push("/flights");
             }
@@ -681,7 +682,8 @@ export default function BookTicket() {
     // const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
     // router.push(`/tickets?${queryString}`);
-    window.history.back();
+    router.push("/tickets");
+    // window.history.back();
   };
 
   // Async function to fetch flight data
@@ -2010,7 +2012,8 @@ export default function BookTicket() {
                         <div className="bg-white shadow sm:rounded-lg relative">
                           <div className="px-4 py-3 border_xcolor_1px flex justify-between">
                             <button
-                              onClick={() => window.history.back()}
+                              // onClick={() => window.history.back()}
+                              onClick={() => router.push("/tickets")}
                               style={{ borderRadius: "5px" }}
                               className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition"
                             >
