@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import "./style.css";
 import { checkTokenExpiry } from "@/services/Utils";
+import { performLogout } from "@/services/AuthService";
 import { getData, postData } from "@/services/NetworkAdapter";
 
 
@@ -93,23 +94,7 @@ export default function Header1(props: Header1Props) {
 
 
   const handleLogout = async () => {
-    window.location.href = "/login";
-    localStorage.removeItem("authToken");
-    try {
-      const res = await fetch("/api/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // credentials: "include", // ensures cookies are sent with request
-      });
-
-      if (res.ok) {
-        // console.log("Logout successful");
-      } else {
-        console.error("Logout failed", await res.text());
-      }
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
+    await performLogout();
   };
 
   return (
