@@ -253,9 +253,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
 
     // Flight Number
     if (!ignoreKeys.includes("flightNumber") && filter.flightNumberSearch) {
-      const passes = ticket.sI.some((segment) =>
-        segment.fD.fN.toLowerCase().includes(filter.flightNumberSearch.toLowerCase())
-      );
+      const passes = ticket.sI.some((segment) => {
+        const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+        return flightCode.toLowerCase().includes(filter.flightNumberSearch.toLowerCase());
+      });
       if (!passes) return false;
     }
 
@@ -424,11 +425,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
 
     if (filter.flightNumberSearch) {
       filteredData = filteredData.filter((ticket) => {
-        return ticket.sI.some((segment) =>
-          segment.fD.fN
-            .toLowerCase()
-            .includes(filter.flightNumberSearch.toLowerCase())
-        );
+        return ticket.sI.some((segment) => {
+          const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+          return flightCode.toLowerCase().includes(filter.flightNumberSearch.toLowerCase());
+        });
       });
     }
 

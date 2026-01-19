@@ -1034,9 +1034,10 @@ export default function Tickets() {
     }
 
     if (!ignoreFilters.includes("flightNumber") && flightNumberSearch) {
-      const passesFlightNumber = ticket.sI.some((segment: any) =>
-        segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase())
-      );
+      const passesFlightNumber = ticket.sI.some((segment: any) => {
+        const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+        return flightCode.toLowerCase().includes(flightNumberSearch.toLowerCase());
+      });
       if (!passesFlightNumber) return false;
     }
 
@@ -1230,11 +1231,10 @@ export default function Tickets() {
 
       if (flightNumberSearch) {
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.sI.some((segment: any) =>
-            segment.fD.fN
-              .toLowerCase()
-              .includes(flightNumberSearch.toLowerCase())
-          );
+          return ticket.sI.some((segment: any) => {
+            const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+            return flightCode.toLowerCase().includes(flightNumberSearch.toLowerCase());
+          });
         });
       }
 

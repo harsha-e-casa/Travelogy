@@ -321,9 +321,10 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     }
 
     if (!ignoreFilters.includes("flightNumber") && flightNumberSearch) {
-      const passesFlightNumber = ticket.sI.some((segment: any) =>
-        segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase())
-      );
+      const passesFlightNumber = ticket.sI.some((segment: any) => {
+        const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+        return flightCode.toLowerCase().includes(flightNumberSearch.toLowerCase());
+      });
       if (!passesFlightNumber) return false;
     }
 
@@ -516,21 +517,19 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
 
     if (tripPhase === "ONWARD" && onwardFlightNumberSearch) {
       filteredData = filteredData.filter((ticket: any) => {
-        return ticket.sI.some((segment: any) =>
-          segment.fD.fN
-            .toLowerCase()
-            .includes(onwardFlightNumberSearch.toLowerCase())
-        );
+        return ticket.sI.some((segment: any) => {
+          const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+          return flightCode.toLowerCase().includes(onwardFlightNumberSearch.toLowerCase());
+        });
       });
     }
 
     if (tripPhase === "RETURN" && returnFlightNumberSearch) {
       filteredData = filteredData.filter((ticket: any) => {
-        return ticket.sI.some((segment: any) =>
-          segment.fD.fN
-            .toLowerCase()
-            .includes(returnFlightNumberSearch.toLowerCase())
-        );
+        return ticket.sI.some((segment: any) => {
+          const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+          return flightCode.toLowerCase().includes(returnFlightNumberSearch.toLowerCase());
+        });
       });
     }
 
