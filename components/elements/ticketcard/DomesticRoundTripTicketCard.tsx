@@ -237,7 +237,7 @@ export default function DomesticRoundTripTicketCard({
         )}
       </div>
 
-      {ticket.totalPriceList.length > 1 && (
+      {filteredFares.length > 1 && (
         <div className="mobile-view-more" onClick={(e) => {
           e.stopPropagation();
           setShowAllFares(!showAllFares);
@@ -249,7 +249,8 @@ export default function DomesticRoundTripTicketCard({
       {showAllFares && (
         <div className="mt-3">
           <Radio.Group onChange={(e) => setValue(e.target.value)} value={value} className="w-full flex flex-col gap-2">
-            {ticket.totalPriceList.map((fare: any, idx: number) => {
+            {filteredFares.map((fare: any) => {
+              const idx = fare.originalIndex;
               const currentFareMarkup = allTicketMarkups[`${ticket.id}_${idx}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
               return (
                 <Radio key={idx} value={idx} className="w-full border p-2 rounded" onClick={(e) => e.stopPropagation()}>

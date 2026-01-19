@@ -968,47 +968,162 @@ export default function Tickets() {
     setFilteredFlightData(sorted);
   }, [priceSort, selectedFareTypes]);
 
-  useEffect(() => {
-    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      const type: any = {
+
+
+  // Helper function to check if a ticket passes filters, ignoring specified filters
+  const checkPassesFilters = (ticket: any, ignoreFilters: string[] = []) => {
+    // 1. Strict Fare Type Filter
+    if (!ignoreFilters.includes("fareType") && selectedFareTypes.length > 0) {
+      const typeMap: { [key: number]: string } = {
         0: "Non Refundable",
         1: "Refundable",
         2: "Partial Refundable",
       };
-      const dataToCheck = flightData.ONWARD || flightData.COMBO;
-      // const allFareTypes = dataToCheck.flatMap((ticket: any) =>
-      //   ticket.totalPriceList.flatMap((priceInfo: any) =>
-      //     Object.keys(priceInfo.fd).map(paxType => priceInfo.fd[paxType].paxType)
-      //   )
-      // ).filter(Boolean);
-      const allFareTypes = dataToCheck
-        .flatMap((ticket: any, ticketIndex: number) => {
-          return ticket.totalPriceList.flatMap(
-            (priceInfo: any, priceIndex: number) => {
-              return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-                return priceInfo.fd[paxTypeKey]?.rT || 0;
-              });
-            }
-          );
-        })
-        .filter((val: any) => Number.isFinite(Number(val)));
-      const fareTypeCounts = allFareTypes.reduce(
-        (acc: any, fareType: string) => {
-          acc[fareType] = (acc[fareType] || 0) + 1;
-          return acc;
-        },
-        {}
-      );
-
-      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
-        (fareType) => ({
-          name: type[fareType],
-          count: fareTypeCounts[fareType],
+      const passesFareType = ticket.totalPriceList.some((priceInfo: any) =>
+        Object.keys(priceInfo.fd).some((paxType) => {
+          const fareType = typeMap[priceInfo.fd[paxType]?.rT || 0];
+          return selectedFareTypes.includes(fareType);
         })
       );
-      setUniqueFareTypes(uniqueFaresWithCounts);
+      if (!passesFareType) return false;
     }
-  }, [flightData]);
+
+    // Fare Identifier Filter
+    if (!ignoreFilters.includes("fareIdentifier") && fareIdentifiers.length > 0) {
+      const passesFareId = ticket.totalPriceList.some((priceInfo: any) =>
+        fareIdentifiers.includes(priceInfo.fareIdentifier)
+      );
+      if (!passesFareId) return false;
+    }
+
+    // 2. Price Range Filter
+    if (!ignoreFilters.includes("price")) {
+      const price = getTicketPrice(ticket);
+      if (price < priceRange[0] || price > priceRange[1]) return false;
+    }
+
+    // Stops Filter
+    if (!ignoreFilters.includes("stops") && stops !== "all") {
+      const stopCount = ticket.sI.length;
+      if (stops === "non-stop" && stopCount !== 1) return false;
+      if (stops === "1-stop" && stopCount !== 2) return false;
+      if (stops === "2-stops" && stopCount <= 2) return false;
+    }
+
+    // Departure Time Filter
+    if (!ignoreFilters.includes("departureTime") && departureTime !== "all") {
+      const departureHour = new Date(ticket.sI[0].dt).getHours();
+      if (departureTime === "early-morning" && !(departureHour >= 0 && departureHour < 6)) return false;
+      if (departureTime === "morning" && !(departureHour >= 6 && departureHour < 12)) return false;
+      if (departureTime === "afternoon" && !(departureHour >= 12 && departureHour < 18)) return false;
+      if (departureTime === "evening" && !(departureHour >= 18 && departureHour < 24)) return false;
+    }
+
+    // Airline Filter
+    if (!ignoreFilters.includes("airline") && selectedAirlines.length > 0) {
+      if (!selectedAirlines.includes(ticket.sI[0].fD.aI.name)) return false;
+    }
+
+    // Arrival Time Filter
+    if (!ignoreFilters.includes("arrivalTime") && arrivalTime !== "all") {
+      const arrivalHour = new Date(ticket.sI[ticket.sI.length - 1].at).getHours();
+      if (arrivalTime === "early-morning" && !(arrivalHour >= 0 && arrivalHour < 6)) return false;
+      if (arrivalTime === "morning" && !(arrivalHour >= 6 && arrivalHour < 12)) return false;
+      if (arrivalTime === "afternoon" && !(arrivalHour >= 12 && arrivalHour < 18)) return false;
+      if (arrivalTime === "evening" && !(arrivalHour >= 18 && arrivalHour < 24)) return false;
+    }
+
+    if (!ignoreFilters.includes("flightNumber") && flightNumberSearch) {
+      const passesFlightNumber = ticket.sI.some((segment: any) =>
+        segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase())
+      );
+      if (!passesFlightNumber) return false;
+    }
+
+    return true;
+  };
+
+  useEffect(() => {
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
+      const dataToCheck = (flightData.ONWARD || flightData.COMBO) || [];
+
+      // Calculate Fare Type Counts (Ignore Fare Type filter)
+      const fareTypesMap: Record<string, number> = {};
+      const typeMap: any = {
+        0: "Non Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
+      };
+
+      dataToCheck.forEach((ticket: any) => {
+        if (checkPassesFilters(ticket, ["fareType"])) {
+          // Extract fare types from this ticket
+          const ticketFareTypes = new Set<string>();
+          ticket.totalPriceList.forEach((priceInfo: any) => {
+            Object.keys(priceInfo.fd).forEach((paxType) => {
+              const rT = priceInfo.fd[paxType]?.rT || 0;
+              const typeName = typeMap[rT];
+              if (typeName) ticketFareTypes.add(typeName);
+            });
+          });
+
+          ticketFareTypes.forEach(ft => {
+            fareTypesMap[ft] = (fareTypesMap[ft] || 0) + 1;
+          });
+        }
+      });
+
+      const uniqueFaresWithCounts = Object.keys(fareTypesMap).map(fareType => ({
+        name: fareType,
+        count: fareTypesMap[fareType]
+      }));
+      setUniqueFareTypes(uniqueFaresWithCounts);
+
+
+      // Calculate Fare Identifier Counts (Ignore Fare Identifier filter)
+      const fareIdMap: Record<string, number> = {};
+
+      dataToCheck.forEach((ticket: any) => {
+        if (checkPassesFilters(ticket, ["fareIdentifier"])) {
+          const ticketFareIds = new Set<string>();
+          ticket.totalPriceList.forEach((priceInfo: any) => {
+            if (priceInfo.fareIdentifier) ticketFareIds.add(priceInfo.fareIdentifier);
+          });
+
+          ticketFareIds.forEach(fid => {
+            fareIdMap[fid] = (fareIdMap[fid] || 0) + 1;
+          });
+        }
+      });
+
+      const uniqueIdsWithCounts = Object.keys(fareIdMap).map(fid => ({
+        name: fid,
+        count: fareIdMap[fid]
+      }));
+
+      // Verify ByFareIdentifier props structure. Assuming it takes list of strings or objects.
+      // Based on previous code flow, it was `uniqueFareIdentifiers`.
+      // Let's assume it wants { option: string, count: number } or similar.
+      // Looking at usage: `options={uniqueFareIdentifiers}`. 
+      // Standard generic filter usually takes objects.
+      // I will stick to { option: fid, count } or similar if I can confirm.
+      // But wait, the original code for fare type used { name: ..., count: ... }.
+      // Identify ByFareIdentifier expectations?
+      // Let's assume generic object is fine.
+      setUniqueFareIdentifiers(uniqueIdsWithCounts);
+
+    }
+  }, [
+    flightData,
+    priceRange,
+    stops,
+    departureTime,
+    selectedAirlines,
+    arrivalTime,
+    fareIdentifiers, // dependency for other group
+    flightNumberSearch,
+    selectedFareTypes, // dependency for other group
+  ]);
 
   const applyFilters = () => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {

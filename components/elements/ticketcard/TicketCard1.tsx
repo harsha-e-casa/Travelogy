@@ -76,6 +76,8 @@ export default function TicketCard1({
     setValue(e.target.value);
   };
 
+
+
   // Calculate markup for the currently selected fare index for the Book Now link
   const getSelectedMarkup = () => {
     return allTicketMarkups[`${ticket.id}_${value}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
@@ -108,11 +110,12 @@ export default function TicketCard1({
   }, [enrichedFares, selectedFareIdentifiers, selectedFareTypes]);
 
   useEffect(() => {
-    if (filteredFares.length > 0) {
-      const isSelectedInFiltered = filteredFares.some((f: any) => f.originalIndex === value);
-      if (!isSelectedInFiltered) {
-        setValue(filteredFares[0].originalIndex);
-      }
+    const isSelectedAvailable = filteredFares.some(
+      (f: any) => f.originalIndex === Number(value)
+    );
+
+    if (!isSelectedAvailable && filteredFares.length > 0) {
+      setValue(filteredFares[0].originalIndex);
     }
   }, [filteredFares, value]);
 

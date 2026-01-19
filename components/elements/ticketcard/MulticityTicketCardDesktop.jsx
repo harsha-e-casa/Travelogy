@@ -180,7 +180,7 @@ export default function MulticityTicketCardDesktop({
 
                                     const fareValue = calculateTotalFare(e.fd, finalMarkup);
                                     return (
-                                        <Radio key={j} value={j} className="w-full radiocomp">
+                                        <Radio key={j} value={j} className="w-full radiocomp" onClick={(e) => e.stopPropagation()}>
                                             <div className="p-0 rounded-lg border-2 radiodiv border-gray-300 hover:border-gray-500">
                                                 <div className="flex flex-row gap-2 items-center">
                                                     <div
