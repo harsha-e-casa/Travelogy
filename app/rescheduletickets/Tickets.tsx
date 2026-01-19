@@ -6,6 +6,7 @@ import React, {
   useContext,
   useRef,
   Suspense,
+  useMemo,
 } from "react";
 import ByAirline from "@/components/Filter/ByAirline";
 import ByClass from "@/components/Filter/ByClass";
@@ -153,6 +154,46 @@ export default function Tickets() {
   const [uniqueAirlines, setUniqueAirlines] = useState<any[]>([]);
   const [priceSort, setPriceSort] = useState<"asc" | "desc">("asc");
 
+  const handleResetAllFilters = () => {
+    setPriceRange([minPriceRange, maxPriceRange]);
+    setStops("all");
+    setPriceSort("asc");
+    setDepartureTime("all");
+    setSelectedAirlines([]);
+    setArrivalTime("all");
+    setFareIdentifiers([]);
+    setFlightNumberSearch("");
+    setSelectedFareTypes([]);
+  };
+
+  const isFilterApplied = useMemo(() => {
+    return (
+      stops !== "all" ||
+      departureTime !== "all" ||
+      arrivalTime !== "all" ||
+      selectedAirlines.length > 0 ||
+      fareIdentifiers.length > 0 ||
+      flightNumberSearch !== "" ||
+      selectedFareTypes.length > 0 ||
+      priceSort !== "asc" ||
+      (priceRange[0] !== minPriceRange || priceRange[1] !== maxPriceRange)
+    );
+  }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (stops !== "all") count++;
+    if (departureTime !== "all") count++;
+    if (arrivalTime !== "all") count++;
+    if (selectedAirlines.length > 0) count++; // Count airline filter as 1 regardless of how many airlines selected
+    if (fareIdentifiers.length > 0) count++;
+    if (flightNumberSearch !== "") count++;
+    if (selectedFareTypes.length > 0) count++;
+    if (priceSort !== "asc") count++;
+    if (priceRange[0] !== minPriceRange || priceRange[1] !== maxPriceRange) count++;
+    return count;
+  }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
+
   useEffect(() => {
     removeCookie("travellerInfo");
     removeCookie("mealinfo");
@@ -212,24 +253,68 @@ export default function Tickets() {
 
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
 
+      // const type: any = {
+      //   0: "Non Refundable",
+      //   1: "Refundable",
+      //   2: "Partial Refundable",
+      // };
+      // const allFareTypes = dataToCheck
+      //   .flatMap((ticket: any, ticketIndex: number) => {
+      //     return ticket.totalPriceList.flatMap(
+      //       (priceInfo: any, priceIndex: number) => {
+      //         return Object.keys(priceInfo.fd).map((paxTypeKey) => {
+      //           return priceInfo.fd[paxTypeKey].rT;
+      //         });
+      //       }
+      //     );
+      //   })
+      //   .filter((val: any) => {
+      //     return val !== undefined && val !== null;
+      //   });
+
+      // const fareTypeCounts = allFareTypes.reduce(
+      //   (acc: any, fareType: string) => {
+      //     acc[fareType] = (acc[fareType] || 0) + 1;
+      //     return acc;
+      //   },
+      //   {}
+      // );
+
+      // const uniqueFareTypesWithCounts = Object.keys(fareTypeCounts).map(
+      //   (fareType) => ({
+      //     name: type[fareType],
+      //     count: fareTypeCounts[fareType],
+      //   })
+      // );
+
+      // setUniqueFareTypes(uniqueFareTypesWithCounts);
+    }
+  }, [flightData]);
+
+  useEffect(() => {
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       const type: any = {
+        0: "Non Refundable",
         1: "Refundable",
         2: "Partial Refundable",
       };
+      const dataToCheck = flightData.ONWARD || flightData.COMBO;
+      // const allFareTypes = dataToCheck.flatMap((ticket: any) =>
+      //   ticket.totalPriceList.flatMap((priceInfo: any) =>
+      //     Object.keys(priceInfo.fd).map(paxType => priceInfo.fd[paxType].paxType)
+      //   )
+      // ).filter(Boolean);
       const allFareTypes = dataToCheck
         .flatMap((ticket: any, ticketIndex: number) => {
           return ticket.totalPriceList.flatMap(
             (priceInfo: any, priceIndex: number) => {
               return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-                return priceInfo.fd[paxTypeKey].rT;
+                return priceInfo.fd[paxTypeKey]?.rT || 0;
               });
             }
           );
         })
-        .filter((val: any) => {
-          return val;
-        });
-
+        .filter((val: any) => Number.isFinite(Number(val)));
       const fareTypeCounts = allFareTypes.reduce(
         (acc: any, fareType: string) => {
           acc[fareType] = (acc[fareType] || 0) + 1;
@@ -238,14 +323,13 @@ export default function Tickets() {
         {}
       );
 
-      const uniqueFareTypesWithCounts = Object.keys(fareTypeCounts).map(
+      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
         (fareType) => ({
           name: type[fareType],
           count: fareTypeCounts[fareType],
         })
       );
-
-      setUniqueFareTypes(uniqueFareTypesWithCounts);
+      setUniqueFareTypes(uniqueFaresWithCounts);
     }
   }, [flightData]);
 
@@ -295,9 +379,36 @@ export default function Tickets() {
 
   const applyFilters = () => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      let dataToFilter = flightData.ONWARD || flightData.COMBO;
+      let dataToFilter = (flightData.ONWARD || flightData.COMBO) || [];
 
-      // Price Range Filter
+      // 1. Strict Fare Type Filter (First Priority)
+      if (selectedFareTypes.length > 0) {
+        const typeMap: { [key: number]: string } = {
+          0: "Non Refundable",
+          1: "Refundable",
+          2: "Partial Refundable",
+        };
+
+        dataToFilter = dataToFilter.filter((ticket: any) => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            Object.keys(priceInfo.fd).some((paxType) => {
+              const fareType = typeMap[priceInfo.fd[paxType]?.rT || 0];
+              return selectedFareTypes.includes(fareType);
+            })
+          );
+        });
+      }
+
+      // Fare Identifier Filter
+      if (fareIdentifiers.length > 0) {
+        dataToFilter = dataToFilter.filter((ticket: any) => {
+          return ticket.totalPriceList.some((priceInfo: any) =>
+            fareIdentifiers.includes(priceInfo.fareIdentifier)
+          );
+        });
+      }
+
+      // 2. Price Range Filter (Uses updated getTicketPrice)
       let filteredData = dataToFilter.filter((ticket: any) => {
         const price = getTicketPrice(ticket);
         return price >= priceRange[0] && price <= priceRange[1];
@@ -369,22 +480,17 @@ export default function Tickets() {
         });
       }
 
-      if (selectedFareTypes.length > 0) {
-        const typeMap: { [key: number]: string } = {
-          1: "Refundable",
-          2: "Partial Refundable",
-        };
-
+      if (flightNumberSearch) {
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.totalPriceList.some((priceInfo: any) =>
-            Object.keys(priceInfo.fd).some((paxType) => {
-              const fareType = typeMap[priceInfo.fd[paxType].rT];
-              return selectedFareTypes.includes(fareType);
-            })
+          return ticket.sI.some((segment: any) =>
+            segment.fD.fN
+              .toLowerCase()
+              .includes(flightNumberSearch.toLowerCase())
           );
         });
       }
 
+      // Sorting (Maintained from original function as Tickets.tsx likely splits this or handles via hook)
       if (priceSort === "asc") {
         filteredData.sort(
           (a: any, b: any) => getTicketPrice(a) - getTicketPrice(b)
@@ -499,6 +605,7 @@ export default function Tickets() {
 
   const handlesearFlight = () => {
     // SetSearchFlight(true);
+    handleResetAllFilters();
 
     if (fetchRescheduleData) {
       const callReissueTicket = async () => {
@@ -595,6 +702,7 @@ export default function Tickets() {
   }, [searchFlight]);
 
   const loadReissueTicket = async (requestId: any) => {
+    handleResetAllFilters();
     setFlightData(null);
     setActiveFlight(true);
     setloading(true);
@@ -815,6 +923,24 @@ export default function Tickets() {
 
   const renderFilters = () => (
     <>
+      {isFilterApplied && (
+        <div className="sticky top-36 md:top-32 lg:top-32 min-[1274px]:top-40 xl:top-40 z-50 sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
+          <div className="box-filters-sidebar">
+            <div className="block-filter border-1">
+              <div className="d-flex align-items-center justify-content-between">
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied Filters <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
+                <Button
+                  type="link"
+                  onClick={handleResetAllFilters}
+                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
+                >
+                  Reset All
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="sidebar-left border-1 background-body">
         <div className="box-filters-sidebar">
           <div className="block-filter border-1">
@@ -1162,7 +1288,7 @@ export default function Tickets() {
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
-                                    <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-36 md:top-32 lg:top-32 min-[1274px]:top-40 xl:top-40 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />
@@ -1210,6 +1336,7 @@ export default function Tickets() {
                                             shareMode={shareMode}
                                             selectedQuoteFlights={selectedQuoteFlights}
                                             onQuoteSelectionChange={handleQuoteSelectionChange}
+                                            selectedFareIdentifiers={fareIdentifiers}
                                           // onPriceClick={openMarkupModal} 
                                           />
                                         ) : (
@@ -1221,6 +1348,7 @@ export default function Tickets() {
                                             shareMode={shareMode}
                                             selectedQuoteFlights={selectedQuoteFlights}
                                             onQuoteSelectionChange={handleQuoteSelectionChange}
+                                            selectedFareIdentifiers={fareIdentifiers}
                                           />
                                         )}
                                       </React.Fragment>
