@@ -196,9 +196,9 @@ export default function MulticityTicketCardDesktop({
                                                             onPriceClick &&
                                                                 onPriceClick(
                                                                     ticket.id,
-                                                                    ticketMarkups[ticket.id] ?? markup,
+                                                                    finalMarkup,
                                                                     ticket,
-                                                                    selectedFareIndex,
+                                                                    j, // Use correct index
                                                                     prevSegments
                                                                 );
                                                         }}

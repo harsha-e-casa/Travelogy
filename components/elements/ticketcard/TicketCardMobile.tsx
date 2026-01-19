@@ -213,7 +213,10 @@ export default function TicketCardMobile({
                                 return (
                                     <Radio key={realIndex} value={realIndex} className="w-full border p-2 rounded">
                                         <div className="flex justify-between items-center w-full">
-                                            <span className="text-sm font-bold">₹{calculateTotalPrice(fare, currentFareMarkup)}</span>
+                                            <span className="text-sm font-bold" onClick={(e) => {
+                                                e.stopPropagation(); // Prevent radio selection when clicking price
+                                                onPriceClick && onPriceClick(ticket.id, currentFareMarkup, ticket, realIndex);
+                                            }}>₹{calculateTotalPrice(fare, currentFareMarkup)}</span>
                                             <span className="text-xs opacity-70">{fare.fareIdentifier}</span>
                                         </div>
                                     </Radio>
