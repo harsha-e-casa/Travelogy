@@ -144,31 +144,6 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     }
   };
 
-  useEffect(() => {
-    if (flightData && activeTabKey) {
-      const tabIndex = parseInt(activeTabKey) - 1;
-      const flightsForSegment = flightData[String(tabIndex)] || [];
-
-      const allFareIdentifiers = flightsForSegment
-        .flatMap((ticket) =>
-          ticket.totalPriceList.map((priceInfo) => priceInfo.fareIdentifier)
-        )
-        .filter(Boolean);
-
-      const fareCounts = allFareIdentifiers.reduce((acc, fare) => {
-        acc[fare] = (acc[fare] || 0) + 1;
-        return acc;
-      }, {});
-
-      const uniqueFaresWithCounts = Object.keys(fareCounts).map((fare) => ({
-        name: fare,
-        count: fareCounts[fare],
-      }));
-
-      setUniqueFareIdentifiers(uniqueFaresWithCounts);
-    }
-  }, [flightData, activeTabKey]);
-
   const getTicketPrice = (ticket, validFareTypes = []) => {
     const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
     const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
@@ -208,10 +183,92 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     return adultFare + childFare + infantFare;
   };
 
+  const checkPassesFilters = (ticket, filter, ignoreKeys = []) => {
+    if (!filter) return true;
+    const selectedFareTypes = filter.selectedFareTypes || [];
+    const FARE_TYPE_LABEL = {
+      0: "Non Refundable",
+      1: "Refundable",
+      2: "Partial Refundable",
+    };
+
+    // 1. Strict Fare Type Filter
+    if (!ignoreKeys.includes("fareType") && selectedFareTypes.length > 0) {
+      const passes = (ticket.totalPriceList || []).some((priceInfo) =>
+        Object.values(priceInfo.fd || {}).some((pax) => {
+          const code = String(pax?.rT);
+          const label = FARE_TYPE_LABEL[code] ?? code;
+          return selectedFareTypes.includes(label);
+        })
+      );
+      if (!passes) return false;
+    }
+
+    // Price Range Filter
+    if (!ignoreKeys.includes("price")) {
+      const price = getTicketPrice(ticket, selectedFareTypes);
+      if (price === undefined || price < filter.priceRange[0] || price > filter.priceRange[1]) return false;
+    }
+
+    // Stops Filter
+    if (!ignoreKeys.includes("stops") && filter.stops !== "all") {
+      const stopCount = ticket.sI.length;
+      if (filter.stops === "non-stop" && stopCount !== 1) return false;
+      if (filter.stops === "1-stop" && stopCount !== 2) return false;
+      if (filter.stops === "2-stops" && stopCount <= 2) return false;
+    }
+
+    // Departure Time Filter
+    if (!ignoreKeys.includes("departureTime") && filter.departureTime !== "all") {
+      const departureHour = new Date(ticket.sI[0].dt).getHours();
+      const t = filter.departureTime;
+      if (t === "early-morning" && !(departureHour >= 0 && departureHour < 6)) return false;
+      if (t === "morning" && !(departureHour >= 6 && departureHour < 12)) return false;
+      if (t === "afternoon" && !(departureHour >= 12 && departureHour < 18)) return false;
+      if (t === "evening" && !(departureHour >= 18 && departureHour < 24)) return false;
+    }
+
+    // Arrival Time Filter
+    if (!ignoreKeys.includes("arrivalTime") && filter.arrivalTime !== "all") {
+      const arrivalHour = new Date(ticket.sI[ticket.sI.length - 1].at).getHours();
+      const t = filter.arrivalTime;
+      if (t === "early-morning" && !(arrivalHour >= 0 && arrivalHour < 6)) return false;
+      if (t === "morning" && !(arrivalHour >= 6 && arrivalHour < 12)) return false;
+      if (t === "afternoon" && !(arrivalHour >= 12 && arrivalHour < 18)) return false;
+      if (t === "evening" && !(arrivalHour >= 18 && arrivalHour < 24)) return false;
+    }
+
+    // Airline Filter
+    if (!ignoreKeys.includes("airline") && filter.selectedAirlines?.length > 0) {
+      if (!filter.selectedAirlines.includes(ticket.sI[0].fD.aI.name)) return false;
+    }
+
+    // Fare Identifier
+    if (!ignoreKeys.includes("fareIdentifier") && filter.fareIdentifiers?.length > 0) {
+      const passes = ticket.totalPriceList?.some((p) =>
+        p?.fareIdentifier && filter.fareIdentifiers.includes(p.fareIdentifier)
+      );
+      if (!passes) return false;
+    }
+
+    // Flight Number
+    if (!ignoreKeys.includes("flightNumber") && filter.flightNumberSearch) {
+      const passes = ticket.sI.some((segment) =>
+        segment.fD.fN.toLowerCase().includes(filter.flightNumberSearch.toLowerCase())
+      );
+      if (!passes) return false;
+    }
+
+    return true;
+  };
+
   useEffect(() => {
-    if (flightData && activeTabKey) {
+    if (flightData && activeTabKey && filters.length > 0) {
       const tabIndex = parseInt(activeTabKey) - 1;
       const flightsForSegment = flightData[String(tabIndex)] || [];
+      const currentFilter = filters[tabIndex];
+
+      if (!currentFilter) return;
 
       const FARE_TYPE_LABEL = {
         0: "Non Refundable",
@@ -219,30 +276,51 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
         2: "Partial Refundable",
       };
 
-      const allFareTypes = (flightsForSegment || [])
-        .flatMap((ticket) =>
-          (ticket.totalPriceList || []).flatMap((priceInfo) =>
-            Object.values(priceInfo.fd || {}).map((pax) => String(pax?.rT))
-          )
-        )
-        .filter(Boolean);
+      // --- Fare Types Counts ---
+      const fareTypeCounts = {};
+      flightsForSegment.forEach(ticket => {
+        if (checkPassesFilters(ticket, currentFilter, ["fareType"])) {
+          const types = new Set();
+          (ticket.totalPriceList || []).forEach(priceInfo => {
+            Object.values(priceInfo.fd || {}).forEach(pax => {
+              const code = String(pax?.rT);
+              const label = FARE_TYPE_LABEL[code] ?? code;
+              types.add(label);
+            });
+          });
+          types.forEach(t => {
+            fareTypeCounts[t] = (fareTypeCounts[t] || 0) + 1;
+          });
+        }
+      });
+      const uniqueFareTypesWithCounts = Object.keys(fareTypeCounts).map(label => ({
+        name: label,
+        count: fareTypeCounts[label]
+      }));
+      setUniqueFareTypes(uniqueFareTypesWithCounts);
 
-      const fareTypeCounts = allFareTypes.reduce((acc, code) => {
-        const label = FARE_TYPE_LABEL[code] ?? code;
-        acc[label] = (acc[label] || 0) + 1;
-        return acc;
-      }, {});
 
-      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
-        (label) => ({
-          name: label,
-          count: fareTypeCounts[label],
-        })
-      );
+      // --- Fare Identifier Counts ---
+      const fareIdCounts = {};
+      flightsForSegment.forEach(ticket => {
+        if (checkPassesFilters(ticket, currentFilter, ["fareIdentifier"])) {
+          const ids = new Set();
+          (ticket.totalPriceList || []).forEach(priceInfo => {
+            if (priceInfo.fareIdentifier) ids.add(priceInfo.fareIdentifier);
+          });
+          ids.forEach(id => {
+            fareIdCounts[id] = (fareIdCounts[id] || 0) + 1;
+          });
+        }
+      });
+      const uniqueFaresWithCounts = Object.keys(fareIdCounts).map(fare => ({
+        name: fare,
+        count: fareIdCounts[fare]
+      }));
+      setUniqueFareIdentifiers(uniqueFaresWithCounts);
 
-      setUniqueFareTypes(uniqueFaresWithCounts);
     }
-  }, [flightData, activeTabKey]);
+  }, [flightData, activeTabKey, filters]);
 
   const applyFilters = (flights, filter) => {
     if (!filter) return flights;

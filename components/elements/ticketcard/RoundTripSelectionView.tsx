@@ -248,71 +248,153 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     2: "Partial Refundable",
   };
 
-  useEffect(() => {
-    if (flightData && (flightData.ONWARD || flightData.RETURN)) {
-      const dataToCheck =
-        tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN;
+  // Helper function for dynamic counts
+  const checkPassesFilters = (ticket: any, ignoreFilters: string[] = []) => {
+    // Determine active filter states based on tripPhase
+    const priceRange = tripPhase === "ONWARD" ? onwardPriceRange : returnPriceRange;
+    const stops = tripPhase === "ONWARD" ? onwardStops : returnStops;
+    const departureTime = tripPhase === "ONWARD" ? onwardDepartureTime : returnDepartureTime;
+    const arrivalTime = tripPhase === "ONWARD" ? onwardArrivalTime : returnArrivalTime;
+    const selectedAirlines = tripPhase === "ONWARD" ? onwardSelectedAirlines : returnSelectedAirlines;
+    const activeFareIdentifiers = tripPhase === "ONWARD" ? onwardFareIdentifiers : returnFareIdentifiers;
+    const activeFareTypes = tripPhase === "ONWARD" ? onwardSelectedFareTypes : returnSelectedFareTypes;
+    const flightNumberSearch = tripPhase === "ONWARD" ? onwardFlightNumberSearch : returnFlightNumberSearch;
+    const FARE_TYPE_LABEL_LOCAL: Record<number, string> = {
+      0: "Non Refundable",
+      1: "Refundable",
+      2: "Partial Refundable",
+    };
 
-      const allFareTypes = dataToCheck
-        .flatMap((ticket: any, ticketIndex: number) => {
-          return ticket.totalPriceList.flatMap(
-            (priceInfo: any, priceIndex: number) => {
-              return Object.keys(priceInfo.fd).map((paxTypeKey) => {
-                return priceInfo.fd[paxTypeKey].rT;
-              });
-            }
-          );
-        })
-        .filter((val: any) => Number.isFinite(Number(val)));
-
-      const fareTypeCounts = allFareTypes.reduce(
-        (acc: any, fareType: string) => {
-          acc[fareType] = (acc[fareType] || 0) + 1;
-          return acc;
-        },
-        {}
-      );
-
-      const uniqueFaresWithCounts = Object.keys(fareTypeCounts).map(
-        (fareType: any) => ({
-          name: FARE_TYPE_LABEL[fareType],
-          count: fareTypeCounts[fareType],
+    // 1. Strict Fare Type Filter
+    if (!ignoreFilters.includes("fareType") && activeFareTypes.length > 0) {
+      const passesFareType = ticket.totalPriceList.some((priceInfo: any) =>
+        Object.values(priceInfo.fd || {}).some((pax: any) => {
+          const code = Number(pax?.rT);
+          const label = FARE_TYPE_LABEL_LOCAL[code] ?? code;
+          return activeFareTypes.includes(label);
         })
       );
-      setUniqueFareTypes(uniqueFaresWithCounts);
+      if (!passesFareType) return false;
     }
-  }, [flightData, tripPhase]);
+
+    // Fare Identifier Filter
+    if (!ignoreFilters.includes("fareIdentifier") && activeFareIdentifiers.length > 0) {
+      const passesFareId = ticket.totalPriceList?.some((p: any) => p?.fareIdentifier && activeFareIdentifiers.includes(p.fareIdentifier));
+      if (!passesFareId) return false;
+    }
+
+    // 2. Price Range Filter
+    if (!ignoreFilters.includes("price")) {
+      const price = getTicketPrice(ticket, activeFareTypes);
+      if (price < priceRange[0] || price > priceRange[1]) return false;
+    }
+
+    // Stops Filter
+    if (!ignoreFilters.includes("stops") && stops !== "all") {
+      const stopCount = ticket.sI.length;
+      if (stops === "non-stop" && stopCount !== 1) return false;
+      if (stops === "1-stop" && stopCount !== 2) return false;
+      if (stops === "2-stops" && stopCount <= 2) return false;
+    }
+
+    // Departure Time Filter
+    if (!ignoreFilters.includes("departureTime") && departureTime !== "all") {
+      const departureHour = new Date(ticket.sI[0].dt).getHours();
+      if (departureTime === "early-morning" && !(departureHour >= 0 && departureHour < 6)) return false;
+      if (departureTime === "morning" && !(departureHour >= 6 && departureHour < 12)) return false;
+      if (departureTime === "afternoon" && !(departureHour >= 12 && departureHour < 18)) return false;
+      if (departureTime === "evening" && !(departureHour >= 18 && departureHour < 24)) return false;
+    }
+
+    // Arrival Time Filter
+    if (!ignoreFilters.includes("arrivalTime") && arrivalTime !== "all") {
+      const arrivalHour = new Date(ticket.sI[ticket.sI.length - 1].at).getHours();
+      if (arrivalTime === "early-morning" && !(arrivalHour >= 0 && arrivalHour < 6)) return false;
+      if (arrivalTime === "morning" && !(arrivalHour >= 6 && arrivalHour < 12)) return false;
+      if (arrivalTime === "afternoon" && !(arrivalHour >= 12 && arrivalHour < 18)) return false;
+      if (arrivalTime === "evening" && !(arrivalHour >= 18 && arrivalHour < 24)) return false;
+    }
+
+    // Airline Filter
+    if (!ignoreFilters.includes("airline") && selectedAirlines.length > 0) {
+      if (!selectedAirlines.includes(ticket.sI[0].fD.aI.name)) return false;
+    }
+
+    if (!ignoreFilters.includes("flightNumber") && flightNumberSearch) {
+      const passesFlightNumber = ticket.sI.some((segment: any) =>
+        segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase())
+      );
+      if (!passesFlightNumber) return false;
+    }
+
+    return true;
+  };
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.RETURN)) {
-      let dataToCheck = [];
-      if (tripPhase == "ONWARD") {
-        dataToCheck = flightData.ONWARD;
-      } else {
-        dataToCheck = flightData.RETURN;
-      }
+      const dataToCheck = tripPhase === "ONWARD" ? flightData.ONWARD : flightData.RETURN;
+      const data = dataToCheck || [];
 
-      const allFareIdentifiers = dataToCheck
-        .flatMap((ticket: any) =>
-          ticket.totalPriceList.map(
-            (priceInfo: any) => priceInfo.fareIdentifier
-          )
-        )
-        .filter(Boolean);
+      // Calculate Fare Type Counts (Ignore Fare Type filter)
+      const fareTypesMap: Record<string, number> = {};
+      const FARE_TYPE_LABEL_LOCAL: Record<number, string> = {
+        0: "Non Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
+      };
 
-      const fareCounts = allFareIdentifiers.reduce((acc: any, fare: string) => {
-        acc[fare] = (acc[fare] || 0) + 1;
-        return acc;
-      }, {});
+      data.forEach((ticket: any) => {
+        if (checkPassesFilters(ticket, ["fareType"])) {
+          const ticketFareTypes = new Set<string>();
+          ticket.totalPriceList.forEach((priceInfo: any) => {
+            Object.values(priceInfo.fd || {}).forEach((pax: any) => {
+              const rT = Number(pax?.rT);
+              const typeName = FARE_TYPE_LABEL_LOCAL[rT];
+              if (typeName) ticketFareTypes.add(typeName);
+            });
+          });
 
-      const uniqueFaresWithCounts = Object.keys(fareCounts).map((fare) => ({
-        name: fare,
-        count: fareCounts[fare],
+          ticketFareTypes.forEach(ft => {
+            fareTypesMap[ft] = (fareTypesMap[ft] || 0) + 1;
+          });
+        }
+      });
+
+      const uniqueFaresWithCounts = Object.keys(fareTypesMap).map(fareType => ({
+        name: fareType,
+        count: fareTypesMap[fareType]
+      }));
+      setUniqueFareTypes(uniqueFaresWithCounts);
+
+      // Calculate Fare Identifier Counts (Ignore Fare Identifier filter)
+      const fareIdMap: Record<string, number> = {};
+
+      data.forEach((ticket: any) => {
+        if (checkPassesFilters(ticket, ["fareIdentifier"])) {
+          const ticketFareIds = new Set<string>();
+          ticket.totalPriceList.forEach((priceInfo: any) => {
+            if (priceInfo.fareIdentifier) ticketFareIds.add(priceInfo.fareIdentifier);
+          });
+
+          ticketFareIds.forEach(fid => {
+            fareIdMap[fid] = (fareIdMap[fid] || 0) + 1;
+          });
+        }
+      });
+
+      const uniqueIdsWithCounts = Object.keys(fareIdMap).map(fid => ({
+        name: fid,
+        count: fareIdMap[fid]
       }));
 
-      setUniqueFareIdentifiers(uniqueFaresWithCounts);
+      setUniqueFareIdentifiers(uniqueIdsWithCounts);
     }
-  }, [flightData, tripPhase]);
+  }, [
+    flightData,
+    tripPhase,
+    onwardPriceRange, onwardStops, onwardDepartureTime, onwardArrivalTime, onwardSelectedAirlines, onwardFareIdentifiers, onwardFlightNumberSearch, onwardSelectedFareTypes,
+    returnPriceRange, returnStops, returnDepartureTime, returnArrivalTime, returnSelectedAirlines, returnFareIdentifiers, returnFlightNumberSearch, returnSelectedFareTypes
+  ]);
 
   const generateStableId = (ticket: any) => {
     if (ticket.id) return ticket.id;
