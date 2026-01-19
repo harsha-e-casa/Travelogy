@@ -94,7 +94,7 @@ const EngineTabs = ({ active_border }) => {
     setCookie("gy_adult", 1);
     setCookie("gy_child", 0);
     setCookie("gy_infant", 0);
-    setCookie("seatSsr_amount", 0);
+    // setCookie("seatSsr_amount", 0);
   }, []);
 
   useEffect(() => {
