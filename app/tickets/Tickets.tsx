@@ -525,11 +525,11 @@ export default function Tickets() {
   const renderFilters = () => (
     <>
       {isFilterApplied && (
-        <div className="sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
+        <div className="sticky top-36 lg:top-48 z-50 sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">
               <div className="d-flex align-items-center justify-content-between">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied Filters <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
                 <Button
                   type="link"
                   onClick={handleResetAllFilters}
@@ -696,19 +696,24 @@ export default function Tickets() {
         e.toCode &&
         e.fromCode === e.toCode
       ) {
-        e.toError = "From and To cannot be the same";
+        e.toError = "From and To cities cannot be the same";
         e.forceOpen = true;
       }
 
       // --- Date order check (ascending) ---
-      if (!e.dateError && idx > 0) {
-        const prevDate = arr[idx - 1]?.departureDate;
+      if (!e.dateError) {
+        let prevDate = null;
+        if (idx === 0) {
+          prevDate = departDate;
+        } else {
+          prevDate = arr[idx - 1]?.departureDate;
+        }
+
         if (prevDate && e.departureDate) {
           if (dayjs(e.departureDate).isBefore(dayjs(prevDate), "day")) {
-            e.dateError = `Date must be on or after previous segment(${dayjs(
+            e.dateError = `Date must be on or after previous segment (${dayjs(
               prevDate
-            ).format("ddd, MMM D YYYY")
-              })`;
+            ).format("ddd, MMM D YYYY")})`;
             e.forceOpen = true;
           }
         }
@@ -731,7 +736,7 @@ export default function Tickets() {
         "Please fix the highlighted fields in your multi-city itinerary."
       );
       if (opts?.focusFirstError && firstBadIndex !== null) {
-        const el = document.querySelector(`[data - seg - row= "${firstBadIndex}"]`);
+        const el = document.querySelector(`[data-seg-row="${firstBadIndex}"]`);
         if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     } else {
@@ -1204,6 +1209,9 @@ export default function Tickets() {
 
     const addErrorFields = (segment: any) => ({
       ...segment,
+      departureDate: segment.departureDate
+        ? dayjs(segment.departureDate).format("YYYY-MM-DD")
+        : "",
       fromError: "",
       toError: "",
       lastEditedField: null,
@@ -1294,7 +1302,7 @@ export default function Tickets() {
 
     setErrorMsg(""); // Clear error if validation passed
 
-    const newDepartureDate = dayjs(lastSegment.departureDate).add(2, "day");
+    const newDepartureDate = dayjs(lastSegment.departureDate).add(2, "day").format("YYYY-MM-DD");
     setMulticitySegments((prev) => [
       ...prev,
       {
@@ -1335,9 +1343,9 @@ export default function Tickets() {
         segment.fromCode === segment.toCode
       ) {
         if (segment.lastEditedField === "from") {
-          fromError = "1 From and To cities cannot be the same.";
-        } else if (segment.lastEditedField === "to") {
-          toError = "1 From and To cities cannot be the same.";
+          fromError = "From and To cities cannot be the same";
+        } else {
+          toError = "From and To cities cannot be the same";
         }
       }
 
@@ -2090,6 +2098,24 @@ export default function Tickets() {
     setOpen(false);
     setFareOpen(false);
   };
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        // console.log("Escape pressed - Closing attributes");
+        closeAllFields();
+        setOpenFromMultiIndex(null);
+        setOpenToMultiIndex(null);
+        setOpenDepartMultiIndex(null);
+      }
+    };
+    // Use capture phase to handle event before other components
+    window.addEventListener("keydown", handleEsc, true);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc, true);
+    };
+  }, []);
 
   useEffect(() => {
     setTotalPassenderCount(adultCount + countChildren);
@@ -3019,7 +3045,7 @@ export default function Tickets() {
                             openToDateRange={() => multiOpenToDateRange(idx)}
                             setDate={(val: any) => {
                               const newSegs = [...multicitySegments];
-                              newSegs[idx].departureDate = val;
+                              newSegs[idx].departureDate = val ? dayjs(val).format("YYYY-MM-DD") : "";
                               setMulticitySegments(newSegs);
                             }}
                             minDate={idx > 0 ? multicitySegments[idx - 1].departureDate : datedep}

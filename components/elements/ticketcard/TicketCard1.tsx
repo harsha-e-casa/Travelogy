@@ -283,9 +283,7 @@ export default function TicketCard1({
           <div
             className="flight-price-1 border-1  price-div flex justify-center items-center flex-col items-center cursor-pointer hover:bg-gray-50 transition-colors"
             style={{ width: "245px", paddingLeft: "20px" }}
-            onClick={() =>
-              onPriceClick && onPriceClick(ticket.id, markup, ticket, value)
-            }
+            onClick={() => { }}
           >
             <Radio.Group
               onChange={onChange}
@@ -307,7 +305,7 @@ export default function TicketCard1({
                                                                     ${"border-gray-300 hover:border-gray-500"}`}
                               >
                                 <div className="flex flex-row gap-2 items-center">
-                                  <div className="text-lg font-bold text-gray-800 price">
+                                  <div className="text-lg font-bold text-gray-800 price" onClick={() => onPriceClick && onPriceClick(ticket.id, currentFareMarkup, ticket, i)}>
                                     ₹
                                     {(() => {
                                       let adultCost = 0;
@@ -398,7 +396,7 @@ export default function TicketCard1({
                                                                 ${"border-gray-300 hover:border-gray-500"}`}
                             >
                               <div className="flex flex-row gap-2 items-center">
-                                <div className="text-lg font-bold text-gray-800 price">
+                                <div className="text-lg font-bold text-gray-800 price" onClick={() => onPriceClick && onPriceClick(ticket.id, currentFareMarkup, ticket, i)}>
                                   ₹
                                   {(() => {
                                     let adultCost = 0;

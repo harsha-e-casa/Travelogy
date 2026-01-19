@@ -124,6 +124,7 @@ const SeatBooking = ({
     }
 
     console.log("Hydration: valid newSeatSelections:", newSeatSelections);
+    console.log("Hydration: Final newSeatSelections:", newSeatSelections);
     setSeatSelections(newSeatSelections);
   }, [apiData, numAdults, numChild]); */
 
@@ -231,6 +232,7 @@ const SeatBooking = ({
   useEffect(() => {
     const bookingId = apiData?.bookingId;
     const newSeatSelections = {};
+    console.log("Hydration: Starting effect. BookingId:", bookingId, "NumAdults:", numAdults, "NumChild:", numChild);
 
     // Hydrate from storedTravellerInfos first (API/Server state)
     if (storedTravellerInfos && Array.isArray(storedTravellerInfos)) {
@@ -304,45 +306,60 @@ const SeatBooking = ({
       processCookie("child", i, (numAdults || 0) + i - 1);
     }
 
-    // setSeatSelections(newSeatSelections);
+    console.log("Hydration: Final newSeatSelections:", newSeatSelections);
+    setSeatSelections(newSeatSelections);
 
     // Also hydrate the summary view state
-    // showSeatNo();
-    // calculateAndStoreTotalAmount(); // Trigger parent update on mount
+    showSeatNo();
+    calculateAndStoreTotalAmount(newSeatSelections); // Trigger parent update on mount with hydrated data
   }, [apiData, numAdults, numChild, storedTravellerInfos]);
 
-  const calculateAndStoreTotalAmount = () => {
+  const calculateAndStoreTotalAmount = (seatSelectionsSource = null) => {
     let totalAmount = 0;
-
-    const collectKeys = [
-      ...Array.from({ length: 9 }, (_, i) => `adult_seat_map-${i + 1}`),
-      ...Array.from({ length: 9 }, (_, i) => `child_seat_map-${i + 1}`),
-    ];
 
     const bookingId = apiData?.bookingId;
 
-    collectKeys.forEach((key) => {
-      let cookieData = null;
-      if (bookingId) {
-        cookieData = getCookie(`${key}_${bookingId}`);
-      }
-      if (!cookieData) {
-        cookieData = getCookie(key);
-      }
-
-      if (cookieData) {
-        try {
-          const parsedArray = JSON.parse(cookieData); // Expecting an array
-          parsedArray.forEach((item) => {
-            if (item?.amount) {
-              totalAmount += parseInt(item.amount);
+    if (seatSelectionsSource) {
+      // Calculate from provided state object (Hydration scenario)
+      Object.values(seatSelectionsSource).forEach((passengers) => {
+        if (Array.isArray(passengers)) {
+          passengers.forEach((seatInfo) => {
+            if (seatInfo && seatInfo.cost) {
+              totalAmount += parseInt(seatInfo.cost || 0, 10);
             }
           });
-        } catch (err) {
-          console.error(`Error parsing cookie for key ${key}:`, err);
         }
-      }
-    });
+      });
+    } else {
+      // Calculate from cookies (Interaction scenario)
+      const collectKeys = [
+        ...Array.from({ length: 9 }, (_, i) => `adult_seat_map-${i + 1}`),
+        ...Array.from({ length: 9 }, (_, i) => `child_seat_map-${i + 1}`),
+      ];
+
+      collectKeys.forEach((key) => {
+        let cookieData = null;
+        if (bookingId) {
+          cookieData = getCookie(`${key}_${bookingId}`);
+        }
+        if (!cookieData) {
+          cookieData = getCookie(key);
+        }
+
+        if (cookieData) {
+          try {
+            const parsedArray = JSON.parse(cookieData); // Expecting an array
+            parsedArray.forEach((item) => {
+              if (item?.amount) {
+                totalAmount += parseInt(item.amount, 10);
+              }
+            });
+          } catch (err) {
+            console.error(`Error parsing cookie for key ${key}:`, err);
+          }
+        }
+      });
+    }
 
     // Set final total into seatSsr_amount
     // setCookie("seatSsr_amount", parseInt(totalAmount, 10).toString());
@@ -434,6 +451,8 @@ const SeatBooking = ({
       console.log("Cookie_bookingId updated:", `${passengerKey}_${bookingId}`, updatedData);
     }
     console.log("Cookie updated:", passengerKey, updatedData);
+
+    calculateAndStoreTotalAmount();
   };
 
   const handleSeatDeselect = (passengerIdx = selectedPassengerIndex) => {

@@ -73,6 +73,8 @@ type Traveller = {
 export default function BookTicket() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
+    useContext(AppContext);
 
   const [loading, setLoading] = useState(true);
   const [bookingId, setBookingId] = useState<string | null>(null);
@@ -128,15 +130,12 @@ export default function BookTicket() {
 
       if (existingKeys.length > 0) {
         setHasExistingData(true);
-        // Clear the specific conflicting booking keys
-        // existingKeys.forEach((key) => {
-        //   localStorage.removeItem(key);
-        //   localStorage.removeItem(`${key}_timestamp`);
-        // });
 
-        Modal.warning({
+        Modal.confirm({
           title: "Booking in Progress",
-          content: "Previous booking under progress",
+          content: "Previous booking under progress. Do you want to continue locally or clear and start fresh?",
+          okText: "Go Back",
+          cancelText: "Clear and Proceed",
           onOk: () => {
             if (window.history.length > 1) {
               // router.back();
@@ -145,13 +144,44 @@ export default function BookTicket() {
               router.push("/flights");
             }
           },
+          onCancel: () => {
+            // Clear existing data and proceed
+            existingKeys.forEach((key) => {
+              const id = key.replace("bookingData_", "");
+              if (id) {
+                // 1. Clear LocalStorage
+                localStorage.removeItem(key);
+                localStorage.removeItem(`${key}_timestamp`);
+
+                // 2. Clear Cookies
+                removeCookie(`travellerInfo_${id}`);
+                removeCookie(`baggageinfo_${id}`);
+                removeCookie(`mealinfo_${id}`);
+                removeCookie(`gst_info_${id}`);
+                removeCookie(`seatSsr_amount_${id}`);
+
+                // Contact info keys variations
+                removeCookie(`email_${id}`);
+                removeCookie(`phone_${id}`);
+                removeCookie(`number_${id}`);
+
+                // Seat maps
+                for (let i = 1; i <= 9; i++) {
+                  removeCookie(`adult_seat_map-${i}_${id}`);
+                  removeCookie(`child_seat_map-${i}_${id}`);
+                }
+              }
+            });
+            // Remove global markers if any
+            localStorage.removeItem("migration_source_booking_id");
+            setHasExistingData(false);
+          },
         });
       }
     }
   }, []);
 
-  const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
-    useContext(AppContext);
+
 
   const tripType = getCookie("gy_triptype");
 
@@ -314,6 +344,10 @@ export default function BookTicket() {
         }
 
         setApiData(data);
+
+        if (data.bookingId) {
+          setCookie(`seatSsr_amount_${data.bookingId}`, "0");
+        }
 
         const firstTrip = data.tripInfos?.[0];
         setBookingId(data.bookingId);
@@ -2074,8 +2108,7 @@ export default function BookTicket() {
                         totalpricee={totalpricee}
                         mealinfo={mealinfo}
                         baggageinfo={baggageinfo}
-                        // seatinfo={seatinfo}
-                        seatinfo={0} // Force 0 as per request to not use cookie/stored value
+                        seatinfo={seatinfo} // Use dynamic seatinfo
                         baggageAmount={baggageAmount}
                         mealAmount={mealAmount}
                         bookingFormKey={bookingFormKey}

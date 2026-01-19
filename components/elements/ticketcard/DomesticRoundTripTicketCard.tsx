@@ -381,7 +381,7 @@ export default function DomesticRoundTripTicketCard({
             className="flight-price-1 border-1 price-div flex justify-center items-center flex-col cursor-pointer hover:bg-gray-50 transition-colors"
             style={{ width: "auto", minWidth: "220px", paddingLeft: "10px" }}
             onClick={(e) => {
-              onPriceClick && onPriceClick(ticket.id, markup, ticket, value);
+              // onPriceClick && onPriceClick(ticket.id, markup, ticket, value);
             }}
           >
             <Radio.Group
@@ -404,7 +404,7 @@ export default function DomesticRoundTripTicketCard({
                              ${"border-gray-300 hover:border-gray-500"}`}
                               >
                                 <div className="flex flex-row gap-2 items-center">
-                                  <div className="text-lg font-bold text-gray-800 price">
+                                  <div className="text-lg font-bold text-gray-800 price" onClick={() => onPriceClick && onPriceClick(ticket.id, currentFareMarkup, ticket, i)}>
                                     ₹
                                     {calculateTotalPrice(e, currentFareMarkup)}
                                   </div>
@@ -462,7 +462,7 @@ export default function DomesticRoundTripTicketCard({
                            ${"border-gray-300 hover:border-gray-500"}`}
                             >
                               <div className="flex flex-row gap-2 items-center">
-                                <div className="text-lg font-bold text-gray-800 price">
+                                <div className="text-lg font-bold text-gray-800 price" onClick={() => onPriceClick && onPriceClick(ticket.id, currentFareMarkup, ticket, i)}>
                                   ₹
                                   {calculateTotalPrice(e, currentFareMarkup)}
                                 </div>

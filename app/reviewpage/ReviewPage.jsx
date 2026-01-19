@@ -131,6 +131,8 @@ const ReviewPage = () => {
 
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
+      } else {
+        router.push("/tickets");
       }
     }
   }, [urlBookingId]);
@@ -1233,6 +1235,8 @@ const ReviewPage = () => {
         return result;
       };
       const payWalletRes = await payWallet();
+
+      console.log("parameterparameter ===>", parameter);
 
       if (payWalletRes?.success && payWalletRes.success == true) {
         saveBookingId();
