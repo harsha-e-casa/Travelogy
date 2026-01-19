@@ -14,8 +14,59 @@
 
 .passenger-details {
   z-index: 10000005;
-  padding: 10px;
-  border: 1px solid orange;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  color: #333;
+  /* Fix invisible text */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form_dr1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.custome_addBtn1 {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.value-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.value-button:hover {
+  background: #e9ecef;
+}
+
+.value-button:active {
+  background: #dfe6ed;
+}
+
+#number {
+  width: 40px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .view-more-txt {
@@ -42,6 +93,7 @@
 .pos-t-r {
   top: 24%;
   right: 12%;
+
   @media (max-width: 1300px) {
     top: 28%;
     right: 12%;
@@ -51,6 +103,7 @@
 .pos-t-r_o {
   top: 24%;
   right: 12%;
+
   @media (max-width: 1300px) {
     top: 29%;
     right: 5%;
@@ -60,6 +113,7 @@
 .pos-t-r_m {
   top: 24%;
   right: 12%;
+
   @media (max-width: 1300px) {
     top: 33%;
     right: 13%;
@@ -72,6 +126,7 @@
     right: -14%;
     width: 43%;
   }
+
   @media (min-width: 1301px) {
     top: 68%;
     right: 0%;

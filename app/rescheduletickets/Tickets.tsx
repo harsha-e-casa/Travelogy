@@ -948,7 +948,7 @@ export default function Tickets() {
         <main className="main">
           {/* <EngineTabs active_border={'1'} /> */}
 
-          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{top:"65px"}}>
+          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{ top: "65px" }}>
             {/* Header Section */}
 
             {!isMobile && (
@@ -1162,7 +1162,7 @@ export default function Tickets() {
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
-                                    <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import dayjs from "dayjs";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import type { RadioChangeEvent } from "antd";
 import { Radio } from "antd";
 import "./ticketCard1.css";
@@ -40,11 +40,51 @@ export default function DomesticRoundTripTicketCard({
     gap: 8,
   };
 
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState(0); // This now stores the originalIndex
 
   const onChange = (e: RadioChangeEvent) => {
     setValue(e.target.value);
   };
+
+  const enrichedFares = useMemo(() => {
+    return ticket.totalPriceList.map((fare: any, index: number) => ({
+      ...fare,
+      originalIndex: index,
+    }));
+  }, [ticket.totalPriceList]);
+
+  const filteredFares = useMemo(() => {
+    return enrichedFares.filter((fare: any) => {
+      if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
+        if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
+          return false;
+        }
+      }
+
+      if (selectedFareTypes && selectedFareTypes.length > 0) {
+        const fareTypeMap: { [key: number]: string } = {
+          0: "Non Refundable",
+          1: "Refundable",
+          2: "Partial Refundable",
+        };
+        const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
+        return selectedFareTypes.includes(fareTypeLabel);
+      }
+      return true;
+    });
+  }, [enrichedFares, selectedFareIdentifiers, selectedFareTypes]);
+
+  const displayedFares = showAllFares ? filteredFares : filteredFares.slice(0, 2);
+
+  useEffect(() => {
+    const isSelectedAvailable = filteredFares.some(
+      (f: any) => f.originalIndex === Number(value)
+    );
+
+    if (!isSelectedAvailable && filteredFares.length > 0) {
+      setValue(filteredFares[0].originalIndex);
+    }
+  }, [filteredFares, value]);
 
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
@@ -111,6 +151,9 @@ export default function DomesticRoundTripTicketCard({
   const mobileView = (
     <div className="ticket-card-mobile card-flight drtm">
       <div className="mobile-card-header">
+        <div className="text-xs text-gray-500 mb-1">
+          {ticket.sI[0].fD.aI.code} {ticket.sI[0].fD.fN}
+        </div>
         {isUat ? (
           <img
             className="mobile-airline-logo"
@@ -235,6 +278,9 @@ export default function DomesticRoundTripTicketCard({
 
                 <div className="flight-route flight-route-type-2 city1">
                   <div className="flex flex-col items-center justify-center w-max">
+                    <div className="text-xs text-gray-500 mb-1">
+                      {segment["fD"].aI.code} {segment["fD"].fN}
+                    </div>
                     {isUat && (
                       <img
                         style={{ width: "50%", margin: "5px" }}
@@ -343,29 +389,9 @@ export default function DomesticRoundTripTicketCard({
               value={value}
               className="fare-options flex flex-col gap-2  w-full"
             >
-              {(showAllFares
-                ? ticket.totalPriceList
-                : ticket.totalPriceList.slice(0, 2)
-              )
-                .filter((fare: any) => {
-                  if (selectedFareIdentifiers && selectedFareIdentifiers.length > 0) {
-                    if (!selectedFareIdentifiers.includes(fare.fareIdentifier)) {
-                      return false;
-                    }
-                  }
-
-                  if (selectedFareTypes && selectedFareTypes.length > 0) {
-                    const fareTypeMap: { [key: number]: string } = {
-                      0: "Non Refundable",
-                      1: "Refundable",
-                      2: "Partial Refundable",
-                    };
-                    const fareTypeLabel = fareTypeMap[fare.fd.ADULT.rT];
-                    return selectedFareTypes.includes(fareTypeLabel);
-                  }
-                  return true;
-                })
-                .map((e: any, i: number) => {
+              {(displayedFares)
+                .map((e: any) => {
+                  const i = e.originalIndex;
                   const currentFareMarkup = allTicketMarkups[`${ticket.id}_${i}`] ?? allTicketMarkups[ticket.id] ?? markup ?? 0;
                   return (
                     <div key={i} style={{ display: "flex", width: "100%", alignItems: "center" }}>
@@ -477,7 +503,7 @@ export default function DomesticRoundTripTicketCard({
                     </div>
                   );
                 })}
-              {ticket.totalPriceList.length > 2 && (
+              {filteredFares.length > 2 && (
                 <button
                   className="view-more-txt"
                   style={{ textAlign: "right", fontSize: "10px" }}

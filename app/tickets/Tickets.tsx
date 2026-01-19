@@ -529,7 +529,7 @@ export default function Tickets() {
           <div className="box-filters-sidebar">
             <div className="block-filter border-1">
               <div className="d-flex align-items-center justify-content-between">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter</h6>
+                <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
                 <Button
                   type="link"
                   onClick={handleResetAllFilters}
@@ -812,6 +812,20 @@ export default function Tickets() {
     );
   }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (stops !== "all") count++;
+    if (departureTime !== "all") count++;
+    if (arrivalTime !== "all") count++;
+    if (selectedAirlines.length > 0) count++; // Count airline filter as 1 regardless of how many airlines selected
+    if (fareIdentifiers.length > 0) count++;
+    if (flightNumberSearch !== "") count++;
+    if (selectedFareTypes.length > 0) count++;
+    if (priceSort !== "asc") count++;
+    if (priceRange[0] !== minPriceRange || priceRange[1] !== maxPriceRange) count++;
+    return count;
+  }, [stops, departureTime, arrivalTime, selectedAirlines, fareIdentifiers, flightNumberSearch, selectedFareTypes, priceSort, priceRange, minPriceRange, maxPriceRange]);
+
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       let dataToCheck = (flightData.ONWARD || flightData.COMBO) || [];
@@ -846,6 +860,19 @@ export default function Tickets() {
       setPriceRange([minPrice, maxPrice]);
     }
   }, [flightData, selectedFareTypes]);
+
+  useEffect(() => {
+    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
+      setStops("all");
+      setPriceSort("asc");
+      setDepartureTime("all");
+      setSelectedAirlines([]);
+      setArrivalTime("all");
+      setFareIdentifiers([]);
+      setFlightNumberSearch("");
+      setSelectedFareTypes([]);
+    }
+  }, [flightData]);
 
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
@@ -1436,6 +1463,7 @@ export default function Tickets() {
 
   // Not required for API call but kept in state for other uses if needed.
   const [ticketParams, setTicketParams] = useState({ id: null, date: null });
+  const [searchedTripType, setSearchedTripType] = useState<string>("");
 
 
   useEffect(() => {
@@ -1669,8 +1697,8 @@ export default function Tickets() {
             }
           });
           setFlightData(tripInfos);
-        }
-        else if (result?.error) {
+          setSearchedTripType(srx_tripType || "");
+        } else if (result?.error) {
           if (typeof result.error === "string") {
             if (result?.error?.toLowerCase()?.includes("invalid airport")) {
               setError("Invalid route. Please choose a different route.");
@@ -1914,9 +1942,12 @@ export default function Tickets() {
   const handleMenuClick: MenuProps["onClick"] = ({ key }) => {
     setTripType(key);
     setCookie("gy_triptype", key);
+    if (key.toLowerCase() === "multi-city") {
+      setModifySearchRef(true);
+    }
     setOpen((prev) => !prev);
     setIsSearchPerformed(false);
-    setFlightData(null);
+    // setFlightData(null);
   };
 
   const handleFareMenuClick: MenuProps["onClick"] = ({ key }) => {
@@ -2206,7 +2237,7 @@ export default function Tickets() {
 
           <div
             className="h-[auto] w-full bg_cs_search"
-            style={{ position: 'sticky', top: isMobile ? '70px' : '70px', zIndex: 9999999 }} // Extremely high z-index to stay above everything
+            style={{ position: 'sticky', top: isMobile ? '70px' : '70px', zIndex: 900 }} // Lower z-index to stay below header's dropdown
           >
             {/* Desktop Header */}
             {!isMobile && (
@@ -2421,26 +2452,53 @@ export default function Tickets() {
 
                   <div
                     className="hdt_header-item relative"
-                    onClick={() => {
-                      if (
-                        ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
-                          modifySearchRef) ||
-                        (srx_tripType?.toLowerCase() || "") !== "multi-city"
-                      ) {
-                        openTraveller();
-                      }
-                    }}
                   >
-                    <label>Passengers &amp; Class</label>
-                    <div className="hdt_value">
-                      <span>
-                        {srx_traveller}{" "}
-                        {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
-                        <span className="text-sm">
-                          {classLabels[srx_cabinType]}
+                    <div
+                      onClick={() => {
+                        if (
+                          ((srx_tripType?.toLowerCase() || "") === "multi-city" &&
+                            modifySearchRef) ||
+                          (srx_tripType?.toLowerCase() || "") !== "multi-city"
+                        ) {
+                          openTraveller();
+                        }
+                      }}
+                    >
+                      <label>Passengers &amp; Class</label>
+                      <div className="hdt_value">
+                        <span>
+                          {srx_traveller}{" "}
+                          {srx_traveller > 1 ? "travellers" : "traveller"} |{" "}
+                          <span className="text-sm">
+                            {classLabels[srx_cabinType]}
+                          </span>
                         </span>
-                      </span>
+                      </div>
                     </div>
+                    {/* Render TravellerForm here for correct positioning */}
+                    {showTraveller && (
+                      <div style={{ position: 'absolute', top: '130%', right: '-40%', zIndex: 10000002 }}>
+                        <TravellerForm
+                          showTraveller={showTraveller}
+                          adult={adultCount}
+                          opentrvForm={openTraveller}
+                          clickMinus={clickMinus}
+                          clickPlus={clickPlus}
+                          clickMinusChildren={clickMinusChildren}
+                          clickPlusChildren={clickPlusChildren}
+                          countchildren={countChildren}
+                          countinfant={countInfant}
+                          handleChangeClass={handleChangeClass}
+                          travellerClass={srx_cabinType}
+                          clickMinusinfant={clickMinusinfant}
+                          clickPlusinfant={clickPlusinfant}
+                          totalPassenderCount={totalPassenderCount}
+                          specificStyle={`${getTravellerClass()} !w-[190%]`}
+                          selectedPassengerType={srx_fareType}
+                          contentWidth="max-content"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   {(srx_tripType?.toLowerCase() || "") === "multi-city" &&
@@ -3057,7 +3115,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Children */}
-                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
+                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Children</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -3081,7 +3139,7 @@ export default function Tickets() {
                       </div>
 
                       {/* Infants */}
-                      <div className={`flex justify - between items - center mb - 4 pb - 3 border - b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
+                      <div className={`flex justify-between items-center mb-4 pb-3 border-b ${srx_fareType !== "REGULAR" ? "opacity-50" : ""} `}>
                         <div className="text-base font-bold">Infant</div>
                         <div className="flex items-center gap-3">
                           <button
@@ -3110,25 +3168,25 @@ export default function Tickets() {
                         <div className="grid grid-cols-2 gap-2">
                           <button
                             onClick={() => handleChangeClass({ target: { value: "b" } })}
-                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "b" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "a" } })}
-                            className={`p - 3 rounded border - 2 font - semibold text - sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold text-sm ${srx_cabinType === "a" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Premium Economy
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "c" } })}
-                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "c" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             Business
                           </button>
                           <button
                             onClick={() => handleChangeClass({ target: { value: "d" } })}
-                            className={`p - 3 rounded border - 2 font - semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
+                            className={`p-3 rounded border-2 font-semibold ${srx_cabinType === "d" ? "bg-blue-500 text-white border-blue-500" : "border-gray-300"} `}
                           >
                             First
                           </button>
@@ -3165,7 +3223,7 @@ export default function Tickets() {
             </div>
           </Drawer>
 
-          <TravellerForm
+          {/* <TravellerForm
             showTraveller={showTraveller}
             adult={adultCount}
             opentrvForm={openTraveller}
@@ -3184,7 +3242,7 @@ export default function Tickets() {
             // specificStyle={"pos-t-r"}
             specificStyle={`${getTravellerClass()} `}
             selectedPassengerType={srx_fareType}
-          />
+          /> */}
 
           {/* Block Banner Tickets */}
           {/* <section className="section-box box-logos-2 box-logos-tickets background-body">
@@ -3277,11 +3335,11 @@ export default function Tickets() {
                     </div>
                   )}
 
-                  {((srx_tripType?.trim().toLowerCase() === "one-way" &&
+                  {((searchedTripType?.trim().toLowerCase() === "one-way" &&
                     flightData?.ONWARD?.length > 0) ||
-                    (srx_tripType?.trim().toLowerCase() === "round-trip" &&
+                    (searchedTripType?.trim().toLowerCase() === "round-trip" &&
                       flightData?.COMBO?.length > 0) ||
-                    (srx_tripType?.trim().toLowerCase() === "multi-city" &&
+                    (searchedTripType?.trim().toLowerCase() === "multi-city" &&
                       flightData?.COMBO?.length > 0)) &&
                     (() => {
                       // const tripInfo = filteredFlightData;
@@ -3323,9 +3381,9 @@ export default function Tickets() {
                               </div>
 
                               <div className="col-xl-9 col-12">
-                                {(srx_tripType?.trim().toLowerCase() === "one-way" ||
-                                  srx_tripType?.trim().toLowerCase() === "round-trip") && (
-                                    <div className="mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                {(searchedTripType?.trim().toLowerCase() === "one-way" ||
+                                  searchedTripType?.trim().toLowerCase() === "round-trip") && (
+                                    <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />
@@ -3430,7 +3488,7 @@ export default function Tickets() {
                       );
                     })()}
 
-                  {(!flightData || (flightData && (!flightData.ONWARD || flightData.ONWARD.length === 0))) && srx_tripType?.trim().toLowerCase() === "one-way" &&
+                  {(!flightData || (flightData && (!flightData.ONWARD || flightData.ONWARD.length === 0))) && searchedTripType?.trim().toLowerCase() === "one-way" &&
                     (() => {
                       return (
                         <>
@@ -3480,10 +3538,10 @@ export default function Tickets() {
                   ) : null } */}
 
                   {/* domestic - ONWARD RETURN - ticketCard */}
-                  {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "round-trip" &&
-                    srx_tripType.trim().toLowerCase() !== "one-way" &&
-                    srx_tripType.trim().toLowerCase() !== "multi-city" ? (
+                  {searchedTripType &&
+                    searchedTripType.trim().toLowerCase() === "round-trip" &&
+                    searchedTripType.trim().toLowerCase() !== "one-way" &&
+                    searchedTripType.trim().toLowerCase() !== "multi-city" ? (
                     <>
                       {flightData &&
                         flightData.ONWARD &&
@@ -3514,8 +3572,8 @@ export default function Tickets() {
                       )}
                     </>
                   ) : null}
-                  {srx_tripType &&
-                    srx_tripType.trim().toLowerCase() === "multi-city" &&
+                  {searchedTripType &&
+                    searchedTripType.trim().toLowerCase() === "multi-city" &&
                     !flightData?.COMBO ? (
                     <>
                       {flightData ? (

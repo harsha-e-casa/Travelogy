@@ -239,9 +239,9 @@
 }
 
 @media (max-width: 426px) {
-  .bg_cs_search {
+  /* .bg_cs_search {
     display: none;
-  }
+  } */
 
   /* .hdt_header {
       display: none;
@@ -324,7 +324,7 @@
 }
 
 /* Tablet optimizations for mobile search summary (425px - 1024px) */
-@media (min-width: 425px) and (max-width: 1024px) {
+@media (max-width: 1024px) {
   .mobile-search-summary {
     padding: 12px 16px !important;
   }

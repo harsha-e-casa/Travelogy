@@ -30,6 +30,7 @@ export const TravellerForm = ({
   totalPassenderCount,
   specificStyle,
   selectedPassengerType,
+  contentWidth,
 }) => {
   return (
     <>
@@ -170,7 +171,7 @@ export const TravellerForm = ({
               </div>
             </div>
 
-            <Flex vertical gap="small" className="mt-10">
+            <Flex vertical gap="small" className="mt-10" style={{ width: contentWidth }}>
               CHOOSE TRAVEL CLASS
               <div>
                 <Radio.Group

@@ -82,7 +82,7 @@ const ReissueReviewPage = () => {
 
   const [flightData, setFlightData] = useState(null);
   const [error, setError] = useState(null);
-  const { getCookie } = useContext(AppContext);
+  const { getCookie, removeCookie } = useContext(AppContext);
 
   const [fareDetails, setFareDetails] = useState(null);
 
@@ -91,9 +91,19 @@ const ReissueReviewPage = () => {
   const [number, setNumber] = useState(null);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(true);
-  const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
-  const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
-  const SeatAmount = Number(getCookie("seatSsr_amount") || 0);
+  const BaggageAmount = JSON.parse(
+    getCookie(`baggageinfo_${urlBookingId}`) ||
+    getCookie("baggageinfo") ||
+    "[]"
+  );
+  const MealAmount = JSON.parse(
+    getCookie(`mealinfo_${urlBookingId}`) || getCookie("mealinfo") || "[]"
+  );
+  const SeatAmount = Number(
+    getCookie(`seatSsr_amount_${urlBookingId}`) ||
+    getCookie("seatSsr_amount") ||
+    0
+  );
 
   const handleSessionExpire = React.useCallback(() => {
     if (!hasExpired.current) {
@@ -124,7 +134,13 @@ const ReissueReviewPage = () => {
     }
   }, [urlBookingId]);
   useEffect(() => {
-    const data = getCookie("travellerInfo");
+    let data;
+    if (urlBookingId) {
+      data = getCookie(`travellerInfo_${urlBookingId}`);
+    }
+    if (!data) {
+      data = getCookie("travellerInfo");
+    }
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -133,10 +149,16 @@ const ReissueReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, []);
+  }, [urlBookingId]);
 
   useEffect(() => {
-    const data = getCookie("email");
+    let data;
+    if (urlBookingId) {
+      data = getCookie(`email_${urlBookingId}`);
+    }
+    if (!data) {
+      data = getCookie("email");
+    }
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -145,10 +167,16 @@ const ReissueReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, [getCookie]);
+  }, [getCookie, urlBookingId]);
 
   useEffect(() => {
-    const data = getCookie("number");
+    let data;
+    if (urlBookingId) {
+      data = getCookie(`number_${urlBookingId}`);
+    }
+    if (!data) {
+      data = getCookie("number");
+    }
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -157,7 +185,7 @@ const ReissueReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, [getCookie]);
+  }, [getCookie, urlBookingId]);
 
   // Function to fetch flight details
   // const fetchFlightDetails = async (priceId) => {
@@ -373,16 +401,41 @@ const ReissueReviewPage = () => {
   const [cookieMappedSeatData, setCookieMappedSeatData] = useState({});
 
   useEffect(() => {
-    const getCookieMealData = getCookie("mealinfo");
-    const mealData = JSON.parse(getCookieMealData);
+    let getCookieMealData;
+    if (urlBookingId) {
+      getCookieMealData = getCookie(`mealinfo_${urlBookingId}`);
+    }
+    if (!getCookieMealData) {
+      getCookieMealData = getCookie("mealinfo");
+    }
+    // const getCookieMealData = getCookie("mealinfo");
+    const mealData = getCookieMealData ? JSON.parse(getCookieMealData) : [];
     setCookieMealData(mealData);
 
-    const getCookiebaggageData = getCookie("baggageinfo");
-    const baggageData = JSON.parse(getCookiebaggageData);
+    let getCookiebaggageData;
+    if (urlBookingId) {
+      getCookiebaggageData = getCookie(`baggageinfo_${urlBookingId}`);
+    }
+    if (!getCookiebaggageData) {
+      getCookiebaggageData = getCookie("baggageinfo");
+    }
+    // const getCookiebaggageData = getCookie("baggageinfo");
+    const baggageData = getCookiebaggageData
+      ? JSON.parse(getCookiebaggageData)
+      : [];
     setCookieBaggageData(baggageData);
 
-    const getCookieSeatData = getCookie("mappedSeatInfo");
-    const mappedSeatData = JSON.parse(getCookieSeatData);
+    let getCookieSeatData;
+    if (urlBookingId) {
+      getCookieSeatData = getCookie(`mappedSeatInfo_${urlBookingId}`);
+    }
+    if (!getCookieSeatData) {
+      getCookieSeatData = getCookie("mappedSeatInfo");
+    }
+    // const getCookieSeatData = getCookie("mappedSeatInfo");
+    const mappedSeatData = getCookieSeatData
+      ? JSON.parse(getCookieSeatData)
+      : [];
     setCookieMappedSeatData(mappedSeatData);
   }, []);
 
@@ -970,6 +1023,23 @@ const ReissueReviewPage = () => {
         }
         return;
       } else {
+        const cookiesToClear = [
+          "travellerInfo",
+          "email",
+          "number",
+          "mealinfo",
+          "baggageinfo",
+          "mappedSeatInfo",
+          "gst_info",
+        ];
+
+        cookiesToClear.forEach((cookieName) => {
+          removeCookie(cookieName); // Clear global cookie
+          if (bookingId) {
+            removeCookie(`${cookieName}_${bookingId}`); // Clear scoped cookie
+          }
+        });
+
         router.push(
           `/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`
         );
@@ -1005,7 +1075,13 @@ const ReissueReviewPage = () => {
   const bookingReviewWithoutPaymentGateway = async () => {
     setBookingLoading(true);
 
-    const gstInfoCookies = getCookie("gst_info");
+    let gstInfoCookies;
+    if (bookingId) {
+      gstInfoCookies = getCookie(`gst_info_${bookingId}`);
+    }
+    if (!gstInfoCookies) {
+      gstInfoCookies = getCookie("gst_info");
+    }
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
     const segmentinfo =
@@ -1058,7 +1134,13 @@ const ReissueReviewPage = () => {
     setBookingLoadingWallet(true);
     setPayError("");
 
-    const gstInfoCookies = getCookie("gst_info");
+    let gstInfoCookies;
+    if (bookingId) {
+      gstInfoCookies = getCookie(`gst_info_${bookingId}`);
+    }
+    if (!gstInfoCookies) {
+      gstInfoCookies = getCookie("gst_info");
+    }
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
     const rsData = getCookie("rs_data");
@@ -1108,7 +1190,13 @@ const ReissueReviewPage = () => {
   const bookingReview = () => {
     setBookingLoading(true);
 
-    const gstInfoCookies = getCookie("gst_info");
+    let gstInfoCookies;
+    if (bookingId) {
+      gstInfoCookies = getCookie(`gst_info_${bookingId}`);
+    }
+    if (!gstInfoCookies) {
+      gstInfoCookies = getCookie("gst_info");
+    }
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
     const segmentinfo =
@@ -2581,13 +2669,19 @@ const ReissueReviewPage = () => {
                             {/* Buttons */}
                             <div className="bg-white relative flex justify-between  flex-col">
                               <div className="mt-60 flex justify-between">
-                                <Link
-                                  href={`/reschedule-book-ticket?tcs_id=${priceId}`}
+                                <div
+                                  onClick={() => {
+                                    if (urlBookingId) {
+                                      localStorage.removeItem(`bookingData_${urlBookingId}`);
+                                      localStorage.removeItem(`bookingData_${urlBookingId}_timestamp`);
+                                    }
+                                    router.push(`/reschedule-book-ticket?tcs_id=${priceId}`);
+                                  }}
                                   style={{ borderRadius: "5px" }}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                 >
                                   Back
-                                </Link>
+                                </div>
                                 {/* {flightData?.conditions?.isBA === true && (
                                   <div
                                     onClick={handleHoldBooking}

@@ -973,16 +973,31 @@ export default function BookTicket() {
         // Set all grouped travelers and cookie
         // setBaggageinfo(baggageInfos);
 
+        const bookingId = apiData?.bookingId;
+        const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+
+        setCookie(`baggageinfo_${bookingId}`, JSON.stringify(baggageInfosPayload), {
+          expires: expires,
+        });
+
         setCookie("baggageinfo", JSON.stringify(baggageInfosPayload), {
-          expires: 7,
+          expires: expires,
         });
         // setBaggageinfo(baggageInfosPayload);
+        setCookie(`mealinfo_${bookingId}`, JSON.stringify(mealinfosPaylode), {
+          expires: expires,
+        });
+
         setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
-          expires: 7,
+          expires: expires,
         });
         // setMealinfo(mealinfosPaylode)
+        setCookie(`mappedSeatInfo_${bookingId}`, JSON.stringify(seatInfosPaylode), {
+          expires: expires,
+        });
+
         setCookie("mappedSeatInfo", JSON.stringify(seatInfosPaylode), {
-          expires: 7,
+          expires: expires,
         });
         // Combine all
         const travellerInfoV: Traveller[] = [
@@ -991,8 +1006,12 @@ export default function BookTicket() {
           ...groupedInfants,
         ];
         setTravellerInfoV(travellerInfoV);
+        setCookie(`travellerInfo_${bookingId}`, JSON.stringify(travellerInfoV), {
+          expires: expires,
+        });
+
         setCookie("travellerInfo", JSON.stringify(travellerInfoV), {
-          expires: 7,
+          expires: expires,
         });
 
         // api call to save traveller info
@@ -1002,6 +1021,10 @@ export default function BookTicket() {
             email: getCookie("email"),
             number: getCookie("number"),
           };
+
+          setCookie(`email_${bookingId}`, getCookie("email"), { expires: expires });
+          setCookie(`number_${bookingId}`, getCookie("number"), { expires: expires });
+
           const result = await postData(
             "travelogy/flight/save-traveller-info",
             reqTravellerInfo
@@ -1014,7 +1037,7 @@ export default function BookTicket() {
         // alert('Validation success!');
         // Proceed with form submission or further actions
         // setLoadingBtn(false)
-        router.push(`/reissuereviewpage?tcs_id=${tcs_id}`);
+        router.push(`/reissuereviewpage?tcs_id=${tcs_id}&booking_id=${bookingId}`);
       })
       .catch((errorInfo) => {
         if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
@@ -1093,18 +1116,40 @@ export default function BookTicket() {
     );
   };
 
+  const clearSessionCookies = () => {
+    const cookiesToClear = [
+      "travellerInfo",
+      "baggageinfo",
+      "mealinfo",
+      "mappedSeatInfo",
+      "gst_info",
+      "email",
+      "number",
+    ];
+
+    cookiesToClear.forEach((name) => {
+      removeCookie(name);
+      if (bookingId) {
+        removeCookie(`${name}_${bookingId}`);
+      }
+    });
+  }
+
+  const hasExpired = useRef(false);
+
   const handleSessionExpire = useCallback(() => {
     if (!hasExpired.current) {
       hasExpired.current = true;
+      clearSessionCookies();
+      window.history.back();
     }
-  }, []);
+  }, [bookingId, removeCookie]); // Added bookingId and removeCookie to dependencies
+
   const timeLeftRef = useSessionTime(
     apiData?.conditions?.sct,
     apiData?.conditions?.st,
     handleSessionExpire
   );
-
-  const hasExpired = useRef(false);
 
   function segregateTravellerInfo(travellers: any) {
     const segrigatedTravellerInfo: any = {};
@@ -2044,7 +2089,7 @@ export default function BookTicket() {
               <SessionTime
                 timeLeftRef={timeLeftRef}
                 searchTickets={searchTickets}
-                redirBookingDetails={redirectBookDetailsPage}
+                redirBookingDetails={handleSessionExpire}
               />
             </div>
           )}

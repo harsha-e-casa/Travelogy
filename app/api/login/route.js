@@ -5,7 +5,7 @@
 //   console.log("client tokennnnnnnnnnnnnn ")
 //   const { email, password } = await req.json();
 
-//   const token = jwt.sign({ email }, "yourSecretKey", { expiresIn: "24h" });
+//   const token = jwt.sign({ email }, "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b", { expiresIn: "24h" });
 //   console.log("client tokennnnnnnnnnnnnn ",token)
 
 //   const res = NextResponse.json({ success: true });
@@ -35,8 +35,10 @@ export async function POST(req) {
 
     const encryptedPassword = CryptoJS.AES.encrypt(
       password,
-      "yourSecretKey"
+      "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
     ).toString();
+
+    console.log("encryptedPassword ==> ",encryptedPassword)
 
     // 1) Call your custom backend
     const upstream = await fetch(`${BACKEND_URL}/travelogy/flight/login`, {

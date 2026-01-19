@@ -129,6 +129,11 @@ const BookingForm: React.FC<BookingFormProps> = ({
           savedMeal.reduce((acc: any, curr: any) => acc + curr.amount, 0)
         );
         let ssrSeatAmount = getCookie("seatSsr_amount");
+
+        if (pathname?.includes("/book-ticket")) {
+          ssrSeatAmount = 0;
+        }
+
         // setTotalSeatAmount(Number(ssrSeatAmount));
         setTotalSeatAmount(Number(ssrSeatAmount ?? 0));
 

@@ -99,9 +99,9 @@ const ReviewPage = () => {
   const [number, setNumber] = useState(null);
   const [totalPriceinfo, setTotalpriceinfo] = useState(null);
   const [showMore, setShowMore] = useState(true);
-  const BaggageAmount = JSON.parse(getCookie("baggageinfo") || "[]");
-  const MealAmount = JSON.parse(getCookie("mealinfo") || "[]");
-  const SeatAmount = Number(getCookie("seatSsr_amount") || 0);
+  const BaggageAmount = JSON.parse(getCookie(`baggageinfo_${urlBookingId}`) || "[]");
+  const MealAmount = JSON.parse(getCookie(`mealinfo_${urlBookingId}`) || "[]");
+  const SeatAmount = Number(getCookie(`seatSsr_amount_${urlBookingId}`) || 0);
 
   const [markup, setMarkup] = useState(0);
   const { removeCookie } = useContext(AppContext);
@@ -136,7 +136,14 @@ const ReviewPage = () => {
   }, [urlBookingId]);
 
   useEffect(() => {
-    const data = getCookie("travellerInfo");
+    let data;
+    if (urlBookingId) {
+      data = getCookie(`travellerInfo_${urlBookingId}`);
+    }
+    if (!data) {
+      // data = getCookie("travellerInfo");
+    }
+
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -145,10 +152,17 @@ const ReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, []);
+  }, [urlBookingId]);
 
   useEffect(() => {
-    const data = getCookie("email");
+    let data;
+    if (urlBookingId) {
+      data = getCookie(`email_${urlBookingId}`);
+    }
+    if (!data) {
+      data = getCookie("email");
+    }
+
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -157,10 +171,17 @@ const ReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, []);
+  }, [urlBookingId]);
 
   useEffect(() => {
-    const data = getCookie("number");
+    let data;
+    if (urlBookingId) {
+      data = getCookie(`number_${urlBookingId}`);
+    }
+    if (!data) {
+      data = getCookie("number");
+    }
+
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -169,7 +190,7 @@ const ReviewPage = () => {
         console.error("Invalid JSON in cookie:", err);
       }
     }
-  }, []);
+  }, [urlBookingId]);
 
   // Function to fetch flight details
   // const fetchFlightDetails = async (priceId) => {
@@ -255,6 +276,28 @@ const ReviewPage = () => {
       setError("No valid tcs_id found in the URL.");
     }
   }, [priceId]);
+
+  const bookingIdRef = React.useRef(urlBookingId);
+  useEffect(() => {
+    bookingIdRef.current = urlBookingId;
+  }, [urlBookingId]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const currentId = bookingIdRef.current;
+      if (currentId) {
+        localStorage.removeItem(`bookingData_${currentId}`);
+        localStorage.removeItem(`bookingData_${currentId}_timestamp`);
+        localStorage.setItem("migration_source_booking_id", currentId);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   const BookingSkeleton = () => {
     return (
@@ -375,23 +418,34 @@ const ReviewPage = () => {
   const toCity = routeinfo.map((e) => e.toCityOrAirport.city);
   const traveldata = routeinfo.map((e) => e.travelDate);
 
-  const [cookieMealData, setCookieMealData] = useState({});
-  const [cookieBaggageData, setCookieBaggageData] = useState({});
-  const [cookieMappedSeatData, setCookieMappedSeatData] = useState({});
+  const [cookieMealData, setCookieMealData] = useState([]);
+  const [cookieBaggageData, setCookieBaggageData] = useState([]);
+  const [cookieMappedSeatData, setCookieMappedSeatData] = useState([]);
 
   useEffect(() => {
-    const getCookieMealData = getCookie("mealinfo");
-    const mealData = JSON.parse(getCookieMealData);
+    let getCookieMealData;
+    let getCookiebaggageData;
+    let getCookieSeatData;
+
+    if (urlBookingId) {
+      getCookieMealData = getCookie(`mealinfo_${urlBookingId}`);
+      getCookiebaggageData = getCookie(`baggageinfo_${urlBookingId}`);
+      getCookieSeatData = getCookie(`mappedSeatInfo_${urlBookingId}`);
+    }
+
+    // if (!getCookieMealData) getCookieMealData = getCookie("mealinfo");
+    // if (!getCookiebaggageData) getCookiebaggageData = getCookie("baggageinfo");
+    // if (!getCookieSeatData) getCookieSeatData = getCookie("mappedSeatInfo");
+
+    const mealData = JSON.parse(getCookieMealData || "[]");
     setCookieMealData(mealData);
 
-    const getCookiebaggageData = getCookie("baggageinfo");
-    const baggageData = JSON.parse(getCookiebaggageData);
+    const baggageData = JSON.parse(getCookiebaggageData || "[]");
     setCookieBaggageData(baggageData);
 
-    const getCookieSeatData = getCookie("mappedSeatInfo");
-    const mappedSeatData = JSON.parse(getCookieSeatData);
+    const mappedSeatData = JSON.parse(getCookieSeatData || "[]");
     setCookieMappedSeatData(mappedSeatData);
-  }, []);
+  }, [urlBookingId]);
 
   //bookingid
   const bookingId = flightData ? flightData.bookingId : null;
@@ -1009,6 +1063,39 @@ const ReviewPage = () => {
         }
       } else {
         // setBookingLoading(false);
+
+        // Clear cookies before redirecting
+        removeCookie("travellerInfo");
+        removeCookie("mealinfo");
+        removeCookie("baggageinfo");
+        removeCookie("seatSsr_amount");
+        removeCookie("gst_info");
+        removeCookie("email");
+        removeCookie("number");
+        removeCookie("mappedSeatInfo");
+
+        if (bookingId) {
+          removeCookie(`travellerInfo_${bookingId}`);
+          removeCookie(`mealinfo_${bookingId}`);
+          removeCookie(`baggageinfo_${bookingId}`);
+          removeCookie(`seatSsr_amount_${bookingId}`); // If we scoped this
+          removeCookie(`gst_info_${bookingId}`);
+          removeCookie(`email_${bookingId}`);
+          removeCookie(`number_${bookingId}`);
+          removeCookie(`baggageinfo_${bookingId}`);
+          removeCookie(`mappedSeatInfo_${bookingId}`);
+        }
+
+        // Loop to remove seat maps
+        for (let i = 1; i <= 9; i++) {
+          removeCookie(`adult_seat_map-${i}`);
+          removeCookie(`child_seat_map-${i}`);
+          if (bookingId) {
+            removeCookie(`adult_seat_map-${i}_${bookingId}`);
+            removeCookie(`child_seat_map-${i}_${bookingId}`);
+          }
+        }
+
         router.push(
           `/BookingDetails?tcs_id=${priceId}&booking_id=${bookingId}`
         );
@@ -2178,13 +2265,20 @@ const ReviewPage = () => {
                             {/* Buttons */}
                             <div className="bg-white relative flex justify-between  flex-col">
                               <div className="mt-60 flex justify-between action-buttons-row">
-                                <Link
-                                  href={`/book-ticket?tcs_id=${priceId}`}
+                                <div
+                                  onClick={() => {
+                                    if (urlBookingId) {
+                                      localStorage.removeItem(`bookingData_${urlBookingId}`);
+                                      localStorage.removeItem(`bookingData_${urlBookingId}_timestamp`);
+                                      localStorage.setItem("migration_source_booking_id", urlBookingId);
+                                    }
+                                    router.push(`/book-ticket?tcs_id=${priceId}`);
+                                  }}
                                   style={{ borderRadius: "5px" }}
                                   className="cursor-pointer border-2 border-black px-4 py-2 bg-yellow-300 hover:bg-yellow-400 transition text-black"
                                 >
                                   Back
-                                </Link>
+                                </div>
                                 {/* {flightData?.conditions?.isBA === true && (
                                   <div
                                     onClick={handleHoldBooking}
