@@ -612,11 +612,11 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     const renderFilters = (tabIndex) => (
       <>
         {isFilterApplied(tabIndex) && (
-          <div className="sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
+          <div className="sticky top-36 lg:top-48 z-50 sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
             <div className="box-filters-sidebar">
               <div className="block-filter border-1">
                 <div className="d-flex align-items-center justify-content-between">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">Applied filter <span className="text-sm font-normal text-gray-500">({getActiveFilterCount(tabIndex)})</span></h6>
+                  <h6 className="text-lg-bold filter-sty neutral-1000">Applied Filters <span className="text-sm font-normal text-gray-500">({getActiveFilterCount(tabIndex)})</span></h6>
                   <Button
                     type="link"
                     onClick={() => handleResetAllFilters(tabIndex)}
