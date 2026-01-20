@@ -837,6 +837,10 @@
   .main_d2l_section {
     padding: 5px;
   }
+
+  .class_main_slider_de1 {
+    padding-top: 5px;
+  }
 }
 
 @media screen and (max-width: 376px) and (min-width: 321px) {
@@ -855,6 +859,10 @@
   .main_d2l_section {
     padding: 5px;
   }
+
+  .class_main_slider_de1 {
+    padding-top: 5px;
+  }
 }
 
 @media screen and (max-width: 426px) and (min-width: 376px) {
@@ -868,6 +876,10 @@
 
   .main_d2l_section {
     padding: 5px;
+  }
+
+  .class_main_slider_de1 {
+    padding-top: 5px;
   }
 }
 
