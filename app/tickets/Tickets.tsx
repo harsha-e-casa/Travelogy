@@ -42,7 +42,7 @@ import "./customeHeader_1.css";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
-import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space, Drawer, Button, Modal, Input, message } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
@@ -3435,9 +3435,10 @@ export default function Tickets() {
                                           <ShareAltOutlined />
                                           <span className="font-semibold">Share By :</span>
                                           <span
-                                            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                            className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                                             onClick={() => setShareMode(true)}
                                           >
+                                            <MailOutlined />
                                             Email
                                           </span>
                                         </div>

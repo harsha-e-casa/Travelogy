@@ -20,7 +20,7 @@ import ByFareType from "@/components/Filter/ByFareType";
 import SelectedFlightSummary from "./SelectedFlightSummary";
 import Cookies from "js-cookie";
 import BySortPrice from "@/components/Filter/BySortPrice";
-import { ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import { DownOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
 import QuoteShareModal from "@/components/elements/QuoteShareModal";
 import { postData } from "@/services/NetworkAdapter";
 import { message } from "antd";
@@ -972,9 +972,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
                     <span className="font-semibold">Share By :</span>
                     {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
                     <span
-                      className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                      className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                       onClick={() => setShareMode(true)}
                     >
+                      <MailOutlined />
                       Email
                     </span>
                     {/* </span> | */}

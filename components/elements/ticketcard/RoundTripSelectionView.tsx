@@ -13,7 +13,7 @@ import ByFareType from "@/components/Filter/ByFareType";
 import Cookies from "js-cookie";
 import BySortPrice from "@/components/Filter/BySortPrice";
 import { Drawer, Button, message } from "antd";
-import { FilterOutlined, ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import { ShareAltOutlined, CloseOutlined, FilterOutlined, DownOutlined, MailOutlined } from "@ant-design/icons";
 import QuoteShareModal from "@/components/elements/QuoteShareModal";
 // import TicketCard1 from "./TicketCard1";
 
@@ -1067,9 +1067,10 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                     <span className="font-semibold">Share By :</span>
                     {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
                     <span
-                      className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                      className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                       onClick={() => setShareMode(true)}
                     >
+                      <MailOutlined />
                       Email
                     </span>
                     {/* </span> | */}

@@ -47,7 +47,7 @@ import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByFareType from "@/components/Filter/ByFareType";
 import BySortPrice from "@/components/Filter/BySortPrice";
-import { ShareAltOutlined, CloseOutlined, FilterOutlined } from "@ant-design/icons";
+import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
 import { message, Drawer, Button } from "antd";
 import TicketCardMobile from "@/components/elements/ticketcard/TicketCardMobile";
 
@@ -1246,15 +1246,16 @@ export default function Tickets() {
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
-                                    <div className="sticky top-36 md:top-32 lg:top-32 min-[1274px]:top-40 xl:top-40 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
+                                    <div className="sticky top-36 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />
                                           <span className="font-semibold">Share By :</span>
                                           <span
-                                            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                            className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                                             onClick={() => setShareMode(true)}
                                           >
+                                            <MailOutlined />
                                             Email
                                           </span>
                                         </div>
