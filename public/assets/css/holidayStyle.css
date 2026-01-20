@@ -24,6 +24,14 @@
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 35%);
   }
+
+  .box-top-category {
+    padding: 60px 13px;
+  }
+
+  .container_sub {
+    width: 99%;
+  }
 }
 
 .section__category .dgfry_card {
@@ -539,7 +547,7 @@
 
 /* Main slider (active card) text sizing */
 .card .content-place {
-  font-size: 1.2rem;
+  font-size: 1.6rem;
   font-weight: 500;
   margin-top: 8px;
   margin-bottom: 4px;
@@ -548,7 +556,7 @@
 .card .content-title-1,
 .card .content-title-2 {
   font-weight: 600;
-  font-size: 1.5rem;
+  font-size: 2rem;
   margin-top: 4px;
   line-height: 1.2;
 }
@@ -580,14 +588,14 @@
 
   .card[style*="width: 220px"] .content-place,
   .card[style*="width: 180px"] .content-place {
-    font-size: 0.65rem;
+    font-size: 1rem;
   }
 
   .card[style*="width: 220px"] .content-title-1,
   .card[style*="width: 220px"] .content-title-2,
   .card[style*="width: 180px"] .content-title-1,
   .card[style*="width: 180px"] .content-title-2 {
-    font-size: 0.9rem;
+    font-size: 1.6rem;
     line-height: 1.1;
   }
 
@@ -624,24 +632,28 @@
 
 @media screen and (max-width: 480px) {
 
+  .card[style*="width: 150px"] .content-place,
   .card[style*="width: 115px"] .content-place,
   .card[style*="width: 110px"] .content-place {
-    font-size: 0.5rem;
+    font-size: 0.6rem;
   }
 
+  .card[style*="width: 150px"] .content-title-1,
+  .card[style*="width: 150px"] .content-title-2,
   .card[style*="width: 115px"] .content-title-1,
   .card[style*="width: 115px"] .content-title-2,
   .card[style*="width: 110px"] .content-title-1,
   .card[style*="width: 110px"] .content-title-2 {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     line-height: 1;
   }
 
   /* Mobile small cards padding */
+  .card[style*="width: 150px"] .card-content,
   .card[style*="width: 115px"] .card-content,
   .card[style*="width: 110px"] .card-content {
-    padding-left: 12px;
-    padding-top: 12px;
+    padding-left: 10px;
+    padding-top: 10px;
   }
 
   /* Mobile main slider padding */
@@ -795,7 +807,7 @@
 
 @media screen and (max-width: 321px) {
   .slider-wrapper {
-    height: 580px !important;
+    height: 505px !important;
   }
 
   .discover-title {
@@ -817,22 +829,57 @@
     transform: translateX(30%);
     padding-top: 5px;
   }
+
+  .box-your-journey {
+    padding: 0px;
+  }
+
+  .main_d2l_section {
+    padding: 5px;
+  }
+
+  .class_main_slider_de1 {
+    padding-top: 5px;
+  }
 }
 
 @media screen and (max-width: 376px) and (min-width: 321px) {
   .slider-wrapper {
-    height: 556px !important;
+    height: 505px !important;
   }
 
   .discover-title {
     font-size: 2rem !important;
   }
 
+  .box-your-journey {
+    padding: 0px;
+  }
+
+  .main_d2l_section {
+    padding: 5px;
+  }
+
+  .class_main_slider_de1 {
+    padding-top: 5px;
+  }
 }
 
 @media screen and (max-width: 426px) and (min-width: 376px) {
   .slider-wrapper {
-    height: 556px !important;
+    height: 506px !important;
+  }
+
+  .box-your-journey {
+    padding: 0px;
+  }
+
+  .main_d2l_section {
+    padding: 5px;
+  }
+
+  .class_main_slider_de1 {
+    padding-top: 5px;
   }
 }
 
@@ -840,10 +887,22 @@
   .slider-wrapper {
     height: 555px !important;
   }
+
+  .box-your-journey {
+    padding: 0px;
+  }
+
+  .tabadjust {
+    margin-top: 0px !important;
+  }
 }
 
 @media screen and (max-width: 1025px) and (min-width: 770px) {
   .slider-wrapper {
     height: 748px !important;
+  }
+
+  .box-your-journey {
+    padding: 0px;
   }
 }

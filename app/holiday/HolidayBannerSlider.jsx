@@ -20,12 +20,12 @@ const Slider = () => {
     if (width <= 480) { // Mobile (320px - 480px)
       return {
         mainHeight: 450,
-        smallCardWidth: 115,
+        smallCardWidth: 150,
         smallCardHeight: 170,
-        smallCardStartX: width * 0.20, // Right-aligned positioning
-        smallCardSpacing: 140,
-        smallCardY: 350,
-        smallCardAnimateY: 370,
+        smallCardStartX: width * 0.30, // Right-aligned positioning
+        smallCardSpacing: 180,
+        smallCardY: 320,
+        smallCardAnimateY: 320,
         borderRadius: 10,
         FontSize: 12,
       };
