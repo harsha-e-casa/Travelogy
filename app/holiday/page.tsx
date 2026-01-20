@@ -178,19 +178,19 @@ const Slider: React.FC = () => {
       <Layout headerStyle={1} footerStyle={1}>
 
 
-      <HolidayBannerSlider />
+        <HolidayBannerSlider />
         {/* <EngineTabs /> */}
         {/* <AnimatedSlider /> */}
 
 
 
-        <div className="h-10">
-        
-        </div>
+        {/* <div className="h-10">
 
-      
+        </div> */}
+
+
         <YourJourney />
-{/*
+        {/*
         <div className="container mt-8">
           <MicroallOffersPage />
         </div>*/}
@@ -206,7 +206,7 @@ const Slider: React.FC = () => {
           {locations.map((loc, index) => (
             <div className="dgfry_card" key={index}>
               <div className="card__img">
-                <img  src={loc.image} alt={loc.place || "Travel Destination"} />
+                <img src={loc.image} alt={loc.place || "Travel Destination"} />
                 <span>
                   <StarIcon /> {loc.rating}
                 </span>
@@ -218,8 +218,8 @@ const Slider: React.FC = () => {
             </div>
           ))}
         </section>
-        
-         <section className="container_sub mb-30 box-top-category">
+
+        <section className="container_sub mb-30 box-top-category">
           {/* <h5
             className="neutral-1000 wow fadeInUp mb-30"
             style={{ visibility: "visible" }}
@@ -262,24 +262,24 @@ const Slider: React.FC = () => {
               <h2 className="text-xl font-bold text-gray-900 tracking-wide">
                 Best Destinations
               </h2>
-              <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
+              <div className="mt-12 mx-auto grid gap-6 sm:gap-10 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 lg:max-w-none">
                 {destinations.map((dest, index) => (
                   <div
                     key={index}
-                    className="flex items-center rounded-lg aft_hvr w-full"
+                    className="flex items-center rounded-lg aft_hvr w-full gap-3 sm:gap-4"
                   >
-                    <div className="w-1/3 rounded-full overflow-hidden">
-                      <img 
+                    <div className="flex-shrink-0 rounded-full overflow-hidden">
+                      <img
                         src={dest.image}
                         alt={dest.title}
-                        className="h-20 w-20 rounded-full object-cover"
+                        className="best_destinations h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover"
                       />
                     </div>
-                    <div className="w-2/3 pl-3">
-                      <p className="text-xl font-semibold text-gray-900">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
                         {dest.title}
                       </p>
-                      <p className="text-xs text-gray-900">
+                      <p className="text-xs text-gray-900 line-clamp-3">
                         {dest.description}
                       </p>
                     </div>
@@ -289,7 +289,7 @@ const Slider: React.FC = () => {
             </div>
           </div>
         </section>
-               {/* </main> */}
+        {/* </main> */}
       </Layout>
     </>
   );
