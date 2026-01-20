@@ -38,7 +38,7 @@ export default function YourJourney() {
       <style dangerouslySetInnerHTML={{ __html: cardStyles }} />
       <section className="section-box box-your-journey background-body">
         <div className="container">
-          <div className="row align-items-center mt-20">
+          <div className="row align-items-center mt-20 tabadjust">
             {/* Left side - Catchy content */}
             <div className="col-lg-6 col-md-6 mb-30">
               <div className="pr-4">
@@ -51,20 +51,20 @@ export default function YourJourney() {
                 </p>
                 <div className="wow fadeInUp">
                   <div className="d-flex align-items-center mb-3">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#ff6b35' }}>
-                      <img src="/assets/imgs/page/tour/post5.png" alt="heart" style={{ width: '40px', height: '40px', borderRadius: "20px" }} />
+                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#ff6b35', flexShrink: 0 }}>
+                      <img src="/assets/imgs/page/tour/post5.png" alt="heart" style={{ width: '40px', height: '40px', borderRadius: "20px", objectFit: "cover" }} />
                     </div>
                     <span className="text-lg neutral-700">Curated experiences just for you</span>
                   </div>
                   <div className="d-flex align-items-center mb-3">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#28a745' }}>
-                      <img src="/assets/imgs/page/tour/post2.png" alt="map" style={{ width: '40px', height: '40px', borderRadius: "20px" }} />
+                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#28a745', flexShrink: 0 }}>
+                      <img src="/assets/imgs/page/tour/post2.png" alt="map" style={{ width: '40px', height: '40px', borderRadius: "20px", objectFit: "cover" }} />
                     </div>
                     <span className="text-lg neutral-700">Handpicked destinations worldwide</span>
                   </div>
                   <div className="d-flex align-items-center">
-                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#ffc107' }}>
-                      <img src="/assets/imgs/page/tour/post3.png" alt="star" style={{ width: '40px', height: '40px', borderRadius: "20px" }} />
+                    <div className="rounded-circle d-flex align-items-center justify-content-center" style={{ width: '40px', height: '40px', marginRight: '15px', backgroundColor: '#ffc107', flexShrink: 0 }}>
+                      <img src="/assets/imgs/page/tour/post3.png" alt="star" style={{ width: '40px', height: '40px', borderRadius: "20px", objectFit: "cover" }} />
                     </div>
                     <span className="text-lg neutral-700">Premium travel experiences</span>
                   </div>

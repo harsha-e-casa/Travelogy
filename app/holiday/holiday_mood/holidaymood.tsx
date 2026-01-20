@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 import { postData } from "@/services/NetworkAdapter";
 import { message, Select, ConfigProvider } from "antd";
+import "../../../public/assets/css/holidayStyle.css";
+
 
 export default function Holidaymood() {
   const searchParams = useSearchParams();
@@ -292,7 +294,7 @@ export default function Holidaymood() {
         },
       ],
     },
-     nightlife: {
+    nightlife: {
       title: "NightLife",
       bannerImage:
         "https://images.unsplash.com/photo-1564501049412-61c2a3083791?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80",
@@ -651,24 +653,24 @@ export default function Holidaymood() {
             <h2 className="text-xl font-bold text-gray-900 tracking-wide">
               Best Destinations
             </h2>
-            <div className="mt-12 max-w-lg mx-auto grid gap-10 lg:grid-cols-4 lg:max-w-none">
+            <div className="mt-12 mx-auto grid gap-6 sm:gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:max-w-none">
               {destinations.map((dest, index) => (
                 <div
                   key={index}
-                  className="flex items-center rounded-lg aft_hvr w-full"
+                  className="flex items-center rounded-lg aft_hvr w-full gap-4"
                 >
-                  <div className="w-1/3 rounded-full overflow-hidden">
+                  <div className="flex-shrink-0 rounded-full overflow-hidden">
                     <img
                       src={dest.image}
                       alt={dest.title}
                       className="h-20 w-20 rounded-full object-cover"
                     />
                   </div>
-                  <div className="w-2/3 pl-3">
-                    <p className="text-xl font-semibold text-gray-900">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xl font-semibold text-gray-900 truncate">
                       {dest.title}
                     </p>
-                    <p className="text-xs text-gray-900">
+                    <p className="text-xs text-gray-900 line-clamp-3">
                       {dest.description}
                     </p>
                   </div>
@@ -702,8 +704,9 @@ export default function Holidaymood() {
               background: "rgba(255,255,255,0.1)",
               backdropFilter: "blur(20px)",
               borderRadius: "20px",
-              padding: "40px",
-              width: "400px",
+              padding: "30px",
+              width: "90%",
+              maxWidth: "400px",
               border: "1px solid rgba(255,255,255,0.2)",
               position: "relative",
             }}
@@ -873,7 +876,8 @@ export default function Holidaymood() {
             </div>
           </div>
         </div>
-      )}
-    </Layout>
+      )
+      }
+    </Layout >
   );
 }
