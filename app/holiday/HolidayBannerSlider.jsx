@@ -2,204 +2,189 @@ import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 
 const data = [
-  {
-    place: 'London',
-    title: 'LONDON',
-    title2: 'PREFECTURE',
-    description: 'Love for the city',
-    image: 'https://travelogy.digilogy.co/demo1.jpg',
-  },
-  {
-    place: 'Switzerland Alps',
-    title: 'SAINT',
-    title2: 'ANTONIEN',
-    description: "Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for tranquility and adventure.",
-    image: 'https://travelogy.digilogy.co/demo2.jpg',
-  },
-  {
-    place: 'Australia - Morocco',
-    title: 'MOROCCO',
-    title2: 'MERZOUGA',
-    description: "Morocco offers vibrant markets, desert landscapes, and rich cultural experiences.",
-    image: 'https://travelogy.digilogy.co/demo3.jpeg',
-  },
-
-  {
-    place: 'Switzerland Alps',
-    title: 'ALPS',
-    title2: 'ANTONIEN',
-    description: "Tucked away in the Switzerland Alps, Saint Antönien offers an idyllic retreat for tranquility and adventure.",
-    image: 'https://travelogy.digilogy.co/demo2.jpg',
-  },
-  {
-    place: 'Australia - Morocco',
-    title: 'AUSTRALIA',
-    title2: 'MERZOUGA',
-    description: "Morocco offers vibrant markets, desert landscapes, and rich cultural experiences.",
-    image: 'https://travelogy.digilogy.co/demo3.jpeg',
-  },
-  {
-    place: 'London',
-    title: 'LONDON',
-    title2: 'PREFECTURE',
-    description: '',
-    image: 'https://travelogy.digilogy.co/demo1.jpg',
-  },
+  { place: 'London', title: 'LONDON', title2: 'PREFECTURE', image: 'https://travelogy.digilogy.co/demo1.jpg' },
+  { place: 'Switzerland Alps', title: 'SAINT', title2: 'ANTONIEN', image: 'https://travelogy.digilogy.co/demo2.jpg' },
+  { place: 'Australia - Morocco', title: 'MOROCCO', title2: 'MERZOUGA', image: 'https://travelogy.digilogy.co/demo3.jpeg' },
+  { place: 'Switzerland Alps', title: 'ALPS', title2: 'ANTONIEN', image: 'https://travelogy.digilogy.co/demo2.jpg' },
+  { place: 'Australia - Morocco', title: 'AUSTRALIA', title2: 'MERZOUGA', image: 'https://travelogy.digilogy.co/demo3.jpeg' },
+  { place: 'London', title: 'LONDON', title2: 'PREFECTURE', image: 'https://travelogy.digilogy.co/demo1.jpg' },
 ];
 
 const Slider = () => {
   const cardsRef = useRef([]);
-  const cardContentsRef = useRef([]);
+  const orderRef = useRef(data.map((_, index) => index));
+
+  const getResponsiveValues = () => {
+    const width = window.innerWidth;
+
+    if (width <= 480) { // Mobile (320px - 480px)
+      return {
+        mainHeight: 450,
+        smallCardWidth: 115,
+        smallCardHeight: 170,
+        smallCardStartX: width * 0.20, // Right-aligned positioning
+        smallCardSpacing: 140,
+        smallCardY: 350,
+        smallCardAnimateY: 370,
+        borderRadius: 10,
+        FontSize: 12,
+      };
+    } else if (width <= 768) { // Tablet (768px)
+      return {
+        mainHeight: 500,
+        smallCardWidth: 110,
+        smallCardHeight: 170,
+        smallCardStartX: width * 0.35,
+        smallCardSpacing: 135,
+        smallCardY: 350,
+        smallCardAnimateY: 370,
+        borderRadius: 10,
+        FontSize: 14,
+      };
+    } else { // Desktop
+      return {
+        mainHeight: 650,
+        smallCardWidth: 220,
+        smallCardHeight: 360,
+        smallCardStartX: width * 0.55,
+        smallCardSpacing: 250,
+        smallCardY: 370,
+        smallCardAnimateY: 370,
+        borderRadius: 15,
+        FontSize: 10,
+      };
+    }
+  };
+
+  const init = () => {
+    const values = getResponsiveValues();
+    const [active, ...rest] = orderRef.current;
+
+    gsap.set(cardsRef.current[active], {
+      x: 0,
+      y: 0,
+      width: "100%", // Use percentage for full-width reliability
+      height: values.mainHeight,
+      borderRadius: 0,
+    });
+
+    rest.forEach((i, index) => {
+      gsap.set(cardsRef.current[i], {
+        x: values.smallCardStartX + index * values.smallCardSpacing,
+        y: values.smallCardY,
+        width: values.smallCardWidth,
+        height: values.smallCardHeight,
+        borderRadius: values.borderRadius,
+        zIndex: 10 + index,
+      });
+    });
+  };
 
   useEffect(() => {
-    document.body.style.overflowX = 'hidden';
-
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, []);
-
-  useEffect(() => {
-    let order = data.map((_, index) => index);
-
-    const init = () => {
-      const [active, ...rest] = order;
-
-      gsap.set(cardsRef.current[active], {
-        x: 0,
-        y: 0,
-        width: window.innerWidth,
-        height: 650,
-      });
-
-      rest.forEach((i, index) => {
-        gsap.set(cardsRef.current[i], {
-          x: 700 + index * 210,
-          y: 450,
-          width: 180,
-          height: 230,
-          borderRadius: 10,
-        });
-      });
-    };
-
     const animateSlider = () => {
+      const order = orderRef.current;
       order.push(order.shift());
 
       const [active, ...rest] = order;
       const prev = rest[rest.length - 1];
+      const values = getResponsiveValues();
+      const screenWidth = window.innerWidth;
 
+      // Active Card Transition
       gsap.to(cardsRef.current[active], {
         x: 0,
         y: 0,
-        width: window.innerWidth,
-        height: 650,
+        width: "100%",
+        height: values.mainHeight,
         borderRadius: 0,
-        zIndex: -1,
-        ease: 'sine.inOut',
-        onComplete: () => {
-          gsap.set(cardsRef.current[prev], {
-            x: 700 + (rest.length - 1) * 210,
-            y: 450,
-            width: 180,
-            height: 230,
-            borderRadius: 10,
-          });
-        },
+        zIndex: 1,
+        duration: 0.8,
+        ease: 'power2.inOut',
       });
-      
-      if (cardsRef.current[active]) {
-        gsap.fromTo(
-          cardsRef.current[active].querySelectorAll('.card_sub'),
-          { y: 50, opacity: 0, top: '50%', left: '30px', transform: 'translateY(-50%)' },
-          { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }
-        );
 
-        gsap.fromTo(
-          cardsRef.current[active].querySelectorAll('.content-place'),
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, fontSize: '2rem', marginTop: '30px', marginBottom: '10px', duration: 0.8, ease: 'power2.out', delay: 0.1 }
-        );
+      // Text Animations based on Screen Size
+      const isMobile = screenWidth <= 480;
+      const isTablet = screenWidth <= 768;
 
-        gsap.fromTo(
-          cardsRef.current[active].querySelectorAll('.pt_set1'),
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, fontSize: '5rem', marginTop: '0', marginBottom: '0', lineHeight: 1.1, duration: 0.8, ease: 'power2.out', delay: 0.2 }
-        );
+      gsap.fromTo(cardsRef.current[active].querySelectorAll('.anim-text'),
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.7,
+          stagger: 0.1,
+          ease: 'power2.out',
+          delay: 0.2,
+        }
+      );
 
-        gsap.fromTo(
-          cardsRef.current[active].querySelectorAll('.pt_set2'),
-          { y: 30, opacity: 0 },
-          { y: 0, opacity: 1, fontSize: '5rem', marginTop: '0', lineHeight: 1.1, duration: 0.8, ease: 'power2.out', delay: 0.3 }
-        );
-      }
-
-     
-
+      // Move Remaining Cards
       rest.forEach((i, index) => {
-        if (i !== prev && cardsRef.current[i]) {
+        if (i !== prev) {
           gsap.to(cardsRef.current[i], {
-            x: 900 + index * 210,
-            y: 500,
-            width: 180,
-            height: 230,
-            zIndex: 99999,
-            duration: 0.3,
+            x: values.smallCardStartX + index * values.smallCardSpacing,
+            y: values.smallCardAnimateY,
+            width: values.smallCardWidth,
+            height: values.smallCardHeight,
+            zIndex: 10 + index,
+            duration: 0.5,
             ease: 'sine.inOut',
           });
-        
-          gsap.set(cardsRef.current[i].querySelectorAll('.card_sub'), { clearProps: 'all' });
-          gsap.set(cardsRef.current[i].querySelectorAll('.pt_set'), { clearProps: 'all' });
-          gsap.set(cardsRef.current[i].querySelectorAll('.pt_set2'), { clearProps: 'all' });
-          gsap.set(cardsRef.current[i].querySelectorAll('.content-place'), { clearProps: 'all' });
+        } else {
+          // Reset the card that was just main to the back of the queue
+          gsap.set(cardsRef.current[prev], {
+            x: values.smallCardStartX + (rest.length - 1) * values.smallCardSpacing,
+            y: values.smallCardY,
+            width: values.smallCardWidth,
+            height: values.smallCardHeight,
+            borderRadius: values.borderRadius,
+            zIndex: 10 + (rest.length - 1)
+          });
         }
       });
     };
 
-    const loop = () => {
-      animateSlider();
-      setTimeout(loop, 4000);
-    };
+    init();
+    const interval = setInterval(animateSlider, 4000);
 
-    const preloadImages = () => {
-      return Promise.all(
-        data.map(({ image }) => {
-          return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.src = image;
-            img.onload = resolve;
-            img.onerror = reject;
-          });
-        })
-      );
-    };
-
-    preloadImages().then(() => {
+    const handleResize = () => {
       init();
-      loop();
-    });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   return (
-    <div className="slider-container">
-      {data.map((item, index) => (
-        <a key={index} href="trip-details">
+    <div className="slider-wrapper" style={{ position: 'relative', width: '100%', overflow: 'hidden', height: '750px' }}>
+      <div className="slider-container" style={{ position: 'relative', width: '100%' }}>
+        {data.map((item, index) => (
           <div
+            key={index}
             className="card"
             ref={(el) => (cardsRef.current[index] = el)}
-            style={{ backgroundImage: `url(${item.image})` }}
+            style={{
+              backgroundImage: `url(${item.image})`,
+              position: 'absolute',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              overflow: 'hidden'
+            }}
           >
-            <div className="card-content" ref={(el) => (cardContentsRef.current[index] = el)}>
-              <div className="card_sub ">
+            <div className="card-content">
+              <div className="card_sub">
                 <div className="content-start"></div>
-                <div className="content-place">{item.place}</div>
-                <div className="content-title-1 pt_set1 pt_set">{item.title}</div>
-                <div className="content-title-2 pt_set2 pt_set">{item.title2}</div>
+                <div className="content-place anim-text">{item.place}</div>
+                <div className="content-title-1 anim-text">{item.title}</div>
+                <div className="content-title-2 anim-text">{item.title2}</div>
               </div>
             </div>
           </div>
-        </a>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

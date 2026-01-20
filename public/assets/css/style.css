@@ -18036,7 +18036,7 @@ h2 span {
   -webkit-transition: ease-in 0.3s;
   -o-transition: ease-in 0.3s;
   transition: ease-in 0.3s;
-  width:100%;
+  width: 100%;
 }
 
 .search_btn {
@@ -19730,10 +19730,11 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
   .wallet_container {
-      max-width: 700px !important;
-      min-width: 700px !important;
-    }
-                                        .custom-select-dropdown {
+    max-width: 700px !important;
+    min-width: 700px !important;
+  }
+
+  .custom-select-dropdown {
     /* width: 200px !important; */
     margin-top: 20px;
   }
@@ -20012,27 +20013,28 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 
 @media (max-width: 767px) {
   .wallet_container {
-      max-width: 350px !important;
-      min-width: 350px !important;
-    }
-  
-    .wallet-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-    }
-  
-    .wallet-filter {
-      margin-left: 0;
-      width: 100%;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-    }
+    max-width: 350px !important;
+    min-width: 350px !important;
+  }
 
-.wallet-filter-select {
-  width: 100%;
-}
+  .wallet-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .wallet-filter {
+    margin-left: 0;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .wallet-filter-select {
+    width: 100%;
+  }
+
   /* Main container becomes vertical */
   .custom-grid {
     display: flex !important;
@@ -20508,6 +20510,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
   padding: 5px 16px;
   margin-top: 3px;
 }
+
 /* Wallet Header */
 .wallet-header {
   display: flex;
@@ -20589,13 +20592,14 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
     padding: 8px !important;
   }
 } */
- 
-.w-400{
-    width:400px ;
+
+.w-400 {
+  width: 400px;
 }
-.check-avail-modal .tab_view_hdr{
-max-height: 178px;
-    left: 0px !important;
-    width: 345px !important;
-    margin-top: 0px !important;
+
+.check-avail-modal .tab_view_hdr {
+  max-height: 178px;
+  left: 0px !important;
+  width: 345px !important;
+  margin-top: 0px !important;
 }
