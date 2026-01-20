@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 
-function useSessionTime(sessionCreatedTimeStr, sessionDurationSec, onExpire) {
+function useSessionTime(sessionCreatedTimeStr, sessionDurationSec, onExpire, uniqueId) {
   const timeLeftRef = useRef(0);
   const expired = useRef(false);
   const intervalRef = useRef(null);
+  const storageKey = uniqueId ? `sessionEndTime_${uniqueId}` : "sessionEndTime";
 
   useEffect(() => {
     let sessionEndTime;
@@ -11,9 +12,9 @@ function useSessionTime(sessionCreatedTimeStr, sessionDurationSec, onExpire) {
     if (sessionCreatedTimeStr && sessionDurationSec) {
       const createdTime = new Date(sessionCreatedTimeStr);
       sessionEndTime = new Date(createdTime.getTime() + sessionDurationSec * 1000);
-      localStorage.setItem("sessionEndTime", sessionEndTime.toISOString());
+      localStorage.setItem(storageKey, sessionEndTime.toISOString());
     } else {
-      const storedEnd = localStorage.getItem("sessionEndTime");
+      const storedEnd = localStorage.getItem(storageKey);
       if (storedEnd) {
         sessionEndTime = new Date(storedEnd);
       }
@@ -38,7 +39,7 @@ function useSessionTime(sessionCreatedTimeStr, sessionDurationSec, onExpire) {
     intervalRef.current = setInterval(updateTimer, 1000);
 
     return () => clearInterval(intervalRef.current);
-  }, [sessionCreatedTimeStr, sessionDurationSec, onExpire]);
+  }, [sessionCreatedTimeStr, sessionDurationSec, onExpire, uniqueId, storageKey]);
 
   return timeLeftRef;  // return ref, not value
 }

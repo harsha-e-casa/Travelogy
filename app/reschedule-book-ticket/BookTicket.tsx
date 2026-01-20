@@ -69,6 +69,8 @@ type Traveller = {
   dob?: string; // Date of birth (for infants)
 };
 
+const EXPIRATION_TIME = 30 * 60 * 1000;
+
 export default function BookTicket() {
   const isUat = process.env.UAT_ENV === "true";
   const searchParams = useSearchParams();
@@ -87,6 +89,37 @@ export default function BookTicket() {
       setLoading(false);
     }
   }, [router]);
+
+  useEffect(() => {
+    const now = Date.now();
+    let foundExisting = false;
+    const existingKeys: string[] = [];
+
+    // Check for expired data
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("re_bookingData_") && !key.endsWith("_timestamp")) {
+        const timestampKey = `${key}_timestamp`;
+        const timestamp = localStorage.getItem(timestampKey);
+        if (timestamp) {
+          if (now - parseInt(timestamp, 10) > EXPIRATION_TIME) {
+            localStorage.removeItem(key);
+            localStorage.removeItem(timestampKey);
+          } else {
+            if (!foundExisting) {
+              foundExisting = true;
+            }
+            existingKeys.push(key);
+          }
+        } else {
+          // If no timestamp, still consider it existing/pending
+          if (!foundExisting) {
+            foundExisting = true;
+          }
+          existingKeys.push(key);
+        }
+      }
+    });
+  }, []);
 
   const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
     useContext(AppContext);
@@ -268,10 +301,12 @@ export default function BookTicket() {
 
       if (!data.status?.success) {
         const apiErrorMessage =
+          data.message ||
           (data.errors?.[0]?.message
             ? data.errors?.[0]?.message
-            : data.error) || "Unknown API error";
-        const apiErrorDetails = data.errors?.[0]?.details || "";
+            : data.error) ||
+          "Unknown API error";
+        const apiErrorDetails = data.details || data.errors?.[0]?.details || "";
         const fullErrorMessage = `${apiErrorMessage}${apiErrorDetails ? ` - ${apiErrorDetails}` : ""
           }`;
 
@@ -336,7 +371,9 @@ export default function BookTicket() {
     } catch (err: any) {
       console.error("error caused", err);
 
-      if (err?.response?.data?.errors?.length) {
+      if (err?.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err?.response?.data?.errors?.length) {
         const firstError = err.response.data.errors[0];
         const message = firstError?.message || "An unknown error occurred.";
         const details = firstError?.details ? ` - ${firstError.details}` : "";
@@ -436,7 +473,13 @@ export default function BookTicket() {
     // const queryString = new URLSearchParams(mydata).toString(); // produces "id=10&date=1222"
 
     // router.push(`/tickets?${queryString}`);
-    window.history.back();
+    // window.history.back();
+    const requestId = fetchRescheduleData?.searchQuery?.requestId;
+    if (requestId) {
+      router.push(`/rescheduletickets?requestId=${requestId}`);
+    } else {
+      console.error("RequestId not found in rs_data");
+    }
   };
 
   const redirectBookDetailsPage = () => {
@@ -558,12 +601,20 @@ export default function BookTicket() {
   const [form] = Form.useForm();
 
   const handleNextClick = () => {
+    // Save apiData to localStorage when continue is clicked
+    if (apiData?.bookingId) {
+      localStorage.setItem(`re_bookingData_${apiData.bookingId}`, JSON.stringify(apiData));
+      localStorage.setItem(`re_bookingData_${apiData.bookingId}_timestamp`, Date.now().toString());
+    }
     setLoadingBtn(true);
     form
       .validateFields() // Validate all fields
       .then(() => {
         // Retrieve all form values for the current fields
         const formValues = form.getFieldsValue(true);
+
+        const bookingId = apiData?.bookingId;
+        const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
 
         if (
           formValues["gstNumber"] &&
@@ -579,7 +630,8 @@ export default function BookTicket() {
             mobile: formValues["companyPhone"],
             address: formValues["companyAddress"],
           };
-          setCookie("gst_info", JSON.stringify(gstInfo));
+          // setCookie("gst_info", JSON.stringify(gstInfo));
+          setCookie(`gst_info_${bookingId}`, JSON.stringify(gstInfo), { expires: expires });
         }
 
         updateemail(formValues["mEmail"]);
@@ -973,32 +1025,32 @@ export default function BookTicket() {
         // Set all grouped travelers and cookie
         // setBaggageinfo(baggageInfos);
 
-        const bookingId = apiData?.bookingId;
-        const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
+        // const bookingId = apiData?.bookingId;
+        // const expires = new Date(new Date().getTime() + 30 * 60 * 1000);
 
         setCookie(`baggageinfo_${bookingId}`, JSON.stringify(baggageInfosPayload), {
           expires: expires,
         });
 
-        setCookie("baggageinfo", JSON.stringify(baggageInfosPayload), {
-          expires: expires,
-        });
+        // setCookie("baggageinfo", JSON.stringify(baggageInfosPayload), {
+        //   expires: expires,
+        // });
         // setBaggageinfo(baggageInfosPayload);
         setCookie(`mealinfo_${bookingId}`, JSON.stringify(mealinfosPaylode), {
           expires: expires,
         });
 
-        setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
-          expires: expires,
-        });
+        // setCookie("mealinfo", JSON.stringify(mealinfosPaylode), {
+        //   expires: expires,
+        // });
         // setMealinfo(mealinfosPaylode)
         setCookie(`mappedSeatInfo_${bookingId}`, JSON.stringify(seatInfosPaylode), {
           expires: expires,
         });
 
-        setCookie("mappedSeatInfo", JSON.stringify(seatInfosPaylode), {
-          expires: expires,
-        });
+        // setCookie("mappedSeatInfo", JSON.stringify(seatInfosPaylode), {
+        //   expires: expires,
+        // });
         // Combine all
         const travellerInfoV: Traveller[] = [
           ...groupedAdults,
@@ -1010,9 +1062,9 @@ export default function BookTicket() {
           expires: expires,
         });
 
-        setCookie("travellerInfo", JSON.stringify(travellerInfoV), {
-          expires: expires,
-        });
+        // setCookie("travellerInfo", JSON.stringify(travellerInfoV), {
+        //   expires: expires,
+        // });
 
         // api call to save traveller info
         const saveTravellerInfo = async () => {
@@ -1148,7 +1200,8 @@ export default function BookTicket() {
   const timeLeftRef = useSessionTime(
     apiData?.conditions?.sct,
     apiData?.conditions?.st,
-    handleSessionExpire
+    handleSessionExpire,
+    tcs_id
   );
 
   function segregateTravellerInfo(travellers: any) {
