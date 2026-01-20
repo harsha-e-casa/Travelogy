@@ -598,7 +598,7 @@ export default function ByPrice({
             value={minInput}
             onChange={(e) => setMinInput(e.target.value)}
             onKeyDown={onEnterApply}
-            style={{ height: 40 }}
+            style={{ height: 30 }}
           />
         </div>
         <span style={{ color: "#6b7280", marginTop: 30 }}>to</span>
@@ -611,7 +611,7 @@ export default function ByPrice({
             value={maxInput}
             onChange={(e) => setMaxInput(e.target.value)}
             onKeyDown={onEnterApply}
-            style={{ height: 40 }}
+            style={{ height: 30 }}
           />
         </div>
       </div>

@@ -32,6 +32,7 @@ import useSessionTime from "../reschedule-book-ticket/useSessionTime";
 import { Suspense } from "react";
 
 const ReissueReviewPage = () => {
+  const EXPIRATION_TIME = 30 * 60 * 1000;
   const searchParams = useSearchParams();
   const priceId = searchParams.get("tcs_id");
   const payment = searchParams.get("payment");
@@ -93,15 +94,17 @@ const ReissueReviewPage = () => {
   const [showMore, setShowMore] = useState(true);
   const BaggageAmount = JSON.parse(
     getCookie(`baggageinfo_${urlBookingId}`) ||
-    getCookie("baggageinfo") ||
+    // getCookie("baggageinfo") ||
     "[]"
   );
   const MealAmount = JSON.parse(
-    getCookie(`mealinfo_${urlBookingId}`) || getCookie("mealinfo") || "[]"
+    getCookie(`mealinfo_${urlBookingId}`) ||
+    // getCookie("mealinfo") || 
+    "[]"
   );
   const SeatAmount = Number(
     getCookie(`seatSsr_amount_${urlBookingId}`) ||
-    getCookie("seatSsr_amount") ||
+    // getCookie("seatSsr_amount") ||
     0
   );
 
@@ -113,7 +116,8 @@ const ReissueReviewPage = () => {
   const timeLeftRef = useSessionTime(
     flightData?.conditions?.sct,
     flightData?.conditions?.st,
-    handleSessionExpire
+    handleSessionExpire,
+    priceId
   );
 
   const hasExpired = React.useRef(false);
@@ -122,11 +126,15 @@ const ReissueReviewPage = () => {
     if (typeof window !== "undefined") {
       let storedApiData = null;
       if (urlBookingId) {
-        storedApiData = localStorage.getItem(`bookingData_${urlBookingId}`);
+        const timestamp = localStorage.getItem(`re_bookingData_${urlBookingId}_timestamp`);
+        const now = Date.now();
+        if (timestamp && now - parseInt(timestamp, 10) <= EXPIRATION_TIME) {
+          storedApiData = localStorage.getItem(`re_bookingData_${urlBookingId}`);
+        }
       }
-      if (!storedApiData) {
-        storedApiData = localStorage.getItem("apiData");
-      }
+      // if (!storedApiData) {
+      //   storedApiData = localStorage.getItem("apiData");
+      // }
 
       if (storedApiData) {
         setFlightData(JSON.parse(storedApiData));
@@ -138,9 +146,9 @@ const ReissueReviewPage = () => {
     if (urlBookingId) {
       data = getCookie(`travellerInfo_${urlBookingId}`);
     }
-    if (!data) {
-      data = getCookie("travellerInfo");
-    }
+    // if (!data) {
+    //   data = getCookie("travellerInfo");
+    // }
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -156,9 +164,9 @@ const ReissueReviewPage = () => {
     if (urlBookingId) {
       data = getCookie(`email_${urlBookingId}`);
     }
-    if (!data) {
-      data = getCookie("email");
-    }
+    // if (!data) {
+    //   data = getCookie("email");
+    // }
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -174,9 +182,9 @@ const ReissueReviewPage = () => {
     if (urlBookingId) {
       data = getCookie(`number_${urlBookingId}`);
     }
-    if (!data) {
-      data = getCookie("number");
-    }
+    // if (!data) {
+    //   data = getCookie("number");
+    // }
     if (data) {
       try {
         const parsedData = JSON.parse(data);
@@ -405,9 +413,9 @@ const ReissueReviewPage = () => {
     if (urlBookingId) {
       getCookieMealData = getCookie(`mealinfo_${urlBookingId}`);
     }
-    if (!getCookieMealData) {
-      getCookieMealData = getCookie("mealinfo");
-    }
+    // if (!getCookieMealData) {
+    //   getCookieMealData = getCookie("mealinfo");
+    // }
     // const getCookieMealData = getCookie("mealinfo");
     const mealData = getCookieMealData ? JSON.parse(getCookieMealData) : [];
     setCookieMealData(mealData);
@@ -416,9 +424,9 @@ const ReissueReviewPage = () => {
     if (urlBookingId) {
       getCookiebaggageData = getCookie(`baggageinfo_${urlBookingId}`);
     }
-    if (!getCookiebaggageData) {
-      getCookiebaggageData = getCookie("baggageinfo");
-    }
+    // if (!getCookiebaggageData) {
+    //   getCookiebaggageData = getCookie("baggageinfo");
+    // }
     // const getCookiebaggageData = getCookie("baggageinfo");
     const baggageData = getCookiebaggageData
       ? JSON.parse(getCookiebaggageData)
@@ -429,9 +437,9 @@ const ReissueReviewPage = () => {
     if (urlBookingId) {
       getCookieSeatData = getCookie(`mappedSeatInfo_${urlBookingId}`);
     }
-    if (!getCookieSeatData) {
-      getCookieSeatData = getCookie("mappedSeatInfo");
-    }
+    // if (!getCookieSeatData) {
+    //   getCookieSeatData = getCookie("mappedSeatInfo");
+    // }
     // const getCookieSeatData = getCookie("mappedSeatInfo");
     const mappedSeatData = getCookieSeatData
       ? JSON.parse(getCookieSeatData)
@@ -1079,9 +1087,9 @@ const ReissueReviewPage = () => {
     if (bookingId) {
       gstInfoCookies = getCookie(`gst_info_${bookingId}`);
     }
-    if (!gstInfoCookies) {
-      gstInfoCookies = getCookie("gst_info");
-    }
+    // if (!gstInfoCookies) {
+    //   gstInfoCookies = getCookie("gst_info");
+    // }
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
     const segmentinfo =
@@ -1138,9 +1146,9 @@ const ReissueReviewPage = () => {
     if (bookingId) {
       gstInfoCookies = getCookie(`gst_info_${bookingId}`);
     }
-    if (!gstInfoCookies) {
-      gstInfoCookies = getCookie("gst_info");
-    }
+    // if (!gstInfoCookies) {
+    //   gstInfoCookies = getCookie("gst_info");
+    // }
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
     const rsData = getCookie("rs_data");
@@ -1194,9 +1202,9 @@ const ReissueReviewPage = () => {
     if (bookingId) {
       gstInfoCookies = getCookie(`gst_info_${bookingId}`);
     }
-    if (!gstInfoCookies) {
-      gstInfoCookies = getCookie("gst_info");
-    }
+    // if (!gstInfoCookies) {
+    //   gstInfoCookies = getCookie("gst_info");
+    // }
     const gstInfos = gstInfoCookies ? JSON.parse(gstInfoCookies) : {};
 
     const segmentinfo =
@@ -2056,8 +2064,7 @@ const ReissueReviewPage = () => {
                               </div>
 
                               {/* Cancellation Charges */}
-                              <div className="py-5 ">
-                                {/* Refund boxes */}
+                              {/* <div className="py-5 ">
                                 <div className="flex flex-row justify-around pr-4 mt-5 flex-wrap gap-y-5">
                                   <div className=" gap-5 justify-center">
                                     <div className="text-center pl-6">
@@ -2068,10 +2075,8 @@ const ReissueReviewPage = () => {
                                   </div>
                                 </div>
 
-                                {/* Timeline */}
                                 <div className="space-y-3 mt-3 pl-20 pr-30">
                                   <div className="relative flex items-center pl-5 justify-center">
-                                    {/* Left Icon */}
                                     <div className="absolute left-0 z-10 flex items-center h-10 justify-start">
                                       <div className="rounded-full w-6 h-6 bg-yellow-300 flex justify-center items-center text-white">
                                         <svg
@@ -2085,7 +2090,6 @@ const ReissueReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    {/* Right Icon */}
                                     <div className="absolute right-0 z-10 flex items-center h-10 justify-end">
                                       <div
                                         className="rounded-full w-6 h-6 bg-red-500 flex justify-center items-center text-white"
@@ -2102,10 +2106,8 @@ const ReissueReviewPage = () => {
                                       </div>
                                     </div>
 
-                                    {/* Horizontal Gradient Line */}
                                     <div className="absolute left-[14px] h-1 w-full bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500" />
 
-                                    {/* Vertical Dotted Line at Center */}
                                     <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 h-6 border-l border-dotted border-gray-400"></div>
                                   </div>
                                 </div>
@@ -2155,7 +2157,7 @@ const ReissueReviewPage = () => {
                                     </p>
                                   </div>
                                 </div>
-                              </div>
+                              </div> */}
 
                               {showMore && (
                                 <div
@@ -2784,6 +2786,11 @@ const ReissueReviewPage = () => {
                         </div>
                         <BookingForm
                           totalpricee={totalPriceinfo}
+                          mealinfo={MealAmount}
+                          baggageinfo={BaggageAmount}
+                          seatinfo={SeatAmount}
+                          baggageAmount={baggageTotal}
+                          mealAmount={mealTotal}
                           afsAmount={afsAmount}
                           rssrAmount={rssrAmount}
                         />

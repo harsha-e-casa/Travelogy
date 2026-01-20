@@ -9,21 +9,25 @@ interface ByPriceProps {
 }
 
 export default function BySortPrice({ sort, setSort }: ByPriceProps) {
+  // const OPTIONS = [
+  //   { label: "₹ Low–High", value: "asc" as PriceSortValue },
+  //   { label: "₹ High–Low", value: "desc" as PriceSortValue },
+  // ];
   const OPTIONS = [
-    { label: "₹ Low–High", value: "asc" as PriceSortValue },
-    { label: "₹ High–Low", value: "desc" as PriceSortValue },
+    { label: "₹ ASC", value: "asc" as PriceSortValue },
+    { label: "₹ DESC", value: "desc" as PriceSortValue },
   ];
 
   const wrapStyle: React.CSSProperties = {
     display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
+    gap: 10,
+    flexWrap: "nowrap",
     alignItems: "center",
   };
 
   const itemStyle = (active: boolean): React.CSSProperties => ({
     padding: "0 12px",
-    height: 40,
+    height: 30,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -37,6 +41,8 @@ export default function BySortPrice({ sort, setSort }: ByPriceProps) {
     userSelect: "none",
     transition: "all .15s ease",
     whiteSpace: "nowrap",
+    flex: 1,
+    marginBottom: "0"
   });
 
   const handleSelect = (value: PriceSortValue) => {
@@ -44,33 +50,31 @@ export default function BySortPrice({ sort, setSort }: ByPriceProps) {
   };
 
   return (
-    <div className="box-collapse scrollFilter">
-      <div role="radiogroup" aria-label="Sort by Price" style={wrapStyle}>
-        {OPTIONS.map((opt) => {
-          const active = sort === opt.value;
-          const id = `sort-price-${opt.value}`;
-          return (
-            <label key={opt.value} htmlFor={id} style={itemStyle(active)}>
-              <input
-                id={id}
-                type="radio"
-                name="price-sort"
-                value={opt.value}
-                checked={active}
-                onChange={() => handleSelect(opt.value)}
-                style={{
-                  position: "absolute",
-                  opacity: 0,
-                  width: 0,
-                  height: 0,
-                  pointerEvents: "none",
-                }}
-              />
-              {opt.label}
-            </label>
-          );
-        })}
-      </div>
+    <div role="radiogroup" aria-label="Sort by Price" style={wrapStyle}>
+      {OPTIONS.map((opt) => {
+        const active = sort === opt.value;
+        const id = `sort-price-${opt.value}`;
+        return (
+          <label key={opt.value} htmlFor={id} style={itemStyle(active)}>
+            <input
+              id={id}
+              type="radio"
+              name="price-sort"
+              value={opt.value}
+              checked={active}
+              onChange={() => handleSelect(opt.value)}
+              style={{
+                position: "absolute",
+                opacity: 0,
+                width: 0,
+                height: 0,
+                pointerEvents: "none",
+              }}
+            />
+            {opt.label}
+          </label>
+        );
+      })}
     </div>
   );
 }

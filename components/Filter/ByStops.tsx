@@ -69,14 +69,14 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
 
   const wrapStyle: React.CSSProperties = {
     display: "flex",
-    gap: 8,
-    flexWrap: "wrap",
+    gap: 10,
+    flexWrap: "nowrap",
     alignItems: "center",
   };
 
   const itemStyle = (active: boolean): React.CSSProperties => ({
-    width: 48,
-    height: 48,
+    padding: "0 12px",
+    height: 30,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -86,13 +86,20 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
     color: active ? "#ff7a00" : "#333",
     cursor: "pointer",
     fontWeight: 700,
+    fontSize: 13,
     userSelect: "none",
     transition: "all .15s ease",
+    flex: 1,
+    whiteSpace: "nowrap",
+    marginBottom: "0"
   });
 
   const cancelStyle: React.CSSProperties = {
     marginLeft: "auto",
-    padding: "6px 10px",
+    padding: "0 10px",
+    height: 30,
+    display: "flex",
+    alignItems: "center",
     borderRadius: 8,
     border: "1px solid #e5e7eb",
     background: "#fff",
@@ -100,7 +107,6 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
     fontSize: 12,
     fontWeight: 600,
     cursor: "pointer",
-    lineHeight: 1,
     transition: "background .15s ease,border-color .15s ease",
   };
 
@@ -113,40 +119,38 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
   };
 
   return (
-    <div className="box-collapse scrollFilter">
-      <div role="radiogroup" aria-label="Stops" style={wrapStyle}>
-        {OPTIONS.map((opt, i) => {
-          const active = stops === opt.value;
-          const id = `stops-${tabIndex ?? 0}-${i}`;
-          return (
-            <label key={opt.value} htmlFor={id} style={itemStyle(active)}>
-              <input
-                id={id}
-                type="radio"
-                name={`stops-${tabIndex}`}
-                value={opt.value}
-                checked={active}
-                onChange={() => handleSelect(opt.value)}
-                style={{
-                  position: "absolute",
-                  opacity: 0,
-                  width: 0,
-                  height: 0,
-                  pointerEvents: "none",
-                }}
-              />
-              {opt.label}
-            </label>
-          );
-        })}
+    <div role="radiogroup" aria-label="Stops" style={wrapStyle}>
+      {OPTIONS.map((opt, i) => {
+        const active = stops === opt.value;
+        const id = `stops-${tabIndex ?? 0}-${i}`;
+        return (
+          <label key={opt.value} htmlFor={id} style={itemStyle(active)}>
+            <input
+              id={id}
+              type="radio"
+              name={`stops-${tabIndex}`}
+              value={opt.value}
+              checked={active}
+              onChange={() => handleSelect(opt.value)}
+              style={{
+                position: "absolute",
+                opacity: 0,
+                width: 0,
+                height: 0,
+                pointerEvents: "none",
+              }}
+            />
+            {opt.label}
+          </label>
+        );
+      })}
 
-        {/* Cancel / Reset */}
-        {stops !== "all" && (
-          <button type="button" onClick={handleCancel} style={cancelStyle}>
-            Reset
-          </button>
-        )}
-      </div>
+      {/* Cancel / Reset */}
+      {stops !== "all" && (
+        <button type="button" onClick={handleCancel} style={cancelStyle}>
+          Reset
+        </button>
+      )}
     </div>
   );
 }

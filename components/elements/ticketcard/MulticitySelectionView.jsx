@@ -20,7 +20,7 @@ import ByFareType from "@/components/Filter/ByFareType";
 import SelectedFlightSummary from "./SelectedFlightSummary";
 import Cookies from "js-cookie";
 import BySortPrice from "@/components/Filter/BySortPrice";
-import { ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import { DownOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
 import QuoteShareModal from "@/components/elements/QuoteShareModal";
 import { postData } from "@/services/NetworkAdapter";
 import { message } from "antd";
@@ -253,9 +253,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
 
     // Flight Number
     if (!ignoreKeys.includes("flightNumber") && filter.flightNumberSearch) {
-      const passes = ticket.sI.some((segment) =>
-        segment.fD.fN.toLowerCase().includes(filter.flightNumberSearch.toLowerCase())
-      );
+      const passes = ticket.sI.some((segment) => {
+        const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+        return flightCode.toLowerCase().includes(filter.flightNumberSearch.toLowerCase());
+      });
       if (!passes) return false;
     }
 
@@ -276,6 +277,22 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
         2: "Partial Refundable",
       };
 
+      // 1. Identify ALL possible Fare Types and Fare Identifiers
+      const allFareTypes = new Set();
+      const allFareIds = new Set();
+      flightsForSegment.forEach(ticket => {
+        (ticket.totalPriceList || []).forEach(priceInfo => {
+          // Fare Types
+          Object.values(priceInfo.fd || {}).forEach(pax => {
+            const code = String(pax?.rT);
+            const label = FARE_TYPE_LABEL[code] ?? code;
+            if (label) allFareTypes.add(label);
+          });
+          // Fare Identifiers
+          if (priceInfo.fareIdentifier) allFareIds.add(priceInfo.fareIdentifier);
+        });
+      });
+
       // --- Fare Types Counts ---
       const fareTypeCounts = {};
       flightsForSegment.forEach(ticket => {
@@ -293,9 +310,9 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
           });
         }
       });
-      const uniqueFareTypesWithCounts = Object.keys(fareTypeCounts).map(label => ({
+      const uniqueFareTypesWithCounts = Array.from(allFareTypes).map(label => ({
         name: label,
-        count: fareTypeCounts[label]
+        count: fareTypeCounts[label] || 0
       }));
       setUniqueFareTypes(uniqueFareTypesWithCounts);
 
@@ -313,9 +330,9 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
           });
         }
       });
-      const uniqueFaresWithCounts = Object.keys(fareIdCounts).map(fare => ({
+      const uniqueFaresWithCounts = Array.from(allFareIds).map(fare => ({
         name: fare,
-        count: fareIdCounts[fare]
+        count: fareIdCounts[fare] || 0
       }));
       setUniqueFareIdentifiers(uniqueFaresWithCounts);
 
@@ -424,11 +441,10 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
 
     if (filter.flightNumberSearch) {
       filteredData = filteredData.filter((ticket) => {
-        return ticket.sI.some((segment) =>
-          segment.fD.fN
-            .toLowerCase()
-            .includes(filter.flightNumberSearch.toLowerCase())
-        );
+        return ticket.sI.some((segment) => {
+          const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+          return flightCode.toLowerCase().includes(filter.flightNumberSearch.toLowerCase());
+        });
       });
     }
 
@@ -690,255 +706,212 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
     const renderFilters = (tabIndex) => (
       <>
         {isFilterApplied(tabIndex) && (
-          <div className="sticky top-36 lg:top-48 z-50 sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
-            <div className="box-filters-sidebar">
-              <div className="block-filter border-1">
-                <div className="d-flex align-items-center justify-content-between">
-                  <h6 className="text-lg-bold filter-sty neutral-1000">Applied Filters <span className="text-sm font-normal text-gray-500">({getActiveFilterCount(tabIndex)})</span></h6>
-                  <Button
-                    type="link"
-                    onClick={() => handleResetAllFilters(tabIndex)}
-                    style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
-                  >
-                    Reset All
-                  </Button>
-                </div>
-              </div>
-            </div>
+          <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+            <span className="text-black font-bold text-sm">Applied Filters <span className="text-gray-500 font-normal">({getActiveFilterCount(tabIndex)})</span> :</span>
+            <span
+              className="cursor-pointer hover:text-orange-500 font-medium text-orange-500 text-sm"
+              style={{ color: "#f97316" }}
+              onClick={() => handleResetAllFilters(tabIndex)}
+            >
+              Reset All
+            </span>
           </div>
         )}
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Filter Price{" "}
-              </h6>
-              <ByPrice
-                key={`price-${tabIndex}`}
-                priceRange={
-                  Array.isArray(filters[tabIndex]?.priceRange)
-                    ? filters[tabIndex].priceRange
-                    : [0, 100000000]
-                }
-                setPriceRange={(newRange) => {
-                  setFilters((prev) => {
-                    const next = [...prev];
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Filter Price</div>
+          <ByPrice
+            key={`price-${tabIndex}`}
+            priceRange={
+              Array.isArray(filters[tabIndex]?.priceRange)
+                ? filters[tabIndex].priceRange
+                : [0, 100000000]
+            }
+            setPriceRange={(newRange) => {
+              setFilters((prev) => {
+                const next = [...prev];
+                next[tabIndex] = {
+                  ...next[tabIndex],
+                  priceRange: newRange,
+                };
+                return next;
+              });
+            }}
+            minPriceRange={
+              Number.isFinite(filters[tabIndex]?.minPriceRange)
+                ? filters[tabIndex].minPriceRange
+                : 0
+            }
+            maxPriceRange={
+              Number.isFinite(filters[tabIndex]?.maxPriceRange)
+                ? filters[tabIndex].maxPriceRange
+                : 100000000
+            }
+          />
+        </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100 flex items-center justify-between gap-3">
+          <div className="text-black font-bold text-sm whitespace-nowrap">Sort by Price</div>
+          <div className="flex-1 min-w-0">
+            <BySortPrice
+              sort={filters[tabIndex]?.priceSort || "asc"}
+              setSort={(validSort) => {
+                setFilters((prev) => {
+                  const next = [...prev];
+                  if (next[tabIndex]) {
                     next[tabIndex] = {
                       ...next[tabIndex],
-                      priceRange: newRange,
+                      priceSort: validSort,
                     };
-                    return next;
-                  });
-                }}
-                minPriceRange={
-                  Number.isFinite(filters[tabIndex]?.minPriceRange)
-                    ? filters[tabIndex].minPriceRange
-                    : 0
-                }
-                maxPriceRange={
-                  Number.isFinite(filters[tabIndex]?.maxPriceRange)
-                    ? filters[tabIndex].maxPriceRange
-                    : 100000000
-                }
-              />
-            </div>
+                  }
+                  return next;
+                });
+              }}
+            />
           </div>
         </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Sort by Price
-              </h6>
-              <BySortPrice
-                sort={filters[tabIndex]?.priceSort || "asc"}
-                setSort={(validSort) => {
-                  setFilters((prev) => {
-                    const next = [...prev];
-                    if (next[tabIndex]) {
-                      next[tabIndex] = {
-                        ...next[tabIndex],
-                        priceSort: validSort,
-                      };
-                    }
-                    return next;
-                  });
-                }}
-              />
-            </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100 flex items-center justify-between gap-3">
+          <div className="text-black font-bold text-sm whitespace-nowrap">Stops</div>
+          <div className="flex-1 min-w-0">
+            <ByStops
+              key={`stops-${tabIndex}`}
+              stops={filters[tabIndex]?.stops}
+              setStops={(newStops) => {
+                setFilters((prevFilters) => {
+                  const newFilters = [...prevFilters];
+                  newFilters[tabIndex] = {
+                    ...newFilters[tabIndex],
+                    stops: newStops,
+                  };
+                  return newFilters;
+                });
+              }}
+              tabIndex={tabIndex}
+            />
           </div>
         </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Stops
-              </h6>
-              <ByStops
-                key={`stops-${tabIndex}`}
-                stops={filters[tabIndex]?.stops}
-                setStops={(newStops) => {
-                  setFilters((prevFilters) => {
-                    const newFilters = [...prevFilters];
-                    newFilters[tabIndex] = {
-                      ...newFilters[tabIndex],
-                      stops: newStops,
-                    };
-                    return newFilters;
-                  });
-                }}
-                tabIndex={tabIndex}
-              />
-            </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Departure Time</div>
+          <ByDepartureTime
+            key={`departureTime-${tabIndex}`}
+            departureTime={filters[tabIndex]?.departureTime}
+            setDepartureTime={(newDepartureTime) => {
+              setFilters((prevFilters) => {
+                const newFilters = [...prevFilters];
+                newFilters[tabIndex] = {
+                  ...newFilters[tabIndex],
+                  departureTime: newDepartureTime,
+                };
+                return newFilters;
+              });
+            }}
+            tabIndex={tabIndex}
+          />
+        </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Arrival Time</div>
+          <ByArrivalTime
+            key={`arrivalTime-${tabIndex}`}
+            arrivalTime={filters[tabIndex]?.arrivalTime}
+            setArrivalTime={(newArrivalTime) => {
+              setFilters((prevFilters) => {
+                const newFilters = [...prevFilters];
+                newFilters[tabIndex] = {
+                  ...newFilters[tabIndex],
+                  arrivalTime: newArrivalTime,
+                };
+                return newFilters;
+              });
+            }}
+            tabIndex={tabIndex}
+          />
+        </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Airlines</div>
+          <div className="box-collapse scrollFilter">
+            <ByAirline
+              key={`airline-${tabIndex}`}
+              uniqueAirlines={[
+                ...new Set(
+                  pair.flights.map(
+                    (ticket) => ticket.sI[0].fD.aI.name
+                  ) || []
+                ),
+              ]}
+              selectedAirlines={filters[tabIndex]?.selectedAirlines}
+              setSelectedAirlines={(newAirlines) => {
+                setFilters((prevFilters) => {
+                  const newFilters = [...prevFilters];
+                  newFilters[tabIndex] = {
+                    ...newFilters[tabIndex],
+                    selectedAirlines: newAirlines,
+                  };
+                  return newFilters;
+                });
+              }}
+            />
           </div>
         </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Departure Time
-              </h6>
-              <ByDepartureTime
-                key={`departureTime-${tabIndex}`}
-                departureTime={filters[tabIndex]?.departureTime}
-                setDepartureTime={(newDepartureTime) => {
-                  setFilters((prevFilters) => {
-                    const newFilters = [...prevFilters];
-                    newFilters[tabIndex] = {
-                      ...newFilters[tabIndex],
-                      departureTime: newDepartureTime,
-                    };
-                    return newFilters;
-                  });
-                }}
-                tabIndex={tabIndex}
-              />
-            </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Fare Identifier</div>
+          <div className="box-collapse scrollFilter">
+            <ByFareIdentifier
+              key={`fare-${tabIndex}`}
+              fareIdentifiers={filters[tabIndex]?.fareIdentifiers}
+              setFareIdentifiers={(newFareIdentifiers) => {
+                setFilters((prevFilters) => {
+                  const newFilters = [...prevFilters];
+                  newFilters[tabIndex] = {
+                    ...newFilters[tabIndex],
+                    fareIdentifiers: newFareIdentifiers,
+                  };
+                  return newFilters;
+                });
+              }}
+              options={uniqueFareIdentifiers}
+            />
           </div>
         </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Arrival Time
-              </h6>
-              <ByArrivalTime
-                key={`arrivalTime-${tabIndex}`}
-                arrivalTime={filters[tabIndex]?.arrivalTime}
-                setArrivalTime={(newArrivalTime) => {
-                  setFilters((prevFilters) => {
-                    const newFilters = [...prevFilters];
-                    newFilters[tabIndex] = {
-                      ...newFilters[tabIndex],
-                      arrivalTime: newArrivalTime,
-                    };
-                    return newFilters;
-                  });
-                }}
-                tabIndex={tabIndex}
-              />
-            </div>
-          </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Flight Number</div>
+          <ByAirlineSearch
+            flightNumberSearch={filters[tabIndex]?.flightNumberSearch}
+            setFlightNumberSearch={(newFlightNumberSearch) => {
+              setFilters((prevFilters) => {
+                const newFilters = [...prevFilters];
+                newFilters[tabIndex] = {
+                  ...newFilters[tabIndex],
+                  flightNumberSearch: newFlightNumberSearch,
+                };
+                return newFilters;
+              });
+            }}
+          />
         </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Airlines
-              </h6>
-              <div className="box-collapse scrollFilter">
-                <ByAirline
-                  key={`airline-${tabIndex}`}
-                  uniqueAirlines={[
-                    ...new Set(
-                      pair.flights.map(
-                        (ticket) => ticket.sI[0].fD.aI.name
-                      ) || []
-                    ),
-                  ]}
-                  selectedAirlines={filters[tabIndex]?.selectedAirlines}
-                  setSelectedAirlines={(newAirlines) => {
-                    setFilters((prevFilters) => {
-                      const newFilters = [...prevFilters];
-                      newFilters[tabIndex] = {
-                        ...newFilters[tabIndex],
-                        selectedAirlines: newAirlines,
-                      };
-                      return newFilters;
-                    });
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Fare Identifier
-              </h6>
-              <ByFareIdentifier
-                key={`fare-${tabIndex}`}
-                fareIdentifiers={filters[tabIndex]?.fareIdentifiers}
-                setFareIdentifiers={(newFareIdentifiers) => {
-                  setFilters((prevFilters) => {
-                    const newFilters = [...prevFilters];
-                    newFilters[tabIndex] = {
-                      ...newFilters[tabIndex],
-                      fareIdentifiers: newFareIdentifiers,
-                    };
-                    return newFilters;
-                  });
-                }}
-                options={uniqueFareIdentifiers}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Flight Number
-              </h6>
-              <ByAirlineSearch
-                flightNumberSearch={filters[tabIndex]?.flightNumberSearch}
-                setFlightNumberSearch={(newFlightNumberSearch) => {
-                  setFilters((prevFilters) => {
-                    const newFilters = [...prevFilters];
-                    newFilters[tabIndex] = {
-                      ...newFilters[tabIndex],
-                      flightNumberSearch: newFlightNumberSearch,
-                    };
-                    return newFilters;
-                  });
-                }}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="sidebar-left border-1 background-body">
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <h6 className="text-lg-bold filter-sty neutral-1000">
-                Fare Type
-              </h6>
-              <ByFareType
-                selectedFareTypes={filters[tabIndex]?.selectedFareTypes}
-                setSelectedFareTypes={(newFareTypes) => {
-                  setFilters((prevFilters) => {
-                    const newFilters = [...prevFilters];
-                    newFilters[tabIndex] = {
-                      ...newFilters[tabIndex],
-                      selectedFareTypes: newFareTypes,
-                    };
-                    return newFilters;
-                  });
-                }}
-                options={uniqueFareTypes}
-              />
-            </div>
+
+        <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <div className="text-black font-bold text-sm mb-2">Fare Type</div>
+          <div className="box-collapse scrollFilter">
+            <ByFareType
+              selectedFareTypes={filters[tabIndex]?.selectedFareTypes}
+              setSelectedFareTypes={(newFareTypes) => {
+                setFilters((prevFilters) => {
+                  const newFilters = [...prevFilters];
+                  newFilters[tabIndex] = {
+                    ...newFilters[tabIndex],
+                    selectedFareTypes: newFareTypes,
+                  };
+                  return newFilters;
+                });
+              }}
+              options={uniqueFareTypes}
+            />
           </div>
         </div>
       </>
@@ -992,16 +965,17 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
               {currentFilter && renderFilters(tabIndex)}
             </div>
             <div className="col-xl-9 col-12">
-              <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
+              <div className="sticky top-36 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-1 rounded shadow-sm border border-gray-100">
                 {!shareMode ? (
                   <div className="flex items-center gap-2 text-gray-600 text-sm">
                     <ShareAltOutlined />
                     <span className="font-semibold">Share By :</span>
                     {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
                     <span
-                      className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                      className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                       onClick={() => setShareMode(true)}
                     >
+                      <MailOutlined />
                       Email
                     </span>
                     {/* </span> | */}

@@ -42,7 +42,7 @@ import "./customeHeader_1.css";
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
 import { Dayjs } from "dayjs";
-import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined } from "@ant-design/icons";
+import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Dropdown, Space, Drawer, Button, Modal, Input, message } from "antd";
 import { tree } from "next/dist/build/templates/app-page";
@@ -525,127 +525,97 @@ export default function Tickets() {
   const renderFilters = () => (
     <>
       {isFilterApplied && (
-        <div className="sticky top-36 lg:top-48 z-50 sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <div className="d-flex align-items-center justify-content-between">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Applied Filters <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
-                <Button
-                  type="link"
-                  onClick={handleResetAllFilters}
-                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
-                >
-                  Reset All
-                </Button>
-              </div>
-            </div>
-          </div>
+        <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <span className="text-black font-bold text-sm">Applied Filters <span className="text-gray-500 font-normal">({activeFilterCount})</span> :</span>
+          <span
+            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500 text-sm"
+            style={{ color: "#f97316" }}
+            onClick={handleResetAllFilters}
+          >
+            Reset All
+          </span>
         </div>
       )}
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Filter Price </h6>
-            <ByPrice
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              minPriceRange={minPriceRange}
-              maxPriceRange={maxPriceRange}
-            />
-          </div>
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Filter Price</div>
+        <ByPrice
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          minPriceRange={minPriceRange}
+          maxPriceRange={maxPriceRange}
+        />
+      </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100 flex items-center justify-between gap-3">
+        <div className="text-black font-bold text-sm whitespace-nowrap">Sort by Price</div>
+        <div className="flex-1 min-w-0">
+          <BySortPrice sort={priceSort} setSort={setPriceSort} />
         </div>
       </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Sort by Price</h6>
-            <BySortPrice sort={priceSort} setSort={setPriceSort} />
-          </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100 flex items-center justify-between gap-3">
+        <div className="text-black font-bold text-sm whitespace-nowrap">Stops</div>
+        <div className="flex-1 min-w-0">
+          <ByStops stops={stops} setStops={setStops} />
         </div>
       </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Stops</h6>
-            <ByStops stops={stops} setStops={setStops} />
-          </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Departure Time</div>
+        <ByDepartureTime
+          departureTime={departureTime}
+          setDepartureTime={setDepartureTime}
+        />
+      </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Arrival Time</div>
+        <ByArrivalTime
+          arrivalTime={arrivalTime}
+          setArrivalTime={setArrivalTime}
+        />
+      </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Airlines</div>
+        <div className="box-collapse scrollFilter">
+          <ByAirline
+            uniqueAirlines={[
+              ...new Set(
+                (flightData?.ONWARD || flightData?.COMBO || [])
+                  ?.map((ticket: any) => ticket.sI[0].fD.aI.name) || []
+              ),
+            ]}
+            selectedAirlines={selectedAirlines}
+            setSelectedAirlines={setSelectedAirlines}
+          />
         </div>
       </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Departure Time</h6>
-            <ByDepartureTime
-              departureTime={departureTime}
-              setDepartureTime={setDepartureTime}
-            />
-          </div>
-        </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Fare Identifier</div>
+        <ByFareIdentifier
+          fareIdentifiers={fareIdentifiers}
+          setFareIdentifiers={setFareIdentifiers}
+          options={uniqueFareIdentifiers}
+        />
       </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Arrival Time</h6>
-            <ByArrivalTime
-              arrivalTime={arrivalTime}
-              setArrivalTime={setArrivalTime}
-            />
-          </div>
-        </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Flight Number</div>
+        <ByAirlineSearch
+          flightNumberSearch={flightNumberSearch}
+          setFlightNumberSearch={setFlightNumberSearch}
+        />
       </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Airlines</h6>
-            <div className="box-collapse scrollFilter">
-              <ByAirline
-                uniqueAirlines={[
-                  ...new Set(
-                    (flightData?.ONWARD || flightData?.COMBO || [])
-                      ?.map((ticket: any) => ticket.sI[0].fD.aI.name) || []
-                  ),
-                ]}
-                selectedAirlines={selectedAirlines}
-                setSelectedAirlines={setSelectedAirlines}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Fare Identifier</h6>
-            <ByFareIdentifier
-              fareIdentifiers={fareIdentifiers}
-              setFareIdentifiers={setFareIdentifiers}
-              options={uniqueFareIdentifiers}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Flight Number</h6>
-            <ByAirlineSearch
-              flightNumberSearch={flightNumberSearch}
-              setFlightNumberSearch={setFlightNumberSearch}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">Fare Type</h6>
-            <ByFareType
-              selectedFareTypes={selectedFareTypes}
-              setSelectedFareTypes={setSelectedFareTypes}
-              options={uniqueFareTypes}
-            />
-          </div>
-        </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Fare Type</div>
+        <ByFareType
+          selectedFareTypes={selectedFareTypes}
+          setSelectedFareTypes={setSelectedFareTypes}
+          options={uniqueFareTypes}
+        />
       </div>
     </>
   );
@@ -879,30 +849,79 @@ export default function Tickets() {
     }
   }, [flightData]);
 
-  useEffect(() => {
-    if (flightData && (flightData.ONWARD || flightData.COMBO)) {
-      const dataToCheck = flightData.ONWARD || flightData.COMBO;
-      const allFareIdentifiers = dataToCheck
-        .flatMap((ticket: any) =>
-          ticket.totalPriceList.map(
-            (priceInfo: any) => priceInfo.fareIdentifier
-          )
-        )
-        .filter(Boolean);
-
-      const fareCounts = allFareIdentifiers.reduce((acc: any, fare: string) => {
-        acc[fare] = (acc[fare] || 0) + 1;
-        return acc;
-      }, {});
-
-      const uniqueFaresWithCounts = Object.keys(fareCounts).map((fare) => ({
-        name: fare,
-        count: fareCounts[fare],
-      }));
-
-      setUniqueFareIdentifiers(uniqueFaresWithCounts);
+  // Helper function to check if a ticket passes filters, ignoring specified filters
+  const checkPassesFilters = (ticket: any, ignoreFilters: string[] = []) => {
+    // 1. Strict Fare Type Filter
+    if (!ignoreFilters.includes("fareType") && selectedFareTypes.length > 0) {
+      const typeMap: { [key: number]: string } = {
+        0: "Non Refundable",
+        1: "Refundable",
+        2: "Partial Refundable",
+      };
+      const passesFareType = ticket.totalPriceList.some((priceInfo: any) =>
+        Object.keys(priceInfo.fd).some((paxType) => {
+          const fareType = typeMap[priceInfo.fd[paxType]?.rT || 0];
+          return selectedFareTypes.includes(fareType);
+        })
+      );
+      if (!passesFareType) return false;
     }
-  }, [flightData]);
+
+    // Fare Identifier Filter
+    if (!ignoreFilters.includes("fareIdentifier") && fareIdentifiers.length > 0) {
+      const passesFareId = ticket.totalPriceList.some((priceInfo: any) =>
+        fareIdentifiers.includes(priceInfo.fareIdentifier)
+      );
+      if (!passesFareId) return false;
+    }
+
+    // 2. Price Range Filter
+    if (!ignoreFilters.includes("price")) {
+      const price = getTicketPrice(ticket);
+      if (price < priceRange[0] || price > priceRange[1]) return false;
+    }
+
+    // Stops Filter
+    if (!ignoreFilters.includes("stops") && stops !== "all") {
+      const stopCount = ticket.sI.length;
+      if (stops === "non-stop" && stopCount !== 1) return false;
+      if (stops === "1-stop" && stopCount !== 2) return false;
+      if (stops === "2-stops" && stopCount <= 2) return false;
+    }
+
+    // Departure Time Filter
+    if (!ignoreFilters.includes("departureTime") && departureTime !== "all") {
+      const departureHour = new Date(ticket.sI[0].dt).getHours();
+      if (departureTime === "early-morning" && !(departureHour >= 0 && departureHour < 6)) return false;
+      if (departureTime === "morning" && !(departureHour >= 6 && departureHour < 12)) return false;
+      if (departureTime === "afternoon" && !(departureHour >= 12 && departureHour < 18)) return false;
+      if (departureTime === "evening" && !(departureHour >= 18 && departureHour < 24)) return false;
+    }
+
+    // Airline Filter
+    if (!ignoreFilters.includes("airline") && selectedAirlines.length > 0) {
+      if (!selectedAirlines.includes(ticket.sI[0].fD.aI.name)) return false;
+    }
+
+    // Arrival Time Filter
+    if (!ignoreFilters.includes("arrivalTime") && arrivalTime !== "all") {
+      const arrivalHour = new Date(ticket.sI[ticket.sI.length - 1].at).getHours();
+      if (arrivalTime === "early-morning" && !(arrivalHour >= 0 && arrivalHour < 6)) return false;
+      if (arrivalTime === "morning" && !(arrivalHour >= 6 && arrivalHour < 12)) return false;
+      if (arrivalTime === "afternoon" && !(arrivalHour >= 12 && arrivalHour < 18)) return false;
+      if (arrivalTime === "evening" && !(arrivalHour >= 18 && arrivalHour < 24)) return false;
+    }
+
+    if (!ignoreFilters.includes("flightNumber") && flightNumberSearch) {
+      const passesFlightNumber = ticket.sI.some((segment: any) => {
+        const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+        return flightCode.toLowerCase().includes(flightNumberSearch.toLowerCase());
+      });
+      if (!passesFlightNumber) return false;
+    }
+
+    return true;
+  };
 
   const getTicketPrice = (ticket: any) => {
     const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
@@ -969,160 +988,91 @@ export default function Tickets() {
   }, [priceSort, selectedFareTypes]);
 
 
-
-  // Helper function to check if a ticket passes filters, ignoring specified filters
-  const checkPassesFilters = (ticket: any, ignoreFilters: string[] = []) => {
-    // 1. Strict Fare Type Filter
-    if (!ignoreFilters.includes("fareType") && selectedFareTypes.length > 0) {
-      const typeMap: { [key: number]: string } = {
-        0: "Non Refundable",
-        1: "Refundable",
-        2: "Partial Refundable",
-      };
-      const passesFareType = ticket.totalPriceList.some((priceInfo: any) =>
-        Object.keys(priceInfo.fd).some((paxType) => {
-          const fareType = typeMap[priceInfo.fd[paxType]?.rT || 0];
-          return selectedFareTypes.includes(fareType);
-        })
-      );
-      if (!passesFareType) return false;
-    }
-
-    // Fare Identifier Filter
-    if (!ignoreFilters.includes("fareIdentifier") && fareIdentifiers.length > 0) {
-      const passesFareId = ticket.totalPriceList.some((priceInfo: any) =>
-        fareIdentifiers.includes(priceInfo.fareIdentifier)
-      );
-      if (!passesFareId) return false;
-    }
-
-    // 2. Price Range Filter
-    if (!ignoreFilters.includes("price")) {
-      const price = getTicketPrice(ticket);
-      if (price < priceRange[0] || price > priceRange[1]) return false;
-    }
-
-    // Stops Filter
-    if (!ignoreFilters.includes("stops") && stops !== "all") {
-      const stopCount = ticket.sI.length;
-      if (stops === "non-stop" && stopCount !== 1) return false;
-      if (stops === "1-stop" && stopCount !== 2) return false;
-      if (stops === "2-stops" && stopCount <= 2) return false;
-    }
-
-    // Departure Time Filter
-    if (!ignoreFilters.includes("departureTime") && departureTime !== "all") {
-      const departureHour = new Date(ticket.sI[0].dt).getHours();
-      if (departureTime === "early-morning" && !(departureHour >= 0 && departureHour < 6)) return false;
-      if (departureTime === "morning" && !(departureHour >= 6 && departureHour < 12)) return false;
-      if (departureTime === "afternoon" && !(departureHour >= 12 && departureHour < 18)) return false;
-      if (departureTime === "evening" && !(departureHour >= 18 && departureHour < 24)) return false;
-    }
-
-    // Airline Filter
-    if (!ignoreFilters.includes("airline") && selectedAirlines.length > 0) {
-      if (!selectedAirlines.includes(ticket.sI[0].fD.aI.name)) return false;
-    }
-
-    // Arrival Time Filter
-    if (!ignoreFilters.includes("arrivalTime") && arrivalTime !== "all") {
-      const arrivalHour = new Date(ticket.sI[ticket.sI.length - 1].at).getHours();
-      if (arrivalTime === "early-morning" && !(arrivalHour >= 0 && arrivalHour < 6)) return false;
-      if (arrivalTime === "morning" && !(arrivalHour >= 6 && arrivalHour < 12)) return false;
-      if (arrivalTime === "afternoon" && !(arrivalHour >= 12 && arrivalHour < 18)) return false;
-      if (arrivalTime === "evening" && !(arrivalHour >= 18 && arrivalHour < 24)) return false;
-    }
-
-    if (!ignoreFilters.includes("flightNumber") && flightNumberSearch) {
-      const passesFlightNumber = ticket.sI.some((segment: any) =>
-        segment.fD.fN.toLowerCase().includes(flightNumberSearch.toLowerCase())
-      );
-      if (!passesFlightNumber) return false;
-    }
-
-    return true;
-  };
-
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       const dataToCheck = (flightData.ONWARD || flightData.COMBO) || [];
 
-      // Calculate Fare Type Counts (Ignore Fare Type filter)
-      const fareTypesMap: Record<string, number> = {};
       const typeMap: any = {
         0: "Non Refundable",
         1: "Refundable",
         2: "Partial Refundable",
       };
 
+      // 1. Identify ALL possible Fare Types and Fare Identifiers from the raw data
+      const allFareTypes = new Set<string>();
+      const allFareIds = new Set<string>();
+
+      dataToCheck.forEach((ticket: any) => {
+        ticket.totalPriceList.forEach((priceInfo: any) => {
+          // Fare Types
+          Object.keys(priceInfo.fd).forEach((paxType) => {
+            const fType = typeMap[priceInfo.fd[paxType]?.rT || 0];
+            if (fType) allFareTypes.add(fType);
+          });
+          // Fare Identifiers
+          if (priceInfo.fareIdentifier) allFareIds.add(priceInfo.fareIdentifier);
+        });
+      });
+
+      // 2. Calculate Counts for Fare Types (applying other filters)
+      const fareTypesMap: Record<string, number> = {};
       dataToCheck.forEach((ticket: any) => {
         if (checkPassesFilters(ticket, ["fareType"])) {
-          // Extract fare types from this ticket
           const ticketFareTypes = new Set<string>();
           ticket.totalPriceList.forEach((priceInfo: any) => {
             Object.keys(priceInfo.fd).forEach((paxType) => {
-              const rT = priceInfo.fd[paxType]?.rT || 0;
-              const typeName = typeMap[rT];
-              if (typeName) ticketFareTypes.add(typeName);
+              const fType = typeMap[priceInfo.fd[paxType]?.rT || 0];
+              if (fType) ticketFareTypes.add(fType);
             });
           });
-
           ticketFareTypes.forEach(ft => {
             fareTypesMap[ft] = (fareTypesMap[ft] || 0) + 1;
           });
         }
       });
 
-      const uniqueFaresWithCounts = Object.keys(fareTypesMap).map(fareType => ({
-        name: fareType,
-        count: fareTypesMap[fareType]
+      const uniqueFaresWithCounts = Array.from(allFareTypes).map((fare) => ({
+        name: fare,
+        count: fareTypesMap[fare] || 0,
       }));
       setUniqueFareTypes(uniqueFaresWithCounts);
 
 
-      // Calculate Fare Identifier Counts (Ignore Fare Identifier filter)
+      // 3. Calculate Counts for Fare Identifiers (applying other filters)
       const fareIdMap: Record<string, number> = {};
-
       dataToCheck.forEach((ticket: any) => {
         if (checkPassesFilters(ticket, ["fareIdentifier"])) {
           const ticketFareIds = new Set<string>();
           ticket.totalPriceList.forEach((priceInfo: any) => {
             if (priceInfo.fareIdentifier) ticketFareIds.add(priceInfo.fareIdentifier);
           });
-
           ticketFareIds.forEach(fid => {
             fareIdMap[fid] = (fareIdMap[fid] || 0) + 1;
           });
         }
       });
 
-      const uniqueIdsWithCounts = Object.keys(fareIdMap).map(fid => ({
+      const uniqueIdsWithCounts = Array.from(allFareIds).map(fid => ({
         name: fid,
-        count: fareIdMap[fid]
+        count: fareIdMap[fid] || 0
       }));
 
-      // Verify ByFareIdentifier props structure. Assuming it takes list of strings or objects.
-      // Based on previous code flow, it was `uniqueFareIdentifiers`.
-      // Let's assume it wants { option: string, count: number } or similar.
-      // Looking at usage: `options={uniqueFareIdentifiers}`. 
-      // Standard generic filter usually takes objects.
-      // I will stick to { option: fid, count } or similar if I can confirm.
-      // But wait, the original code for fare type used { name: ..., count: ... }.
-      // Identify ByFareIdentifier expectations?
-      // Let's assume generic object is fine.
       setUniqueFareIdentifiers(uniqueIdsWithCounts);
 
     }
   }, [
     flightData,
-    priceRange,
     stops,
     departureTime,
-    selectedAirlines,
     arrivalTime,
+    selectedAirlines,
     fareIdentifiers, // dependency for other group
     flightNumberSearch,
     selectedFareTypes, // dependency for other group
+    priceSort,
+    priceRange,
+    minPriceRange,
+    maxPriceRange
   ]);
 
   const applyFilters = () => {
@@ -1229,12 +1179,13 @@ export default function Tickets() {
       }
 
       if (flightNumberSearch) {
+        console.log("flightNumberSearchflightNumberSearch ==> ", flightNumberSearch)
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.sI.some((segment: any) =>
-            segment.fD.fN
-              .toLowerCase()
-              .includes(flightNumberSearch.toLowerCase())
-          );
+          return ticket.sI.some((segment: any) => {
+            const flightCode = `${segment.fD.aI.code} ${segment.fD.fN}`;
+            console.log("flightCodeflightCodeflightCode ==> ", flightCode)
+            return flightCode.toLowerCase().includes(flightNumberSearch.toLowerCase());
+          });
         });
       }
 
@@ -3364,57 +3315,11 @@ export default function Tickets() {
             </div>
           </Drawer>
 
-          {/* <TravellerForm
-            showTraveller={showTraveller}
-            adult={adultCount}
-            opentrvForm={openTraveller}
-            clickMinus={clickMinus}
-            clickPlus={clickPlus}
-            clickMinusChildren={clickMinusChildren}
-            clickPlusChildren={clickPlusChildren}
-            countchildren={countChildren}
-            countinfant={countInfant}
-            handleChangeClass={handleChangeClass}
-            travellerClass={srx_cabinType}
-            clickMinusinfant={clickMinusinfant}
-            clickPlusinfant={clickPlusinfant}
-            totalPassenderCount={totalPassenderCount}
-            // specificStyle={{ top: "23%", right: "9%" }}
-            // specificStyle={"pos-t-r"}
-            specificStyle={`${getTravellerClass()} `}
-            selectedPassengerType={srx_fareType}
-          /> */}
-
-          {/* Block Banner Tickets */}
-          {/* <section className="section-box box-logos-2 box-logos-tickets background-body">
-            <div className="container">
-              <div className="box-swiper pt-0">
-                <div className="swiper-container swiper-group-payment-10 wow fadeInUp">
-                  <SwiperGroupPayment10Slider />
-                </div>
-              </div>
-            </div>
-          </section> */}
-
           {/* Ticket List Section */}
-
           <section className="box-section block-content-tourlist background-body">
-            <div className="container-fluid" style={{ width: "100%" }}>
+            <div className="container">
               <div className="box-content-main">
                 <div className="content-right border ">
-                  {/* <div className="box-filters mb-25 pb-5 border-bottom border-1">
-                    <SortTicketsFilter
-                      sortCriteria={sortCriteria}
-                      handleSortChange={handleSortChange}
-                      itemsPerPage={itemsPerPage}
-                      handleItemsPerPageChange={handleItemsPerPageChange}
-                      handleClearFilters={handleClearFilters}
-                      startItemIndex={startItemIndex}
-                      endItemIndex={endItemIndex}
-                      sortedTickets={sortedTickets}
-                    />
-                  </div> */}
-
                   {loading && (
                     <div
                       className="box-list-flights box-list-flights-2"
@@ -3524,15 +3429,16 @@ export default function Tickets() {
                               <div className="col-xl-9 col-12">
                                 {(searchedTripType?.trim().toLowerCase() === "one-way" ||
                                   searchedTripType?.trim().toLowerCase() === "round-trip") && (
-                                    <div className="sticky top-36 lg:top-48 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-36 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />
                                           <span className="font-semibold">Share By :</span>
                                           <span
-                                            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                            className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                                             onClick={() => setShareMode(true)}
                                           >
+                                            <MailOutlined />
                                             Email
                                           </span>
                                         </div>
@@ -3647,37 +3553,6 @@ export default function Tickets() {
                       );
                     })()}
 
-                  {/* {(srx_tripType && srx_tripType.trim().toLowerCase() === "one-way") ? (
-                    <>
-                      {flightData && flightData.ONWARD && flightData.ONWARD.length > 0 ?
-                        (<><div className="box-grid-tours">
-                          <div className="row">
-                            <div className="box-list-flights box-list-flights-2">
-                              {flightData.ONWARD.map((ticket: any) => (
-                                <React.Fragment key={ticket.id}>
-                                  <TicketCard1 ticket={ticket} />
-                                </React.Fragment>
-                              ))
-                              }
-                            </div>
-                          </div>
-                        </div>
-                          <ByPagination
-                            handlePreviousPage={handlePreviousPage}
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            handleNextPage={handleNextPage}
-                            handlePageChange={handlePageChange}
-                          />
-                        </>) : (<>
-                          {loading === false && <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                            <p className="text-xl font-semibold">No result found</p>
-                            <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
-                          </div>}
-                      </>)}
-                    </>
-                  ) : null } */}
-
                   {/* domestic - ONWARD RETURN - ticketCard */}
                   {searchedTripType &&
                     searchedTripType.trim().toLowerCase() === "round-trip" &&
@@ -3760,199 +3635,7 @@ export default function Tickets() {
                       </div>
                     </div>
                   )}
-                  {/* {error == "" && (
-                                        <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                                            <p className="text-xl font-semibold">No result found</p>
-                                            <p className="text-sm mt-2 text-gray-400">
-                                                Try adjusting your filters or search criteria.
-                                            </p>
-                                        </div>
-                                    )} */}
-
-                  {/* {srx_tripType && srx_tripType.trim().toLowerCase() === "round-trip" ? (
-                    <>
-                      {flightData && flightData.ONWARD && flightData.ONWARD.length > 0 && flightData.RETURN && flightData.RETURN.length > 0 ?
-                        (<>
-                          <div className="box-grid-tours">
-                            <div className="row">
-                              <p>ONWARD</p>
-                              <div className="box-list-flights box-list-flights-2">
-                                {flightData.ONWARD.map((ticket: any) => (
-                                  <React.Fragment key={ticket.id}>
-                                    <DomesticRoundTripTicketCard ticket={ticket} markup={markup} />
-                                  </React.Fragment>
-                                ))
-                                }
-                              </div>
-                              <p>RETURN</p>
-                              <div className="box-list-flights box-list-flights-2">
-                                {flightData.RETURN.map((ticket: any) => (
-                                  <React.Fragment key={ticket.id}>
-                                    <DomesticRoundTripTicketCard ticket={ticket} markup={markup} />
-                                  </React.Fragment>
-                                ))
-                                }
-                              </div>
-                            </div>
-                          </div>
-                          <ByPagination
-                            handlePreviousPage={handlePreviousPage}
-                            totalPages={totalPages}
-                            currentPage={currentPage}
-                            handleNextPage={handleNextPage}
-                            handlePageChange={handlePageChange}
-                          />
-                        </>) : (<>
-                          {loading === false && <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                            <p className="text-xl font-semibold">No result found</p>
-                            <p className="text-sm mt-2 text-gray-400">Try adjusting your filters or search criteria.</p>
-                          </div>}
-                      </>)}
-                    </>
-                  ) : null } */}
                 </div>
-
-                {/* Left Sidebar Filters */}
-                {/* {(
-                  (srx_tripType?.trim().toLowerCase() === "round-trip" && flightData?.COMBO?.length > 0) ||
-                  (srx_tripType?.trim().toLowerCase() === "multi-city" && flightData?.COMBO?.length > 0)) && (
-                    <div className="content-left order-lg-first d1-class">
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Filter Price{" "}
-                            </h6>
-                            <ByPrice
-                              priceRange={priceRange}
-                              setPriceRange={setPriceRange}
-                              minPriceRange={minPriceRange}
-                              maxPriceRange={maxPriceRange}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Stops
-                            </h6>
-                            <ByStops stops={stops} setStops={setStops} />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Price
-                            </h6>
-                            <BySortPrice
-                              sort={priceSort}
-                              setSort={setPriceSort}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Departure Time
-                            </h6>
-                            <ByDepartureTime
-                              departureTime={departureTime}
-                              setDepartureTime={setDepartureTime}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Arrival Time
-                            </h6>
-                            <ByArrivalTime
-                              arrivalTime={arrivalTime}
-                              setArrivalTime={setArrivalTime}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Airlines
-                            </h6>
-                            <div className="box-collapse scrollFilter">
-                              <ByAirline
-                                uniqueAirlines={[
-                                  ...new Set(
-                                    (
-                                      flightData?.ONWARD ||
-                                      flightData?.COMBO ||
-                                      []
-                                    ).map(
-                                      (ticket: any) => ticket.sI[0].fD.aI.name
-                                    )
-                                  ),
-                                ]}
-                                selectedAirlines={selectedAirlines}
-                                setSelectedAirlines={setSelectedAirlines}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Fare Identifier
-                            </h6>
-                            <ByFareIdentifier
-                              fareIdentifiers={fareIdentifiers}
-                              setFareIdentifiers={setFareIdentifiers}
-                              options={uniqueFareIdentifiers}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Flight Number
-                            </h6>
-                            <ByAirlineSearch
-                              flightNumberSearch={flightNumberSearch}
-                              setFlightNumberSearch={setFlightNumberSearch}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="sidebar-left border-1 background-body">
-                        <div className="box-filters-sidebar">
-                          <div className="border-1">
-                            <h6 className="text-lg-bold filter-sty neutral-1000">
-                              Fare Type
-                            </h6>
-                            <ByFareType
-                              selectedFareTypes={selectedFareTypes}
-                              setSelectedFareTypes={setSelectedFareTypes}
-                              options={uniqueFareTypes}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
               </div>
             </div>
           </section>

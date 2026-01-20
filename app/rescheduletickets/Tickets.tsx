@@ -47,7 +47,7 @@ import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
 import ByFareType from "@/components/Filter/ByFareType";
 import BySortPrice from "@/components/Filter/BySortPrice";
-import { ShareAltOutlined, CloseOutlined, FilterOutlined } from "@ant-design/icons";
+import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
 import { message, Drawer, Button } from "antd";
 import TicketCardMobile from "@/components/elements/ticketcard/TicketCardMobile";
 
@@ -924,145 +924,103 @@ export default function Tickets() {
   const renderFilters = () => (
     <>
       {isFilterApplied && (
-        <div className="sticky top-36 md:top-32 lg:top-32 min-[1274px]:top-40 xl:top-40 z-50 sidebar-left border-1 background-body mb-10" style={{ height: "60px", paddingTop: "15px" }}>
-          <div className="box-filters-sidebar">
-            <div className="block-filter border-1">
-              <div className="d-flex align-items-center justify-content-between">
-                <h6 className="text-lg-bold filter-sty neutral-1000">Applied Filters <span className="text-sm font-normal text-gray-500">({activeFilterCount})</span></h6>
-                <Button
-                  type="link"
-                  onClick={handleResetAllFilters}
-                  style={{ padding: 0, height: "auto", color: "#ffa726", fontWeight: "bold", marginBottom: "20px" }}
-                >
-                  Reset All
-                </Button>
-              </div>
-            </div>
-          </div>
+        <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+          <span className="text-black font-bold text-sm">Applied Filters <span className="text-gray-500 font-normal">({activeFilterCount})</span> :</span>
+          <span
+            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500 text-sm"
+            style={{ color: "#f97316" }}
+            onClick={handleResetAllFilters}
+          >
+            Reset All
+          </span>
         </div>
       )}
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Filter Price{" "}
-            </h6>
-            <ByPrice
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              minPriceRange={minPriceRange}
-              maxPriceRange={maxPriceRange}
-            />
-          </div>
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Filter Price</div>
+        <ByPrice
+          priceRange={priceRange}
+          setPriceRange={setPriceRange}
+          minPriceRange={minPriceRange}
+          maxPriceRange={maxPriceRange}
+        />
+      </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100 flex items-center justify-between gap-3">
+        <div className="text-black font-bold text-sm whitespace-nowrap">Sort by Price</div>
+        <div className="flex-1 min-w-0">
+          <BySortPrice sort={priceSort} setSort={setPriceSort} />
         </div>
       </div>
 
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Sort by Price
-            </h6>
-            <BySortPrice sort={priceSort} setSort={setPriceSort} />
-          </div>
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100 flex items-center justify-between gap-3">
+        <div className="text-black font-bold text-sm whitespace-nowrap">Stops</div>
+        <div className="flex-1 min-w-0">
+          <ByStops stops={stops} setStops={setStops} />
         </div>
       </div>
 
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Stops
-            </h6>
-            <ByStops stops={stops} setStops={setStops} />
-          </div>
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Departure Time</div>
+        <ByDepartureTime
+          departureTime={departureTime}
+          setDepartureTime={setDepartureTime}
+        />
+      </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Arrival Time</div>
+        <ByArrivalTime
+          arrivalTime={arrivalTime}
+          setArrivalTime={setArrivalTime}
+        />
+      </div>
+
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Airlines</div>
+        <div className="box-collapse scrollFilter">
+          <ByAirline
+            uniqueAirlines={[
+              ...new Set(
+                (
+                  flightData?.ONWARD ||
+                  flightData?.COMBO ||
+                  []
+                ).map((ticket: any) => ticket.sI[0].fD.aI.name)
+              ),
+            ]}
+            selectedAirlines={selectedAirlines}
+            setSelectedAirlines={setSelectedAirlines}
+          />
         </div>
       </div>
 
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Departure Time
-            </h6>
-            <ByDepartureTime
-              departureTime={departureTime}
-              setDepartureTime={setDepartureTime}
-            />
-          </div>
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Fare Identifier</div>
+        <div className="box-collapse scrollFilter">
+          <ByFareIdentifier
+            fareIdentifiers={fareIdentifiers}
+            setFareIdentifiers={setFareIdentifiers}
+            options={uniqueFareIdentifiers}
+          />
         </div>
       </div>
 
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Arrival Time
-            </h6>
-            <ByArrivalTime
-              arrivalTime={arrivalTime}
-              setArrivalTime={setArrivalTime}
-            />
-          </div>
-        </div>
-      </div>
+      {/* <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Flight Number</div>
+        <ByAirlineSearch
+          flightNumberSearch={flightNumberSearch}
+          setFlightNumberSearch={setFlightNumberSearch}
+        />
+      </div> */}
 
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Airlines
-            </h6>
-            <div className="box-collapse scrollFilter">
-              <ByAirline
-                uniqueAirlines={[
-                  ...new Set(
-                    (
-                      flightData?.ONWARD ||
-                      flightData?.COMBO ||
-                      []
-                    ).map((ticket: any) => ticket.sI[0].fD.aI.name)
-                  ),
-                ]}
-                selectedAirlines={selectedAirlines}
-                setSelectedAirlines={setSelectedAirlines}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Fare Identifier
-            </h6>
-            <div className="box-collapse scrollFilter">
-              <ByFareIdentifier
-                fareIdentifiers={fareIdentifiers}
-                setFareIdentifiers={setFareIdentifiers}
-                options={uniqueFareIdentifiers}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="sidebar-left border-1 background-body">
-        <div className="box-filters-sidebar">
-          <div className="block-filter border-1">
-            <h6 className="text-lg-bold filter-sty neutral-1000">
-              Fare Type
-            </h6>
-            <div className="box-collapse scrollFilter">
-              <ByFareType
-                selectedFareTypes={selectedFareTypes}
-                setSelectedFareTypes={setSelectedFareTypes}
-                options={uniqueFareTypes}
-              />
-            </div>
-          </div>
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className="text-black font-bold text-sm mb-2">Fare Type</div>
+        <div className="box-collapse scrollFilter">
+          <ByFareType
+            selectedFareTypes={selectedFareTypes}
+            setSelectedFareTypes={setSelectedFareTypes}
+            options={uniqueFareTypes}
+          />
         </div>
       </div>
     </>
@@ -1288,15 +1246,16 @@ export default function Tickets() {
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
-                                    <div className="sticky top-36 md:top-32 lg:top-32 min-[1274px]:top-40 xl:top-40 z-10 mb-3 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100">
+                                    <div className="sticky top-36 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />
                                           <span className="font-semibold">Share By :</span>
                                           <span
-                                            className="cursor-pointer hover:text-orange-500 font-medium text-orange-500"
+                                            className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                                             onClick={() => setShareMode(true)}
                                           >
+                                            <MailOutlined />
                                             Email
                                           </span>
                                         </div>
