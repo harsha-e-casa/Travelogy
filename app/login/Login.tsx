@@ -265,8 +265,8 @@ export default function Login() {
               />
             </div>
             <div className="login-text-content p-20">
-              <h2>Login & Let Your</h2>
-              <h2>Dreams Take Your Flight</h2>
+              <h2 style={{ lineHeight: "1.15", marginBottom: "5px" }}>Login & Let Your</h2>
+              <h2 style={{ lineHeight: "1.15", marginTop: "0" }}>Dreams Take Your Flight</h2>
             </div>
           </div>
 

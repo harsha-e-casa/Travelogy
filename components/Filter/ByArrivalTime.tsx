@@ -87,10 +87,10 @@ export default function ByArrivalTime({
   };
 
   const TIME_OPTIONS = [
-    { value: "early-morning", label: "12am – 6am", img: IMAGES.earlyMorning },
-    { value: "morning", label: "6am – 12pm", img: IMAGES.morning },
-    { value: "afternoon", label: "12pm – 6pm", img: IMAGES.afternoon },
-    { value: "evening", label: "6pm – 12am", img: IMAGES.evening },
+    { value: "early-morning", label: "00\n-\n06", img: IMAGES.earlyMorning },
+    { value: "morning", label: "06\n-\n12", img: IMAGES.morning },
+    { value: "afternoon", label: "12\n-\n18", img: IMAGES.afternoon },
+    { value: "evening", label: "18\n-\n00", img: IMAGES.evening },
   ];
 
   const name = `arrivalTime-${tabIndex}`;
@@ -119,39 +119,39 @@ export default function ByArrivalTime({
   };
   const cardsWrap: React.CSSProperties = {
     display: "flex",
-    gap: 12,
+    gap: 8,
     flexWrap: "wrap",
     alignItems: "stretch",
     justifyContent: "center",
   };
   const cardStyle = (active: boolean): React.CSSProperties => ({
-    width: 45,
-    height: 100,
+    width: 48,
+    height: 90,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: 10,
-    borderRadius: 10,
-    border: active ? "2px solid #ff7a00" : "1px solid #e5e7eb",
-    background: active ? "rgba(255,122,0,0.10)" : "#fff",
-    boxShadow: active ? "0 4px 10px rgba(255,122,0,0.15)" : "none",
+    justifyContent: "center",
+    padding: "8px 4px",
+    borderRadius: 12,
+    border: active ? "1px solid #ff7a00" : "1px solid #e5e7eb",
+    background: active ? "rgba(255,122,0,0.05)" : "#fff",
+    color: active ? "#ff7a00" : "#333",
     cursor: "pointer",
     userSelect: "none",
     transition: "all .15s ease",
   });
   const imgStyle: React.CSSProperties = {
-    width: "100%",
-    // height: 56,
-    objectFit: "cover",
-    borderRadius: 6,
+    width: 32,
+    height: 32,
+    objectFit: "contain",
+    marginBottom: 6,
   };
   const labelStyle: React.CSSProperties = {
-    fontSize: 12,
-    fontWeight: 700,
-    color: "#333",
+    fontSize: 11,
+    fontWeight: 600,
     textAlign: "center",
-    lineHeight: 1.2,
+    lineHeight: 1.3,
+    whiteSpace: "pre-line",
   };
   const hiddenInput: React.CSSProperties = {
     position: "absolute",
