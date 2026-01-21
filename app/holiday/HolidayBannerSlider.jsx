@@ -21,11 +21,11 @@ const Slider = () => {
       return {
         mainHeight: 450,
         smallCardWidth: 150,
-        smallCardHeight: 170,
+        smallCardHeight: 180,
         smallCardStartX: width * 0.30, // Right-aligned positioning
         smallCardSpacing: 180,
-        smallCardY: 320,
-        smallCardAnimateY: 320,
+        smallCardY: 300,
+        smallCardAnimateY: 300,
         borderRadius: 10,
         FontSize: 12,
       };
@@ -44,12 +44,12 @@ const Slider = () => {
     } else { // Desktop
       return {
         mainHeight: 650,
-        smallCardWidth: 220,
-        smallCardHeight: 360,
+        smallCardWidth: 180,
+        smallCardHeight: 250,
         smallCardStartX: width * 0.55,
-        smallCardSpacing: 250,
-        smallCardY: 370,
-        smallCardAnimateY: 370,
+        smallCardSpacing: 240,
+        smallCardY: 470,
+        smallCardAnimateY: 470,
         borderRadius: 15,
         FontSize: 10,
       };
@@ -68,7 +68,25 @@ const Slider = () => {
       borderRadius: 0,
     });
 
+    // Initial text animation for the first slide - Sync all elements and smoothen
+    gsap.fromTo(cardsRef.current[active].querySelectorAll('.anim-text'),
+      { yPercent: 100, opacity: 0 },
+      {
+        yPercent: 0,
+        opacity: 1,
+        duration: 1.2,
+        stagger: 0,
+        ease: 'power2.in',
+      }
+    );
+
     rest.forEach((i, index) => {
+      // Ensure small card text is visible
+      gsap.set(cardsRef.current[i].querySelectorAll('.anim-text'), {
+        opacity: 1,
+        yPercent: 0
+      });
+
       gsap.set(cardsRef.current[i], {
         x: values.smallCardStartX + index * values.smallCardSpacing,
         y: values.smallCardY,
@@ -97,24 +115,25 @@ const Slider = () => {
         width: "100%",
         height: values.mainHeight,
         borderRadius: 0,
-        zIndex: 1,
+        zIndex: 2, // Slightly higher than background
         duration: 0.8,
-        ease: 'power2.inOut',
+        ease: 'power2.in',
       });
 
       // Text Animations based on Screen Size
       const isMobile = screenWidth <= 480;
       const isTablet = screenWidth <= 768;
 
+      // Sync all text elements to come at the same time with smooth transition
       gsap.fromTo(cardsRef.current[active].querySelectorAll('.anim-text'),
-        { y: 30, opacity: 0 },
+        { yPercent: 100, opacity: 0 },
         {
-          y: 0,
+          yPercent: 0,
           opacity: 1,
-          duration: 0.7,
-          stagger: 0.1,
-          ease: 'power2.out',
-          delay: 0.2,
+          duration: 1.2,
+          stagger: 0,
+          ease: 'power2.in',
+          clearProps: "transform",
         }
       );
 
@@ -130,15 +149,25 @@ const Slider = () => {
             duration: 0.5,
             ease: 'sine.inOut',
           });
-        } else {
-          // Reset the card that was just main to the back of the queue
+          // Keep the previous card in background and static during transition
+          gsap.set(cardsRef.current[prev], {
+            zIndex: 1,
+            x: 0,
+            y: 0,
+            width: "100%",
+            height: values.mainHeight,
+            borderRadius: 0
+          });
+
+          // Snap the card that was just main to the back of the queue AFTER it's covered
           gsap.set(cardsRef.current[prev], {
             x: values.smallCardStartX + (rest.length - 1) * values.smallCardSpacing,
             y: values.smallCardY,
             width: values.smallCardWidth,
             height: values.smallCardHeight,
             borderRadius: values.borderRadius,
-            zIndex: 10 + (rest.length - 1)
+            zIndex: 10 + (rest.length - 1),
+            delay: 0.8 // Matches active card expansion duration
           });
         }
       });
@@ -176,7 +205,7 @@ const Slider = () => {
           >
             <div className="card-content">
               <div className="card_sub">
-                <div className="content-start"></div>
+                <div className="content-start anim-text"></div>
                 <div className="content-place anim-text">{item.place}</div>
                 <div className="content-title-1 anim-text">{item.title}</div>
                 <div className="content-title-2 anim-text">{item.title2}</div>

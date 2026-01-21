@@ -543,6 +543,14 @@
 
 .content-place {
   font-weight: 500;
+  opacity: 0;
+  /* Hidden by default, animated in by GSAP */
+  will-change: transform, opacity;
+}
+
+.anim-text {
+  opacity: 0;
+  will-change: transform, opacity;
 }
 
 /* Main slider (active card) text sizing */
@@ -578,8 +586,9 @@
   /* Main slider gets larger padding */
   .card[style*="width: 100%"] .card-content,
   .card[style*="width: 100%"]>.card-content {
-    padding-left: 40px;
-    padding-top: 40px;
+    padding-left: 30px;
+    padding-top: 220px;
+    align-items: flex-start;
   }
 }
 
@@ -588,14 +597,14 @@
 
   .card[style*="width: 220px"] .content-place,
   .card[style*="width: 180px"] .content-place {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .card[style*="width: 220px"] .content-title-1,
   .card[style*="width: 220px"] .content-title-2,
   .card[style*="width: 180px"] .content-title-1,
   .card[style*="width: 180px"] .content-title-2 {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
     line-height: 1.1;
   }
 
@@ -603,7 +612,7 @@
   .card[style*="width: 220px"] .card-content,
   .card[style*="width: 180px"] .card-content {
     padding-left: 15px;
-    padding-top: 15px;
+    padding-top: 100px;
   }
 }
 
@@ -635,7 +644,7 @@
   .card[style*="width: 150px"] .content-place,
   .card[style*="width: 115px"] .content-place,
   .card[style*="width: 110px"] .content-place {
-    font-size: 0.6rem;
+    font-size: 1rem;
   }
 
   .card[style*="width: 150px"] .content-title-1,
@@ -644,7 +653,7 @@
   .card[style*="width: 115px"] .content-title-2,
   .card[style*="width: 110px"] .content-title-1,
   .card[style*="width: 110px"] .content-title-2 {
-    font-size: 0.8rem;
+    font-size: 1.2rem;
     line-height: 1;
   }
 
@@ -653,7 +662,7 @@
   .card[style*="width: 115px"] .card-content,
   .card[style*="width: 110px"] .card-content {
     padding-left: 10px;
-    padding-top: 10px;
+    padding-top: 40px;
   }
 
   /* Mobile main slider padding */
