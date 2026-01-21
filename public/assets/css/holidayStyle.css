@@ -30,7 +30,7 @@
   }
 
   .container_sub {
-    width: 99%;
+    width: 99% !important;
   }
 }
 
@@ -913,8 +913,8 @@
   }
 
   .container_sub {
-    width: 100%;
-    margin: 0px;
+    width: 100% !important;
+    margin: 0px !important;
   }
 }
 
