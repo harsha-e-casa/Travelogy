@@ -36,7 +36,7 @@ export default function YourJourney() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: cardStyles }} />
-      <section className="section-box box-your-journey background-body">
+      <section className="section-box box-your-journey background-body tabadjust">
         <div className="container">
           <div className="row align-items-center mt-20 tabadjust">
             {/* Left side - Catchy content */}
