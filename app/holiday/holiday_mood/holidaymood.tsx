@@ -650,7 +650,7 @@ export default function Holidaymood() {
       <section>
         <div className="class_main_slider_de1 container shadow-700 mb-30  box-top-category">
           <div className="main_d2l_section p-8 pt-4">
-            <h2 className="text-xl font-bold text-gray-900 tracking-wide">
+            <h2 className="text-4xl font-bold tracking-wide">
               Best Destinations
             </h2>
             <div className="mt-12 mx-auto grid gap-6 sm:gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:max-w-none">
