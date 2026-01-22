@@ -43,6 +43,7 @@ import {
   Form,
   Input,
   InputNumber,
+  Modal,
   Row,
   Select,
 } from "antd";
@@ -77,6 +78,9 @@ export default function BookTicket() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [hasExistingData, setHasExistingData] = useState(false);
+  const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
+    useContext(AppContext);
 
   const requestId = searchParams.get("requestId");
 
@@ -91,38 +95,85 @@ export default function BookTicket() {
   }, [router]);
 
   useEffect(() => {
-    const now = Date.now();
-    let foundExisting = false;
-    const existingKeys: string[] = [];
+    if (typeof window !== "undefined") {
+      const now = Date.now();
+      let foundExisting = false;
+      const existingKeys: string[] = [];
 
-    // Check for expired data
-    Object.keys(localStorage).forEach((key) => {
-      if (key.startsWith("re_bookingData_") && !key.endsWith("_timestamp")) {
-        const timestampKey = `${key}_timestamp`;
-        const timestamp = localStorage.getItem(timestampKey);
-        if (timestamp) {
-          if (now - parseInt(timestamp, 10) > EXPIRATION_TIME) {
-            localStorage.removeItem(key);
-            localStorage.removeItem(timestampKey);
+      // Check for expired data
+      Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("re_bookingData_") && !key.endsWith("_timestamp")) {
+          const timestampKey = `${key}_timestamp`;
+          const timestamp = localStorage.getItem(timestampKey);
+          if (timestamp) {
+            if (now - parseInt(timestamp, 10) > EXPIRATION_TIME) {
+              localStorage.removeItem(key);
+              localStorage.removeItem(timestampKey);
+            } else {
+              if (!foundExisting) {
+                foundExisting = true;
+              }
+              existingKeys.push(key);
+            }
           } else {
+            // If no timestamp, still consider it existing/pending
             if (!foundExisting) {
               foundExisting = true;
             }
             existingKeys.push(key);
           }
-        } else {
-          // If no timestamp, still consider it existing/pending
-          if (!foundExisting) {
-            foundExisting = true;
-          }
-          existingKeys.push(key);
         }
+      });
+
+      if (existingKeys.length > 0) {
+        setHasExistingData(true);
+
+        Modal.confirm({
+          title: "Booking in Progress",
+          content: "Previous booking under progress. Do you want to continue locally or clear and start fresh?",
+          okText: "Go Back",
+          cancelText: "Clear and Proceed",
+          onOk: () => {
+            router.push("/rescheduletickets");
+          },
+          onCancel: () => {
+            // Clear existing data and proceed
+            existingKeys.forEach((key) => {
+              const id = key.replace("re_bookingData_", "");
+              if (id) {
+                // 1. Clear LocalStorage
+                localStorage.removeItem(key);
+                localStorage.removeItem(`${key}_timestamp`);
+
+                // 2. Clear Cookies
+                removeCookie(`travellerInfo_${id}`);
+                removeCookie(`baggageinfo_${id}`);
+                removeCookie(`mealinfo_${id}`);
+                removeCookie(`gst_info_${id}`);
+                removeCookie(`seatSsr_amount_${id}`);
+
+                // Contact info keys variations
+                removeCookie(`email_${id}`);
+                removeCookie(`phone_${id}`);
+                removeCookie(`number_${id}`);
+
+                // Seat maps
+                for (let i = 1; i <= 9; i++) {
+                  removeCookie(`adult_seat_map-${i}_${id}`);
+                  removeCookie(`child_seat_map-${i}_${id}`);
+                }
+              }
+            });
+            // Remove global markers if any
+            localStorage.removeItem("migration_source_booking_id");
+            setHasExistingData(false);
+          },
+        });
       }
-    });
+    }
   }, []);
 
-  const { getCookie, setCookie, updateemail, updatephone, removeCookie } =
-    useContext(AppContext);
+
 
   interface FlightSegment {
     id: string;
@@ -324,6 +375,76 @@ export default function BookTicket() {
 
       const firstTrip = data.tripInfos?.[0];
       setBookingId(data.bookingId);
+      const newBookingId = data.bookingId;
+
+      if (typeof window !== "undefined" && newBookingId) {
+        const storageKeys = Object.keys(localStorage);
+        const previousDataKey = storageKeys.find(
+          (key) =>
+            key.startsWith("re_bookingData_") &&
+            !key.endsWith("_timestamp") &&
+            key !== `re_bookingData_${newBookingId}`
+        );
+
+        if (previousDataKey) {
+          const oldId = previousDataKey.replace("re_bookingData_", "");
+          console.log(`Migrating data from ${oldId} to ${newBookingId}`);
+
+          // Migrate LocalStorage
+          const oldData = localStorage.getItem(previousDataKey);
+          const oldTimestamp = localStorage.getItem(`${previousDataKey}_timestamp`);
+
+          if (oldData) {
+            localStorage.setItem(`re_bookingData_${newBookingId}`, oldData);
+            localStorage.removeItem(previousDataKey);
+          }
+          if (oldTimestamp) {
+            localStorage.setItem(
+              `re_bookingData_${newBookingId}_timestamp`,
+              oldTimestamp
+            );
+            localStorage.removeItem(`${previousDataKey}_timestamp`);
+          }
+
+          // Migrate Cookies
+          const suffixes = [
+            "travellerInfo",
+            "baggageinfo",
+            "mealinfo",
+            "gst_info",
+            "seatSsr_amount",
+            "email",
+            "phone",
+            "number",
+          ];
+
+          suffixes.forEach((suffix) => {
+            const oldVal = getCookie(`${suffix}_${oldId}`);
+            if (oldVal) {
+              setCookie(`${suffix}_${newBookingId}`, oldVal);
+              removeCookie(`${suffix}_${oldId}`);
+            }
+          });
+
+          // Migrate Seat Maps
+          for (let i = 1; i <= 9; i++) {
+            const adultSeat = getCookie(`adult_seat_map-${i}_${oldId}`);
+            if (adultSeat) {
+              setCookie(`adult_seat_map-${i}_${newBookingId}`, adultSeat);
+              removeCookie(`adult_seat_map-${i}_${oldId}`);
+            }
+            const childSeat = getCookie(`child_seat_map-${i}_${oldId}`);
+            if (childSeat) {
+              setCookie(`child_seat_map-${i}_${newBookingId}`, childSeat);
+              removeCookie(`child_seat_map-${i}_${oldId}`);
+            }
+          }
+
+          setHasExistingData(false);
+          // Force reload or state update might be needed if components rely on cookies immediately, 
+          // but since we updated them, subsequent reads should work.
+        }
+      }
 
       const segs = firstTrip?.sI;
       const id = segs?.[0]?.id.trim();
