@@ -1494,47 +1494,33 @@ const Alldetails = ({ totalpricee }) => {
                   </p>
                 </div>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 sm:mt-0">
                   {departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && (
                     <div>
                       {bookingDetails?.order?.status === "SUCCESS" && (
-                        <div className="flex flex-row gap-3">
-                          <button
-                            style={{
-                              paddingTop: "5px",
-                              paddingBottom: "5px",
-                              paddingLeft: "10px",
-                              paddingRight: "10px",
-                            }}
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                          <AmendmentPopup
+                            className="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded px-4 py-2 text-sm font-medium transition w-full sm:w-auto"
                             onClick={handleCancellation}
-                          >
-                            <AmendmentPopup
-                              bookingId={bookingId}
-                              bookingDetails={bookingDetails}
-                              onSubmit={(
+                            bookingId={bookingId}
+                            bookingDetails={bookingDetails}
+                            onSubmit={(
+                              bookingId,
+                              amendmentType,
+                              remarks,
+                              callback
+                            ) =>
+                              sumbitAmendmentapi(
                                 bookingId,
                                 amendmentType,
                                 remarks,
-                                callback
-                              ) =>
-                                sumbitAmendmentapi(
-                                  bookingId,
-                                  amendmentType,
-                                  remarks,
-                                  (data) => {
-                                    callback?.(data);
-                                    setShowTravellerModal(true);
-                                  }
-                                )
-                              }
-                            />
-                          </button>
+                                (data) => {
+                                  callback?.(data);
+                                  setShowTravellerModal(true);
+                                }
+                              )
+                            }
+                          />
                         </div>
                       )}
                     </div>
@@ -1545,16 +1531,9 @@ const Alldetails = ({ totalpricee }) => {
                       {!reStatus && isNoPrintVisible && (
                         <div className={isNoPrintVisible ? "" : "no-print"}>
                           {bookingDetails?.order?.status === "SUCCESS" && (
-                            <div
-                              style={{
-                                paddingTop: "5px",
-                                paddingBottom: "5px",
-                                paddingLeft: "10px",
-                                paddingRight: "10px",
-                              }}
-                            >
+                            <div className="w-full sm:w-auto">
                               <button
-                                className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                                className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto mt-2 sm:mt-0"
                                 onClick={openReIssueModal}
                               >
                                 Reschedule
@@ -1811,17 +1790,9 @@ const Alldetails = ({ totalpricee }) => {
                   {isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
                       {bookingDetails?.order?.status === "SUCCESS" ? (
-                        <div
-                          className="relative inline-block"
-                          style={{
-                            paddingTop: "5px",
-                            paddingBottom: "5px",
-                            paddingLeft: "10px",
-                            paddingRight: "10px",
-                          }}
-                        >
+                        <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                             disabled={!bookingDetails}
                             onClick={() => {
                               printTicket(bookingDetails, markup);
@@ -1830,7 +1801,7 @@ const Alldetails = ({ totalpricee }) => {
                             Print Ticket
                           </button>
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100 ml-2"
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                             disabled={!bookingDetails}
                             onClick={handleOpenEmailModal}
                           >
@@ -1842,17 +1813,9 @@ const Alldetails = ({ totalpricee }) => {
                         bookingDetails?.order?.status === "UNCONFIRMED" ||
                         bookingDetails?.order?.status === "CANCELLED" ? (
                         <>
-                          <div
-                            className="relative inline-block"
-                            style={{
-                              paddingTop: "5px",
-                              paddingBottom: "5px",
-                              paddingLeft: "10px",
-                              paddingRight: "10px",
-                            }}
-                          >
+                          <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
                               onClick={() => {
                                 printTicket(bookingDetails, markup);
@@ -1861,7 +1824,7 @@ const Alldetails = ({ totalpricee }) => {
                               Print Ticket
                             </button>
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100 ml-2"
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
                               onClick={handleOpenEmailModal}
                             >
@@ -1871,33 +1834,23 @@ const Alldetails = ({ totalpricee }) => {
                         </>
                       ) : (
                         <div
-                          className="flex flex-row gap-3"
-                          style={{ alignItems: "center" }}
+                          className="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto mt-2 sm:mt-0"
                         >
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                             onClick={handleUnHold}
                           >
                             Unhold
                           </button>
                           <button
-                            className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                             onClick={() => setPaymentModel(true)}
                           >
                             Pay Now
                           </button>
-                          <div
-                            className="relative inline-block"
-                            style={{
-                              paddingTop: "5px",
-                              paddingBottom: "5px",
-                              paddingLeft: "10px",
-                              paddingRight: "10px",
-                            }}
-                          >
-
+                          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100"
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
                               onClick={() => {
                                 printTicket(bookingDetails, markup);
@@ -1906,7 +1859,7 @@ const Alldetails = ({ totalpricee }) => {
                               Print Ticket
                             </button>
                             <button
-                              className="border border-grey rounded px-2 sm:px-4 py-2 hover:bg-gray-100 ml-2"
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
                               onClick={handleOpenEmailModal}
                             >

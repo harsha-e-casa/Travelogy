@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './TripPlans.css';
 
-export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
+export const TripPlans = ({ selectedPlan, setSelectedPlan }) => {
   // Set initial selected plan to 'Round Trip'
 
   const handlePlanChange = (e) => {
@@ -10,7 +10,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
   };
 
   return (
-    <div className="plans mt-35 mb_8 ml_10 trip_radio">
+    <div className="plans mt-35 mb_8 trip_radio">
       {/* One Way Plan */}
       <label className="plan basic-plan" htmlFor="basic">
         <input
@@ -46,7 +46,7 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
       </label>
 
       {/* Multi City Plan */}
-     <label className="plan complete-plan" htmlFor="complete2">
+      <label className="plan complete-plan" htmlFor="complete2">
         <input
           type="radio"
           id="complete2"
@@ -67,8 +67,8 @@ export const TripPlans = ({selectedPlan, setSelectedPlan}) => {
 };
 
 
-export const TripPlansHotel = ({selectedPlan, setSelectedPlan}) => {
- 
+export const TripPlansHotel = ({ selectedPlan, setSelectedPlan }) => {
+
   // Set initial selected plan to 'Round Trip'
 
   const handlePlanChange = (e) => {
@@ -113,7 +113,7 @@ export const TripPlansHotel = ({selectedPlan, setSelectedPlan}) => {
       </label>
 
       {/* Multi City Plan */}
-    {/*  <label className="plan complete-plan" htmlFor="complete2">
+      {/*  <label className="plan complete-plan" htmlFor="complete2">
         <input
           type="radio"
           id="complete2"

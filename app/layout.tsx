@@ -7,13 +7,13 @@ import { AppContextProvider } from '../util/AppContext';
 
 
 const manrope_init = Manrope({
-    weight: ['300', '400', '500', '600', '700','800'],
+    weight: ['300', '400', '500', '600', '700', '800'],
     subsets: ['latin'],
     variable: "--manrope",
     display: 'swap',
 })
 const merienda_init = Merienda({
-    weight: ['300', '400', '500', '600', '700','800'],
+    weight: ['300', '400', '500', '600', '700', '800'],
     subsets: ['latin'],
     variable: "--merienda",
     display: 'swap',
@@ -33,7 +33,7 @@ export default function RootLayout({
         <html lang="en" className={`${manrope_init.variable} ${merienda_init.variable}`}>
             <body>
                 <AppContextProvider>
-                 {children}
+                    {children}
                 </AppContextProvider>
             </body>
         </html>

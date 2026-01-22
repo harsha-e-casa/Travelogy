@@ -1,7 +1,7 @@
 import { useState } from "react";
 import TravellerDetailsModal from "./TravellerDetailsModal";
 
-const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
+const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails, className, onClick }) => {
   const [showModal, setShowModal] = useState(false);
   const [amendmentType, setAmendmentType] = useState("");
   const [showTravellerModal, setShowTravellerModal] = useState(false);
@@ -9,7 +9,10 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
   const [selectedAmendmentId, setSelectedAmendmentId] = useState(null);
   const [selectedAmendmentType, setSelectedAmendmentType] = useState("");
 
-  const handleOpen = () => setShowModal(true);
+  const handleOpen = (e) => {
+    if (onClick) onClick(e);
+    setShowModal(true);
+  };
   const handleClose = () => setShowModal(false);
 
   const tripInfos = bookingDetails?.itemInfos?.AIR?.tripInfos || [];
@@ -66,7 +69,7 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails }) => {
     <div>
       <button
         onClick={handleOpen}
-        className="border border-gray-400 rounded px-2 sm:px-4 py-2"
+        className={className || "border border-gray-400 rounded px-2 sm:px-4 py-2"}
       >
         Cancellation
       </button>

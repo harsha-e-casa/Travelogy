@@ -59,6 +59,8 @@
 //   );
 // }
 
+import { useEffect, useState } from "react";
+
 export default function ByStops({ stops, setStops, tabIndex }: any) {
   const OPTIONS = [
     // {label: "0", value: "all"},
@@ -66,6 +68,28 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
     { label: "1", value: "1-stop" },
     { label: "2+", value: "2-stops" },
   ];
+
+
+  // State to track if it's mobile
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Update the isMobile state based on window width
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768); // Consider 768px as the threshold for mobile
+    };
+
+    // Set initial state based on the current window size
+    handleResize();
+
+    // Add event listener to handle window resizing
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const wrapStyle: React.CSSProperties = {
     display: "flex",
@@ -75,7 +99,7 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
   };
 
   const itemStyle = (active: boolean): React.CSSProperties => ({
-    padding: "0 12px",
+    padding: isMobile ? "0 6px" : "0 12px",
     height: 30,
     display: "flex",
     alignItems: "center",

@@ -522,7 +522,7 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
                 const dep = dayjs(seg.dt);
                 return (
                   <React.Fragment key={seg.id}>
-                    <div className="flex justify-between items-center p-4 border-b">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 p-4 border-b text-center md:text-left">
                       <div>
                         <p>
                           {seg.da.city} ({seg.da.code}) - {seg.aa.city} (

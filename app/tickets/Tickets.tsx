@@ -117,6 +117,7 @@ export default function Tickets() {
 
   // State for mobile/tablet filter drawer
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  const [filterCriteria, setFilterCriteria] = useState(false);
 
   const showFilterDrawer = () => {
     setFilterDrawerOpen(true);
@@ -490,6 +491,12 @@ export default function Tickets() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    if (isMobile) {
+      setFilterCriteria(true)
+    }
+  }, [isMobile]);
+
   const handleDepartureDateChange = (date: any) => {
     setDatedep(date);
 
@@ -525,7 +532,9 @@ export default function Tickets() {
   const renderFilters = () => (
     <>
       {isFilterApplied && (
-        <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        // filterCriteria is true then top-0
+        // <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+        <div className={`sticky ${filterCriteria ? 'top-0' : 'top-36 lg:top-48'} z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100`}>
           <span className="text-black font-bold text-sm">Applied Filters <span className="text-gray-500 font-normal">({activeFilterCount})</span> :</span>
           <span
             className="cursor-pointer hover:text-orange-500 font-medium text-orange-500 text-sm"
@@ -2329,7 +2338,7 @@ export default function Tickets() {
 
           <div
             className="h-[auto] w-full bg_cs_search"
-            style={{ position: 'sticky', top: isMobile ? '70px' : '70px', zIndex: 900 }} // Lower z-index to stay below header's dropdown
+            style={{ position: 'sticky', top: isMobile ? '60px' : '70px', zIndex: 900 }} // Lower z-index to stay below header's dropdown
           >
             {/* Desktop Header */}
             {!isMobile && (
@@ -3429,7 +3438,7 @@ export default function Tickets() {
                               <div className="col-xl-9 col-12">
                                 {(searchedTripType?.trim().toLowerCase() === "one-way" ||
                                   searchedTripType?.trim().toLowerCase() === "round-trip") && (
-                                    <div className="sticky top-36 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />

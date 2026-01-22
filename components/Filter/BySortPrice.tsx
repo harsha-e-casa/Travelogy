@@ -1,5 +1,4 @@
-// BySortPrice.tsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 type PriceSortValue = "asc" | "desc";
 
@@ -9,14 +8,31 @@ interface ByPriceProps {
 }
 
 export default function BySortPrice({ sort, setSort }: ByPriceProps) {
-  // const OPTIONS = [
-  //   { label: "₹ Low–High", value: "asc" as PriceSortValue },
-  //   { label: "₹ High–Low", value: "desc" as PriceSortValue },
-  // ];
   const OPTIONS = [
     { label: "₹ ASC", value: "asc" as PriceSortValue },
     { label: "₹ DESC", value: "desc" as PriceSortValue },
   ];
+
+  // State to track if it's mobile
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Update the isMobile state based on window width
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768); // Consider 768px as the threshold for mobile
+    };
+
+    // Set initial state based on the current window size
+    handleResize();
+
+    // Add event listener to handle window resizing
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const wrapStyle: React.CSSProperties = {
     display: "flex",
@@ -26,7 +42,7 @@ export default function BySortPrice({ sort, setSort }: ByPriceProps) {
   };
 
   const itemStyle = (active: boolean): React.CSSProperties => ({
-    padding: "0 12px",
+    padding: isMobile ? "0 6px" : "0 12px",
     height: 30,
     display: "flex",
     alignItems: "center",
@@ -42,7 +58,7 @@ export default function BySortPrice({ sort, setSort }: ByPriceProps) {
     transition: "all .15s ease",
     whiteSpace: "nowrap",
     flex: 1,
-    marginBottom: "0"
+    marginBottom: "0",
   });
 
   const handleSelect = (value: PriceSortValue) => {
