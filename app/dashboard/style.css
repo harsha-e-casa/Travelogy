@@ -62,6 +62,8 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.3);
+  max-width: 100%;
+  width: 100%;
 }
 
 /* Tab content transparency */
@@ -176,8 +178,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .hero-section::before {
@@ -475,10 +482,11 @@
   color: #374151;
   font-size: 0.875rem;
   white-space: nowrap;
-  
+
 }
 
-.filter-input, .filter-select {
+.filter-input,
+.filter-select {
   padding: 8px 12px;
   border: 1px solid #e5e7eb;
   border-radius: 1px;
@@ -492,7 +500,8 @@
 
 }
 
-.filter-input:focus, .filter-select:focus {
+.filter-input:focus,
+.filter-select:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -698,28 +707,42 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-group {
     flex-direction: column;
     align-items: stretch;
     gap: 5px;
   }
-  
+
   .table-header {
     padding: 15px 20px;
     flex-direction: column;
     align-items: stretch;
   }
-  
+
+  /* Make table scrollable on small screens */
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    /* Optional: smooth corners */
+  }
+
   .modern-table {
     font-size: 0.8rem;
+    min-width: 800px;
+    /* Ensure table doesn't squash columns too much */
   }
-  
+
   .modern-table th,
   .modern-table td {
     padding: 10px 15px;
+    white-space: nowrap;
+    /* Prevent wrapping inside cells */
   }
-  
+
   .table-footer {
     padding: 15px 20px;
     flex-direction: column;
@@ -734,50 +757,164 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 2.0rem;
+    word-break: break-word;
+    /* Prevent long title overflow */
   }
-  
+
+  /* Prevent main content from forcing width */
+  .main-content {
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    padding: 40px 10px;
+    /* Reduced padding */
+  }
+
+  .bookings-container {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 10px;
+    /* Smaller radius on mobile */
+  }
+
+  /* Ensure Animate Tabs scroll properly */
+  .modern-tabs {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .modern-tabs .ant-tabs-nav {
+    width: 100%;
+    padding: 10px 10px 0;
+  }
+
+  .modern-tabs .ant-tabs-nav-wrap {
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    /* Ensure flex for calculation */
+  }
+
+  .modern-tabs .ant-tabs-nav-wrap::-webkit-scrollbar,
+  .table-responsive::-webkit-scrollbar {
+    height: 3px;
+    background-color: transparent;
+  }
+
+  .modern-tabs .ant-tabs-nav-wrap::-webkit-scrollbar-thumb,
+  .table-responsive::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+  }
+
   .hero-content {
     flex-direction: column;
     text-align: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 10px;
   }
-  
-  .hero-text {
-    text-align: center;
+
+  /* Filters stacking full width */
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    overflow: hidden;
+    /* Prevent spill */
+    padding: 15px;
   }
-  
-  .stats-grid {
-    grid-template-columns: 1fr;
-    margin-top: -20px;
+
+  .filter-group {
+    width: 100%;
+    align-items: flex-start;
   }
-  
-  .stat-card {
-    padding: 20px;
+
+  .filter-input,
+  .filter-select,
+  .ant-picker,
+  .ant-select {
+    width: 100% !important;
+    /* Force full width on mobile inputs */
+    max-width: 100%;
   }
-  
-  .section-title {
-    font-size: 2rem;
-  }
-  
+
   .tab-item {
-    min-width: auto;
-    padding: 12px 16px;
+    min-width: unset;
+    /* Remove fixed width */
+    padding: 8px 12px;
+    flex-direction: row;
+    /* Keep row to save vertical space if possible, or col if needed */
+    gap: 8px;
+    justify-content: center;
+    white-space: nowrap;
+    border: 1px solid #e5e7eb;
+    /* Thinner border on mobile */
   }
-  
+
+  .tab-icon img {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Hide text on very small screens or ensure it doesn't break layout */
+  .tab-text {
+    font-size: 0.8rem;
+    /* optional: hide on very small screens if needed, 
+       but keeping for now as scrolling should handle it. */
+  }
+}
+
+@media (max-width: 480px) {
+  .tab-item {
+    padding: 0;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    justify-content: center;
+    min-width: unset;
+  }
+
+  .tab-icon,
   .tab-text {
     display: none;
   }
+
+  .tab-badge {
+    background: transparent !important;
+    padding: 0;
+    font-size: 1.1rem;
+    color: inherit;
+    min-width: unset;
+  }
+
+  .modern-tabs .ant-tabs-tab {
+    margin-right: 15px;
+  }
+
+  .modern-tabs .ant-tabs-tab-active .tab-badge {
+    color: white;
+  }
+
+  .modern-tabs .ant-tabs-tab:not(.ant-tabs-tab-active) .tab-badge {
+    color: #374151;
+  }
+
 }
 
 @media (max-width: 480px) {
   .hero-section {
     padding: 40px 15px;
   }
-  
+
   .main-content {
     padding: 40px 15px;
   }
-  
+
   .tab-content {
     padding: 20px 15px;
   }
@@ -808,7 +945,8 @@
   min-width: fit-content;
 }
 
-.filter-input, .filter-select {
+.filter-input,
+.filter-select {
   padding: 8px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -818,7 +956,8 @@
   color: #374151;
 }
 
-.filter-input:focus, .filter-select:focus {
+.filter-input:focus,
+.filter-select:focus {
   outline: none;
   border-color: #0e1088;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
@@ -970,10 +1109,11 @@
   font-size: 0.8rem;
   white-space: nowrap;
   min-width: fit-content;
-  
+
 }
 
-.filter-input, .filter-select {
+.filter-input,
+.filter-select {
   padding: 10px 14px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -984,7 +1124,8 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.filter-input:focus, .filter-select:focus {
+.filter-input:focus,
+.filter-select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -1038,7 +1179,8 @@
 }
 
 /* Hover effects */
-.filter-input:hover, .filter-select:hover {
+.filter-input:hover,
+.filter-select:hover {
   border-color: #9ca3af;
 }
 
@@ -1053,15 +1195,16 @@
     gap: 15px;
     padding: 15px 20px;
   }
-  
-  .filter-input, .filter-select {
+
+  .filter-input,
+  .filter-select {
     width: 120px;
   }
-  
+
   .filter-input[type="date"] {
     width: 140px;
   }
-  
+
   .filter-input[type="text"] {
     width: 160px;
   }
@@ -1093,7 +1236,8 @@
   min-width: fit-content;
 }
 
-.filter-input, .filter-select {
+.filter-input,
+.filter-select {
   padding: 10px 14px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -1104,7 +1248,8 @@
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.filter-input:focus, .filter-select:focus {
+.filter-input:focus,
+.filter-select:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -1157,7 +1302,8 @@
 }
 
 /* Hover effects */
-.filter-input:hover, .filter-select:hover {
+.filter-input:hover,
+.filter-select:hover {
   border-color: #9ca3af;
 }
 
@@ -1172,15 +1318,16 @@
     gap: 15px;
     padding: 15px 20px;
   }
-  
-  .filter-input, .filter-select {
+
+  .filter-input,
+  .filter-select {
     width: 120px;
   }
-  
+
   .filter-input[type="date"] {
     width: 140px;
   }
-  
+
   .filter-input[type="text"] {
     width: 160px;
   }
@@ -1211,7 +1358,8 @@
   min-width: fit-content;
 }
 
-.filter-input, .filter-select {
+.filter-input,
+.filter-select {
   padding: 8px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -1221,7 +1369,8 @@
   color: #374151;
 }
 
-.filter-input:focus, .filter-select:focus {
+.filter-input:focus,
+.filter-select:focus {
   outline: none;
   border-color: #0e1088;
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
@@ -1356,11 +1505,11 @@
   .bookings-container {
     padding: 15px !important;
   }
-  
+
   .hero-title {
     font-size: 2.8rem;
   }
-  
+
   .tab-item {
     min-width: 200px;
     padding: 12px 20px;
@@ -1371,44 +1520,63 @@
   .bookings-container {
     padding: 10px !important;
   }
-  
+
   .hero-section {
     padding: 30px 15px;
   }
-  
+
   .main-content {
     padding: 30px 15px;
   }
-  
+
   .hero-title {
     font-size: 2.2rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1.1rem;
   }
-  
+
+  .modern-tabs .ant-tabs-nav-list {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .modern-tabs .ant-tabs-tab {
+    flex: 1;
+    margin: 0 4px !important;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+  }
+
   .tab-item {
     min-width: auto;
-    padding: 10px 15px;
+    padding: 15px 10px;
+    /* Increased padding */
     font-size: 0.85rem;
+    width: 100%;
+    justify-content: center;
+    border-radius: 15px;
+    /* Square shaped */
   }
-  
+
   .modern-table {
     font-size: 0.8rem;
   }
-  
+
   .modern-table th,
   .modern-table td {
     padding: 10px 12px;
   }
-  
+
   .filter-input,
   .filter-select {
     width: 100px;
     font-size: 0.8rem;
   }
-  
+
   .filters-section {
     gap: 15px;
     padding: 15px 20px;
@@ -1419,72 +1587,262 @@
   .bookings-container {
     padding: 8px !important;
   }
-  
+
   .hero-section {
     padding: 25px 10px;
   }
-  
+
   .main-content {
     padding: 25px 10px;
   }
-  
+
   .hero-title {
     font-size: 1.8rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1rem;
   }
-  
+
   .tab-item {
     padding: 8px 12px;
     font-size: 0.8rem;
   }
-  
+
   .modern-table {
     font-size: 0.75rem;
   }
-  
+
   .modern-table th,
   .modern-table td {
     padding: 8px 10px;
   }
-  
+
   .filter-input,
   .filter-select {
     width: 90px;
     font-size: 0.75rem;
     padding: 6px 10px;
   }
-  
+
   .filters-section {
     gap: 10px;
     padding: 10px 15px;
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .filter-group {
     flex-direction: column;
     align-items: stretch;
     gap: 5px;
   }
-  
+
   .pagination-btn {
     padding: 4px 8px;
     font-size: 0.75rem;
     min-width: 50px;
   }
-  
+
   .table-header {
     padding: 10px 15px;
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
-  
+
   .pagination-info {
     flex-direction: column;
     gap: 10px;
   }
+}
+
+/* Updates for Mobile Filters and Tabs */
+@media (max-width: 480px) {
+  .modern-tabs .ant-tabs-nav-list {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tab-item {
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+  }
+
+  /* Left align rows per page */
+  .pagination-info {
+    align-items: flex-start !important;
+    width: 100%;
+  }
+
+  .tab-icon {
+    display: block !important;
+    /* Force show icon on mobile */
+    font-size: 3rem;
+    margin: 0;
+  }
+
+  .tab-text,
+  .tab-badge {
+    display: none !important;
+    /* Hide text and badge on mobile */
+  }
+}
+
+@media (max-width: 768px) {
+  .filters-toggle-btn {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    margin: 15px auto 0 0 !important;
+    /* Force left alignment */
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    width: fit-content;
+    align-self: flex-start;
+    /* Safety for flex parents */
+  }
+
+  .table-header {
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-info {
+    flex-direction: row !important;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .tab-badge,
+  .tab-icon {
+    display: none;
+  }
+
+  /* .filters-section block removed to avoid conflict with drawer style */
+
+  .filter-input,
+  .filter-select,
+  .filter-input[type='date'],
+  .filter-input[type='text'] {
+    width: 100% !important;
+  }
+}
+
+.filters-toggle-btn {
+  display: none;
+}
+
+.modern-tabs .ant-tabs-nav-wrap::-webkit-scrollbar,
+.table-responsive::-webkit-scrollbar {
+  height: 3px;
+  background-color: transparent;
+}
+
+.modern-tabs .ant-tabs-nav-wrap::-webkit-scrollbar-thumb,
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: #FFA500;
+  /* Orange scrollbar */
+  border-radius: 10px;
+}
+
+/* Side-Drawer Slide-In for Mobile Filters */
+@media (max-width: 768px) {
+  .filters-section {
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: auto !important;
+    width: 85% !important;
+    max-width: 320px !important;
+    height: 100vh !important;
+    z-index: 2000 !important;
+    background: white !important;
+    padding: 20px !important;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 0 !important;
+    transform: translateX(100%) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    margin: 0 !important;
+    border: none !important;
+    overflow-y: auto !important;
+    pointer-events: none;
+    /* Prevent clicks when closed */
+  }
+
+  .filters-section.show-filters {
+    transform: translateX(0) !important;
+    pointer-events: auto;
+    /* Enable clicks when open */
+  }
+
+  /* Show header inside mobile drawer */
+  .filters-header {
+    display: flex !important;
+  }
+
+  .filter-input,
+  .filter-select,
+  .filter-input[type='date'],
+  .filter-input[type='text'] {
+    width: 100% !important;
+  }
+}
+
+/* Hide header on desktop (min-width 769px) */
+@media (min-width: 769px) {
+  .filters-header {
+    display: none !important;
+  }
+}
+
+/* Backdrop for Filters */
+.filter-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1999;
+  /* Just below the drawer (2000) */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.filter-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+} 
+/* Fix for filter label alignment on mobile and tablet */ 
+@media (max-width: 768px) { 
+  .filter-group { 
+    align-items: flex-start !important; 
+  } 
+  .filter-label { 
+    text-align: left; 
+    width: 100%; 
+  } 
+}
+ 
+/* Fix for reset button size on mobile and tablet */ 
+@media (max-width: 768px) { 
+  .filters-section button { 
+    width: auto !important; 
+    align-self: flex-start; 
+    min-width: 120px; 
+  } 
 }

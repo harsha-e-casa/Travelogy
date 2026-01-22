@@ -89,10 +89,10 @@ export default function VisaPage() {
             </div> */}
           </div>
         </div>
-        <div className="container pt-30 pb-80">
+        <div className="container pt-30">
           <LoveUs />
         </div>
-        <section className="section-box box-how-it-work background-body">
+        <section className="section-box box-how-it-work background-body pt-0 pb-0">
           <div className="container">
             {/*<div className="text-center wow fadeInUp">*/}
             <div className="text-center">
@@ -440,7 +440,7 @@ export default function VisaPage() {
             </div>
           </div>
         </div>
-        <div className="container pt-120 pb-80">
+        <div className="container pt-80 pb-40">
           <div className="text-center">
             <h2 className="neutral-1000">Why Travel With Us?</h2>
             <p className="text-xl-medium neutral-500">

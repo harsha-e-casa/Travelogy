@@ -16,7 +16,11 @@ import { useRouter } from "next/navigation";
 const Page = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("profile");
-  const [loading, setloading] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingFlight, setLoadingFlight] = useState(false);
+  const [loadingHotel, setLoadingHotel] = useState(false);
+  const [loadingAmendment, setLoadingAmendment] = useState(false);
+  const [loadingReBooking, setLoadingReBooking] = useState(false);
   const [userData, setUserData] = useState();
   const [userBookingData, setUserBookingData] = useState();
   const [userHotelBookingData, setUserHotelBookingData] = useState();
@@ -68,7 +72,7 @@ const Page = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setloading(true);
+        setLoadingUser(true);
 
         const reqParams = {
           phone: "",
@@ -82,16 +86,16 @@ const Page = () => {
         );
 
         setUserData(result);
-        setloading(false);
+        setLoadingUser(false);
       } catch (error) {
-        setloading(false);
+        setLoadingUser(false);
       }
     };
     fetchUserData();
 
     const fetchflightBookings = async () => {
       try {
-        setloading(true);
+        setLoadingFlight(true);
 
         const reqParams = {
           phone: "",
@@ -103,16 +107,16 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setUserBookingData(result);
-        setloading(false);
+        setLoadingFlight(false);
       } catch (error) {
-        setloading(false);
+        setLoadingFlight(false);
       }
     };
     fetchflightBookings();
 
     const fetchAmendmentId = async () => {
       try {
-        setloading(true);
+        setLoadingAmendment(true);
 
         const reqParams = {
           phone: "",
@@ -124,16 +128,16 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setUseramendmentData(result);
-        setloading(false);
+        setLoadingAmendment(false);
       } catch (error) {
-        setloading(false);
+        setLoadingAmendment(false);
       }
     };
     fetchAmendmentId();
 
     const fetchreflightBookings = async () => {
       try {
-        setloading(true);
+        setLoadingReBooking(true);
 
         const reqParams = {
           phone: "",
@@ -145,16 +149,16 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setReUserBookingData(result);
-        setloading(false);
+        setLoadingReBooking(false);
       } catch (error) {
-        setloading(false);
+        setLoadingReBooking(false);
       }
     };
     fetchreflightBookings();
 
     const fetchHotelBookings = async () => {
       try {
-        setloading(true);
+        setLoadingHotel(true);
 
         const reqParams = {
           phone: "",
@@ -166,9 +170,9 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setUserHotelBookingData(result);
-        setloading(false);
+        setLoadingHotel(false);
       } catch (error) {
-        setloading(false);
+        setLoadingHotel(false);
       }
     };
     fetchHotelBookings();
@@ -375,16 +379,16 @@ const Page = () => {
 
                     <div className="profile-box">
                       <div className="profile-avatar">
-                        {!loading && userData?.userData?.user_name
+                        {!loadingUser && userData?.userData?.user_name
                           ? userData.userData.user_name.charAt(0).toUpperCase()
                           : ""}
                       </div>{" "}
                       <div className="profile-info">
                         <div className="profile-name">
-                          {!loading ? userData?.userData?.user_name : null}
+                          {!loadingUser ? userData?.userData?.user_name : null}
                         </div>
                         <div className="profile-email">
-                          {!loading ? userData?.userData?.e_mail : null}
+                          {!loadingUser ? userData?.userData?.e_mail : null}
                         </div>
                       </div>
                     </div>
@@ -400,7 +404,7 @@ const Page = () => {
                           <div className="info-row">
                             <span className="label text-sm">NAME</span>
                             <span className="value">
-                              {!loading
+                              {!loadingUser
                                 ? userData?.userData?.user_name || "NA"
                                 : "NA"}
                             </span>
@@ -408,7 +412,7 @@ const Page = () => {
                           <div className="info-row">
                             <span className="label">MARITAL STATUS</span>
                             <span className="value">
-                              {!loading
+                              {!loadingUser
                                 ? userData?.userData?.marital_status
                                 : null}
                             </span>
@@ -419,7 +423,7 @@ const Page = () => {
                           <div className="info-row">
                             <span className="label">DOB</span>
                             <span className="value">
-                              {!loading
+                              {!loadingUser
                                 ? userData?.userData?.dob?.split("T")[0]
                                 : null}
                             </span>
@@ -427,7 +431,7 @@ const Page = () => {
                           <div className="info-row">
                             <span className="label">ADDRESS</span>
                             <span className="value">
-                              {!loading ? userData?.userData?.address : null}
+                              {!loadingUser ? userData?.userData?.address : null}
                             </span>
                           </div>
                         </div>
@@ -436,7 +440,7 @@ const Page = () => {
                           <div className="info-row">
                             <span className="label">GENDER</span>
                             <span className="value">
-                              {!loading ? userData?.userData?.gender : null}
+                              {!loadingUser ? userData?.userData?.gender : null}
                             </span>
                           </div>
                         </div>
@@ -465,7 +469,7 @@ const Page = () => {
                           </div>
                           <div className="flex justify-between items-center">
                             <div className="font-bold login-value">
-                              {!loading ? userData?.userData?.phone : null}
+                              {!loadingUser ? userData?.userData?.phone : null}
                             </div>
                             {/* <div className="text-green-600 flex items-center"> */}
                             {/* <span>✔️ Verified</span>
@@ -481,7 +485,7 @@ const Page = () => {
                           </div>
                           <div className="flex items-center">
                             <div className="text-blue-600 cursor-pointer login-value text-blue-500">
-                              {!loading ? userData?.userData?.e_mail : null}
+                              {!loadingUser ? userData?.userData?.e_mail : null}
                             </div>
                           </div>
 
@@ -491,7 +495,7 @@ const Page = () => {
                           <div className="flex items-center">
                             <div className="text-blue-600 cursor-pointer login-value text-blue-500">
                               RS.{" "}
-                              {!loading
+                              {!loadingUser
                                 ? userData?.userData?.wallet_balance
                                 : 0.0}
                             </div>
@@ -552,6 +556,7 @@ const Page = () => {
                           key: "1",
                           children: (
                             <FlightBookingList
+                              loading={loadingFlight}
                               bookings={userBookingData?.bookings}
                             />
                           ),
@@ -565,6 +570,7 @@ const Page = () => {
                           key: "2",
                           children: (
                             <AmendmentList
+                              loading={loadingAmendment}
                               amendments={userAmendmentData?.amendments}
                             />
                           ),
@@ -578,6 +584,7 @@ const Page = () => {
                           key: "3",
                           children: (
                             <FlightReBookingList
+                              loading={loadingReBooking}
                               bookings={userReBookingData?.reBookings}
                             />
                           ),
@@ -591,6 +598,7 @@ const Page = () => {
                           key: "4",
                           children: (
                             <HotelBookingList
+                              loading={loadingHotel}
                               bookings={userHotelBookingData?.bookings}
                             />
                           ),

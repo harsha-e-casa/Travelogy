@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Select, DatePicker, Button } from "antd";
+import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import TableSkeleton from "./TableSkeleton";
 
 function formatDateTime(isoString) {
   if (!isoString) return "--";
@@ -17,6 +19,7 @@ function formatDateTime(isoString) {
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
 const FlightReBookingList = ({
+  loading,
   bookings,
   statusOptions,
   statusFilter,
@@ -35,6 +38,7 @@ const FlightReBookingList = ({
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
+  const [showFilters, setShowFilters] = useState(false);
 
   // SORT LOGIC
   let sortedBookings = [...bookings];
@@ -86,7 +90,29 @@ const FlightReBookingList = ({
 
   return (
     <div className="table-section">
-      <div className="filters-section">
+      {/* Backdrop */}
+      {showFilters && (
+        <div
+          className="filter-backdrop show"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
+
+      <div className={`filters-section ${showFilters ? "show-filters" : ""}`}>
+        <div className="filters-header md:hidden flex justify-between items-center mb-4 w-full" style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '15px',
+          borderBottom: '1px solid #e5e7eb',
+          paddingBottom: '15px'
+        }}>
+          <div className="flex items-center gap-2">
+            <FilterOutlined />
+            <span className="text-lg font-bold" style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Filters</span>
+          </div>
+          <CloseOutlined onClick={() => setShowFilters(false)} style={{ fontSize: '1.2rem', padding: '5px', cursor: 'pointer' }} />
+        </div>
         <div className="filter-group">
           <label className="filter-label">Email:</label>
           <Select
@@ -162,6 +188,13 @@ const FlightReBookingList = ({
         </Button>
       </div>
 
+      <div
+        className="filters-toggle-btn"
+        onClick={() => setShowFilters(!showFilters)}
+      >
+        <FilterOutlined /> Filters
+      </div>
+
       {/* Pagination Row */}
       <div className="table-header">
         <div className="pagination-info">
@@ -200,86 +233,92 @@ const FlightReBookingList = ({
           </button>
         </div>
       </div>
-      <table className="modern-table">
-        <thead>
-          <tr>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("idIndex")}
-            >
-              ID
-              {sortBy === "idIndex" && (
-                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
-              )}
-            </th>
-            <th>Old Booking ID</th>
-            <th>Booking ID</th>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("amount")}
-            >
-              Amount
-              {sortBy === "amount" && (
-                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
-              )}
-            </th>
-            <th>Status</th>
-            <th>Booking Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!bookings || bookings.length === 0 ? (
+      <div className="table-responsive">
+        {loading ? (
+          <TableSkeleton rows={pageSize} columns={6} />
+        ) : (
+          <table className="modern-table">
+          <thead>
             <tr>
-              <td colSpan={6} className="empty-state">
-                <div className="empty-state-text">No Re-bookings found</div>
-              </td>
+              <th
+                className="cursor-pointer select-none"
+                onClick={() => handleSort("idIndex")}
+              >
+                ID
+                {sortBy === "idIndex" && (
+                  <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+                )}
+              </th>
+              <th>Old Booking ID</th>
+              <th>Booking ID</th>
+              <th
+                className="cursor-pointer select-none"
+                onClick={() => handleSort("amount")}
+              >
+                Amount
+                {sortBy === "amount" && (
+                  <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+                )}
+              </th>
+              <th>Status</th>
+              <th>Booking Time</th>
             </tr>
-          ) : pagedBookings.length > 0 ? (
-            pagedBookings.map((b, idx) => (
-              <tr key={b.id || idx}>
-                <td>{startIdx + idx + 1}</td>
-                <td>
-                  <Link
-                    href={`/BookingDetails?booking_id=${b.old_booking_id}`}
-                    className="booking-id"
-                  >
-                    {b.old_booking_id}
-                  </Link>
+          </thead>
+          <tbody>
+            {!bookings || bookings.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="empty-state">
+                  <div className="empty-state-text">No Re-bookings found</div>
                 </td>
-                <td>
-                  <Link
-                    href={`/BookingDetails?booking_id=${b.booking_id}?re=true`}
-                    className="booking-id"
-                  >
-                    {b.booking_id}
-                  </Link>
-                </td>
-                <td>{b.amount || "--"}</td>
-                <td>
-                  <span className={getStatusClass(b.status)}>
-                    {b.status || "--"}
-                  </span>
-                </td>
-                <td>{formatDateTime(b.booking_time)}</td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={6} className="empty-state">
-                <div className="empty-state-icon"></div>
-                <div className="empty-state-text">No Re-bookings found</div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ) : pagedBookings.length > 0 ? (
+              pagedBookings.map((b, idx) => (
+                <tr key={b.id || idx}>
+                  <td>{startIdx + idx + 1}</td>
+                  <td>
+                    <Link
+                      href={`/BookingDetails?booking_id=${b.old_booking_id}`}
+                      className="booking-id"
+                    >
+                      {b.old_booking_id}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      href={`/BookingDetails?booking_id=${b.booking_id}?re=true`}
+                      className="booking-id"
+                    >
+                      {b.booking_id}
+                    </Link>
+                  </td>
+                  <td>{b.amount || "--"}</td>
+                  <td>
+                    <span className={getStatusClass(b.status)}>
+                      {b.status || "--"}
+                    </span>
+                  </td>
+                  <td>{formatDateTime(b.booking_time)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="empty-state">
+                  <div className="empty-state-icon"></div>
+                  <div className="empty-state-text">No Re-bookings found</div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        )}
+      </div>
       <div className="table-footer">
         <span>
           Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)}{" "}
           of {total} bookings
         </span>
       </div>
-    </div>
+    </div >
   );
 };
 

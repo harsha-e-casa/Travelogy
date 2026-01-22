@@ -257,7 +257,7 @@ const Slider: React.FC = () => {
 
 
         <section>
-          <div className="class_main_slider_de1 container shadow-700 mb-80  box-top-category">
+          <div className="class_main_slider_de1 container shadow-700 mb-80  box-top-category pt-6">
             <div className="main_d2l_section p-3 pt-4">
               <h2 className="text-4xl font-bold tracking-wide">
                 Best Destinations

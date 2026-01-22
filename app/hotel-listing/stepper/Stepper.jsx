@@ -473,7 +473,7 @@ export function Step1TravellerDetails({
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
+        <div className="desktop-booking-grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
             <p className="text-gray-700">
@@ -538,6 +538,91 @@ export function Step1TravellerDetails({
                 return "N/A";
               })()}
             </p>
+          </div>
+        </div>
+
+        {/* Mobile View for Check In/Out */}
+        <div className="mobile-booking-grid bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-left">
+              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
+                CHECK IN
+              </span>
+              <div className="font-bold text-lg text-black leading-tight">
+                {hotelReviewData?.query?.checkinDate
+                  ? dayjs(hotelReviewData.query.checkinDate).format("D MMM")
+                  : "N/A"}{" "}
+                <span className="text-sm font-normal text-gray-500">
+                  {hotelReviewData?.query?.checkinDate
+                    ? dayjs(hotelReviewData.query.checkinDate).format(
+                        "YYYY, ddd"
+                      )
+                    : ""}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {hotelReviewData?.hInfo?.checkInTime?.beginTime || "2 PM"}
+              </div>
+            </div>
+
+            <div className="px-3 py-1 bg-gray-100 rounded-full border border-gray-200">
+              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+                {(() => {
+                  const checkin = hotelReviewData?.query?.checkinDate;
+                  const checkout = hotelReviewData?.query?.checkoutDate;
+                  if (checkin && checkout) {
+                    const nights = dayjs(checkout).diff(dayjs(checkin), "day");
+                    return `${nights} Night${nights > 1 ? "s" : ""}`;
+                  }
+                  return "N/A";
+                })()}
+              </span>
+            </div>
+
+            <div className="text-right">
+              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
+                CHECK OUT
+              </span>
+              <div className="font-bold text-lg text-black leading-tight">
+                {hotelReviewData?.query?.checkoutDate
+                  ? dayjs(hotelReviewData.query.checkoutDate).format("D MMM")
+                  : "N/A"}{" "}
+                <span className="text-sm font-normal text-gray-500">
+                  {hotelReviewData?.query?.checkoutDate
+                    ? dayjs(hotelReviewData.query.checkoutDate).format(
+                        "YYYY, ddd"
+                      )
+                    : ""}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {hotelReviewData?.hInfo?.checkOutTime?.beginTime || "12 PM"}
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 pt-3 mt-3">
+            <div className="text-xs text-gray-500 mb-1">Guests & Rooms</div>
+            <div className="font-bold text-base text-black">
+              {(() => {
+                const rooms = hotelReviewData?.query?.roomInfo || [];
+                const totalAdults = rooms.reduce(
+                  (sum, r) => sum + (r.numberOfAdults || 0),
+                  0
+                );
+                const totalChildren = rooms.reduce(
+                  (sum, r) => sum + (r.numberOfChild || 0),
+                  0
+                );
+                const totalRooms = rooms.length;
+                let guestString = `${totalAdults} Adults`;
+                if (totalChildren > 0)
+                  guestString += `, ${totalChildren} Children`;
+                return `${guestString} • ${totalRooms} Room${
+                  totalRooms > 1 ? "s" : ""
+                }`;
+              })()}
+            </div>
           </div>
         </div>
         <>
@@ -992,7 +1077,7 @@ export function Step2Review({
             </span>
           </p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
+        <div className="desktop-booking-grid grid-cols-2 md:grid-cols-6 gap-4 bg-blue-50 p-4 rounded-md text-sm text-gray-800 booking_grid">
           <div>
             <strong className="block text-gray-900">Check In</strong>
             <p className="text-gray-700">
@@ -1057,6 +1142,91 @@ export function Step2Review({
                 return "N/A";
               })()}
             </p>
+          </div>
+        </div>
+
+        {/* Mobile View for Check In/Out */}
+        <div className="mobile-booking-grid bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-left">
+              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
+                CHECK IN
+              </span>
+              <div className="font-bold text-lg text-black leading-tight">
+                {hotelReviewData?.query?.checkinDate
+                  ? dayjs(hotelReviewData.query.checkinDate).format("D MMM")
+                  : "N/A"}{" "}
+                <span className="text-sm font-normal text-gray-500">
+                  {hotelReviewData?.query?.checkinDate
+                    ? dayjs(hotelReviewData.query.checkinDate).format(
+                        "YYYY, ddd"
+                      )
+                    : ""}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {hotelReviewData?.hInfo?.checkInTime?.beginTime || "2 PM"}
+              </div>
+            </div>
+
+            <div className="px-3 py-1 bg-gray-100 rounded-full border border-gray-200">
+              <span className="text-xs font-semibold text-gray-600 whitespace-nowrap">
+                {(() => {
+                  const checkin = hotelReviewData?.query?.checkinDate;
+                  const checkout = hotelReviewData?.query?.checkoutDate;
+                  if (checkin && checkout) {
+                    const nights = dayjs(checkout).diff(dayjs(checkin), "day");
+                    return `${nights} Night${nights > 1 ? "s" : ""}`;
+                  }
+                  return "N/A";
+                })()}
+              </span>
+            </div>
+
+            <div className="text-right">
+              <span className="text-xs text-gray-500 uppercase font-semibold block mb-1">
+                CHECK OUT
+              </span>
+              <div className="font-bold text-lg text-black leading-tight">
+                {hotelReviewData?.query?.checkoutDate
+                  ? dayjs(hotelReviewData.query.checkoutDate).format("D MMM")
+                  : "N/A"}{" "}
+                <span className="text-sm font-normal text-gray-500">
+                  {hotelReviewData?.query?.checkoutDate
+                    ? dayjs(hotelReviewData.query.checkoutDate).format(
+                        "YYYY, ddd"
+                      )
+                    : ""}
+                </span>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {hotelReviewData?.hInfo?.checkOutTime?.beginTime || "12 PM"}
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 pt-3 mt-3">
+            <div className="text-xs text-gray-500 mb-1">Guests & Rooms</div>
+            <div className="font-bold text-base text-black">
+              {(() => {
+                const rooms = hotelReviewData?.query?.roomInfo || [];
+                const totalAdults = rooms.reduce(
+                  (sum, r) => sum + (r.numberOfAdults || 0),
+                  0
+                );
+                const totalChildren = rooms.reduce(
+                  (sum, r) => sum + (r.numberOfChild || 0),
+                  0
+                );
+                const totalRooms = rooms.length;
+                let guestString = `${totalAdults} Adults`;
+                if (totalChildren > 0)
+                  guestString += `, ${totalChildren} Children`;
+                return `${guestString} • ${totalRooms} Room${
+                  totalRooms > 1 ? "s" : ""
+                }`;
+              })()}
+            </div>
           </div>
         </div>
         <h3 className="font-bold text-base">Guest Details:</h3>
