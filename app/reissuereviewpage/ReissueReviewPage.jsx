@@ -2445,195 +2445,197 @@ const ReissueReviewPage = () => {
                                   <p className="text-xl-bold neutral-1000 mb-10 ">
                                     Passenger information
                                   </p>
-                                  <table className="w-full border-collapse mb-20">
-                                    <thead
-                                      style={{ borderBottom: "grey 1px solid" }}
-                                    >
-                                      <tr>
-                                        <th
-                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
-                                          style={{ width: "1rem" }}
-                                        >
-                                          S.No
-                                        </th>
-                                        <th
-                                          className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
-                                          style={{ width: "20rem" }}
-                                        >
-                                          Full Name
-                                        </th>
-                                        <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
-                                          Add-ons
-                                        </th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {travellers.length > 0 ? (
-                                        travellers.map((traveller, index) => {
-                                          const fullName = `${traveller?.ti || ""
-                                            } ${traveller?.fN || ""} ${traveller?.lN || ""
-                                            }`.trim();
-
-                                          const addOns = [];
-
-                                          if (
-                                            traveller.ssrBaggageInfos &&
-                                            traveller.ssrBaggageInfos.length > 0
-                                          ) {
-                                            const baggageDetails =
-                                              traveller.ssrBaggageInfos
-                                                .map((b) => {
-                                                  const baggageFromCookie =
-                                                    cookieBaggageData.find(
-                                                      (c) => c.code === b.code
-                                                    );
-                                                  return baggageFromCookie
-                                                    ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
-                                                    : b.code;
-                                                })
-                                                .filter(Boolean)
-                                                .join(", ");
-                                            if (baggageDetails) {
-                                              addOns.push(
-                                                `Baggage: ${baggageDetails}`
-                                              );
-                                            }
-                                          }
-
-                                          if (
-                                            traveller.ssrMealInfos &&
-                                            traveller.ssrMealInfos.length > 0
-                                          ) {
-                                            const mealDetails =
-                                              traveller.ssrMealInfos
-                                                .map((m) => {
-                                                  const mealFromCookie =
-                                                    cookieMealData.find(
-                                                      (c) => c.code === m.code
-                                                    );
-                                                  return mealFromCookie
-                                                    ? `${mealFromCookie.desc} [${mealFromCookie.fromToCode}]`
-                                                    : m.code;
-                                                })
-                                                .filter(Boolean)
-                                                .join(", ");
-                                            if (mealDetails)
-                                              addOns.push(
-                                                `Meals: ${mealDetails}`
-                                              );
-                                          }
-
-                                          if (
-                                            traveller.ssrSeatInfos &&
-                                            traveller.ssrSeatInfos.length > 0
-                                          ) {
-                                            const seatDetails =
-                                              traveller.ssrSeatInfos
-                                                .map((s) => {
-                                                  const mealFromCookie =
-                                                    cookieMappedSeatData.find(
-                                                      (c) => c.code === s.code
-                                                    );
-                                                  return mealFromCookie
-                                                    ? `${mealFromCookie.code} [${mealFromCookie.fromToCode}]`
-                                                    : s.code;
-                                                })
-                                                .filter(Boolean)
-                                                .join(", ");
-                                            if (seatDetails)
-                                              addOns.push(
-                                                `Seat: ${seatDetails}`
-                                              );
-                                          }
-
-                                          return (
-                                            <tr key={index}>
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {index + 1}
-                                              </td>
-                                              <td
-                                                className="px-4 py-3 border-b border-gray-200 text-black"
-                                                style={{
-                                                  display: "flex",
-                                                  flexDirection: "column",
-                                                }}
-                                              >
-                                                {fullName || "N/A"}
-                                                {traveller?.di && (
-                                                  <span>
-                                                    ID: {traveller.di}
-                                                  </span>
-                                                )}
-                                                {(traveller?.pNat ||
-                                                  traveller?.pNum ||
-                                                  traveller?.eD ||
-                                                  traveller?.pid ||
-                                                  traveller?.dob) && (
-                                                    <>
-                                                      {traveller?.pNat && (
-                                                        <span>
-                                                          Nationality:{" "}
-                                                          {traveller.pNat}
-                                                        </span>
-                                                      )}
-                                                      {traveller?.pNum && (
-                                                        <span>
-                                                          Passport Number:{" "}
-                                                          {traveller.pNum}
-                                                        </span>
-                                                      )}
-                                                      {traveller?.eD && (
-                                                        <span>
-                                                          Expiry Date:{" "}
-                                                          {traveller.eD}
-                                                        </span>
-                                                      )}
-                                                      {traveller?.pid && (
-                                                        <span>
-                                                          Issue Date:{" "}
-                                                          {traveller.pid}
-                                                        </span>
-                                                      )}
-                                                      {traveller?.dob && (
-                                                        <span>
-                                                          Date Of Birth:{" "}
-                                                          {traveller.dob}
-                                                        </span>
-                                                      )}
-                                                    </>
-                                                  )}
-                                              </td>
-                                              <td className="px-4 py-3 border-b border-gray-200 text-black">
-                                                {addOns && addOns.length > 0 ? (
-                                                  <div className="flex flex-col gap-1">
-                                                    {addOns.map((item, i) => (
-                                                      <span
-                                                        key={i}
-                                                        className="text-sm"
-                                                      >
-                                                        {item}
-                                                      </span>
-                                                    ))}
-                                                  </div>
-                                                ) : (
-                                                  "None"
-                                                )}
-                                              </td>
-                                            </tr>
-                                          );
-                                        })
-                                      ) : (
+                                  <div className="overflow-x-auto">
+                                    <table className="w-full border-collapse mb-20">
+                                      <thead
+                                        style={{ borderBottom: "grey 1px solid" }}
+                                      >
                                         <tr>
-                                          <td
-                                            colSpan="3"
-                                            className="px-4 py-3 text-center border-b border-gray-200 text-black"
+                                          <th
+                                            className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                            style={{ width: "1rem" }}
                                           >
-                                            No passenger information available.
-                                          </td>
+                                            S.No
+                                          </th>
+                                          <th
+                                            className="px-4 py-2 text-left text-gray-600 border-b border-gray-300"
+                                            style={{ width: "20rem" }}
+                                          >
+                                            Full Name
+                                          </th>
+                                          <th className="px-4 py-2 text-left text-gray-600 border-b border-gray-300">
+                                            Add-ons
+                                          </th>
                                         </tr>
-                                      )}
-                                    </tbody>
-                                  </table>
+                                      </thead>
+                                      <tbody>
+                                        {travellers.length > 0 ? (
+                                          travellers.map((traveller, index) => {
+                                            const fullName = `${traveller?.ti || ""
+                                              } ${traveller?.fN || ""} ${traveller?.lN || ""
+                                              }`.trim();
+
+                                            const addOns = [];
+
+                                            if (
+                                              traveller.ssrBaggageInfos &&
+                                              traveller.ssrBaggageInfos.length > 0
+                                            ) {
+                                              const baggageDetails =
+                                                traveller.ssrBaggageInfos
+                                                  .map((b) => {
+                                                    const baggageFromCookie =
+                                                      cookieBaggageData.find(
+                                                        (c) => c.code === b.code
+                                                      );
+                                                    return baggageFromCookie
+                                                      ? `${baggageFromCookie.desc} [${baggageFromCookie.fromToCode}]`
+                                                      : b.code;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join(", ");
+                                              if (baggageDetails) {
+                                                addOns.push(
+                                                  `Baggage: ${baggageDetails}`
+                                                );
+                                              }
+                                            }
+
+                                            if (
+                                              traveller.ssrMealInfos &&
+                                              traveller.ssrMealInfos.length > 0
+                                            ) {
+                                              const mealDetails =
+                                                traveller.ssrMealInfos
+                                                  .map((m) => {
+                                                    const mealFromCookie =
+                                                      cookieMealData.find(
+                                                        (c) => c.code === m.code
+                                                      );
+                                                    return mealFromCookie
+                                                      ? `${mealFromCookie.desc} [${mealFromCookie.fromToCode}]`
+                                                      : m.code;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join(", ");
+                                              if (mealDetails)
+                                                addOns.push(
+                                                  `Meals: ${mealDetails}`
+                                                );
+                                            }
+
+                                            if (
+                                              traveller.ssrSeatInfos &&
+                                              traveller.ssrSeatInfos.length > 0
+                                            ) {
+                                              const seatDetails =
+                                                traveller.ssrSeatInfos
+                                                  .map((s) => {
+                                                    const mealFromCookie =
+                                                      cookieMappedSeatData.find(
+                                                        (c) => c.code === s.code
+                                                      );
+                                                    return mealFromCookie
+                                                      ? `${mealFromCookie.code} [${mealFromCookie.fromToCode}]`
+                                                      : s.code;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join(", ");
+                                              if (seatDetails)
+                                                addOns.push(
+                                                  `Seat: ${seatDetails}`
+                                                );
+                                            }
+
+                                            return (
+                                              <tr key={index}>
+                                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                  {index + 1}
+                                                </td>
+                                                <td
+                                                  className="px-4 py-3 border-b border-gray-200 text-black"
+                                                  style={{
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                  }}
+                                                >
+                                                  {fullName || "N/A"}
+                                                  {traveller?.di && (
+                                                    <span>
+                                                      ID: {traveller.di}
+                                                    </span>
+                                                  )}
+                                                  {(traveller?.pNat ||
+                                                    traveller?.pNum ||
+                                                    traveller?.eD ||
+                                                    traveller?.pid ||
+                                                    traveller?.dob) && (
+                                                      <>
+                                                        {traveller?.pNat && (
+                                                          <span>
+                                                            Nationality:{" "}
+                                                            {traveller.pNat}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.pNum && (
+                                                          <span>
+                                                            Passport Number:{" "}
+                                                            {traveller.pNum}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.eD && (
+                                                          <span>
+                                                            Expiry Date:{" "}
+                                                            {traveller.eD}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.pid && (
+                                                          <span>
+                                                            Issue Date:{" "}
+                                                            {traveller.pid}
+                                                          </span>
+                                                        )}
+                                                        {traveller?.dob && (
+                                                          <span>
+                                                            Date Of Birth:{" "}
+                                                            {traveller.dob}
+                                                          </span>
+                                                        )}
+                                                      </>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 py-3 border-b border-gray-200 text-black">
+                                                  {addOns && addOns.length > 0 ? (
+                                                    <div className="flex flex-col gap-1">
+                                                      {addOns.map((item, i) => (
+                                                        <span
+                                                          key={i}
+                                                          className="text-sm"
+                                                        >
+                                                          {item}
+                                                        </span>
+                                                      ))}
+                                                    </div>
+                                                  ) : (
+                                                    "None"
+                                                  )}
+                                                </td>
+                                              </tr>
+                                            );
+                                          })
+                                        ) : (
+                                          <tr>
+                                            <td
+                                              colSpan="3"
+                                              className="px-4 py-3 text-center border-b border-gray-200 text-black"
+                                            >
+                                              No passenger information available.
+                                            </td>
+                                          </tr>
+                                        )}
+                                      </tbody>
+                                    </table>
+                                  </div>
                                 </div>
                               </div>
 

@@ -123,7 +123,7 @@ export default function ByDepartureTime({
   const cardsWrap: React.CSSProperties = {
     display: "flex",
     gap: 8,
-    flexWrap: "wrap",
+    // flexWrap: "wrap",
     alignItems: "stretch",
     justifyContent: "center",
   };

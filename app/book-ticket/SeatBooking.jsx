@@ -37,6 +37,17 @@ const SeatBooking = ({
   }, [flightSeat]);
 
   const [prefilledSeatNo, setPrefilledSeatNo] = useState({});
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     console.log("mame seat data ====", storedTravellerInfos);
@@ -383,9 +394,9 @@ const SeatBooking = ({
     // setSeatSelections(updatedSelections);
 
     const updatedSelections = { ...seatSelections };
-    if (!updatedSelections[flightId]) {
-      updatedSelections[flightId] = [];
-    }
+    // Create a copy of the array for this flightId to avoid direct mutation
+    updatedSelections[flightId] = updatedSelections[flightId] ? [...updatedSelections[flightId]] : [];
+
     updatedSelections[flightId][selectedPassengerIndex] = {
       seatNo,
       cost,
@@ -536,7 +547,20 @@ const SeatBooking = ({
 
     const seatGrid = Array.from({ length: maxRow }, (_, rowIndex) => {
       return (
-        <div key={rowIndex} className="flex gap-2 mb-2">
+        <div key={rowIndex} className={`flex gap-2 mb-2 ${isMobile ? "flex-col" : ""}`}>
+          {/* If mobile, maybe we want rows to be columns? No, rows are A,B,C. 
+               If horizontal view means "Row 1, Row 2..." side by side.
+               So Row 1 is a vertical strip? 
+               Standard: Row 1 is horiz (A B C).
+               Horizontal MAP means: A B C  (Row 1) (Row 2)..
+               Wait. A plane is usually [A B C] [D E F].
+               If I make the *Rows* display horizontally next to each other:
+               [Row 1] [Row 2] [Row 3]...
+               Inside Row 1: A
+                             B
+                             C
+               Then I need `flex-col` for the Row container.
+            */}
           {Array.from({ length: maxCol }, (_, colIndex) => {
             const seat = sInfo.find(
               (s) =>
@@ -563,7 +587,7 @@ const SeatBooking = ({
               !booked && matchesFilter && !isSeatTakenByOthers;
 
             // Get the dynamic color for the seat based on the amount
-            const seatColor = getSeatColorClass(seat.amount, isSelected); // Get the color based on the amount
+            const seatColor = getSeatColorClass(seat.amount || 0, isSelected);
 
             // If booked, grey out the seat with no other colors
             const seatStyle = booked
@@ -571,7 +595,7 @@ const SeatBooking = ({
               : isSelectable && isSelected
                 ? "bg-green-500"
                 : isSelectable
-                  ? `cursor-pointer text-white` // Apply dynamic color for selectable
+                  ? `cursor-pointer text-white`
                   : "bg-gray-300 text-gray-500 cursor-not-allowed";
 
             return (
@@ -585,11 +609,11 @@ const SeatBooking = ({
                     handleSeatSelect(seat.code, seat.amount || 0);
                   }
                 }}
-                className={`w-10 h-10 flex items-center justify-center text-sm font-medium border transition-all
+                className={`${isMobile ? "w-8 h-8 text-xs" : "w-10 h-10 text-sm"} flex items-center justify-center font-medium border transition-all
                 ${seatStyle} 
                 ${aisle ? "border-blue-500" : ""}
                 ${legroom ? "rounded-full" : "rounded"}`}
-                style={{ backgroundColor: (booked || isSelected) ? undefined : seatColor }} // Apply the dynamic color using inline style
+                style={{ backgroundColor: (booked || isSelected) ? undefined : seatColor }}
               >
                 {isSelected ? (
                   <span className="text-white font-bold text-lg">✓</span>
@@ -603,7 +627,7 @@ const SeatBooking = ({
       );
     });
 
-    return <div className="p-4">{seatGrid}</div>;
+    return <div className={`p-4 ${isMobile ? "flex flex-row gap-4 overflow-x-auto" : ""}`}>{seatGrid}</div>;
   };
 
   console.log("seatSelectionsseatSelections ============= ", seatSelections);
@@ -619,7 +643,7 @@ const SeatBooking = ({
                 const dep = dayjs(seg.dt);
                 return (
                   <React.Fragment key={seg.id}>
-                    <div className="flex justify-between items-center p-4 border-b">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 p-4 border-b text-center md:text-left">
                       <div>
                         <p>
                           {seg.da.city} ({seg.da.code}) - {seg.aa.city} (
@@ -627,21 +651,6 @@ const SeatBooking = ({
                         </p>
                         <p>{dep.format("DD MMM YYYY")}</p>
                       </div>
-
-                      {/* change data based on seatNo use seg.id */}
-                      {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
-                        {(seatNo?.[seg.id] || []).map((item, index) => {
-
-                          const key = Object.keys(item)[0]; // like 'adult-1' or 'child-1'
-                          const seatNo = item[key];
-
-                          return (
-                            <div key={index}>
-                              {key}: {seatNo}
-                            </div>
-                          );
-                        })}
-                      </div> */}
 
                       <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
                         {(seatSelections[seg.id] || []).map((sel, idx) => {
@@ -663,27 +672,6 @@ const SeatBooking = ({
                           );
                         })}
                       </div>
-
-                      {/* <div className="mt-1 text-sm text-gray-700 flex flex-col space-y-1">
-                        {(() => {
-
-                          if (!prefilledSeatNo || typeof prefilledSeatNo !== "object") return null;
-
-                          const keysArray = Object.keys(prefilledSeatNo);
-
-                          if (!Array.isArray(prefilledSeatNo[keysArray[segIndex]])) return null;
-
-                          return prefilledSeatNo[keysArray[segIndex]].map((item, i) => {
-                            const key = Object.keys(item)[0];
-                            const seatNo = item[key];
-                            return (
-                              <div key={i}>
-                                {key}: {seatNo}
-                              </div>
-                            );
-                          });
-                        })()}
-                      </div> */}
 
                       <button
                         onClick={() =>
@@ -743,158 +731,216 @@ const SeatBooking = ({
           onClick={() => setFlightSeat(null)}
         >
           <div
-            className="bg-white max-w-3xl overflow-y-auto p-6 rounded-lg relative seat-booking-h"
+            className={`bg-white rounded-lg relative seat-booking-h ${isMobile ? "w-full h-full max-w-full overflow-hidden flex flex-col" : "max-w-3xl overflow-y-auto p-6"}`}
             // style={{ maxHeight: "80vh", width: "60%" }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-2 right-2 text-gray-700"
+              className="absolute top-2 right-2 text-gray-700 z-50 bg-white rounded-full p-1 shadow-md"
               onClick={() => setFlightSeat(null)}
             >
               ❌
             </button>
-            <h2 className="text-lg font-bold mb-4">Select Seats</h2>
-            <div className="row">
-              <div className="col-lg-5">
-                {/* flight details */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-around",
-                  }}
-                >
-                  <div className="flex item-center">
-                    {isUat && (
-                      <img
-                        style={{ width: "35px", height: "35px", margin: "5px" }}
-                        src={`/assets/imgs/airlines/${flightSeat?.seg["fD"].aI.code}.png`}
-                        alt=""
-                      />
-                    )}
-                    {!isUat && (
-                      <img
-                        style={{ width: "35px", height: "35px", margin: "5px" }}
-                        src={`/assets/imgs/airlines/${flightSeat?.seg[
-                          "fD"
-                        ].aI.code.toLowerCase()}.png`}
-                        alt=""
-                      />
-                    )}
-                    <div>
-                      <p>{flightSeat?.seg["fD"].aI.name}</p>
-                      <p className="text-small">
-                        {flightSeat?.seg.fD.aI.code}-{flightSeat?.seg.fD.fN}
-                      </p>
-                    </div>
-                  </div>
-                  <div>
-                    <p>
-                      {flightSeat?.seg.da.code} - {flightSeat?.seg.aa.code}
-                    </p>
+
+            {isMobile ? (
+              // MOBILE UI
+              <div className="flex flex-col h-full bg-gray-50">
+                <div className="bg-white p-4 shadow-sm z-10">
+                  <h2 className="text-lg font-bold">Select Seats</h2>
+                  <div className="flex items-center justify-between text-sm mt-2">
+                    <span className="font-semibold">{flightSeat?.seg.da.code} - {flightSeat?.seg.aa.code}</span>
+                    <span className="text-gray-500">{flightSeat?.seg["fD"].aI.name}</span>
                   </div>
                 </div>
 
-                {/* Choose Seat */}
-                <div>
-                  <table className="w-full border-collapse mb-20">
-                    <thead style={{ borderBottom: "1px solid grey" }}>
-                      <tr>
-                        <th className="px-2 py-2 text-left text-gray-600 border-b border-gray-300">
-                          Passenger
-                        </th>
-                        <th className="px-2 py-2 text-left text-gray-600 border-b border-gray-300">
-                          Seat No
-                        </th>
-                        <th className="px-2 py-2 text-left text-gray-600 border-b border-gray-300">
-                          Cost
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...Array(numAdults)].map((_, index) => (
-                        <tr
-                          key={`adult-${index}`}
-                          className={
-                            selectedPassengerIndex === index
-                              ? "bg-blue-100 cursor-pointer"
-                              : "cursor-pointer"
-                          }
-                          onClick={() => setSelectedPassengerIndex(index)}
+                <div className="flex-1 overflow-y-auto">
+                  {/* Seat Map - Horizontal Scroll */}
+                  <div className="bg-white my-2 p-2">
+                    <p className="text-center text-sm text-gray-400 mb-2">Scroll horizontally to see columns</p>
+                    {renderSeatMap(flightSeat?.seat?.sInfo || [])}
+                  </div>
+
+                  {/* Legend */}
+                  <div className="bg-white p-4 mb-2">
+                    <p className="font-semibold text-sm mb-2">Seat Status</p>
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <div className="flex items-center gap-1"><span className="w-4 h-4 bg-green-500 rounded flex items-center justify-center text-white">✓</span> Sel</div>
+                      <div className="flex items-center gap-1"><span className="w-4 h-4 bg-gray-400 rounded flex items-center justify-center text-white">×</span> Booked</div>
+                    </div>
+
+                    <p className="font-semibold text-sm mt-3 mb-2">Seat Fees</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(() => {
+                        const feeMap = new Set();
+                        (flightSeat?.seat?.sInfo || []).forEach(s => { if (!s.isBooked) feeMap.add(s.amount || 0); });
+                        return Array.from(feeMap).sort((a, b) => a - b).map(amt => {
+                          const color = getSeatColorClass(amt, false);
+                          return <span key={amt} className="px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: color }}>₹{amt}</span>
+                        });
+                      })()}
+                    </div>
+                  </div>
+
+                  {/* Passenger Selection */}
+                  <div className="bg-white p-4 mb-80">
+                    <h3 className="font-semibold mb-2">Passengers</h3>
+                    {[...Array(numAdults)].map((_, i) => (
+                      <div
+                        key={`m-adult-${i}`}
+                        onClick={() => setSelectedPassengerIndex(i)}
+                        className={`p-3 mb-2 rounded border flex justify-between items-center ${selectedPassengerIndex === i ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
+                      >
+                        <div>
+                          <div className="font-medium">Adult {i + 1}</div>
+                          <div className="text-sm text-gray-500">
+                            {seatSelections[flightSeat?.seg?.id]?.[i]?.seatNo ? `Seat: ${seatSelections[flightSeat?.seg?.id]?.[i]?.seatNo}` : 'No seat selected'}
+                          </div>
+                        </div>
+                        <div className="font-semibold">
+                          {seatSelections[flightSeat?.seg?.id]?.[i]?.cost ? `₹${seatSelections[flightSeat?.seg?.id]?.[i]?.cost}` : '—'}
+                        </div>
+                        {seatSelections[flightSeat?.seg?.id]?.[i]?.seatNo && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleSeatDeselect(i); }}
+                            className="text-red-500 font-bold px-2"
+                          >×</button>
+                        )}
+                      </div>
+                    ))}
+                    {numChild !== null && [...Array(numChild)].map((_, i) => {
+                      const idx = numAdults + i;
+                      return (
+                        <div
+                          key={`m-child-${i}`}
+                          onClick={() => setSelectedPassengerIndex(idx)}
+                          className={`p-3 mb-2 rounded border flex justify-between items-center ${selectedPassengerIndex === idx ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
                         >
-                          <td className="px-2 py-2 text-gray-700">
-                            Adult - {index + 1}
-                          </td>
-                          <td className="px-2 py-2 text-gray-700">
-                            {seatSelections[flightSeat?.seg?.id]?.[index]
-                              ?.seatNo ? (
-                              <div className="flex items-center gap-2">
-                                <span>
-                                  {
-                                    seatSelections[flightSeat?.seg?.id]?.[index]
-                                      ?.seatNo
-                                  }
-                                </span>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleSeatDeselect(index);
-                                  }}
-                                  className="text-red-500 hover:text-red-700 font-bold ml-2"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
-                          <td className="px-2 py-2 text-gray-700">
-                            {seatSelections[flightSeat?.seg?.id]?.[index]
-                              ?.cost ||
-                              seatSelections[flightSeat?.seg?.id]?.[index]
-                                ?.cost == "0"
-                              ? `₹ ${seatSelections[flightSeat?.seg?.id]?.[index]
-                                ?.cost
-                              }`
-                              : "—"}
-                          </td>
-                        </tr>
-                      ))}
-                      {numChild !== null &&
-                        [...Array(numChild)].map((_, index) => {
-                          const passengerIndex = numAdults + index;
-                          return (
+                          <div>
+                            <div className="font-medium">Child {i + 1}</div>
+                            <div className="text-sm text-gray-500">
+                              {seatSelections[flightSeat?.seg?.id]?.[idx]?.seatNo ? `Seat: ${seatSelections[flightSeat?.seg?.id]?.[idx]?.seatNo}` : 'No seat selected'}
+                            </div>
+                          </div>
+                          <div className="font-semibold">
+                            {seatSelections[flightSeat?.seg?.id]?.[idx]?.cost ? `₹${seatSelections[flightSeat?.seg?.id]?.[idx]?.cost}` : '—'}
+                          </div>
+                          {seatSelections[flightSeat?.seg?.id]?.[idx]?.seatNo && (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleSeatDeselect(idx); }}
+                              className="text-red-500 font-bold px-2"
+                            >×</button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Fixed Footer */}
+                <div className="bg-white p-4 border-t flex justify-between items-center shadow-lg absolute bottom-0 w-full z-20">
+                  <div>
+                    <div className="text-gray-500 text-xs">Total Amount</div>
+                    <div className="font-bold text-lg">
+                      ₹{(seatSelections[flightSeat?.seg?.id] || []).reduce((sum, s) => sum + (Number(s?.cost) || 0), 0)}
+                    </div>
+                  </div>
+                  <button
+                    className="bg-blue-600 text-white px-6 py-2 rounded font-semibold shadow"
+                    onClick={handleProceed}
+                  >
+                    Proceed
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // DESKTOP UI (Original)
+              <>
+                <h2 className="text-lg font-bold mb-4">Select Seats</h2>
+                <div className="row">
+                  <div className="col-lg-5">
+                    {/* flight details */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <div className="flex item-center">
+                        {isUat && (
+                          <img
+                            style={{ width: "35px", height: "35px", margin: "5px" }}
+                            src={`/assets/imgs/airlines/${flightSeat?.seg["fD"].aI.code}.png`}
+                            alt=""
+                          />
+                        )}
+                        {!isUat && (
+                          <img
+                            style={{ width: "35px", height: "35px", margin: "5px" }}
+                            src={`/assets/imgs/airlines/${flightSeat?.seg[
+                              "fD"
+                            ].aI.code.toLowerCase()}.png`}
+                            alt=""
+                          />
+                        )}
+                        <div>
+                          <p>{flightSeat?.seg["fD"].aI.name}</p>
+                          <p className="text-small">
+                            {flightSeat?.seg.fD.aI.code}-{flightSeat?.seg.fD.fN}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p>
+                          {flightSeat?.seg.da.code} - {flightSeat?.seg.aa.code}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Choose Seat */}
+                    <div>
+                      <table className="w-full border-collapse mb-20">
+                        <thead style={{ borderBottom: "1px solid grey" }}>
+                          <tr>
+                            <th className="px-2 py-2 text-left text-gray-600 border-b border-gray-300">
+                              Passenger
+                            </th>
+                            <th className="px-2 py-2 text-left text-gray-600 border-b border-gray-300">
+                              Seat No
+                            </th>
+                            <th className="px-2 py-2 text-left text-gray-600 border-b border-gray-300">
+                              Cost
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[...Array(numAdults)].map((_, index) => (
                             <tr
-                              key={`child-${index}`}
+                              key={`adult-${index}`}
                               className={
-                                selectedPassengerIndex === passengerIndex
+                                selectedPassengerIndex === index
                                   ? "bg-blue-100 cursor-pointer"
                                   : "cursor-pointer"
                               }
-                              onClick={() =>
-                                setSelectedPassengerIndex(passengerIndex)
-                              }
+                              onClick={() => setSelectedPassengerIndex(index)}
                             >
                               <td className="px-2 py-2 text-gray-700">
-                                Child - {index + 1}
+                                Adult - {index + 1}
                               </td>
                               <td className="px-2 py-2 text-gray-700">
-                                {seatSelections[flightSeat?.seg?.id]?.[
-                                  passengerIndex
-                                ]?.seatNo ? (
+                                {seatSelections[flightSeat?.seg?.id]?.[index]
+                                  ?.seatNo ? (
                                   <div className="flex items-center gap-2">
                                     <span>
                                       {
-                                        seatSelections[flightSeat?.seg?.id]?.[
-                                          passengerIndex
-                                        ]?.seatNo
+                                        seatSelections[flightSeat?.seg?.id]?.[index]
+                                          ?.seatNo
                                       }
                                     </span>
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleSeatDeselect(passengerIndex);
+                                        handleSeatDeselect(index);
                                       }}
                                       className="text-red-500 hover:text-red-700 font-bold ml-2"
                                     >
@@ -906,192 +952,201 @@ const SeatBooking = ({
                                 )}
                               </td>
                               <td className="px-2 py-2 text-gray-700">
-                                {seatSelections[flightSeat?.seg?.id]?.[
-                                  passengerIndex
-                                ]?.cost ||
-                                  seatSelections[flightSeat?.seg?.id]?.[
-                                    passengerIndex
-                                  ]?.cost == "0"
-                                  ? `₹${seatSelections[flightSeat?.seg?.id]?.[
-                                    passengerIndex
-                                  ].cost
+                                {seatSelections[flightSeat?.seg?.id]?.[index]
+                                  ?.cost ||
+                                  seatSelections[flightSeat?.seg?.id]?.[index]
+                                    ?.cost == "0"
+                                  ? `₹ ${seatSelections[flightSeat?.seg?.id]?.[index]
+                                    ?.cost
                                   }`
                                   : "—"}
                               </td>
                             </tr>
-                          );
-                        })}
-                    </tbody>
-                  </table>
-                  <div className="flex justify-end py-2 border-t border-gray-300">
-                    <span className="font-semibold text-gray-800">
-                      Total: ₹{" "}
-                      {(seatSelections[flightSeat?.seg?.id] || []).reduce(
-                        (total, seat) =>
-                          total + (seat?.cost ? parseInt(seat.cost) : 0),
-                        0
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="w-full flex justify-center mt-2">
-                  <button
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow"
-                    onClick={handleProceed}
-                  >
-                    Proceed
-                  </button>
-                </div>
-
-                {/* seat ledend */}
-                <div>
-                  <p style={{ paddingTop: "20px" }}>Seat Status</p>
-                  <div
-                    className="flex space-x-4 items-center"
-                    style={{ paddingTop: "10px" }}
-                  >
-                    {/* Selected */}
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">✓</span>
+                          ))}
+                          {numChild !== null &&
+                            [...Array(numChild)].map((_, index) => {
+                              const passengerIndex = numAdults + index;
+                              return (
+                                <tr
+                                  key={`child-${index}`}
+                                  className={
+                                    selectedPassengerIndex === passengerIndex
+                                      ? "bg-blue-100 cursor-pointer"
+                                      : "cursor-pointer"
+                                  }
+                                  onClick={() =>
+                                    setSelectedPassengerIndex(passengerIndex)
+                                  }
+                                >
+                                  <td className="px-2 py-2 text-gray-700">
+                                    Child - {index + 1}
+                                  </td>
+                                  <td className="px-2 py-2 text-gray-700">
+                                    {seatSelections[flightSeat?.seg?.id]?.[
+                                      passengerIndex
+                                    ]?.seatNo ? (
+                                      <div className="flex items-center gap-2">
+                                        <span>
+                                          {
+                                            seatSelections[flightSeat?.seg?.id]?.[
+                                              passengerIndex
+                                            ]?.seatNo
+                                          }
+                                        </span>
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSeatDeselect(passengerIndex);
+                                          }}
+                                          className="text-red-500 hover:text-red-700 font-bold ml-2"
+                                        >
+                                          ×
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      "—"
+                                    )}
+                                  </td>
+                                  <td className="px-2 py-2 text-gray-700">
+                                    {seatSelections[flightSeat?.seg?.id]?.[
+                                      passengerIndex
+                                    ]?.cost ||
+                                      seatSelections[flightSeat?.seg?.id]?.[
+                                        passengerIndex
+                                      ]?.cost == "0"
+                                      ? `₹${seatSelections[flightSeat?.seg?.id]?.[
+                                        passengerIndex
+                                      ].cost
+                                      }`
+                                      : "—"}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                        </tbody>
+                      </table>
+                      <div className="flex justify-end py-2 border-t border-gray-300">
+                        <span className="font-semibold text-gray-800">
+                          Total: ₹{" "}
+                          {(seatSelections[flightSeat?.seg?.id] || []).reduce(
+                            (total, seat) =>
+                              total + (seat?.cost ? parseInt(seat.cost) : 0),
+                            0
+                          )}
+                        </span>
                       </div>
-                      <span className="text-gray-700 text-sm">Selected</span>
                     </div>
 
-                    {/* Booked */}
-                    <div className="flex items-center space-x-2">
-                      <div className="w-5 h-5 bg-gray-400 rounded flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">×</span>
-                      </div>
-                      <span className="text-gray-700 text-sm">Booked</span>
+                    <div className="w-full flex justify-center mt-2">
+                      <button
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded shadow"
+                        onClick={handleProceed}
+                      >
+                        Proceed
+                      </button>
                     </div>
-                  </div>
-                </div>
 
-                {/* seat fee */}
-                {/* <div>
-                  <p className="font-semibold mb-2">Seat Fees</p>
-                  <div>
-                    {(() => {
-                      const feeMap = {};
-                      (flightSeat?.seat?.sInfo || []).forEach((seat) => {
-                        if (!seat.isBooked) {
-                          const cost = seat.amount || 0;
-                          feeMap[cost] = (feeMap[cost] || 0) + 1;
-                        }
-                      });
-
-                      const sortedFees = Object.entries(feeMap).sort(
-                        (a, b) => a[0] - b[0]
-                      );
-
-                      const toggleAmount = (amount) => {
-                        setSelectedAmounts((prev) =>
-                          prev.includes(amount)
-                            ? prev.filter((a) => a !== amount)
-                            : [...prev, amount]
-                        );
-                      };
-
-                      return sortedFees.map(([amount, count]) => (
-                        <div
-                          key={amount}
-                          className="flex items-center justify-between py-1"
-                          style={{ maxHeight: "25px" }}
-                        >
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              checked={selectedAmounts.includes(Number(amount))}
-                              onChange={() => toggleAmount(Number(amount))}
-                              style={{ height: "15px" }}
-                            />
-                            <span>₹{amount}</span>
-                          </label>
-                          <span className="text-sm text-gray-600">
-                            {count} seat{count > 1 ? "s" : ""}
-                          </span>
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </div> */}
-                <div>
-                  <p className="font-semibold mb-2">Seat Fees</p>
-                  <div>
-                    {(() => {
-                      const feeMap = {};
-                      (flightSeat?.seat?.sInfo || []).forEach((seat) => {
-                        if (!seat.isBooked) {
-                          const cost = seat.amount || 0;
-                          feeMap[cost] = (feeMap[cost] || 0) + 1;
-                        }
-                      });
-
-                      const sortedFees = Object.entries(feeMap).sort(
-                        (a, b) => a[0] - b[0]
-                      );
-
-                      const toggleAmount = (amount) => {
-                        setSelectedAmounts((prev) =>
-                          prev.includes(amount)
-                            ? prev.filter((a) => a !== amount)
-                            : [...prev, amount]
-                        );
-                      };
-
-                      return sortedFees.map(([amount, count]) => {
-                        const seatColor = getSeatColorClass(
-                          Number(amount),
-                          false
-                        ); // Use the getSeatColorClass function for background color
-
-                        return (
-                          <div
-                            key={amount}
-                            className="flex items-center justify-between py-1"
-                            style={{ maxHeight: "25px", margin: "6px" }}
-                          >
-                            <label className="flex items-center space-x-2">
-                              {/* Add dynamic background color to the label */}
-                              <input
-                                type="checkbox"
-                                checked={selectedAmounts.includes(
-                                  Number(amount)
-                                )}
-                                onChange={() => toggleAmount(Number(amount))}
-                                style={{ height: "15px" }}
-                              />
-                              {/* <div
-                                style={{ width: "50px", height: "17px", backgroundColor: seatColor }}
-                              ></div> */}
-                              <span
-                                style={{
-                                  backgroundColor: seatColor, // Apply the dynamic background color here
-                                  padding: "3px 10px",
-                                  borderRadius: "4px",
-                                  color: "#fff", // Ensure the text is readable with white text
-                                }}
-                              >
-                                ₹{amount}
-                              </span>
-                            </label>
-                            <span className="text-sm text-gray-600">
-                              {count} seat{count > 1 ? "s" : ""}
-                            </span>
+                    {/* seat ledend */}
+                    <div>
+                      <p style={{ paddingTop: "20px" }}>Seat Status</p>
+                      <div
+                        className="flex space-x-4 items-center"
+                        style={{ paddingTop: "10px" }}
+                      >
+                        {/* Selected */}
+                        <div className="flex items-center space-x-2">
+                          <div className="w-5 h-5 bg-green-500 rounded flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">✓</span>
                           </div>
-                        );
-                      });
-                    })()}
+                          <span className="text-gray-700 text-sm">Selected</span>
+                        </div>
+
+                        {/* Booked */}
+                        <div className="flex items-center space-x-2">
+                          <div className="w-5 h-5 bg-gray-400 rounded flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">×</span>
+                          </div>
+                          <span className="text-gray-700 text-sm">Booked</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* seat fee */}
+
+                    <div>
+                      <p className="font-semibold mb-2">Seat Fees</p>
+                      <div>
+                        {(() => {
+                          const feeMap = {};
+                          (flightSeat?.seat?.sInfo || []).forEach((seat) => {
+                            if (!seat.isBooked) {
+                              const cost = seat.amount || 0;
+                              feeMap[cost] = (feeMap[cost] || 0) + 1;
+                            }
+                          });
+
+                          const sortedFees = Object.entries(feeMap).sort(
+                            (a, b) => a[0] - b[0]
+                          );
+
+                          const toggleAmount = (amount) => {
+                            setSelectedAmounts((prev) =>
+                              prev.includes(amount)
+                                ? prev.filter((a) => a !== amount)
+                                : [...prev, amount]
+                            );
+                          };
+
+                          return sortedFees.map(([amount, count]) => {
+                            const seatColor = getSeatColorClass(
+                              Number(amount),
+                              false
+                            );
+
+                            return (
+                              <div
+                                key={amount}
+                                className="flex items-center justify-between py-1"
+                                style={{ maxHeight: "25px", margin: "6px" }}
+                              >
+                                <label className="flex items-center space-x-2">
+                                  {/* Add dynamic background color to the label */}
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedAmounts.includes(
+                                      Number(amount)
+                                    )}
+                                    onChange={() => toggleAmount(Number(amount))}
+                                    style={{ height: "15px" }}
+                                  />
+                                  <span
+                                    style={{
+                                      backgroundColor: seatColor,
+                                      padding: "3px 10px",
+                                      borderRadius: "4px",
+                                      color: "#fff",
+                                    }}
+                                  >
+                                    ₹{amount}
+                                  </span>
+                                </label>
+                                <span className="text-sm text-gray-600">
+                                  {count} seat{count > 1 ? "s" : ""}
+                                </span>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-lg-7">
+                    {renderSeatMap(flightSeat?.seat?.sInfo || [])}
                   </div>
                 </div>
-              </div>
-
-              <div className="col-lg-7">
-                {renderSeatMap(flightSeat?.seat?.sInfo || [])}
-              </div>
-            </div>
+              </>
+            )}
           </div>
         </div>
       )}

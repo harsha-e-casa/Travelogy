@@ -1318,3 +1318,131 @@
     border-bottom-right-radius: 8px;
   }
 }
+
+@media (max-width: 325px) {
+  .country {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 2px;
+    /* Reduced gap to save space */
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    position: relative !important;
+    /* Needed for absolute positioning of icon */
+  }
+
+  .country_from {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+    margin-bottom: 0px !important;
+  }
+
+  .country_symbol {
+    display: block !important;
+    position: absolute !important;
+    left: -12% !important;
+    transform: translateX(-50%) !important;
+    top: 45px !important;
+    /* Adjusted to vertically center (~45px for ~90px row) */
+    bottom: auto !important;
+    /* preventing bottom override */
+    z-index: 20 !important;
+    width: auto !important;
+    grid-column: unset !important;
+    grid-row: unset !important;
+  }
+
+  .country_symbol svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .country_to {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+    margin-bottom: 0px !important;
+    padding: 0px !important;
+  }
+
+  .g_w_3 {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+    margin-bottom: 0px !important;
+  }
+
+  .g_w_4 {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+    margin-bottom: 0px !important;
+  }
+
+  .g_w_5 {
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
+    max-width: 100% !important;
+    border-radius: 8px !important;
+  }
+
+  /* Compact padding for 320px */
+  .country_from .pl-6,
+  .g_w_3 .pl-6,
+  .g_w_4 .pl-6,
+  .g_w_5 .pl-6 {
+    padding-left: 0.5rem !important;
+  }
+
+  /* Extra padding for "To" box to clear the centered swap icon */
+  .country_to .pl-6 {
+    padding-left: 1.5rem !important;
+  }
+
+  /* Font size adjustments to fit 2-col on 320px */
+  .country_from .text_4xl,
+  .country_to .text_4xl,
+  .g_w_3 .text-4xl,
+  .g_w_4 .text-4xl {
+    font-size: 14px !important;
+  }
+
+  .country_from .text-xl_small,
+  .country_to .text-xl_small,
+  .g_w_3 .text-xl-small,
+  .g_w_4 .text-xl-small {
+    font-size: 8px !important;
+  }
+
+  .country_from .text-xl-small,
+  .country_to .text-xl_small,
+  .g_w_3 .pt-2,
+  .g_w_4 .pt-2 {
+    font-size: 10px !important;
+  }
+
+  .g_w_3 .sub_txt1,
+  .g_w_4 .sub_txt1 {
+    font-size: 9px !important;
+  }
+
+  /* Fix horizontal overflow by reducing parent container padding */
+  .section_main_book_dash_01 {
+    padding: 3% 0px 7% 0px !important;
+    /* Removed horizontal padding completely */
+  }
+
+  .engine_layer {
+    width: 100% !important;
+    /* Maximize width */
+    left: 0 !important;
+    right: 0 !important;
+    margin: 0 !important;
+  }
+}

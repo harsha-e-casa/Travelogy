@@ -749,6 +749,11 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
     }
   }, [
     tripPhase,
+    onwardStops,
+    onwardDepartureTime,
+    onwardArrivalTime,
+    onwardSelectedAirlines,
+    onwardFareIdentifiers,
     onwardFlightNumberSearch,
     onwardSelectedFareTypes,
     onwardPriceSort,

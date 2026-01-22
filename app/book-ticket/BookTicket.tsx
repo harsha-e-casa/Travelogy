@@ -32,6 +32,7 @@ import "./ExtraBaggage.jsx";
 import "./SessionTime.jsx";
 import { notification } from "antd";
 import "./style.css";
+import "./bookTicket.css";
 import useSessionTime from "./useSessionTime.js";
 import useForceUpdate from "./useForceUpdate.js";
 import {

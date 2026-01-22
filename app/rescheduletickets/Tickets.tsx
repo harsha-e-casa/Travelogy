@@ -175,6 +175,7 @@ export default function Tickets() {
   };
 
   const isFilterApplied = useMemo(() => {
+    console.log("isFilterAppliedisFilterApplied ==> ", stops)
     return (
       stops !== "all" ||
       departureTime !== "all" ||
@@ -1233,35 +1234,33 @@ export default function Tickets() {
 
                       return (
                         <>
+                          <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
+                            <Button
+                              type="primary"
+                              icon={<FilterOutlined />}
+                              onClick={showFilterDrawer}
+                              style={{ marginBottom: "10px" }}
+                            >
+                              Filters
+                            </Button>
+                          </div>
+
+                          <Drawer
+                            title="Filter Flights"
+                            placement="left"
+                            onClose={onCloseFilterDrawer}
+                            open={filterDrawerOpen}
+                            width={300}
+                            zIndex={10000001}
+                          >
+                            <div className="content-left">
+                              {renderFilters()}
+                            </div>
+                          </Drawer>
+
                           {tripInfo?.length > 0 ? (
                             <>
                               <div className="box-grid-tours">
-                                {/* Mobile Filter Button */}
-                                <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
-                                  <Button
-                                    type="primary"
-                                    icon={<FilterOutlined />}
-                                    onClick={showFilterDrawer}
-                                    style={{ marginBottom: "10px" }}
-                                  >
-                                    Filters
-                                  </Button>
-                                </div>
-
-                                {/* Drawer */}
-                                <Drawer
-                                  title="Filter Flights"
-                                  placement="left"
-                                  onClose={onCloseFilterDrawer}
-                                  open={filterDrawerOpen}
-                                  width={300}
-                                  zIndex={10000001}
-                                >
-                                  <div className="content-left">
-                                    {renderFilters()}
-                                  </div>
-                                </Drawer>
-
                                 <div className="row">
                                   <div
                                     className="box-list-flights box-list-flights-2"
@@ -1312,7 +1311,8 @@ export default function Tickets() {
                                           <TicketCardMobile
                                             ticket={ticket}
                                             flightData={flightData}
-                                            markup={markup}
+                                            reschedule={true}
+                                            requestId={requestId}
                                             shareMode={shareMode}
                                             selectedQuoteFlights={selectedQuoteFlights}
                                             onQuoteSelectionChange={handleQuoteSelectionChange}

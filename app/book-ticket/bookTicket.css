@@ -4,6 +4,23 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.m-px-10 {
+  @media (max-width: 1300px) {
+    padding-right: 2.5rem;
+    padding-left: 2.5rem;
+  }
+
+  @media (max-width: 430px) {
+    padding-right: 0rem;
+    padding-left: 0rem;
+  }
 }
