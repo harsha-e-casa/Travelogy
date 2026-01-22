@@ -45,6 +45,7 @@ import { checkTokenExpiry } from "@/services/Utils";
 import ByDepartureTime from "@/components/Filter/ByDepartureTime";
 import ByArrivalTime from "@/components/Filter/ByArrivalTime";
 import ByFareIdentifier from "@/components/Filter/ByFareIdentifier";
+import ByAirlineSearch from "@/components/Filter/ByAirlineSearch";
 import ByFareType from "@/components/Filter/ByFareType";
 import BySortPrice from "@/components/Filter/BySortPrice";
 import { DownOutlined, FilterOutlined, ShareAltOutlined, CloseOutlined, MailOutlined } from "@ant-design/icons";
@@ -482,11 +483,22 @@ export default function Tickets() {
 
       if (flightNumberSearch) {
         filteredData = filteredData.filter((ticket: any) => {
-          return ticket.sI.some((segment: any) =>
-            segment.fD.fN
-              .toLowerCase()
-              .includes(flightNumberSearch.toLowerCase())
-          );
+          return ticket.sI.some((segment: any) => {
+            const airlineCode = segment?.fD?.aI?.code || "";
+            const flightNumber = segment?.fD?.fN || "";
+            const flightCode = `${airlineCode} ${flightNumber}`;
+            const flightCodeNoSpace = `${airlineCode}${flightNumber}`;
+
+            const searchTerm = flightNumberSearch.toLowerCase().trim();
+
+            const isMatch = (
+              flightCode.toLowerCase().includes(searchTerm) ||
+              flightCodeNoSpace.toLowerCase().includes(searchTerm) ||
+              flightNumber.toLowerCase().includes(searchTerm)
+            );
+
+            return isMatch;
+          });
         });
       }
 
@@ -541,6 +553,7 @@ export default function Tickets() {
     selectedAirlines,
     arrivalTime,
     fareIdentifiers,
+    flightNumberSearch,
     selectedFareTypes,
     flightData,
     priceSort,
@@ -1005,13 +1018,13 @@ export default function Tickets() {
         </div>
       </div>
 
-      {/* <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
+      <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
         <div className="text-black font-bold text-sm mb-2">Flight Number</div>
         <ByAirlineSearch
           flightNumberSearch={flightNumberSearch}
           setFlightNumberSearch={setFlightNumberSearch}
         />
-      </div> */}
+      </div>
 
       <div className="mb-2 bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
         <div className="text-black font-bold text-sm mb-2">Fare Type</div>
