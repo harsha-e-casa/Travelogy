@@ -400,13 +400,7 @@ const VisaForm = () => {
 
           <div className="custom-radio-group">
             <div
-              className="pt-2 grid grid-cols-4 gap-2"
-              style={{
-                width: "90%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-around",
-              }}
+              className="pt-2 grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-[90%]"
               role="radiogroup"
               aria-invalid={Boolean(errors.purposeOfTravel)}
             >
@@ -420,7 +414,7 @@ const VisaForm = () => {
                     id={option}
                     name="purposeOfTravel"
                     value={option}
-                    className="radio-input w-4 h-4"
+                    className="radio-input w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] shrink-0"
                     onChange={handleRadioChange}
                     onFocus={() => handleClearError("purposeOfTravel")}
                   />

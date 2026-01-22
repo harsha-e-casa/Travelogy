@@ -54,7 +54,7 @@ const InsurancePage = () => {
           </div>
         </div>
 
-        <section className="section-box box-how-it-work background-body">
+        <section className="section-box box-how-it-work background-body pt-0 pb-0">
           <div className="container">
             <div className="text-center"></div>
             <div className="row mt-60 align-items-center">
@@ -339,7 +339,7 @@ const InsurancePage = () => {
           </div>
         </div>
 
-        <div className="container pt-120 pb-80">
+        <div className="container pt-80 pb-40">
           <div className="text-center">
             <h2 className="neutral-1000">
               Why Choose Us for Your Travel Insurance?
