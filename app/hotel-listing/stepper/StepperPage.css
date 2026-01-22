@@ -76,6 +76,24 @@
     display: none;
 }
 
+/* Explicit Booking Grid Visibility Control */
+.desktop-booking-grid {
+    display: grid !important;
+}
+.mobile-booking-grid {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    .desktop-booking-grid {
+        display: none !important;
+    }
+    .mobile-booking-grid {
+        display: block !important;
+        background-color: #eff6ff !important;
+    }
+}
+
 /* Hide desktop sidebar fare summary on tablet and mobile */
 @media (max-width:768px) {
     .fare-summary-wrapper {
@@ -317,6 +335,40 @@
     /* Ensure inputs take remaining space */
     .stepper-guest-row input {
         width: 100%;
+    }
+}
+
+/* Small mobile devices (e.g., 320px width) */
+@media (max-width: 370px) {
+    .stepper-content {
+        padding: 0 5px !important;
+    }
+
+    .mobile-booking-grid {
+        padding: 10px !important;
+    }
+
+    .mobile-booking-grid .text-lg {
+        font-size: 16px !important;
+    }
+
+    .mobile-booking-grid .text-xs {
+        font-size: 11px !important;
+    }
+    
+    .mobile-booking-grid .text-sm {
+        font-size: 12px !important;
+    }
+
+    /* Reduce badge padding */
+    .mobile-booking-grid .px-3 {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+    
+    /* Adjust spacing in the flex header */
+    .mobile-booking-grid .flex.justify-between {
+        gap: 5px;
     }
 }
 
