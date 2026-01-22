@@ -415,7 +415,7 @@ const TravelForm = () => {
           </label>
 
           <div className="custom-radio-group">
-            <div className="pl-20 pt-2 grid grid-cols-2 gap-4">
+            <div className="pt-2 grid grid-cols-1 md:grid-cols-2 gap-4 w-full md:w-[90%]">
               {/* Group Insurance */}
               <label className="custom-radio-button flex items-center gap-2">
                 <input
@@ -423,7 +423,7 @@ const TravelForm = () => {
                   id="grpIns"
                   name="policyType"
                   value="grpIns"
-                  className="radio-input w-4 h-4"
+                  className="radio-input w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] shrink-0"
                   onChange={handleRadioChange}
                   onFocus={() => handleClearError("policyType")}
                 />
@@ -437,7 +437,7 @@ const TravelForm = () => {
                   id="indIns"
                   name="policyType"
                   value="indIns"
-                  className="radio-input w-4 h-4"
+                  className="radio-input w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] shrink-0"
                   onChange={handleRadioChange}
                   onFocus={() => handleClearError("policyType")}
                 />
@@ -466,12 +466,7 @@ const TravelForm = () => {
 
           <div className="custom-radio-group">
             <div
-              className="pt-2 grid grid-cols-4 gap-2"
-              style={{
-                width: "90%",
-                display: "flex",
-                justifyContent: "space-around",
-              }}
+              className="pt-2 grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-[90%]"
             >
               {["usd50k", "usd2.5L", "usd5L", "usd10L"].map((option) => (
                 <label
@@ -483,7 +478,7 @@ const TravelForm = () => {
                     id={option}
                     name="insuranceCoverage"
                     value={option}
-                    className="radio-input w-4 h-4"
+                    className="radio-input w-5 h-5 min-w-[1.25rem] min-h-[1.25rem] shrink-0"
                     onChange={handleRadioChange}
                     onFocus={() => handleClearError("insuranceCoverage")}
                   />

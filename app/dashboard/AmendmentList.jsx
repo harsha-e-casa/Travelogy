@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Select, DatePicker, Button } from "antd";
+import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import AmendmentModal from "./AmendmentModal";
 
@@ -41,6 +42,7 @@ const AmendmentList = ({
   const [sortBy, setSortBy] = useState("idIndex");
   const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   let sortedBookings = amendments ? [...amendments] : [];
   if (sortBy === "idIndex") {
@@ -112,7 +114,29 @@ const AmendmentList = ({
 
   return (
     <div className="table-section">
-      <div className="filters-section">
+      {/* Backdrop */}
+      {showFilters && (
+        <div
+          className="filter-backdrop show"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
+
+      <div className={`filters-section ${showFilters ? "show-filters" : ""}`}>
+        <div className="filters-header md:hidden flex justify-between items-center mb-4 w-full" style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '15px',
+          borderBottom: '1px solid #e5e7eb',
+          paddingBottom: '15px'
+        }}>
+          <div className="flex items-center gap-2">
+            <FilterOutlined />
+            <span className="text-lg font-bold" style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Filters</span>
+          </div>
+          <CloseOutlined onClick={() => setShowFilters(false)} style={{ fontSize: '1.2rem', padding: '5px', cursor: 'pointer' }} />
+        </div>
         <div className="filter-group">
           <label className="filter-label">Email:</label>
           <Select
@@ -188,6 +212,13 @@ const AmendmentList = ({
         </Button>
       </div>
 
+      <div
+        className="filters-toggle-btn"
+        onClick={() => setShowFilters(!showFilters)}
+      >
+        <FilterOutlined /> Filters
+      </div>
+
       {/* Pagination Row */}
       <div className="table-header">
         <div className="pagination-info">
@@ -235,76 +266,78 @@ const AmendmentList = ({
         data={modalData}
         loading={loading}
       />
-      <table className="modern-table">
-        <thead>
-          <tr>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("idIndex")}
-            >
-              ID
-              {sortBy === "idIndex" && (
-                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
-              )}
-            </th>
-            <th>Booking ID</th>
-            <th>Amendment ID</th>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("amount")}
-            >
-              Amount
-              {sortBy === "amount" && (
-                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
-              )}
-            </th>
-            <th>Type Of Amendment</th>
-            <th>Status</th>
-            <th>Time Of Amendment</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!amendments || amendments.length === 0 ? (
+      <div className="table-responsive">
+        <table className="modern-table">
+          <thead>
             <tr>
-              <td colSpan={7} className="empty-state">
-                <div className="empty-state-text">No Amendments found</div>
-              </td>
+              <th
+                className="cursor-pointer select-none"
+                onClick={() => handleSort("idIndex")}
+              >
+                ID
+                {sortBy === "idIndex" && (
+                  <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+                )}
+              </th>
+              <th>Booking ID</th>
+              <th>Amendment ID</th>
+              <th
+                className="cursor-pointer select-none"
+                onClick={() => handleSort("amount")}
+              >
+                Amount
+                {sortBy === "amount" && (
+                  <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+                )}
+              </th>
+              <th>Type Of Amendment</th>
+              <th>Status</th>
+              <th>Time Of Amendment</th>
             </tr>
-          ) : pagedBookings.length > 0 ? (
-            pagedBookings.map((b, idx) => (
-              <tr key={b.id || idx}>
-                <td>{startIdx + idx + 1}</td>
-                <td >
-                  <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
-                    {b.booking_id}
-                  </Link>
+          </thead>
+          <tbody>
+            {!amendments || amendments.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="empty-state">
+                  <div className="empty-state-text">No Amendments found</div>
                 </td>
-                <td
-                  onClick={() => handleAmendmentClick(b.amendment_id)}
-                >
-                  {b.amendment_id || "--"}
-                </td>
-                <td >
-                  {b.refundable_amount || "--"}
-                </td>
-                <td >
-                  {b.type_of_amendment || "--"}
-                </td>
-                <td >
-                  {b.amendment_status || "--"}
-                </td>
-                <td >{formatDateTime(b.time)}</td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={5} className="empty-state">
-                <div className="empty-state-text">No amendments found</div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ) : pagedBookings.length > 0 ? (
+              pagedBookings.map((b, idx) => (
+                <tr key={b.id || idx}>
+                  <td>{startIdx + idx + 1}</td>
+                  <td >
+                    <Link href={`/BookingDetails?booking_id=${b.booking_id}`}>
+                      {b.booking_id}
+                    </Link>
+                  </td>
+                  <td
+                    onClick={() => handleAmendmentClick(b.amendment_id)}
+                  >
+                    {b.amendment_id || "--"}
+                  </td>
+                  <td >
+                    {b.refundable_amount || "--"}
+                  </td>
+                  <td >
+                    {b.type_of_amendment || "--"}
+                  </td>
+                  <td >
+                    {b.amendment_status || "--"}
+                  </td>
+                  <td >{formatDateTime(b.time)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="empty-state">
+                  <div className="empty-state-text">No amendments found</div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div className="table-footer">
         <span>
@@ -312,7 +345,7 @@ const AmendmentList = ({
           of {total} bookings
         </span>
       </div>
-    </div>
+    </div >
   );
 };
 

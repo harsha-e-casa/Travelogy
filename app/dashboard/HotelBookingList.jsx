@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Select, DatePicker, Button } from "antd";
+import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 function formatDateTime(isoString) {
@@ -35,6 +36,7 @@ const HotelBookingList = ({
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
   const [sortBy, setSortBy] = useState("idIndex"); // "idIndex" or "amount"
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
+  const [showFilters, setShowFilters] = useState(false);
 
   // SORT LOGIC
   let sortedBookings = [...bookings];
@@ -86,7 +88,29 @@ const HotelBookingList = ({
 
   return (
     <div className="table-section">
-      <div className="filters-section">
+      {/* Backdrop */}
+      {showFilters && (
+        <div
+          className="filter-backdrop show"
+          onClick={() => setShowFilters(false)}
+        />
+      )}
+
+      <div className={`filters-section ${showFilters ? "show-filters" : ""}`}>
+        <div className="filters-header md:hidden flex justify-between items-center mb-4 w-full" style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '15px',
+          borderBottom: '1px solid #e5e7eb',
+          paddingBottom: '15px'
+        }}>
+          <div className="flex items-center gap-2">
+            <FilterOutlined />
+            <span className="text-lg font-bold" style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Filters</span>
+          </div>
+          <CloseOutlined onClick={() => setShowFilters(false)} style={{ fontSize: '1.2rem', padding: '5px', cursor: 'pointer' }} />
+        </div>
         <div className="filter-group">
           <label className="filter-label">Email:</label>
           <Select
@@ -175,6 +199,13 @@ const HotelBookingList = ({
         </Button>
       </div>
 
+      <div
+        className="filters-toggle-btn"
+        onClick={() => setShowFilters(!showFilters)}
+      >
+        <FilterOutlined /> Filters
+      </div>
+
       {/* Pagination Row */}
       <div className="table-header">
         <div className="pagination-info">
@@ -214,80 +245,82 @@ const HotelBookingList = ({
         </div>
       </div>
 
-      <table className="modern-table">
-        <thead>
-          <tr>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("idIndex")}
-            >
-              ID
-              {sortBy === "idIndex" && (
-                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
-              )}
-            </th>
-            <th>Booking ID</th>
-            <th
-              className="cursor-pointer select-none"
-              onClick={() => handleSort("amount")}
-            >
-              Base Fare
-              {sortBy === "amount" && (
-                <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
-              )}
-            </th>
-            <th>Markup</th>
-            <th>Total Amount</th>
-            <th>Status</th>
-            <th>Booking Time</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!bookings || bookings.length === 0 ? (
+      <div className="table-responsive">
+        <table className="modern-table">
+          <thead>
             <tr>
-              <td colSpan={7} className="empty-state">
-                <div className="empty-state-text">No bookings found</div>
-              </td>
+              <th
+                className="cursor-pointer select-none"
+                onClick={() => handleSort("idIndex")}
+              >
+                ID
+                {sortBy === "idIndex" && (
+                  <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+                )}
+              </th>
+              <th>Booking ID</th>
+              <th
+                className="cursor-pointer select-none"
+                onClick={() => handleSort("amount")}
+              >
+                Base Fare
+                {sortBy === "amount" && (
+                  <span>{sortOrder === "asc" ? " ▲" : " ▼"}</span>
+                )}
+              </th>
+              <th>Markup</th>
+              <th>Total Amount</th>
+              <th>Status</th>
+              <th>Booking Time</th>
             </tr>
-          ) : pagedBookings.length > 0 ? (
-            pagedBookings.map((b, idx) => (
-              <tr key={b.id || idx}>
-                <td>{startIdx + idx + 1}</td>
-                <td>
-                  <Link
-                    href={`/hotel-listing/stepper/booking-details?bookingId=${b.booking_id}`}
-                    className="booking-id"
-                  >
-                    {b.booking_id}
-                  </Link>
+          </thead>
+          <tbody>
+            {!bookings || bookings.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="empty-state">
+                  <div className="empty-state-text">No bookings found</div>
                 </td>
-                <td>{b.amount || "--"}</td>
-                <td>{b.markup || "--"}</td>
-                <td>{b.totalAmount || "--"}</td>
-                <td>
-                  <span className={getStatusClass(b.status)}>
-                    {b.status || "--"}
-                  </span>
-                </td>
-                <td>{formatDateTime(b.booking_time)}</td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={7} className="text-center py-4">
-                No bookings found
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            ) : pagedBookings.length > 0 ? (
+              pagedBookings.map((b, idx) => (
+                <tr key={b.id || idx}>
+                  <td>{startIdx + idx + 1}</td>
+                  <td>
+                    <Link
+                      href={`/hotel-listing/stepper/booking-details?bookingId=${b.booking_id}`}
+                      className="booking-id"
+                    >
+                      {b.booking_id}
+                    </Link>
+                  </td>
+                  <td>{b.amount || "--"}</td>
+                  <td>{b.markup || "--"}</td>
+                  <td>{b.totalAmount || "--"}</td>
+                  <td>
+                    <span className={getStatusClass(b.status)}>
+                      {b.status || "--"}
+                    </span>
+                  </td>
+                  <td>{formatDateTime(b.booking_time)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className="text-center py-4">
+                  No bookings found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
       <div className="table-footer">
         <span>
           Showing {total === 0 ? 0 : startIdx + 1} to {Math.min(endIdx, total)}{" "}
           of {total} bookings
         </span>
       </div>
-    </div>
+    </div >
   );
 };
 
