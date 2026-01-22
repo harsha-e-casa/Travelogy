@@ -110,3 +110,12 @@
         display: block;
     }
 }
+
+/* Share Quote Button - Mobile Optimization */
+@media (max-width: 350px) {
+    .share-quote-btn {
+        width: 37%;
+        font-size: 0.65rem;
+        padding-left: 13px !important;
+    }
+}

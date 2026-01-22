@@ -59,34 +59,39 @@ export default function SortHotelsFilter({
         </div>
         <div className="col-xl-8 col-md-8 col-12 mb-10 text-lg-end text-center">
           <div className="box-item-sort">
-            <button className="btn btn-gray rounded-4" onClick={handleClearFilters}>Clear Filters</button>
+            <button
+              className={`btn btn-gray rounded-4 ${sortCriteria === "name" ? "d-none d-md-inline-block" : ""}`}
+              onClick={handleClearFilters}
+            >
+              Clear Filters
+            </button>
             <div className="item-sort border-1 rounded-3">
               <span className="text-xs-medium neutral-500 mr-5">Sort by:</span>
-              <Select 
-              value={sortCriteria}
-              onChange={(value) =>
+              <Select
+                value={sortCriteria}
+                onChange={(value) =>
                   // keep existing handler signature by synthesizing an event object
                   handleSortChange({ target: { value } } as unknown as React.ChangeEvent<HTMLSelectElement>)
                 }
-                style={{ minWidth: 5, textAlign:"left" }}
+                style={{ minWidth: 5, textAlign: "left" }}
                 bordered={false}   // remove input border
-                suffixIcon={null}  
+                suffixIcon={null}
               >
                 <Select.Option value="name">Name</Select.Option>
-                    <Select.Option value="price">Price</Select.Option>
-                    <Select.Option value="rating">Rating</Select.Option>
+                <Select.Option value="price">Price</Select.Option>
+                <Select.Option value="rating">Rating</Select.Option>
               </Select>
             </div>
             {/* Mobile Filter Button - Inline with sort options */}
             {onFilterClick && (
-              <button 
+              <button
                 className="filter-hamburger-btn-inline"
                 onClick={onFilterClick}
                 aria-label="Open Filters"
               >
                 <div className="hamburger-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                    <path d="M3 3h18L14 12v7l-4 2v-9L3 3z" fill="grey"/>
+                    <path d="M3 3h18L14 12v7l-4 2v-9L3 3z" fill="grey" />
                   </svg>
                 </div>
               </button>

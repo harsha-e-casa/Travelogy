@@ -8,7 +8,6 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  /* background: #008cff; */
   color: white;
   border: none;
   border-radius: 8px;
@@ -16,7 +15,6 @@
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.3s ease;
-  /* box-shadow: 0 2px 8px rgba(0, 140, 255, 0.3); */
   width: 60px;
   height: 35px;
   border: 1px solid #e4e6e8;
@@ -24,9 +22,7 @@
 }
 
 .filter-hamburger-btn-inline:hover {
-  /* background: orange; */
   transform: translateY(-2px);
-  /* box-shadow: 0 4px 12px rgba(0, 140, 255, 0.4); */
 }
 
 .filter-hamburger-btn-inline:active {
@@ -135,43 +131,30 @@
   }
 }
 
-
-/* Ensure images are responsive and fit within their container */
+/* Image Section Styles */
 .hotel-images-section {
   display: flex;
-  /* Use flexbox for alignment */
   flex-wrap: wrap;
-  /* Allow wrapping for smaller screens */
   justify-content: center;
-  /* Center images horizontally */
   margin: 0 auto;
-  /* Center the section */
   max-width: 80%;
-  /* Prevent overflow */
 }
 
 .hotel-images-section img {
   max-width: 100%;
-  /* Make images responsive */
   height: auto;
-  /* Maintain aspect ratio */
   margin: 5px;
-  /* Add some spacing between images */
   border-radius: 8px;
-  /* Optional: add rounded corners */
 }
 
-/* Media query for smaller screens */
 @media (max-width: 1025px) {
   .hotel-images-section {
     flex-direction: column;
-    /* Stack images vertically on small screens */
     align-items: center;
-    /* Center images */
   }
 }
 
-/* Panel Header */
+/* Panel Elements */
 .filter-panel-header {
   display: flex;
   align-items: center;
@@ -212,7 +195,6 @@
   height: 24px;
 }
 
-/* Panel Content */
 .filter-panel-content {
   flex: 1;
   overflow-y: auto;
@@ -237,7 +219,6 @@
   background: #555;
 }
 
-/* Panel Footer */
 .filter-panel-footer {
   padding: 16px 20px;
   border-top: 1px solid #e0e0e0;
@@ -267,16 +248,14 @@
   transform: scale(0.98);
 }
 
-/* Hide desktop filters on mobile */
 .desktop-filters {
   display: block;
 }
 
 /* ============================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS (Main Layout)
    ============================================ */
 
-/* Show hamburger button and hide desktop filters on tablet and mobile */
 @media (max-width: 1023px) {
   .filter-hamburger-btn-inline {
     display: flex;
@@ -286,7 +265,6 @@
     display: none !important;
   }
 
-  /* Ensure items align in a row on mobile/tablet */
   .box-item-sort {
     display: flex;
     flex-direction: row;
@@ -297,7 +275,6 @@
   }
 }
 
-/* Adjust mobile filter panel for smaller screens */
 @media (max-width: 767px) {
   .mobile-filter-panel {
     width: 85%;
@@ -316,14 +293,16 @@
   .filter-panel-content {
     padding: 12px;
   }
+
+  .hotel-list-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
 }
 
-/* Full width filter panel on small mobile */
 @media (max-width: 599px) {
   .mobile-filter-panel {
     width: 90%;
-    max-width: 100%;
-    height: 100vh;
   }
 
   .filter-hamburger-btn-inline {
@@ -351,7 +330,7 @@
 }
 
 /* ============================================
-   IMAGE GALLERY RESPONSIVE STYLES
+   IMAGE GALLERY STYLES
    ============================================ */
 
 .image-gallery {
@@ -375,7 +354,6 @@
   gap: 10px;
 }
 
-/* When multiple images exist, the right column has a vertical row of 3 images */
 .image-row-3 {
   display: flex;
   flex-direction: column;
@@ -401,10 +379,9 @@
 
 .main-banner-img {
   height: 400px;
-  /* Default height for desktop */
 }
 
-/* Button overlay positioning */
+/* Gallery Photo Count Button Styling */
 .box-button-abs {
   position: absolute;
   bottom: 20px;
@@ -416,609 +393,83 @@
   background-color: white;
   color: #1a1a1a;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   gap: 8px;
-  border-radius: 10px;
-}
-
-.filter-panel-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.filter-panel-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Panel Footer */
-.filter-panel-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #e0e0e0;
-  background: white;
-}
-
-.filter-apply-btn {
-  width: 100%;
-  padding: 14px 20px;
-  background: #008cff;
-  color: white;
-  border: none;
-  border-radius: 8px;
   font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 140, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.filter-apply-btn:hover {
-  background: #0077dd;
-  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.4);
-}
-
-.filter-apply-btn:active {
-  transform: scale(0.98);
-}
-
-/* Hide desktop filters on mobile */
-.desktop-filters {
-  display: block;
+.btn.btn-brand-secondary:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
 }
 
 /* ============================================
-   RESPONSIVE BREAKPOINTS
+   GALLERY RESPONSIVE ADJUSTMENTS
    ============================================ */
 
-/* Show hamburger button and hide desktop filters on tablet and mobile */
-@media (max-width: 1023px) {
-  .filter-hamburger-btn-inline {
-    display: flex;
+/* Large Desktop Adjustments */
+@media (max-width: 1410px) {
+  .image-row:first-child .image-column:first-child {
+    flex: 3;
   }
 
-  .desktop-filters {
-    display: none !important;
+  .image-row:first-child .image-column:last-child {
+    flex: 1;
   }
 
-  /* Ensure items align in a row on mobile/tablet */
-  .box-item-sort {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
+  .main-banner-img {
+    height: 380px;
+  }
+
+  .image-row,
+  .image-column,
+  .image-row-3 {
     gap: 8px;
   }
 }
 
-/* Adjust mobile filter panel for smaller screens */
-@media (max-width: 767px) {
-  .mobile-filter-panel {
-    width: 85%;
-    max-width: 100%;
-    height: 100vh;
+/* Range adjustment for 1024px to 1200px as requested */
+@media screen and (min-width: 1024px) and (max-width: 1280px) {
+  .box-button-abs {
+    bottom: 20px !important;
+    right: 90px !important;
   }
 
-  .filter-panel-header {
-    padding: 16px;
+  .btn.btn-brand-secondary {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    gap: 4px;
+    border-radius: 8px;
   }
 
-  .filter-panel-title {
-    font-size: 1.1rem;
-  }
-
-  .filter-panel-content {
-    padding: 12px;
-  }
-}
-
-/* Full width filter panel on small mobile */
-@media (max-width: 599px) {
-  .mobile-filter-panel {
-    width: 90%;
-    max-width: 100%;
-    height: 100vh;
-  }
-
-  .filter-hamburger-btn-inline {
-    width: auto;
-    justify-content: center;
-    padding: 10px 20px;
-  }
-
-  .filter-panel-header {
-    padding: 14px 16px;
-  }
-
-  .filter-panel-title {
-    font-size: 1rem;
-  }
-
-  .filter-panel-content {
-    padding: 10px;
-  }
-
-  .filter-apply-btn {
-    padding: 12px 16px;
-    font-size: 0.95rem;
+  .btn.btn-brand-secondary svg {
+    width: 18px !important;
+    height: 18px !important;
   }
 }
 
-/* ============================================
-   IMAGE GALLERY RESPONSIVE STYLES
-   ============================================ */
-
-.image-gallery {
-  position: relative;
-  margin-bottom: 20px;
-  width: auto;
-  max-width: 100%;
-}
-
-.image-row {
-  display: flex;
-  gap: 10px;
-  width: auto;
-  max-width: 100%;
-}
-
-.image-column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* When multiple images exist, the right column has a vertical row of 3 images */
-.image-row-3 {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-}
-
-.image-item {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.image-item img,
-.main-banner-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-}
-
-.main-banner-img {
-  height: 400px;
-  /* Default height for desktop */
-}
-
-/* Button overlay positioning */
-.box-button-abs {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-}
-
-.btn.btn-brand-secondary {
-  background-color: white;
-  color: #1a1a1a;
-  padding: 8px 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 10px;
-}
-
-.filter-panel-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.filter-panel-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Panel Footer */
-.filter-panel-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #e0e0e0;
-  background: white;
-}
-
-.filter-apply-btn {
-  width: 100%;
-  padding: 14px 20px;
-  background: #008cff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 140, 255, 0.3);
-}
-
-.filter-apply-btn:hover {
-  background: #0077dd;
-  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.4);
-}
-
-.filter-apply-btn:active {
-  transform: scale(0.98);
-}
-
-/* Hide desktop filters on mobile */
-.desktop-filters {
-  display: block;
-}
-
-/* ============================================
-   RESPONSIVE BREAKPOINTS
-   ============================================ */
-
-/* Show hamburger button and hide desktop filters on tablet and mobile */
-@media (max-width: 1023px) {
-  .filter-hamburger-btn-inline {
-    display: flex;
-  }
-
-  .desktop-filters {
-    display: none !important;
-  }
-
-  /* Ensure items align in a row on mobile/tablet */
-  .box-item-sort {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-}
-
-/* Adjust mobile filter panel for smaller screens */
-@media (max-width: 767px) {
-  .mobile-filter-panel {
-    width: 85%;
-    max-width: 100%;
-    height: 100vh;
-  }
-
-  .filter-panel-header {
-    padding: 16px;
-  }
-
-  .filter-panel-title {
-    font-size: 1.1rem;
-  }
-
-  .filter-panel-content {
-    padding: 12px;
-  }
-}
-
-/* Full width filter panel on small mobile */
-@media (max-width: 599px) {
-  .mobile-filter-panel {
-    width: 90%;
-    max-width: 100%;
-    height: 100vh;
-  }
-
-  .filter-hamburger-btn-inline {
-    width: auto;
-    justify-content: center;
-    padding: 10px 20px;
-  }
-
-  .filter-panel-header {
-    padding: 14px 16px;
-  }
-
-  .filter-panel-title {
-    font-size: 1rem;
-  }
-
-  .filter-panel-content {
-    padding: 10px;
-  }
-
-  .filter-apply-btn {
-    padding: 12px 16px;
-    font-size: 0.95rem;
-  }
-}
-
-/* ============================================
-   IMAGE GALLERY RESPONSIVE STYLES
-   ============================================ */
-
-.image-gallery {
-  position: relative;
-  margin-bottom: 20px;
-  width: auto;
-  max-width: 100%;
-}
-
-.image-row {
-  display: flex;
-  gap: 10px;
-  width: auto;
-  max-width: 100%;
-}
-
-.image-column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* When multiple images exist, the right column has a vertical row of 3 images */
-.image-row-3 {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-}
-
-.image-item {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.image-item img,
-.main-banner-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-}
-
-.main-banner-img {
-  height: 400px;
-  /* Default height for desktop */
-}
-
-/* Button overlay positioning */
-.box-button-abs {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-}
-
-.btn.btn-brand-secondary {
-  background-color: white;
-  color: #1a1a1a;
-  padding: 8px 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 10px;
-}
-
-.filter-panel-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.filter-panel-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Panel Footer */
-.filter-panel-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #e0e0e0;
-  background: white;
-}
-
-.filter-apply-btn {
-  width: 100%;
-  padding: 14px 20px;
-  background: #008cff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 140, 255, 0.3);
-}
-
-.filter-apply-btn:hover {
-  background: #0077dd;
-  box-shadow: 0 4px 12px rgba(0, 140, 255, 0.4);
-}
-
-.filter-apply-btn:active {
-  transform: scale(0.98);
-}
-
-/* Hide desktop filters on mobile */
-.desktop-filters {
-  display: block;
-}
-
-/* ============================================
-   RESPONSIVE BREAKPOINTS
-   ============================================ */
-
-/* Show hamburger button and hide desktop filters on tablet and mobile */
-@media (max-width: 1023px) {
-  .filter-hamburger-btn-inline {
-    display: flex;
-  }
-
-  .desktop-filters {
-    display: none !important;
-  }
-
-  /* Ensure items align in a row on mobile/tablet */
-  .box-item-sort {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-}
-
-/* Adjust mobile filter panel for smaller screens */
-@media (max-width: 767px) {
-  .mobile-filter-panel {
-    width: 85%;
-    max-width: 100%;
-    height: 100vh;
-  }
-
-  .filter-panel-header {
-    padding: 16px;
-  }
-
-  .filter-panel-title {
-    font-size: 1.1rem;
-  }
-
-  .filter-panel-content {
-    padding: 12px;
-  }
-}
-
-/* Full width filter panel on small mobile */
-@media (max-width: 599px) {
-  .mobile-filter-panel {
-    width: 90%;
-    max-width: 100%;
-    height: 100vh;
-  }
-
-  .filter-hamburger-btn-inline {
-    width: auto;
-    justify-content: center;
-    padding: 10px 20px;
-  }
-
-  .filter-panel-header {
-    padding: 14px 16px;
-  }
-
-  .filter-panel-title {
-    font-size: 1rem;
-  }
-
-  .filter-panel-content {
-    padding: 10px;
-  }
-
-  .filter-apply-btn {
-    padding: 12px 16px;
-    font-size: 0.95rem;
-  }
-}
-
-/* ============================================
-   IMAGE GALLERY RESPONSIVE STYLES
-   ============================================ */
-
-.image-gallery {
-  position: relative;
-  margin-bottom: 20px;
-  width: auto;
-  max-width: 100%;
-}
-
-.image-row {
-  display: flex;
-  gap: 10px;
-  width: auto;
-  max-width: 100%;
-}
-
-.image-column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* When multiple images exist, the right column has a vertical row of 3 images */
-.image-row-3 {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-}
-
-.image-item {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.image-item img,
-.main-banner-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-  display: block;
-}
-
-.main-banner-img {
-  height: 400px;
-  /* Default height for desktop */
-}
-
-/* Button overlay positioning */
-.box-button-abs {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10;
-}
-
-.btn.btn-brand-secondary {
-  background-color: white;
-  color: #1a1a1a;
-  padding: 8px 16px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* RESPONSIVE ADJUSTMENTS FOR GALLERY */
-
-/* Tablet (Portrait) and smaller Desktop */
+/* Tablet / Smaller Desktop */
 @media (max-width: 1024px) {
   .main-banner-img {
     height: 350px;
   }
 
-  /* Ensure spacing at edges for tablet/mobile if container is full width */
   .image-gallery {
     box-sizing: border-box;
     overflow: hidden;
+  }
+
+  /* Shared adjustments for smaller screens if not in the specific range above */
+  @media (max-width: 1024px) {
+    .btn.btn-brand-secondary {
+      padding: 5px 10px;
+      font-size: 0.75rem;
+      gap: 1;
+    }
   }
 }
 
@@ -1032,31 +483,32 @@
     height: 280px;
   }
 
-  /* On mobile, the side column (thumbnails) should become a row below the main image */
   .image-row-3 {
     flex-direction: row;
     height: 100px;
-    /* Fixed height for thumbnails strip */
   }
 
   .image-column {
     width: 100%;
   }
 
-  /* Hide the bottom row of images on mobile if it exists, or make it scrollable */
   .image-row:nth-child(2) {
     display: none;
-    /* Simplify for mobile, or could be scrollable */
   }
 
   .box-button-abs {
-    bottom: 10px;
-    right: 10px;
+    bottom: 14px;
+    right: 8px;
   }
 
   .btn.btn-brand-secondary {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  .btn.btn-brand-secondary svg {
+    display: none !important;
   }
 }
 
@@ -1074,11 +526,16 @@
   .image-row {
     gap: 6px;
   }
+
+  .btn.btn-brand-secondary {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
 }
 
-@media (max-width: 767px) {
-  .hotel-list-container {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+@media (max-width: 321px) {
+  .btn.btn-brand-secondary {
+    padding: 3px 5px;
+    font-size: 0.65rem;
   }
 }

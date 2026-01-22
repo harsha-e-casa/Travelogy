@@ -4,6 +4,7 @@ import { message } from "antd";
 import dayjs from "dayjs";
 import { postData } from "@/services/NetworkAdapter";
 import { ShareAltOutlined } from "@ant-design/icons";
+import "../booking-mobile.css";
 
 const HotelData = ({
   fetchHotelData = [],
@@ -106,12 +107,12 @@ const HotelData = ({
           room?.cnp?.ifra === false && room?.cnp?.inra === true
             ? "Non-Refundable"
             : room?.cnp?.ifra === false && room?.cnp?.inra === false
-            ? "No Free Cancellation"
-            : room?.cnp?.ifra === true && room?.cnp?.inra === false && room?.cnp?.pd?.[0]?.tdt
-            ? `Free Cancellation Till: ${dayjs(room?.cnp?.pd[0]?.tdt).format("DD/MM/YYYY")}`
-            : "";
+              ? "No Free Cancellation"
+              : room?.cnp?.ifra === true && room?.cnp?.inra === false && room?.cnp?.pd?.[0]?.tdt
+                ? `Free Cancellation Till: ${dayjs(room?.cnp?.pd[0]?.tdt).format("DD/MM/YYYY")}`
+                : "";
 
-        const facilitiesHTML = data?.fcs?.length > 0 
+        const facilitiesHTML = data?.fcs?.length > 0
           ? `<div style="margin-top: 15px;">
                <div style="font-size: 13px; font-weight: 700; color: #334155; margin-bottom: 8px;">Room Facilities:</div>
                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
@@ -170,16 +171,16 @@ const HotelData = ({
     const checkin = dayjs(checkinDate).format("DD MMM YYYY");
     const checkout = dayjs(checkoutDate).format("DD MMM YYYY");
 
-    const checkinTime = 
-      hotelData?.checkInTime?.beginTime || 
-      hotelData?.ad?.checkInTime || 
-      hotelData?.ad?.checkInTime?.beginTime || 
+    const checkinTime =
+      hotelData?.checkInTime?.beginTime ||
+      hotelData?.ad?.checkInTime ||
+      hotelData?.ad?.checkInTime?.beginTime ||
       "02:00 PM";
-      
-    const checkoutTime = 
-      hotelData?.checkOutTime?.beginTime || 
-      hotelData?.ad?.checkOutTime || 
-      hotelData?.ad?.checkOutTime?.beginTime || 
+
+    const checkoutTime =
+      hotelData?.checkOutTime?.beginTime ||
+      hotelData?.ad?.checkOutTime ||
+      hotelData?.ad?.checkOutTime?.beginTime ||
       "11:00 AM";
 
     return `
@@ -259,33 +260,32 @@ const HotelData = ({
   };
   return (
     <>
-      <div className="flex justify-between items-center mt-3"style={{
-        position:"sticky",
+      <div className="flex justify-between items-center mt-3" style={{
+        position: "sticky",
         padding: "5px",
         top: "20px",
         background: "white"
       }}>
-        <h2 className="text-xl font-bold text-gray-800">Rooms</h2>
+        <h2 className="text-xl max-[350px]:text-sm font-bold text-gray-800">Rooms</h2>
         <button
           onClick={
             isSelectionMode && selectedQuoteRooms.length > 0
               ? () => setIsShareModalOpen(true)
               : toggleSelectionMode
           }
-          className={`text-sm font-semibold px-4 py-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 flex items-center gap-2 ${
-            isSelectionMode
-              ? selectedQuoteRooms.length > 0
-                ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              : "bg-blue-600 text-white hover:bg-yellow-500"
-          }`}
+          className={`text-sm font-semibold px-4 py-2 rounded-md bg-yellow-500 text-white hover:bg-yellow-600 flex items-center gap-2 whitespace-nowrap share-quote-btn ${isSelectionMode
+            ? selectedQuoteRooms.length > 0
+              ? "bg-yellow-500 text-white hover:bg-yellow-600"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+            : "bg-blue-600 text-white hover:bg-yellow-500"
+            }`}
         >
           {isSelectionMode
             ? selectedQuoteRooms.length > 0
               ? "Send Quote"
               : "Cancel"
             : "Share Quote"}
-           {(selectedQuoteRooms.length > 0 || !isSelectionMode) && (
+          {(selectedQuoteRooms.length > 0 || !isSelectionMode) && (
             <ShareAltOutlined />
           )}
         </button>
@@ -324,185 +324,183 @@ const HotelData = ({
           </div>
         ) : (
           fetchHotelData.map((room, index) => {
-          const dataLen = room.ris?.length;
-          return (
-            <React.Fragment key={index}>
-              {room.ris.map((data, index2) => {
-                const optionId = room.id;
-                const markup =
-                  markupObj?.individual?.[optionId] !== undefined
-                    ? markupObj.individual[optionId]
-                    : markupObj?.global || 0;
-                const price = ((data?.tfcs?.TF || 0) + markup).toFixed(2);
-                const nights = data?.pis?.length;
-                const isRefundable = room?.cnp?.inra;
-                const panRequired = room?.ipr;
-                const roomKey = `${room.id}-${index2}`;
-                let freeCancellationDate = null;
-                if (room?.cnp?.inra === false && Array.isArray(room?.cnp?.pd)) {
-                  const freeCancellation = room.cnp.pd.find((p) => p.am === 0);
-                  if (freeCancellation?.tdt) {
-                    const dateObj = new Date(freeCancellation.tdt);
-                    freeCancellationDate = dateObj.toLocaleDateString("en-GB");
+            const dataLen = room.ris?.length;
+            return (
+              <React.Fragment key={index}>
+                {room.ris.map((data, index2) => {
+                  const optionId = room.id;
+                  const markup =
+                    markupObj?.individual?.[optionId] !== undefined
+                      ? markupObj.individual[optionId]
+                      : markupObj?.global || 0;
+                  const price = ((data?.tfcs?.TF || 0) + markup).toFixed(2);
+                  const nights = data?.pis?.length;
+                  const isRefundable = room?.cnp?.inra;
+                  const panRequired = room?.ipr;
+                  const roomKey = `${room.id}-${index2}`;
+                  let freeCancellationDate = null;
+                  if (room?.cnp?.inra === false && Array.isArray(room?.cnp?.pd)) {
+                    const freeCancellation = room.cnp.pd.find((p) => p.am === 0);
+                    if (freeCancellation?.tdt) {
+                      const dateObj = new Date(freeCancellation.tdt);
+                      freeCancellationDate = dateObj.toLocaleDateString("en-GB");
+                    }
                   }
-                }
-                return (
-                  <div
-                    key={index2}
-                    className={`flex items-start border-t p-4 hover:bg-gray-50/50 transition-colors gap-4 ${
-                      dataLen == index2 + 1 ? "room_options" : ""
-                    }`}
-                  >
-                    {isSelectionMode && (
-                      <div className="pt-1">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 rounded border-gray-300 text-[#f2994a] focus:ring-[#f2994a]"
-                          checked={selectedQuoteRooms.includes(roomKey)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedQuoteRooms((prev) => [
-                                ...prev,
-                                roomKey,
-                              ]);
-                            } else {
-                              setSelectedQuoteRooms((prev) =>
-                                prev.filter((id) => id !== roomKey)
-                              );
-                            }
-                          }}
-                        />
-                      </div>
-                    )}
-                    <div className="flex-grow flex flex-col">
-                      {/* Top row: Meal Plan and Links grouped together */}
-                      <div className="flex gap-5 mb-3">
-                      <div className="text-gray-800 text-xs font-bold uppercase tracking-wider">
-                        {data.mb || "ROOM ONLY"}
-                      </div>
-                      <div className="flex gap-5">
-                          
-                          {room?.cnp?.ifra === false &&
-                          room?.cnp?.inra === true ? (
-                            <div className="text-red-500 text-xs font-medium">
-                              No Free Cancellation / Non-Refundable
-                            </div>
-                          ) : room?.cnp?.ifra === false &&
-                            room?.cnp?.inra === false ? (
-                            <div className="text-red-500 text-xs font-medium">
-                              No Free Cancellation
-                            </div>
-                          ) : room?.cnp?.ifra === true &&
-                            room?.cnp?.inra === false &&
-                            room?.cnp?.pd?.[0]?.tdt ? (
-                            <div className="text-green-600 text-xs font-medium">
-                              Free Cancellation Till:{" "}
-                              {new Date(
-                                room?.cnp?.pd[0]?.tdt
-                              ).toLocaleDateString("en-GB")}
-                            </div>
-                          ) : null}
-
-                          {panRequired === false && (
-                            <div className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[7px] font-bold uppercase inline-block">
-                              PAN not Required
-                            </div>
-                          )}
+                  return (
+                    <div
+                      key={index2}
+                      className={`flex items-start border-t p-4 hover:bg-gray-50/50 transition-colors gap-4 ${dataLen == index2 + 1 ? "room_options" : ""
+                        }`}
+                    >
+                      {isSelectionMode && (
+                        <div className="pt-1">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 rounded border-gray-300 text-[#f2994a] focus:ring-[#f2994a]"
+                            checked={selectedQuoteRooms.includes(roomKey)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedQuoteRooms((prev) => [
+                                  ...prev,
+                                  roomKey,
+                                ]);
+                              } else {
+                                setSelectedQuoteRooms((prev) =>
+                                  prev.filter((id) => id !== roomKey)
+                                );
+                              }
+                            }}
+                          />
                         </div>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row items-start gap-6">
-                      <div className="flex-grow">
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-xs border-collapse border border-gray-200">
-                            <tbody>
-                              <tr>
-                                <td className="text-gray-500 p-3 border border-gray-200 w-1/3 text-sm">
-                                  Room Name:
-                                </td>
-                                <td className="text-gray-800 p-3 border border-gray-200 font-bold text-sm">
-                                  {data.srn}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-gray-500 p-3 border border-gray-200 text-sm">
-                                  Room Category:
-                                </td>
-                                <td className="text-gray-800 p-3 border border-gray-200 text-sm">
-                                  {data.rc}
-                                </td>
-                              </tr>
-                              <tr>
-                                <td className="text-gray-500 p-3 border border-gray-200 text-sm">
-                                  Room Type:
-                                </td>
-                                <td className="text-gray-800 p-3 border border-gray-200 text-sm">
-                                  {data.rt}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-
-                        {/* Cancellation Policy and Room Facilities (Bottom Left) */}
-                        
-                        <div className="flex gap-5 mt-6">
-                        <span
-                          className="text-xs text-black underline cursor-pointer font-medium"
-                          onClick={() => {
-                            setCancellationPolicyData(room?.cnp?.pd || []);
-                            setShowCancellationModal(true);
-                          }}
-                        >
-                          Cancellation Policy
-                        </span>
-
-                        <span
-                          className="text-xs text-black underline cursor-pointer font-medium"
-                          onClick={() => {
-                            setModalTitle("Room Facilities");
-                            setCurrentFacilities(data?.fcs || []);
-                            setShowFacilityModal(true);
-                          }}
-                        >
-                          Room Facilities
-                        </span>
-                      </div>
-                      </div>
-
-                      <div className="flex flex-col items-end justify-center min-w-[180px] self-center -mt-8">
-                        <div className="text-2xl font-bold text-gray-900">
-                          ₹{Number(price).toLocaleString("en-IN")}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1 text-right font-bold">
-                          for {nights} {nights !== 1 ? "Nights" : "Night"} For {data.adt} {data.adt !== 1 ? "Adults" : "Adult"}{" "}
-                          {data.chd} {data.chd !== 1 ? "Children" : "Child"}
-                        </div>
-                        <div
-                          className="text-xs text-blue-600 hover:text-blue-800 mt-2 underline cursor-pointer font-medium"
-                          onClick={() => handlePriceClick(data.pis)}
-                        >
-                          Per Night Price
-                        </div>
-                        {dataLen === index2 + 1 && (
-                          <div className="mt-2">
-                            <button
-                              className="book-now-btn"
-                              onClick={() => handleBookNow(room.id)}
-                            >
-                              Book Now
-                            </button>
+                      )}
+                      <div className="flex-grow flex flex-col">
+                        {/* Top row: Meal Plan and Links grouped together */}
+                        <div className="flex flex-col md:flex-row gap-2 md:gap-5 mb-3">
+                          <div className="text-gray-800 text-xs font-bold uppercase tracking-wider mb-1 md:mb-0">
+                            {data.mb || "ROOM ONLY"}
                           </div>
-                        )}
+                          <div className="flex flex-wrap gap-2 md:gap-5">
+                            {room?.cnp?.ifra === false &&
+                              room?.cnp?.inra === true ? (
+                              <div className="text-red-500 text-[10px] md:text-xs font-medium">
+                                No Free Cancellation / Non-Refundable
+                              </div>
+                            ) : room?.cnp?.ifra === false &&
+                              room?.cnp?.inra === false ? (
+                              <div className="text-red-500 text-[10px] md:text-xs font-medium">
+                                No Free Cancellation
+                              </div>
+                            ) : room?.cnp?.ifra === true &&
+                              room?.cnp?.inra === false &&
+                              room?.cnp?.pd?.[0]?.tdt ? (
+                              <div className="text-green-600 text-[10px] md:text-xs font-medium">
+                                Free Cancellation Till:{" "}
+                                {new Date(
+                                  room?.cnp?.pd[0]?.tdt
+                                ).toLocaleDateString("en-GB")}
+                              </div>
+                            ) : null}
+
+                            {panRequired === false && (
+                              <div className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[7px] font-bold uppercase inline-block self-center">
+                                PAN not Required
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row items-start gap-6">
+                          <div className="flex-grow">
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-xs border-collapse border border-gray-200">
+                                <tbody>
+                                  <tr>
+                                    <td className="text-gray-500 p-2 md:p-3 border border-gray-200 w-[45%] md:w-1/3 text-[11px] md:text-sm">
+                                      Room Name:
+                                    </td>
+                                    <td className="text-gray-800 p-2 md:p-3 border border-gray-200 font-bold text-[11px] md:text-sm">
+                                      {data.srn}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-gray-500 p-2 md:p-3 border border-gray-200 text-[11px] md:text-sm">
+                                      Room Category:
+                                    </td>
+                                    <td className="text-gray-800 p-2 md:p-3 border border-gray-200 text-[11px] md:text-sm">
+                                      {data.rc}
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td className="text-gray-500 p-2 md:p-3 border border-gray-200 text-[11px] md:text-sm">
+                                      Room Type:
+                                    </td>
+                                    <td className="text-gray-800 p-2 md:p-3 border border-gray-200 text-[11px] md:text-sm">
+                                      {data.rt}
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+
+                            {/* Cancellation Policy and Room Facilities (Bottom Left) */}
+
+                            <div className="flex flex-wrap gap-4 md:gap-5 mt-4 md:mt-6">
+                              <span
+                                className="text-[10px] md:text-xs text-black underline cursor-pointer font-medium"
+                                onClick={() => {
+                                  setCancellationPolicyData(room?.cnp?.pd || []);
+                                  setShowCancellationModal(true);
+                                }}
+                              >
+                                Cancellation Policy
+                              </span>
+
+                              <span
+                                className="text-[10px] md:text-xs text-black underline cursor-pointer font-medium"
+                                onClick={() => {
+                                  setModalTitle("Room Facilities");
+                                  setCurrentFacilities(data?.fcs || []);
+                                  setShowFacilityModal(true);
+                                }}
+                              >
+                                Room Facilities
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col items-center md:items-end justify-center w-full md:w-auto md:min-w-[180px] self-center mt-6 md:-mt-8">
+                            <div className="text-xl md:text-2xl font-bold text-gray-900">
+                              ₹{Number(price).toLocaleString("en-IN")}
+                            </div>
+                            <div className="text-[10px] md:text-xs text-gray-500 mt-1 text-center md:text-right font-bold">
+                              for {nights} {nights !== 1 ? "Nights" : "Night"} For {data.adt} {data.adt !== 1 ? "Adults" : "Adult"}{" "}
+                              {data.chd} {data.chd !== 1 ? "Children" : "Child"}
+                            </div>
+                            <div
+                              className="text-[10px] md:text-xs text-blue-600 hover:text-blue-800 mt-2 underline cursor-pointer font-medium"
+                              onClick={() => handlePriceClick(data.pis)}
+                            >
+                              Per Night Price
+                            </div>
+                            {dataLen === index2 + 1 && (
+                              <div className="mt-3">
+                                <button
+                                  className="book-now-btn"
+                                  onClick={() => handleBookNow(room.id)}
+                                >
+                                  Book Now
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </React.Fragment>
-          );
-        })
+                  );
+                })}
+              </React.Fragment>
+            );
+          })
         )}
       </div>
 
@@ -650,11 +648,10 @@ const HotelData = ({
               />
             </div>
             <button
-              className={`w-full py-2 rounded-md text-white font-semibold transition-colors ${
-                shareStatus === "sending"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-yellow-500 hover:bg-yellow-600"
-              }`}
+              className={`w-full py-2 rounded-md text-white font-semibold transition-colors ${shareStatus === "sending"
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-yellow-500 hover:bg-yellow-600"
+                }`}
               onClick={handleShareQuote}
               disabled={shareStatus === "sending"}
             >

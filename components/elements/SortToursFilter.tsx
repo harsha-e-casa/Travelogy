@@ -34,7 +34,12 @@ export default function SortToursFilter({
 				</div>
 				<div className="col-xl-8 col-md-8 mb-10 text-lg-end text-center">
 					<div className="box-item-sort">
-						<button onClick={handleClearFilters}>Clear Filters</button>
+						<button
+							className={`btn btn-gray rounded-4 ${sortCriteria === "name" ? "d-none d-md-inline-block" : ""}`}
+							onClick={handleClearFilters}
+						>
+							Clear Filters
+						</button>
 						<div className="item-sort border-1"><span className="text-xs-medium neutral-500 mr-5">Show</span>
 							<select value={itemsPerPage} onChange={handleItemsPerPageChange}>
 								<option value={10}>10</option>

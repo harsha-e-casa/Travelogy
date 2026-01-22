@@ -28,7 +28,7 @@ const Modal = ({
     if (isOpen && standardImages.length > 0) {
       setSelectedImage(
         standardImages[0]?.url ||
-          "https://via.placeholder.com/400x300.png?text=No+Image+Available"
+        "https://via.placeholder.com/400x300.png?text=No+Image+Available"
       );
     }
   }, [isOpen, standardImages, setSelectedImage]);
@@ -49,7 +49,7 @@ const Modal = ({
     if (standardImages.length > 0) {
       setSelectedImage(
         standardImages[currentIndex]?.url ||
-          "https://via.placeholder.com/400x300.png?text=No+Image+Available"
+        "https://via.placeholder.com/400x300.png?text=No+Image+Available"
       );
     }
   }, [currentIndex, standardImages, setSelectedImage]);
@@ -140,7 +140,7 @@ export default function ActivitiesDetail4() {
   const [showTraveller, setShowTraveller] = useState(false);
   const [openCheckin, setOpenCheckin] = useState(false);
   const [openCheckout, setOpenCheckout] = useState(false);
-  
+
   // Markup State
   const [markupObj, setMarkupObj] = useState({ global: 0, individual: {} });
 
@@ -163,9 +163,9 @@ export default function ActivitiesDetail4() {
       const newState = isGlobal
         ? { ...prev, global: amount, individual: {} }
         : {
-            ...prev,
-            individual: { ...prev.individual, [id]: amount },
-          };
+          ...prev,
+          individual: { ...prev.individual, [id]: amount },
+        };
 
       localStorage.setItem("hotelMarkupData", JSON.stringify(newState));
       if (isGlobal) localStorage.setItem("hotelMarkup", amount); // Backward compatibility
@@ -201,8 +201,8 @@ export default function ActivitiesDetail4() {
       childAge: Array.isArray(childAge)
         ? childAge
         : Array.isArray(childAges)
-        ? childAges
-        : [],
+          ? childAges
+          : [],
     }));
   const toggleTraveller = () => {
     setShowTraveller((prevState) => !prevState);
@@ -515,15 +515,13 @@ export default function ActivitiesDetail4() {
               <div className="xl:col-span-8 order-1 px-4 md:px-6 lg:px-8 xl:px-0">
                 <div className="box-banner-activities-detail-4">
                   <div
-                    className={`image-gallery ${
-                      hasMultipleImages ? "has-button-overlay" : ""
-                    }`}
+                    className={`image-gallery ${hasMultipleImages ? "has-button-overlay" : ""
+                      }`}
                   >
                     <div className="image-row">
                       <div
-                        className={`image-column ${
-                          hasMultipleImages ? "has-overlay" : ""
-                        }`}
+                        className={`image-column ${hasMultipleImages ? "has-overlay" : ""
+                          }`}
                       >
                         <img
                           className="main-banner-img"
@@ -552,9 +550,8 @@ export default function ActivitiesDetail4() {
                     </div>
                     {hasMultipleImages && (
                       <div
-                        className={`image-row ${
-                          hasMultipleImages ? "has-button-overlay" : ""
-                        }`}
+                        className={`image-row ${hasMultipleImages ? "has-button-overlay" : ""
+                          }`}
                       >
                         {displayImages.slice(4, 8).map((image, index) => (
                           <div key={index} className="image-item">
@@ -566,13 +563,7 @@ export default function ActivitiesDetail4() {
                         ))}
                       </div>
                     )}
-                  </div>
 
-                  <div
-                    className={`container-banner-activities ${
-                      !hasMultipleImages ? "single-image-mode" : ""
-                    }`}
-                  >
                     {hasMultipleImages && (
                       <div className="box-button-abs box-button-abs-right">
                         <Link
@@ -606,6 +597,12 @@ export default function ActivitiesDetail4() {
                         />
                       </div>
                     )}
+                  </div>
+
+                  <div
+                    className={`container-banner-activities ${!hasMultipleImages ? "single-image-mode" : ""
+                      }`}
+                  >
                   </div>
                 </div>
               </div>
@@ -646,9 +643,9 @@ export default function ActivitiesDetail4() {
                               const hasDoubleSpace = value.includes("  ");
                               const listItems = hasDoubleSpace
                                 ? value
-                                    .split(/ {2,}/)
-                                    .map((item) => item.trim())
-                                    .filter(Boolean)
+                                  .split(/ {2,}/)
+                                  .map((item) => item.trim())
+                                  .filter(Boolean)
                                 : [];
 
                               return (
@@ -737,9 +734,8 @@ export default function ActivitiesDetail4() {
                         <iframe
                           src={`https://www.google.com/maps?q=${encodeURIComponent(
                             `${hotelName}, ${hotelAddress}, ${hotelCity}`
-                          )}&ll=${hotelData?.gl?.lt},${
-                            hotelData?.gl?.ln
-                          }&z=15&output=embed`}
+                          )}&ll=${hotelData?.gl?.lt},${hotelData?.gl?.ln
+                            }&z=15&output=embed`}
                           width="100%"
                           height={290}
                           style={{ border: 0 }}
