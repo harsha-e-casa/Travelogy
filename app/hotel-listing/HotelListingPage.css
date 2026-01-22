@@ -1075,3 +1075,10 @@
     gap: 6px;
   }
 }
+
+@media (max-width: 767px) {
+  .hotel-list-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}

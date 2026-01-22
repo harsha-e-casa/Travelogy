@@ -1067,7 +1067,7 @@ export default function HotelListing() {
             <div className="container-fluid" style={{ width: "98%" }}>
               <div className="">
                 <div className="box-content-main top-14 left-0 right-0 z-10 bg-white w-[93%] mx-auto flex flex-col lg:flex-row h-[calc(100vh-6rem)]  gap-3">
-                  <div className="content-right lg:w-3/4 overflow-y-auto p-3 h-full overflow-hidden">
+                  <div className="content-right lg:w-3/4 overflow-y-auto p-3 h-full overflow-hidden hotel-list-container">
                     <div className="box-filters mb-25 pb-5 border-bottom border-1">
                       <SortHotelsFilter
                         sortCriteria={sortCriteria}
@@ -1092,7 +1092,7 @@ export default function HotelListing() {
                           </div>
                         ))}
                       </div> */}
-                      <div className="container">
+                      <div className="container hotel-list-container">
                         {/* {loading ? (
                         <div className="col-12 d-flex justify-center py-5">
                           <div className="loader"></div>
