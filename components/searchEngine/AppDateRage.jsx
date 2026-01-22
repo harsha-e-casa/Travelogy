@@ -81,9 +81,8 @@ const AppDateRange = ({
     const isSelected = valueDate && current.isSame(valueDate, "day");
     return (
       <div
-        className={`ant-picker-cell-inner ${
-          isSelected ? "my-selected-date" : ""
-        }`}
+        className={`ant-picker-cell-inner ${isSelected ? "my-selected-date" : ""
+          }`}
       >
         {current.date()}
       </div>
@@ -101,7 +100,7 @@ const AppDateRange = ({
         inputReadOnly
         format="DD-MM-YYYY"
         showToday={false}
-        getPopupContainer={(trigger) => trigger.parentNode}
+      // getPopupContainer={(trigger) => trigger.parentNode}
       />
     </div>
   ) : null;
