@@ -272,9 +272,8 @@ const EngineHeaderHotel = ({ active_border }) => {
           <button
             onClick={handleSearch}
             disabled={!canSearch || isSubmitting}
-            className={`search_btn_font text-white uppercase tracking-wide ${
-              !canSearch || isSubmitting ? "opacity-60 cursor-not-allowed" : ""
-            }`}
+            className={`search_btn_font text-white uppercase tracking-wide ${!canSearch || isSubmitting ? "opacity-60 cursor-not-allowed" : ""
+              }`}
           >
             {isSubmitting ? "Searching…" : "Search"}
           </button>
@@ -307,7 +306,7 @@ const EngineHeaderHotel = ({ active_border }) => {
                 <CityListSearch
                   operEngLocation={openfrom}
                   setSelectFrom={setSelectFrom}
-                  // setSelectFromSub={setSelectFromSub}
+                // setSelectFromSub={setSelectFromSub}
                 />
               </div>
             ) : null}
@@ -477,104 +476,102 @@ const EngineHeaderHotel = ({ active_border }) => {
           </div>
         </div>
         <div className="mobile_view p-3">
-          <div className="text_start b_right_2px tab_grid_w_1 grid_w_1 css_pointer relative">
-            <div onClick={() => openfrom("mobile")} className="mobile-row">
-              <span className="mobile-label">Location</span>
-              <span className="mobile-value">
-                {selectFrom?.cityName || "Select City"}
-              </span>
-            </div>
-
-            {showSearchState && openEnv === "mobile" && (
-              <div className="searchFfromSelect searchFfromSelect_1">
-                <CityListSearch
-                  operEngLocation={openfrom}
-                  setSelectFrom={setSelectFrom}
-                />
-              </div>
-            )}
-          </div>
-          <div
-            className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              openToDateRange("mobile");
-            }}
-          >
-            <div className="mobile-row">
-              <span className="mobile-label">Check-In</span>
-              <span className="mobile-value">
-                {dd_date} {dd_monthStr} {dd_year} {dd_strdate}
-              </span>
-            </div>
-
-            {openDateRage && openEnv === "mobile" ? (
-              <div onClick={(e) => e.stopPropagation()}>
-                <AppDateRage
-                  openToDateRange={openToDateRange}
-                  setDatedep={setDatedep}
-                  valueDate={datedep}
-                />
-              </div>
-            ) : null}
-          </div>
-          {selectedPlan === "round-trip" && (
-            <div
-              className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                openToDateRangeR("mobile");
-              }}
-            >
-              <div className="mobile-row">
-                <span className="mobile-label">Check-Out</span>
+          <div className="mobile-rounded-box">
+            <div className="text_start b_right_2px tab_grid_w_1 grid_w_1 css_pointer relative">
+              <div onClick={() => openfrom("mobile")} className="mobile-row">
+                <span className="mobile-label">Location</span>
                 <span className="mobile-value">
-                  {ddr_date} {ddr_monthStr} {ddr_year} {ddr_strdate}
+                  {selectFrom?.cityName || "Select City"}
                 </span>
               </div>
 
-              {openDateRageR && openEnv === "mobile" && (
-                <div onClick={(e) => e.stopPropagation()}>
-                  {" "}
-                  <AppDateRage
-                    key={datedep.format("YYYY-MM-DD")}
-                    openToDateRange={openToDateRangeR}
-                    setDatedep={setDatedepr}
-                    minDate={datedep.add(1, "day")}
-                    valueDate={datedepr}
+              {showSearchState && openEnv === "mobile" && (
+                <div className="searchFfromSelect searchFfromSelect_1">
+                  <CityListSearch
+                    operEngLocation={openfrom}
+                    setSelectFrom={setSelectFrom}
                   />
                 </div>
               )}
             </div>
-          )}
-          <div
-            className="text_start b_right_2px grid_w_2 css_pointer"
-            onClick={openTraveller}
-          >
-            <div className="mobile-row">
-              <span className="mobile-label">Guests</span>
-              <span className="mobile-value">
-                {adult} {adult > 1 ? "Adults" : "Adult"},
-                {countchildren > 0 ? (
-                  <>
-                    <span className="cus_txt_traveller lg:text-4xl xl:text-3lg font-bold text-gray-900">
-                      {" "}
-                      {countchildren}{" "}
-                    </span>
-                    <span className="cus_txt_traveller lg:text-1xl xl:text-1lg font-bold text-gray-900">
-                      {countchildren > 1 ? "Children" : "Child"}
-                    </span>
-                  </>
+          </div>
+          <div className="mobile-rounded-box">
+            <div className="flex">
+              <div
+                className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer flex-1"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openToDateRange("mobile");
+                }}
+              >
+                <div className="mobile-row flex-column align-items-start">
+                  <span className="mobile-label-small">Check-In</span>
+                  <span className="mobile-value-small">
+                    {dd_date} {dd_monthStr} {dd_year}
+                  </span>
+                </div>
+
+                {openDateRage && openEnv === "mobile" ? (
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <AppDateRage
+                      openToDateRange={openToDateRange}
+                      setDatedep={setDatedep}
+                      valueDate={datedep}
+                    />
+                  </div>
                 ) : null}
-                {countchildren > 0 ? "," : null} {rooms}{" "}
-                {rooms > 1 ? "Rooms" : "Room"}
-              </span>
+              </div>
+              {selectedPlan === "round-trip" && (
+                <div
+                  className="text_start b_right_2px tab_grid_w_2 grid_w_1 css_pointer flex-1 "
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openToDateRangeR("mobile");
+                  }}
+                >
+                  <div className="mobile-row flex-column align-items-start mobile-divider">
+                    <span className="mobile-label-small">Check-Out</span>
+                    <span className="mobile-value-small">
+                      {ddr_date} {ddr_monthStr} {ddr_year}
+                    </span>
+                  </div>
+
+                  {openDateRageR && openEnv === "mobile" && (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      {" "}
+                      <AppDateRage
+                        key={datedep.format("YYYY-MM-DD")}
+                        openToDateRange={openToDateRangeR}
+                        setDatedep={setDatedepr}
+                        minDate={datedep.add(1, "day")}
+                        valueDate={datedepr}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-          <div className="text_start b_right_2px grid_w_4 css_pointer box_left_ddr2">
-            <div className="mobile-row">
-              <span className="mobile-label">Total Nights</span>
-              <span className="mobile-value">{totalNights}</span>
+          <div className="mobile-rounded-box">
+            <div
+              className="text_start b_right_2px grid_w_2 css_pointer"
+              onClick={openTraveller}
+            >
+              <div className="mobile-row">
+                <span className="mobile-label">Guests</span>
+                <span className="mobile-value">
+                  {adult} {adult > 1 ? "Adults" : "Adult"}, {rooms}{" "}
+                  {rooms > 1 ? "Rooms" : "Room"}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mobile-rounded-box">
+            <div className="text_start b_right_2px grid_w_4 css_pointer box_left_ddr2">
+              <div className="mobile-row">
+                <span className="mobile-label">Total Nights</span>
+                <span className="mobile-value">{totalNights}</span>
+              </div>
             </div>
           </div>
         </div>
