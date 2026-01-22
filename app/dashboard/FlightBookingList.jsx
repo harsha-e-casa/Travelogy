@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Select, DatePicker, Button } from "antd";
 import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import TableSkeleton from "./TableSkeleton";
 
 function formatDateTime(isoString) {
   if (!isoString) return "--";
@@ -18,6 +19,7 @@ function formatDateTime(isoString) {
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
 const FlightBookingList = ({
+  loading,
   bookings,
   statusOptions,
   statusFilter,
@@ -275,7 +277,10 @@ const FlightBookingList = ({
       </div>
 
       <div className="table-responsive">
-        <table className="modern-table">
+        {loading ? (
+          <TableSkeleton rows={pageSize} columns={7} />
+        ) : (
+          <table className="modern-table">
           <thead>
             <tr>
               <th
@@ -342,6 +347,7 @@ const FlightBookingList = ({
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       <div className="table-footer">

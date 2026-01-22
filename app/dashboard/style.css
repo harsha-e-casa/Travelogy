@@ -1826,4 +1826,23 @@
 .filter-backdrop.show {
   opacity: 1;
   visibility: visible;
+} 
+/* Fix for filter label alignment on mobile and tablet */ 
+@media (max-width: 768px) { 
+  .filter-group { 
+    align-items: flex-start !important; 
+  } 
+  .filter-label { 
+    text-align: left; 
+    width: 100%; 
+  } 
+}
+ 
+/* Fix for reset button size on mobile and tablet */ 
+@media (max-width: 768px) { 
+  .filters-section button { 
+    width: auto !important; 
+    align-self: flex-start; 
+    min-width: 120px; 
+  } 
 }

@@ -19,7 +19,11 @@ const Page = () => {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState("profile");
-  const [loading, setloading] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingFlight, setLoadingFlight] = useState(false);
+  const [loadingHotel, setLoadingHotel] = useState(false);
+  const [loadingAmendment, setLoadingAmendment] = useState(false);
+  const [loadingReBooking, setLoadingReBooking] = useState(false);
   const [userData, setUserData] = useState();
   const [userBookingData, setUserBookingData] = useState();
   const [userHotelBookingData, setUserHotelBookingData] = useState();
@@ -121,7 +125,7 @@ const Page = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setloading(true);
+        setLoadingUser(true);
 
         const reqParams = {
           phone: "",
@@ -135,16 +139,16 @@ const Page = () => {
         );
 
         setUserData(result);
-        setloading(false);
+        setLoadingUser(false);
       } catch (error) {
-        setloading(false);
+        setLoadingUser(false);
       }
     };
     fetchUserData();
 
     const fetchflightBookings = async () => {
       try {
-        setloading(true);
+        setLoadingFlight(true);
 
         const reqParams = {
           phone: "",
@@ -156,16 +160,16 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setUserBookingData(result);
-        setloading(false);
+        setLoadingFlight(false);
       } catch (error) {
-        setloading(false);
+        setLoadingFlight(false);
       }
     };
     fetchflightBookings();
 
     const fetchAmendmentId = async () => {
       try {
-        setloading(true);
+        setLoadingAmendment(true);
 
         const reqParams = {
           phone: "",
@@ -177,16 +181,16 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setUseramendmentData(result);
-        setloading(false);
+        setLoadingAmendment(false);
       } catch (error) {
-        setloading(false);
+        setLoadingAmendment(false);
       }
     };
     fetchAmendmentId();
 
     const fetchreflightBookings = async () => {
       try {
-        setloading(true);
+        setLoadingReBooking(true);
 
         const reqParams = {
           phone: "",
@@ -198,16 +202,16 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setReUserBookingData(result);
-        setloading(false);
+        setLoadingReBooking(false);
       } catch (error) {
-        setloading(false);
+        setLoadingReBooking(false);
       }
     };
     fetchreflightBookings();
 
     const fetchHotelBookings = async () => {
       try {
-        setloading(true);
+        setLoadingHotel(true);
 
         const reqParams = {
           phone: "",
@@ -219,9 +223,9 @@ const Page = () => {
           { Authorization: `Bearer ${token}` }
         );
         setUserHotelBookingData(result);
-        setloading(false);
+        setLoadingHotel(false);
       } catch (error) {
-        setloading(false);
+        setLoadingHotel(false);
       }
     };
     fetchHotelBookings();
@@ -566,14 +570,6 @@ const Page = () => {
       <Layout headerStyle={1} footerStyle={7}>
         <main className="modern-dashboard">
           <section className="section_main_book_dash_01 relative_MainBanner">
-            {/* Loading Overlay */}
-            {loading && (
-              <div className="modern-loading">
-                <div className="loading-spinner"></div>
-                <p>Loading your dashboard...</p>
-              </div>
-            )}
-
             {/* Hero Section */}
             <div className="hero-section">
               <div className="hero-content">
@@ -675,6 +671,7 @@ const Page = () => {
                       children: (
                         <div className="tab-content">
                           <FlightBookingList
+                            loading={loadingFlight}
                             bookings={filteredFlightBookings}
                             statusOptions={flightStatusOptions}
                             statusFilter={flightStatusFilter}
@@ -706,6 +703,7 @@ const Page = () => {
                       children: (
                         <div className="tab-content">
                           <AmendmentList
+                            loading={loadingAmendment}
                             amendments={filteredAmendments}
                             statusOptions={amendmentStatusOptions}
                             statusFilter={amendmentStatusFilter}
@@ -737,6 +735,7 @@ const Page = () => {
                       children: (
                         <div className="tab-content">
                           <FlightReBookingList
+                            loading={loadingReBooking}
                             bookings={filteredReBookings}
                             statusOptions={reBookingStatusOptions}
                             statusFilter={reBookingStatusFilter}
@@ -768,6 +767,7 @@ const Page = () => {
                       children: (
                         <div className="tab-content">
                           <HotelBookingList
+                            loading={loadingHotel}
                             bookings={filteredHotelBookings}
                             statusOptions={hotelStatusOptions}
                             statusFilter={hotelStatusFilter}
