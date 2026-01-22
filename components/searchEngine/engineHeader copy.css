@@ -261,7 +261,7 @@
 
   .country_from .pb-4,
   .country_to .pb-4 {
-    padding-bottom: 0.5rem !important;
+    padding-bottom: 0.5rem;
   }
 
   /* Multi-city responsive layout */
@@ -365,9 +365,6 @@
   .engine_layer {
     width: 100% !important;
     background: rgba(255, 255, 255, 0.4) !important;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
   }
 
   .country {
@@ -380,35 +377,43 @@
   .country_from {
     grid-column: 1;
     grid-row: 1;
-    max-width: 200px !important;
+    max-width: 100% !important;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
   }
 
   .country_symbol {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
     z-index: 10;
+    margin-right: -14px;
   }
 
   .country_symbol svg {
     width: 28px;
     height: 28px;
+    background: white;
+    border-radius: 50%;
   }
 
   .country_to {
     grid-column: 2;
     grid-row: 1;
-    max-width: 200px !important;
+    width: 100%;
+    max-width: 100% !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
-    padding: 0;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
   }
 
   .g_w_3 {
     grid-column: 1;
     grid-row: 3;
-    max-width: 200px !important;
+    width: 100%;
+    max-width: 100% !important;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -418,7 +423,8 @@
   .g_w_4 {
     grid-column: 2;
     grid-row: 3;
-    max-width: 200px !important;
+    width: 100%;
+    max-width: 100% !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
     border-top-left-radius: 8px;
@@ -554,23 +560,26 @@
   .flex.items-start.flex-wrap .g_w_1 {
     grid-column: 1;
     grid-row: 1;
-    width: 100% !important;
+    width: 100%;
     max-width: 100% !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
   }
 
   .flex.items-start.flex-wrap .searchReplaceLocation {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
     z-index: 10;
+    margin-right: -14px;
   }
 
   .flex.items-start.flex-wrap .searchReplaceLocation svg {
     width: 28px;
     height: 28px;
+    background: white;
+    border-radius: 50%;
   }
 
   .flex.items-start.flex-wrap .g_w_2 {
@@ -580,7 +589,7 @@
     border-bottom-right-radius: 8px;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
-    width: 100% !important;
+    width: 100%;
     max-width: 100% !important;
     padding: 0px;
   }
@@ -594,7 +603,7 @@
   .flex.items-start.flex-wrap .g_w_3 {
     grid-row: 2;
     position: relative;
-    width: 100% !important;
+    width: 100%;
     max-width: 100% !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -636,14 +645,6 @@
     padding-top: 15px;
     display: ruby-text;
     margin-right: 105px !important;
-
-    @supports (-webkit-touch-callout: none) {
-      @media (max-width: 426px) and (min-width: 320px) {
-        margin-right: 0px !important;
-        margin-top: 50px !important;
-      }
-    }
-
     margin: 0;
   }
 
@@ -692,7 +693,7 @@
   }
 
   .engine_layer {
-    width: 100% !important;
+    width: 115% !important;
     background: rgba(255, 255, 255, 0.4) !important;
   }
 
@@ -706,15 +707,19 @@
   .country_from {
     grid-column: 1;
     grid-row: 1;
+    width: 100%;
     max-width: 100% !important;
   }
 
   .country_symbol {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
     z-index: 10;
+    margin-right: -14px;
+    background: white;
+    border-radius: 50%;
   }
 
   .country_symbol svg {
@@ -725,6 +730,7 @@
   .country_to {
     grid-column: 2;
     grid-row: 1;
+    width: 100%;
     max-width: 100% !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -734,6 +740,7 @@
   .g_w_3 {
     grid-column: 1;
     grid-row: 3;
+    width: 100%;
     max-width: 100% !important;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
@@ -744,6 +751,7 @@
   .g_w_4 {
     grid-column: 2;
     grid-row: 3;
+    width: 100%;
     max-width: 100% !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -754,7 +762,7 @@
   .g_w_5 {
     grid-column: 1 / -1;
     grid-row: 5;
-    width: 100% !important;
+    width: 100%;
     max-width: 100% !important;
     border-radius: 8px;
   }
@@ -880,17 +888,16 @@
   .flex.items-start.flex-wrap .g_w_1 {
     grid-column: 1;
     grid-row: 1;
-    max-width: 100% !important;
+    max-width: 175px !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
   }
 
   .flex.items-start.flex-wrap .searchReplaceLocation {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
-    z-index: 10;
   }
 
   .flex.items-start.flex-wrap .searchReplaceLocation svg {
@@ -905,7 +912,7 @@
     border-bottom-right-radius: 8px;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
-    max-width: 100% !important;
+    max-width: 175px !important;
     padding: 0px;
   }
 
@@ -918,7 +925,7 @@
   .flex.items-start.flex-wrap .g_w_3 {
     grid-row: 2;
     position: relative;
-    max-width: 100% !important;
+    max-width: 355px !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
   }
@@ -1005,7 +1012,7 @@
   }
 
   .engine_layer {
-    width: 100% !important;
+    width: 115% !important;
     background: rgba(255, 255, 255, 0.4) !important;
   }
 
@@ -1014,24 +1021,19 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto auto;
     gap: 6px;
-
-    /* width: 100% !important;
-    justify-content: flex-start;
-    align-items: center; */
   }
 
   .country_from {
     grid-column: 1;
     grid-row: 1;
-    max-width: 100% !important;
+    max-width: 145px !important;
   }
 
   .country_symbol {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
-    z-index: 10;
   }
 
   .country_symbol svg {
@@ -1042,7 +1044,7 @@
   .country_to {
     grid-column: 2;
     grid-row: 1;
-    max-width: 100% !important;
+    max-width: 145px !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
     padding: 0;
@@ -1050,8 +1052,8 @@
 
   .g_w_3 {
     grid-column: 1;
-    grid-row: 2;
-    max-width: 100% !important;
+    grid-row: 3;
+    max-width: 190px !important;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -1060,8 +1062,8 @@
 
   .g_w_4 {
     grid-column: 2;
-    grid-row: 2;
-    max-width: 100% !important;
+    grid-row: 3;
+    max-width: 190px !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
     border-top-left-radius: 8px;
@@ -1070,8 +1072,8 @@
 
   .g_w_5 {
     grid-column: 1 / -1;
-    grid-row: 3;
-    max-width: 100% !important;
+    grid-row: 5;
+    max-width: 295px !important;
     border-radius: 8px;
   }
 
@@ -1082,17 +1084,17 @@
   /* Font size adjustments */
   .country_from .text-xl-small,
   .country_to .text-xl-small {
-    font-size: 10px;
+    font-size: 14px;
   }
 
   .country_from .text_4xl,
   .country_to .text_4xl {
-    font-size: 14px !important;
+    font-size: 18px !important;
   }
 
   .country_from .text-xl_small,
   .country_to .text-xl_small {
-    font-size: 8px;
+    font-size: 10px;
   }
 
   /* Font size adjustments for multicity input fields */
@@ -1199,17 +1201,16 @@
   .flex.items-start.flex-wrap .g_w_1 {
     grid-column: 1;
     grid-row: 1;
-    max-width: 100% !important;
+    max-width: 145px !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
   }
 
   .flex.items-start.flex-wrap .searchReplaceLocation {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: end;
     align-self: center;
-    z-index: 10;
   }
 
   .flex.items-start.flex-wrap .searchReplaceLocation svg {
@@ -1224,7 +1225,7 @@
     border-bottom-right-radius: 8px;
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
-    max-width: 100% !important;
+    max-width: 145px !important;
     padding: 0px;
   }
 
@@ -1237,7 +1238,7 @@
   .flex.items-start.flex-wrap .g_w_3 {
     grid-row: 2;
     position: relative;
-    max-width: 100% !important;
+    max-width: 295px !important;
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
   }

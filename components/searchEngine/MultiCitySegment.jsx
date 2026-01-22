@@ -129,13 +129,13 @@ const MultiCitySegment = ({
       style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}
     >
       {/* From */}
-      <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1" onClick={() => multiCityCloseAllFieldsFn()}>
+      <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1 country_from" onClick={() => multiCityCloseAllFieldsFn()}>
         <div onClick={() => onToggleSection(index, "from")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">From</div>
-          <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
-            <h6 className="font_bold text-black tracking-wide">
+          <div className="pl-6 pb-4 relative">
+            <h2 className="text_4xl font_bold text-black tracking-wide">
               {segment.from || "Select City"}
-            </h6>
+            </h2>
             <p className="text-xl_small truncate-text">
               {segment.fromCode || "---"}
             </p>
@@ -165,7 +165,7 @@ const MultiCitySegment = ({
       </div>
 
       {/* Swap Icon */}
-      <div className="searchReplaceLocation mt-8">
+      <div className="searchReplaceLocation">
         <svg
           onClick={() => {
             const newFrom = segment.to;
@@ -211,13 +211,13 @@ const MultiCitySegment = ({
       </div>
 
       {/* To */}
-      <div className="text_start b_right_2px g_w_2 css_pointer relative" onClick={() => multiCityCloseAllFieldsFn()}>
+      <div className="text_start b_right_2px g_w_2 css_pointer relative country_to" onClick={() => multiCityCloseAllFieldsFn()}>
         <div onClick={() => onToggleSection(index, "to")}>
           <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
-          <div className="pl-6 relative" style={{ paddingBottom: "10px" }}>
-            <h6 className="font_bold text-black tracking-wide">
+          <div className="pl-6 pb-4 relative">
+            <h2 className="text_4xl font_bold text-black tracking-wide">
               {segment.to || "Select City"}
-            </h6>
+            </h2>
             <p className="text-xl_small truncate-text">
               {segment.toCode || "---"}
             </p>
@@ -248,7 +248,6 @@ const MultiCitySegment = ({
 
       <div
         className="text_start b_right_2px g_w_3 css_pointer"
-        style={{ paddingBottom: "13px", position: "relative" }}
         onClick={() => multiCityCloseAllFieldsFn()}
       >
         <div
@@ -258,13 +257,10 @@ const MultiCitySegment = ({
           <div>
             <div className="pt-2 pb-2">{displayDate.format("dddd")}</div>
             <div>
-              <span
-                className="font-bold text-gray-900"
-                style={{ fontSize: "20px" }}
-              >
+              <span className="text-4xl font-bold text-gray-900">
                 {displayDate.format("DD")}
               </span>
-              <sub className="sub_txt1" style={{ margin: "5px" }}>
+              <sub className="sub_txt1">
                 {displayDate.format("MMM")}
               </sub>
             </div>
@@ -292,7 +288,7 @@ const MultiCitySegment = ({
           <div
             onClick={() => removeSegment(index)}
             className="text-red-600 font-bold text-lg css_pointer"
-            style={{ position: "absolute", top: "0px", right: "0px", fontSize: "35px", cursor: "pointer" }}
+            style={{ position: "absolute", top: "0px", right: "0px", fontSize: "35px", cursor: "pointer", zIndex: 10 }}
           >
             ×
           </div>
