@@ -527,7 +527,7 @@ const TravelForm = () => {
         {/* Submit */}
         <div className="form-item pt-6">
           <button type="submit" className="book-now-btn">
-            {loading ? "Submitting ..." : "Submit Travell Application"}
+            {loading ? "Submitting ..." : "Submit Travel Application"}
           </button>
         </div>
       </form>

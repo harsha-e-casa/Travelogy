@@ -4,6 +4,7 @@ import { Select, DatePicker, Button } from "antd";
 import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import AmendmentModal from "./AmendmentModal";
+import TableSkeleton from "./TableSkeleton";
 
 import { postAmendmentDetails, postData } from "@/services/NetworkAdapter";
 
@@ -21,6 +22,7 @@ function formatDateTime(isoString) {
 const PAGE_SIZE_OPTIONS = [5, 10, 20, 50, 100];
 
 const AmendmentList = ({
+  loading,
   amendments,
   statusOptions,
   statusFilter,
@@ -41,7 +43,7 @@ const AmendmentList = ({
   const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[1]);
   const [sortBy, setSortBy] = useState("idIndex");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [loading, setLoading] = useState(false);
+  const [isModalLoading, setIsModalLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
   let sortedBookings = amendments ? [...amendments] : [];
@@ -75,7 +77,7 @@ const AmendmentList = ({
 
   const handleAmendmentClick = async (amendmentId) => {
     try {
-      setLoading(true);
+      setIsModalLoading(true);
       let reqData = {
         action: "pollAmendment",
         requestData: { amendmentId: amendmentId },
@@ -87,12 +89,12 @@ const AmendmentList = ({
 
       setModalData(amendmentDetails);
       setIsModalOpen(true);
-      setLoading(false);
+      setIsModalLoading(false);
     } catch (error) {
       console.error("Error fetching amendment details:", error);
       setModalData({ error: error.response.data.errors[0].message || "--" });
       setIsModalOpen(true);
-      setLoading(false);
+      setIsModalLoading(false);
     }
   };
 
@@ -264,10 +266,13 @@ const AmendmentList = ({
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
         data={modalData}
-        loading={loading}
+        loading={isModalLoading}
       />
       <div className="table-responsive">
-        <table className="modern-table">
+        {loading ? (
+          <TableSkeleton rows={pageSize} columns={7} />
+        ) : (
+          <table className="modern-table">
           <thead>
             <tr>
               <th
@@ -337,6 +342,7 @@ const AmendmentList = ({
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       <div className="table-footer">
