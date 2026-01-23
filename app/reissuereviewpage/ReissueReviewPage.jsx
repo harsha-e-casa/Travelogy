@@ -2676,8 +2676,8 @@ const ReissueReviewPage = () => {
                                 <div
                                   onClick={() => {
                                     if (urlBookingId) {
-                                      localStorage.removeItem(`bookingData_${urlBookingId}`);
-                                      localStorage.removeItem(`bookingData_${urlBookingId}_timestamp`);
+                                      localStorage.removeItem(`re_bookingData_${urlBookingId}`);
+                                      localStorage.removeItem(`re_bookingData_${urlBookingId}_timestamp`);
                                     }
                                     router.push(`/reschedule-book-ticket?tcs_id=${priceId}`);
                                   }}

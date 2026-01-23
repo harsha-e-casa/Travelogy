@@ -1,10 +1,10 @@
 import { useEffect, useReducer, useRef } from 'react';
 
 
-function SessionTimer({ timeLeftRef,searchTickets,redirBookingDetails }) {
+function SessionTimer({ timeLeftRef, searchTickets, redirBookingDetails }) {
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const hasExpired = useRef(false); // prevent repeated firing
-  
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -12,7 +12,7 @@ function SessionTimer({ timeLeftRef,searchTickets,redirBookingDetails }) {
 
       if (timeLeftRef.current <= 0 && !hasExpired.current) {
         hasExpired.current = true;
-        alert('Your session has expired!');
+        // alert('Your session has expired!');
         // searchTickets()
         redirBookingDetails()
       }
