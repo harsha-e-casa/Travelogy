@@ -1494,7 +1494,7 @@ const Alldetails = ({ totalpricee }) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 sm:mt-0">
+                <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-2 sm:gap-3 mt-4 sm:mt-0">
                   {departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && (
                     <div>
                       {bookingDetails?.order?.status === "SUCCESS" && (
@@ -1533,7 +1533,7 @@ const Alldetails = ({ totalpricee }) => {
                           {bookingDetails?.order?.status === "SUCCESS" && (
                             <div className="w-full sm:w-auto">
                               <button
-                                className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto mt-2 sm:mt-0"
+                                className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto sm:mt-0"
                                 onClick={openReIssueModal}
                               >
                                 Reschedule
@@ -1790,7 +1790,7 @@ const Alldetails = ({ totalpricee }) => {
                   {isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
                       {bookingDetails?.order?.status === "SUCCESS" ? (
-                        <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:mt-0 w-full sm:w-auto">
                           <button
                             className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                             disabled={!bookingDetails}
@@ -1798,14 +1798,14 @@ const Alldetails = ({ totalpricee }) => {
                               printTicket(bookingDetails, markup);
                             }}
                           >
-                            Print Ticket
+                            Print 1
                           </button>
                           <button
                             className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                             disabled={!bookingDetails}
                             onClick={handleOpenEmailModal}
                           >
-                            Email Ticket
+                            Email
                           </button>
                         </div>
                       ) : bookingDetails?.order?.status === "PENDING" ||
@@ -1813,7 +1813,7 @@ const Alldetails = ({ totalpricee }) => {
                         bookingDetails?.order?.status === "UNCONFIRMED" ||
                         bookingDetails?.order?.status === "CANCELLED" ? (
                         <>
-                          <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0 w-full sm:w-auto">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:mt-0 w-full sm:w-auto">
                             <button
                               className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
@@ -1821,14 +1821,14 @@ const Alldetails = ({ totalpricee }) => {
                                 printTicket(bookingDetails, markup);
                               }}
                             >
-                              Print Ticket
+                              Print 2
                             </button>
                             <button
                               className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
                               onClick={handleOpenEmailModal}
                             >
-                              Email Ticket
+                              Email
                             </button>
                           </div>
                         </>
@@ -1856,14 +1856,14 @@ const Alldetails = ({ totalpricee }) => {
                                 printTicket(bookingDetails, markup);
                               }}
                             >
-                              Print Ticket
+                              Print 3
                             </button>
                             <button
                               className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
                               disabled={!bookingDetails}
                               onClick={handleOpenEmailModal}
                             >
-                              Email Ticket
+                              Email
                             </button>
                           </div>
                         </div>

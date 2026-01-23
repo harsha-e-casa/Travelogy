@@ -1002,51 +1002,27 @@ const ReviewPage = () => {
 
       const result = await postData("travelogy/one-way/fetch-data", reqData);
 
-      if (result?.errCode == "1131") {
+      if (result?.errCode && result?.message) {
+        setError(result?.message);
+        setPaymentFailurePopup(false);
+        setPaymentModel(false);
+        setBookingLoading(false);
+        setBookingLoadingWallet(false);
+
         if (wallet) {
           const reqRefund = {
             booking_id: bookingId,
             amount: parameter?.paymentInfos?.[0]?.amount,
           };
-          const refundRes = await postData(
+          await postData(
             "travelogy/flight/refundWallet",
             reqRefund,
             { Authorization: `Bearer ${token}` }
           );
-          if (refundRes.success) {
-            message.error(
-              result?.message + ". Amount refunded to wallet."
-            );
-          } else {
-            message.error(result?.message + ". Refund failed.");
-          }
-        } else {
-          message.error(result?.message);
         }
-        setPaymentFailurePopup(false);
-        setPaymentModel(false);
-        setBookingLoading(false);
-        setBookingLoadingWallet(false);
         return;
       }
 
-      // // test
-      // const result = { error: "Request failed with status code 400" };
-
-      // const saveBookingId = async () => {
-      //   const reqSaveBookingId = {
-      //     booking_id: bookingId,
-      //     phone: number.number,
-      //     amount: finalAmountToPay,
-      //   };
-      //   console.log("reqSaveBookingId === > ", reqSaveBookingId);
-      //   const result = await postData(
-      //     "travelogy/flight/save-booking",
-      //     reqSaveBookingId
-      //   );
-      //   console.log("saveBookingId result === > ", result);
-      // };
-      // saveBookingId();
       if (result?.error) {
         setError(result?.error);
         setPaymentFailurePopup(false);

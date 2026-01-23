@@ -937,7 +937,17 @@ export default function Tickets() {
   const handleGotItClick = () => {
     closePopUp();
     // go back to webpage
-    window.history.back();
+    // window.history.back();
+
+    const rsData = getCookie("rs_data");
+    const rsJsonData = rsData ? JSON.parse(rsData) : null;
+    const oldBookingId = rsJsonData?.searchQuery?.oldBookingId;
+
+    if (oldBookingId) {
+      router.push(`/BookingDetails?booking_id=${oldBookingId}`);
+    } else {
+      window.history.back();
+    }
   };
 
   let searchEnginewidth = {};
@@ -946,7 +956,7 @@ export default function Tickets() {
     <>
       {isFilterApplied && (
         // <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
-        <div className={`sticky ${filterCriteria ? 'top-0' : 'top-36 lg:top-48'} z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100`}>
+        <div className={`sticky ${filterCriteria ? 'top-0' : 'top-36 lg:top-40'} z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100`}>
           <span className="text-black font-bold text-sm">Applied Filters <span className="text-gray-500 font-normal">({activeFilterCount})</span> :</span>
           <span
             className="cursor-pointer hover:text-orange-500 font-medium text-orange-500 text-sm"
@@ -1054,7 +1064,7 @@ export default function Tickets() {
         <main className="main">
           {/* <EngineTabs active_border={'1'} /> */}
 
-          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{ top: "65px" }}>
+          <div className="h-[auto] w-full z-20 sticky bg_cs_search" style={{ top: "65px", zIndex: "99999" }}>
             {/* Header Section */}
 
             {!isMobile && (
@@ -1266,7 +1276,7 @@ export default function Tickets() {
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
-                                    <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-32 lg:top-40 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
                                       {!shareMode ? (
                                         <div className="flex items-center gap-2 text-gray-600 text-sm">
                                           <ShareAltOutlined />

@@ -574,6 +574,7 @@ export function printTicket(raw, markup = 0) {
     iframe.style.border = "0";
     iframe.setAttribute("aria-hidden", "true");
     document.body.appendChild(iframe);
+
     // 2) Write content
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     doc.open();
@@ -599,7 +600,7 @@ export function printTicket(raw, markup = 0) {
       setTimeout(() => {
         if (iframe && iframe.parentNode) iframe.parentNode.removeChild(iframe);
         if (timeoutId) clearTimeout(timeoutId);
-      }, 500); // Increased timeout to see if it helps
+      }, 50);
     };
 
     if (iframe.contentWindow) {
@@ -633,10 +634,10 @@ export function printTicket(raw, markup = 0) {
       triggerOnce();
     });
 
-    // Increased fallback timeout
+    // Fallback timeout aligned with HotelPrint.js
     timeoutId = setTimeout(() => {
       triggerOnce();
-    }, 2000);
+    }, 1500);
   } catch (err) {
     console.error("Error in printTicket:", err);
   }
@@ -823,7 +824,7 @@ function renderTicketHTML(vm, useAbsolute = false) {
       .header-top {display: flex;justify-content: space-between;align-items: flex-start;margin-bottom: 12px;}
       .header-logo img {height: 100px;width: auto;}
       .header-address {text-align: right;font-size: 12px;line-height: 1.4;}
-      .wrap { max-width: 820px; margin: 0 auto; }
+      .wrap { max-width: 100%; margin: 0 auto; padding: 20px; }
       .card { border: 1px solid #E5E7EB; border-radius: 12px; padding: 18px; margin-bottom: 14px; }
       .row { display: flex; gap: 12px; }
       .space-between { display: flex; justify-content: space-between; align-items: center; }
