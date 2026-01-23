@@ -608,6 +608,77 @@ export default function VendorCreate(): JSX.Element {
         </section>
       </main>
 
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @media (max-width: 425px) {
+            .ant-modal {
+              max-width: calc(100vw - 32px) !important;
+              margin: 16px !important;
+            }
+            .ant-modal-content {
+              border-radius: 12px !important;
+            }
+            .ant-modal-header {
+              padding: 12px 16px !important;
+            }
+            .ant-modal-title {
+              font-size: 14px !important;
+            }
+            .ant-modal-body {
+              padding: 16px !important;
+            }
+            .ant-modal-footer {
+              padding: 10px 16px !important;
+            }
+            .ant-modal-footer .ant-btn {
+              font-size: 13px !important;
+              height: 36px !important;
+              padding: 4px 12px !important;
+            }
+            .ant-input,
+            .ant-input-password,
+            .ant-input-affix-wrapper,
+            .ant-input-number,
+            .ant-input-number-input {
+              font-size: 14px !important;
+              padding: 8px 11px !important;
+            }
+            .ant-form-item-label > label {
+              font-size: 13px !important;
+            }
+            .ant-radio-wrapper {
+              font-size: 13px !important;
+            }
+            .ant-input-number {
+              width: 100% !important;
+            }
+          }
+          @media (max-width: 375px) {
+            .ant-modal {
+              max-width: calc(100vw - 20px) !important;
+              margin: 10px !important;
+            }
+            .ant-modal-header,
+            .ant-modal-body,
+            .ant-modal-footer {
+              padding: 12px !important;
+            }
+          }
+          @media (max-width: 320px) {
+            .ant-modal {
+              max-width: calc(100vw - 16px) !important;
+              margin: 8px !important;
+            }
+            .ant-modal-title {
+              font-size: 13px !important;
+            }
+            .ant-modal-body {
+              padding: 10px !important;
+            }
+          }
+        `
+      }} />
+
       <Modal
         title={`Reset Password: ${resetTarget?.e_mail || ""}`}
         open={resetOpen}
