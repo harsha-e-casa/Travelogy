@@ -227,7 +227,87 @@ export default function VendorCreate(): JSX.Element {
                 minHeight: "70vh",
               }}
             >
-              <div
+              <style dangerouslySetInnerHTML={{
+                __html: `
+                @media (max-width: 425px) {
+                  .bookings-container {
+                    padding: 5px !important;
+                  }
+                  .vendor-grid-wrapper {
+                    grid-template-columns: 1fr !important;
+                    gap: 15px !important;
+                    min-height: auto !important;
+                  }
+                  .vendor-create-card,
+                  .vendor-list-card {
+                    border-radius: 12px !important;
+                    height: auto !important;
+                    min-height: auto !important;
+                  }
+                  .vendor-create-card .ant-card-body {
+                    padding: 16px !important;
+                  }
+                  .vendor-list-card .ant-card-body {
+                    padding: 16px !important;
+                  }
+                  .card-header {
+                    flex-wrap: wrap !important;
+                    gap: 8px !important;
+                    margin-bottom: 16px !important;
+                  }
+                  .card-header img {
+                    width: 16px !important;
+                    height: 16px !important;
+                  }
+                  .card-header span {
+                    font-size: 14px !important;
+                  }
+                  .vendor-create-card .ant-form-item {
+                    margin-bottom: 16px !important;
+                  }
+                  .vendor-create-card .ant-form-item-label > label {
+                    font-size: 13px !important;
+                  }
+                  .vendor-create-card .ant-input,
+                  .vendor-create-card .ant-input-password,
+                  .vendor-create-card .ant-input-affix-wrapper {
+                    font-size: 14px !important;
+                  }
+                  .vendor-create-card .ant-btn-lg {
+                    height: 40px !important;
+                    font-size: 14px !important;
+                  }
+                  .vendor-list-card .ant-table {
+                    font-size: 11px !important;
+                  }
+                  .vendor-list-card .ant-btn {
+                    font-size: 11px !important;
+                    padding: 4px 8px !important;
+                    height: auto !important;
+                  }
+                  .vendor-list-card .ant-table-thead > tr > th {
+                    padding: 6px 4px !important;
+                    font-size: 10px !important;
+                  }
+                  .vendor-list-card .ant-table-tbody > tr > td {
+                    padding: 6px 4px !important;
+                    font-size: 10px !important;
+                  }
+                }
+                @media (max-width: 375px) {
+                  .bookings-container {
+                    padding: 3px !important;
+                  }
+                  .vendor-grid-wrapper {
+                    gap: 12px !important;
+                  }
+                  .vendor-create-card .ant-card-body,
+                  .vendor-list-card .ant-card-body {
+                    padding: 12px !important;
+                  }
+                }
+              `}} />
+              <div className="vendor-grid-wrapper"
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
@@ -237,12 +317,14 @@ export default function VendorCreate(): JSX.Element {
                 }}
               >
                 <Card
+                  className="vendor-create-card"
                   style={{
                     borderRadius: "16px",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   }}
                 >
                   <div
+                    className="card-header"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -386,6 +468,7 @@ export default function VendorCreate(): JSX.Element {
                 </Card>
 
                 <Card
+                  className="vendor-list-card"
                   style={{
                     borderRadius: "16px",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -395,6 +478,7 @@ export default function VendorCreate(): JSX.Element {
                   }}
                 >
                   <div
+                    className="card-header"
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -523,6 +607,77 @@ export default function VendorCreate(): JSX.Element {
           </div>
         </section>
       </main>
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @media (max-width: 425px) {
+            .ant-modal {
+              max-width: calc(100vw - 32px) !important;
+              margin: 16px !important;
+            }
+            .ant-modal-content {
+              border-radius: 12px !important;
+            }
+            .ant-modal-header {
+              padding: 12px 16px !important;
+            }
+            .ant-modal-title {
+              font-size: 14px !important;
+            }
+            .ant-modal-body {
+              padding: 16px !important;
+            }
+            .ant-modal-footer {
+              padding: 10px 16px !important;
+            }
+            .ant-modal-footer .ant-btn {
+              font-size: 13px !important;
+              height: 36px !important;
+              padding: 4px 12px !important;
+            }
+            .ant-input,
+            .ant-input-password,
+            .ant-input-affix-wrapper,
+            .ant-input-number,
+            .ant-input-number-input {
+              font-size: 14px !important;
+              padding: 8px 11px !important;
+            }
+            .ant-form-item-label > label {
+              font-size: 13px !important;
+            }
+            .ant-radio-wrapper {
+              font-size: 13px !important;
+            }
+            .ant-input-number {
+              width: 100% !important;
+            }
+          }
+          @media (max-width: 375px) {
+            .ant-modal {
+              max-width: calc(100vw - 20px) !important;
+              margin: 10px !important;
+            }
+            .ant-modal-header,
+            .ant-modal-body,
+            .ant-modal-footer {
+              padding: 12px !important;
+            }
+          }
+          @media (max-width: 320px) {
+            .ant-modal {
+              max-width: calc(100vw - 16px) !important;
+              margin: 8px !important;
+            }
+            .ant-modal-title {
+              font-size: 13px !important;
+            }
+            .ant-modal-body {
+              padding: 10px !important;
+            }
+          }
+        `
+      }} />
 
       <Modal
         title={`Reset Password: ${resetTarget?.e_mail || ""}`}
