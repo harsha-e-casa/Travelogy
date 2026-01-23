@@ -402,7 +402,7 @@ export default function WalletOption(): JSX.Element {
               className="bookings-container wallet_container"
             >
               <div style={{ padding: "20px 25px 0", background: "#f8fafc", borderTopLeftRadius: "16px", borderTopRightRadius: "16px" }}>
-                <h2 className="wallet-title" style={{ margin: 0, fontSize: "24px", fontWeight: 700, textAlign: "left" }}>
+                <h2 className="wallet-title" style={{ margin: 0, fontWeight: 700, textAlign: "left" }}>
                   {activeTab === "overview" ? "Wallet History Overview" : "Vendor Section"}
                 </h2>
               </div>
@@ -416,11 +416,10 @@ export default function WalletOption(): JSX.Element {
                       cursor: "pointer",
                       border: activeTab === "overview" ? "2px solid #ff8a00" : "2px solid #e5e7eb",
                       boxShadow: activeTab === "overview" ? "0 4px 12px rgba(255, 138, 0, 0.2)" : "none",
-                      minWidth: "200px"
                     }}
                   >
                     <HistoryOutlined style={{ marginRight: "8px", color: activeTab === "overview" ? "#ff8a00" : "#666" }} />
-                    <span style={{ fontWeight: 600, color: activeTab === "overview" ? "#ff8a00" : "#666" }}>Wallet Overview</span>
+                    <span className="tab-text" style={{ fontWeight: 600, color: activeTab === "overview" ? "#ff8a00" : "#666" }}>Wallet Overview</span>
                   </div>
                   <div
                     className="tab-item"
@@ -429,11 +428,10 @@ export default function WalletOption(): JSX.Element {
                       cursor: "pointer",
                       border: activeTab === "vendors" ? "2px solid #ff8a00" : "2px solid #e5e7eb",
                       boxShadow: activeTab === "vendors" ? "0 4px 12px rgba(255, 138, 0, 0.2)" : "none",
-                      minWidth: "200px"
                     }}
                   >
                     <UserOutlined style={{ marginRight: "8px", color: activeTab === "vendors" ? "#ff8a00" : "#666" }} />
-                    <span style={{ fontWeight: 600, color: activeTab === "vendors" ? "#ff8a00" : "#666" }}>Vendors</span>
+                    <span className="tab-text" style={{ fontWeight: 600, color: activeTab === "vendors" ? "#ff8a00" : "#666" }}>Vendors</span>
                   </div>
                 </div>
               )}
@@ -442,7 +440,44 @@ export default function WalletOption(): JSX.Element {
               {activeTab === "overview" && (
                 <div style={{ marginTop: "20px", padding: "0 25px" }}>
                   <style jsx>{`
+                    @media (min-width: 769px) {
+                      .wallet-title {
+                        font-size: 24px;
+                      }
+                      .tab-item {
+                         min-width: 200px;
+                         padding: 8px 16px; /* consistent padding desktop */
+                         display: flex;
+                         align-items: center;
+                         justify-content: center;
+                         border-radius: 8px; /* Assuming some border radius was implicit or inherited */
+                      }
+                    }
                     @media (max-width: 768px) {
+                      .wallet-title {
+                        font-size: 18px;
+                      }
+                      .modern-tabs {
+                        gap: 10px !important;
+                      }
+                      .tab-item {
+                        min-width: auto;
+                        padding: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                         border-radius: 8px;
+                      }
+                      .tab-text {
+                        display: none;
+                      }
+                      /* Icons larger on mobile if needed, or keeping standard */
+                      
+                      .wallet-controls-container {
+                        flex-direction: column;
+                        align-items: flex-start !important;
+                        gap: 15px !important;
+                      }
                       .wallet-date-filter-group {
                         display: flex !important;
                         flex-wrap: wrap;
@@ -455,11 +490,32 @@ export default function WalletOption(): JSX.Element {
                         margin-bottom: 0;
                         border-radius: 4px; 
                       }
+                      .wallet-filter-section {
+                         width: 100%;
+                         display: flex;
+                         flex-direction: column;
+                         align-items: flex-start !important;
+                         gap: 8px !important;
+                      }
+                      .wallet-filter-select {
+                        width: 100% !important;
+                        min-width: 100% !important;
+                      }
+                    }
+                    @media (max-width: 425px) {
+                      .wallet-stats-grid {
+                        grid-template-columns: 1fr !important;
+                        gap: 12px !important;
+                        margin-top: 20px !important;
+                      }
+                      .wallet-stat-card {
+                        min-width: 100% !important;
+                      }
                     }
                   `}</style>
 
-                  <div style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
-                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+                  <div className="wallet-controls-container" style={{ marginBottom: 20, marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center", width: "100%" }}>
                       <span style={{ fontWeight: 600 }}>Date Filter:</span>
                       <Radio.Group
                         className="wallet-date-filter-group"
@@ -493,7 +549,7 @@ export default function WalletOption(): JSX.Element {
                     </div>
 
                     {isAdmin && (
-                      <div className="wallet-filter" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <div className="wallet-filter wallet-filter-section" style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
                         <span className="wallet-filter-label" style={{ fontWeight: 600, margin: 0 }}>Filter by Vendor:</span>
                         <Select
                           placeholder="Select Vendor"
@@ -526,6 +582,7 @@ export default function WalletOption(): JSX.Element {
 
                   {/* Stats Cards */}
                   <div
+                    className="wallet-stats-grid"
                     style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -537,6 +594,7 @@ export default function WalletOption(): JSX.Element {
                       <Card
                         key={i}
                         bordered={false}
+                        className="wallet-stat-card"
                         style={{
                           borderRadius: "16px",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
@@ -688,6 +746,24 @@ export default function WalletOption(): JSX.Element {
               {/* Vendors Section */}
               {activeTab === "vendors" && isAdmin && (
                 <div style={{ marginTop: "20px", padding: "20px" }}>
+                  <style jsx>{`
+                    @media (max-width: 768px) {
+                      .vendor-header-actions {
+                        flex-direction: column !important;
+                        align-items: flex-start !important;
+                        gap: 12px !important;
+                      }
+                      .vendor-title-wrapper {
+                        width: 100%;
+                        margin-bottom: 4px;
+                      }
+                      .vendor-header-actions .ant-btn {
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+                        width: auto !important;
+                      }
+                    }
+                  `}</style>
                   <Card
                     style={{
                       borderRadius: "16px",
@@ -695,6 +771,7 @@ export default function WalletOption(): JSX.Element {
                     }}
                   >
                     <div
+                      className="vendor-header-actions"
                       style={{
                         display: "flex",
                         alignItems: "center",
@@ -702,20 +779,22 @@ export default function WalletOption(): JSX.Element {
                         marginBottom: 20,
                       }}
                     >
-                      <SafetyOutlined style={{ color: "#ff8a00" }} />
-                      <span
-                        style={{
-                          color: "#333",
-                          fontWeight: 600,
-                          fontSize: "18px",
-                        }}
-                      >
-                        Vendors
-                      </span>
+                      <div className="vendor-title-wrapper" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <SafetyOutlined style={{ color: "#ff8a00" }} />
+                        <span
+                          style={{
+                            color: "#333",
+                            fontWeight: 600,
+                            fontSize: "18px",
+                          }}
+                        >
+                          Vendors
+                        </span>
+                      </div>
                       <Button
                         onClick={() => window.location.href = '/user-create'}
                         style={{
-                          marginLeft: "auto",
+                          // marginLeft: "auto",
                           marginRight: 8,
                           background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
                           border: "none",

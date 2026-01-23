@@ -20014,7 +20014,7 @@ xl  80rem (1280px)  @media (width >= 80rem) { ... }
 @media (max-width: 767px) {
   .wallet_container {
     max-width: 350px !important;
-    min-width: 350px !important;
+    min-width: 300px !important;
   }
 
   .wallet-header {
