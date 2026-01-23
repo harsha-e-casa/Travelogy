@@ -1,13 +1,19 @@
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 import TravellerDetailsModal from "./TravellerDetailsModal";
 
-const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails, className, onClick }) => {
+const AmendmentPopup = forwardRef(({ bookingId, onSubmit, bookingDetails, className, onClick }, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [amendmentType, setAmendmentType] = useState("");
   const [showTravellerModal, setShowTravellerModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [selectedAmendmentId, setSelectedAmendmentId] = useState(null);
   const [selectedAmendmentType, setSelectedAmendmentType] = useState("");
+
+  useImperativeHandle(ref, () => ({
+    open: () => {
+      setShowModal(true);
+    }
+  }));
 
   const handleOpen = (e) => {
     if (onClick) onClick(e);
@@ -132,6 +138,8 @@ const AmendmentPopup = ({ bookingId, onSubmit, bookingDetails, className, onClic
       )}
     </div>
   );
-};
+});
+
+AmendmentPopup.displayName = 'AmendmentPopup';
 
 export default AmendmentPopup;

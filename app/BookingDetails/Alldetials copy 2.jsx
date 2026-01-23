@@ -48,7 +48,6 @@ const Alldetails = ({ totalpricee }) => {
   const [showContact, setShowContact] = useState(false);
   const [isNoPrintVisible, setNoPrintVisible] = useState(true);
   const printRef = useRef(null);
-  const mobileAmendmentRef = useRef(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [fareType, setFareType] = useState("");
   const [afsAmount, setAfsAmount] = useState(0);
@@ -1495,8 +1494,56 @@ const Alldetails = ({ totalpricee }) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-2 sm:gap-3 mt-2 sm:mt-0">
+                <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-2 sm:gap-3 mt-4 sm:mt-0">
+                  {departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && (
+                    <div>
+                      {bookingDetails?.order?.status === "SUCCESS" && (
+                        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                          <AmendmentPopup
+                            className="bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 rounded px-4 py-2 text-sm font-medium transition w-full sm:w-auto"
+                            onClick={handleCancellation}
+                            bookingId={bookingId}
+                            bookingDetails={bookingDetails}
+                            onSubmit={(
+                              bookingId,
+                              amendmentType,
+                              remarks,
+                              callback
+                            ) =>
+                              sumbitAmendmentapi(
+                                bookingId,
+                                amendmentType,
+                                remarks,
+                                (data) => {
+                                  callback?.(data);
+                                  setShowTravellerModal(true);
+                                }
+                              )
+                            }
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
 
+                  {departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && (
+                    <>
+                      {!reStatus && isNoPrintVisible && (
+                        <div className={isNoPrintVisible ? "" : "no-print"}>
+                          {bookingDetails?.order?.status === "SUCCESS" && (
+                            <div className="w-full sm:w-auto">
+                              <button
+                                className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto sm:mt-0"
+                                onClick={openReIssueModal}
+                              >
+                                Reschedule
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
 
                   {isReIssueModalOpen && (
                     <div className="fixed inset-0 p-t-reissue z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -1742,150 +1789,85 @@ const Alldetails = ({ totalpricee }) => {
 
                   {isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
-
-                      {/* --- MOBILE DROPDOWN (Visible only on small screens) --- */}
-                      <div className="relative w-full sm:w-auto sm:mt-0">
-                        <div className="flex gap-2">
-                          {bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ON_HOLD" ? (
-                            <>
-                              <button
-                                onClick={() => setPaymentModel(true)}
-                                className="flex-1 sm:flex-none sm:w-auto bg-yellow-400 text-black font-bold py-3 px-6 rounded-lg shadow-sm whitespace-nowrap"
-                              >
-                                Pay Now
-                              </button>
-                              <button
-                                onClick={() => setShowDropdown(!showDropdown)}
-                                className="bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg shadow-sm flex items-center justify-center gap-2"
-                              >
-                                More
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              onClick={() => setShowDropdown(!showDropdown)}
-                              className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-lg shadow-sm flex items-center justify-center gap-2 whitespace-nowrap"
-                            >
-                              More Options
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                            </button>
-                          )}
+                      {bookingDetails?.order?.status === "SUCCESS" ? (
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:mt-0 w-full sm:w-auto">
+                          <button
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                            disabled={!bookingDetails}
+                            onClick={() => {
+                              printTicket(bookingDetails, markup);
+                            }}
+                          >
+                            Print 1
+                          </button>
+                          <button
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                            disabled={!bookingDetails}
+                            onClick={handleOpenEmailModal}
+                          >
+                            Email
+                          </button>
                         </div>
-
-                        {showDropdown && (
-                          <div className="absolute right-0 top-full mt-2 w-full sm:w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
-                            <div className="flex flex-col">
-                              {/* Print */}
-                              <button
-                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 text-left text-sm font-medium text-gray-700"
-                                onClick={() => {
-                                  printTicket(bookingDetails, markup);
-                                  setShowDropdown(false);
-                                }}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                                Print Ticket
-                              </button>
-
-                              {/* Email */}
-                              <button
-                                className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 text-left text-sm font-medium text-gray-700"
-                                onClick={() => {
-                                  handleOpenEmailModal();
-                                  setShowDropdown(false);
-                                }}
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                Email Ticket
-                              </button>
-
-                              {/* Cancellation (Success Only) */}
-                              {bookingDetails?.order?.status === "SUCCESS" && (
-                                <AmendmentPopup
-                                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 text-left text-sm font-medium text-red-600 w-full"
-                                  onClick={() => {
-                                    setShowDropdown(false);
-                                  }}
-                                  bookingId={bookingId}
-                                  bookingDetails={bookingDetails}
-                                  onSubmit={(
-                                    bookingId,
-                                    amendmentType,
-                                    remarks,
-                                    callback
-                                  ) =>
-                                    sumbitAmendmentapi(
-                                      bookingId,
-                                      amendmentType,
-                                      remarks,
-                                      (data) => {
-                                        callback?.(data);
-                                        setShowTravellerModal(true);
-                                      }
-                                    )
-                                  }
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-                                  Cancel Booking
-                                </AmendmentPopup>
-                              )}
-
-                              {/* Reschedule (Success + Date Validation) */}
-                              {bookingDetails?.order?.status === "SUCCESS" && departuredate && departuredate.length > 0 && new Date() < new Date(departuredate[0]) && !reStatus && (
-                                <button
-                                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 text-left text-sm font-medium text-blue-600"
-                                  onClick={() => {
-                                    openReIssueModal();
-                                    setShowDropdown(false);
-                                  }}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                  Reschedule
-                                </button>
-                              )}
-
-                              {/* Unhold (Pending Only) */}
-                              {(bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ON_HOLD") && (
-                                <button
-                                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-gray-100 text-left text-sm font-medium text-gray-700"
-                                  onClick={() => {
-                                    handleUnHold();
-                                    setShowDropdown(false);
-                                  }}
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
-                                  Unhold Booking
-                                </button>
-                              )}
-                            </div>
+                      ) : bookingDetails?.order?.status === "PENDING" ||
+                        bookingDetails?.order?.status === "ABORTED" ||
+                        bookingDetails?.order?.status === "UNCONFIRMED" ||
+                        bookingDetails?.order?.status === "CANCELLED" ? (
+                        <>
+                          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:mt-0 w-full sm:w-auto">
+                            <button
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                              disabled={!bookingDetails}
+                              onClick={() => {
+                                printTicket(bookingDetails, markup);
+                              }}
+                            >
+                              Print 2
+                            </button>
+                            <button
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                              disabled={!bookingDetails}
+                              onClick={handleOpenEmailModal}
+                            >
+                              Email
+                            </button>
                           </div>
-                        )}
-
-                        {/* Hidden AmendmentPopup for Trigger */}
-                        <AmendmentPopup
-                          ref={mobileAmendmentRef}
-                          className="hidden"
-                          bookingId={bookingId}
-                          bookingDetails={bookingDetails}
-                          onSubmit={(
-                            bookingId,
-                            amendmentType,
-                            remarks,
-                            callback
-                          ) =>
-                            sumbitAmendmentapi(
-                              bookingId,
-                              amendmentType,
-                              remarks,
-                              (data) => {
-                                callback?.(data);
-                                setShowTravellerModal(true);
-                              }
-                            )
-                          }
-                        />
-                      </div>
+                        </>
+                      ) : (
+                        <div
+                          className="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto mt-2 sm:mt-0"
+                        >
+                          <button
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                            onClick={handleUnHold}
+                          >
+                            Unhold
+                          </button>
+                          <button
+                            className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                            onClick={() => setPaymentModel(true)}
+                          >
+                            Pay Now
+                          </button>
+                          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <button
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                              disabled={!bookingDetails}
+                              onClick={() => {
+                                printTicket(bookingDetails, markup);
+                              }}
+                            >
+                              Print 3
+                            </button>
+                            <button
+                              className="border border-gray-300 rounded px-4 py-2 hover:bg-gray-100 text-sm font-medium w-full sm:w-auto"
+                              disabled={!bookingDetails}
+                              onClick={handleOpenEmailModal}
+                            >
+                              Email
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
