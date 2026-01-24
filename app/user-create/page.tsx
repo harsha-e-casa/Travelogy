@@ -13,6 +13,7 @@ import {
   Switch,
   InputNumber,
   Radio,
+  Segmented,
 } from "antd";
 import {
   MailOutlined,
@@ -57,6 +58,8 @@ export default function VendorCreate(): JSX.Element {
   const [resetTarget, setResetTarget] = useState<Vendor | null>(null);
   const [resetSubmitting, setResetSubmitting] = useState(false);
   const [resetForm] = Form.useForm();
+
+  const [activeTab, setActiveTab] = useState<"create" | "list">("create");
 
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const [activeVendor, setActiveVendor] = useState<Vendor | null>(null);
@@ -296,7 +299,7 @@ export default function VendorCreate(): JSX.Element {
                 }
                 @media (max-width: 375px) {
                   .bookings-container {
-                    padding: 3px !important;
+                    padding: 12px !important;
                   }
                   .vendor-grid-wrapper {
                     gap: 12px !important;
@@ -307,301 +310,337 @@ export default function VendorCreate(): JSX.Element {
                   }
                 }
               `}} />
+              <div className="mobile-tabs-container" style={{ marginBottom: 20, display: 'none' }}>
+                <Segmented
+                  block
+                  options={[
+                    { label: 'Create Vendor', value: 'create', icon: <div className="tab-icon create-icon" /> },
+                    { label: 'View Vendors', value: 'list', icon: <div className="tab-icon list-icon" /> },
+                  ]}
+                  value={activeTab}
+                  onChange={(val: any) => setActiveTab(val)}
+                  size="large"
+                  style={{ background: '#f0f0f0', padding: 4 }}
+                />
+              </div>
+
               <div className="vendor-grid-wrapper"
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                   gap: "20px",
                   alignItems: "start",
                   minHeight: "600px",
                 }}
               >
-                <Card
-                  className="vendor-create-card"
-                  style={{
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <div
-                    className="card-header"
+                <div className={`create-section-wrapper ${activeTab === 'list' ? 'hidden-mobile' : ''}`}>
+                  <Card
+                    className="vendor-create-card"
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 20,
+                      borderRadius: "16px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                     }}
                   >
-                    <img
-                      src="/assets/imgs/airplane_1604953.svg"
-                      alt="Flights"
-                      style={{ width: "20px", height: "20px" }}
-                    />
-                    <span
+                    <div
+                      className="card-header"
                       style={{
-                        color: "#333",
-                        fontWeight: 600,
-                        fontSize: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 20,
                       }}
                     >
-                      Create Vendor
-                    </span>
-                  </div>
-
-                  {successMsg && (
-                    <Alert
-                      style={{ marginBottom: 16 }}
-                      type="success"
-                      showIcon
-                      message={successMsg}
-                    />
-                  )}
-                  {errorMsg && (
-                    <Alert
-                      style={{ marginBottom: 16 }}
-                      type="error"
-                      showIcon
-                      message={errorMsg}
-                    />
-                  )}
-
-                  <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={onFinish}
-                    autoComplete="off"
-                    requiredMark={false}
-                  >
-                    <Form.Item
-                      label="Email"
-                      name="email"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please enter vendor email",
-                        },
-                        {
-                          type: "email",
-                          message: "Please enter a valid email",
-                        },
-                      ]}
-                    >
-                      <Input
-                        size="large"
-                        prefix={<MailOutlined />}
-                        placeholder="vendor@example.com"
-                        autoComplete="email"
+                      <img
+                        src="/assets/imgs/airplane_1604953.svg"
+                        alt="Flights"
+                        style={{ width: "20px", height: "20px" }}
                       />
-                    </Form.Item>
-
-                    <Form.Item
-                      label="Phone"
-                      name="phone"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please enter phone number",
-                        },
-                        {
-                          pattern: /^[0-9]{10}$/,
-                          message: "Phone must be 10 digits",
-                        },
-                      ]}
-                    >
-                      <Input
-                        size="large"
-                        prefix={<PhoneOutlined />}
-                        placeholder="10-digit phone"
-                        inputMode="numeric"
-                        maxLength={10}
-                        onKeyDown={(e) => {
-                          const ok = [
-                            "Backspace",
-                            "Delete",
-                            "Tab",
-                            "ArrowLeft",
-                            "ArrowRight",
-                            "Home",
-                            "End",
-                          ];
-                          if (ok.includes(e.key)) return;
-                          if (!/^\d$/.test(e.key)) e.preventDefault();
+                      <span
+                        style={{
+                          color: "#333",
+                          fontWeight: 600,
+                          fontSize: "16px",
                         }}
-                      />
-                    </Form.Item>
+                      >
+                        Create Vendor
+                      </span>
+                    </div>
 
-                    <Form.Item
-                      label="Password"
-                      name="password"
-                      rules={[
-                        { required: true, message: "Please enter a password" },
-                        {
-                          min: 6,
-                          message: "Password must be at least 6 characters",
-                        },
-                      ]}
+                    {successMsg && (
+                      <Alert
+                        style={{ marginBottom: 16 }}
+                        type="success"
+                        showIcon
+                        message={successMsg}
+                      />
+                    )}
+                    {errorMsg && (
+                      <Alert
+                        style={{ marginBottom: 16 }}
+                        type="error"
+                        showIcon
+                        message={errorMsg}
+                      />
+                    )}
+
+                    <Form
+                      form={form}
+                      layout="vertical"
+                      onFinish={onFinish}
+                      autoComplete="off"
+                      requiredMark={false}
                     >
-                      <Input.Password
+                      <Form.Item
+                        label="Email"
+                        name="email"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter vendor email",
+                          },
+                          {
+                            type: "email",
+                            message: "Please enter a valid email",
+                          },
+                        ]}
+                      >
+                        <Input
+                          size="large"
+                          prefix={<MailOutlined />}
+                          placeholder="vendor@example.com"
+                          autoComplete="email"
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Phone"
+                        name="phone"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Please enter phone number",
+                          },
+                          {
+                            pattern: /^[0-9]{10}$/,
+                            message: "Phone must be 10 digits",
+                          },
+                        ]}
+                      >
+                        <Input
+                          size="large"
+                          prefix={<PhoneOutlined />}
+                          placeholder="10-digit phone"
+                          inputMode="numeric"
+                          maxLength={10}
+                          onKeyDown={(e) => {
+                            const ok = [
+                              "Backspace",
+                              "Delete",
+                              "Tab",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Home",
+                              "End",
+                            ];
+                            if (ok.includes(e.key)) return;
+                            if (!/^\d$/.test(e.key)) e.preventDefault();
+                          }}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        label="Password"
+                        name="password"
+                        rules={[
+                          { required: true, message: "Please enter a password" },
+                          {
+                            min: 6,
+                            message: "Password must be at least 6 characters",
+                          },
+                        ]}
+                      >
+                        <Input.Password
+                          size="large"
+                          prefix={<LockOutlined />}
+                          placeholder="Enter a secure password"
+                          autoComplete="new-password"
+                        />
+                      </Form.Item>
+
+                      <Button
+                        block
                         size="large"
-                        prefix={<LockOutlined />}
-                        placeholder="Enter a secure password"
-                        autoComplete="new-password"
-                      />
-                    </Form.Item>
+                        type="primary"
+                        htmlType="submit"
+                        loading={submitting}
+                        style={{
+                          fontWeight: 700,
+                          letterSpacing: 0.2,
+                          background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                          border: "none",
+                          color: "#fff",
+                        }}
+                      >
+                        Create Vendor
+                      </Button>
+                    </Form>
+                  </Card>
+                </div>
 
-                    <Button
-                      block
-                      size="large"
-                      type="primary"
-                      htmlType="submit"
-                      loading={submitting}
-                      style={{
-                        fontWeight: 700,
-                        letterSpacing: 0.2,
-                        background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
-                        border: "none",
-                      }}
-                    >
-                      Create Vendor
-                    </Button>
-                  </Form>
-                </Card>
-
-                <Card
-                  className="vendor-list-card"
-                  style={{
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    height: "600px",
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <div
-                    className="card-header"
+                <div className={`list-section-wrapper ${activeTab === 'create' ? 'hidden-mobile' : ''}`}>
+                  <Card
+                    className="vendor-list-card"
                     style={{
+                      borderRadius: "16px",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      height: "600px",
                       display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 20,
+                      flexDirection: "column",
                     }}
                   >
-                    <SafetyOutlined style={{ color: "#ff8a00" }} />
-                    <span
+                    <div
+                      className="card-header"
                       style={{
-                        color: "#333",
-                        fontWeight: 600,
-                        fontSize: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 20,
                       }}
                     >
-                      Vendors
-                    </span>
-                    <Button
-                      icon={<ReloadOutlined />}
-                      size="small"
-                      onClick={fetchVendors}
-                      loading={loadingList}
-                      style={{
-                        marginLeft: "auto",
-                        background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
-                        border: "none",
-                        color: "white",
-                      }}
-                    >
-                      Refresh
-                    </Button>
-                  </div>
+                      <SafetyOutlined style={{ color: "#ff8a00" }} />
+                      <span
+                        style={{
+                          color: "#333",
+                          fontWeight: 600,
+                          fontSize: "16px",
+                        }}
+                      >
+                        Vendors
+                      </span>
+                      <Button
+                        icon={<ReloadOutlined />}
+                        size="small"
+                        onClick={fetchVendors}
+                        loading={loadingList}
+                        style={{
+                          marginLeft: "auto",
+                          background: "linear-gradient(90deg,#ff8a00,#ff6a00)",
+                          border: "none",
+                          color: "white",
+                        }}
+                      >
+                        Refresh
+                      </Button>
+                    </div>
 
-                  <div style={{ flex: 1, overflow: "auto" }}>
-                    <Table<Vendor>
-                      rowKey="id"
-                      size="small"
-                      loading={loadingList}
-                      dataSource={vendors}
-                      pagination={{ pageSize: 10, showSizeChanger: false }}
-                      columns={[
-                        { title: "Email", dataIndex: "e_mail", ellipsis: true, width: 150 },
-                        { title: "Phone", dataIndex: "phone", width: 130 },
-                        { title: "Wallet", dataIndex: "balance", width: 130 },
+                    {/* DESKTOP TABLE */}
+                    <div className="desktop-table-view" style={{ flex: 1, overflow: "auto" }}>
+                      <Table<Vendor>
+                        rowKey="id"
+                        size="small"
+                        loading={loadingList}
+                        dataSource={vendors}
+                        pagination={{ pageSize: 10, showSizeChanger: false }}
+                        columns={[
+                          { title: "Email", dataIndex: "e_mail", ellipsis: true, width: 150 },
+                          { title: "Phone", dataIndex: "phone", width: 130 },
+                          { title: "Wallet", dataIndex: "balance", width: 130 },
 
-                        // 🟦 WALLET ACTIONS
-                        {
-                          title: "Wallet Actions",
-                          key: "walletActions",
-                          width: 160,
-                          render: (_, rec) => (
-                            <Space>
-                              <Button
-                                size="small"
-                                onClick={() => openWalletModal(rec)}
-                              >
-                                Add / Deduct
-                              </Button>
-                            </Space>
-                          ),
-                        },
-
-                        // 🟩 ACTIVE / INACTIVE TOGGLE
-                        {
-                          title: "Status",
-                          dataIndex: "is_active",
-                          width: 120,
-                          render: (_, rec: any) => {
-                            const isActive =
-                              rec.is_active === 1 ||
-                              rec.is_active === true ||
-                              (typeof rec.status === "string" &&
-                                rec.status.toLowerCase() === "active");
-
-                            return (
-                              <Switch
-                                checked={isActive}
-                                onChange={(v) => toggleActive(rec, v)}
-                              />
-                            );
+                          // 🟦 WALLET ACTIONS
+                          {
+                            title: "Wallet Actions",
+                            key: "walletActions",
+                            width: 160,
+                            render: (_, rec) => (
+                              <Space>
+                                <Button
+                                  size="small"
+                                  onClick={() => openWalletModal(rec)}
+                                >
+                                  Add / Deduct
+                                </Button>
+                              </Space>
+                            ),
                           },
-                        },
 
-                        {
-                          title: "Password Reset",
-                          key: "actions",
-                          width: 120,
-                          render: (_, rec) => (
-                            <Button type="link" onClick={() => openReset(rec)}>
-                              Reset
-                            </Button>
-                          ),
-                        },
-                      ]}
-                    />
-                  </div>
-                  {/* <div style={{ flex: 1, overflow: "auto" }}>
-                    {" "}
-                    <Table<Vendor>
-                      rowKey="id"
-                      size="small"
-                      loading={loadingList}
-                      dataSource={vendors}
-                      pagination={{ pageSize: 10, showSizeChanger: false }}
-                      columns={[
-                        { title: "Email", dataIndex: "e_mail", ellipsis: true },
-                        { title: "Phone", dataIndex: "phone", width: 130 },
-                        { title: "Wallet", dataIndex: "balance", width: 130 },
-                        {
-                          title: "Password Reset",
-                          key: "actions",
-                          width: 120,
-                          render: (_, rec) => (
-                            <Button type="link" onClick={() => openReset(rec)}>
-                              {" "}
-                              Reset{" "}
-                            </Button>
-                          ),
-                        },
-                      ]}
-                    />{" "}
-                  </div> */}
-                </Card>
+                          // 🟩 ACTIVE / INACTIVE TOGGLE
+                          {
+                            title: "Status",
+                            dataIndex: "is_active",
+                            width: 120,
+                            render: (_, rec: any) => {
+                              const isActive =
+                                rec.is_active === 1 ||
+                                rec.is_active === true ||
+                                (typeof rec.status === "string" &&
+                                  rec.status.toLowerCase() === "active");
+
+                              return (
+                                <Switch
+                                  checked={isActive}
+                                  onChange={(v) => toggleActive(rec, v)}
+                                />
+                              );
+                            },
+                          },
+
+                          {
+                            title: "Password Reset",
+                            key: "actions",
+                            width: 120,
+                            render: (_, rec) => (
+                              <Button type="link" onClick={() => openReset(rec)}>
+                                Reset
+                              </Button>
+                            ),
+                          },
+                        ]}
+                      />
+                    </div>
+
+                    {/* MOBILE CARD LIST */}
+                    <div className="mobile-list-view" style={{ display: 'none', flex: 1, overflowY: 'auto' }}>
+                      {vendors.map((vendor: any) => {
+                        const isActive =
+                          vendor.user_id === 1 || // Assuming logic mapping
+                          (vendor as any).is_active === 1 ||
+                          (vendor as any).is_active === true ||
+                          (typeof (vendor as any).status === "string" &&
+                            (vendor as any).status.toLowerCase() === "active");
+
+                        return (
+                          <div key={vendor.id} style={{
+                            border: '1px solid #eee',
+                            borderRadius: 12,
+                            padding: 12,
+                            marginBottom: 12,
+                            background: '#fafafa'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                              <span style={{ fontWeight: 600, color: '#333' }}>{vendor.e_mail}</span>
+                              <Switch size="small" checked={isActive} onChange={(v) => toggleActive(vendor, v)} />
+                            </div>
+                            <div style={{ display: 'flex', gap: 10, fontSize: 13, color: '#666', marginBottom: 8 }}>
+                              <span>📞 {vendor.phone}</span>
+                              <span>💰 {vendor.balance || 0}</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                              <Button size="small" type="dashed" onClick={() => openWalletModal(vendor)} style={{ flex: 1, fontSize: 12 }}>
+                                Wallet
+                              </Button>
+                              <Button size="small" onClick={() => openReset(vendor)} style={{ flex: 1, fontSize: 12 }}>
+                                Reset Pass
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {vendors.length === 0 && !loadingList && (
+                        <div style={{ textAlign: 'center', padding: 20, color: '#999' }}>No vendors found</div>
+                      )}
+                    </div>
+                  </Card>
+                </div>
               </div>
             </div>
           </div>
@@ -610,7 +649,29 @@ export default function VendorCreate(): JSX.Element {
 
       <style dangerouslySetInnerHTML={{
         __html: `
-          @media (max-width: 425px) {
+        @media (max-width: 768px) {
+           .vendor-grid-wrapper {
+              display: block !important;
+              min-height: auto !important;
+           }
+           .mobile-tabs-container {
+              display: block !important;
+           }
+           .hidden-mobile {
+              display: none !important;
+           }
+           .desktop-table-view {
+              display: none !important;
+           }
+           .mobile-list-view {
+              display: block !important;
+           }
+           .vendor-create-card, .vendor-list-card {
+              height: auto !important;
+              min-height: 400px;
+           }
+        }
+        @media (max-width: 425px) {
             .ant-modal {
               max-width: calc(100vw - 32px) !important;
               margin: 16px !important;
