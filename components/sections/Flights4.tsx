@@ -158,18 +158,19 @@ export default function Flights4() {
 
   return (
     <>
-      {!loading && (
+      {!loading && apiData && apiData.length > 0 && (
         <>
           <section className="section-box background-body">
             <div className="container">
               <div className="row align-items-end">
-                <div className="col-md-9 mb-30 wow fadeInUp">
+                <div className="col-md-9 wow fadeInUp">
                   <h2 className="title-svg neutral-1000">
                     <svg
                       width={27}
                       height={39}
                       viewBox="0 0 27 39"
                       xmlns="http://www.w3.org/2000/svg"
+                      className="d-none d-lg-block"
                     >
                       <path
                         fillRule="evenodd"
@@ -205,7 +206,7 @@ export default function Flights4() {
                     Top Flight Starting From
                   </h2>
                 </div>
-                <div className="col-md-3 position-relative mb-30 wow fadeInUp">
+                <div className="col-md-3 position-relative mb-30 wow fadeInUp d-none d-md-flex">
                   <div className="box-button-slider box-button-slider-team justify-content-end">
                     <div
                       ref={prevRef}
@@ -248,7 +249,7 @@ export default function Flights4() {
 
             <div className="block-flights">
               <div className="box-swiper-padding container-slider">
-                <div className="box-swiper mt-30">
+                <div className="box-swiper mt-10 mt-md-30">
                   <div className="swiper-container swiper-group-animate swiper-group-journey">
                     <Swiper
                       {...swiperGroupAnimate}

@@ -237,7 +237,7 @@ const BookingDetailsPage = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main">
-          <section className="box-section box-breadcrumb background-body m-px-10">
+          <section className="box-section box-breadcrumb background-body m-px-10 d-none d-md-block">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>

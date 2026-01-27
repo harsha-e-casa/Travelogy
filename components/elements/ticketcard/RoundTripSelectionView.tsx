@@ -1014,18 +1014,6 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
 
   return (
     <>
-      {/* Mobile Filter Button (Visible < 1200px) */}
-      <div className="d-xl-none d-block p-2" style={{ textAlign: 'right' }}>
-        <Button
-          type="primary"
-          icon={<FilterOutlined />}
-          onClick={showFilterDrawer}
-          style={{ marginBottom: '10px' }}
-        >
-          Filters
-        </Button>
-      </div>
-
       {/* Drawer for Mobile Filters */}
       <Drawer
         title="Filter Flights"
@@ -1073,12 +1061,22 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
               </div>
 
               {/* Share Toolbar */}
-              <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100 mx-2" style={{ marginRight: '10px', marginLeft: '10px' }}>
+              <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-between items-center bg-white p-2 rounded shadow-sm border border-gray-100 mx-2" style={{ marginRight: '10px', marginLeft: '10px' }}>
+                {/* Mobile Filter Button */}
+                <div className="d-xl-none d-block">
+                  <Button
+                    type="primary"
+                    icon={<FilterOutlined />}
+                    onClick={showFilterDrawer}
+                  >
+                    Filters
+                  </Button>
+                </div>
+
                 {!shareMode ? (
-                  <div className="flex items-center gap-2 text-gray-600 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600 text-sm ml-auto">
                     <ShareAltOutlined />
                     <span className="font-semibold">Share By :</span>
-                    {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}
                     <span
                       className="cursor-pointer hover:text-blue-800 font-medium text-blue-600 flex items-center gap-1 transition-colors"
                       onClick={() => setShareMode(true)}
@@ -1086,8 +1084,6 @@ export default function RoundTripSelectionView({ flightData, markup = 0, ticketM
                       <MailOutlined />
                       Email
                     </span>
-                    {/* </span> | */}
-                    {/* <span className="cursor-pointer hover:text-blue-600 font-medium">View</span> */}
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 w-full justify-between">
