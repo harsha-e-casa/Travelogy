@@ -1244,17 +1244,6 @@ export default function Tickets() {
 
                       return (
                         <>
-                          <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
-                            <Button
-                              type="primary"
-                              icon={<FilterOutlined />}
-                              onClick={showFilterDrawer}
-                              style={{ marginBottom: "10px" }}
-                            >
-                              Filters
-                            </Button>
-                          </div>
-
                           <Drawer
                             title="Filter Flights"
                             placement="left"
@@ -1276,9 +1265,20 @@ export default function Tickets() {
                                     className="box-list-flights box-list-flights-2"
                                     style={{ padding: "10px" }}
                                   >
-                                    <div className="sticky top-32 lg:top-40 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-32 lg:top-40 z-10 mb-2 flex justify-between items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                      {/* Mobile Filter Button */}
+                                      <div className="d-xl-none d-block">
+                                        <Button
+                                          type="primary"
+                                          icon={<FilterOutlined />}
+                                          onClick={showFilterDrawer}
+                                        >
+                                          Filters
+                                        </Button>
+                                      </div>
+
                                       {!shareMode ? (
-                                        <div className="flex items-center gap-2 text-gray-600 text-sm">
+                                        <div className="flex items-center gap-2 text-gray-600 text-sm ml-auto">
                                           <ShareAltOutlined />
                                           <span className="font-semibold">Share By :</span>
                                           <span

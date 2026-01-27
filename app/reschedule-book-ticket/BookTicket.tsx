@@ -1345,7 +1345,7 @@ export default function BookTicket() {
 
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main relative">
-          <section className="box-section box-breadcrumb background-body m-px-10">
+          <section className="box-section box-breadcrumb background-body m-px-10 d-none d-md-block">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
@@ -1402,7 +1402,7 @@ export default function BookTicket() {
 
           <section className="section-box block-content-book-tickets background-card m-px-10">
             <div className="container pt-1">
-              <h4 className="neutral-1000 mb-20">Complete your booking</h4>
+              <h4 className="neutral-1000 mb-20 mobile-booking-heading">Complete your booking</h4>
 
               {loading ? (
                 <BookingSkeleton />
@@ -1416,16 +1416,16 @@ export default function BookTicket() {
                         <>
                           {apiData?.tripInfos?.length <= 2 ? (
                             idx === 0 ? (
-                              <h5>Onward Journey</h5>
+                              <h6>Onward Journey</h6>
                             ) : idx === 1 ? (
-                              <h5 className="pt-15">Return Journey</h5>
+                              <h6 className="pt-15">Return Journey</h6>
                             ) : null
                           ) : (
                             <>
-                              <h5 className="pt-15">
+                              <h6 className="pt-15">
                                 {trip?.sI?.[0]?.da?.city} →{" "}
                                 {trip?.sI?.[trip?.sI.length - 1]?.aa?.city}
-                              </h5>
+                              </h6>
                             </>
                           )}
                           <div className="row mt-20">
@@ -1524,7 +1524,7 @@ export default function BookTicket() {
                                               </div>
                                             </div>
                                           </div>
-                                          <div className="item-timeline">
+                                          <div className="item-timeline pb-0-imp">
                                             <div className="item-line-timeline">
                                               <div className="time-flight">
                                                 <p className="text-sm-bold neutral-1000 icon-time">
@@ -1732,6 +1732,43 @@ export default function BookTicket() {
                         />
 
                         <div className="text-lg leading-6 font-bold text-gray-900 p-4">
+                          <div>
+                            <h2
+                              id="applicant-information-title"
+                              className="text-lg leading-6 font-bold text-gray-900"
+                            >
+                              Baggage
+                            </h2>
+                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                              <ExtraBaggage
+                                form={form}
+                                numAdults={numAdults}
+                                numChild={numChild}
+                                apiData={apiData}
+                                storedTravellerInfos={storedTravellerInfos}
+                                onBaggageChange={handleBaggageChange}
+                              />
+                            </p>
+                            <h2
+                              id="applicant-information-title"
+                              className="text-lg leading-6 font-bold text-gray-900"
+                            >
+                              Meal
+                            </h2>
+                            <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                              <MealInfo
+                                form={form}
+                                numAdults={numAdults}
+                                numChild={numChild}
+                                numInfants={numInfants}
+                                apiData={apiData}
+                                storedTravellerInfos={storedTravellerInfos}
+                                onMealChange={handleMealChange}
+                              />
+                            </p>
+                          </div>
+                        </div>
+                        {/* <div className="text-lg leading-6 font-bold text-gray-900 p-4">
                           Add Meal and Baggage
                           <div>
                             <div className="px-4 py-3 border_xcolor_1px">
@@ -1773,7 +1810,7 @@ export default function BookTicket() {
                               </p>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
 
                         {apiData?.conditions?.isa === true && (
                           <div className="text-lg leading-6 font-bold text-gray-900 p-4">
@@ -1798,7 +1835,7 @@ export default function BookTicket() {
                             <span>(Optional)</span>
                           )}
                           <div>
-                            <div className="px-4 py-3 border_xcolor_1px">
+                            <div className="py-3 border_xcolor_1px">
                               <h2
                                 id="applicant-information-title"
                                 className="text-sm leading-6 text-gray-500"

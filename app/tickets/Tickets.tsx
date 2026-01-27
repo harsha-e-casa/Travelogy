@@ -3404,7 +3404,7 @@ export default function Tickets() {
                         <>
                           <div className="box-grid-tours">
                             {/* Mobile Filter Button */}
-                            <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
+                            {/* <div className="d-xl-none d-block p-2" style={{ textAlign: "right" }}>
                               <Button
                                 type="primary"
                                 icon={<FilterOutlined />}
@@ -3413,7 +3413,7 @@ export default function Tickets() {
                               >
                                 Filters
                               </Button>
-                            </div>
+                            </div> */}
 
                             {/* Drawer */}
                             <Drawer
@@ -3438,9 +3438,20 @@ export default function Tickets() {
                               <div className="col-xl-9 col-12">
                                 {(searchedTripType?.trim().toLowerCase() === "one-way" ||
                                   searchedTripType?.trim().toLowerCase() === "round-trip") && (
-                                    <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                    <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-between items-center bg-white p-2 rounded shadow-sm border border-gray-100" style={{ marginTop: "10px" }}>
+                                      {/* Mobile Filter Button */}
+                                      <div className="d-xl-none d-block">
+                                        <Button
+                                          type="primary"
+                                          icon={<FilterOutlined />}
+                                          onClick={showFilterDrawer}
+                                        >
+                                          Filters
+                                        </Button>
+                                      </div>
+
                                       {!shareMode ? (
-                                        <div className="flex items-center gap-2 text-gray-600 text-sm">
+                                        <div className="flex items-center gap-2 text-gray-600 text-sm ml-auto">
                                           <ShareAltOutlined />
                                           <span className="font-semibold">Share By :</span>
                                           <span

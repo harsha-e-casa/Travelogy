@@ -4,6 +4,36 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+@media (max-width: 768px) {
+  .mobile-booking-heading {
+    font-size: 24px !important;
+    font-weight: 700;
+    margin-bottom: 10px !important;
+  }
+
+  .box-timeline {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+  }
+
+  .item-line-timeline {
+    margin-bottom: 0px !important;
+  }
+
+  .pb-0-imp {
+    padding-bottom: 0px !important;
+  }
 }

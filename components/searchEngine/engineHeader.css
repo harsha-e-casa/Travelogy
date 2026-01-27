@@ -1317,6 +1317,11 @@
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
   }
+
+  .section_main_book_dash_01 {
+    padding: 3% 0px 7% 0px !important;
+    /* Removed horizontal padding completely */
+  }
 }
 
 @media (max-width: 325px) {

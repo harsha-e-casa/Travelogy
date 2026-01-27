@@ -731,7 +731,7 @@ const SeatBooking = ({
           onClick={() => setFlightSeat(null)}
         >
           <div
-            className={`bg-white rounded-lg relative seat-booking-h ${isMobile ? "w-full h-full max-w-full overflow-hidden flex flex-col" : "max-w-3xl overflow-y-auto p-6"}`}
+            className={`bg-white rounded-lg relative seat-booking-h ${isMobile ? "w-[90%] h-full overflow-hidden flex flex-col" : "max-w-3xl overflow-y-auto p-6"}`}
             // style={{ maxHeight: "80vh", width: "60%" }}
             onClick={(e) => e.stopPropagation()}
           >

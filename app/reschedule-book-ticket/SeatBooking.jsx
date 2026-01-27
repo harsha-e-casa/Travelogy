@@ -616,7 +616,8 @@ const SeatBooking = ({ numAdults, numChild, apiData }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-2 right-2 text-gray-700 z-50 bg-white rounded-full p-1 shadow-md"
+              // className="absolute top-2 right-2 text-gray-700 z-50 bg-white rounded-full p-1 shadow-md"
+              className={`bg-white rounded-lg relative seat-booking-h ${isMobile ? "w-[90%] h-full overflow-hidden flex flex-col" : "max-w-3xl overflow-y-auto p-6"}`}
               onClick={() => setFlightSeat(null)}
             >
               ❌

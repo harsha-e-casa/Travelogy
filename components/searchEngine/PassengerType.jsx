@@ -54,6 +54,7 @@ export const PassengerType = ({
         </div>
         {hoveredStudent && (
           <div
+            className="hidden lg:block"
             style={{
               position: "absolute",
               top: "100%",
@@ -102,6 +103,7 @@ export const PassengerType = ({
         </div>
         {hoveredSenior && (
           <div
+            className="hidden lg:block"
             style={{
               position: "absolute",
               top: "100%",

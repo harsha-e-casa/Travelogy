@@ -609,6 +609,8 @@ const Alldetails = ({ totalpricee }) => {
 
       if (result?.status?.success === true) {
         window.location.reload();
+      } else if (result?.errCode === "1072") {
+        setError(result?.message || "Cancellation not available for PNR");
       } else {
         setError("Unhold operation failed");
       }
@@ -1928,10 +1930,9 @@ const Alldetails = ({ totalpricee }) => {
                           key={`${tripIndex}-${segIndex}`}
                           className="premium-flight-card mb-4 shadow-sm"
                         >
-                          {/* Card Header: Airline Info & Badges */}
                           <div className="bg-slate-50 px-4 py-3 flex flex-wrap justify-between items-center border-b border-slate-100 gap-3">
-                            <div className="flex items-center gap-4">
-                              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex items-center justify-center min-w-[100px]">
+                            <div className="flex items-center gap-2 md:gap-4">
+                              <div className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm flex items-center justify-center min-w-fit md:min-w-[100px]">
                                 <span className="font-extrabold text-slate-800 tracking-tight text-sm">
                                   {seg?.fD?.aI?.name}
                                 </span>
@@ -1945,7 +1946,7 @@ const Alldetails = ({ totalpricee }) => {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-col gap-1">
                               {fareType && (
                                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${fareType.toLowerCase().includes('non') ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100'}`}>
                                   {fareType}
@@ -1960,24 +1961,30 @@ const Alldetails = ({ totalpricee }) => {
                           </div>
 
                           {/* Card Body: Departure -> Timeline -> Arrival */}
-                          <div className="p-4 md:p-6">
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                          <div className="p-4 md:p-6 mobile-sm-padding">
+                            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-0 md:gap-6">
                               {/* Departure */}
-                              <div className="flex-1 text-center md:text-left">
-                                <div className="airport-info-label mb-3">Departure</div>
-                                <div className="time-display mb-1">{seg?.dt.split("T")[1]}</div>
-                                <div className="text-sm font-bold text-slate-500 mb-4">{formattedDate}</div>
-                                <div className="city-display mb-1">
-                                  {seg?.da?.city} <span className="text-slate-400 ml-1">({seg?.da?.code})</span>
-                                </div>
-                                <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] mx-auto md:mx-0">
-                                  {seg?.da?.name}
-                                </div>
-                                {seg?.da?.terminal && (
-                                  <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                                    {seg?.da?.terminal}
+                              <div className="flex-1">
+                                <div className="flex custom-flex justify-between md:justify-start items-stretch gap-0 md:gap-4">
+                                  <div className="text-left">
+                                    <div className="airport-info-label mb-1">Departure</div>
+                                    <div className="time-display mb-1">{seg?.dt.split("T")[1]}</div>
+                                    <div className="text-sm font-bold text-slate-500 mb-0 md:mb-4">{formattedDate}</div>
                                   </div>
-                                )}
+                                  <div className="text-right md:text-left mt-0 md:mt-0">
+                                    <div className="city-display mb-1">
+                                      {seg?.da?.city} <span className="text-slate-400 ml-1">({seg?.da?.code})</span>
+                                    </div>
+                                    <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] ml-auto md:ml-0">
+                                      {seg?.da?.name}
+                                    </div>
+                                    {seg?.da?.terminal && (
+                                      <div className="inline-block bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                                        {seg?.da?.terminal}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
 
                               {/* Timeline Connector */}
@@ -1999,28 +2006,34 @@ const Alldetails = ({ totalpricee }) => {
                               </div>
 
                               {/* Arrival */}
-                              <div className="flex-1 text-center md:text-right">
-                                <div className="airport-info-label mb-3">Arrival</div>
-                                <div className="time-display mb-1">{seg?.at?.split("T")[1]}</div>
-                                <div className="text-sm font-bold text-slate-500 mb-4">
-                                  {new Date(seg?.at).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}
-                                </div>
-                                <div className="city-display mb-1">
-                                  {seg?.aa?.city} <span className="text-slate-400 ml-1">({seg?.aa?.code})</span>
-                                </div>
-                                <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] mx-auto md:ml-auto md:mr-0">
-                                  {seg?.aa?.name}
-                                </div>
-                                {seg?.aa?.terminal && (
-                                  <div className="inline-block mt-4 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
-                                    {seg?.aa?.terminal}
+                              <div className="flex-1">
+                                <div className="flex custom-flex justify-between md:justify-start items-stretch gap-0 md:gap-4">
+                                  <div className="text-left md:text-right">
+                                    <div className="airport-info-label mb-1">Arrival</div>
+                                    <div className="time-display mb-1">{seg?.at?.split("T")[1]}</div>
+                                    <div className="text-sm font-bold text-slate-500 mb-0 md:mb-4">
+                                      {new Date(seg?.at).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })}
+                                    </div>
                                   </div>
-                                )}
+                                  <div className="text-right md:text-right mt-0 md:mt-0">
+                                    <div className="city-display mb-1">
+                                      {seg?.aa?.city} <span className="text-slate-400 ml-1">({seg?.aa?.code})</span>
+                                    </div>
+                                    <div className="text-xs text-slate-400 font-medium truncate max-w-[180px] ml-auto md:mr-0">
+                                      {seg?.aa?.name}
+                                    </div>
+                                    {seg?.aa?.terminal && (
+                                      <div className="inline-block bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                                        {seg?.aa?.terminal}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
 
                             {/* Baggage Information Footer */}
-                            <div className="mt-6 pt-5 border-t border-slate-50 flex flex-wrap gap-4 justify-center md:justify-start">
+                            <div className="mt-0 md:mt-6 pt-5 border-t border-slate-50 flex flex-wrap gap-4 justify-center md:justify-start">
                               <div className="baggage-tag shadow-sm border border-slate-100">
                                 <div className="bg-blue-50 p-1.5 rounded-md">
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -2390,62 +2403,40 @@ const Alldetails = ({ totalpricee }) => {
         paymentModel && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div
-              className="bg-white border-2 border-black w-96 p-6 rounded-lg text-center shadow-lg relative"
-              style={{ width: "35%" }}
+              className="bg-white border text-center border-gray-200 w-full max-w-md p-6 rounded-xl shadow-2xl relative mx-4"
             >
               <button
-                // onClick={() => setPaymentFailurePopup(false)}
                 onClick={() => {
                   setPaymentModel(false);
                   setPaymsg("");
                 }}
-                className="absolute top-2 right-2 text-gray-700 hover:text-black text-xl font-bold"
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition"
               >
-                ×
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
 
-              <p className="text-black-600 mb-2 font-semibold">
+              <h3 className="text-xl font-bold text-gray-800 mb-6 mt-1">
                 Choose Payment Mode
-              </p>
+              </h3>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-around",
-                  paddingTop: "10px",
-                }}
-              >
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <div
                   onClick={bookingReviewWIthWallet}
-                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoadingWallet
-                    ? "bg-gray-300"
-                    : "bg-yellow-300 hover:bg-yellow-400"
+                  className={`flex-1 cursor-pointer font-medium px-4 py-3 rounded-lg transition border flex items-center justify-center
+                    ${bookingLoadingWallet
+                      ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                      : "bg-yellow-400 hover:bg-yellow-500 text-black border-transparent shadow-sm hover:shadow-md"
                     }`}
-                  disabled={bookingLoadingWallet}
                 >
                   {bookingLoadingWallet ? (
                     <div className="flex items-center gap-2">
-                      <svg
-                        className="animate-spin h-5 w-5 text-black"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                        ></path>
+                      <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                       </svg>
-                      <span>Loading...</span>
+                      <span>Processing...</span>
                     </div>
                   ) : (
                     "Wallet Payment"
@@ -2453,47 +2444,31 @@ const Alldetails = ({ totalpricee }) => {
                 </div>
 
                 <div
-                  // onClick={bookingReview}
                   onClick={handlePayNow}
-                  className={`cursor-pointer border-2 border-black px-4 py-2 transition text-black rounded-md flex items-center justify-center ${bookingLoading
-                    ? "bg-gray-300"
-                    : "bg-yellow-300 hover:bg-yellow-400"
+                  className={`flex-1 cursor-pointer font-medium px-4 py-3 rounded-lg transition border flex items-center justify-center
+                    ${bookingLoading
+                      ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
+                      : "bg-yellow-400 hover:bg-yellow-500 text-black border-transparent shadow-sm hover:shadow-md"
                     }`}
-                  disabled={bookingLoading}
                 >
                   {bookingLoading ? (
                     <div className="flex items-center gap-2">
-                      <svg
-                        className="animate-spin h-5 w-5 text-black"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                        ></path>
+                      <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                       </svg>
-                      <span>Loading...</span>
+                      <span>Processing...</span>
                     </div>
                   ) : (
                     "Pay via Gateway"
                   )}
                 </div>
               </div>
+
               {paymsg && (
-                <p className="text-red-600 pt-2" style={{ textAlign: "center" }}>
+                <div className="mt-4 bg-red-50 text-red-600 px-3 py-2 rounded text-sm">
                   {paymsg.message}, Balance: {paymsg.balance}
-                </p>
+                </div>
               )}
             </div>
           </div>

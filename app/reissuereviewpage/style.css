@@ -128,3 +128,9 @@
     gap: 1rem !important;
   }
 }
+
+.no-mobile-mb-20 {
+  @media (max-width: 768px) {
+    margin-bottom: 0px !important;
+  }
+}

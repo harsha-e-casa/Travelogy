@@ -1353,7 +1353,7 @@ const ReissueReviewPage = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Layout headerStyle={1} footerStyle={1}>
         <main className="main relative">
-          <section className="box-section box-breadcrumb background-body m-px-10">
+          <section className="box-section box-breadcrumb background-body m-px-10 d-none d-md-block">
             <div className="container pt-1">
               <ul className="breadcrumbs">
                 <li>
@@ -1553,7 +1553,7 @@ const ReissueReviewPage = () => {
                                   <div className="shadow rounded-md p-3">
                                     <div className="flex flex-col justify-start  items-start">
                                       {/* City and direction row */}
-                                      <div className="flex flex-row gap-3 items-center mb-2">
+                                      <div className="flex flex-row gap-3 items-center mb-2 d-none d-md-block">
                                         <p className="text-xl-bold neutral-1000">
                                           {seg?.da?.city || "DELHI"}{" "}
                                           <span>({seg?.da?.cityCode})</span>
@@ -1583,7 +1583,7 @@ const ReissueReviewPage = () => {
                                             "Date not available"}
                                         </p>
                                         {/* Info list below the cities */}
-                                        <ul className="flex flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc">
+                                        <ul className="flex flex-row gap-4 mb-20 text-sm-medium neutral-500 list-disc no-mobile-mb-20">
                                           {/* <li className="text-sm-medium neutral-500 ">
                                               {stops || "No stop info"}
                                             </li> */}
@@ -1596,7 +1596,7 @@ const ReissueReviewPage = () => {
                                     </div>
 
                                     <div className="flex flex-row justify-between review-info-row">
-                                      <div className="logo-flight flex flex-row gap-3 items-center mb-20">
+                                      <div className="logo-flight flex flex-row gap-3 items-center mb-20 no-mobile-mb-20">
                                         <div className="text-md-bold neutral-900">
                                           {seg?.fD?.aI?.name}
                                         </div>

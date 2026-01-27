@@ -940,18 +940,6 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
       ),
       children: (
         <>
-          {/* Filter Button for Mobile/Tablet (< 1200px) */}
-          <div className="d-xl-none d-block p-2" style={{ textAlign: 'right' }}>
-            <Button
-              type="primary"
-              icon={<FilterOutlined />}
-              onClick={showFilterDrawer}
-              style={{ marginBottom: '10px' }}
-            >
-              Filters
-            </Button>
-          </div>
-
           {/* Drawer for Mobile Filters */}
           <Drawer
             title="Filter Flights"
@@ -974,9 +962,20 @@ export default function MulticitySelectionView({ flightData, markup = 0, ticketM
               {currentFilter && renderFilters(tabIndex)}
             </div>
             <div className="col-xl-9 col-12">
-              <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-end items-center bg-white p-1 rounded shadow-sm border border-gray-100">
+              <div className="sticky top-32 lg:top-48 z-10 mb-2 flex justify-between items-center bg-white p-1 rounded shadow-sm border border-gray-100">
+                {/* Mobile Filter Button */}
+                <div className="d-xl-none d-block">
+                  <Button
+                    type="primary"
+                    icon={<FilterOutlined />}
+                    onClick={showFilterDrawer}
+                  >
+                    Filters
+                  </Button>
+                </div>
+
                 {!shareMode ? (
-                  <div className="flex items-center gap-2 text-gray-600 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600 text-sm ml-auto">
                     <ShareAltOutlined />
                     <span className="font-semibold">Share By :</span>
                     {/* <span className="cursor-pointer hover:text-green-600 font-medium">Whatsapp</span> | */}

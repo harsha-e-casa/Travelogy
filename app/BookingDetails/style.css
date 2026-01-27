@@ -311,3 +311,11 @@
     font-size: 1.75rem;
   }
 }
+
+.custom-flex {
+  flex-direction: row !important;
+
+  @media (min-width: 768px) {
+    flex-direction: column !important;
+  }
+}
