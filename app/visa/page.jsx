@@ -56,7 +56,7 @@ export default function VisaPage() {
           <div className="w-full">
             <div className="">
               <div className="mx-auto px-4 sm:max-w-2xl sm:px-6 sm:text-center lg:px-0 lg:text-left lg:flex lg:items-center text-center">
-                <div className="pb-10">
+                <div className="pb-40">
                   <h1 className="text-1x2 tracking-tight font-extrabold text-black sm:text-6xl xl:text-6xl">
                     <span className="block p-4">
                       Get a tourist visa, quick and easy.
