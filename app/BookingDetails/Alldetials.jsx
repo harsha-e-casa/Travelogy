@@ -1979,7 +1979,7 @@ const Alldetails = ({ totalpricee }) => {
                                       {seg?.da?.name}
                                     </div>
                                     {seg?.da?.terminal && (
-                                      <div className="inline-block mt-2 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                                      <div className="inline-block bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
                                         {seg?.da?.terminal}
                                       </div>
                                     )}
@@ -2023,7 +2023,7 @@ const Alldetails = ({ totalpricee }) => {
                                       {seg?.aa?.name}
                                     </div>
                                     {seg?.aa?.terminal && (
-                                      <div className="inline-block mt-2 px-3 py-1 bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                                      <div className="inline-block bg-slate-100 text-slate-600 text-[10px] font-bold rounded uppercase tracking-wider">
                                         {seg?.aa?.terminal}
                                       </div>
                                     )}
