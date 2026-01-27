@@ -33,6 +33,7 @@
 
 .main-menu {
   display: flex;
+  align-items: stretch;
   gap: 0px;
   list-style: none;
   margin: 0;
@@ -109,6 +110,7 @@
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
+  align-self: center;
 }
 
 .btn-logout:hover {
@@ -247,14 +249,17 @@
 }
 
 .nav-main-menu li a {
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  height: 100%;
   padding: 8px 16px;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .nav-main-menu {
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  align-self: stretch;
   justify-content: center;
   /* or space-between */
   gap: 20px;
@@ -303,5 +308,5 @@
 
 .main-menu li {
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
