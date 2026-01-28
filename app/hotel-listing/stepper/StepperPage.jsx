@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { Modal } from "antd";
 import SessionTimerWithModal from "./SessionTimer";
 // import { fetchHotelReviewData } from "../../../util/HotelApi";
 import Skeleton from "../Skeleton";
@@ -122,7 +123,57 @@ export default function Stepper() {
     const savedFormData = localStorage.getItem("formData");
     return savedFormData ? JSON.parse(savedFormData) : {};
   });
-  
+
+  /*
+     Logic for Checking Booking in Progress
+  */
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedFormData = localStorage.getItem("formData");
+      if (savedFormData) {
+        try {
+          const parsed = JSON.parse(savedFormData);
+
+          // If there is ANY keys in formData, we consider it "in progress"
+          // You might want to be more specific, e.g. check if guests exist
+          if (Object.keys(parsed).length > 0) {
+            Modal.confirm({
+              title: "Booking in Progress",
+              content:
+                "Previous booking under progress. Do you want to continue locally or clear and start fresh?",
+              okText: "Go Back",
+              okButtonProps: {
+                style: { backgroundColor: "orange", borderColor: "orange" },
+              },
+              cancelText: "Clear and Proceed",
+              onOk: () => {
+                // User wants to go back / abort this new session
+                if (window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push("/hotel-listing");
+                }
+              },
+              onCancel: () => {
+                // User wants to clear existing data and start fresh here
+                localStorage.removeItem("formData");
+                localStorage.removeItem(stepKey); // Clear step memory
+                // Also clear personal documents data if any
+                localStorage.removeItem("personalDocumentsData");
+                localStorage.removeItem("acceptTerms");
+                // Reset state
+                setFormData({});
+                setCurrentStep(1);
+              },
+            });
+          }
+        } catch (e) {
+          console.error("Error parsing existing formData", e);
+        }
+      }
+    }
+  }, []);
+
   // Markup State
   const [markup, setMarkup] = useState(() => {
     if (typeof window !== "undefined") {
@@ -150,7 +201,7 @@ export default function Stepper() {
       if (savedData) {
         try {
           markupObj = JSON.parse(savedData);
-        } catch (e) {}
+        } catch (e) { }
       }
 
       if (oid) {
@@ -432,8 +483,8 @@ export default function Stepper() {
                       </span>
                       <span
                         className={`text-sm font-medium ${status === "completed"
-                            ? "text-4aa301"
-                            : "text-gray-700"
+                          ? "text-4aa301"
+                          : "text-gray-700"
                           }`}
                       >
                         {step.title}

@@ -35,10 +35,10 @@ export function HotelReviewComponent({
         if (response.error) {
           throw new Error(response.error);
         }
-        
+
         if (!cancelled) {
           setHotelReviewData(response);
-          
+
           // Auto-save markup with the newly generated bookingId
           if (response.bookingId && markup > 0) {
             postData("travelogy/flight/save-markup", {
@@ -68,14 +68,14 @@ export function Step1TravellerDetails({
   setFormData,
   onNext,
   markup = 0,
-  setMarkup = () => {},
+  setMarkup = () => { },
 }) {
   // Markup State handled by parent (StepperPage)
   // const [markup, setMarkup] = useState(0);
   // const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   // const [tempMarkup, setTempMarkup] = useState("0");
   // const [showTaxDetails, setShowTaxDetails] = useState(false);
-  
+
   // const handleUpdateMarkup = () => {
   //   setMarkup(Number(tempMarkup));
   //   setShowMarkupPopup(false);
@@ -555,8 +555,8 @@ export function Step1TravellerDetails({
                 <span className="text-sm font-normal text-gray-500">
                   {hotelReviewData?.query?.checkinDate
                     ? dayjs(hotelReviewData.query.checkinDate).format(
-                        "YYYY, ddd"
-                      )
+                      "YYYY, ddd"
+                    )
                     : ""}
                 </span>
               </div>
@@ -590,8 +590,8 @@ export function Step1TravellerDetails({
                 <span className="text-sm font-normal text-gray-500">
                   {hotelReviewData?.query?.checkoutDate
                     ? dayjs(hotelReviewData.query.checkoutDate).format(
-                        "YYYY, ddd"
-                      )
+                      "YYYY, ddd"
+                    )
                     : ""}
                 </span>
               </div>
@@ -618,9 +618,8 @@ export function Step1TravellerDetails({
                 let guestString = `${totalAdults} Adults`;
                 if (totalChildren > 0)
                   guestString += `, ${totalChildren} Children`;
-                return `${guestString} • ${totalRooms} Room${
-                  totalRooms > 1 ? "s" : ""
-                }`;
+                return `${guestString} • ${totalRooms} Room${totalRooms > 1 ? "s" : ""
+                  }`;
               })()}
             </div>
           </div>
@@ -714,8 +713,8 @@ export function Step1TravellerDetails({
                       <div className="flex flex-col">
                         <input
                           ref={(el) =>
-                            (errorRefs.current[`passportNumber_r${roomIndex}`] =
-                              el)
+                          (errorRefs.current[`passportNumber_r${roomIndex}`] =
+                            el)
                           }
                           className="border p-2 rounded stepper_input"
                           placeholder="Passport Number"
@@ -848,7 +847,7 @@ export function Step1TravellerDetails({
                 )}
                 <div className="mt-2 text-sm font-semibold text-orange-600">
                   {currentAdults.length + 1 < room.numberOfAdults ||
-                  currentChildren.length < room.numberOfChild ? (
+                    currentChildren.length < room.numberOfChild ? (
                     <button
                       onClick={() => {
                         if (currentAdults.length + 1 < room.numberOfAdults) {
@@ -921,7 +920,7 @@ export function Step1TravellerDetails({
             </div>
           </div>
           <div className="mobile-fare-summary mt-4 mb-4 screen-only p-0">
-             <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} markup={markup} setMarkup={setMarkup} />
+            <FareAmount hotelReviewData={hotelReviewData} Category={"bbook"} markup={markup} setMarkup={setMarkup} />
           </div>
         </div>
 
@@ -1159,8 +1158,8 @@ export function Step2Review({
                 <span className="text-sm font-normal text-gray-500">
                   {hotelReviewData?.query?.checkinDate
                     ? dayjs(hotelReviewData.query.checkinDate).format(
-                        "YYYY, ddd"
-                      )
+                      "YYYY, ddd"
+                    )
                     : ""}
                 </span>
               </div>
@@ -1194,8 +1193,8 @@ export function Step2Review({
                 <span className="text-sm font-normal text-gray-500">
                   {hotelReviewData?.query?.checkoutDate
                     ? dayjs(hotelReviewData.query.checkoutDate).format(
-                        "YYYY, ddd"
-                      )
+                      "YYYY, ddd"
+                    )
                     : ""}
                 </span>
               </div>
@@ -1222,9 +1221,8 @@ export function Step2Review({
                 let guestString = `${totalAdults} Adults`;
                 if (totalChildren > 0)
                   guestString += `, ${totalChildren} Children`;
-                return `${guestString} • ${totalRooms} Room${
-                  totalRooms > 1 ? "s" : ""
-                }`;
+                return `${guestString} • ${totalRooms} Room${totalRooms > 1 ? "s" : ""
+                  }`;
               })()}
             </div>
           </div>
@@ -1232,191 +1230,189 @@ export function Step2Review({
         <h3 className="font-bold text-base">Guest Details:</h3>
         {Category !== "abook"
           ? Object.values(formData.guests || {}).map((guest, roomIndex) => {
-              // Filter valid guests (lead + extra guests with valid data)
-              const allGuests = [guest, ...(guest.extraGuests || [])];
-              const validGuests = allGuests.filter((g) => {
-                const firstName = g?.firstName?.trim() || "";
-                const lastName = g?.lastName?.trim() || "";
-                return firstName && lastName;
-              });
+            // Filter valid guests (lead + extra guests with valid data)
+            const allGuests = [guest, ...(guest.extraGuests || [])];
+            const validGuests = allGuests.filter((g) => {
+              const firstName = g?.firstName?.trim() || "";
+              const lastName = g?.lastName?.trim() || "";
+              return firstName && lastName;
+            });
 
-              // Only render if there are valid guests
-              if (validGuests.length === 0) return null;
+            // Only render if there are valid guests
+            if (validGuests.length === 0) return null;
 
-              // Get the actual room configuration for accurate guest count
-              const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
-              const adults = roomConfig?.numberOfAdults || 0;
-              const children = roomConfig?.numberOfChild || 0;
+            // Get the actual room configuration for accurate guest count
+            const roomConfig = hotelReviewData?.query?.roomInfo?.[roomIndex];
+            const adults = roomConfig?.numberOfAdults || 0;
+            const children = roomConfig?.numberOfChild || 0;
 
-              return (
-                <div key={roomIndex} className="border-b pb-4">
-                  <h4 className="font-bold text-md">
-                    <div>
-                      <p>
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc}{" "}
-                        -{" "}
-                        {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
-                        <span className="text-gray-500">
-                          {" "}
-                          ({adults} {adults === 1 ? "Adult" : "Adults"}
-                          {children > 0
-                            ? `, ${children} ${
-                                children === 1 ? "Child" : "Children"
-                              }`
-                            : ""})
-                        </span>
-                      </p>
-                    </div>
-                  </h4>
-                  <div className="guest-details-table-wrapper desktop-only-table">
-                    <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                      <thead className="bg-blue-50">
-                        <tr>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            No.
-                          </th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            Title
-                          </th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            First Name
-                          </th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            Last Name
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {validGuests.map((validGuest, index) => (
-                          <tr key={index} className="border-b">
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {index + 1}.
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {validGuest.title}
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {validGuest.firstName}
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {validGuest.lastName}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="mobile-guest-details">
-                    {validGuests.map((validGuest, index) => (
-                      <div
-                        key={index}
-                        className="mobile-guest-row border-b py-2"
-                      >
-                        <span className="font-semibold mr-2">{index + 1}.</span>
-                        <span>
-                          {validGuest.title}. {validGuest.firstName}&nbsp;{" "}
-                          {validGuest.lastName}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })
-          : hotelPassenger?.map((room, roomIndex) => {
-              // Filter valid guests (excluding TBA and empty values)
-              const validGuests =
-                room?.ti?.filter((passenger) => {
-                  const firstName = passenger?.fN?.trim() || "";
-                  const lastName = passenger?.lN?.trim() || "";
-
-                  // Filter out TBA, empty, or undefined values
-                  return (
-                    firstName &&
-                    lastName &&
-                    firstName.toUpperCase() !== "TBA" &&
-                    lastName.toUpperCase() !== "TBA"
-                  );
-                }) || [];
-
-              // Only render the room section if there are valid guests
-              if (validGuests.length === 0) return null;
-
-              // Total guest count includes all guests (for display purposes)
-              const adults = room?.adt || 0;
-              const children = room?.chd || 0;
-
-              return (
-                <div key={roomIndex} className="border-b space-y-2">
-                  <h4 className="font-bold text-md">
+            return (
+              <div key={roomIndex} className="border-b pb-4">
+                <h4 className="font-bold text-md">
+                  <div>
                     <p>
-                      {room?.rc} <span className="text-md">( {room?.mb})</span>
+                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.rc}{" "}
+                      -{" "}
+                      {hotelReviewData?.hInfo?.ops?.[0]?.ris?.[roomIndex]?.mb}
                       <span className="text-gray-500">
                         {" "}
                         ({adults} {adults === 1 ? "Adult" : "Adults"}
                         {children > 0
-                          ? `, ${children} ${
-                              children === 1 ? "Child" : "Children"
-                            }`
+                          ? `, ${children} ${children === 1 ? "Child" : "Children"
+                          }`
                           : ""})
                       </span>
                     </p>
-                  </h4>
-
-                  <div className="guest-details-table-wrapper desktop-only-table">
-                    <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
-                      <thead className="bg-blue-50">
-                        <tr>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            No.
-                          </th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            Title
-                          </th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            First Name
-                          </th>
-                          <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
-                            Last Name
-                          </th>
+                  </div>
+                </h4>
+                <div className="guest-details-table-wrapper desktop-only-table">
+                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                    <thead className="bg-blue-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          No.
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Title
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          First Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Last Name
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {validGuests.map((validGuest, index) => (
+                        <tr key={index} className="border-b">
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {index + 1}.
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {validGuest.title}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {validGuest.firstName}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {validGuest.lastName}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {validGuests.map((passenger, index) => (
-                          <tr key={index} className="border-b">
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {index + 1}.
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {passenger?.ti}
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {passenger?.fN}
-                            </td>
-                            <td className="px-4 py-2 text-sm text-gray-800">
-                              {passenger?.lN}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <div className="mobile-guest-details">
-                    {validGuests.map((passenger, index) => (
-                      <div
-                        key={index}
-                        className="mobile-guest-row border-b py-2"
-                      >
-                        <span className="font-semibold mr-2">{index + 1}.</span>
-                        <span>
-                          {passenger?.ti}. {passenger?.fN}&nbsp; {passenger?.lN}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              );
-            })}
+                <div className="mobile-guest-details">
+                  {validGuests.map((validGuest, index) => (
+                    <div
+                      key={index}
+                      className="mobile-guest-row border-b py-2"
+                    >
+                      <span className="font-semibold mr-2">{index + 1}.</span>
+                      <span>
+                        {validGuest.title}. {validGuest.firstName}&nbsp;{" "}
+                        {validGuest.lastName}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })
+          : hotelPassenger?.map((room, roomIndex) => {
+            // Filter valid guests (excluding TBA and empty values)
+            const validGuests =
+              room?.ti?.filter((passenger) => {
+                const firstName = passenger?.fN?.trim() || "";
+                const lastName = passenger?.lN?.trim() || "";
+
+                // Filter out TBA, empty, or undefined values
+                return (
+                  firstName &&
+                  lastName &&
+                  firstName.toUpperCase() !== "TBA" &&
+                  lastName.toUpperCase() !== "TBA"
+                );
+              }) || [];
+
+            // Only render the room section if there are valid guests
+            if (validGuests.length === 0) return null;
+
+            // Total guest count includes all guests (for display purposes)
+            const adults = room?.adt || 0;
+            const children = room?.chd || 0;
+
+            return (
+              <div key={roomIndex} className="border-b space-y-2">
+                <h4 className="font-bold text-md">
+                  <p>
+                    {room?.rc} <span className="text-md">( {room?.mb})</span>
+                    <span className="text-gray-500">
+                      {" "}
+                      ({adults} {adults === 1 ? "Adult" : "Adults"}
+                      {children > 0
+                        ? `, ${children} ${children === 1 ? "Child" : "Children"
+                        }`
+                        : ""})
+                    </span>
+                  </p>
+                </h4>
+
+                <div className="guest-details-table-wrapper desktop-only-table">
+                  <table className="w-full mt-2 bg-sky-100 border border-gray-300 rounded-3">
+                    <thead className="bg-blue-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          No.
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Title
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          First Name
+                        </th>
+                        <th className="px-4 py-2 text-left text-sm font-medium text-gray-600">
+                          Last Name
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {validGuests.map((passenger, index) => (
+                        <tr key={index} className="border-b">
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {index + 1}.
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {passenger?.ti}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {passenger?.fN}
+                          </td>
+                          <td className="px-4 py-2 text-sm text-gray-800">
+                            {passenger?.lN}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mobile-guest-details">
+                  {validGuests.map((passenger, index) => (
+                    <div
+                      key={index}
+                      className="mobile-guest-row border-b py-2"
+                    >
+                      <span className="font-semibold mr-2">{index + 1}.</span>
+                      <span>
+                        {passenger?.ti}. {passenger?.fN}&nbsp; {passenger?.lN}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
 
         {Category !== "abook" ? (
           formData.specialRequest?.trim() ? (
@@ -1762,11 +1758,10 @@ export function Step2Review({
               <button
                 type="button"
                 // disabled={!accepted}
-                className={`book-now-btn ${
-                  accepted
-                    ? "bg-orange-500 hover:bg-orange-600"
-                    : "bg-gray-400 cursor-not-allowed"
-                }`}
+                className={`book-now-btn ${accepted
+                  ? "bg-orange-500 hover:bg-orange-600"
+                  : "bg-gray-400 cursor-not-allowed"
+                  }`}
                 onClick={handleNext}
               >
                 CONTINUE
@@ -2006,38 +2001,38 @@ export function Step3PersonalDocuments({
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
-          mode: "custom",
-          rooms: (hotelReviewData?.query?.roomInfo || []).map(
-            (room, rIdx) =>
-              guardianMode[rIdx]
-                ? {
-                    useGuardian: true,
-                    guardian: {
-                      first: (guardianPANs[rIdx]?.first || "").trim(),
-                      last: (guardianPANs[rIdx]?.last || "").trim(),
-                      pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-                    },
-                  }
-                : {
-                    useGuardian: false,
-                    guests: getUiGuests(rIdx).map((guest, gIdx) => ({
-                      pan: isMaster(guest?.title)
-                        ? ""
-                        : (individualPANs[`${rIdx}-${gIdx}`] || "")
-                            .toUpperCase()
-                            .trim(),
-                    })),
-                  }
-            // : {
-            //     useGuardian: false,
-            //     guests: (room?.guests || []).map((_, gIdx) => ({
-            //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-            //         .toUpperCase()
-            //         .trim(),
-            //     })),
-            //   }
-          ),
-        };
+        mode: "custom",
+        rooms: (hotelReviewData?.query?.roomInfo || []).map(
+          (room, rIdx) =>
+            guardianMode[rIdx]
+              ? {
+                useGuardian: true,
+                guardian: {
+                  first: (guardianPANs[rIdx]?.first || "").trim(),
+                  last: (guardianPANs[rIdx]?.last || "").trim(),
+                  pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+                },
+              }
+              : {
+                useGuardian: false,
+                guests: getUiGuests(rIdx).map((guest, gIdx) => ({
+                  pan: isMaster(guest?.title)
+                    ? ""
+                    : (individualPANs[`${rIdx}-${gIdx}`] || "")
+                      .toUpperCase()
+                      .trim(),
+                })),
+              }
+          // : {
+          //     useGuardian: false,
+          //     guests: (room?.guests || []).map((_, gIdx) => ({
+          //       pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+          //         .toUpperCase()
+          //         .trim(),
+          //     })),
+          //   }
+        ),
+      };
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
@@ -2055,27 +2050,27 @@ export function Step3PersonalDocuments({
     const finalPanInfo = samePANForAll
       ? { mode: "same", pan: (samePANValue || "").toUpperCase().trim() }
       : {
-          mode: "custom",
-          rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
-            guardianMode[rIdx]
-              ? {
-                  useGuardian: true,
-                  guardian: {
-                    first: (guardianPANs[rIdx]?.first || "").trim(),
-                    last: (guardianPANs[rIdx]?.last || "").trim(),
-                    pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
-                  },
-                }
-              : {
-                  useGuardian: false,
-                  guests: (room?.guests || []).map((_, gIdx) => ({
-                    pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
-                      .toUpperCase()
-                      .trim(),
-                  })),
-                }
-          ),
-        };
+        mode: "custom",
+        rooms: (hotelReviewData?.query?.roomInfo || []).map((room, rIdx) =>
+          guardianMode[rIdx]
+            ? {
+              useGuardian: true,
+              guardian: {
+                first: (guardianPANs[rIdx]?.first || "").trim(),
+                last: (guardianPANs[rIdx]?.last || "").trim(),
+                pan: (guardianPANs[rIdx]?.pan || "").toUpperCase().trim(),
+              },
+            }
+            : {
+              useGuardian: false,
+              guests: (room?.guests || []).map((_, gIdx) => ({
+                pan: (individualPANs[`${rIdx}-${gIdx}`] || "")
+                  .toUpperCase()
+                  .trim(),
+              })),
+            }
+        ),
+      };
 
     const panInfo = { ...finalPanInfo, tcsDeclaration: selectedTCS };
 
@@ -2142,9 +2137,8 @@ export function Step3PersonalDocuments({
                   <div className="flex gap-2 mb-2 pan_type_2">
                     {/* First */}
                     <Input
-                      className={`w-60 stepper_input ${
-                        errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
-                      }`}
+                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.first ? "border-red-500" : ""
+                        }`}
                       placeholder="First Name"
                       value={guardianPANs[rIdx]?.first || ""}
                       onChange={(e) => {
@@ -2178,9 +2172,8 @@ export function Step3PersonalDocuments({
                     )}
 
                     <Input
-                      className={`w-60 stepper_input ${
-                        errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
-                      }`}
+                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.last ? "border-red-500" : ""
+                        }`}
                       placeholder="Last Name"
                       value={guardianPANs[rIdx]?.last || ""}
                       onChange={(e) => {
@@ -2215,9 +2208,8 @@ export function Step3PersonalDocuments({
 
                     {/* PAN */}
                     <Input
-                      className={`w-60 stepper_input ${
-                        errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
-                      }`}
+                      className={`w-60 stepper_input ${errors.guardian?.[rIdx]?.pan ? "border-red-500" : ""
+                        }`}
                       placeholder="PAN Number"
                       value={guardianPANs[rIdx]?.pan || ""}
                       onChange={(e) => {
@@ -2293,19 +2285,17 @@ export function Step3PersonalDocuments({
                         className="flex items-center justify-between mb-3 space-x-3 pan_type_1"
                       >
                         <p className="text-sm font-medium text-gray-700 w-2/6">
-                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${
-                            guest?.lastName || ""
-                          }`.trim()}
+                          {`${guest?.title || ""}. ${guest?.firstName || ""} ${guest?.lastName || ""
+                            }`.trim()}
                         </p>
 
                         {!guest?.title?.toLowerCase().includes("master") && (
                           <div className="flex-1">
                             <Input
-                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${
-                                errors.individual?.[`${rIdx}-${gIdx}`]
-                                  ? "border-red-500"
-                                  : ""
-                              }`}
+                              className={`w-full border-0 border-bottom_1 border-gray-300 rounded-none focus:ring-0 focus:border-blue-500 stepper_input ${errors.individual?.[`${rIdx}-${gIdx}`]
+                                ? "border-red-500"
+                                : ""
+                                }`}
                               placeholder="Enter PAN Individual"
                               value={individualPANs[`${rIdx}-${gIdx}`] || ""}
                               onChange={(e) =>
@@ -2332,9 +2322,8 @@ export function Step3PersonalDocuments({
         ) : (
           <div className="flex gap-2 mb-4 ">
             <Input
-              className={`w-60 stepper_input ${
-                errors.samePAN ? "border-red-500" : ""
-              }`}
+              className={`w-60 stepper_input ${errors.samePAN ? "border-red-500" : ""
+                }`}
               placeholder="Enter PAN"
               value={samePANValue}
               onChange={(e) => {
@@ -2496,7 +2485,7 @@ export function Step4Payment({
   const [loading, setLoading] = useState(false);
 
 
-// amount to be deducted from wallet is totalBaseFare + totalTax
+  // amount to be deducted from wallet is totalBaseFare + totalTax
   const bookingReviewWIthWallet = async () => {
     setPaymsg("");
     const token =
@@ -2813,7 +2802,7 @@ export function useFareBreakdown(hotelReviewData) {
   return { totalBaseFare, totalTax };
 }
 
-export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = () => {}, showEdit = true }) {
+export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = () => { }, showEdit = true }) {
   const searchParams = useSearchParams();
   const hid = searchParams.get("hid");
   const oid = searchParams.get("oid");
@@ -2831,7 +2820,7 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
   const toggleDetails = () => {
     setIsDetailsVisible((prevState) => !prevState);
   };
-  
+
   // Markup Logic
   const [showMarkupPopup, setShowMarkupPopup] = useState(false);
   const [tempMarkup, setTempMarkup] = useState("0");
@@ -2881,105 +2870,105 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
             <span>Base Fare</span>
             <span>₹{totalBaseFare.toFixed(2)}</span>
           </div>
-          
+
           <div className="flex flex-col border-b pb-2">
             <div className="flex justify-between items-center">
-                <div className="flex items-center cursor-pointer gap-2" onClick={() => setShowTaxDetails(!showTaxDetails)}>
-                    <span>Taxes and Fees</span>
-                    <DownOutlined className={`transform transition-transform ${showTaxDetails ? "rotate-180" : ""}`} style={{width:"10px", height:"10px"}}/>
-                </div>
-                
-                <div className="flex items-center gap-2 relative">
-                    <span>₹{totalTax.toFixed(2)}</span>
-                    {showEdit && (
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => {
-                          setTempMarkup(markup.toString());
-                          setShowMarkupPopup(!showMarkupPopup);
-                        }}
+              <div className="flex items-center cursor-pointer gap-2" onClick={() => setShowTaxDetails(!showTaxDetails)}>
+                <span>Taxes and Fees</span>
+                <DownOutlined className={`transform transition-transform ${showTaxDetails ? "rotate-180" : ""}`} style={{ width: "10px", height: "10px" }} />
+              </div>
+
+              <div className="flex items-center gap-2 relative">
+                <span>₹{totalTax.toFixed(2)}</span>
+                {showEdit && (
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setTempMarkup(markup.toString());
+                      setShowMarkupPopup(!showMarkupPopup);
+                    }}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                  </div>
+                )}
+
+                {showMarkupPopup && (
+                  <div className="absolute top-8 right-0 bg-white shadow-xl rounded-lg p-3 border border-gray-200 z-50 w-60">
+                    <button
+                      onClick={() => setShowMarkupPopup(false)}
+                      className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                      </div>
-                    )}
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
 
-                    {showMarkupPopup && (
-                        <div className="absolute top-8 right-0 bg-white shadow-xl rounded-lg p-3 border border-gray-200 z-50 w-60">
-                          <button
-                            onClick={() => setShowMarkupPopup(false)}
-                            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <line x1="18" y1="6" x2="6" y2="18"></line>
-                              <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                          </button>
-
-                          <div className="mt-5 mb-3 bg-gray-50 border border-gray-100 rounded p-2">
-                            <label className="block text-xs text-gray-400 font-medium mb-0.5">
-                              Markup Price
-                            </label>
-                            <input
-                              type="number"
-                              value={tempMarkup}
-                              onChange={(e) => {
-                                const val = e.target.value;
-                                if (val === "" || Number(val) <= 1000000) {
-                                  setTempMarkup(val);
-                                }
-                              }}
-                              onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
-                              className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
-                              placeholder="0"
-                            />
-                          </div>
-                          <div className="flex justify-end">
-                            <button
-                              onClick={handleUpdateMarkup}
-                              className="btn-logout text-white rounded px-4 py-1.5 text-sm font-bold hover:bg-orange-600 transition shadow-sm"
-                            >
-                              Update
-                            </button>
-                          </div>
-                        </div>
-                     )}
-                </div>
-            </div>
-            
-            {showTaxDetails && (
-                <div className="mt-2 pl-4 flex flex-col gap-1 text-gray-500 text-xs">
-                    <div className="flex justify-between">
-                        <span>Taxes and Fees</span>
-                        <span>₹{totalTax.toFixed(2)}</span>
+                    <div className="mt-5 mb-3 bg-gray-50 border border-gray-100 rounded p-2">
+                      <label className="block text-xs text-gray-400 font-medium mb-0.5">
+                        Markup Price
+                      </label>
+                      <input
+                        type="number"
+                        value={tempMarkup}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "" || Number(val) <= 1000000) {
+                            setTempMarkup(val);
+                          }
+                        }}
+                        onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()}
+                        className="w-full bg-transparent text-lg text-gray-900 font-semibold focus:outline-none placeholder-gray-300"
+                        placeholder="0"
+                      />
                     </div>
-                    {markup > 0 && (
-                        <div className="flex justify-between">
-                            <span>Markup</span>
-                            <span>₹{markup.toFixed(2)}</span>
-                        </div>
-                    )}
+                    <div className="flex justify-end">
+                      <button
+                        onClick={handleUpdateMarkup}
+                        className="btn-logout text-white rounded px-4 py-1.5 text-sm font-bold hover:bg-orange-600 transition shadow-sm"
+                      >
+                        Update
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {showTaxDetails && (
+              <div className="mt-2 pl-4 flex flex-col gap-1 text-gray-500 text-xs">
+                <div className="flex justify-between">
+                  <span>Taxes and Fees</span>
+                  <span>₹{totalTax.toFixed(2)}</span>
                 </div>
+                {markup > 0 && (
+                  <div className="flex justify-between">
+                    <span>Markup</span>
+                    <span>₹{markup.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
@@ -3039,10 +3028,9 @@ export function FareAmount({ hotelReviewData, Category, markup = 0, setMarkup = 
               >
                 <span>Taxes and Fees</span>
                 <DownOutlined
-                  className={`transform transition-transform ${
-                    showTaxDetails ? "rotate-180" : ""
-                  }`}
-                  style={{width:"8px", height:"8px"}}
+                  className={`transform transition-transform ${showTaxDetails ? "rotate-180" : ""
+                    }`}
+                  style={{ width: "8px", height: "8px" }}
                 />
               </div>
               <span>₹{totalTaxSum.toFixed(2)}</span>
