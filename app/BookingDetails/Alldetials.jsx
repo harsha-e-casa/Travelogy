@@ -1804,33 +1804,16 @@ const Alldetails = ({ totalpricee }) => {
 
                               {/* Cancellation (Success Only) */}
                               {bookingDetails?.order?.status === "SUCCESS" && (
-                                <AmendmentPopup
+                                <button
                                   className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b border-gray-100 text-left text-sm font-medium text-red-600 w-full"
                                   onClick={() => {
                                     setShowDropdown(false);
+                                    mobileAmendmentRef.current?.open();
                                   }}
-                                  bookingId={bookingId}
-                                  bookingDetails={bookingDetails}
-                                  onSubmit={(
-                                    bookingId,
-                                    amendmentType,
-                                    remarks,
-                                    callback
-                                  ) =>
-                                    sumbitAmendmentapi(
-                                      bookingId,
-                                      amendmentType,
-                                      remarks,
-                                      (data) => {
-                                        callback?.(data);
-                                        setShowTravellerModal(true);
-                                      }
-                                    )
-                                  }
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                                   Cancel Booking
-                                </AmendmentPopup>
+                                </button>
                               )}
 
                               {/* Reschedule (Success + Date Validation) */}

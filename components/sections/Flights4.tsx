@@ -43,6 +43,7 @@ export default function Flights4() {
     const cabinCode =
       item?.data?.totalPriceList?.[0]?.fd?.ADULT?.cc ?? "ECONOMY";
     const cabinType = cabinMap[cabinCode] ?? "a";
+    console.log("cabinnnnnnnnnnnnn ==> ", cabinType)
 
     // If you want to use the counts from your search request, hardcode them here:
     const adults = "1";
@@ -97,13 +98,13 @@ export default function Flights4() {
 
     const cabinCode =
       item?.data?.totalPriceList?.[0]?.fd?.ADULT?.cc ?? "ECONOMY";
-    const cabinMap: Record<string, string> = {
-      ECONOMY: "e",
-      PREMIUM_ECONOMY: "pe",
-      BUSINESS: "b",
-      FIRST: "f",
-    };
-    const cabinType = cabinMap[cabinCode] ?? "e";
+    // const cabinMap: Record<string, string> = {
+    //   ECONOMY: "e",
+    //   PREMIUM_ECONOMY: "pe",
+    //   BUSINESS: "b",
+    //   FIRST: "f",
+    // };
+    const cabinType = cabinMap[cabinCode] ?? "a";
 
     const adults = "1";
     const children = "0";
