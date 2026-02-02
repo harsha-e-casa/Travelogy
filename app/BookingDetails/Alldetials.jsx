@@ -1464,6 +1464,18 @@ const Alldetails = ({ totalpricee }) => {
     }
   };
 
+  useEffect(() => {
+    if (isReIssueModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isReIssueModalOpen]);
+
+
   return (
     <>
       <h4 className="neutral-1000">Booking Details</h4>
@@ -1498,244 +1510,7 @@ const Alldetails = ({ totalpricee }) => {
                 <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-2 sm:gap-3 mt-2 sm:mt-0">
 
 
-                  {isReIssueModalOpen && (
-                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 w-full h-full">
-                      <div className="bg-white rounded-lg p-6 shadow-xl relative w-full max-w-xl max-h-[90vh] overflow-y-auto mx-4">
-                        <button
-                          onClick={closeReIssueModal}
-                          className="absolute top-4 right-4 text-2xl text-black"
-                        >
-                          &times;
-                        </button>
-                        <h2 className="text-xl font-bold text-blue-800">
-                          Reschedule Flight
-                        </h2>
 
-                        <div className="mb-4">
-                          <label
-                            htmlFor="pnr-select"
-                            className="block text-gray-500"
-                          >
-                            Select PNR
-                          </label>
-                          <select
-                            id="pnr-select"
-                            value={selectedPNR}
-                            onChange={(e) => handlePNRSelect(e.target.value)}
-                            className="reschedule-opt-w border-b border-gray-400 py-2 px-4"
-                          >
-                            <option value="">-- Select PNR --</option>
-                            {Object.keys(rescheduleData.pnrs).map(
-                              (pnr, index) => (
-                                <option key={index} value={pnr}>
-                                  {pnr} - {rescheduleData.pnrs[pnr]}{" "}
-                                </option>
-                              )
-                            )}
-                          </select>
-                        </div>
-
-                        {selectedPNR && (
-                          <div className="mb-6 flex justify-around">
-                            <div>
-                              <h6 className="font-bold text-gray-700">
-                                Travel Details:
-                              </h6>
-                              <p className="text-gray-600">
-                                From:{" "}
-                                {
-                                  rescheduleData.pnrFlightDetails[selectedPNR]
-                                    .from
-                                }
-                              </p>
-                              <p className="text-gray-600">
-                                To:{" "}
-                                {
-                                  rescheduleData.pnrFlightDetails[selectedPNR]
-                                    .to
-                                }
-                              </p>
-                              <p className="text-gray-600">
-                                Departure Time:{" "}
-                                {formatDateTime(
-                                  rescheduleData.pnrFlightDetails[selectedPNR]
-                                    .departureTime
-                                )}
-                              </p>
-                              <p className="text-gray-600">
-                                Arrival Time:{" "}
-                                {formatDateTime(
-                                  rescheduleData.pnrFlightDetails[selectedPNR]
-                                    .arrivalTime
-                                )}
-                              </p>
-                            </div>
-
-                            <div>
-                              <label
-                                className="block text-gray-700 font-medium mb-2"
-                                htmlFor="reschedule-date"
-                              >
-                                Select New Travel Date:
-                              </label>
-                              <DatePicker
-                                id="reschedule-date"
-                                format="MM/DD/YYYY"
-                                value={
-                                  rescheduleDate ? dayjs(rescheduleDate) : null
-                                }
-                                onChange={(d) =>
-                                  setRescheduleDate(
-                                    d ? d.format("YYYY-MM-DD") : ""
-                                  )
-                                }
-                                disabled={!selectedPNR}
-                                disabledDate={(current) =>
-                                  current && current < dayjs().startOf("day")
-                                }
-                                className="border border-gray-400 px-2 py-2 rounded w-full"
-                                popupClassName="z-[9999]"
-                                getPopupContainer={() => document.body}
-                                placement="bottomLeft"
-                                onKeyDown={(e) => {
-                                  const okKeys = [
-                                    "Backspace",
-                                    "Tab",
-                                    "ArrowLeft",
-                                    "ArrowRight",
-                                    "Delete",
-                                    "Enter",
-                                  ];
-                                  if (okKeys.includes(e.key)) return;
-                                  if (!/[\d/]/.test(e.key)) e.preventDefault();
-                                }}
-                                onPaste={(e) => {
-                                  const text = (
-                                    e.clipboardData.getData("text") || ""
-                                  ).trim();
-                                  if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
-                                    e.preventDefault();
-                                }}
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {selectedPNR &&
-                          rescheduleData.pnrPassengerDetails[selectedPNR] && (
-                            <div className="mb-6">
-                              <h6 className="font-bold text-gray-700">
-                                Travellers:
-                              </h6>
-                              <div>
-                                {rescheduleData.pnrPassengerDetails[
-                                  selectedPNR
-                                ].map((passenger, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center gap-2"
-                                  >
-                                    <input
-                                      type="checkbox"
-                                      style={{ width: "20px" }}
-                                      id={`traveller-${index}`}
-                                      className="form-checkbox"
-                                      checked={selectedTravellers.some(
-                                        (p) =>
-                                          p.firstName === passenger.firstName &&
-                                          p.lastName === passenger.lastName &&
-                                          p.title === passenger.title &&
-                                          p.passengerType ===
-                                          passenger.passengerType &&
-                                          p.index === index
-                                      )}
-                                      onChange={(e) => {
-                                        let updated;
-                                        if (e.target.checked) {
-                                          updated = [
-                                            ...selectedTravellers,
-                                            { ...passenger, index },
-                                          ];
-                                        } else {
-                                          updated = selectedTravellers.filter(
-                                            (p) =>
-                                              !(
-                                                p.firstName ===
-                                                passenger.firstName &&
-                                                p.lastName ===
-                                                passenger.lastName &&
-                                                p.title === passenger.title &&
-                                                p.passengerType ===
-                                                passenger.passengerType &&
-                                                p.index === index
-                                              )
-                                          );
-                                        }
-                                        setSelectedTravellers(updated);
-                                      }}
-                                    />
-
-                                    <label htmlFor={`traveller-${index}`}>
-                                      {passenger.title} {passenger.firstName}{" "}
-                                      {passenger.lastName} (
-                                      {passenger.passengerType})
-                                    </label>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                        <button
-                          onClick={handleSubmitReIssue}
-                          className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
-                          disabled={
-                            !rescheduleDate ||
-                            selectedTravellers.length === 0 ||
-                            rescheduleLoading
-                          }
-                        >
-                          {rescheduleLoading ? (
-                            <>
-                              <svg
-                                className="animate-spin h-5 w-5 mr-2"
-                                viewBox="0 0 24 24"
-                              >
-                                <circle
-                                  className="opacity-25"
-                                  cx="12"
-                                  cy="12"
-                                  r="10"
-                                  stroke="white"
-                                  strokeWidth="4"
-                                  fill="none"
-                                />
-                                <path
-                                  className="opacity-75"
-                                  fill="white"
-                                  d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
-                                />
-                              </svg>
-                              Loading...
-                            </>
-                          ) : (
-                            "Submit"
-                          )}
-                        </button>
-
-                        {rescheduleError !== "" && (
-                          <p className="text-sm-medium text-red-400">
-                            {rescheduleError}
-                          </p>
-                        )}
-                        {reissueApiError !== "" && (
-                          <p className="text-sm-medium text-red-400 mt-2">
-                            {reissueApiError}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   {isNoPrintVisible && (
                     <div className={isNoPrintVisible ? "" : "no-print"}>
@@ -2487,6 +2262,245 @@ const Alldetails = ({ totalpricee }) => {
           </div>
         )
       }
+      {/* === RESCHEDULE MODAL MOVED HERE === */}
+      {isReIssueModalOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 w-full h-full">
+          <div className="bg-white rounded-lg p-6 shadow-xl relative w-full max-w-xl max-h-[90vh] overflow-y-auto mx-4">
+            <button
+              onClick={closeReIssueModal}
+              className="absolute top-4 right-4 text-2xl text-black"
+            >
+              &times;
+            </button>
+            <h2 className="text-xl font-bold text-blue-800">
+              Reschedule Flight
+            </h2>
+
+            <div className="mb-4">
+              <label
+                htmlFor="pnr-select"
+                className="block text-gray-500"
+              >
+                Select PNR
+              </label>
+              <select
+                id="pnr-select"
+                value={selectedPNR}
+                onChange={(e) => handlePNRSelect(e.target.value)}
+                className="reschedule-opt-w border-b border-gray-400 py-2 px-4"
+              >
+                <option value="">-- Select PNR --</option>
+                {Object.keys(rescheduleData.pnrs).map(
+                  (pnr, index) => (
+                    <option key={index} value={pnr}>
+                      {pnr} - {rescheduleData.pnrs[pnr]}{" "}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+
+            {selectedPNR && (
+              <div className="mb-6 flex justify-around">
+                <div>
+                  <h6 className="font-bold text-gray-700">
+                    Travel Details:
+                  </h6>
+                  <p className="text-gray-600">
+                    From:{" "}
+                    {
+                      rescheduleData.pnrFlightDetails[selectedPNR]
+                        .from
+                    }
+                  </p>
+                  <p className="text-gray-600">
+                    To:{" "}
+                    {
+                      rescheduleData.pnrFlightDetails[selectedPNR]
+                        .to
+                    }
+                  </p>
+                  <p className="text-gray-600">
+                    Departure Time:{" "}
+                    {formatDateTime(
+                      rescheduleData.pnrFlightDetails[selectedPNR]
+                        .departureTime
+                    )}
+                  </p>
+                  <p className="text-gray-600">
+                    Arrival Time:{" "}
+                    {formatDateTime(
+                      rescheduleData.pnrFlightDetails[selectedPNR]
+                        .arrivalTime
+                    )}
+                  </p>
+                </div>
+
+                <div>
+                  <label
+                    className="block text-gray-700 font-medium mb-2"
+                    htmlFor="reschedule-date"
+                  >
+                    Select New Travel Date:
+                  </label>
+                  <DatePicker
+                    id="reschedule-date"
+                    format="MM/DD/YYYY"
+                    value={
+                      rescheduleDate ? dayjs(rescheduleDate) : null
+                    }
+                    onChange={(d) =>
+                      setRescheduleDate(
+                        d ? d.format("YYYY-MM-DD") : ""
+                      )
+                    }
+                    disabled={!selectedPNR}
+                    disabledDate={(current) =>
+                      current && current < dayjs().startOf("day")
+                    }
+                    className="border border-gray-400 px-2 py-2 rounded w-full"
+                    popupClassName="z-[9999]"
+                    getPopupContainer={() => document.body}
+                    placement="bottomLeft"
+                    onKeyDown={(e) => {
+                      const okKeys = [
+                        "Backspace",
+                        "Tab",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Delete",
+                        "Enter",
+                      ];
+                      if (okKeys.includes(e.key)) return;
+                      if (!/[\d/]/.test(e.key)) e.preventDefault();
+                    }}
+                    onPaste={(e) => {
+                      const text = (
+                        e.clipboardData.getData("text") || ""
+                      ).trim();
+                      if (!/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(text))
+                        e.preventDefault();
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {selectedPNR &&
+              rescheduleData.pnrPassengerDetails[selectedPNR] && (
+                <div className="mb-6">
+                  <h6 className="font-bold text-gray-700">
+                    Travellers:
+                  </h6>
+                  <div>
+                    {rescheduleData.pnrPassengerDetails[
+                      selectedPNR
+                    ].map((passenger, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2"
+                      >
+                        <input
+                          type="checkbox"
+                          style={{ width: "20px" }}
+                          id={`traveller-${index}`}
+                          className="form-checkbox"
+                          checked={selectedTravellers.some(
+                            (p) =>
+                              p.firstName === passenger.firstName &&
+                              p.lastName === passenger.lastName &&
+                              p.title === passenger.title &&
+                              p.passengerType ===
+                              passenger.passengerType &&
+                              p.index === index
+                          )}
+                          onChange={(e) => {
+                            let updated;
+                            if (e.target.checked) {
+                              updated = [
+                                ...selectedTravellers,
+                                { ...passenger, index },
+                              ];
+                            } else {
+                              updated = selectedTravellers.filter(
+                                (p) =>
+                                  !(
+                                    p.firstName ===
+                                    passenger.firstName &&
+                                    p.lastName ===
+                                    passenger.lastName &&
+                                    p.title === passenger.title &&
+                                    p.passengerType ===
+                                    passenger.passengerType &&
+                                    p.index === index
+                                  )
+                              );
+                            }
+                            setSelectedTravellers(updated);
+                          }}
+                        />
+
+                        <label htmlFor={`traveller-${index}`}>
+                          {passenger.title} {passenger.firstName}{" "}
+                          {passenger.lastName} (
+                          {passenger.passengerType})
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            <button
+              onClick={handleSubmitReIssue}
+              className="btn btn-gray bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded flex items-center"
+              disabled={
+                !rescheduleDate ||
+                selectedTravellers.length === 0 ||
+                rescheduleLoading
+              }
+            >
+              {rescheduleLoading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="white"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="white"
+                      d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 01-8 8z"
+                    />
+                  </svg>
+                  Loading...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </button>
+
+            {rescheduleError !== "" && (
+              <p className="text-sm-medium text-red-400">
+                {rescheduleError}
+              </p>
+            )}
+            {reissueApiError !== "" && (
+              <p className="text-sm-medium text-red-400 mt-2">
+                {reissueApiError}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 };
