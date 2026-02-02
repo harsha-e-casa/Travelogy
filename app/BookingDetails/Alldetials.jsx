@@ -492,7 +492,6 @@ const Alldetails = ({ totalpricee }) => {
 
     const pnr = rescheduleData.pnrs[selectedPNR] || "";
     const pnrKey = selectedPNR;
-    console.log("pnrKey == ", pnrKey);
 
     const [from, to] = pnrKey.split("-");
 
@@ -1500,11 +1499,8 @@ const Alldetails = ({ totalpricee }) => {
 
 
                   {isReIssueModalOpen && (
-                    <div className="fixed inset-0 p-t-reissue z-50 flex items-center justify-center bg-black bg-opacity-50">
-                      <div
-                        className="bg-white rounded-lg p-6 shadow-lg relative"
-                        style={{ width: "75%" }}
-                      >
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 w-full h-full">
+                      <div className="bg-white rounded-lg p-6 shadow-xl relative w-full max-w-xl max-h-[90vh] overflow-y-auto mx-4">
                         <button
                           onClick={closeReIssueModal}
                           className="absolute top-4 right-4 text-2xl text-black"
