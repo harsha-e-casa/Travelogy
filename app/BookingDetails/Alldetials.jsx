@@ -491,9 +491,8 @@ const Alldetails = ({ totalpricee }) => {
     setReissueApiError("");
 
     const pnr = rescheduleData.pnrs[selectedPNR] || "";
-    const pnrKey = Object.keys(rescheduleData.pnrs).find(
-      (key) => rescheduleData.pnrs[key] === pnr
-    );
+    const pnrKey = selectedPNR;
+    console.log("pnrKey == ", pnrKey);
 
     const [from, to] = pnrKey.split("-");
 
@@ -1748,7 +1747,7 @@ const Alldetails = ({ totalpricee }) => {
                       {/* --- MOBILE DROPDOWN (Visible only on small screens) --- */}
                       <div className="relative w-full sm:w-auto sm:mt-0">
                         <div className="flex gap-2">
-                          {bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ON_HOLD" ? (
+                          {bookingDetails?.order?.status === "ON_HOLD" ? (
                             <>
                               <button
                                 onClick={() => setPaymentModel(true)}
@@ -1831,7 +1830,7 @@ const Alldetails = ({ totalpricee }) => {
                               )}
 
                               {/* Unhold (Pending Only) */}
-                              {(bookingDetails?.order?.status === "PENDING" || bookingDetails?.order?.status === "ON_HOLD") && (
+                              {(bookingDetails?.order?.status === "ON_HOLD") && (
                                 <button
                                   className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-gray-100 text-left text-sm font-medium text-gray-700"
                                   onClick={() => {

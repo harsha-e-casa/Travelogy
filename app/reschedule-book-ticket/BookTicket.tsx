@@ -1311,12 +1311,13 @@ export default function BookTicket() {
   const hasExpired = useRef(false);
 
   const handleSessionExpire = useCallback(() => {
+    if (error) return;
     if (!hasExpired.current) {
       hasExpired.current = true;
       clearSessionCookies();
       window.history.back();
     }
-  }, [bookingId, removeCookie]); // Added bookingId and removeCookie to dependencies
+  }, [bookingId, removeCookie, error]); // Added bookingId and removeCookie to dependencies
 
   const timeLeftRef = useSessionTime(
     apiData?.conditions?.sct,
