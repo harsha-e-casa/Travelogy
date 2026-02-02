@@ -219,6 +219,72 @@ export default function Tickets() {
     }
   }, []);
 
+  const getTicketPrice = (ticket: any, specificFareIndex?: number) => {
+    let dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
+    let dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
+    let dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
+
+    if (isNaN(dfadu)) dfadu = 1;
+    if (isNaN(dfchi)) dfchi = 0;
+    if (isNaN(dfinf)) dfinf = 0;
+
+    const typeMap: { [key: number]: string } = {
+      0: "Non Refundable",
+      1: "Refundable",
+      2: "Partial Refundable",
+    };
+
+    let selectedFareIndex = 0;
+
+    if (typeof specificFareIndex === "number") {
+      selectedFareIndex = specificFareIndex;
+    } else {
+      // If strict fare types are selected, find the first matching fare Option
+      if (selectedFareTypes.length > 0) {
+        const matchIndex = ticket.totalPriceList.findIndex((priceInfo: any) =>
+          Object.keys(priceInfo.fd).some((paxType) => {
+            const fareType = typeMap[priceInfo.fd[paxType]?.rT || 0];
+            return selectedFareTypes.includes(fareType);
+          })
+        );
+        if (matchIndex !== -1) {
+          selectedFareIndex = matchIndex;
+        }
+      }
+    }
+
+    const fareOption = ticket.totalPriceList?.[selectedFareIndex];
+
+    const adultFare = (fareOption?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
+    const childFare = (fareOption?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
+    const infantFare = (fareOption?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
+
+    return adultFare + childFare + infantFare;
+  };
+
+  const getPriceRangeFromData = (data: any[]) => {
+    const prices: number[] = [];
+
+    data.forEach((ticket) => {
+      // Calculate price for ALL fare options to get the true range
+      if (ticket.totalPriceList && Array.isArray(ticket.totalPriceList)) {
+        ticket.totalPriceList.forEach((_: any, index: number) => {
+          const price = getTicketPrice(ticket, index);
+          if (price !== undefined && !isNaN(price)) {
+            prices.push(price);
+          }
+        });
+      }
+    });
+
+    if (prices.length === 0) return [0, 100000]; // Fallback
+
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    return [minPrice, maxPrice];
+  };
+
   useEffect(() => {
     if (flightData && (flightData.ONWARD || flightData.COMBO)) {
       const dataToCheck = flightData.ONWARD || flightData.COMBO;
@@ -342,20 +408,7 @@ export default function Tickets() {
     }
   }, [flightData]);
 
-  const getTicketPrice = (ticket: any) => {
-    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
 
-    const adultFare =
-      (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * dfadu;
-    const childFare =
-      (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * dfchi;
-    const infantFare =
-      (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * dfinf;
-
-    return adultFare + childFare + infantFare;
-  };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
@@ -522,35 +575,10 @@ export default function Tickets() {
       }
 
       setFilteredFlightData({ ONWARD: filteredData });
-    }
-  };
+    };
+  }
 
-  const getPriceRangeFromData = (data: any[]) => {
-    const prices: number[] = [];
 
-    const dfadu = parseInt(Cookies.get("gy_adult") || "1", 10);
-    const dfchi = parseInt(Cookies.get("gy_child") || "0", 10);
-    const dfinf = parseInt(Cookies.get("gy_infant") || "0", 10);
-
-    data.forEach((ticket) => {
-      const adultFare =
-        (ticket?.totalPriceList?.[0]?.fd?.ADULT?.fC?.NF ?? 0) * (dfadu ?? 0);
-      const childFare =
-        (ticket?.totalPriceList?.[0]?.fd?.CHILD?.fC?.NF ?? 0) * (dfchi ?? 0);
-      const infantFare =
-        (ticket?.totalPriceList?.[0]?.fd?.INFANT?.fC?.NF ?? 0) * (dfinf ?? 0);
-
-      const price = adultFare + childFare + infantFare;
-      if (price !== undefined) {
-        prices.push(price);
-      }
-    });
-
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-
-    return [minPrice, maxPrice];
-  };
 
   useEffect(() => {
     applyFilters();

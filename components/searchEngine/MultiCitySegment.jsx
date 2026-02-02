@@ -124,180 +124,199 @@ const MultiCitySegment = ({
   }, [segment.from, segment.to, index, onSegmentErrorChange]);
 
   return (
-    <div
-      className="flex items-start flex-wrap"
-      style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}
-    >
-      {/* From */}
-      <div className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1 country_from" onClick={() => multiCityCloseAllFieldsFn()}>
-        <div onClick={() => onToggleSection(index, "from")}>
-          <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">From</div>
-          <div className="pl-6 pb-4 relative">
-            <h2 className="text_4xl font_bold text-black tracking-wide">
-              {segment.from || "Select City"}
-            </h2>
-            <p className="text-xl_small truncate-text">
-              {segment.fromCode || "---"}
-            </p>
-          </div>
-        </div>
-        {isOpen("from") && (
-          <div className="searchFfromSelect searchFfromSelect_1">
-            <AppListSearch
-              operEngLocation={() => onToggleSection(null, null)}
-              setSelectFrom={(val) => handleFromChange("from", val)}
-              setSelectFromSub={(val) => handleFromChange("fromCode", val)}
-            />
-          </div>
-        )}
-        <Tooltip
-          className="flex shadow-md z-10"
-          placement="bottom"
-          title={fromError}
-          open={!!fromError}
-          arrow={{ pointAtCenter: true }}
-          overlayInnerStyle={{
-            backgroundColor: "#ffeaea",
-            color: "#ff4d4f",
-            fontWeight: 500,
-          }}
-        ></Tooltip>
-      </div>
-
-      {/* Swap Icon */}
-      <div className="searchReplaceLocation">
-        <svg
-          onClick={() => {
-            const newFrom = segment.to;
-            const newFromCode = segment.toCode;
-            const newTo = segment.from;
-            const newToCode = segment.fromCode;
-
-            const updatedSegment = {
-              ...segment,
-              from: newFrom,
-              fromCode: newFromCode,
-              to: newTo,
-              toCode: newToCode,
-            };
-
-            updateSegment(index, updatedSegment);
-
-            // Re-validate after swap
-            if (
-              updatedSegment.from &&
-              updatedSegment.to &&
-              updatedSegment.from === updatedSegment.to
-            ) {
-              setFromError("From and To cities cannot be the same.");
-              setToError("From and To cities cannot be the same.");
-              onSegmentErrorChange(index, true);
-            } else {
-              setFromError("");
-              setToError("");
-              onSegmentErrorChange(index, false);
-            }
-          }}
-          xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
-          viewBox="0 0 24 24"
-        >
-          <path
-            fill="#e88400"
-            d="M4.993 11.016a1 1 0 0 1-.531-1.848L7.15 6.48a1 1 0 0 1 1.414 1.415l-1.121 1.12h7.55a1 1 0 0 1 0 2zm14.014 1.969a1 1 0 0 1 .531 1.848L16.85 17.52a1 1 0 1 1-1.414-1.415l1.121-1.12h-7.55a1 1 0 1 1 0-2z"
-          />
-        </svg>
-      </div>
-
-      {/* To */}
-      <div className="text_start b_right_2px g_w_2 css_pointer relative country_to" onClick={() => multiCityCloseAllFieldsFn()}>
-        <div onClick={() => onToggleSection(index, "to")}>
-          <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
-          <div className="pl-6 pb-4 relative">
-            <h2 className="text_4xl font_bold text-black tracking-wide">
-              {segment.to || "Select City"}
-            </h2>
-            <p className="text-xl_small truncate-text">
-              {segment.toCode || "---"}
-            </p>
-          </div>
-        </div>
-        {isOpen("to") && (
-          <div className="searchFfromSelect searchFfromSelect_1">
-            <AppListSearch
-              operEngLocation={() => onToggleSection(null, null)}
-              setSelectFrom={(val) => handleToChange("to", val)}
-              setSelectFromSub={(val) => handleToChange("toCode", val)}
-            />
-            <Tooltip
-              className="flex shadow-md z-50"
-              placement="bottom"
-              title={toError}
-              open={!!toError}
-              arrow={{ pointAtCenter: true }}
-              overlayInnerStyle={{
-                backgroundColor: "#ffeaea",
-                color: "#ff4d4f",
-                fontWeight: 500,
-              }}
-            ></Tooltip>
-          </div>
-        )}
-      </div>
-
-      <div
-        className="text_start b_right_2px g_w_3 css_pointer"
-        onClick={() => multiCityCloseAllFieldsFn()}
-      >
+    <div>
+      <div className="flex country relative multicity-row">
+        {/* From */}
         <div
-          className="flex pl-6 justify_content_space"
-          onClick={() => onToggleSection(index, "date")}
+          className="text_start b_right_2px g_w_1 css_pointer relative box_left_ddr1 country_from"
+          onClick={() => multiCityCloseAllFieldsFn()}
         >
-          <div>
-            <div className="pt-2 pb-2">{displayDate.format("dddd")}</div>
-            <div>
-              <span className="text-4xl font-bold text-gray-900">
-                {displayDate.format("DD")}
-              </span>
-              <sub className="sub_txt1">
-                {displayDate.format("MMM")}
-              </sub>
+          <div onClick={() => onToggleSection(index, "from")}>
+            <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-500">
+              From
             </div>
-            <div className="text_start mt-0 flex">
-              <div className="txt_travelSelect3 txt_travelFrom">
-                Departure Date
+            <div className="pl-6 pb-4 relative">
+              <h2 className="text_4xl font_bold text-black tracking-wide">
+                {segment.from || "Select City"}
+              </h2>
+              <p className="text-xl_small truncate-text">
+                {segment.fromCode || "---"}
+              </p>
+            </div>
+          </div>
+          {isOpen("from") && (
+            <div className="searchFfromSelect searchFfromSelect_1">
+              <AppListSearch
+                operEngLocation={() => onToggleSection(null, null)}
+                setSelectFrom={(val) => handleFromChange("from", val)}
+                setSelectFromSub={(val) => handleFromChange("fromCode", val)}
+              />
+            </div>
+          )}
+          <Tooltip
+            className="flex shadow-md z-10"
+            placement="bottom"
+            title={fromError}
+            open={!!fromError}
+            arrow={{ pointAtCenter: true }}
+            overlayInnerStyle={{
+              backgroundColor: "#ffeaea",
+              color: "#ff4d4f",
+              fontWeight: 500,
+            }}
+          ></Tooltip>
+        </div>
+
+        {/* Swap Icon */}
+        <div className="searchReplaceLocation country_symbol">
+          <svg
+            onClick={() => {
+              const newFrom = segment.to;
+              const newFromCode = segment.toCode;
+              const newTo = segment.from;
+              const newToCode = segment.fromCode;
+
+              const updatedSegment = {
+                ...segment,
+                from: newFrom,
+                fromCode: newFromCode,
+                to: newTo,
+                toCode: newToCode,
+              };
+
+              updateSegment(index, updatedSegment);
+
+              // Re-validate after swap
+              if (
+                updatedSegment.from &&
+                updatedSegment.to &&
+                updatedSegment.from === updatedSegment.to
+              ) {
+                setFromError("From and To cities cannot be the same.");
+                setToError("From and To cities cannot be the same.");
+                onSegmentErrorChange(index, true);
+              } else {
+                setFromError("");
+                setToError("");
+                onSegmentErrorChange(index, false);
+              }
+            }}
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="#e88400"
+              d="M4.993 11.016a1 1 0 0 1-.531-1.848L7.15 6.48a1 1 0 0 1 1.414 1.415l-1.121 1.12h7.55a1 1 0 0 1 0 2zm14.014 1.969a1 1 0 0 1 .531 1.848L16.85 17.52a1 1 0 1 1-1.414-1.415l1.121-1.12h-7.55a1 1 0 1 1 0-2z"
+            />
+          </svg>
+        </div>
+
+        {/* To */}
+        <div
+          className="text_start b_right_2px g_w_2 css_pointer relative country_to"
+          onClick={() => multiCityCloseAllFieldsFn()}
+        >
+          <div onClick={() => onToggleSection(index, "to")}>
+            <div className="pt-2 pl-6 pb-2 text-xl-small text-gray-400">To</div>
+            <div className="pl-6 pb-4 relative">
+              <h2 className="text_4xl font_bold text-black tracking-wide">
+                {segment.to || "Select City"}
+              </h2>
+              <p className="text-xl_small truncate-text">
+                {segment.toCode || "---"}
+              </p>
+            </div>
+          </div>
+          {isOpen("to") && (
+            <div className="searchFfromSelect searchFfromSelect_1">
+              <AppListSearch
+                operEngLocation={() => onToggleSection(null, null)}
+                setSelectFrom={(val) => handleToChange("to", val)}
+                setSelectFromSub={(val) => handleToChange("toCode", val)}
+              />
+              <Tooltip
+                className="flex shadow-md z-50"
+                placement="bottom"
+                title={toError}
+                open={!!toError}
+                arrow={{ pointAtCenter: true }}
+                overlayInnerStyle={{
+                  backgroundColor: "#ffeaea",
+                  color: "#ff4d4f",
+                  fontWeight: 500,
+                }}
+              ></Tooltip>
+            </div>
+          )}
+        </div>
+
+        <div
+          className="text_start b_right_2px g_w_3 css_pointer"
+          onClick={() => multiCityCloseAllFieldsFn()}
+        >
+          <div
+            className="flex pl-6 justify_content_space"
+            onClick={() => onToggleSection(index, "date")}
+          >
+            <div>
+              <div className="pt-2 pb-2">{displayDate.format("dddd")}</div>
+              <div>
+                <span className="text-4xl font-bold text-gray-900">
+                  {displayDate.format("DD")}
+                </span>
+                <sub className="sub_txt1 p-2">{displayDate.format("MMM")}</sub>
+              </div>
+              <div className="text_start mt-0 flex">
+                <div className="txt_travelSelect3 txt_travelFrom">
+                  Departure Date
+                </div>
               </div>
             </div>
           </div>
+          {isOpen("date") && (
+            <AppDateRangeFlight
+              openToDateRange={() => onToggleSection(null, null)}
+              setDate={(date) =>
+                updateSegment(index, {
+                  ...segment,
+                  departureDate: dayjs(date),
+                })
+              }
+              minDate={minDate ? dayjs(minDate) : null}
+              value={segment.departureDate ? dayjs(segment.departureDate) : null}
+            />
+          )}
+          {showRemove && (
+            <div
+              onClick={() => removeSegment(index)}
+              className="text-red-600 font-bold text-lg css_pointer"
+              style={{
+                position: "absolute",
+                top: "0px",
+                right: "0px",
+                fontSize: "35px",
+                cursor: "pointer",
+                zIndex: 10,
+              }}
+            >
+              ×
+            </div>
+          )}
         </div>
-        {isOpen("date") && (
-          <AppDateRangeFlight
-            openToDateRange={() => onToggleSection(null, null)}
-            setDate={(date) =>
-              updateSegment(index, {
-                ...segment,
-                departureDate: dayjs(date),
-              })
-            }
-            minDate={minDate ? dayjs(minDate) : null}
-            value={segment.departureDate ? dayjs(segment.departureDate) : null}
-          />
-        )}
-        {showRemove && (
-          <div
-            onClick={() => removeSegment(index)}
-            className="text-red-600 font-bold text-lg css_pointer"
-            style={{ position: "absolute", top: "0px", right: "0px", fontSize: "35px", cursor: "pointer", zIndex: 10 }}
-          >
-            ×
-          </div>
-        )}
       </div>
 
       {/* Actions */}
       {showAdd && (
-        <div style={{ width: "65%", display: "flex", justifyContent: "center", marginTop: "10px" }}>
+        <div
+          style={{
+            width: "65%",
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "10px",
+          }}
+        >
           <div
             onClick={addSegment}
             className="text-blue-600 font-semibold text-sm px-3 py-1 border border-blue-600 rounded css_pointer"

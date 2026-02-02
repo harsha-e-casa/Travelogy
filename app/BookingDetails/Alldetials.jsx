@@ -2265,7 +2265,7 @@ const Alldetails = ({ totalpricee }) => {
       {/* === RESCHEDULE MODAL MOVED HERE === */}
       {isReIssueModalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 w-full h-full">
-          <div className="bg-white rounded-lg p-6 shadow-xl relative w-full max-w-xl max-h-[90vh] overflow-y-auto mx-4">
+          <div className="bg-white rounded-lg p-6 mt-4 shadow-xl relative w-full max-w-xl max-h-[90vh] overflow-y-auto mx-4">
             <button
               onClick={closeReIssueModal}
               className="absolute top-4 right-4 text-2xl text-black"
