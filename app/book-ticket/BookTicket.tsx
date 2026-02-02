@@ -153,24 +153,38 @@ export default function BookTicket() {
                 // 1. Clear LocalStorage
                 localStorage.removeItem(key);
                 localStorage.removeItem(`${key}_timestamp`);
+              }
+            });
 
-                // 2. Clear Cookies
-                removeCookie(`travellerInfo_${id}`);
-                removeCookie(`baggageinfo_${id}`);
-                removeCookie(`mealinfo_${id}`);
-                removeCookie(`gst_info_${id}`);
-                removeCookie(`seatSsr_amount_${id}`);
+            // 2. Clear ALL Booking Related Cookies (Wildcard)
+            const cookies = document.cookie.split(";");
+            const prefixesToClear = [
+              "travellerInfo",
+              "baggageinfo",
+              "mealinfo",
+              "gst_info",
+              "seatSsr_amount",
+              "mappedSeatInfo",
+              "email",
+              "phone",
+              "number",
+              "adult_seat_map",
+              "child_seat_map",
+            ];
 
-                // Contact info keys variations
-                removeCookie(`email_${id}`);
-                removeCookie(`phone_${id}`);
-                removeCookie(`number_${id}`);
+            cookies.forEach((cookie) => {
+              const eqPos = cookie.indexOf("=");
+              const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
 
-                // Seat maps
-                for (let i = 1; i <= 9; i++) {
-                  removeCookie(`adult_seat_map-${i}_${id}`);
-                  removeCookie(`child_seat_map-${i}_${id}`);
-                }
+              const shouldClear = prefixesToClear.some(
+                (prefix) =>
+                  name === prefix ||
+                  name.startsWith(`${prefix}_`) ||
+                  name.startsWith(`${prefix}-`)
+              );
+
+              if (shouldClear) {
+                removeCookie(name);
               }
             });
             // Remove global markers if any
@@ -323,10 +337,10 @@ export default function BookTicket() {
 
         // const data: ApiResponse = await postDataFlightDetails(parameter);
 
-        if (!data.status?.success) {
+        if (!data.status?.success || data.errCode) {
           const apiErrorMessage =
-            data.errors?.[0]?.message || data.error || "Unknown API error";
-          const apiErrorDetails = data.errors?.[0]?.details || "";
+            data.message || data.errors?.[0]?.message || data.error || "Unknown API error";
+          const apiErrorDetails = data.details || data.errors?.[0]?.details || "";
           const fullErrorMessage = `${apiErrorMessage}${apiErrorDetails ? ` - ${apiErrorDetails}` : ""
             }`;
 

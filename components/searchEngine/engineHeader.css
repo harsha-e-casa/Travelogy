@@ -1447,7 +1447,30 @@
     width: 100% !important;
     /* Maximize width */
     left: 0 !important;
-    right: 0 !important;
     margin: 0 !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .multicity-row {
+    flex-wrap: nowrap !important;
+  }
+
+  .multicity-row .g_w_1,
+  .multicity-row .g_w_2,
+  .multicity-row .g_w_3 {
+    flex: 1 1 30% !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0 !important;
+  }
+
+  /* Adjust font sizes if needed for tighter space */
+  .multicity-row .text-4xl {
+    font-size: 16px !important;
+  }
+
+  .multicity-row .country_symbol {
+    z-index: 10;
   }
 }
