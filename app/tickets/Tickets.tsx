@@ -472,12 +472,9 @@ export default function Tickets() {
   const [modifySearchOpen, setModifySearchOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [isDirectFlight, setIsDirectFlight] = useState(false);
-
-  useEffect(() => {
-    const directFlightCookie = Cookies.get("gy_direct_flight");
-    setIsDirectFlight(directFlightCookie === "true");
-  }, []);
+  const [isDirectFlight, setIsDirectFlight] = useState(() => {
+    return Cookies.get("gy_direct_flight") === "true";
+  });
 
   useEffect(() => {
     setCookie("gy_direct_flight", isDirectFlight ? "true" : "false");

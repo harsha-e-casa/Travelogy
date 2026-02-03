@@ -197,6 +197,7 @@ export default function Header1(props: Header1Props) {
                     <ul
                       className={`dropdown-menu ${adminDropdownOpen ? "show" : ""
                         }`}
+                      style={{ left: "-10px" }}
                     >
                       {/* <li
                         className={`${pathname === "/profile" ? "active" : ""}`}
