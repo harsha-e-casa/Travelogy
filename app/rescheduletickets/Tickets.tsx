@@ -126,7 +126,7 @@ export default function Tickets() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 1070);
+      setIsMobile(window.innerWidth < 1440);
     };
     handleResize();
     window.addEventListener("resize", handleResize);

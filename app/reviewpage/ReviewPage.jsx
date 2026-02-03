@@ -1617,7 +1617,7 @@ const ReviewPage = () => {
                                   <div className="shadow rounded-md p-3">
                                     <div className="flex flex-col justify-start  items-start">
                                       {/* City and direction row */}
-                                      <div className="flex flex-row gap-3 items-center mb-2 d-none d-md-block">
+                                      {/* <div className="flex flex-row gap-3 items-center mb-2 d-none d-md-block">
                                         <p className="text-xl-bold neutral-1000">
                                           {seg?.da?.city || "DELHI"}{" "}
                                           <span>({seg?.da?.cityCode})</span>
@@ -1639,7 +1639,7 @@ const ReviewPage = () => {
                                           {seg?.aa?.city || "DELHI"}{" "}
                                           <span>({seg?.aa?.cityCode})</span>
                                         </p>
-                                      </div>
+                                      </div> */}
 
                                       <div className="flex flex-row gap-2">
                                         <p className="text-sm-bold neutral-500 ">
