@@ -313,8 +313,8 @@ const BookingDetailsPage = () => {
     try {
       // Extract lead guest name
       const leadGuest = bookingDetails?.itemInfos?.HOTEL?.hInfo?.ops?.[0]?.ris?.[0]?.ti?.[0];
-      const guestName = leadGuest 
-        ? `${leadGuest.fN || ""} ${leadGuest.lN || ""}`.trim() 
+      const guestName = leadGuest
+        ? `${leadGuest.fN || ""} ${leadGuest.lN || ""}`.trim()
         : "Traveller";
 
       // Generate HTML content for the email
@@ -332,7 +332,7 @@ const BookingDetailsPage = () => {
           <p style="color: #f37021; font-weight: 500; font-size: 15px;">Happy Travelling!</p>
         </div>
       `;
-      
+
       generatedHtml = thanksContent + generatedHtml;
 
       const payload = {
@@ -393,7 +393,7 @@ const BookingDetailsPage = () => {
         try {
           const now = new Date();
           let cancellationCharge = 0;
-          
+
           if (cancellationPolicy && cancellationPolicy.length > 0) {
             // Find applicable cancellation charge from policy
             const applicablePolicy = cancellationPolicy.find(policy => {
@@ -408,7 +408,7 @@ const BookingDetailsPage = () => {
               // If no matching period found, check if it's before the first period or after the last
               const firstPolicy = cancellationPolicy[0];
               const lastPolicy = cancellationPolicy[cancellationPolicy.length - 1];
-              
+
               if (now < new Date(firstPolicy.fdt)) {
                 cancellationCharge = 0; // Assuming free cancellation before first period
               } else if (now > new Date(lastPolicy.tdt)) {
@@ -427,7 +427,7 @@ const BookingDetailsPage = () => {
           if (finalRefundAmount > 0) {
             const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
             const refundRes = await postData(
-              "https://api.travelogy.co/travelogy/flight/refundWallet",
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/travelogy/flight/refundWallet`,
               {
                 booking_id: bookingId,
                 amount: finalRefundAmount,
