@@ -33,9 +33,13 @@ export async function POST(req) {
   try {
     const { email, password } = await req.json();
 
+    const key = CryptoJS.enc.Hex.parse("92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b");
+    const iv = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
+
     const encryptedPassword = CryptoJS.AES.encrypt(
       password,
-      "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
+      key,
+      { iv: iv }
     ).toString();
 
     console.log("encryptedPassword ==> ", encryptedPassword)

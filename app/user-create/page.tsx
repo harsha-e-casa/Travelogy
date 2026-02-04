@@ -98,9 +98,12 @@ export default function VendorCreate(): JSX.Element {
     setSuccessMsg(null);
     setErrorMsg(null);
     try {
+      const key = CryptoJS.enc.Hex.parse("92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b");
+      const iv = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
       const encryptedPassword = CryptoJS.AES.encrypt(
         vals.password,
-        "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
+        key,
+        { iv: iv }
       ).toString();
       const reqData = {
         email: vals.email,
@@ -144,9 +147,12 @@ export default function VendorCreate(): JSX.Element {
     try {
       const { newPassword } = await resetForm.validateFields();
       setResetSubmitting(true);
+      const key = CryptoJS.enc.Hex.parse("92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b");
+      const iv = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
       const encrypted = CryptoJS.AES.encrypt(
         newPassword,
-        "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
+        key,
+        { iv: iv }
       ).toString();
       await postData(
         RESET_ENDPOINT,
