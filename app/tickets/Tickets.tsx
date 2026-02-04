@@ -471,20 +471,20 @@ export default function Tickets() {
 
   const [modifySearchOpen, setModifySearchOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isDirectFlight, setIsDirectFlight] = useState(false);
-
-  useEffect(() => {
-    const directFlightCookie = Cookies.get("gy_direct_flight");
-    setIsDirectFlight(directFlightCookie === "true");
-  }, []);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [isDirectFlight, setIsDirectFlight] = useState(() => {
+    return Cookies.get("gy_direct_flight") === "true";
+  });
 
   useEffect(() => {
     setCookie("gy_direct_flight", isDirectFlight ? "true" : "false");
   }, [isDirectFlight]);
 
   useEffect(() => {
+    console.log("window.innerWidthwindow.innerWidth ==> ", window.innerWidth)
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024);
+      setIsSmallScreen(window.innerWidth == 1024)
     };
     handleResize();
     window.addEventListener("resize", handleResize);
@@ -534,7 +534,7 @@ export default function Tickets() {
       {isFilterApplied && (
         // filterCriteria is true then top-0
         // <div className="sticky top-36 lg:top-48 z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100">
-        <div className={`sticky ${filterCriteria ? 'top-0' : 'top-36 lg:top-48'} z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100`}>
+        <div className={`sticky ${filterCriteria || isSmallScreen ? 'top-0' : 'top-36 lg:top-48'} z-50 mb-2 flex justify-between items-center bg-white px-3 py-2 rounded shadow-sm border border-gray-100`}>
           <span className="text-black font-bold text-sm">Applied Filters <span className="text-gray-500 font-normal">({activeFilterCount})</span> :</span>
           <span
             className="cursor-pointer hover:text-orange-500 font-medium text-orange-500 text-sm"

@@ -5,7 +5,7 @@
  * saving, updating, and fetching markup values for hotel bookings.
  */
 
-const API_BASE_URL = "https://api.travelogy.co/travelogy/hotel";
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/travelogy/hotel`;
 
 /**
  * Save or update markup for a single hotel booking

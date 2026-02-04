@@ -72,11 +72,13 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
 
   // State to track if it's mobile
   const [isMobile, setIsMobile] = useState(false);
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   // Update the isMobile state based on window width
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768); // Consider 768px as the threshold for mobile
+      setIsSmallScreen(window.innerWidth == 1024);
     };
 
     // Set initial state based on the current window size
@@ -99,7 +101,7 @@ export default function ByStops({ stops, setStops, tabIndex }: any) {
   };
 
   const itemStyle = (active: boolean): React.CSSProperties => ({
-    padding: isMobile ? "0 6px" : "0 12px",
+    padding: isMobile || isSmallScreen ? "0 6px" : "0 12px",
     height: 30,
     display: "flex",
     alignItems: "center",

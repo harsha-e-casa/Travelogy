@@ -27,7 +27,7 @@ import CryptoJS from "crypto-js";
 export const runtime = "nodejs"; // ensure Node runtime
 export const dynamic = "force-dynamic"; // avoid caching
 
-const BACKEND_URL = "https://api.travelogy.co/";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export async function POST(req) {
   try {
@@ -38,17 +38,26 @@ export async function POST(req) {
       "92077e393546d4310a2af55592879820c7af16b4153f484f70e41fbdd127239b"
     ).toString();
 
-    console.log("encryptedPassword ==> ",encryptedPassword)
+    console.log("encryptedPassword ==> ", encryptedPassword)
 
     // 1) Call your custom backend
     const upstream = await fetch(`${BACKEND_URL}/travelogy/flight/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+        'Accept': 'application/json',
+        "Content-Type": "application/json"
+      },
       // If the backend needs cookies itself, add credentials: "include"
       body: JSON.stringify({ email: email, password: encryptedPassword }),
     });
 
+
+    console.log("upstream ==> ", upstream)
     const data = await upstream.json().catch(() => ({}));
+
+
+    console.log("data ==> ", data)
 
     if (!upstream.ok || !data?.token) {
       const msg = data?.message || "Invalid credentials";

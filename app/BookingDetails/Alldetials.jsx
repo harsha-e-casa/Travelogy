@@ -2196,7 +2196,7 @@ const Alldetails = ({ totalpricee }) => {
                   )}
                 </div>
 
-                <div
+                {/* <div
                   onClick={handlePayNow}
                   className={`flex-1 cursor-pointer font-medium px-4 py-3 rounded-lg transition border flex items-center justify-center
                     ${bookingLoading
@@ -2215,6 +2215,18 @@ const Alldetails = ({ totalpricee }) => {
                   ) : (
                     "Pay via Gateway"
                   )}
+                </div> */}
+
+                <div
+                  className={`flex-1 border border-gray-300 px-4 py-3 transition text-black rounded-lg flex items-center justify-between bg-gray-100 cursor-not-allowed opacity-50 pointer-events-none`}
+                  aria-disabled={true}
+                >
+                  <span className="font-medium">
+                    Pay via Gateway
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    (Unavailable)
+                  </span>
                 </div>
               </div>
 
